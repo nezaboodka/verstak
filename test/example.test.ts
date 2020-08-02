@@ -6,5 +6,5 @@
 import test from 'ava'
 
 test('Example', t => {
-  // nop
+  t.is('Example', 'Example')
 })
