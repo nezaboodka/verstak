@@ -17,4 +17,4 @@ isolated data snapshot and then, once atomically applied, are
 way, because reactronic **takes full care of tracking dependencies**
 between visual components (observers) and state objects (observables).
 
-Read more: https://github.com/nezaboodka/reactronic/blob/master/README.md#readme
+Based on Reactronic: https://github.com/nezaboodka/reactronic/blob/master/README.md#readme
