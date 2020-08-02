@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    // General
+    "pretty": true,
+    "watch": false,
+    "listFiles": true,
+    "inlineSources": false,
+    "removeComments": false, // keep comments to make tests coverage working
+    // Targets & outputs
+    "target": "es6",
+    "module": "commonjs",
+    // "moduleResolution": "node",
+    "lib": ["es2016", "dom"],
+    "noEmit": false,
+    "noLib": false,
+    "baseUrl": "source",
+    // "rootDir": "source",
+    "outDir": "build/dist",
+    "declarationDir": "build/dist",
+    "declaration": true,
+    // Debugging
+    "sourceMap": true,
+    "inlineSourceMap": false,
+    // Strictness
+    "strict": true,
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    // Other
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "jsx": "react",
+  },
+  "include": [
+    "source/**/*.ts",
+    "test/**/*.ts",
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
+  ]
+}

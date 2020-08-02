@@ -1,0 +1,28 @@
+{
+  "check-coverage": true,
+  "lines": 50,
+  "functions": 50,
+  "branches": 50,
+  "exclude": [
+    "**/*.d.ts",
+  ],
+  "include": [
+    "source/**/*.ts",
+    "test/**/*.ts"
+  ],
+  "require": [
+    "ts-node/register",
+    "source-map-support/register"
+  ],
+  "extension": [
+    ".ts",
+  ],
+  "reporter": [
+    "lcovonly",
+    "html"
+  ],
+  "temp-dir": "build/coverage/output",
+  "report-dir": "build/coverage",
+  "cache": false,
+  "all": true
+}

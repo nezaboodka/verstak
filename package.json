@@ -1,0 +1,54 @@
+{
+  "name": "reactronic-front",
+  "version": "0.20.10",
+  "description": "Reactronic Front - Transactionally Reactive Frontend Development Framework",
+  "main": "build/dist/source/api.js",
+  "types": "build/dist/source/api.d.ts",
+  "files": [
+    "build/dist/source/**/*.*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nezaboodka/reactronic-front.git"
+  },
+  "keywords": [
+    "nezaboodka",
+    "reactronic",
+    "state management",
+    "rendering",
+    "consistent",
+    "reactive",
+    "reactivity",
+    "transactional",
+    "asynchronous",
+    "frontend",
+    "ui"
+  ],
+  "author": "Yury Chetyrko <ychetyrko@gmail.com> (https://github.com/ychetyrko)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nezaboodka/reactronic-front/issues"
+  },
+  "homepage": "https://github.com/nezaboodka/reactronic-front/blob/master/README.md#readme",
+  "dependencies": {
+    "reactronic": "0.20.94"
+  },
+  "devDependencies": {
+    "@types/node": "14.0.23",
+    "typescript": "3.9.6",
+    "ts-node": "8.10.2",
+    "tsconfig-paths": "3.9.0",
+    "eslint": "7.4.0",
+    "@typescript-eslint/parser": "3.6.1",
+    "@typescript-eslint/eslint-plugin": "3.6.1",
+    "ava": "3.10.1",
+    "nyc": "15.1.0"
+  },
+  "scripts": {
+    "build": "eslint source/**/*.ts test/**/*.ts && tsc",
+    "fix": "eslint --fix source/**/*.ts test/**/*.ts",
+    "pack": "eslint source/**/*.ts test/**/*.ts && tsc --sourceMap false --removeComments true",
+    "test": "ava",
+    "cover": "nyc ava && open build/coverage/index.html"
+  }
+}
