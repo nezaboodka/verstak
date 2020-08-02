@@ -2201,7 +2201,7 @@ rc@^1.2.8:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-reactronic@0.20.94:
+reactronic@^0.20.94:
   version "0.20.94"
   resolved "https://registry.yarnpkg.com/reactronic/-/reactronic-0.20.94.tgz#6e2d7a482bcec84998782e0327bb0feed4bab0d3"
   integrity sha512-sepAIsS/v3+u6R04TQxCLrF/n4UImAly1ihFK4d/I1Dm6VHptvQEj22FKH9H+RmHhrS/U9I/wsjF/PQiFKeYEw==
