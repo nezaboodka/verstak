@@ -45,6 +45,10 @@ export class Ref<T = any> {
   static sameRefs(v1: Ref, v2: Ref): boolean {
     return v1.owner === v2.owner && v1.name === v2.name
   }
+
+  static similarRefs(v1: Ref, v2: Ref): boolean {
+    return v1.owner.constructor === v2.owner.constructor && v1.name === v2.name && v1.index === v2.index
+  }
 }
 
 export class ToggleRef<T = boolean> extends Ref<T> {
