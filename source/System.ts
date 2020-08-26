@@ -81,8 +81,8 @@ export function render(t: Token<any, any, any>): void {
   try {
     gOwner = t
     gBuffer = []
-    if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getRefTraceId(t)))
-      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(t.mounted!.level))}${getRefTraceId(t)}.render/${t.mounted?.cycle}${t.state !== RenderWithParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
+    if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getTokenTraceId(t)))
+      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(t.mounted!.level))}${getTokenTraceId(t)}.render/${t.mounted?.cycle}${t.state !== RenderWithParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
     if (t.customize)
       t.customize(customize, inst.native, t.state)
     else
@@ -187,17 +187,17 @@ function callMount(t: Token, owner: Token, sibling?: Token): Mounted {
   else
     mounted.instance.native = owner.mounted?.instance?.native // default mount
   if (t.state !== RenderWithParent)
-    Reactronic.setLoggingHint(mounted, Reactronic.isLogging ? getRefTraceId(t) : t.id)
-  if (gTrace && gTraceMask.indexOf('m') >= 0 && new RegExp(gTrace, 'gi').test(getRefTraceId(t)))
-    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(t.mounted!.level))}${getRefTraceId(t)}.mounted`)
+    Reactronic.setLoggingHint(mounted, Reactronic.isLogging ? getTokenTraceId(t) : t.id)
+  if (gTrace && gTraceMask.indexOf('m') >= 0 && new RegExp(gTrace, 'gi').test(getTokenTraceId(t)))
+    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(t.mounted!.level))}${getTokenTraceId(t)}.mounted`)
   return mounted
 }
 
 function callUnmount(t: Token, owner: Token, cause: Token): void {
-  if (gTrace && gTraceMask.indexOf('u') >= 0 && new RegExp(gTrace, 'gi').test(getRefTraceId(t)))
-    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(t.mounted!.level))}${getRefTraceId(t)}.unmounting`)
+  if (gTrace && gTraceMask.indexOf('u') >= 0 && new RegExp(gTrace, 'gi').test(getTokenTraceId(t)))
+    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(t.mounted!.level))}${getTokenTraceId(t)}.unmounting`)
   if (t.state !== RenderWithParent)
-    Reactronic.unmount(t.mounted) // isolated(Cache.unmount, ref.instance) // TODO: Consider creating one transaction for all un-mounts
+    Reactronic.unmount(t.mounted) // isolated(Cache.unmount, t.instance) // TODO: Consider creating one transaction for all un-mounts
   const rtti = t.rtti
   if (rtti.unmount)
     rtti.unmount(t, owner, cause)
@@ -209,7 +209,7 @@ function reconcileOrdinary(owner: Token): void {
   const inst = owner.mounted?.instance as Instance | undefined
   if (inst !== undefined && gBuffer !== undefined) {
     const buffer = gBuffer
-    const children = buffer.slice().sort(compareRefs)
+    const children = buffer.slice().sort(compareTokens)
     gBuffer = undefined
     // Unmount or resolve existing
     let sibling: Token | undefined = undefined
@@ -217,7 +217,7 @@ function reconcileOrdinary(owner: Token): void {
     while (i < inst.children.length) {
       const existing = inst.children[i]
       let t = children[j]
-      const diff = t !== undefined ? compareRefs(t, existing) : 1
+      const diff = t !== undefined ? compareTokens(t, existing) : 1
       if (diff > 0) {
         callUnmount(existing, owner, existing)
         i++
@@ -227,7 +227,7 @@ function reconcileOrdinary(owner: Token): void {
           throw new Error(`duplicate id '${sibling.id}' inside '${owner.id}'`)
         if (diff === 0) {
           if (t.state !== RenderWithParent && attributesAreEqual(t.state, existing.state))
-            t = t.annex = children[j] = existing // skip re-rendering and preserve existing ref
+            t = t.annex = children[j] = existing // skip re-rendering and preserve existing token
           else
             t.mounted = existing.mounted // reuse existing instance for re-rendering
           i++, j++
@@ -257,14 +257,14 @@ function reconcileOrdinary(owner: Token): void {
 function reconcileSorted(owner: Token): void {
   const inst = owner.mounted?.instance as Instance | undefined
   if (inst !== undefined && gBuffer !== undefined) {
-    const children = gBuffer.sort(compareRefs)
+    const children = gBuffer.sort(compareTokens)
     gBuffer = undefined
     let sibling: Token | undefined = undefined
     let i = 0, j = 0
     while (i < inst.children.length || j < children.length) {
       const existing = inst.children[i]
       let t = children[j]
-      const diff = compareNullable(t, existing, compareRefs)
+      const diff = compareNullable(t, existing, compareTokens)
       if (diff > 0) {
         callUnmount(existing, owner, existing)
         i++
@@ -278,7 +278,7 @@ function reconcileSorted(owner: Token): void {
         }
         else { // diff === 0
           if (t.state !== RenderWithParent && attributesAreEqual(t.state, existing.state))
-            t = children[j] = existing // skip re-rendering and preserve existing ref
+            t = children[j] = existing // skip re-rendering and preserve existing token
           else
             t.mounted = existing.mounted // reuse existing instance for re-rendering
           i++, j++
@@ -291,7 +291,7 @@ function reconcileSorted(owner: Token): void {
   }
 }
 
-function compareRefs(t1: Token, t2: Token): number {
+function compareTokens(t1: Token, t2: Token): number {
   return t1.id.localeCompare(t2.id)
 }
 
@@ -323,7 +323,7 @@ function attributesAreEqual(a1: any, a2: any): boolean {
   return result
 }
 
-function getRefTraceId(t: Token): string {
+function getTokenTraceId(t: Token): string {
   return `${t.rtti.name}:${t.id}`
 }
 

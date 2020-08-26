@@ -3,9 +3,8 @@
 // Copyright (C) 2019-2020 Yury Chetyrko <ychetyrko@gmail.com>
 // MIT License: https://raw.githubusercontent.com/nezaboodka/reactronic-front/master/LICENSE
 
-import { Sensitivity, sensitive } from 'reactronic'
+import { Sensitivity, sensitive, ToggleRef } from 'reactronic'
 import { Context, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, NO_BINDINGS } from './InputDevice'
-import { ToggleRef } from './Ref'
 
 export interface AbstractInputDevices {
   readonly context: Readonly<Context>
