@@ -6,7 +6,7 @@
 import { cached, Transaction } from 'reactronic'
 
 export function restyler<T>(restyle: () => T): Restyler<T> {
-  return Transaction.run('restyle', () => new Restyler<T>(restyle))
+  return Transaction.run(() => new Restyler<T>(restyle))
 }
 
 export class Restyler<T> {

@@ -67,7 +67,7 @@ export function emit<E = unknown, O = void, S = void>(
   }
   else { // render root immediately
     gBuffer = [t]
-    Transaction.run('render-root', reconcile)
+    Transaction.run(reconcile)
   }
   return t
 }
@@ -159,7 +159,7 @@ class Mounted<E = unknown, O = void, S = void> {
   @trigger @sensitiveArgs(true) // @noSideEffects(true)
   render(t: Token<E, O, S>): void {
     renderInline(this, t)
-    Reactronic.configureCache({ priority: this.level })
+    Reactronic.configureCurrentMethodCache({ priority: this.level })
   }
 }
 
