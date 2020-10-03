@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/nezaboodka/reactronic-front/blob/master/README.md#readme",
   "dependencies": {
-    "reactronic": "^0.20.99"
+    "reactronic": "^0.20.100"
   },
   "devDependencies": {
     "@types/node": "14.11.2",

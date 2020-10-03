@@ -3,7 +3,7 @@
 // Copyright (C) 2019-2020 Yury Chetyrko <ychetyrko@gmail.com>
 // MIT License: https://raw.githubusercontent.com/nezaboodka/reactronic-front/master/LICENSE
 
-import { Sensitivity, sensitive, ToggleRef } from 'reactronic'
+import { Sensitivity, sensitive, BoolRef } from 'reactronic'
 import { Context, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, NO_BINDINGS } from './InputDevice'
 
 export interface AbstractInputDevices {
@@ -234,12 +234,12 @@ export function grabBindings<T = unknown>(path: any[], sym: symbol, existing: Ar
 export function switchBindings(existing: unknown[], updated: unknown[]): unknown[] {
   if (updated !== existing) {
     existing.forEach(x => {
-      if (x instanceof ToggleRef && x.value1 !== x.value2)
-        x.value = x.value2
+      if (x instanceof BoolRef && x.value1 !== x.value2)
+        x.deref = x.value2
     })
     updated.forEach(x => {
-      if (x instanceof ToggleRef)
-        x.value = x.value1
+      if (x instanceof BoolRef)
+        x.deref = x.value1
     })
   }
   return updated
