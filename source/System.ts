@@ -197,7 +197,7 @@ function callUnmount(t: Token, owner: Token, cause: Token): void {
   if (gTrace && gTraceMask.indexOf('u') >= 0 && new RegExp(gTrace, 'gi').test(getTokenTraceId(t)))
     console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(t.mounted!.level))}${getTokenTraceId(t)}.unmounting`)
   if (t.state !== RenderWithParent)
-    Reactronic.unmount(t.mounted) // isolated(Cache.unmount, t.instance) // TODO: Consider creating one transaction for all un-mounts
+    Reactronic.dispose(t.mounted) // isolated(Cache.unmount, t.instance) // TODO: Consider creating one transaction for all un-mounts
   const rtti = t.rtti
   if (rtti.unmount)
     rtti.unmount(t, owner, cause)
