@@ -3,13 +3,13 @@
 // Copyright (C) 2019-2020 Yury Chetyrko <ychetyrko@gmail.com>
 // MIT License: https://raw.githubusercontent.com/nezaboodka/reactronic-front/master/LICENSE
 
-import { Render, Token, Rtti, emit } from './System'
+import { Render, Emitted, Rtti, emit } from './System'
 
-export function Trigger<E = unknown, O = void, S = void>(id: string, state: S, render: Render<E, O, S>): Token<E, O, S> {
+export function RxFragment<E = unknown, O = void, S = void>(id: string, state: S, render: Render<E, O, S>): Emitted<E, O, S> {
   return emit(id, state, render, undefined, RTTI_TRIGGER)
 }
 
-export function SortingTrigger<E = unknown, O = void, S = void>(id: string, state: S, render: Render<E, O, S>): Token<E, O, S> {
+export function RxSortingFragment<E = unknown, O = void, S = void>(id: string, state: S, render: Render<E, O, S>): Emitted<E, O, S> {
   return emit(id, state, render, undefined, RTTI_SORTING_TRIGGER)
 }
 
