@@ -187,7 +187,7 @@ function callMount(e: Emitted, owner: Emitted, sibling?: Emitted): Mounted {
   else
     mounted.instance.native = owner.mounted?.instance?.native // default mount
   if (e.state !== RenderWithParent)
-    Reactronic.setLoggingHint(mounted, Reactronic.isLogging ? getTokenTraceId(e) : e.id)
+    Reactronic.setTraceHint(mounted, Reactronic.isTraceEnabled ? getTokenTraceId(e) : e.id)
   if (gTrace && gTraceMask.indexOf('m') >= 0 && new RegExp(gTrace, 'gi').test(getTokenTraceId(e)))
     console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(e.mounted!.level))}${getTokenTraceId(e)}.mounted`)
   return mounted
