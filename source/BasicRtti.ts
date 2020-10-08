@@ -6,12 +6,12 @@
 import { Render, Emitted, Rtti, emit } from './System'
 
 export function RxFragment<E = unknown, O = void, S = void>(id: string, state: S, render: Render<E, O, S>): Emitted<E, O, S> {
-  return emit(id, state, render, undefined, RTTI_TRIGGER)
+  return emit(id, state, render, undefined, RTTI_RX_FRAGMENT)
 }
 
 export function RxSortingFragment<E = unknown, O = void, S = void>(id: string, state: S, render: Render<E, O, S>): Emitted<E, O, S> {
-  return emit(id, state, render, undefined, RTTI_SORTING_TRIGGER)
+  return emit(id, state, render, undefined, RTTI_RX_SORTING_FRAGMENT)
 }
 
-const RTTI_TRIGGER: Rtti<any, any, any> = { name: 'trigger', sorting: false }
-const RTTI_SORTING_TRIGGER: Rtti<any, any, any> = { name: 'sorting-trigger', sorting: true }
+const RTTI_RX_FRAGMENT: Rtti<any, any, any> = { name: 'fragment', sorting: false }
+const RTTI_RX_SORTING_FRAGMENT: Rtti<any, any, any> = { name: 'sorting-fragment', sorting: true }

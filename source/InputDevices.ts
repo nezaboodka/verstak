@@ -33,8 +33,8 @@ export class InputDevices implements AbstractInputDevices {
   }
 
   protected doFocusOut(focus: unknown[]): void {
-    // This will cause HTMLElement.focus for elements with TrackFocus trigger
-    !this.keyboard.down && sensitive(Sensitivity.TriggerEvenOnSameValueAssignment, () =>
+    // This will cause HTMLElement.focus for elements with TrackFocus reaction
+    !this.keyboard.down && sensitive(Sensitivity.ReactionEvenOnSameValueAssignment, () =>
       switchBindings(NO_BINDINGS, this.context.focus))
   }
 
@@ -137,7 +137,7 @@ export class InputDevices implements AbstractInputDevices {
     const kb = this.keyboard
     kb.bindings = bindings
     kb.up = ''
-    sensitive(Sensitivity.TriggerEvenOnSameValueAssignment, () => kb.down = key)
+    sensitive(Sensitivity.ReactionEvenOnSameValueAssignment, () => kb.down = key)
     kb.modifiers |= InputDevices.getKeyAsModifierIfAny(key)
   }
 
@@ -145,7 +145,7 @@ export class InputDevices implements AbstractInputDevices {
     const kb = this.keyboard
     kb.bindings = bindings
     kb.down = ''
-    sensitive(Sensitivity.TriggerEvenOnSameValueAssignment, () => kb.up = key)
+    sensitive(Sensitivity.ReactionEvenOnSameValueAssignment, () => kb.up = key)
     kb.modifiers &= ~InputDevices.getKeyAsModifierIfAny(key)
   }
 
