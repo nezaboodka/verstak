@@ -3,7 +3,7 @@
 // Copyright (C) 2019-2020 Yury Chetyrko <ychetyrko@gmail.com>
 // MIT License: https://raw.githubusercontent.com/nezaboodka/reactronic-front/master/LICENSE
 
-import { reactive, untracked, Transaction, Reactronic, sensitiveArgs } from 'reactronic'
+import { trigger, untracked, Transaction, Reactronic, sensitiveArgs } from 'reactronic'
 
 // BlankState, RenderWithParent, Render, Customize
 
@@ -156,7 +156,7 @@ class Mounted<E = unknown, O = void, S = void> {
     this.instance = instance
   }
 
-  @reactive @sensitiveArgs(true) // @noSideEffects(true)
+  @trigger @sensitiveArgs(true) // @noSideEffects(true)
   render(e: Emitted<E, O, S>): void {
     renderInline(this, e)
     Reactronic.configureCurrentMethodCache({ priority: this.level })
