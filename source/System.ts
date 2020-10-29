@@ -228,10 +228,9 @@ function reconcileOrdinary(owner: Emitted): void {
         if (sibling !== undefined && e.id === sibling.id)
           throw new Error(`duplicate id '${sibling.id}' inside '${owner.id}'`)
         if (diff === 0) {
+          e.mounted = existing.mounted // reuse existing instance for re-rendering
           if (e.state !== RenderWithParent && attributesAreEqual(e.state, existing.state))
             e = e.annex = children[j] = existing // skip re-rendering and preserve existing token
-          else
-            e.mounted = existing.mounted // reuse existing instance for re-rendering
           i++, j++
         }
         else // diff < 0
