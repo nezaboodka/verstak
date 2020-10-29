@@ -278,10 +278,9 @@ function reconcileSorted(owner: Emitted): void {
           j++
         }
         else { // diff === 0
+          e.mounted = existing.mounted // reuse existing instance for re-rendering
           if (e.state !== RenderWithParent && attributesAreEqual(e.state, existing.state))
             e = children[j] = existing // skip re-rendering and preserve existing token
-          else
-            e.mounted = existing.mounted // reuse existing instance for re-rendering
           i++, j++
         }
         e !== existing && callRender(e, owner)
