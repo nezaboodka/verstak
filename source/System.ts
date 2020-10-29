@@ -220,11 +220,7 @@ function reconcileOrdinary(owner: Emitted): void {
       const existing = inst.children[i]
       let e = children[j]
       const diff = e !== undefined ? compareHandles(e, existing) : 1
-      if (diff > 0) {
-        callUnmount(existing, owner, existing)
-        i++
-      }
-      else {
+      if (diff <= 0) {
         if (sibling !== undefined && e.id === sibling.id)
           throw new Error(`duplicate id '${sibling.id}' inside '${owner.id}'`)
         if (diff === 0) {
@@ -237,6 +233,8 @@ function reconcileOrdinary(owner: Emitted): void {
           j++ // mount/reorder is performed below
         sibling = e
       }
+      else // diff > 0
+        callUnmount(existing, owner, existing), i++
     }
     // Mount and render
     sibling = undefined
@@ -266,26 +264,22 @@ function reconcileSorted(owner: Emitted): void {
       const existing = inst.children[i]
       let e = children[j]
       const diff = compareNullable(e, existing, compareHandles)
-      if (diff > 0) {
-        callUnmount(existing, owner, existing)
-        i++
-      }
-      else {
+      if (diff <= 0) {
         if (sibling !== undefined && e.id === sibling.id)
           throw new Error(`duplicate id '${sibling.id}' inside '${owner.id}'`)
-        if (diff < 0) {
-          callMount(e, owner, sibling)
-          j++
-        }
-        else { // diff === 0
+        if (diff === 0) { // diff === 0
           e.mounted = existing.mounted // reuse existing instance for re-rendering
           if (e.state !== RenderWithParent && attributesAreEqual(e.state, existing.state))
             e = children[j] = existing // skip re-rendering and preserve existing token
           i++, j++
         }
+        else // diff < 0
+          callMount(e, owner, sibling), j++
         e !== existing && callRender(e, owner)
         sibling = e
       }
+      else // diff > 0
+        callUnmount(existing, owner, existing), i++
     }
     inst.children = children
   }
