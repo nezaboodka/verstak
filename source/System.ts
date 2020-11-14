@@ -56,7 +56,7 @@ export interface Rtti<E = unknown, O = void, S = void> { // Run-Time Type Info
   unmount?(m: Manifest<E, O, S>, owner: Manifest, cause: Manifest): void
 }
 
-// manifest, render, reconcile, unmount
+// manifest, render, renderChildrenNow, unmount
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 export function manifest<E = unknown, O = void, S = void>(
@@ -74,7 +74,7 @@ export function manifest<E = unknown, O = void, S = void>(
   }
   else { // render root immediately
     gBuffer = [m]
-    Transaction.run(reconcile)
+    Transaction.run(renderChildrenNow)
   }
   return m
 }
@@ -94,7 +94,7 @@ export function render(m: Manifest<any, any, any>): void {
       m.customize(customize, inst.native, m.state)
     else
       m.render(inst.native, undefined, m.state)
-    reconcile() // ignored if rendered already
+    renderChildrenNow() // ignored if rendered already
   }
   finally {
     gBuffer = outerBuffer
@@ -111,12 +111,12 @@ function customize(options: any): any {
   return options
 }
 
-export function reconcile(): void {
+export function renderChildrenNow(): void {
   const x = gOwner
   if (x.rtti.sorting)
-    reconcileSorted(x)
+    reconcileSortedChildren(x)
   else
-    reconcileOrdinary(x)
+    reconcileOrdinaryChildren(x)
 }
 
 export function unmount(m: Manifest<any, any>, owner: Manifest, cause: Manifest): void {
@@ -208,7 +208,7 @@ function callUnmount(m: Manifest, owner: Manifest, cause: Manifest): void {
     unmount(m, owner, cause) // default unmount
 }
 
-function reconcileOrdinary(owner: Manifest): void {
+function reconcileOrdinaryChildren(owner: Manifest): void {
   const inst = owner.mounted?.instance as Instance | undefined
   if (inst !== undefined && gBuffer !== undefined) {
     const buffer = gBuffer
@@ -254,7 +254,7 @@ function reconcileOrdinary(owner: Manifest): void {
   }
 }
 
-function reconcileSorted(owner: Manifest): void {
+function reconcileSortedChildren(owner: Manifest): void {
   const inst = owner.mounted?.instance as Instance | undefined
   if (inst !== undefined && gBuffer !== undefined) {
     const children = gBuffer.sort(compareHandles)
