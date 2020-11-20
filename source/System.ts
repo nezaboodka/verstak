@@ -36,6 +36,7 @@ export class Manifest<E = unknown, O = void, S = void> {
       readonly cycle: number
       instance?: {
         native?: E
+        model?: any
       }
     }
   ) {
@@ -127,7 +128,14 @@ export function unmount(m: Manifest<any, any>, owner: Manifest, cause: Manifest)
   m.mounted = undefined
 }
 
-// cycle, native, trace
+// instance, cycle, trace
+
+export function instance<T>(): { model?: T } {
+  const inst = gOwner.mounted?.instance
+  if (!inst)
+    throw new Error('instance function can be call only inside rendering function')
+  return inst
+}
 
 export function cycle(): number {
   return gOwner.mounted?.cycle ?? 0
