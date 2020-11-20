@@ -12,25 +12,19 @@ import { trigger, untracked, Transaction, Reactronic, sensitiveArgs } from 'reac
 export const BlankState = undefined as void // trick to allow avoiding attributes as the last parameter of render/setup
 export const RenderWithParent = Symbol('render-with-parent') as unknown as void
 
-export type Render<E = unknown, O = void, S = void> = (
-  element: E,
-  options: O,
-  state: {readonly [P in keyof S]: S[P]}) => void
+export type Render<E = unknown, O = void> = (element: E, options: O) => void
 
-export type Customize<O = unknown, E = void, S = void> = (
-  render: (options: O) => O,
-  element: E,
-  state: {readonly [P in keyof S]: S[P]}) => void
+export type Customize<O = unknown, E = void> = (render: (options: O) => O, element: E) => void
 
 // Manifest
 
-export class Manifest<E = unknown, O = void, S = void> {
+export class Manifest<E = unknown, O = void> {
   constructor(
     readonly id: string,
-    readonly state: S,
-    readonly render: Render<E, O, S>,
-    readonly customize: Customize<O, E, S> | undefined,
-    readonly rtti: Rtti<E, O, S>,
+    readonly deps: any,
+    readonly render: Render<E, O>,
+    readonly customize: Customize<O, E> | undefined,
+    readonly rtti: Rtti<E, O>,
     public mounted?: {
       readonly level: number
       readonly cycle: number
@@ -41,33 +35,33 @@ export class Manifest<E = unknown, O = void, S = void> {
     }
   ) {
   }
-  annex?: Manifest<E, O, S>
+  annex?: Manifest<E, O>
 
   get native(): E | undefined  { return this.mounted?.instance?.native }
 }
 
 // Rtti
 
-export interface Rtti<E = unknown, O = void, S = void> { // Run-Time Type Info
+export interface Rtti<E = unknown, O = void> { // Run-Time Type Info
   readonly name: string
   readonly sorting: boolean
-  render?(m: Manifest<E, O, S>): void
-  mount?(m: Manifest<E, O, S>, owner: Manifest, sibling?: Manifest): void
-  reorder?(m: Manifest<E, O, S>, owner: Manifest, sibling?: Manifest): void
-  unmount?(m: Manifest<E, O, S>, owner: Manifest, cause: Manifest): void
+  render?(m: Manifest<E, O>): void
+  mount?(m: Manifest<E, O>, owner: Manifest, sibling?: Manifest): void
+  reorder?(m: Manifest<E, O>, owner: Manifest, sibling?: Manifest): void
+  unmount?(m: Manifest<E, O>, owner: Manifest, cause: Manifest): void
 }
 
 // manifest, render, renderChildrenNow, unmount
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-export function manifest<E = unknown, O = void, S = void>(
-  id: string, state: S, render: Render<E, O, S>,
-  customize: Customize<O, E, S> | undefined, rtti: Rtti<E, O, S>): Manifest<E, O, S> {
+export function manifest<E = unknown, O = void>(
+  id: string, deps: any, render: Render<E, O>,
+  customize: Customize<O, E> | undefined, rtti: Rtti<E, O>): Manifest<E, O> {
 
   const owner = gOwner // shorthand
   if (!owner.mounted?.instance)
     throw new Error('element must be mounted before children')
-  const m = new Manifest<any, any, any>(id, state, render, customize, rtti)
+  const m = new Manifest<any, any>(id, deps, render, customize, rtti)
   if (owner !== BlankManifest) {
     if (gBuffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -80,7 +74,7 @@ export function manifest<E = unknown, O = void, S = void>(
   return m
 }
 
-export function render(m: Manifest<any, any, any>): void {
+export function render(m: Manifest<any, any>): void {
   const inst = m.mounted?.instance as (Instance | undefined)
   if (!inst)
     throw new Error('element must be mounted before rendering')
@@ -90,11 +84,11 @@ export function render(m: Manifest<any, any, any>): void {
     gOwner = m
     gBuffer = []
     if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getTokenTraceId(m)))
-      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getTokenTraceId(m)}.render/${m.mounted?.cycle}${m.state !== RenderWithParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
+      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getTokenTraceId(m)}.render/${m.mounted?.cycle}${m.deps !== RenderWithParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
     if (m.customize)
-      m.customize(customize, inst.native, m.state)
+      m.customize(customize, inst.native)
     else
-      m.render(inst.native, undefined, m.state)
+      m.render(inst.native, undefined)
     renderChildrenNow() // ignored if rendered already
   }
   finally {
@@ -108,7 +102,7 @@ function customize(options: any): any {
   const inst = t.mounted?.instance as (Instance | undefined)
   if (!inst)
     throw new Error('element must be mounted before rendering')
-  t.render(inst.native, options, t.state)
+  t.render(inst.native, options)
   return options
 }
 
@@ -168,20 +162,20 @@ class Mounted<E = unknown, O = void, S = void> {
   }
 
   @trigger @sensitiveArgs(true) // @noSideEffects(true)
-  render(m: Manifest<E, O, S>): void {
+  render(m: Manifest<E, O>): void {
     renderInline(this, m)
     Reactronic.configureCurrentMethodCache({ priority: this.level })
   }
 }
 
-function renderInline<E, O, S>(mounted: Mounted<E, O, S>, m: Manifest<E, O, S>): void {
+function renderInline<E, O>(mounted: Mounted<E, O>, m: Manifest<E, O>): void {
   mounted.cycle++
   m.rtti.render ? m.rtti.render(m) : render(m)
 }
 
 function callRender(m: Manifest, owner: Manifest): void {
   const mounted = m.mounted as Mounted
-  if (m.state === RenderWithParent) // inline elements are always rendered
+  if (m.deps === RenderWithParent) // inline elements are always rendered
     renderInline(mounted, m)
   else // rendering of reactive elements is cached to avoid redundant calls
     untracked(mounted.render, m)
@@ -197,7 +191,7 @@ function callMount(m: Manifest, owner: Manifest, sibling?: Manifest): Mounted {
     rtti.mount(m, owner, sibling)
   else
     mounted.instance.native = owner.mounted?.instance?.native // default mount
-  if (m.state !== RenderWithParent)
+  if (m.deps !== RenderWithParent)
     Reactronic.setTraceHint(mounted, Reactronic.isTraceEnabled ? getTokenTraceId(m) : m.id)
   if (gTrace && gTraceMask.indexOf('m') >= 0 && new RegExp(gTrace, 'gi').test(getTokenTraceId(m)))
     console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getTokenTraceId(m)}.mounted`)
@@ -207,7 +201,7 @@ function callMount(m: Manifest, owner: Manifest, sibling?: Manifest): Mounted {
 function callUnmount(m: Manifest, owner: Manifest, cause: Manifest): void {
   if (gTrace && gTraceMask.indexOf('u') >= 0 && new RegExp(gTrace, 'gi').test(getTokenTraceId(m)))
     console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getTokenTraceId(m)}.unmounting`)
-  if (m.state !== RenderWithParent)
+  if (m.deps !== RenderWithParent)
     Reactronic.dispose(m.mounted) // isolated(Cache.unmount, t.instance) // TODO: Consider creating one transaction for all un-mounts
   const rtti = m.rtti
   if (rtti.unmount)
@@ -234,7 +228,7 @@ function reconcileOrdinaryChildren(owner: Manifest): void {
           throw new Error(`duplicate id '${sibling.id}' inside '${owner.id}'`)
         if (diff === 0) {
           e.mounted = existing.mounted // reuse existing instance for re-rendering
-          if (e.state !== RenderWithParent && attributesAreEqual(e.state, existing.state))
+          if (e.deps !== RenderWithParent && attributesAreEqual(e.deps, existing.deps))
             e = e.annex = children[j] = existing // skip re-rendering and preserve existing token
           i++, j++
         }
@@ -278,7 +272,7 @@ function reconcileSortedChildren(owner: Manifest): void {
           throw new Error(`duplicate id '${sibling.id}' inside '${owner.id}'`)
         if (diff === 0) { // diff === 0
           e.mounted = existing.mounted // reuse existing instance for re-rendering
-          if (e.state !== RenderWithParent && attributesAreEqual(e.state, existing.state))
+          if (e.deps !== RenderWithParent && attributesAreEqual(e.deps, existing.deps))
             e = children[j] = existing // skip re-rendering and preserve existing token
           i++, j++
         }
@@ -330,7 +324,7 @@ function getTokenTraceId(m: Manifest): string {
   return `${m.rtti.name}:${m.id}`
 }
 
-const BlankManifest = new Manifest<any, any, any>(
+const BlankManifest = new Manifest<any, any>(
   'blank',                           // id
   RenderWithParent,                  // state
   () => { /* nop */ },               // render
@@ -339,7 +333,7 @@ const BlankManifest = new Manifest<any, any, any>(
   new Mounted(0, new Instance()),    // mounted
 )
 
-let gOwner: Manifest<any, any, any> = BlankManifest
+let gOwner: Manifest<any, any> = BlankManifest
 let gBuffer: Manifest[] | undefined = undefined
 let gTrace: string | undefined = undefined
 let gTraceMask: string = 'r'
