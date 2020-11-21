@@ -13,7 +13,7 @@ export const BlankState = undefined as void // trick to allow avoiding attribute
 export const RenderWithParent = Symbol('render-with-parent') as unknown as void
 
 export type Render<E = unknown, O = void> = (element: E, options: O) => void
-export type Override<O = unknown, E = void> = (render: (options: O) => O, element: E) => void
+export type ComponentRender<O = unknown, E = void> = (render: (options: O) => O, element: E) => void
 
 // Manifest
 
@@ -22,7 +22,7 @@ export class Manifest<E = unknown, O = void> {
     readonly id: string,
     readonly deps: any,
     readonly render: Render<E, O>,
-    readonly override: Override<O, E> | undefined,
+    readonly componentRender: ComponentRender<O, E> | undefined,
     readonly rtti: Rtti<E, O>,
     public mounted?: {
       readonly level: number
@@ -55,12 +55,12 @@ export interface Rtti<E = unknown, O = void> { // Run-Time Type Info
 
 export function manifest<E = unknown, O = void>(
   id: string, deps: any, render: Render<E, O>,
-  override: Override<O, E> | undefined, rtti: Rtti<E, O>): Manifest<E, O> {
+  componentRender: ComponentRender<O, E> | undefined, rtti: Rtti<E, O>): Manifest<E, O> {
 
   const owner = gOwner // shorthand
   if (!owner.mounted?.instance)
     throw new Error('element must be mounted before children')
-  const m = new Manifest<any, any>(id, deps, render, override, rtti)
+  const m = new Manifest<any, any>(id, deps, render, componentRender, rtti)
   if (owner !== BlankManifest) {
     if (gBuffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -84,8 +84,8 @@ export function render(m: Manifest<any, any>): void {
     gBuffer = []
     if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getTokenTraceId(m)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getTokenTraceId(m)}.render/${m.mounted?.cycle}${m.deps !== RenderWithParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
-    if (m.override)
-      m.override(override, inst.native)
+    if (m.componentRender)
+      m.componentRender(componentRender, inst.native)
     else
       m.render(inst.native, undefined)
     renderChildrenNow() // ignored if rendered already
@@ -96,7 +96,7 @@ export function render(m: Manifest<any, any>): void {
   }
 }
 
-function override(options: any): any {
+function componentRender(options: any): any {
   const t = gOwner
   const inst = t.mounted?.instance as (Instance | undefined)
   if (!inst)
