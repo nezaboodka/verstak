@@ -7,9 +7,9 @@
 
 import { trigger, untracked, Transaction, Reactronic, sensitiveArgs } from 'reactronic'
 
-// BlankState, RenderWithParent, Render, Override
+// NoDeps, RenderWithParent, Render, ComponentRender
 
-export const BlankState = undefined as void // trick to allow avoiding attributes as the last parameter of render/setup
+export const NoDeps = undefined as void // trick to allow avoiding attributes as the last parameter of render/setup
 export const RenderWithParent = Symbol('render-with-parent') as unknown as void
 
 export type Render<E = unknown, O = void> = (element: E, options: O) => void
