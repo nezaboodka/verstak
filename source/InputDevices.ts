@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Sensitivity, sensitive, BoolField } from 'reactronic'
+import { Sensitivity, sensitive, FieldToggle } from 'reactronic'
 import { Context, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, NO_BINDINGS } from './InputDevice'
 
 export interface AbstractInputDevices {
@@ -236,11 +236,11 @@ export function grabBindings<T = unknown>(path: any[], sym: symbol, existing: Ar
 export function switchBindings(existing: unknown[], updated: unknown[]): unknown[] {
   if (updated !== existing) {
     existing.forEach(f => {
-      if (f instanceof BoolField && f.value1 !== f.value2)
+      if (f instanceof FieldToggle && f.value1 !== f.value2)
         f.value = f.value2
     })
     updated.forEach(x => {
-      if (x instanceof BoolField)
+      if (x instanceof FieldToggle)
         x.value = x.value1
     })
   }
