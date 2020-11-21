@@ -13,7 +13,7 @@ export const NoDeps = undefined as void // trick to allow avoiding attributes as
 export const RenderWithParent = Symbol('render-with-parent') as unknown as void
 
 export type Render<E = unknown, O = void> = (element: E, options: O) => void
-export type ComponentRender<O = unknown, E = void> = (render: (options: O) => O, element: E) => void
+export type ComponentRender<O = unknown, E = void> = (applyOptions: (options: O) => O, element: E) => void
 
 // Manifest
 
