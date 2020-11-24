@@ -11,16 +11,16 @@ import { Stateful, untracked } from 'reactronic'
 
 export class InputDevice extends Stateful {
   nativeElements: unknown[] = []
-  composedBindings: unknown[] = NO_BINDINGS
-  get bindings(): unknown[] { return untracked(() => this.composedBindings) }
-  set bindings(value: unknown[]) { this.composedBindings = value }
+  composedEventDataList: unknown[] = EMPTY_EVENT_DATA_LIST
+  get eventDataList(): unknown[] { return untracked(() => this.composedEventDataList) }
+  set eventDataList(value: unknown[]) { this.composedEventDataList = value }
 }
 
 // Context
 
 export class Context extends Stateful {
-  focus: unknown[] = NO_BINDINGS
-  hover: unknown[] = NO_BINDINGS
+  focusEventDataList: unknown[] = EMPTY_EVENT_DATA_LIST
+  hoverEventDataList: unknown[] = EMPTY_EVENT_DATA_LIST
 }
 
 // Keyboard
@@ -89,4 +89,4 @@ export class Scroll extends InputDevice {
   deltaY = 0
 }
 
-export const NO_BINDINGS: any[] = []
+export const EMPTY_EVENT_DATA_LIST: any[] = []

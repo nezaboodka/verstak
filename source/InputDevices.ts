@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Sensitivity, sensitive, FieldToggle } from 'reactronic'
-import { Context, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, NO_BINDINGS } from './InputDevice'
+import { Context, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EMPTY_EVENT_DATA_LIST } from './InputDevice'
 
 export interface AbstractInputDevices {
   readonly context: Readonly<Context>
@@ -27,7 +27,7 @@ export class InputDevices implements AbstractInputDevices {
 
   protected trackFocus(focus: unknown[], force: boolean): void {
     if (focus.length > 0 || force)
-      this.context.focus = switchBindings(this.context.focus, focus)
+      this.context.focusEventDataList = switchEventDataList(this.context.focusEventDataList, focus)
   }
 
   protected doFocusIn(focus: unknown[]): void {
@@ -37,20 +37,20 @@ export class InputDevices implements AbstractInputDevices {
   protected doFocusOut(focus: unknown[]): void {
     // This will cause HTMLElement.focus for elements with TrackFocus reaction
     !this.keyboard.down && sensitive(Sensitivity.TriggerEvenOnSameValueAssignment, () =>
-      switchBindings(NO_BINDINGS, this.context.focus))
+      switchEventDataList(EMPTY_EVENT_DATA_LIST, this.context.focusEventDataList))
   }
 
-  protected doPointerOver(bindings: unknown[], hoverBindings: unknown[], clientX: number, clientY: number): void {
+  protected doPointerOver(eventDataList: unknown[], hoverEventDataList: unknown[], clientX: number, clientY: number): void {
     const p = this.pointer
     InputDevices.rememberPointer(p, clientX, clientY)
-    p.bindings = bindings
-    this.context.hover = switchBindings(this.context.hover, hoverBindings)
+    p.eventDataList = eventDataList
+    this.context.hoverEventDataList = switchEventDataList(this.context.hoverEventDataList, hoverEventDataList)
   }
 
-  protected doPointerMove(bindings: unknown[], pointerId: number, clientX: number, clientY: number): void {
+  protected doPointerMove(eventDataList: unknown[], pointerId: number, clientX: number, clientY: number): void {
     const p = this.pointer
     InputDevices.rememberPointer(p, clientX, clientY)
-    p.bindings = bindings
+    p.eventDataList = eventDataList
     if (p.draggableObject !== undefined) {
       if (!p.captured)
         p.captured = this.setPointerCapture(pointerId)
@@ -66,11 +66,11 @@ export class InputDevices implements AbstractInputDevices {
     return distance > Pointer.draggingThreshold
   }
 
-  protected doPointerDown(bindings: unknown[], focus: unknown[],
+  protected doPointerDown(eventDataList: unknown[], focus: unknown[],
     pointerId: number, buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
     InputDevices.rememberPointer(p, clientX, clientY)
-    p.bindings = bindings
+    p.eventDataList = eventDataList
     this.trackFocus(focus, true)
     p.captured = false
     p.draggableObject = undefined
@@ -81,11 +81,11 @@ export class InputDevices implements AbstractInputDevices {
     p.down = buttons
   }
 
-  protected doPointerUp(bindings: unknown[], focus: unknown[],
+  protected doPointerUp(eventDataList: unknown[], focus: unknown[],
     pointerId: number, buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
     InputDevices.rememberPointer(p, clientX, clientY)
-    p.bindings = bindings
+    p.eventDataList = eventDataList
     if (p.draggingObject !== undefined) {
       p.droppedObject = p.draggingObject
       p.droppedAtX = p.positionX
@@ -104,48 +104,48 @@ export class InputDevices implements AbstractInputDevices {
       p.captured = this.releasePointerCapture(pointerId)
   }
 
-  protected doDblClick(bindings: unknown[], focus: unknown[],
+  protected doDblClick(eventDataList: unknown[], focus: unknown[],
     buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
     InputDevices.rememberPointer(p, clientX, clientY)
-    p.bindings = bindings
+    p.eventDataList = eventDataList
     p.doubleClick = buttons
   }
 
-  protected doTouchStart(bindings: unknown[], focus: unknown[]): void {
+  protected doTouchStart(eventDataList: unknown[], focus: unknown[]): void {
     const p = this.pointer
-    p.bindings = bindings
+    p.eventDataList = eventDataList
     this.trackFocus(focus, true)
     p.touched = true
   }
 
-  protected doTouchEnd(bindings: unknown[]): void {
+  protected doTouchEnd(eventDataList: unknown[]): void {
     const p = this.pointer
-    p.bindings = bindings
+    p.eventDataList = eventDataList
     p.touched = false
   }
 
-  protected doWheel(bindings: unknown[], focus: unknown[],
+  protected doWheel(eventDataList: unknown[], focus: unknown[],
     deltaX: number, deltaY: number, clientX: number, clientY: number): void {
     const scroll = this.scroll
     InputDevices.rememberPointer(this.pointer, clientX, clientY)
-    scroll.bindings = bindings
+    scroll.eventDataList = eventDataList
     // this.trackFocus(focus, true)
     scroll.deltaX = deltaX
     scroll.deltaY = deltaY
   }
 
-  protected doKeyDown(bindings: unknown[], key: string): void {
+  protected doKeyDown(eventDataList: unknown[], key: string): void {
     const kb = this.keyboard
-    kb.bindings = bindings
+    kb.eventDataList = eventDataList
     kb.up = ''
     sensitive(Sensitivity.TriggerEvenOnSameValueAssignment, () => kb.down = key)
     kb.modifiers |= InputDevices.getKeyAsModifierIfAny(key)
   }
 
-  protected doKeyUp(bindings: unknown[], key: string): void {
+  protected doKeyUp(eventDataList: unknown[], key: string): void {
     const kb = this.keyboard
-    kb.bindings = bindings
+    kb.eventDataList = eventDataList
     kb.down = ''
     sensitive(Sensitivity.TriggerEvenOnSameValueAssignment, () => kb.up = key)
     kb.modifiers &= ~InputDevices.getKeyAsModifierIfAny(key)
@@ -163,7 +163,7 @@ export class InputDevices implements AbstractInputDevices {
 
   private static rememberPointer(p: Pointer, clientX: number, clientY: number): void {
     if (p.down === PointerButton.None) {
-      p.bindings = NO_BINDINGS
+      p.eventDataList = EMPTY_EVENT_DATA_LIST
       p.up = PointerButton.None
       p.click = PointerButton.None
       p.doubleClick = PointerButton.None
@@ -212,7 +212,7 @@ export class InputDevices implements AbstractInputDevices {
   }
 }
 
-export function grabBindings<T = unknown>(path: any[], sym: symbol, existing: Array<T>): T[] {
+export function grabEventDataList<T = unknown>(path: any[], sym: symbol, existing: Array<T>): T[] {
   let result = existing
   let i = 0
   let j = 0
@@ -233,7 +233,7 @@ export function grabBindings<T = unknown>(path: any[], sym: symbol, existing: Ar
   return result
 }
 
-export function switchBindings(existing: unknown[], updated: unknown[]): unknown[] {
+export function switchEventDataList(existing: unknown[], updated: unknown[]): unknown[] {
   if (updated !== existing) {
     existing.forEach(f => {
       if (f instanceof FieldToggle && f.value1 !== f.value2)
