@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { trigger, untracked, Transaction, Reactronic, sensitiveArgs } from 'reactronic'
+import { reaction, untracked, Transaction, Reactronic, sensitiveArgs } from 'reactronic'
 
 // NoDeps, RenderWithParent, Render, ComponentRender
 
@@ -160,7 +160,7 @@ class Mounted<E = unknown, O = void, S = void> {
     this.instance = instance
   }
 
-  @trigger @sensitiveArgs(true) // @noSideEffects(true)
+  @reaction @sensitiveArgs(true) // @noSideEffects(true)
   render(m: Manifest<E, O>): void {
     renderInline(this, m)
     Reactronic.configureCurrentMethodCache({ priority: this.level })
