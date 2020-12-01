@@ -5,11 +5,11 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Stateful, untracked } from 'reactronic'
+import { ManagedObject, untracked } from 'reactronic'
 
 // InputDevice
 
-export class InputDevice extends Stateful {
+export class InputDevice extends ManagedObject {
   nativeElements: unknown[] = []
   composedEventDataList: unknown[] = EMPTY_EVENT_DATA_LIST
   get eventDataList(): unknown[] { return untracked(() => this.composedEventDataList) }
@@ -18,7 +18,7 @@ export class InputDevice extends Stateful {
 
 // Context
 
-export class Context extends Stateful {
+export class Context extends ManagedObject {
   focusEventDataList: unknown[] = EMPTY_EVENT_DATA_LIST
   hoverEventDataList: unknown[] = EMPTY_EVENT_DATA_LIST
 }
