@@ -5,20 +5,20 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ManagedObject, untracked } from 'reactronic'
+import { ObservableObject, unobserved } from 'reactronic'
 
 // InputDevice
 
-export class InputDevice extends ManagedObject {
+export class InputDevice extends ObservableObject {
   nativeElements: unknown[] = []
   composedEventDataList: unknown[] = EMPTY_EVENT_DATA_LIST
-  get eventDataList(): unknown[] { return untracked(() => this.composedEventDataList) }
+  get eventDataList(): unknown[] { return unobserved(() => this.composedEventDataList) }
   set eventDataList(value: unknown[]) { this.composedEventDataList = value }
 }
 
 // Context
 
-export class Context extends ManagedObject {
+export class Context extends ObservableObject {
   focusEventDataList: unknown[] = EMPTY_EVENT_DATA_LIST
   hoverEventDataList: unknown[] = EMPTY_EVENT_DATA_LIST
 }
