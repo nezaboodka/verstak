@@ -5,14 +5,14 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ObservableObject, unobserved } from 'reactronic'
+import { ObservableObject, unreactive } from 'reactronic'
 
 // InputDevice
 
 export class InputDevice extends ObservableObject {
   nativeElements: unknown[] = []
   composedEventDataList: unknown[] = EMPTY_EVENT_DATA_LIST
-  get eventDataList(): unknown[] { return unobserved(() => this.composedEventDataList) }
+  get eventDataList(): unknown[] { return unreactive(() => this.composedEventDataList) }
   set eventDataList(value: unknown[]) { this.composedEventDataList = value }
 }
 
