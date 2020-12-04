@@ -8,11 +8,11 @@
 export type EventData = EventDataPayload & EventDataPrimacy
 
 export interface EventDataPayload {
-  focusData?: unknown
-  hoverData?: unknown
-  keyboardData?: unknown
-  pointerData?: unknown
-  scrollData?: unknown
+  focus?: unknown
+  hover?: unknown
+  keyboard?: unknown
+  pointer?: unknown
+  scroll?: unknown
 }
 
 export interface EventDataPrimacy {
