@@ -1,6 +1,6 @@
 {
   "name": "reactronic-front",
-  "version": "0.20.602",
+  "version": "0.20.603",
   "description": "Reactronic Front - Transactionally Reactive Frontend Development Framework",
   "main": "build/dist/source/api.js",
   "types": "build/dist/source/api.d.ts",
