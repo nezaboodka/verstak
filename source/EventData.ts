@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export type EventData = EventDataPayload & EventDataPrimacy
+export type EventData = EventDataPayload & EventDataImportance
 
 export interface EventDataPayload {
   focus?: unknown
@@ -15,10 +15,10 @@ export interface EventDataPayload {
   scroll?: unknown
 }
 
-export interface EventDataPrimacy {
-  focusPrimacy?: number
-  hoverPrimacy?: number
-  keyboardPrimacy?: number
-  pointerPrimacy?: number
-  scrollPrimacy?: number
+export interface EventDataImportance {
+  focusImportance?: number
+  hoverImportance?: number
+  keyboardImportance?: number
+  pointerImportance?: number
+  scrollImportance?: number
 }

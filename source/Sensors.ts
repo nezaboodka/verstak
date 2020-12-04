@@ -7,7 +7,7 @@
 
 import { Sensitivity, sensitive, FieldToggle } from 'reactronic'
 import { Device, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EMPTY_EVENT_DATA_LIST } from './Devices'
-// import { EventData, EventDataPayload, EventDataPrimacy } from './EventData'
+// import { EventData, EventDataPayload, EventDataImportance } from './EventData'
 
 export interface AbstractSensors {
   readonly focus: Readonly<Device>
