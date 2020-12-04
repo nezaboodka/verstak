@@ -220,22 +220,39 @@ export class Sensors implements AbstractSensors {
 }
 
 export function grabEventInfos<T = unknown>(path: any[], sym: symbol,
-  dataKey: keyof EventPayload, importanceKey: keyof EventImportance,
+  payloadKey: keyof EventPayload, importanceKey: keyof EventImportance,
   existing: Array<T>): T[] {
   let result = existing
   let i = 0
   let j = 0
+  let importance = Number.MIN_SAFE_INTEGER
   while (i < path.length) {
-    const item = path[i][sym] as EventInfo | undefined
-    if (item !== undefined) {
-      const d = item[dataKey] as T | undefined
-      if (d !== undefined) {
-        if (result !== existing)
-          result.push(d)
-        else if (d !== existing[j])
-          result = existing.slice(0, j), result.push(d)
-        else
-          j++
+    const info = path[i][sym] as EventInfo | undefined
+    if (info !== undefined) {
+      const payload = info[payloadKey] as T | undefined
+      if (payload !== undefined) {
+        const imp = info[importanceKey] ?? 0
+        if (imp === importance) {
+          // Handle event infos of the same importance
+          if (result !== existing)
+            result.push(payload)
+          else if (payload !== existing[j])
+            result = existing.slice(0, j), result.push(payload)
+          else
+            j++
+        }
+        else if (imp > importance) {
+          // Raise events importance and start from scratch
+          importance = imp
+          result = existing
+          if (payload !== existing[0])
+            result = [payload]
+          else
+            j = 1
+        }
+        else {
+          // Ignore event infos with lower importance
+        }
       }
     }
     i++
