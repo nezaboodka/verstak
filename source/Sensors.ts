@@ -6,20 +6,20 @@
 // automatically licensed under the license referred above.
 
 import { Sensitivity, sensitive, FieldToggle } from 'reactronic'
-import { Device, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EMPTY_EVENT_DATA_LIST } from './Devices'
-// import { EventData, EventDataPayload, EventDataImportance } from './EventData'
+import { SensorDevice, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EMPTY_EVENT_DATA_LIST } from './SensorDevices'
+import { EventInfo, EventPayload, EventImportance } from './EventInfo'
 
 export interface AbstractSensors {
-  readonly focus: Readonly<Device>
-  readonly hover: Readonly<Device>
+  readonly focus: Readonly<SensorDevice>
+  readonly hover: Readonly<SensorDevice>
   readonly keyboard: Readonly<Keyboard>
   readonly pointer: Readonly<Pointer>
   readonly scroll: Readonly<Scroll>
 }
 
 export class Sensors implements AbstractSensors {
-  readonly focus = new Device()
-  readonly hover = new Device()
+  readonly focus = new SensorDevice()
+  readonly hover = new SensorDevice()
   readonly keyboard = new Keyboard()
   readonly pointer = new Pointer()
   readonly scroll = new Scroll()
@@ -30,7 +30,7 @@ export class Sensors implements AbstractSensors {
 
   protected trackFocus(focus: unknown[], force: boolean): void {
     if (focus.length > 0 || force)
-      this.focus.eventDataMix = switchEventDataMix(this.focus.eventDataMix, focus)
+      this.focus.eventInfos = switchEventInfos(this.focus.eventInfos, focus)
   }
 
   protected doFocusIn(focus: unknown[]): void {
@@ -40,24 +40,24 @@ export class Sensors implements AbstractSensors {
   protected doFocusOut(focus: unknown[]): void {
     // This will cause HTMLElement.focus for elements with TrackFocus reaction
     !this.keyboard.down && sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () =>
-      switchEventDataMix(EMPTY_EVENT_DATA_LIST, this.focus.eventDataMix))
+      switchEventInfos(EMPTY_EVENT_DATA_LIST, this.focus.eventInfos))
   }
 
-  protected doPointerOver(eventDataMix: unknown[], hoverEventDataMix: unknown[], clientX: number, clientY: number): void {
+  protected doPointerOver(eventInfos: unknown[], hoverEventInfos: unknown[], clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.eventDataMix = eventDataMix
-    this.hover.eventDataMix = switchEventDataMix(this.hover.eventDataMix, hoverEventDataMix)
+    p.eventInfos = eventInfos
+    this.hover.eventInfos = switchEventInfos(this.hover.eventInfos, hoverEventInfos)
   }
 
-  protected doPointerLeave(eventDataMix: unknown[], hoverEventDataMix: unknown[], clientX: number, clientY: number): void {
+  protected doPointerLeave(eventInfos: unknown[], hoverEventInfos: unknown[], clientX: number, clientY: number): void {
     // do nothing
   }
 
-  protected doPointerMove(eventDataMix: unknown[], pointerId: number, clientX: number, clientY: number): void {
+  protected doPointerMove(eventInfos: unknown[], pointerId: number, clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.eventDataMix = eventDataMix
+    p.eventInfos = eventInfos
     if (p.draggableObject !== undefined) {
       if (!p.captured)
         p.captured = this.setPointerCapture(pointerId)
@@ -73,11 +73,11 @@ export class Sensors implements AbstractSensors {
     return distance > Pointer.draggingThreshold
   }
 
-  protected doPointerDown(eventDataMix: unknown[], focus: unknown[],
+  protected doPointerDown(eventInfos: unknown[], focus: unknown[],
     pointerId: number, buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.eventDataMix = eventDataMix
+    p.eventInfos = eventInfos
     this.trackFocus(focus, true)
     p.captured = false
     p.draggableObject = undefined
@@ -88,11 +88,11 @@ export class Sensors implements AbstractSensors {
     p.down = buttons
   }
 
-  protected doPointerUp(eventDataMix: unknown[], focus: unknown[],
+  protected doPointerUp(eventInfos: unknown[], focus: unknown[],
     pointerId: number, buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.eventDataMix = eventDataMix
+    p.eventInfos = eventInfos
     if (p.draggingObject !== undefined) {
       p.droppedObject = p.draggingObject
       p.droppedAtX = p.positionX
@@ -111,48 +111,48 @@ export class Sensors implements AbstractSensors {
       p.captured = this.releasePointerCapture(pointerId)
   }
 
-  protected doDblClick(eventDataMix: unknown[], focus: unknown[],
+  protected doDblClick(eventInfos: unknown[], focus: unknown[],
     buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.eventDataMix = eventDataMix
+    p.eventInfos = eventInfos
     p.doubleClick = buttons
   }
 
-  protected doTouchStart(eventDataMix: unknown[], focus: unknown[]): void {
+  protected doTouchStart(eventInfos: unknown[], focus: unknown[]): void {
     const p = this.pointer
-    p.eventDataMix = eventDataMix
+    p.eventInfos = eventInfos
     this.trackFocus(focus, true)
     p.touched = true
   }
 
-  protected doTouchEnd(eventDataMix: unknown[]): void {
+  protected doTouchEnd(eventInfos: unknown[]): void {
     const p = this.pointer
-    p.eventDataMix = eventDataMix
+    p.eventInfos = eventInfos
     p.touched = false
   }
 
-  protected doWheel(eventDataMix: unknown[], focus: unknown[],
+  protected doWheel(eventInfos: unknown[], focus: unknown[],
     deltaX: number, deltaY: number, clientX: number, clientY: number): void {
     const scroll = this.scroll
     Sensors.rememberPointer(this.pointer, clientX, clientY)
-    scroll.eventDataMix = eventDataMix
+    scroll.eventInfos = eventInfos
     // this.trackFocus(focus, true)
     scroll.deltaX = deltaX
     scroll.deltaY = deltaY
   }
 
-  protected doKeyDown(eventDataMix: unknown[], key: string): void {
+  protected doKeyDown(eventInfos: unknown[], key: string): void {
     const kb = this.keyboard
-    kb.eventDataMix = eventDataMix
+    kb.eventInfos = eventInfos
     kb.up = ''
     sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.down = key)
     kb.modifiers |= Sensors.getKeyAsModifierIfAny(key)
   }
 
-  protected doKeyUp(eventDataMix: unknown[], key: string): void {
+  protected doKeyUp(eventInfos: unknown[], key: string): void {
     const kb = this.keyboard
-    kb.eventDataMix = eventDataMix
+    kb.eventInfos = eventInfos
     kb.down = ''
     sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.up = key)
     kb.modifiers &= ~Sensors.getKeyAsModifierIfAny(key)
@@ -170,7 +170,7 @@ export class Sensors implements AbstractSensors {
 
   private static rememberPointer(p: Pointer, clientX: number, clientY: number): void {
     if (p.down === PointerButton.None) {
-      p.eventDataMix = EMPTY_EVENT_DATA_LIST
+      p.eventInfos = EMPTY_EVENT_DATA_LIST
       p.up = PointerButton.None
       p.click = PointerButton.None
       p.doubleClick = PointerButton.None
@@ -219,46 +219,33 @@ export class Sensors implements AbstractSensors {
   }
 }
 
-// export function grabEventDataMix<T = unknown>(path: any[], sym: symbol,
-//   dataKey: keyof EventDataPayload, primacyKey: keyof EventDataPrimacy, existing: Array<T>): T[] {
-//   let result = existing
-//   let i = 0
-//   let j = 0
-//   let primacy = 0
-//   while (i < path.length) {
-//     const item = path[i][sym] as EventData | undefined
-//     if (item !== undefined) {
-//       const d = item[dataKey] as T | undefined
-//       if (d !== undefined) {
-//         const p = item[primacyKey] ?? 0
-//         if (result !== existing) {
-//           if (p > primacy) {
-//             result = []
-//             primacy = p
-//           }
-//           if (p === primacy)
-//             result.push(d)
-//         }
-//         else if (d !== existing[j]) {
-//           result = existing.slice(0, j), result.push(d)
-//         }
-//         else
-//           j++
+export function grabEventInfos<T = unknown>(path: any[], sym: symbol,
+  dataKey: keyof EventPayload, importanceKey: keyof EventImportance,
+  existing: Array<T>): T[] {
+  let result = existing
+  let i = 0
+  let j = 0
+  while (i < path.length) {
+    const item = path[i][sym] as EventInfo | undefined
+    if (item !== undefined) {
+      const d = item[dataKey] as T | undefined
+      if (d !== undefined) {
+        if (result !== existing)
+          result.push(d)
+        else if (d !== existing[j])
+          result = existing.slice(0, j), result.push(d)
+        else
+          j++
+      }
+    }
+    i++
+  }
+  if (j === 0 && result === existing && existing.length > 0)
+    result = []
+  return result
+}
 
-//         if (p > primacy) {
-//         }
-//         else {
-//         }
-//       }
-//     }
-//     i++
-//   }
-//   if (j === 0 && result === existing && existing.length > 0)
-//     result = []
-//   return result
-// }
-
-export function switchEventDataMix(existing: unknown[], updated: unknown[]): unknown[] {
+export function switchEventInfos(existing: unknown[], updated: unknown[]): unknown[] {
   if (updated !== existing) {
     existing.forEach(f => {
       if (f instanceof FieldToggle && f.value1 !== f.value2)

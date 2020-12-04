@@ -5,9 +5,20 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from './System'
-export * from './Restyler'
-export * from './SensorDevices'
-export * from './Sensors'
-export * from './EventInfo'
-export * from './BasicRtti'
+export type EventInfo = EventPayload & EventImportance
+
+export interface EventPayload {
+  focus?: unknown
+  hover?: unknown
+  keyboard?: unknown
+  pointer?: unknown
+  scroll?: unknown
+}
+
+export interface EventImportance {
+  focusImportance?: number
+  hoverImportance?: number
+  keyboardImportance?: number
+  pointerImportance?: number
+  scrollImportance?: number
+}
