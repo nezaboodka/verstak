@@ -5,8 +5,20 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from './System'
-export * from './Restyler'
-export * from './Devices'
-export * from './Sensors'
-export * from './BasicRtti'
+export type EventData = EventDataPayload & EventDataPrimacy
+
+export interface EventDataPayload {
+  focusData?: unknown
+  hoverData?: unknown
+  keyboardData?: unknown
+  pointerData?: unknown
+  scrollData?: unknown
+}
+
+export interface EventDataPrimacy {
+  focusPrimacy?: number
+  hoverPrimacy?: number
+  keyboardPrimacy?: number
+  pointerPrimacy?: number
+  scrollPrimacy?: number
+}

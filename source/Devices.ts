@@ -7,20 +7,13 @@
 
 import { ObservableObject, unreactive } from 'reactronic'
 
-// InputDevice
+// AbstractDevice
 
-export class InputDevice extends ObservableObject {
+export class Device extends ObservableObject {
   nativeElements: unknown[] = []
-  composedEventDataList: unknown[] = EMPTY_EVENT_DATA_LIST
-  get eventDataList(): unknown[] { return unreactive(() => this.composedEventDataList) }
-  set eventDataList(value: unknown[]) { this.composedEventDataList = value }
-}
-
-// Context
-
-export class Context extends ObservableObject {
-  focusEventDataList: unknown[] = EMPTY_EVENT_DATA_LIST
-  hoverEventDataList: unknown[] = EMPTY_EVENT_DATA_LIST
+  composedEventDataMix: unknown[] = EMPTY_EVENT_DATA_LIST
+  get eventDataMix(): unknown[] { return unreactive(() => this.composedEventDataMix) }
+  set eventDataMix(value: unknown[]) { this.composedEventDataMix = value }
 }
 
 // Keyboard
@@ -43,7 +36,7 @@ export enum KeyboardModifiers {
   AltMeta = 4 + 8,
 }
 
-export class Keyboard extends InputDevice {
+export class Keyboard extends Device {
   down = ''
   up = ''
   modifiers = KeyboardModifiers.None
@@ -58,7 +51,7 @@ export enum PointerButton {
   Middle = 4,
 }
 
-export class Pointer extends InputDevice {
+export class Pointer extends Device {
   static readonly draggingThreshold = 4
   captured = false
   touched = false
@@ -82,7 +75,7 @@ export class Pointer extends InputDevice {
 
 // Scroll
 
-export class Scroll extends InputDevice {
+export class Scroll extends Device {
   positionX = 0
   positionY = 0
   deltaX = 0
