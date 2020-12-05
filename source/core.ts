@@ -5,12 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from 'core'
-
-export * from './web/WebRtti'
-export * from './web/WebElements'
-export * from './web/WebSensors'
-export * from './web/WebApiExt'
-export * from './web/TwoWayFocusSync'
-
-import './web/WebApiExt' // needed to perform initialization
+export * from './core/System'
+export * from './core/Restyler'
+export * from './core/SensorDevices'
+export * from './core/Sensors'
+export * from './core/EventInfo'
+export * from './core/BasicRtti'
