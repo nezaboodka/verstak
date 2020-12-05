@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from 'core'
+export * from './core'
 
 export * from './web/WebRtti'
 export * from './web/WebElements'
