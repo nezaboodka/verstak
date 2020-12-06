@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Sensitivity, sensitive, FieldToggle } from 'reactronic'
+import { Sensitivity, sensitive, ToggleRef } from 'reactronic'
 import { SensorDevice, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EMPTY_EVENT_DATA_LIST } from './SensorDevices'
 import { EventInfo, EventPayload, EventImportance } from './EventInfo'
 
@@ -265,11 +265,11 @@ export function grabEventInfos<T = unknown>(path: any[], sym: symbol,
 export function switchEventInfos(existing: unknown[], updated: unknown[]): unknown[] {
   if (updated !== existing) {
     existing.forEach(f => {
-      if (f instanceof FieldToggle && f.value1 !== f.value2)
+      if (f instanceof ToggleRef && f.value1 !== f.value2)
         f.value = f.value2
     })
     updated.forEach(x => {
-      if (x instanceof FieldToggle)
+      if (x instanceof ToggleRef)
         x.value = x.value1
     })
   }
