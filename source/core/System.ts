@@ -62,12 +62,12 @@ export function manifest<E = unknown, O = void>(
     throw new Error('element must be mounted before children')
   const m = new Manifest<any, any>(id, deps, render, componentRender, rtti)
   if (owner !== BlankManifest) {
-    if (gBuffer === undefined)
+    if (gPending === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    gBuffer.push(m)
+    gPending.push(m)
   }
   else { // render root immediately
-    gBuffer = [m]
+    gPending = [m]
     Transaction.run(renderChildrenNow)
   }
   return m
@@ -78,10 +78,10 @@ export function render(m: Manifest<any, any>): void {
   if (!inst)
     throw new Error('element must be mounted before rendering')
   const outerOwner = gOwner
-  const outerBuffer = gBuffer
+  const outerPending = gPending
   try {
     gOwner = m
-    gBuffer = []
+    gPending = []
     if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.render/${m.mounted?.cycle}${m.deps !== RenderWithParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
     if (m.componentRender)
@@ -91,7 +91,7 @@ export function render(m: Manifest<any, any>): void {
     renderChildrenNow() // ignored if rendered already
   }
   finally {
-    gBuffer = outerBuffer
+    gPending = outerPending
     gOwner = outerOwner
   }
 }
@@ -211,10 +211,10 @@ function callUnmount(m: Manifest, owner: Manifest, cause: Manifest): void {
 
 function reconcileOrdinaryChildren(owner: Manifest): void {
   const inst = owner.mounted?.instance as Instance | undefined
-  if (inst !== undefined && gBuffer !== undefined) {
-    const buffer = gBuffer
+  if (inst !== undefined && gPending !== undefined) {
+    const buffer = gPending
     const children = buffer.slice().sort(compareManifests)
-    gBuffer = undefined
+    gPending = undefined
     // Unmount or resolve existing
     let sibling: Manifest | undefined = undefined
     let i = 0, j = 0
@@ -257,9 +257,9 @@ function reconcileOrdinaryChildren(owner: Manifest): void {
 
 function reconcileSortedChildren(owner: Manifest): void {
   const inst = owner.mounted?.instance as Instance | undefined
-  if (inst !== undefined && gBuffer !== undefined) {
-    const children = gBuffer.sort(compareManifests)
-    gBuffer = undefined
+  if (inst !== undefined && gPending !== undefined) {
+    const children = gPending.sort(compareManifests)
+    gPending = undefined
     let sibling: Manifest | undefined = undefined
     let i = 0, j = 0
     while (i < inst.children.length || j < children.length) {
@@ -333,6 +333,6 @@ const BlankManifest = new Manifest<any, any>(
 )
 
 let gOwner: Manifest<any, any> = BlankManifest
-let gBuffer: Manifest[] | undefined = undefined
+let gPending: Manifest[] | undefined = undefined
 let gTrace: string | undefined = undefined
 let gTraceMask: string = 'r'
