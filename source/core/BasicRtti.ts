@@ -7,13 +7,13 @@
 
 import { Render, Manifest, Rtti, manifest } from './System'
 
-export function RxFragment<E = unknown, O = void, S = void>(id: string, state: S, render: Render<E, O>): Manifest<E, O> {
-  return manifest(id, state, render, undefined, RTTI_RX_FRAGMENT)
+export function RxFragment<E = unknown, O = void>(id: string, deps: any, render: Render<E, O>): Manifest<E, O> {
+  return manifest(id, deps, render, undefined, RTTI_RX_FRAGMENT)
 }
 
-export function RxSortingFragment<E = unknown, O = void, S = void>(id: string, state: S, render: Render<E, O>): Manifest<E, O> {
-  return manifest(id, state, render, undefined, RTTI_RX_SORTING_FRAGMENT)
+export function RxSortingFragment<E = unknown, O = void>(id: string, deps: any, render: Render<E, O>): Manifest<E, O> {
+  return manifest(id, deps, render, undefined, RTTI_RX_SORTING_FRAGMENT)
 }
 
-const RTTI_RX_FRAGMENT: Rtti<any, any> = { name: 'fragment', sorting: false }
-const RTTI_RX_SORTING_FRAGMENT: Rtti<any, any> = { name: 'sorting-fragment', sorting: true }
+const RTTI_RX_FRAGMENT: Rtti<any, any> = { name: 'RxFragment', sorting: false }
+const RTTI_RX_SORTING_FRAGMENT: Rtti<any, any> = { name: 'RxSortingFragment', sorting: true }

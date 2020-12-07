@@ -10,7 +10,7 @@ import { reactive, unreactive, Transaction, Reactronic, observableArgs } from 'r
 // NoDeps, RenderWithParent, Render, ComponentRender
 
 export const NoDeps = undefined as void // trick to allow avoiding attributes as the last parameter of render/setup
-export const RenderWithParent = Symbol('render-with-parent') as unknown as void
+export const RenderWithParent = Symbol('RenderWithParent') as unknown as void
 
 export type Render<E = unknown, O = void> = (element: E, options: O) => void
 export type ComponentRender<O = unknown, E = void> = (render: (options: O) => O, element: E) => void
@@ -144,17 +144,17 @@ export function trace(enabled: boolean, mask: string, regexp: string): void {
 const EMPTY: Array<Manifest> = []
 Object.freeze(EMPTY)
 
-class Instance<E = unknown, O = unknown> {
+class Instance<E = unknown> {
   native?: E = undefined
   children: ReadonlyArray<Manifest> = EMPTY
 }
 
-class Mounted<E = unknown, O = void, S = void> {
+class Mounted<E = unknown, O = void> {
   readonly level: number
   cycle: number
-  instance?: Instance<E, O>
+  instance?: Instance<E>
 
-  constructor(level: number, instance?: Instance<E, O>) {
+  constructor(level: number, instance?: Instance<E>) {
     this.level = level
     this.cycle = 0
     this.instance = instance
