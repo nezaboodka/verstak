@@ -82,8 +82,8 @@ export function render(m: Manifest<any, any>): void {
   try {
     gOwner = m
     gBuffer = []
-    if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getTokenTraceId(m)))
-      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getTokenTraceId(m)}.render/${m.mounted?.cycle}${m.deps !== RenderWithParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
+    if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
+      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.render/${m.mounted?.cycle}${m.deps !== RenderWithParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
     if (m.componentRender)
       m.componentRender(componentRender, inst.native)
     else
@@ -191,15 +191,15 @@ function callMount(m: Manifest, owner: Manifest, sibling?: Manifest): Mounted {
   else
     mounted.instance.native = owner.mounted?.instance?.native // default mount
   if (m.deps !== RenderWithParent)
-    Reactronic.setTraceHint(mounted, Reactronic.isTraceEnabled ? getTokenTraceId(m) : m.id)
-  if (gTrace && gTraceMask.indexOf('m') >= 0 && new RegExp(gTrace, 'gi').test(getTokenTraceId(m)))
-    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getTokenTraceId(m)}.mounted`)
+    Reactronic.setTraceHint(mounted, Reactronic.isTraceEnabled ? getManifestTraceHint(m) : m.id)
+  if (gTrace && gTraceMask.indexOf('m') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
+    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.mounted`)
   return mounted
 }
 
 function callUnmount(m: Manifest, owner: Manifest, cause: Manifest): void {
-  if (gTrace && gTraceMask.indexOf('u') >= 0 && new RegExp(gTrace, 'gi').test(getTokenTraceId(m)))
-    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getTokenTraceId(m)}.unmounting`)
+  if (gTrace && gTraceMask.indexOf('u') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
+    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.unmounting`)
   if (m.deps !== RenderWithParent)
     Reactronic.dispose(m.mounted) // isolated(Cache.unmount, t.instance) // TODO: Consider creating one transaction for all un-mounts
   const rtti = m.rtti
@@ -213,7 +213,7 @@ function reconcileOrdinaryChildren(owner: Manifest): void {
   const inst = owner.mounted?.instance as Instance | undefined
   if (inst !== undefined && gBuffer !== undefined) {
     const buffer = gBuffer
-    const children = buffer.slice().sort(compareHandles)
+    const children = buffer.slice().sort(compareManifests)
     gBuffer = undefined
     // Unmount or resolve existing
     let sibling: Manifest | undefined = undefined
@@ -221,13 +221,13 @@ function reconcileOrdinaryChildren(owner: Manifest): void {
     while (i < inst.children.length) {
       const existing = inst.children[i]
       let e = children[j]
-      const diff = e !== undefined ? compareHandles(e, existing) : 1
+      const diff = e !== undefined ? compareManifests(e, existing) : 1
       if (diff <= 0) {
         if (sibling !== undefined && e.id === sibling.id)
           throw new Error(`duplicate id '${sibling.id}' inside '${owner.id}'`)
         if (diff === 0) {
           e.mounted = existing.mounted // reuse existing instance for re-rendering
-          if (e.deps !== RenderWithParent && attributesAreEqual(e.deps, existing.deps))
+          if (e.deps !== RenderWithParent && depsAreEqual(e.deps, existing.deps))
             e = e.annex = children[j] = existing // skip re-rendering and preserve existing token
           i++, j++
         }
@@ -258,20 +258,20 @@ function reconcileOrdinaryChildren(owner: Manifest): void {
 function reconcileSortedChildren(owner: Manifest): void {
   const inst = owner.mounted?.instance as Instance | undefined
   if (inst !== undefined && gBuffer !== undefined) {
-    const children = gBuffer.sort(compareHandles)
+    const children = gBuffer.sort(compareManifests)
     gBuffer = undefined
     let sibling: Manifest | undefined = undefined
     let i = 0, j = 0
     while (i < inst.children.length || j < children.length) {
       const existing = inst.children[i]
       let e = children[j]
-      const diff = compareNullable(e, existing, compareHandles)
+      const diff = compareNullable(e, existing, compareManifests)
       if (diff <= 0) {
         if (sibling !== undefined && e.id === sibling.id)
           throw new Error(`duplicate id '${sibling.id}' inside '${owner.id}'`)
         if (diff === 0) { // diff === 0
           e.mounted = existing.mounted // reuse existing instance for re-rendering
-          if (e.deps !== RenderWithParent && attributesAreEqual(e.deps, existing.deps))
+          if (e.deps !== RenderWithParent && depsAreEqual(e.deps, existing.deps))
             e = children[j] = existing // skip re-rendering and preserve existing token
           i++, j++
         }
@@ -287,7 +287,7 @@ function reconcileSortedChildren(owner: Manifest): void {
   }
 }
 
-function compareHandles(m1: Manifest, m2: Manifest): number {
+function compareManifests(m1: Manifest, m2: Manifest): number {
   return m1.id.localeCompare(m2.id)
 }
 
@@ -300,7 +300,7 @@ function compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T,
   return diff
 }
 
-function attributesAreEqual(a1: any, a2: any): boolean {
+function depsAreEqual(a1: any, a2: any): boolean {
   let result = a1 === a2
   if (!result) {
     if (Array.isArray(a1)) {
@@ -319,7 +319,7 @@ function attributesAreEqual(a1: any, a2: any): boolean {
   return result
 }
 
-function getTokenTraceId(m: Manifest): string {
+function getManifestTraceHint(m: Manifest): string {
   return `${m.rtti.name}:${m.id}`
 }
 
