@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reactive, unreactive, Transaction, Reactronic, observableArgs } from 'reactronic'
+import { reactive, unobservable, Transaction, Reactronic, observableArgs } from 'reactronic'
 
 // NoDeps, RenderWithParent, Render, ComponentRender
 
@@ -177,7 +177,7 @@ function callRender(m: Manifest, owner: Manifest): void {
   if (m.deps === RenderWithParent) // inline elements are always rendered
     renderInline(mounted, m)
   else // rendering of reactive elements is cached to avoid redundant calls
-    unreactive(mounted.render, m)
+    unobservable(mounted.render, m)
 }
 
 function callMount(m: Manifest, owner: Manifest, sibling?: Manifest): Mounted {
