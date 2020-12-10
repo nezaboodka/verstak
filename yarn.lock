@@ -2253,10 +2253,10 @@ rc@^1.2.8:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-reactronic@^0.20.702:
-  version "0.20.702"
-  resolved "https://registry.yarnpkg.com/reactronic/-/reactronic-0.20.702.tgz#19c9808e239e5b9274992de7a6e380c0fad70cf6"
-  integrity sha512-tYGcna8Tg106qU/BZywX0vEmO3fWeCPmT3cjWIM+CKUk58Beb2tlo2nzQqgkh2Vsn0tAPgk8WBn9/ymikwoOKg==
+reactronic@^0.20.703:
+  version "0.20.703"
+  resolved "https://registry.yarnpkg.com/reactronic/-/reactronic-0.20.703.tgz#bab122466b1ba362611fcf17420a175795b64c17"
+  integrity sha512-L1SBXyuM+jDYqRcvzHfNpiUQ0ZdqoIeo+yEAZDKKaHOfkmhpPYcOs9OwrLlgpuCfX36w9A7NsHskTtEh6rjAxQ==
 
 read-pkg@^5.2.0:
   version "5.2.0"
