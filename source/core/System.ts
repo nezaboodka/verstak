@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reactive, unobserved, Transaction, Reactronic, observableArgs } from 'reactronic'
+import { reaction, unobservableRun, Transaction, Reactronic, observableArgs } from 'reactronic'
 
 // NoDeps, RenderWithParent, Render, ComponentRender
 
@@ -160,7 +160,7 @@ class Mounted<E = unknown, O = void> {
     this.instance = instance
   }
 
-  @reactive @observableArgs(true) // @noSideEffects(true)
+  @reaction @observableArgs(true) // @noSideEffects(true)
   render(m: Manifest<E, O>): void {
     renderInline(this, m)
     Reactronic.configureCurrentMethodCache({ priority: this.level })
@@ -177,7 +177,7 @@ function callRender(m: Manifest, owner: Manifest): void {
   if (m.deps === RenderWithParent) // inline elements are always rendered
     renderInline(mounted, m)
   else // rendering of reactive elements is cached to avoid redundant calls
-    unobserved(mounted.render, m)
+    unobservableRun(mounted.render, m)
 }
 
 function callMount(m: Manifest, owner: Manifest, sibling?: Manifest): Mounted {

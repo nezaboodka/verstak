@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Sensitivity, sensitive, ToggleRef } from 'reactronic'
+import { Sensitivity, sensitiveRun, ToggleRef } from 'reactronic'
 import { SensorDevice, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EMPTY_EVENT_DATA_LIST } from './SensorDevices'
 import { EventInfo, EventPayload, EventImportance } from './EventInfo'
 
@@ -39,7 +39,7 @@ export class Sensors implements AbstractSensors {
 
   protected doFocusOut(focus: unknown[]): void {
     // This will cause HTMLElement.focus for elements with TrackFocus reaction
-    !this.keyboard.down && sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () =>
+    !this.keyboard.down && sensitiveRun(Sensitivity.ReactEvenOnSameValueAssignment, () =>
       switchEventInfos(EMPTY_EVENT_DATA_LIST, this.focus.eventInfos))
   }
 
@@ -146,7 +146,7 @@ export class Sensors implements AbstractSensors {
     const kb = this.keyboard
     kb.eventInfos = eventInfos
     kb.up = ''
-    sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.down = key)
+    sensitiveRun(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.down = key)
     kb.modifiers |= Sensors.getKeyAsModifierIfAny(key)
   }
 
@@ -154,7 +154,7 @@ export class Sensors implements AbstractSensors {
     const kb = this.keyboard
     kb.eventInfos = eventInfos
     kb.down = ''
-    sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.up = key)
+    sensitiveRun(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.up = key)
     kb.modifiers &= ~Sensors.getKeyAsModifierIfAny(key)
   }
 
