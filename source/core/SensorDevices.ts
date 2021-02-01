@@ -10,8 +10,9 @@ import { ObservableObject, unobservableRun } from 'reactronic'
 // SensorDevice
 
 export class SensorDevice extends ObservableObject {
+  revision: number = 0
   nativeElements: unknown[] = []
-  composedEventInfos: unknown[] = EMPTY_EVENT_DATA_LIST
+  private composedEventInfos: unknown[] = EMPTY_EVENT_DATA_LIST
   get eventInfos(): unknown[] { return unobservableRun(() => this.composedEventInfos) }
   set eventInfos(value: unknown[]) { this.composedEventInfos = value }
 }
