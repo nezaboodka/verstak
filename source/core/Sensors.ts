@@ -29,8 +29,11 @@ export class Sensors implements AbstractSensors {
   }
 
   protected trackFocus(focus: unknown[], force: boolean): void {
-    if (focus.length > 0 || force)
-      this.focus.eventInfos = switchEventInfos(this.focus.eventInfos, focus)
+    if (focus.length > 0 || force) {
+      const f = this.focus
+      f.eventInfos = switchEventInfos(f.eventInfos, focus)
+      f.revision++
+    }
   }
 
   protected doFocusIn(focus: unknown[]): void {
@@ -39,15 +42,25 @@ export class Sensors implements AbstractSensors {
 
   protected doFocusOut(focus: unknown[]): void {
     // This will cause HTMLElement.focus for elements with TrackFocus reaction
-    !this.keyboard.down && sensitiveRun(Sensitivity.ReactEvenOnSameValueAssignment, () =>
-      switchEventInfos(EMPTY_EVENT_DATA_LIST, this.focus.eventInfos))
+
+    // !this.keyboard.down && sensitiveRun(Sensitivity.ReactEvenOnSameValueAssignment, () =>
+    //   switchEventInfos(EMPTY_EVENT_DATA_LIST, this.focus.eventInfos))
+
+    if (!this.keyboard.down) {
+      const f = this.focus
+      sensitiveRun(Sensitivity.ReactEvenOnSameValueAssignment, () =>
+        switchEventInfos(EMPTY_EVENT_DATA_LIST, this.focus.eventInfos))
+      f.revision++
+    }
   }
 
   protected doPointerOver(eventInfos: unknown[], hoverEventInfos: unknown[], clientX: number, clientY: number): void {
     const p = this.pointer
+    const h = this.hover
     Sensors.rememberPointer(p, clientX, clientY)
     p.eventInfos = eventInfos
-    this.hover.eventInfos = switchEventInfos(this.hover.eventInfos, hoverEventInfos)
+    h.eventInfos = switchEventInfos(this.hover.eventInfos, hoverEventInfos)
+    h.revision++
   }
 
   protected doPointerLeave(eventInfos: unknown[], hoverEventInfos: unknown[], clientX: number, clientY: number): void {
@@ -124,22 +137,25 @@ export class Sensors implements AbstractSensors {
     p.eventInfos = eventInfos
     this.trackFocus(focus, true)
     p.touched = true
+    p.revision++
   }
 
   protected doTouchEnd(eventInfos: unknown[]): void {
     const p = this.pointer
     p.eventInfos = eventInfos
     p.touched = false
+    p.revision++
   }
 
   protected doWheel(eventInfos: unknown[], focus: unknown[],
     deltaX: number, deltaY: number, clientX: number, clientY: number): void {
-    const scroll = this.scroll
+    const s = this.scroll
     Sensors.rememberPointer(this.pointer, clientX, clientY)
-    scroll.eventInfos = eventInfos
+    s.eventInfos = eventInfos
     // this.trackFocus(focus, true)
-    scroll.deltaX = deltaX
-    scroll.deltaY = deltaY
+    s.deltaX = deltaX
+    s.deltaY = deltaY
+    s.revision++
   }
 
   protected doKeyDown(eventInfos: unknown[], key: string): void {
@@ -148,6 +164,7 @@ export class Sensors implements AbstractSensors {
     kb.up = ''
     sensitiveRun(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.down = key)
     kb.modifiers |= Sensors.getKeyAsModifierIfAny(key)
+    kb.revision++
   }
 
   protected doKeyUp(eventInfos: unknown[], key: string): void {
@@ -156,6 +173,7 @@ export class Sensors implements AbstractSensors {
     kb.down = ''
     sensitiveRun(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.up = key)
     kb.modifiers &= ~Sensors.getKeyAsModifierIfAny(key)
+    kb.revision++
   }
 
   // Internal
@@ -182,6 +200,7 @@ export class Sensors implements AbstractSensors {
     p.droppedObject = undefined
     p.droppedAtX = Infinity
     p.droppedAtY = Infinity
+    p.revision++
   }
 
   private static getKeyAsModifierIfAny(key: string): KeyboardModifiers {
