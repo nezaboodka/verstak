@@ -254,13 +254,16 @@ export function grabEventInfos<T = unknown>(path: any[], sym: symbol,
         imp = imp ?? 0
         if (imp === importance) {
           // Handle event infos of the same importance
-          if (payload !== undefined) {
-            if (result !== existing)
-              result.push(payload)
-            else if (payload !== existing[j])
+          if (result !== existing)
+            payload !== undefined && result.push(payload)
+          else if (payload !== undefined) {
+            if (payload !== existing[j])
               result = existing.slice(0, j), result.push(payload)
             else
               j++
+          }
+          else {
+            result = existing.slice(0, j)
           }
         }
         else if (imp > importance) {
@@ -272,6 +275,9 @@ export function grabEventInfos<T = unknown>(path: any[], sym: symbol,
               result = [payload]
             else
               j = 1
+          }
+          else {
+            result = []
           }
         }
         else {
