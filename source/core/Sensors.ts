@@ -249,25 +249,30 @@ export function grabEventInfos<T = unknown>(path: any[], sym: symbol,
     const info = path[i][sym] as EventInfo | undefined
     if (info !== undefined) {
       const payload = info[payloadKey] as T | undefined
-      if (payload !== undefined) {
-        const imp = info[importanceKey] ?? 0
+      let imp = info[importanceKey]
+      if (payload !== undefined || imp !== undefined) {
+        imp = imp ?? 0
         if (imp === importance) {
           // Handle event infos of the same importance
-          if (result !== existing)
-            result.push(payload)
-          else if (payload !== existing[j])
-            result = existing.slice(0, j), result.push(payload)
-          else
-            j++
+          if (payload !== undefined) {
+            if (result !== existing)
+              result.push(payload)
+            else if (payload !== existing[j])
+              result = existing.slice(0, j), result.push(payload)
+            else
+              j++
+          }
         }
         else if (imp > importance) {
           // Raise events importance and start from scratch
           importance = imp
           result = existing
-          if (payload !== existing[0])
-            result = [payload]
-          else
-            j = 1
+          if (payload !== undefined) {
+            if (payload !== existing[0])
+              result = [payload]
+            else
+              j = 1
+          }
         }
         else {
           // Ignore event infos with lower importance
