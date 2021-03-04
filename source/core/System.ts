@@ -163,7 +163,7 @@ class Mounted<E = unknown, O = void> {
   @reaction @observableArgs(true) // @noSideEffects(true)
   render(m: Manifest<E, O>): void {
     renderInline(this, m)
-    Reactronic.configureCurrentMethodCache({ priority: this.level })
+    Reactronic.configureCurrentMethod({ priority: this.level })
   }
 }
 
