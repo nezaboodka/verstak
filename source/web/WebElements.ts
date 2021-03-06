@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Render, Manifest, manifest, RenderWithParent, ComponentRender } from '../core'
+import { Render, Manifest, manifest, RefreshWithParent, ComponentRender } from '../core'
 import { HtmlRtti, SvgRtti } from './WebRtti'
 
 function nullRender(e: Element): void { /* nop */ }
@@ -37,32 +37,32 @@ export function RxTH<O = void>(id: string, triggers: any, render: Render<HTMLTab
 export function RxTD<O = void>(id: string, triggers: any, render: Render<HTMLTableDataCellElement, O>, componentRender?: ComponentRender<O, HTMLTableDataCellElement>): Manifest<HTMLTableDataCellElement, O> { return manifest(id, triggers, render, componentRender, Html.td) }
 export function RxCaption<O = void>(id: string, triggers: any, render: Render<HTMLTableCaptionElement, O>, componentRender?: ComponentRender<O, HTMLTableCaptionElement>): Manifest<HTMLTableCaptionElement, O> { return manifest(id, triggers, render, componentRender, Html.caption) }
 
-export function div(id: string, render: Render<HTMLDivElement> = nullRender): Manifest<HTMLDivElement> { return manifest(id, RenderWithParent, render, undefined, Html.div) }
-export function span(id: string, render: Render<HTMLSpanElement> = nullRender): Manifest<HTMLSpanElement> { return manifest(id, RenderWithParent, render, undefined, Html.span) }
-export function section(id: string, render: Render<HTMLElement> = nullRender): Manifest<HTMLElement> { return manifest(id, RenderWithParent, render, undefined, Html.section) }
-export function nav(id: string, render: Render<HTMLElement> = nullRender): Manifest<HTMLElement> { return manifest(id, RenderWithParent, render, undefined, Html.nav) }
-export function link(id: string, render: Render<HTMLLinkElement> = nullRender): Manifest<HTMLLinkElement> { return manifest(id, RenderWithParent, render, undefined, Html.link) }
-export function button(id: string, render: Render<HTMLButtonElement> = nullRender): Manifest<HTMLButtonElement> { return manifest(id, RenderWithParent, render, undefined, Html.button) }
-export function img(id: string, render: Render<HTMLImageElement> = nullRender): Manifest<HTMLImageElement> { return manifest(id, RenderWithParent, render, undefined, Html.image) }
-export function input(id: string, render: Render<HTMLInputElement> = nullRender): Manifest<HTMLInputElement> { return manifest(id, RenderWithParent, render, undefined, Html.input) }
-export function select(id: string, render: Render<HTMLSelectElement> = nullRender): Manifest<HTMLSelectElement> { return manifest(id, RenderWithParent, render, undefined, Html.select) }
-export function option(id: string, render: Render<HTMLOptionElement> = nullRender): Manifest<HTMLOptionElement> { return manifest(id, RenderWithParent, render, undefined, Html.option) }
-export function label(id: string, render: Render<HTMLLabelElement> = nullRender): Manifest<HTMLLabelElement> { return manifest(id, RenderWithParent, render, undefined, Html.label) }
-export function header(id: string, render: Render<HTMLElement> = nullRender): Manifest<HTMLElement> { return manifest(id, RenderWithParent, render, undefined, Html.header) }
-export function audio(id: string, render: Render<HTMLAudioElement> = nullRender): Manifest<HTMLAudioElement> { return manifest(id, RenderWithParent, render, undefined, Html.audio) }
-export function video(id: string, render: Render<HTMLVideoElement> = nullRender): Manifest<HTMLVideoElement> { return manifest(id, RenderWithParent, render, undefined, Html.video) }
-export function iframe(id: string, render: Render<HTMLIFrameElement> = nullRender): Manifest<HTMLIFrameElement> { return manifest(id, RenderWithParent, render, undefined, Html.iframe) }
-export function source(id: string, render: Render<HTMLSourceElement> = nullRender): Manifest<HTMLSourceElement> { return manifest(id, RenderWithParent, render, undefined, Html.source) }
-export function i(id: string, render: Render<HTMLElement> = nullRender): Manifest<HTMLElement> { return manifest(id, RenderWithParent, render, undefined, Html.i) }
-export function b(id: string, render: Render<HTMLElement> = nullRender): Manifest<HTMLElement> { return manifest(id, RenderWithParent, render, undefined, Html.b) }
-export function u(id: string, render: Render<HTMLElement> = nullRender): Manifest<HTMLElement> { return manifest(id, RenderWithParent, render, undefined, Html.u) }
-export function ol(id: string, render: Render<HTMLOListElement> = nullRender): Manifest<HTMLOListElement> { return manifest(id, RenderWithParent, render, undefined, Html.ol) }
-export function ul(id: string, render: Render<HTMLUListElement> = nullRender): Manifest<HTMLUListElement> { return manifest(id, RenderWithParent, render, undefined, Html.ul) }
-export function li(id: string, render: Render<HTMLLIElement> = nullRender): Manifest<HTMLLIElement> { return manifest(id, RenderWithParent, render, undefined, Html.li) }
-export function tr(id: string, render: Render<HTMLTableRowElement> = nullRender): Manifest<HTMLTableRowElement> { return manifest(id, RenderWithParent, render, undefined, Html.tr) }
-export function th(id: string, render: Render<HTMLTableHeaderCellElement> = nullRender): Manifest<HTMLTableHeaderCellElement> { return manifest(id, RenderWithParent, render, undefined, Html.th) }
-export function td(id: string, render: Render<HTMLTableDataCellElement> = nullRender): Manifest<HTMLTableDataCellElement> { return manifest(id, RenderWithParent, render, undefined, Html.td) }
-export function caption(id: string, render: Render<HTMLTableCaptionElement> = nullRender): Manifest<HTMLTableCaptionElement> { return manifest(id, RenderWithParent, render, undefined, Html.caption) }
+export function div(id: string, render: Render<HTMLDivElement> = nullRender): Manifest<HTMLDivElement> { return manifest(id, RefreshWithParent, render, undefined, Html.div) }
+export function span(id: string, render: Render<HTMLSpanElement> = nullRender): Manifest<HTMLSpanElement> { return manifest(id, RefreshWithParent, render, undefined, Html.span) }
+export function section(id: string, render: Render<HTMLElement> = nullRender): Manifest<HTMLElement> { return manifest(id, RefreshWithParent, render, undefined, Html.section) }
+export function nav(id: string, render: Render<HTMLElement> = nullRender): Manifest<HTMLElement> { return manifest(id, RefreshWithParent, render, undefined, Html.nav) }
+export function link(id: string, render: Render<HTMLLinkElement> = nullRender): Manifest<HTMLLinkElement> { return manifest(id, RefreshWithParent, render, undefined, Html.link) }
+export function button(id: string, render: Render<HTMLButtonElement> = nullRender): Manifest<HTMLButtonElement> { return manifest(id, RefreshWithParent, render, undefined, Html.button) }
+export function img(id: string, render: Render<HTMLImageElement> = nullRender): Manifest<HTMLImageElement> { return manifest(id, RefreshWithParent, render, undefined, Html.image) }
+export function input(id: string, render: Render<HTMLInputElement> = nullRender): Manifest<HTMLInputElement> { return manifest(id, RefreshWithParent, render, undefined, Html.input) }
+export function select(id: string, render: Render<HTMLSelectElement> = nullRender): Manifest<HTMLSelectElement> { return manifest(id, RefreshWithParent, render, undefined, Html.select) }
+export function option(id: string, render: Render<HTMLOptionElement> = nullRender): Manifest<HTMLOptionElement> { return manifest(id, RefreshWithParent, render, undefined, Html.option) }
+export function label(id: string, render: Render<HTMLLabelElement> = nullRender): Manifest<HTMLLabelElement> { return manifest(id, RefreshWithParent, render, undefined, Html.label) }
+export function header(id: string, render: Render<HTMLElement> = nullRender): Manifest<HTMLElement> { return manifest(id, RefreshWithParent, render, undefined, Html.header) }
+export function audio(id: string, render: Render<HTMLAudioElement> = nullRender): Manifest<HTMLAudioElement> { return manifest(id, RefreshWithParent, render, undefined, Html.audio) }
+export function video(id: string, render: Render<HTMLVideoElement> = nullRender): Manifest<HTMLVideoElement> { return manifest(id, RefreshWithParent, render, undefined, Html.video) }
+export function iframe(id: string, render: Render<HTMLIFrameElement> = nullRender): Manifest<HTMLIFrameElement> { return manifest(id, RefreshWithParent, render, undefined, Html.iframe) }
+export function source(id: string, render: Render<HTMLSourceElement> = nullRender): Manifest<HTMLSourceElement> { return manifest(id, RefreshWithParent, render, undefined, Html.source) }
+export function i(id: string, render: Render<HTMLElement> = nullRender): Manifest<HTMLElement> { return manifest(id, RefreshWithParent, render, undefined, Html.i) }
+export function b(id: string, render: Render<HTMLElement> = nullRender): Manifest<HTMLElement> { return manifest(id, RefreshWithParent, render, undefined, Html.b) }
+export function u(id: string, render: Render<HTMLElement> = nullRender): Manifest<HTMLElement> { return manifest(id, RefreshWithParent, render, undefined, Html.u) }
+export function ol(id: string, render: Render<HTMLOListElement> = nullRender): Manifest<HTMLOListElement> { return manifest(id, RefreshWithParent, render, undefined, Html.ol) }
+export function ul(id: string, render: Render<HTMLUListElement> = nullRender): Manifest<HTMLUListElement> { return manifest(id, RefreshWithParent, render, undefined, Html.ul) }
+export function li(id: string, render: Render<HTMLLIElement> = nullRender): Manifest<HTMLLIElement> { return manifest(id, RefreshWithParent, render, undefined, Html.li) }
+export function tr(id: string, render: Render<HTMLTableRowElement> = nullRender): Manifest<HTMLTableRowElement> { return manifest(id, RefreshWithParent, render, undefined, Html.tr) }
+export function th(id: string, render: Render<HTMLTableHeaderCellElement> = nullRender): Manifest<HTMLTableHeaderCellElement> { return manifest(id, RefreshWithParent, render, undefined, Html.th) }
+export function td(id: string, render: Render<HTMLTableDataCellElement> = nullRender): Manifest<HTMLTableDataCellElement> { return manifest(id, RefreshWithParent, render, undefined, Html.td) }
+export function caption(id: string, render: Render<HTMLTableCaptionElement> = nullRender): Manifest<HTMLTableCaptionElement> { return manifest(id, RefreshWithParent, render, undefined, Html.caption) }
 
 const Html = {
   div: new HtmlRtti<HTMLDivElement>('div'),
@@ -121,33 +121,33 @@ export function RxTextPath<O = void>(id: string, triggers: any, render: Render<S
 export function RxUse<O = void>(id: string, triggers: any, render: Render<SVGUseElement, O>, componentRender?: ComponentRender<O, SVGUseElement>): Manifest<SVGUseElement, O> { return manifest(id, triggers, render, componentRender, Svg.use) }
 export function RxView<O = void>(id: string, triggers: any, render: Render<SVGViewElement, O>, componentRender?: ComponentRender<O, SVGViewElement>): Manifest<SVGViewElement, O> { return manifest(id, triggers, render, componentRender, Svg.view) }
 
-export function svg(id: string, render: Render<SVGSVGElement> = nullRender): Manifest<SVGSVGElement> { return manifest(id, RenderWithParent, render, undefined, Svg.svg) }
-export function svgLink(id: string, render: Render<SVGAElement> = nullRender): Manifest<SVGAElement> { return manifest(id, RenderWithParent, render, undefined, Svg.link) }
-export function animate(id: string, render: Render<SVGAnimateElement> = nullRender): Manifest<SVGAnimateElement> { return manifest(id, RenderWithParent, render, undefined, Svg.animate) }
-export function animateMotion(id: string, render: Render<SVGAnimateMotionElement> = nullRender): Manifest<SVGAnimateMotionElement> { return manifest(id, RenderWithParent, render, undefined, Svg.animateMotion) }
-export function animateTransform(id: string, render: Render<SVGAnimateTransformElement> = nullRender): Manifest<SVGAnimateTransformElement> { return manifest(id, RenderWithParent, render, undefined, Svg.animateTransform) }
-export function circle(id: string, render: Render<SVGCircleElement> = nullRender): Manifest<SVGCircleElement> { return manifest(id, RenderWithParent, render, undefined, Svg.circle) }
-export function clipPath(id: string, render: Render<SVGClipPathElement> = nullRender): Manifest<SVGClipPathElement> { return manifest(id, RenderWithParent, render, undefined, Svg.clipPath) }
-export function defs(id: string, render: Render<SVGDefsElement> = nullRender): Manifest<SVGDefsElement> { return manifest(id, RenderWithParent, render, undefined, Svg.defs) }
-export function desc(id: string, render: Render<SVGDescElement> = nullRender): Manifest<SVGDescElement> { return manifest(id, RenderWithParent, render, undefined, Svg.desc) }
-export function ellipse(id: string, render: Render<SVGEllipseElement> = nullRender): Manifest<SVGEllipseElement> { return manifest(id, RenderWithParent, render, undefined, Svg.ellipse) }
-export function foreignObject(id: string, render: Render<SVGForeignObjectElement> = nullRender): Manifest<SVGForeignObjectElement> { return manifest(id, RenderWithParent, render, undefined, Svg.foreignObject) }
-export function g(id: string, render: Render<SVGGElement> = nullRender): Manifest<SVGGElement> { return manifest(id, RenderWithParent, render, undefined, Svg.g) }
-export function svgImage(id: string, render: Render<SVGImageElement> = nullRender): Manifest<SVGImageElement> { return manifest(id, RenderWithParent, render, undefined, Svg.image) }
-export function line(id: string, render: Render<SVGLineElement> = nullRender): Manifest<SVGLineElement> { return manifest(id, RenderWithParent, render, undefined, Svg.line) }
-export function linearGradient(id: string, render: Render<SVGLinearGradientElement> = nullRender): Manifest<SVGLinearGradientElement> { return manifest(id, RenderWithParent, render, undefined, Svg.linearGradient) }
-export function marker(id: string, render: Render<SVGMarkerElement> = nullRender): Manifest<SVGMarkerElement> { return manifest(id, RenderWithParent, render, undefined, Svg.marker) }
-export function mask(id: string, render: Render<SVGMaskElement> = nullRender): Manifest<SVGMaskElement> { return manifest(id, RenderWithParent, render, undefined, Svg.mask) }
-export function path(id: string, render: Render<SVGPathElement> = nullRender): Manifest<SVGPathElement> { return manifest(id, RenderWithParent, render, undefined, Svg.path) }
-export function pattern(id: string, render: Render<SVGPatternElement> = nullRender): Manifest<SVGPatternElement> { return manifest(id, RenderWithParent, render, undefined, Svg.pattern) }
-export function polygon(id: string, render: Render<SVGPolygonElement> = nullRender): Manifest<SVGPolygonElement> { return manifest(id, RenderWithParent, render, undefined, Svg.polygon) }
-export function polyline(id: string, render: Render<SVGPolylineElement> = nullRender): Manifest<SVGPolylineElement> { return manifest(id, RenderWithParent, render, undefined, Svg.polyline) }
-export function radialGradient(id: string, render: Render<SVGRadialGradientElement> = nullRender): Manifest<SVGRadialGradientElement> { return manifest(id, RenderWithParent, render, undefined, Svg.radialGradient) }
-export function rect(id: string, render: Render<SVGRectElement> = nullRender): Manifest<SVGRectElement> { return manifest(id, RenderWithParent, render, undefined, Svg.rect) }
-export function text(id: string, render: Render<SVGTextElement> = nullRender): Manifest<SVGTextElement> { return manifest(id, RenderWithParent, render, undefined, Svg.text) }
-export function textPath(id: string, render: Render<SVGTextPathElement> = nullRender): Manifest<SVGTextPathElement> { return manifest(id, RenderWithParent, render, undefined, Svg.textPath) }
-export function use(id: string, render: Render<SVGUseElement> = nullRender): Manifest<SVGUseElement> { return manifest(id, RenderWithParent, render, undefined, Svg.use) }
-export function view(id: string, render: Render<SVGViewElement> = nullRender): Manifest<SVGViewElement> { return manifest(id, RenderWithParent, render, undefined, Svg.view) }
+export function svg(id: string, render: Render<SVGSVGElement> = nullRender): Manifest<SVGSVGElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.svg) }
+export function svgLink(id: string, render: Render<SVGAElement> = nullRender): Manifest<SVGAElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.link) }
+export function animate(id: string, render: Render<SVGAnimateElement> = nullRender): Manifest<SVGAnimateElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.animate) }
+export function animateMotion(id: string, render: Render<SVGAnimateMotionElement> = nullRender): Manifest<SVGAnimateMotionElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.animateMotion) }
+export function animateTransform(id: string, render: Render<SVGAnimateTransformElement> = nullRender): Manifest<SVGAnimateTransformElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.animateTransform) }
+export function circle(id: string, render: Render<SVGCircleElement> = nullRender): Manifest<SVGCircleElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.circle) }
+export function clipPath(id: string, render: Render<SVGClipPathElement> = nullRender): Manifest<SVGClipPathElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.clipPath) }
+export function defs(id: string, render: Render<SVGDefsElement> = nullRender): Manifest<SVGDefsElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.defs) }
+export function desc(id: string, render: Render<SVGDescElement> = nullRender): Manifest<SVGDescElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.desc) }
+export function ellipse(id: string, render: Render<SVGEllipseElement> = nullRender): Manifest<SVGEllipseElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.ellipse) }
+export function foreignObject(id: string, render: Render<SVGForeignObjectElement> = nullRender): Manifest<SVGForeignObjectElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.foreignObject) }
+export function g(id: string, render: Render<SVGGElement> = nullRender): Manifest<SVGGElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.g) }
+export function svgImage(id: string, render: Render<SVGImageElement> = nullRender): Manifest<SVGImageElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.image) }
+export function line(id: string, render: Render<SVGLineElement> = nullRender): Manifest<SVGLineElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.line) }
+export function linearGradient(id: string, render: Render<SVGLinearGradientElement> = nullRender): Manifest<SVGLinearGradientElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.linearGradient) }
+export function marker(id: string, render: Render<SVGMarkerElement> = nullRender): Manifest<SVGMarkerElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.marker) }
+export function mask(id: string, render: Render<SVGMaskElement> = nullRender): Manifest<SVGMaskElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.mask) }
+export function path(id: string, render: Render<SVGPathElement> = nullRender): Manifest<SVGPathElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.path) }
+export function pattern(id: string, render: Render<SVGPatternElement> = nullRender): Manifest<SVGPatternElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.pattern) }
+export function polygon(id: string, render: Render<SVGPolygonElement> = nullRender): Manifest<SVGPolygonElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.polygon) }
+export function polyline(id: string, render: Render<SVGPolylineElement> = nullRender): Manifest<SVGPolylineElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.polyline) }
+export function radialGradient(id: string, render: Render<SVGRadialGradientElement> = nullRender): Manifest<SVGRadialGradientElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.radialGradient) }
+export function rect(id: string, render: Render<SVGRectElement> = nullRender): Manifest<SVGRectElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.rect) }
+export function text(id: string, render: Render<SVGTextElement> = nullRender): Manifest<SVGTextElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.text) }
+export function textPath(id: string, render: Render<SVGTextPathElement> = nullRender): Manifest<SVGTextPathElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.textPath) }
+export function use(id: string, render: Render<SVGUseElement> = nullRender): Manifest<SVGUseElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.use) }
+export function view(id: string, render: Render<SVGViewElement> = nullRender): Manifest<SVGViewElement> { return manifest(id, RefreshWithParent, render, undefined, Svg.view) }
 
 const Svg = {
   svg: new SvgRtti<SVGSVGElement>('svg'),

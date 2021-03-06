@@ -7,10 +7,9 @@
 
 import { reaction, unobservableRun, Transaction, Reactronic, observableArgs } from 'reactronic'
 
-// NoTriggers, RenderWithParent, Render, ComponentRender
+// RefreshWithParent, Render, ComponentRender
 
-export const NoTriggers = undefined as void // trick to allow avoiding attributes as the last parameter of render/setup
-export const RenderWithParent = Symbol('RenderWithParent') as unknown as void
+export const RefreshWithParent = Symbol('RefreshWithParent') as unknown as void
 
 export type Render<E = unknown, O = void> = (element: E, options: O) => void
 export type ComponentRender<O = unknown, E = void> = (render: (options: O) => O, element: E) => void
@@ -83,7 +82,7 @@ export function render(m: Manifest<any, any>): void {
     gOwner = m
     gPending = []
     if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
-      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.render/${m.mounted?.cycle}${m.triggers !== RenderWithParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
+      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.render/${m.mounted?.cycle}${m.triggers !== RefreshWithParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
     if (m.componentRender)
       m.componentRender(componentRender, inst.native)
     else
@@ -174,7 +173,7 @@ function renderInline<E, O>(mounted: Mounted<E, O>, m: Manifest<E, O>): void {
 
 function callRender(m: Manifest, owner: Manifest): void {
   const mounted = m.mounted as Mounted
-  if (m.triggers === RenderWithParent) // inline elements are always rendered
+  if (m.triggers === RefreshWithParent) // inline elements are always rendered
     renderInline(mounted, m)
   else // rendering of reactive elements is cached to avoid redundant calls
     unobservableRun(mounted.render, m)
@@ -190,7 +189,7 @@ function callMount(m: Manifest, owner: Manifest, sibling?: Manifest): Mounted {
     rtti.mount(m, owner, sibling)
   else
     mounted.instance.native = owner.mounted?.instance?.native // default mount
-  if (m.triggers !== RenderWithParent)
+  if (m.triggers !== RefreshWithParent)
     Reactronic.setTraceHint(mounted, Reactronic.isTraceEnabled ? getManifestTraceHint(m) : m.id)
   if (gTrace && gTraceMask.indexOf('m') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
     console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.mounted`)
@@ -200,7 +199,7 @@ function callMount(m: Manifest, owner: Manifest, sibling?: Manifest): Mounted {
 function callUnmount(m: Manifest, owner: Manifest, cause: Manifest): void {
   if (gTrace && gTraceMask.indexOf('u') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
     console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.unmounting`)
-  if (m.triggers !== RenderWithParent)
+  if (m.triggers !== RefreshWithParent)
     Reactronic.dispose(m.mounted) // isolated(Cache.unmount, t.instance) // TODO: Consider creating one transaction for all un-mounts
   const rtti = m.rtti
   if (rtti.unmount)
@@ -227,7 +226,7 @@ function reconcileOrdinaryChildren(owner: Manifest): void {
           throw new Error(`duplicate id '${sibling.id}' inside '${owner.id}'`)
         if (diff === 0) {
           e.mounted = existing.mounted // reuse existing instance for re-rendering
-          if (e.triggers !== RenderWithParent && triggersAreEqual(e.triggers, existing.triggers))
+          if (e.triggers !== RefreshWithParent && triggersAreEqual(e.triggers, existing.triggers))
             e = e.annex = children[j] = existing // skip re-rendering and preserve existing token
           i++, j++
         }
@@ -271,7 +270,7 @@ function reconcileSortedChildren(owner: Manifest): void {
           throw new Error(`duplicate id '${sibling.id}' inside '${owner.id}'`)
         if (diff === 0) { // diff === 0
           e.mounted = existing.mounted // reuse existing instance for re-rendering
-          if (e.triggers !== RenderWithParent && triggersAreEqual(e.triggers, existing.triggers))
+          if (e.triggers !== RefreshWithParent && triggersAreEqual(e.triggers, existing.triggers))
             e = children[j] = existing // skip re-rendering and preserve existing token
           i++, j++
         }
@@ -325,7 +324,7 @@ function getManifestTraceHint(m: Manifest): string {
 
 const BlankManifest = new Manifest<any, any>(
   'blank',                           // id
-  RenderWithParent,                  // state
+  RefreshWithParent,                  // state
   () => { /* nop */ },               // render
   undefined,                         // override
   { name: 'blank', sorting: false }, // rtti
