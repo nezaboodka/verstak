@@ -7,9 +7,9 @@
 
 import { reaction, unobservableRun, Transaction, Reactronic, observableArgs } from 'reactronic'
 
-// NoDependencies, RenderWithParent, Render, ComponentRender
+// NoTriggers, RenderWithParent, Render, ComponentRender
 
-export const NoDependencies = undefined as void // trick to allow avoiding attributes as the last parameter of render/setup
+export const NoTriggers = undefined as void // trick to allow avoiding attributes as the last parameter of render/setup
 export const RenderWithParent = Symbol('RenderWithParent') as unknown as void
 
 export type Render<E = unknown, O = void> = (element: E, options: O) => void
@@ -20,7 +20,7 @@ export type ComponentRender<O = unknown, E = void> = (render: (options: O) => O,
 export class Manifest<E = unknown, O = void> {
   constructor(
     readonly id: string,
-    readonly dependencies: any,
+    readonly triggers: any,
     readonly render: Render<E, O>,
     readonly componentRender: ComponentRender<O, E> | undefined,
     readonly rtti: Rtti<E, O>,
@@ -54,13 +54,13 @@ export interface Rtti<E = unknown, O = void> { // Run-Time Type Info
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 export function manifest<E = unknown, O = void>(
-  id: string, dependencies: any, render: Render<E, O>,
+  id: string, triggers: any, render: Render<E, O>,
   componentRender: ComponentRender<O, E> | undefined, rtti: Rtti<E, O>): Manifest<E, O> {
 
   const owner = gOwner // shorthand
   if (!owner.mounted?.instance)
     throw new Error('element must be mounted before children')
-  const m = new Manifest<any, any>(id, dependencies, render, componentRender, rtti)
+  const m = new Manifest<any, any>(id, triggers, render, componentRender, rtti)
   if (owner !== BlankManifest) {
     if (gPending === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -83,7 +83,7 @@ export function render(m: Manifest<any, any>): void {
     gOwner = m
     gPending = []
     if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
-      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.render/${m.mounted?.cycle}${m.dependencies !== RenderWithParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
+      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.render/${m.mounted?.cycle}${m.triggers !== RenderWithParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
     if (m.componentRender)
       m.componentRender(componentRender, inst.native)
     else
@@ -174,7 +174,7 @@ function renderInline<E, O>(mounted: Mounted<E, O>, m: Manifest<E, O>): void {
 
 function callRender(m: Manifest, owner: Manifest): void {
   const mounted = m.mounted as Mounted
-  if (m.dependencies === RenderWithParent) // inline elements are always rendered
+  if (m.triggers === RenderWithParent) // inline elements are always rendered
     renderInline(mounted, m)
   else // rendering of reactive elements is cached to avoid redundant calls
     unobservableRun(mounted.render, m)
@@ -190,7 +190,7 @@ function callMount(m: Manifest, owner: Manifest, sibling?: Manifest): Mounted {
     rtti.mount(m, owner, sibling)
   else
     mounted.instance.native = owner.mounted?.instance?.native // default mount
-  if (m.dependencies !== RenderWithParent)
+  if (m.triggers !== RenderWithParent)
     Reactronic.setTraceHint(mounted, Reactronic.isTraceEnabled ? getManifestTraceHint(m) : m.id)
   if (gTrace && gTraceMask.indexOf('m') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
     console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.mounted`)
@@ -200,7 +200,7 @@ function callMount(m: Manifest, owner: Manifest, sibling?: Manifest): Mounted {
 function callUnmount(m: Manifest, owner: Manifest, cause: Manifest): void {
   if (gTrace && gTraceMask.indexOf('u') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
     console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.unmounting`)
-  if (m.dependencies !== RenderWithParent)
+  if (m.triggers !== RenderWithParent)
     Reactronic.dispose(m.mounted) // isolated(Cache.unmount, t.instance) // TODO: Consider creating one transaction for all un-mounts
   const rtti = m.rtti
   if (rtti.unmount)
@@ -227,7 +227,7 @@ function reconcileOrdinaryChildren(owner: Manifest): void {
           throw new Error(`duplicate id '${sibling.id}' inside '${owner.id}'`)
         if (diff === 0) {
           e.mounted = existing.mounted // reuse existing instance for re-rendering
-          if (e.dependencies !== RenderWithParent && dependenciesAreEqual(e.dependencies, existing.dependencies))
+          if (e.triggers !== RenderWithParent && triggersAreEqual(e.triggers, existing.triggers))
             e = e.annex = children[j] = existing // skip re-rendering and preserve existing token
           i++, j++
         }
@@ -271,7 +271,7 @@ function reconcileSortedChildren(owner: Manifest): void {
           throw new Error(`duplicate id '${sibling.id}' inside '${owner.id}'`)
         if (diff === 0) { // diff === 0
           e.mounted = existing.mounted // reuse existing instance for re-rendering
-          if (e.dependencies !== RenderWithParent && dependenciesAreEqual(e.dependencies, existing.dependencies))
+          if (e.triggers !== RenderWithParent && triggersAreEqual(e.triggers, existing.triggers))
             e = children[j] = existing // skip re-rendering and preserve existing token
           i++, j++
         }
@@ -300,7 +300,7 @@ function compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T,
   return diff
 }
 
-function dependenciesAreEqual(a1: any, a2: any): boolean {
+function triggersAreEqual(a1: any, a2: any): boolean {
   let result = a1 === a2
   if (!result) {
     if (Array.isArray(a1)) {
