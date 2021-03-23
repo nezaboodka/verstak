@@ -2321,10 +2321,10 @@
     "minimist" "^1.2.0"
     "strip-json-comments" "~2.0.1"
 
-"reactronic@^0.21.110":
-  "integrity" "sha512-kmteazT7bjbx2QQJec11gMqNZv32xK2V/iEMDqcXq+hL1P434SVHOMvmq3Sa2a1yP+3k4HcQpAyOgd1hDkwVmg=="
-  "resolved" "https://registry.npmjs.org/reactronic/-/reactronic-0.21.110.tgz"
-  "version" "0.21.110"
+"reactronic@^0.21.120":
+  "integrity" "sha512-u2CMjrvAazhflcp0uohal3vCxghRNAu7zaRzpwPoZ21ojm2QfANOW+49u1n+wASB20SriKPI5qFLARK+4Xj65A=="
+  "resolved" "https://registry.npmjs.org/reactronic/-/reactronic-0.21.120.tgz"
+  "version" "0.21.120"
 
 "read-pkg@^5.2.0":
   "integrity" "sha512-Ug69mNOpfvKDAc2Q8DRpMjjzdtrnv9HcSMX+4VsZxD1aZ6ZzrIE7rlzXBtWTyhULSMKg076AW6WR5iZpD0JiOg=="
