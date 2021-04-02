@@ -36,6 +36,7 @@ export function RxTR<O = void>(id: string, args: any, render: Render<HTMLTableRo
 export function RxTH<O = void>(id: string, args: any, render: Render<HTMLTableHeaderCellElement, O>, componentRender?: ComponentRender<O, HTMLTableHeaderCellElement>): Manifest<HTMLTableHeaderCellElement, O> { return manifest(id, args, render, componentRender, Html.th) }
 export function RxTD<O = void>(id: string, args: any, render: Render<HTMLTableDataCellElement, O>, componentRender?: ComponentRender<O, HTMLTableDataCellElement>): Manifest<HTMLTableDataCellElement, O> { return manifest(id, args, render, componentRender, Html.td) }
 export function RxCaption<O = void>(id: string, args: any, render: Render<HTMLTableCaptionElement, O>, componentRender?: ComponentRender<O, HTMLTableCaptionElement>): Manifest<HTMLTableCaptionElement, O> { return manifest(id, args, render, componentRender, Html.caption) }
+export function RxTextarea<O = void>(id: string, args: any, render: Render<HTMLTextAreaElement, O>, componentRender?: ComponentRender<O, HTMLTextAreaElement>): Manifest<HTMLTextAreaElement, O> { return manifest(id, args, render, componentRender, Html.textarea) }
 
 export function div(id: string, render: Render<HTMLDivElement> = nullRender): Manifest<HTMLDivElement> { return manifest(id, RefreshWithParent, render, undefined, Html.div) }
 export function span(id: string, render: Render<HTMLSpanElement> = nullRender): Manifest<HTMLSpanElement> { return manifest(id, RefreshWithParent, render, undefined, Html.span) }
@@ -63,6 +64,7 @@ export function tr(id: string, render: Render<HTMLTableRowElement> = nullRender)
 export function th(id: string, render: Render<HTMLTableHeaderCellElement> = nullRender): Manifest<HTMLTableHeaderCellElement> { return manifest(id, RefreshWithParent, render, undefined, Html.th) }
 export function td(id: string, render: Render<HTMLTableDataCellElement> = nullRender): Manifest<HTMLTableDataCellElement> { return manifest(id, RefreshWithParent, render, undefined, Html.td) }
 export function caption(id: string, render: Render<HTMLTableCaptionElement> = nullRender): Manifest<HTMLTableCaptionElement> { return manifest(id, RefreshWithParent, render, undefined, Html.caption) }
+export function textarea(id: string, render: Render<HTMLTextAreaElement> = nullRender): Manifest<HTMLTextAreaElement> { return manifest(id, RefreshWithParent, render, undefined, Html.textarea) }
 
 const Html = {
   div: new HtmlRtti<HTMLDivElement>('div'),
@@ -91,6 +93,7 @@ const Html = {
   th: new HtmlRtti<HTMLTableHeaderCellElement>('th'),
   td: new HtmlRtti<HTMLTableDataCellElement>('td'),
   caption: new HtmlRtti<HTMLTableCaptionElement>('caption'),
+  textarea: new HtmlRtti<HTMLTextAreaElement>('textarea'),
 }
 
 export function RxSvg<O = void>(id: string, args: any, render: Render<SVGSVGElement, O>, componentRender?: ComponentRender<O, SVGSVGElement>): Manifest<SVGSVGElement, O> { return manifest(id, args, render, componentRender, Svg.svg) }
