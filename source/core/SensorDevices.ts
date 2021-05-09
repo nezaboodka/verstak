@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ObservableObject, unobservableRun } from 'reactronic'
+import { ObservableObject, nonreactiveRun } from 'reactronic'
 
 // SensorDevice
 
@@ -13,7 +13,7 @@ export class SensorDevice extends ObservableObject {
   revision: number = 0
   nativeElements: unknown[] = []
   private composedEventInfos: unknown[] = EMPTY_EVENT_DATA_LIST
-  get eventInfos(): unknown[] { return unobservableRun(() => this.composedEventInfos) }
+  get eventInfos(): unknown[] { return nonreactiveRun(() => this.composedEventInfos) }
   set eventInfos(value: unknown[]) { this.composedEventInfos = value }
 }
 

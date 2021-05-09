@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reaction, unobservableRun, Transaction, Reactronic, observableArgs } from 'reactronic'
+import { reaction, nonreactiveRun, Operation, Reactronic, observableArgs } from 'reactronic'
 
 // RefreshWithParent, Render, ComponentRender
 
@@ -67,7 +67,7 @@ export function manifest<E = unknown, O = void>(
   }
   else { // render root immediately
     gPending = [m]
-    Transaction.run(renderChildrenNow)
+    Operation.run(renderChildrenNow)
   }
   return m
 }
@@ -82,7 +82,7 @@ export function render(m: Manifest<any, any>): void {
     gOwner = m
     gPending = []
     if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
-      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.render/${m.mounted?.cycle}${m.args !== RefreshWithParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
+      console.log(`t${Operation.current.id}v${Operation.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.render/${m.mounted?.cycle}${m.args !== RefreshWithParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
     if (m.componentRender)
       m.componentRender(componentRender, inst.native)
     else
@@ -176,7 +176,7 @@ function callRender(m: Manifest, owner: Manifest): void {
   if (m.args === RefreshWithParent) // inline elements are always rendered
     renderInline(mounted, m)
   else // rendering of reactive elements is cached to avoid redundant calls
-    unobservableRun(mounted.render, m)
+    nonreactiveRun(mounted.render, m)
 }
 
 function callMount(m: Manifest, owner: Manifest, sibling?: Manifest): Mounted {
@@ -192,13 +192,13 @@ function callMount(m: Manifest, owner: Manifest, sibling?: Manifest): Mounted {
   if (m.args !== RefreshWithParent)
     Reactronic.setTraceHint(mounted, Reactronic.isTraceEnabled ? getManifestTraceHint(m) : m.id)
   if (gTrace && gTraceMask.indexOf('m') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
-    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.mounted`)
+    console.log(`t${Operation.current.id}v${Operation.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.mounted`)
   return mounted
 }
 
 function callUnmount(m: Manifest, owner: Manifest, cause: Manifest): void {
   if (gTrace && gTraceMask.indexOf('u') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
-    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.unmounting`)
+    console.log(`t${Operation.current.id}v${Operation.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.unmounting`)
   if (m.args !== RefreshWithParent)
     Reactronic.dispose(m.mounted) // isolated(Cache.unmount, t.instance) // TODO: Consider creating one transaction for all un-mounts
   const rtti = m.rtti
