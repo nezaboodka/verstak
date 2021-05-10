@@ -5,10 +5,10 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { cached, Operation } from 'reactronic'
+import { cached, Transaction } from 'reactronic'
 
 export function restyler<T>(restyle: () => T): Restyler<T> {
-  return Operation.run(() => new Restyler<T>(restyle))
+  return Transaction.run(() => new Restyler<T>(restyle))
 }
 
 export class Restyler<T> {

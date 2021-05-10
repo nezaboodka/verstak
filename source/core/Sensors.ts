@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Sensitivity, sensitiveRun, ToggleRef } from 'reactronic'
+import { Sensitivity, sensitive, ToggleRef } from 'reactronic'
 import { SensorDevice, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EMPTY_EVENT_DATA_LIST } from './SensorDevices'
 import { EventInfo, EventPayload, EventImportance } from './EventInfo'
 
@@ -48,7 +48,7 @@ export class Sensors implements AbstractSensors {
 
     if (!this.keyboard.down) {
       const f = this.focus
-      sensitiveRun(Sensitivity.ReactEvenOnSameValueAssignment, () =>
+      sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () =>
         switchEventInfos(EMPTY_EVENT_DATA_LIST, this.focus.eventInfos))
       f.revision++
     }
@@ -162,7 +162,7 @@ export class Sensors implements AbstractSensors {
     const kb = this.keyboard
     kb.eventInfos = eventInfos
     kb.up = ''
-    sensitiveRun(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.down = key)
+    sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.down = key)
     kb.modifiers |= Sensors.getKeyAsModifierIfAny(key)
     kb.revision++
   }
@@ -171,7 +171,7 @@ export class Sensors implements AbstractSensors {
     const kb = this.keyboard
     kb.eventInfos = eventInfos
     kb.down = ''
-    sensitiveRun(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.up = key)
+    sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.up = key)
     kb.modifiers &= ~Sensors.getKeyAsModifierIfAny(key)
     kb.revision++
   }
