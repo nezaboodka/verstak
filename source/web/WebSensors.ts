@@ -5,12 +5,12 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { transaction, trace, TraceLevel, plain } from 'reactronic'
+import { transaction, trace, TraceLevel, unobservable } from 'reactronic'
 import { Sensors, grabEventInfos } from '../core'
 import { SymEventInfo } from './WebApiExt'
 
 export class WebSensors extends Sensors {
-  @plain currentEvent: Event | undefined = undefined
+  @unobservable currentEvent: Event | undefined = undefined
   element?: HTMLElement | null
 
   constructor() {

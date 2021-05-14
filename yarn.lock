@@ -2294,10 +2294,10 @@ rc@^1.2.8:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-reactronic@^0.21.400:
-  version "0.21.400"
-  resolved "https://registry.npmjs.org/reactronic/-/reactronic-0.21.400.tgz"
-  integrity sha512-EjUyIiCl/N86of7PjZARvhuOrfDRLUyxXxCJw/eQI5KwpBPvdEOuwSyE+0TWHPVFMgghKSgSlWme7kjvN4AkSQ==
+reactronic@^0.21.500:
+  version "0.21.500"
+  resolved "https://registry.npmjs.org/reactronic/-/reactronic-0.21.500.tgz"
+  integrity sha512-6BTRNcBG6vQNzx3dMNcl3Dbr6JXMaiV+Ie0ii+if9RksSxOTHdBxcogNPqWPXV2Te3V1AlmqApz6PbzCU4Lnmg==
 
 read-pkg@^5.2.0:
   version "5.2.0"
