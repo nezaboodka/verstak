@@ -18,3 +18,7 @@ way, because reactronic **takes full care of tracking dependencies**
 between visual components (observers) and state objects (observables).
 
 Based on Reactronic: https://github.com/nezaboodka/reactronic/blob/master/README.md#readme
+
+Example of the application built with Reactronic-Front: https://nevod.io
+
+Source code of the example: https://gitlab.com/nezaboodka/nevod.web.public/-/blob/master/README.md
