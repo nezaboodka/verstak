@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Reactronic } from 'reactronic'
-import { render, unmount, Manifest, Rtti } from '../core'
+import { render, unmount, Manifest, Rtti, forAll } from '../core'
 
 export function usingParent<T>(e: HTMLElement, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = WebRtti.current
@@ -92,12 +92,25 @@ export abstract class WebRtti<E extends Element> implements Rtti<E, any> {
 
   static current: Element = global.document?.body
   static unmounting?: Element = undefined
-  static blinkingEffect: string | undefined = undefined
+
+  private static _blinkingEffect: string | undefined = undefined
+  static set blinkingEffect(value: string | undefined) {
+    if (value === undefined) {
+      forAll((e: any) => {
+        if (e instanceof HTMLElement)
+          e.classList.remove(`${WebRtti.blinkingEffect}-0`, `${WebRtti.blinkingEffect}-1`)
+      })
+    }
+    WebRtti._blinkingEffect = value
+  }
+  static get blinkingEffect(): string | undefined {
+    return WebRtti._blinkingEffect
+  }
 }
 
 function blink(e: Element, cycle: number): void {
-  const n1 = cycle % 2 + 1
-  const n2 = n1 % 2 + 1
+  const n1 = cycle % 2
+  const n2 = 1 >> n1
   e.classList.toggle(`${WebRtti.blinkingEffect}-${n1}`, true)
   e.classList.toggle(`${WebRtti.blinkingEffect}-${n2}`, false)
 }

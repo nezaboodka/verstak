@@ -60,7 +60,7 @@ export function manifest<E = unknown, O = void>(
   if (!owner.mounted?.instance)
     throw new Error('element must be mounted before children')
   const m = new Manifest<any, any>(id, args, render, componentRender, rtti)
-  if (owner !== BlankManifest) {
+  if (owner !== RootManifest) {
     if (gPending === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     gPending.push(m)
@@ -120,7 +120,7 @@ export function unmount(m: Manifest<any, any>, owner: Manifest, cause: Manifest)
   m.mounted = undefined
 }
 
-// instance, cycle, trace
+// instance, cycle, trace, forAll
 
 export function instance<T>(): { model?: T } {
   const inst = gOwner.mounted?.instance
@@ -136,6 +136,10 @@ export function cycle(): number {
 export function trace(enabled: boolean, mask: string, regexp: string): void {
   gTrace = enabled ? regexp : undefined
   gTraceMask = mask
+}
+
+export function forAll<E>(action: (e: E) => void): void {
+  forEachChildRecursively(RootManifest, action)
 }
 
 // Internal
@@ -322,16 +326,25 @@ function getManifestTraceHint(m: Manifest): string {
   return `${m.rtti.name}:${m.id}`
 }
 
-const BlankManifest = new Manifest<any, any>(
-  'blank',                           // id
-  RefreshParent,                  // state
-  () => { /* nop */ },               // render
-  undefined,                         // override
-  { name: 'blank', sorting: false }, // rtti
-  new Mounted(0, new Instance()),    // mounted
+function forEachChildRecursively<E>(m: Manifest, action: (e: E) => void): void {
+  const inst = m.mounted?.instance
+  if (inst instanceof Instance) {
+    const native = inst.native
+    native && action(native)
+    inst.children.forEach(x => forEachChildRecursively(x, action))
+  }
+}
+
+const RootManifest = new Manifest<any, any>(
+  'root',                           // id
+  RefreshParent,                    // state
+  () => { /* nop */ },              // render
+  undefined,                        // override
+  { name: 'root', sorting: false }, // rtti
+  new Mounted(0, new Instance()),   // mounted
 )
 
-let gOwner: Manifest<any, any> = BlankManifest
+let gOwner: Manifest<any, any> = RootManifest
 let gPending: Manifest[] | undefined = undefined
 let gTrace: string | undefined = undefined
 let gTraceMask: string = 'r'
