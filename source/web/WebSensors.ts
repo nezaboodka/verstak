@@ -38,6 +38,7 @@ export class WebSensors extends Sensors {
         existing.removeEventListener('pointermove', this.onPointerMove, false)
         existing.removeEventListener('pointerdown', this.onPointerDown, false)
         existing.removeEventListener('pointerup', this.onPointerUp, false)
+        existing.removeEventListener('lostpointercapture', this.onLostPointerCapture, false)
         existing.removeEventListener('dblclick', this.onDblClick, false)
         existing.removeEventListener('touchstart', this.onTouchStart, false)
         existing.removeEventListener('touchend', this.onTouchEnd, false)
@@ -53,6 +54,7 @@ export class WebSensors extends Sensors {
         element.addEventListener('pointermove', this.onPointerMove, false)
         element.addEventListener('pointerdown', this.onPointerDown, false)
         element.addEventListener('pointerup', this.onPointerUp, false)
+        element.addEventListener('lostpointercapture', this.onLostPointerCapture, false)
         element.addEventListener('dblclick', this.onDblClick, false)
         element.addEventListener('touchstart', this.onTouchStart, false)
         element.addEventListener('touchend', this.onTouchEnd, false)
@@ -120,6 +122,16 @@ export class WebSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerUp(
+      grabEventInfos(path, SymEventInfo, 'pointer', 'pointerImportance', this.pointer.eventInfos),
+      grabEventInfos(path, SymEventInfo, 'focus', 'focusImportance', this.focus.eventInfos),
+      e.pointerId, e.buttons, e.clientX, e.clientY)
+  }
+
+  @transaction @trace(TraceLevel.Suppress)
+  onLostPointerCapture(e: PointerEvent): void {
+    const path = e.composedPath()
+    this.currentEvent = e
+    this.doPointerCancel(
       grabEventInfos(path, SymEventInfo, 'pointer', 'pointerImportance', this.pointer.eventInfos),
       grabEventInfos(path, SymEventInfo, 'focus', 'focusImportance', this.focus.eventInfos),
       e.pointerId, e.buttons, e.clientX, e.clientY)

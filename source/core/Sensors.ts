@@ -124,6 +124,22 @@ export class Sensors implements AbstractSensors {
       p.captured = this.releasePointerCapture(pointerId)
   }
 
+  protected doPointerCancel(eventInfos: unknown[], focus: unknown[],
+    pointerId: number, buttons: number, clientX: number, clientY: number): void {
+    const p = this.pointer
+    Sensors.rememberPointer(p, clientX, clientY)
+    p.eventInfos = eventInfos
+    p.draggableObject = undefined
+    p.draggingObject = undefined
+    p.draggingModifiers = KeyboardModifiers.None
+    p.draggingStartAtX = Infinity
+    p.draggingStartAtY = Infinity
+    p.up = PointerButton.None
+    p.down = PointerButton.None
+    p.captured = false
+    console.log('----------doPointerCancel-----------')
+  }
+
   protected doDblClick(eventInfos: unknown[], focus: unknown[],
     buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
