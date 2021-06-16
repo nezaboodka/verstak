@@ -14,9 +14,9 @@ export function TwoWayFocusSync(
   focusToggle: ToggleRef<any>,
   setNativeFocus?: (() => void)
 ): void {
-  let ei = target.eventInfo
+  let ei = target.signals
   if (!ei)
-    ei = target.eventInfo = {}
+    ei = target.signals = {}
   ei.focus = focusToggle
   if (setNativeFocus === undefined)
     setNativeFocus = () => target.focus()

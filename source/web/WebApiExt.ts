@@ -5,22 +5,22 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { EventInfo } from '../core'
+import { Signals } from '../core'
 
-export const SymEventInfo: unique symbol = Symbol('EventInfo')
+export const SymSignals: unique symbol = Symbol('Signals')
 
 declare global {
   interface Element {
-    eventInfo?: EventInfo
+    signals?: Signals
   }
 }
 
 const ElementType = global.Element
 
 if (ElementType !== undefined) {
-  Object.defineProperty(ElementType.prototype, 'eventInfo', {
+  Object.defineProperty(ElementType.prototype, 'signals', {
     configurable: false, enumerable: false,
-    get(): unknown { return this[SymEventInfo] },
-    set(value: unknown) { this[SymEventInfo] = value },
+    get(): unknown { return this[SymSignals] },
+    set(value: unknown) { this[SymSignals] = value },
   })
 }

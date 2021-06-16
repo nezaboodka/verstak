@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { transaction, trace, TraceLevel, unobservable } from 'reactronic'
-import { Sensors, grabEventInfos } from '../core'
-import { SymEventInfo } from './WebApiExt'
+import { Sensors, grabElementSignals } from '../core'
+import { SymSignals } from './WebApiExt'
 
 export class WebSensors extends Sensors {
   @unobservable currentEvent: Event | undefined = undefined
@@ -67,7 +67,7 @@ export class WebSensors extends Sensors {
 
   @transaction @trace(TraceLevel.Suppress)
   resetFocus(): void {
-    const ei = this.element?.eventInfo?.focus
+    const ei = this.element?.signals?.focus
     this.trackFocus(ei ? [ei] : [], true)
     this.element?.focus()
   }
@@ -77,7 +77,7 @@ export class WebSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doFocusIn(
-      grabEventInfos(path, SymEventInfo, 'focus', 'focusImportance', this.focus.eventInfos))
+      grabElementSignals(path, SymSignals, 'focus', 'focusImportance', this.focus.signals))
   }
 
   @transaction @trace(TraceLevel.Suppress)
@@ -85,7 +85,7 @@ export class WebSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doFocusOut(
-      grabEventInfos(path, SymEventInfo, 'focus', 'focusImportance', this.focus.eventInfos))
+      grabElementSignals(path, SymSignals, 'focus', 'focusImportance', this.focus.signals))
   }
 
   @transaction @trace(TraceLevel.Suppress)
@@ -93,8 +93,8 @@ export class WebSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerOver(
-      grabEventInfos(path, SymEventInfo, 'pointer', 'pointerImportance', this.pointer.eventInfos),
-      grabEventInfos(path, SymEventInfo, 'hover', 'hoverImportance', this.hover.eventInfos),
+      grabElementSignals(path, SymSignals, 'pointer', 'pointerImportance', this.pointer.signals),
+      grabElementSignals(path, SymSignals, 'hover', 'hoverImportance', this.hover.signals),
       e.clientX, e.clientY)
   }
 
@@ -103,7 +103,7 @@ export class WebSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerMove(
-      grabEventInfos(path, SymEventInfo, 'pointer', 'pointerImportance', this.pointer.eventInfos),
+      grabElementSignals(path, SymSignals, 'pointer', 'pointerImportance', this.pointer.signals),
       e.pointerId, e.clientX, e.clientY)
   }
 
@@ -112,8 +112,8 @@ export class WebSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerDown(
-      grabEventInfos(path, SymEventInfo, 'pointer', 'pointerImportance', this.pointer.eventInfos),
-      grabEventInfos(path, SymEventInfo, 'focus', 'focusImportance', this.focus.eventInfos),
+      grabElementSignals(path, SymSignals, 'pointer', 'pointerImportance', this.pointer.signals),
+      grabElementSignals(path, SymSignals, 'focus', 'focusImportance', this.focus.signals),
       e.pointerId, e.buttons, e.clientX, e.clientY)
   }
 
@@ -122,8 +122,8 @@ export class WebSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerUp(
-      grabEventInfos(path, SymEventInfo, 'pointer', 'pointerImportance', this.pointer.eventInfos),
-      grabEventInfos(path, SymEventInfo, 'focus', 'focusImportance', this.focus.eventInfos),
+      grabElementSignals(path, SymSignals, 'pointer', 'pointerImportance', this.pointer.signals),
+      grabElementSignals(path, SymSignals, 'focus', 'focusImportance', this.focus.signals),
       e.pointerId, e.buttons, e.clientX, e.clientY)
   }
 
@@ -132,8 +132,8 @@ export class WebSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerCancel(
-      grabEventInfos(path, SymEventInfo, 'pointer', 'pointerImportance', this.pointer.eventInfos),
-      grabEventInfos(path, SymEventInfo, 'focus', 'focusImportance', this.focus.eventInfos),
+      grabElementSignals(path, SymSignals, 'pointer', 'pointerImportance', this.pointer.signals),
+      grabElementSignals(path, SymSignals, 'focus', 'focusImportance', this.focus.signals),
       e.pointerId, e.buttons, e.clientX, e.clientY)
   }
 
@@ -142,8 +142,8 @@ export class WebSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doDblClick(
-      grabEventInfos(path, SymEventInfo, 'pointer', 'pointerImportance', this.pointer.eventInfos),
-      grabEventInfos(path, SymEventInfo, 'focus', 'focusImportance', this.focus.eventInfos),
+      grabElementSignals(path, SymSignals, 'pointer', 'pointerImportance', this.pointer.signals),
+      grabElementSignals(path, SymSignals, 'focus', 'focusImportance', this.focus.signals),
       e.buttons, e.clientX, e.clientY)
   }
 
@@ -152,8 +152,8 @@ export class WebSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doTouchStart(
-      grabEventInfos(path, SymEventInfo, 'pointer', 'pointerImportance', this.pointer.eventInfos),
-      grabEventInfos(path, SymEventInfo, 'focus', 'focusImportance', this.focus.eventInfos))
+      grabElementSignals(path, SymSignals, 'pointer', 'pointerImportance', this.pointer.signals),
+      grabElementSignals(path, SymSignals, 'focus', 'focusImportance', this.focus.signals))
   }
 
   @transaction @trace(TraceLevel.Suppress)
@@ -161,7 +161,7 @@ export class WebSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doTouchEnd(
-      grabEventInfos(path, SymEventInfo, 'pointer', 'pointerImportance', this.pointer.eventInfos))
+      grabElementSignals(path, SymSignals, 'pointer', 'pointerImportance', this.pointer.signals))
   }
 
   @transaction @trace(TraceLevel.Suppress)
@@ -169,8 +169,8 @@ export class WebSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doWheel(
-      grabEventInfos(path, SymEventInfo, 'scroll', 'scrollImportance', this.scroll.eventInfos),
-      grabEventInfos(path, SymEventInfo, 'focus', 'focusImportance', this.focus.eventInfos),
+      grabElementSignals(path, SymSignals, 'scroll', 'scrollImportance', this.scroll.signals),
+      grabElementSignals(path, SymSignals, 'focus', 'focusImportance', this.focus.signals),
       e.deltaX, e.deltaY, e.clientX, e.clientY)
   }
 
@@ -179,7 +179,7 @@ export class WebSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doKeyDown(
-      grabEventInfos(path, SymEventInfo, 'keyboard', 'keyboardImportance', this.keyboard.eventInfos), e.key)
+      grabElementSignals(path, SymSignals, 'keyboard', 'keyboardImportance', this.keyboard.signals), e.key)
   }
 
   @transaction @trace(TraceLevel.Suppress)
@@ -187,7 +187,7 @@ export class WebSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doKeyUp(
-      grabEventInfos(path, SymEventInfo, 'keyboard', 'keyboardImportance', this.keyboard.eventInfos), e.key)
+      grabElementSignals(path, SymSignals, 'keyboard', 'keyboardImportance', this.keyboard.signals), e.key)
   }
 
   protected setPointerCapture(pointerId: number): boolean {

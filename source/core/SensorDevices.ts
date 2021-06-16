@@ -12,9 +12,9 @@ import { ObservableObject, nonreactive } from 'reactronic'
 export class SensorDevice extends ObservableObject {
   revision: number = 0
   nativeElements: unknown[] = []
-  private composedEventInfos: unknown[] = EMPTY_EVENT_DATA_LIST
-  get eventInfos(): unknown[] { return nonreactive(() => this.composedEventInfos) }
-  set eventInfos(value: unknown[]) { this.composedEventInfos = value }
+  private composedSignals: unknown[] = EMPTY_EVENT_DATA_LIST
+  get signals(): unknown[] { return nonreactive(() => this.composedSignals) }
+  set signals(value: unknown[]) { this.composedSignals = value }
 }
 
 // Keyboard

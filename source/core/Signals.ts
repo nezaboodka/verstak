@@ -5,9 +5,20 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from './core/System'
-export * from './core/Restyler'
-export * from './core/SensorDevices'
-export * from './core/Sensors'
-export * from './core/Signals'
-export * from './core/BasicRtti'
+export type Signals = SignalsPayload & SignalsImportance
+
+export interface SignalsPayload {
+  focus?: unknown
+  hover?: unknown
+  keyboard?: unknown
+  pointer?: unknown
+  scroll?: unknown
+}
+
+export interface SignalsImportance {
+  focusImportance?: number
+  hoverImportance?: number
+  keyboardImportance?: number
+  pointerImportance?: number
+  scrollImportance?: number
+}
