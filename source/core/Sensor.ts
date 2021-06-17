@@ -7,9 +7,9 @@
 
 import { ObservableObject, nonreactive } from 'reactronic'
 
-// SensorDevice
+// Sensor
 
-export class SensorDevice extends ObservableObject {
+export class Sensor extends ObservableObject {
   revision: number = 0
   nativeElements: unknown[] = []
   private composedSensorDataList: unknown[] = EMPTY_EVENT_DATA_LIST
@@ -37,7 +37,7 @@ export enum KeyboardModifiers {
   AltMeta = 4 + 8,
 }
 
-export class Keyboard extends SensorDevice {
+export class Keyboard extends Sensor {
   down = ''
   up = ''
   modifiers = KeyboardModifiers.None
@@ -52,7 +52,7 @@ export enum PointerButton {
   Middle = 4,
 }
 
-export class Pointer extends SensorDevice {
+export class Pointer extends Sensor {
   static readonly draggingThreshold = 4
   captured = false
   touched = false
@@ -76,7 +76,7 @@ export class Pointer extends SensorDevice {
 
 // Scroll
 
-export class Scroll extends SensorDevice {
+export class Scroll extends Sensor {
   positionX = 0
   positionY = 0
   deltaX = 0

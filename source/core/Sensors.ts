@@ -6,20 +6,20 @@
 // automatically licensed under the license referred above.
 
 import { Sensitivity, sensitive, ToggleRef } from 'reactronic'
-import { SensorDevice, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EMPTY_EVENT_DATA_LIST } from './SensorDevices'
+import { Sensor, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EMPTY_EVENT_DATA_LIST } from './Sensor'
 import { SensorData, SensorDataPayload, SensorDataImportance } from './SensorData'
 
 export interface AbstractSensors {
-  readonly focus: Readonly<SensorDevice>
-  readonly hover: Readonly<SensorDevice>
+  readonly focus: Readonly<Sensor>
+  readonly hover: Readonly<Sensor>
   readonly keyboard: Readonly<Keyboard>
   readonly pointer: Readonly<Pointer>
   readonly scroll: Readonly<Scroll>
 }
 
 export class Sensors implements AbstractSensors {
-  readonly focus = new SensorDevice()
-  readonly hover = new SensorDevice()
+  readonly focus = new Sensor()
+  readonly hover = new Sensor()
   readonly keyboard = new Keyboard()
   readonly pointer = new Pointer()
   readonly scroll = new Scroll()
