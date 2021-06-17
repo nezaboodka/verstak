@@ -5,29 +5,29 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { CustomInfo } from '../core'
+import { SensorData } from '../core'
 
-export const SymCustomInfo: unique symbol = Symbol('CustomInfo')
+export const SymSensorData: unique symbol = Symbol('SensorData')
 
 declare global {
   interface Element {
-    customInfo: CustomInfo
+    sensorData: SensorData
   }
 }
 
 const ElementType = global.Element
 
 if (ElementType !== undefined) {
-  Object.defineProperty(ElementType.prototype, 'customInfo', {
+  Object.defineProperty(ElementType.prototype, 'sensorData', {
     configurable: false, enumerable: false,
     get(): unknown {
-      let result = this[SymCustomInfo]
+      let result = this[SymSensorData]
       if (result === undefined)
-        result = this[SymCustomInfo] = {}
+        result = this[SymSensorData] = {}
       return result
     },
     set(value: unknown) {
-      this[SymCustomInfo] = value
+      this[SymSensorData] = value
     },
   })
 }

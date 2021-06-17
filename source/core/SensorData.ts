@@ -5,9 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export type CustomInfo = CustomInfoPayload & CustomInfoImportance
+export type SensorData = SensorDataPayload & SensorDataImportance
 
-export interface CustomInfoPayload {
+export interface SensorDataPayload {
   focus?: unknown
   hover?: unknown
   keyboard?: unknown
@@ -15,7 +15,7 @@ export interface CustomInfoPayload {
   scroll?: unknown
 }
 
-export interface CustomInfoImportance {
+export interface SensorDataImportance {
   focusImportance?: number
   hoverImportance?: number
   keyboardImportance?: number
