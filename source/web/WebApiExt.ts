@@ -11,7 +11,7 @@ export const SymCustomInfo: unique symbol = Symbol('CustomInfo')
 
 declare global {
   interface Element {
-    customInfo?: CustomInfo
+    customInfo: CustomInfo
   }
 }
 
