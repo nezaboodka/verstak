@@ -111,8 +111,8 @@ export class Sensors implements AbstractSensors {
       p.droppedAtX = p.positionX
       p.droppedAtY = p.positionY
     }
-    else if (!Sensors.isDraggingDistance(p))
-      p.click = p.down
+    // else if (!Sensors.isDraggingDistance(p))
+    //   p.click = p.down
     p.draggableObject = undefined
     p.draggingObject = undefined
     p.draggingModifiers = KeyboardModifiers.None
@@ -137,7 +137,16 @@ export class Sensors implements AbstractSensors {
     p.up = PointerButton.None
     p.down = PointerButton.None
     p.captured = false
-    console.log('----------doPointerCancel-----------')
+    // console.log('----------doPointerCancel-----------')
+  }
+
+  protected doClick(sensorDataList: unknown[], focus: unknown[],
+    buttons: number, clientX: number, clientY: number): void {
+    const p = this.pointer
+    Sensors.rememberPointer(p, clientX, clientY)
+    p.sensorDataList = sensorDataList
+    if (p.draggableObject === undefined)
+      p.click = buttons
   }
 
   protected doDblClick(sensorDataList: unknown[], focus: unknown[],

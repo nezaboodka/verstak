@@ -39,6 +39,7 @@ export class WebSensors extends Sensors {
         existing.removeEventListener('pointerdown', this.onPointerDown, false)
         existing.removeEventListener('pointerup', this.onPointerUp, false)
         existing.removeEventListener('lostpointercapture', this.onLostPointerCapture, false)
+        existing.removeEventListener('click', this.onClick, false)
         existing.removeEventListener('dblclick', this.onDblClick, false)
         existing.removeEventListener('touchstart', this.onTouchStart, false)
         existing.removeEventListener('touchend', this.onTouchEnd, false)
@@ -55,6 +56,7 @@ export class WebSensors extends Sensors {
         element.addEventListener('pointerdown', this.onPointerDown, false)
         element.addEventListener('pointerup', this.onPointerUp, false)
         element.addEventListener('lostpointercapture', this.onLostPointerCapture, false)
+        element.addEventListener('click', this.onClick, false)
         element.addEventListener('dblclick', this.onDblClick, false)
         element.addEventListener('touchstart', this.onTouchStart, false)
         element.addEventListener('touchend', this.onTouchEnd, false)
@@ -135,6 +137,16 @@ export class WebSensors extends Sensors {
       grabSensorDataList(path, SymSensorData, 'pointer', 'pointerImportance', this.pointer.sensorDataList),
       grabSensorDataList(path, SymSensorData, 'focus', 'focusImportance', this.focus.sensorDataList),
       e.pointerId, e.buttons, e.clientX, e.clientY)
+  }
+
+  @transaction @trace(TraceLevel.Suppress)
+  onClick(e: MouseEvent): void {
+    const path = e.composedPath()
+    this.currentEvent = e
+    this.doClick(
+      grabSensorDataList(path, SymSensorData, 'pointer', 'pointerImportance', this.pointer.sensorDataList),
+      grabSensorDataList(path, SymSensorData, 'focus', 'focusImportance', this.focus.sensorDataList),
+      e.buttons, e.clientX, e.clientY)
   }
 
   @transaction @trace(TraceLevel.Suppress)
