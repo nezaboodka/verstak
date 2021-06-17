@@ -7,7 +7,7 @@
 
 import { Sensitivity, sensitive, ToggleRef } from 'reactronic'
 import { SensorDevice, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EMPTY_EVENT_DATA_LIST } from './SensorDevices'
-import { Signals, SignalsPayload, SignalsImportance } from './Signals'
+import { CustomInfo, CustomInfoPayload, CustomInfoImportance } from './CustomInfo'
 
 export interface AbstractSensors {
   readonly focus: Readonly<SensorDevice>
@@ -31,7 +31,7 @@ export class Sensors implements AbstractSensors {
   protected trackFocus(focus: unknown[], force: boolean): void {
     if (focus.length > 0 || force) {
       const f = this.focus
-      f.signals = switchSignals(f.signals, focus)
+      f.customInfos = switchCustomInfos(f.customInfos, focus)
       f.revision++
     }
   }
@@ -44,33 +44,33 @@ export class Sensors implements AbstractSensors {
     // This will cause HTMLElement.focus for elements with TrackFocus reaction
 
     // !this.keyboard.down && sensitiveRun(Sensitivity.ReactEvenOnSameValueAssignment, () =>
-    //   switchSignals(EMPTY_EVENT_DATA_LIST, this.focus.signals))
+    //   switchCustomInfos(EMPTY_EVENT_DATA_LIST, this.focus.customInfos))
 
     if (!this.keyboard.down) {
       const f = this.focus
       sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () =>
-        switchSignals(EMPTY_EVENT_DATA_LIST, this.focus.signals))
+        switchCustomInfos(EMPTY_EVENT_DATA_LIST, this.focus.customInfos))
       f.revision++
     }
   }
 
-  protected doPointerOver(signals: unknown[], hoverSignals: unknown[], clientX: number, clientY: number): void {
+  protected doPointerOver(customInfos: unknown[], hoverCustomInfos: unknown[], clientX: number, clientY: number): void {
     const p = this.pointer
     const h = this.hover
     Sensors.rememberPointer(p, clientX, clientY)
-    p.signals = signals
-    h.signals = switchSignals(this.hover.signals, hoverSignals)
+    p.customInfos = customInfos
+    h.customInfos = switchCustomInfos(this.hover.customInfos, hoverCustomInfos)
     h.revision++
   }
 
-  protected doPointerLeave(signals: unknown[], hoverSignals: unknown[], clientX: number, clientY: number): void {
+  protected doPointerLeave(customInfos: unknown[], hoverCustomInfos: unknown[], clientX: number, clientY: number): void {
     // do nothing
   }
 
-  protected doPointerMove(signals: unknown[], pointerId: number, clientX: number, clientY: number): void {
+  protected doPointerMove(customInfos: unknown[], pointerId: number, clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.signals = signals
+    p.customInfos = customInfos
     if (p.draggableObject !== undefined) {
       if (!p.captured)
         p.captured = this.setPointerCapture(pointerId)
@@ -86,11 +86,11 @@ export class Sensors implements AbstractSensors {
     return distance > Pointer.draggingThreshold
   }
 
-  protected doPointerDown(signals: unknown[], focus: unknown[],
+  protected doPointerDown(customInfos: unknown[], focus: unknown[],
     pointerId: number, buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.signals = signals
+    p.customInfos = customInfos
     this.trackFocus(focus, true)
     p.captured = false
     p.draggableObject = undefined
@@ -101,11 +101,11 @@ export class Sensors implements AbstractSensors {
     p.down = buttons
   }
 
-  protected doPointerUp(signals: unknown[], focus: unknown[],
+  protected doPointerUp(customInfos: unknown[], focus: unknown[],
     pointerId: number, buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.signals = signals
+    p.customInfos = customInfos
     if (p.draggingObject !== undefined) {
       p.droppedObject = p.draggingObject
       p.droppedAtX = p.positionX
@@ -124,11 +124,11 @@ export class Sensors implements AbstractSensors {
       p.captured = this.releasePointerCapture(pointerId)
   }
 
-  protected doPointerCancel(signals: unknown[], focus: unknown[],
+  protected doPointerCancel(customInfos: unknown[], focus: unknown[],
     pointerId: number, buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.signals = signals
+    p.customInfos = customInfos
     p.draggableObject = undefined
     p.draggingObject = undefined
     p.draggingModifiers = KeyboardModifiers.None
@@ -140,52 +140,52 @@ export class Sensors implements AbstractSensors {
     console.log('----------doPointerCancel-----------')
   }
 
-  protected doDblClick(signals: unknown[], focus: unknown[],
+  protected doDblClick(customInfos: unknown[], focus: unknown[],
     buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.signals = signals
+    p.customInfos = customInfos
     p.doubleClick = buttons
   }
 
-  protected doTouchStart(signals: unknown[], focus: unknown[]): void {
+  protected doTouchStart(customInfos: unknown[], focus: unknown[]): void {
     const p = this.pointer
-    p.signals = signals
+    p.customInfos = customInfos
     this.trackFocus(focus, true)
     p.touched = true
     p.revision++
   }
 
-  protected doTouchEnd(signals: unknown[]): void {
+  protected doTouchEnd(customInfos: unknown[]): void {
     const p = this.pointer
-    p.signals = signals
+    p.customInfos = customInfos
     p.touched = false
     p.revision++
   }
 
-  protected doWheel(signals: unknown[], focus: unknown[],
+  protected doWheel(customInfos: unknown[], focus: unknown[],
     deltaX: number, deltaY: number, clientX: number, clientY: number): void {
     const s = this.scroll
     Sensors.rememberPointer(this.pointer, clientX, clientY)
-    s.signals = signals
+    s.customInfos = customInfos
     // this.trackFocus(focus, true)
     s.deltaX = deltaX
     s.deltaY = deltaY
     s.revision++
   }
 
-  protected doKeyDown(signals: unknown[], key: string): void {
+  protected doKeyDown(customInfos: unknown[], key: string): void {
     const kb = this.keyboard
-    kb.signals = signals
+    kb.customInfos = customInfos
     kb.up = ''
     sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.down = key)
     kb.modifiers |= Sensors.getKeyAsModifierIfAny(key)
     kb.revision++
   }
 
-  protected doKeyUp(signals: unknown[], key: string): void {
+  protected doKeyUp(customInfos: unknown[], key: string): void {
     const kb = this.keyboard
-    kb.signals = signals
+    kb.customInfos = customInfos
     kb.down = ''
     sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.up = key)
     kb.modifiers &= ~Sensors.getKeyAsModifierIfAny(key)
@@ -204,7 +204,7 @@ export class Sensors implements AbstractSensors {
 
   private static rememberPointer(p: Pointer, clientX: number, clientY: number): void {
     if (p.down === PointerButton.None) {
-      p.signals = EMPTY_EVENT_DATA_LIST
+      p.customInfos = EMPTY_EVENT_DATA_LIST
       p.up = PointerButton.None
       p.click = PointerButton.None
       p.doubleClick = PointerButton.None
@@ -254,18 +254,18 @@ export class Sensors implements AbstractSensors {
   }
 }
 
-export function grabElementSignals<T = unknown>(path: any[], sym: symbol,
-  payloadKey: keyof SignalsPayload, importanceKey: keyof SignalsImportance,
+export function grabCustomInfos<T = unknown>(path: any[], sym: symbol,
+  payloadKey: keyof CustomInfoPayload, importanceKey: keyof CustomInfoImportance,
   existing: Array<T>): T[] {
   let result = existing
   let i = 0
   let j = 0
   let importance = Number.MIN_SAFE_INTEGER
   while (i < path.length) {
-    const signals = path[i][sym] as Signals | undefined
-    if (signals !== undefined) {
-      const payload = signals[payloadKey] as T | undefined
-      let imp = signals[importanceKey]
+    const customInfo = path[i][sym] as CustomInfo | undefined
+    if (customInfo !== undefined) {
+      const payload = customInfo[payloadKey] as T | undefined
+      let imp = customInfo[importanceKey]
       if (payload !== undefined || imp !== undefined) {
         imp = imp ?? 0
         if (imp === importance) {
@@ -308,7 +308,7 @@ export function grabElementSignals<T = unknown>(path: any[], sym: symbol,
   return result
 }
 
-export function switchSignals(existing: unknown[], updated: unknown[]): unknown[] {
+export function switchCustomInfos(existing: unknown[], updated: unknown[]): unknown[] {
   if (updated !== existing) {
     existing.forEach(f => {
       if (f instanceof ToggleRef && f.value1 !== f.value2)

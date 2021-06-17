@@ -5,9 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export type Signals = SignalsPayload & SignalsImportance
+export type CustomInfo = CustomInfoPayload & CustomInfoImportance
 
-export interface SignalsPayload {
+export interface CustomInfoPayload {
   focus?: unknown
   hover?: unknown
   keyboard?: unknown
@@ -15,7 +15,7 @@ export interface SignalsPayload {
   scroll?: unknown
 }
 
-export interface SignalsImportance {
+export interface CustomInfoImportance {
   focusImportance?: number
   hoverImportance?: number
   keyboardImportance?: number
