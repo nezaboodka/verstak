@@ -5,6 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
+import { PointerButton } from 'core/Sensor'
 import { transaction, trace, TraceLevel, unobservable } from 'reactronic'
 import { Sensors, grabSensorDataList } from '../core'
 import { SymSensorData } from './WebApiExt'
@@ -146,7 +147,7 @@ export class WebSensors extends Sensors {
     this.doClick(
       grabSensorDataList(path, SymSensorData, 'pointer', 'pointerImportance', this.pointer.sensorDataList),
       grabSensorDataList(path, SymSensorData, 'focus', 'focusImportance', this.focus.sensorDataList),
-      e.buttons, e.clientX, e.clientY)
+      PointerButton.Left, e.clientX, e.clientY)
   }
 
   @transaction @trace(TraceLevel.Suppress)
@@ -156,7 +157,7 @@ export class WebSensors extends Sensors {
     this.doDblClick(
       grabSensorDataList(path, SymSensorData, 'pointer', 'pointerImportance', this.pointer.sensorDataList),
       grabSensorDataList(path, SymSensorData, 'focus', 'focusImportance', this.focus.sensorDataList),
-      e.buttons, e.clientX, e.clientY)
+      PointerButton.Left, e.clientX, e.clientY)
   }
 
   @transaction @trace(TraceLevel.Suppress)
