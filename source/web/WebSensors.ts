@@ -5,9 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { PointerButton } from 'core/Sensor'
 import { transaction, trace, TraceLevel, unobservable } from 'reactronic'
-import { Sensors, grabSensorDataList } from '../core'
+import { Sensors, grabSensorDataList, PointerButton } from '../core'
 import { SymSensorData } from './WebApiExt'
 
 export class WebSensors extends Sensors {
