@@ -64,14 +64,6 @@ export class Pointer extends Sensor {
   up = PointerButton.None
   click = PointerButton.None
   doubleClick = PointerButton.None
-  draggableObject: any = undefined
-  draggingObject: any = undefined
-  draggingModifiers = KeyboardModifiers.None
-  draggingStartAtX = Infinity
-  draggingStartAtY = Infinity
-  droppedObject: any = undefined
-  droppedAtX = Infinity
-  droppedAtY = Infinity
 }
 
 // Scroll
@@ -84,3 +76,61 @@ export class Scroll extends Sensor {
 }
 
 export const EMPTY_EVENT_DATA_LIST: any[] = []
+
+export class DragStart extends Sensor {
+  static readonly draggingThreshold = 4
+  positionX = 0
+  positionY = 0
+  previousPositionX = 0
+  previousPositionY = 0
+  draggableObject: any = undefined
+  draggingObject: any = undefined
+  draggingModifiers = KeyboardModifiers.None
+  draggingStartAtX = Infinity
+  draggingStartAtY = Infinity
+  droppedObject: any = undefined
+  droppedAtX = Infinity
+  droppedAtY = Infinity
+}
+
+export class DragEnd extends Sensor {
+  static readonly draggingThreshold = 4
+  positionX = 0
+  positionY = 0
+  previousPositionX = 0
+  previousPositionY = 0
+  draggableObject: any = undefined
+  draggingObject: any = undefined
+  draggingModifiers = KeyboardModifiers.None
+  draggingStartAtX = Infinity
+  draggingStartAtY = Infinity
+  droppedObject: any = undefined
+  droppedAtX = Infinity
+  droppedAtY = Infinity
+}
+
+export class DragOver extends Sensor {
+  static readonly draggingThreshold = 4
+  positionX = 0
+  positionY = 0
+  previousPositionX = 0
+  previousPositionY = 0
+  draggableObject: any = undefined
+  draggingObject: any = undefined
+  draggingModifiers = KeyboardModifiers.None
+  draggingStartAtX = Infinity
+  draggingStartAtY = Infinity
+  droppedObject: any = undefined
+  droppedAtX = Infinity
+  droppedAtY = Infinity
+}
+
+export class DragState {
+  draggableObject: any = undefined
+  draggingObject: any = undefined
+  draggingModifiers = KeyboardModifiers.None
+  draggingStartAtX = Infinity
+  draggingStartAtY = Infinity
+  droppedAtX = Infinity
+  droppedAtY = Infinity
+}

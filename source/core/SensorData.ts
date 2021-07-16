@@ -13,6 +13,9 @@ export interface SensorDataPayload {
   keyboard?: unknown
   pointer?: unknown
   scroll?: unknown
+  dragStart?: unknown
+  dragEnd?: unknown
+  dragOver?: unknown
 }
 
 export interface SensorDataImportance {
@@ -21,4 +24,5 @@ export interface SensorDataImportance {
   keyboardImportance?: number
   pointerImportance?: number
   scrollImportance?: number
+  dragImportance?: number
 }
