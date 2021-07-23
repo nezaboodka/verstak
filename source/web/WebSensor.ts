@@ -40,7 +40,7 @@ export class WebDrag extends Sensor {
   private get event(): DragEvent {
     const e = this.currentEvent.value
     if (!(e instanceof DragEvent))
-      throw new Error('\'currentEvent\' must be of type \'DragEvent\' to perform any drag operations')
+      throw new TypeError('\'currentEvent\' must be of type \'DragEvent\' to perform any drag operations')
     return e
   }
 
