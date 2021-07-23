@@ -53,7 +53,6 @@ export enum PointerButton {
 }
 
 export class Pointer extends Sensor {
-  static readonly draggingThreshold = 4
   captured = false
   touched = false
   positionX = 0
@@ -64,14 +63,6 @@ export class Pointer extends Sensor {
   up = PointerButton.None
   click = PointerButton.None
   doubleClick = PointerButton.None
-  draggableObject: any = undefined
-  draggingObject: any = undefined
-  draggingModifiers = KeyboardModifiers.None
-  draggingStartAtX = Infinity
-  draggingStartAtY = Infinity
-  droppedObject: any = undefined
-  droppedAtX = Infinity
-  droppedAtY = Infinity
 }
 
 // Scroll

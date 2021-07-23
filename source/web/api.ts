@@ -7,6 +7,7 @@
 
 export * from './WebRtti'
 export * from './WebElements'
+export * from './WebSensor'
 export * from './WebSensors'
 export * from './WebApiExt'
 export * from './TwoWayFocusSync'

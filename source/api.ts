@@ -9,6 +9,7 @@ export * from './core'
 
 export * from './web/WebRtti'
 export * from './web/WebElements'
+export * from './web/WebSensor'
 export * from './web/WebSensors'
 export * from './web/WebApiExt'
 export * from './web/TwoWayFocusSync'

@@ -71,19 +71,6 @@ export class Sensors implements AbstractSensors {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
     p.sensorDataList = sensorDataList
-    if (p.draggableObject !== undefined) {
-      if (!p.captured)
-        p.captured = this.setPointerCapture(pointerId)
-      if (p.captured && p.draggingObject === undefined && Sensors.isDraggingDistance(p))
-        p.draggingObject = p.draggableObject
-    }
-  }
-
-  private static isDraggingDistance(p: Pointer): boolean {
-    const distance = Math.max(
-      Math.abs(p.positionX - p.draggingStartAtX),
-      Math.abs(p.positionY - p.draggingStartAtY))
-    return distance > Pointer.draggingThreshold
   }
 
   protected doPointerDown(sensorDataList: unknown[], focus: unknown[],
@@ -93,11 +80,6 @@ export class Sensors implements AbstractSensors {
     p.sensorDataList = sensorDataList
     this.trackFocus(focus, true)
     p.captured = false
-    p.draggableObject = undefined
-    p.draggingObject = undefined
-    p.draggingStartAtX = p.positionX
-    p.draggingStartAtY = p.positionY
-    p.draggingModifiers = this.keyboard.modifiers
     p.down = buttons
   }
 
@@ -106,18 +88,6 @@ export class Sensors implements AbstractSensors {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
     p.sensorDataList = sensorDataList
-    if (p.draggingObject !== undefined) {
-      p.droppedObject = p.draggingObject
-      p.droppedAtX = p.positionX
-      p.droppedAtY = p.positionY
-    }
-    // else if (!Sensors.isDraggingDistance(p))
-    //   p.click = p.down
-    p.draggableObject = undefined
-    p.draggingObject = undefined
-    p.draggingModifiers = KeyboardModifiers.None
-    p.draggingStartAtX = Infinity
-    p.draggingStartAtY = Infinity
     p.up = p.down
     p.down = PointerButton.None
     if (p.captured)
@@ -129,11 +99,6 @@ export class Sensors implements AbstractSensors {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
     p.sensorDataList = sensorDataList
-    p.draggableObject = undefined
-    p.draggingObject = undefined
-    p.draggingModifiers = KeyboardModifiers.None
-    p.draggingStartAtX = Infinity
-    p.draggingStartAtY = Infinity
     p.up = PointerButton.None
     p.down = PointerButton.None
     p.captured = false
@@ -145,8 +110,7 @@ export class Sensors implements AbstractSensors {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
     p.sensorDataList = sensorDataList
-    if (p.draggableObject === undefined)
-      p.click = buttons
+    p.click = buttons
   }
 
   protected doDblClick(sensorDataList: unknown[], focus: unknown[],
@@ -222,9 +186,6 @@ export class Sensors implements AbstractSensors {
     p.previousPositionY = p.positionY
     p.positionX = clientX
     p.positionY = clientY
-    p.droppedObject = undefined
-    p.droppedAtX = Infinity
-    p.droppedAtY = Infinity
     p.revision++
   }
 

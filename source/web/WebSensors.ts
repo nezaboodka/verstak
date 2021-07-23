@@ -5,17 +5,21 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { transaction, trace, TraceLevel, unobservable } from 'reactronic'
-import { Sensors, grabSensorDataList, PointerButton } from '../core'
+import { transaction, trace, TraceLevel, unobservable, sensitive, Sensitivity, Ref } from 'reactronic'
+import { Sensors, grabSensorDataList, PointerButton, KeyboardModifiers } from '../core'
 import { SymSensorData } from './WebApiExt'
+import { DragStage, WebDrag } from './WebSensor'
 
 export class WebSensors extends Sensors {
   @unobservable currentEvent: Event | undefined = undefined
   element?: HTMLElement | null
 
+  readonly drag: WebDrag
+
   constructor() {
     super()
     this.element = undefined
+    this.drag = new WebDrag(Ref.to(this).currentEvent)
   }
 
   preventDefault(): void {
@@ -46,6 +50,10 @@ export class WebSensors extends Sensors {
         existing.removeEventListener('wheel', this.onWheel, { capture: true })
         existing.removeEventListener('keydown', this.onKeyDown, { capture: true })
         existing.removeEventListener('keyup', this.onKeyUp, { capture: true })
+        existing.removeEventListener('dragstart', this.onDragStart, { capture: true })
+        existing.removeEventListener('dragover', this.onDragOver, { capture: true })
+        existing.removeEventListener('drop', this.onDrop, { capture: true })
+        existing.removeEventListener('dragend', this.onDragEnd, { capture: true })
       }
       this.element = element
       if (element && enabled) {
@@ -59,10 +67,14 @@ export class WebSensors extends Sensors {
         element.addEventListener('click', this.onClick, { capture: true })
         element.addEventListener('dblclick', this.onDblClick, { capture: true })
         element.addEventListener('touchstart', this.onTouchStart, { capture: true })
-        element.addEventListener('touchend', this.onTouchEnd, { capture: true } )
+        element.addEventListener('touchend', this.onTouchEnd, { capture: true })
         element.addEventListener('wheel', this.onWheel, { capture: true })
         element.addEventListener('keydown', this.onKeyDown, { capture: true })
         element.addEventListener('keyup', this.onKeyUp, { capture: true })
+        element.addEventListener('dragstart', this.onDragStart, { capture: true })
+        element.addEventListener('dragover', this.onDragOver, { capture: true })
+        element.addEventListener('drop', this.onDrop, { capture: true })
+        element.addEventListener('dragend', this.onDragEnd, { capture: true })
       }
     }
   }
@@ -200,6 +212,59 @@ export class WebSensors extends Sensors {
     this.currentEvent = e
     this.doKeyUp(
       grabSensorDataList(path, SymSensorData, 'keyboard', 'keyboardImportance', this.keyboard.sensorDataList), e.key)
+  }
+
+  @transaction @trace(TraceLevel.Suppress)
+  onDragStart(e: DragEvent): void {
+    const path = e.composedPath()
+    const sensorDataList = grabSensorDataList(path, SymSensorData, 'drag', 'dragImportance', this.drag.sensorDataList)
+    const d = this.drag
+    this.currentEvent = e
+    d.sensorDataList = sensorDataList
+    d.stage = DragStage.Started
+    d.draggingObject = sensorDataList[0]
+    d.draggingStartAtX = e.clientX
+    d.draggingStartAtY = e.clientY
+    d.draggingModifiers = this.keyboard.modifiers
+    d.revision++
+  }
+
+  @transaction @trace(TraceLevel.Suppress)
+  onDragOver(e: DragEvent): void {
+    const path = e.composedPath()
+    const d = this.drag
+    this.currentEvent = e
+    d.sensorDataList = grabSensorDataList(path, SymSensorData, 'drag', 'dragImportance', this.drag.sensorDataList)
+    sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => d.stage = DragStage.Dragging)
+    d.revision++
+  }
+
+  @transaction @trace(TraceLevel.Suppress)
+  onDrop(e: DragEvent): void {
+    const path = e.composedPath()
+    const d = this.drag
+    this.currentEvent = e
+    d.sensorDataList = grabSensorDataList(path, SymSensorData, 'drag', 'dragImportance', this.drag.sensorDataList)
+    d.droppedAtX = e.clientX
+    d.droppedAtY = e.clientY
+    d.stage = DragStage.Dropped
+    d.revision++
+  }
+
+  @transaction @trace(TraceLevel.Suppress)
+  onDragEnd(e: DragEvent): void {
+    const path = e.composedPath()
+    const d = this.drag
+    this.currentEvent = e
+    d.sensorDataList = grabSensorDataList(path, SymSensorData, 'drag', 'dragImportance', this.drag.sensorDataList)
+    d.stage = DragStage.Finished
+    d.draggingStartAtX = Infinity
+    d.draggingStartAtY = Infinity
+    d.draggingModifiers = KeyboardModifiers.None
+    d.draggingObject = undefined
+    d.droppedAtX = e.clientX
+    d.droppedAtY = e.clientY
+    d.revision++
   }
 
   protected setPointerCapture(pointerId: number): boolean {
