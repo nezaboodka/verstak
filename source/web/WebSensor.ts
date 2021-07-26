@@ -10,8 +10,8 @@ import { KeyboardModifiers, Sensor } from '../core'
 
 // Drag
 
-export type AllowedDragOperations = 'none' | 'copy' | 'copyLink' | 'copyMove' | 'link' | 'linkMove' | 'move' | 'all' | 'uninitialized'
-export type DragOperation = 'none' | 'copy' | 'link' | 'move'
+export type AllowedDragCursor = 'none' | 'copy' | 'copyLink' | 'copyMove' | 'link' | 'linkMove' | 'move' | 'all' | 'uninitialized'
+export type DragCursor = 'none' | 'copy' | 'link' | 'move'
 
 export enum DragStage {
   Started,
@@ -45,22 +45,22 @@ export class WebDrag extends Sensor {
   }
 
   // dropEffect
-  get currentOperation(): DragOperation {
+  get cursor(): DragCursor {
     return this.event.dataTransfer?.dropEffect ?? 'none'
   }
 
-  set currentOperation(operation: DragOperation) {
+  set cursor(operation: DragCursor) {
     const dataTransfer = this.event.dataTransfer
     if (dataTransfer)
       dataTransfer.dropEffect = operation
   }
 
   // effectAllowed
-  get allowedDragOperations(): AllowedDragOperations {
+  get allowedCursor(): AllowedDragCursor {
     return this.event.dataTransfer?.effectAllowed ?? 'none'
   }
 
-  set allowedDragOperations(operations: AllowedDragOperations) {
+  set allowedCursor(operations: AllowedDragCursor) {
     if (this.stage === DragStage.Started) {
       const dataTransfer = this.event.dataTransfer
       if (dataTransfer)
@@ -71,7 +71,7 @@ export class WebDrag extends Sensor {
     }
   }
 
-  dropZone(): void {
+  allowDropHere(): void {
     this.event.preventDefault()
   }
 }
