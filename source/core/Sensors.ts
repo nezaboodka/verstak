@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { Sensitivity, sensitive, ToggleRef } from 'reactronic'
-import { Sensor, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EMPTY_EVENT_DATA_LIST } from './Sensor'
-import { SensorData, SensorDataPayload, SensorDataImportance } from './SensorData'
+import { Sensor, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EMPTY_ASSOCIATED_DATA_LIST } from './Sensor'
+import { AssociatedData, AssociatedDataPayload, AssociatedDataImportance } from './AssociatedData'
 
 export interface AbstractSensors {
   readonly focus: Readonly<Sensor>
@@ -31,7 +31,7 @@ export class Sensors implements AbstractSensors {
   protected trackFocus(focus: unknown[], force: boolean): void {
     if (focus.length > 0 || force) {
       const f = this.focus
-      f.sensorDataList = switchSensorDataList(f.sensorDataList, focus)
+      f.associatedDataList = switchAssociatedDataList(f.associatedDataList, focus)
       f.revision++
     }
   }
@@ -44,121 +44,121 @@ export class Sensors implements AbstractSensors {
     // This will cause HTMLElement.focus for elements with TrackFocus reaction
 
     // !this.keyboard.down && sensitiveRun(Sensitivity.ReactEvenOnSameValueAssignment, () =>
-    //   switchSensorDataList(EMPTY_EVENT_DATA_LIST, this.focus.sensorDataList))
+    //   switchAssociatedDataList(EMPTY_EVENT_DATA_LIST, this.focus.associatedDataList))
 
     if (!this.keyboard.down) {
       const f = this.focus
       sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () =>
-        switchSensorDataList(EMPTY_EVENT_DATA_LIST, this.focus.sensorDataList))
+        switchAssociatedDataList(EMPTY_ASSOCIATED_DATA_LIST, this.focus.associatedDataList))
       f.revision++
     }
   }
 
-  protected doPointerOver(sensorDataList: unknown[], hoverSensorDataList: unknown[], clientX: number, clientY: number): void {
+  protected doPointerOver(associatedDataList: unknown[], hoverAssociatedDataList: unknown[], clientX: number, clientY: number): void {
     const p = this.pointer
     const h = this.hover
     Sensors.rememberPointer(p, clientX, clientY)
-    p.sensorDataList = sensorDataList
-    h.sensorDataList = switchSensorDataList(this.hover.sensorDataList, hoverSensorDataList)
+    p.associatedDataList = associatedDataList
+    h.associatedDataList = switchAssociatedDataList(this.hover.associatedDataList, hoverAssociatedDataList)
     h.revision++
   }
 
-  protected doPointerLeave(sensorDataList: unknown[], hoverSensorDataList: unknown[], clientX: number, clientY: number): void {
+  protected doPointerLeave(associatedDataList: unknown[], hoverAssociatedDataList: unknown[], clientX: number, clientY: number): void {
     // do nothing
   }
 
-  protected doPointerMove(sensorDataList: unknown[], pointerId: number, clientX: number, clientY: number): void {
+  protected doPointerMove(associatedDataList: unknown[], pointerId: number, clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.sensorDataList = sensorDataList
+    p.associatedDataList = associatedDataList
   }
 
-  protected doPointerDown(sensorDataList: unknown[], focus: unknown[],
+  protected doPointerDown(associatedDataList: unknown[], focus: unknown[],
     pointerId: number, buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.sensorDataList = sensorDataList
+    p.associatedDataList = associatedDataList
     this.trackFocus(focus, true)
     p.captured = false
     p.down = buttons
   }
 
-  protected doPointerUp(sensorDataList: unknown[], focus: unknown[],
+  protected doPointerUp(associatedDataList: unknown[], focus: unknown[],
     pointerId: number, buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.sensorDataList = sensorDataList
+    p.associatedDataList = associatedDataList
     p.up = p.down
     p.down = PointerButton.None
     if (p.captured)
       p.captured = this.releasePointerCapture(pointerId)
   }
 
-  protected doPointerCancel(sensorDataList: unknown[], focus: unknown[],
+  protected doPointerCancel(associatedDataList: unknown[], focus: unknown[],
     pointerId: number, buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.sensorDataList = sensorDataList
+    p.associatedDataList = associatedDataList
     p.up = PointerButton.None
     p.down = PointerButton.None
     p.captured = false
     // console.log('----------doPointerCancel-----------')
   }
 
-  protected doClick(sensorDataList: unknown[], focus: unknown[],
+  protected doClick(associatedDataList: unknown[], focus: unknown[],
     buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.sensorDataList = sensorDataList
+    p.associatedDataList = associatedDataList
     p.click = buttons
   }
 
-  protected doDblClick(sensorDataList: unknown[], focus: unknown[],
+  protected doDblClick(associatedDataList: unknown[], focus: unknown[],
     buttons: number, clientX: number, clientY: number): void {
     const p = this.pointer
     Sensors.rememberPointer(p, clientX, clientY)
-    p.sensorDataList = sensorDataList
+    p.associatedDataList = associatedDataList
     p.doubleClick = buttons
   }
 
-  protected doTouchStart(sensorDataList: unknown[], focus: unknown[]): void {
+  protected doTouchStart(associatedDataList: unknown[], focus: unknown[]): void {
     const p = this.pointer
-    p.sensorDataList = sensorDataList
+    p.associatedDataList = associatedDataList
     this.trackFocus(focus, true)
     p.touched = true
     p.revision++
   }
 
-  protected doTouchEnd(sensorDataList: unknown[]): void {
+  protected doTouchEnd(associatedDataList: unknown[]): void {
     const p = this.pointer
-    p.sensorDataList = sensorDataList
+    p.associatedDataList = associatedDataList
     p.touched = false
     p.revision++
   }
 
-  protected doWheel(sensorDataList: unknown[], focus: unknown[],
+  protected doWheel(associatedDataList: unknown[], focus: unknown[],
     deltaX: number, deltaY: number, clientX: number, clientY: number): void {
     const s = this.scroll
     Sensors.rememberPointer(this.pointer, clientX, clientY)
-    s.sensorDataList = sensorDataList
+    s.associatedDataList = associatedDataList
     // this.trackFocus(focus, true)
     s.deltaX = deltaX
     s.deltaY = deltaY
     s.revision++
   }
 
-  protected doKeyDown(sensorDataList: unknown[], key: string): void {
+  protected doKeyDown(associatedDataList: unknown[], key: string): void {
     const kb = this.keyboard
-    kb.sensorDataList = sensorDataList
+    kb.associatedDataList = associatedDataList
     kb.up = ''
     sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.down = key)
     kb.modifiers |= Sensors.getKeyAsModifierIfAny(key)
     kb.revision++
   }
 
-  protected doKeyUp(sensorDataList: unknown[], key: string): void {
+  protected doKeyUp(associatedDataList: unknown[], key: string): void {
     const kb = this.keyboard
-    kb.sensorDataList = sensorDataList
+    kb.associatedDataList = associatedDataList
     kb.down = ''
     sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.up = key)
     kb.modifiers &= ~Sensors.getKeyAsModifierIfAny(key)
@@ -177,7 +177,7 @@ export class Sensors implements AbstractSensors {
 
   private static rememberPointer(p: Pointer, clientX: number, clientY: number): void {
     if (p.down === PointerButton.None) {
-      p.sensorDataList = EMPTY_EVENT_DATA_LIST
+      p.associatedDataList = EMPTY_ASSOCIATED_DATA_LIST
       p.up = PointerButton.None
       p.click = PointerButton.None
       p.doubleClick = PointerButton.None
@@ -224,15 +224,15 @@ export class Sensors implements AbstractSensors {
   }
 }
 
-export function grabSensorDataList<T = unknown>(path: any[], sym: symbol,
-  payloadKey: keyof SensorDataPayload, importanceKey: keyof SensorDataImportance,
+export function grabAssociatedDataList<T = unknown>(path: any[], sym: symbol,
+  payloadKey: keyof AssociatedDataPayload, importanceKey: keyof AssociatedDataImportance,
   existing: Array<T>): T[] {
   let result = existing
   let i = 0
   let j = 0
   let importance = Number.MIN_SAFE_INTEGER
   while (i < path.length) {
-    const data = path[i][sym] as SensorData | undefined
+    const data = path[i][sym] as AssociatedData | undefined
     if (data !== undefined) {
       const payload = data[payloadKey] as T | undefined
       let imp = data[importanceKey]
@@ -278,7 +278,7 @@ export function grabSensorDataList<T = unknown>(path: any[], sym: symbol,
   return result
 }
 
-export function switchSensorDataList(existing: unknown[], updated: unknown[]): unknown[] {
+export function switchAssociatedDataList(existing: unknown[], updated: unknown[]): unknown[] {
   if (updated !== existing) {
     existing.forEach(f => {
       if (f instanceof ToggleRef && f.value1 !== f.value2)

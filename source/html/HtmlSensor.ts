@@ -20,7 +20,7 @@ export enum DragStage {
   Finished,
 }
 
-// TODO: set draggable attribute implicitly depending on presence of 'drag' property in 'sensorData'
+// TODO: set draggable attribute implicitly depending on presence of 'drag' property in 'associatedData'
 export class HtmlDrag extends Sensor {
   @unobservable private readonly currentEvent: Ref<Event | undefined>
 

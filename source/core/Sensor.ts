@@ -12,9 +12,9 @@ import { ObservableObject, nonreactive } from 'reactronic'
 export class Sensor extends ObservableObject {
   revision: number = 0
   nativeElements: unknown[] = []
-  private composedSensorDataList: unknown[] = EMPTY_EVENT_DATA_LIST
-  get sensorDataList(): unknown[] { return nonreactive(() => this.composedSensorDataList) }
-  set sensorDataList(value: unknown[]) { this.composedSensorDataList = value }
+  private composedAssociatedDataList: unknown[] = EMPTY_ASSOCIATED_DATA_LIST
+  get associatedDataList(): unknown[] { return nonreactive(() => this.composedAssociatedDataList) }
+  set associatedDataList(value: unknown[]) { this.composedAssociatedDataList = value }
 }
 
 // Keyboard
@@ -74,4 +74,4 @@ export class Scroll extends Sensor {
   deltaY = 0
 }
 
-export const EMPTY_EVENT_DATA_LIST: any[] = []
+export const EMPTY_ASSOCIATED_DATA_LIST: any[] = []

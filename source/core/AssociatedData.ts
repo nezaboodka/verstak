@@ -5,9 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export type SensorData = SensorDataPayload & SensorDataImportance
+export type AssociatedData = AssociatedDataPayload & AssociatedDataImportance
 
-export interface SensorDataPayload {
+export interface AssociatedDataPayload {
   focus?: unknown
   hover?: unknown
   keyboard?: unknown
@@ -16,7 +16,7 @@ export interface SensorDataPayload {
   drag?: unknown
 }
 
-export interface SensorDataImportance {
+export interface AssociatedDataImportance {
   focusImportance?: number
   hoverImportance?: number
   keyboardImportance?: number

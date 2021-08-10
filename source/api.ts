@@ -9,7 +9,7 @@ export * from './core/System'
 export * from './core/Restyler'
 export * from './core/Sensor'
 export * from './core/Sensors'
-export * from './core/SensorData'
+export * from './core/AssociatedData'
 export * from './core/BasicRtti'
 
 export * from './html/HtmlRtti'

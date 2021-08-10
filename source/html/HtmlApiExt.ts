@@ -5,29 +5,29 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { SensorData } from '../core/api'
+import { AssociatedData } from '../core/api'
 
-export const SymSensorData: unique symbol = Symbol('SensorData')
+export const SymAssociatedData: unique symbol = Symbol('AssociatedData')
 
 declare global {
   interface Element {
-    sensorData: SensorData
+    associatedData: AssociatedData
   }
 }
 
 const ElementType = global.Element
 
 if (ElementType !== undefined) {
-  Object.defineProperty(ElementType.prototype, 'sensorData', {
+  Object.defineProperty(ElementType.prototype, 'associatedData', {
     configurable: false, enumerable: false,
     get(): unknown {
-      let result = this[SymSensorData]
+      let result = this[SymAssociatedData]
       if (result === undefined)
-        result = this[SymSensorData] = {}
+        result = this[SymAssociatedData] = {}
       return result
     },
     set(value: unknown) {
-      this[SymSensorData] = value
+      this[SymAssociatedData] = value
     },
   })
 }
