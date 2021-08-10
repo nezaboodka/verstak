@@ -7,19 +7,35 @@
 
 import { transaction, trace, TraceLevel, unobservable, sensitive, Sensitivity, Ref } from 'reactronic'
 import { Sensors, grabAssociatedDataList, PointerButton, KeyboardModifiers } from '../core/api'
+import { internalInstance } from '../core/System'
 import { SymAssociatedData } from './HtmlApiExt'
-import { DragStage, HtmlDrag } from './HtmlSensor'
+import { DragStage, HtmlDrag, HtmlResize } from './HtmlSensor'
 
 export class HtmlSensors extends Sensors {
+  @unobservable private readonly resizeObserver: ResizeObserver
   @unobservable currentEvent: Event | undefined = undefined
-  element?: HTMLElement | null
+  eventSource?: HTMLElement | null
 
   readonly drag: HtmlDrag
+  readonly resize: HtmlResize
 
   constructor() {
     super()
-    this.element = undefined
+    this.eventSource = undefined
     this.drag = new HtmlDrag(Ref.to(this).currentEvent)
+    this.resize = new HtmlResize()
+    this.resizeObserver = new ResizeObserver(this.onResize)
+  }
+
+  observeResizeOfRenderingElement(value: boolean): void {
+    const instance = internalInstance<Element>()
+    if (value !== instance.isResizeSensorEnabled) {
+      if (value)
+        this.resizeObserver.observe(instance.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      else
+        this.resizeObserver.unobserve(instance.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      instance.isResizeSensorEnabled = value
+    }
   }
 
   preventDefault(): void {
@@ -34,7 +50,7 @@ export class HtmlSensors extends Sensors {
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
-    const existing = this.element
+    const existing = this.eventSource
     if (element !== existing) {
       if (existing) {
         existing.removeEventListener('focusin', this.onFocusIn, { capture: true })
@@ -55,7 +71,7 @@ export class HtmlSensors extends Sensors {
         existing.removeEventListener('drop', this.onDrop, { capture: true })
         existing.removeEventListener('dragend', this.onDragEnd, { capture: true })
       }
-      this.element = element
+      this.eventSource = element
       if (element && enabled) {
         element.addEventListener('focusin', this.onFocusIn, { capture: true })
         element.addEventListener('focusout', this.onFocusOut, { capture: true })
@@ -81,13 +97,13 @@ export class HtmlSensors extends Sensors {
 
   @transaction @trace(TraceLevel.Suppress)
   resetFocus(): void {
-    const ei = this.element?.associatedData?.focus
+    const ei = this.eventSource?.associatedData?.focus
     this.trackFocus(ei ? [ei] : [], true)
-    this.element?.focus()
+    this.eventSource?.focus()
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onFocusIn(e: FocusEvent): void {
+  protected onFocusIn(e: FocusEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
     this.doFocusIn(
@@ -95,7 +111,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onFocusOut(e: FocusEvent): void {
+  protected onFocusOut(e: FocusEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
     this.doFocusOut(
@@ -103,7 +119,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onPointerOver(e: PointerEvent): void {
+  protected onPointerOver(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerOver(
@@ -113,7 +129,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onPointerMove(e: PointerEvent): void {
+  protected onPointerMove(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerMove(
@@ -122,7 +138,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onPointerDown(e: PointerEvent): void {
+  protected onPointerDown(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerDown(
@@ -132,7 +148,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onPointerUp(e: PointerEvent): void {
+  protected onPointerUp(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerUp(
@@ -142,7 +158,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onLostPointerCapture(e: PointerEvent): void {
+  protected onLostPointerCapture(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerCancel(
@@ -152,7 +168,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onClick(e: MouseEvent): void {
+  protected onClick(e: MouseEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
     this.doClick(
@@ -162,7 +178,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onDblClick(e: MouseEvent): void {
+  protected onDblClick(e: MouseEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
     this.doDblClick(
@@ -172,7 +188,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onTouchStart(e: Event): void {
+  protected onTouchStart(e: Event): void {
     const path = e.composedPath()
     this.currentEvent = e
     this.doTouchStart(
@@ -181,7 +197,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onTouchEnd(e: Event): void {
+  protected onTouchEnd(e: Event): void {
     const path = e.composedPath()
     this.currentEvent = e
     this.doTouchEnd(
@@ -189,7 +205,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onWheel(e: WheelEvent): void {
+  protected onWheel(e: WheelEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
     this.doWheel(
@@ -199,7 +215,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onKeyDown(e: KeyboardEvent): void {
+  protected onKeyDown(e: KeyboardEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
     this.doKeyDown(
@@ -207,7 +223,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onKeyUp(e: KeyboardEvent): void {
+  protected onKeyUp(e: KeyboardEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
     this.doKeyUp(
@@ -215,7 +231,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onDragStart(e: DragEvent): void {
+  protected onDragStart(e: DragEvent): void {
     const path = e.composedPath()
     const associatedDataList = grabAssociatedDataList(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataList)
     const d = this.drag
@@ -230,7 +246,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onDragOver(e: DragEvent): void {
+  protected onDragOver(e: DragEvent): void {
     const path = e.composedPath()
     const d = this.drag
     this.currentEvent = e
@@ -240,7 +256,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onDrop(e: DragEvent): void {
+  protected onDrop(e: DragEvent): void {
     const path = e.composedPath()
     const d = this.drag
     this.currentEvent = e
@@ -252,7 +268,7 @@ export class HtmlSensors extends Sensors {
   }
 
   @transaction @trace(TraceLevel.Suppress)
-  onDragEnd(e: DragEvent): void {
+  protected onDragEnd(e: DragEvent): void {
     const path = e.composedPath()
     const d = this.drag
     this.currentEvent = e
@@ -267,13 +283,32 @@ export class HtmlSensors extends Sensors {
     d.revision++
   }
 
+  @transaction @trace(TraceLevel.Suppress)
+  protected onResize(entries: Array<ResizeObserverEntry>): void {
+    const r = this.resize
+    r.revision++
+    r.resizedElements = entries.map(entry => {
+      const element = entry.target as Element
+      return {
+        borderBoxSize: entry.borderBoxSize,
+        contentBoxSize: entry.contentBoxSize,
+        contentRect: entry.contentRect,
+        associatedData: element.associatedData.resize,
+      }
+    })
+    r.associatedDataList = entries.map(x => {
+      const element = x.target as Element
+      return element.associatedData
+    })
+  }
+
   protected setPointerCapture(pointerId: number): boolean {
-    this.element?.setPointerCapture(pointerId)
-    return this.element instanceof HTMLElement
+    this.eventSource?.setPointerCapture(pointerId)
+    return this.eventSource instanceof HTMLElement
   }
 
   protected releasePointerCapture(pointerId: number): boolean {
-    this.element?.releasePointerCapture(pointerId)
+    this.eventSource?.releasePointerCapture(pointerId)
     return false
   }
 }

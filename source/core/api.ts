@@ -5,7 +5,22 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from './System'
+export {
+  RefreshParent,
+  Render,
+  ComponentRender,
+  MountedInstance,
+  Manifest,
+  Rtti,
+  manifest,
+  render,
+  renderChildrenNow,
+  unmount,
+  instance,
+  cycle,
+  trace,
+  forAll,
+} from './System'
 export * from './Restyler'
 export * from './Sensor'
 export * from './Sensors'

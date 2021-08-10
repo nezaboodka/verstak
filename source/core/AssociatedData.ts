@@ -14,6 +14,7 @@ export interface AssociatedDataPayload {
   pointer?: unknown
   scroll?: unknown
   drag?: unknown
+  resize?: unknown
 }
 
 export interface AssociatedDataImportance {

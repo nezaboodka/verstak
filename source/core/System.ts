@@ -10,11 +10,16 @@ import { reaction, nonreactive, Transaction, Reactronic, observableArgs } from '
 // RefreshParent, Render, ComponentRender
 
 export const RefreshParent = Symbol('RefreshParent') as unknown as void
-
 export type Render<E = unknown, O = void> = (element: E, options: O) => void
 export type ComponentRender<O = unknown, E = void> = (render: (options: O) => O, element: E) => void
 
 // Manifest
+
+export interface MountedInstance<E> {
+  native?: E
+  model?: any
+  isResizeSensorEnabled?: boolean
+}
 
 export class Manifest<E = unknown, O = void> {
   constructor(
@@ -26,16 +31,13 @@ export class Manifest<E = unknown, O = void> {
     public mounted?: {
       readonly level: number
       readonly cycle: number
-      instance?: {
-        native?: E
-        model?: any
-      }
+      instance?: MountedInstance<E>
     }
   ) {
   }
   annex?: Manifest<E, O>
 
-  get native(): E | undefined  { return this.mounted?.instance?.native }
+  get native(): E | undefined { return this.mounted?.instance?.native }
 }
 
 // Rtti
@@ -125,7 +127,14 @@ export function unmount(m: Manifest<any, any>, owner: Manifest, cause: Manifest)
 export function instance<T>(): { model?: T } {
   const inst = gOwner.mounted?.instance
   if (!inst)
-    throw new Error('instance function can be call only inside rendering function')
+    throw new Error('instance function can be called only inside rendering function')
+  return inst
+}
+
+export function internalInstance<T>(): MountedInstance<T> {
+  const inst = gOwner.mounted?.instance
+  if (!inst)
+    throw new Error('internalInstance function can be called only inside rendering function')
   return inst
 }
 

@@ -30,9 +30,22 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     const outer = AbstractHtmlRtti.current
     try { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const mounted = m.mounted! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const native = mounted.instance!.native!
+      const instance = mounted.instance! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const native = instance.native!
       AbstractHtmlRtti.current = native // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}render(${e.id} r${ref.mounted!.cycle})`)
       render(m) // proceed
+
+      // TODO: refactor
+      const data = native.associatedData
+      if (data.drag !== undefined) {
+        if (native instanceof HTMLElement && !native.draggable)
+          native.draggable = true
+      }
+      else {
+        if (native instanceof HTMLElement && native.draggable)
+          native.draggable = false
+      }
+
       AbstractHtmlRtti.blinkingEffect && blink(native, mounted.cycle)
       if (AbstractHtmlRtti.isDebugAttributeEnabled)
         native.setAttribute('rdbg', `${mounted.cycle}:    ${Reactronic.why()}`)
