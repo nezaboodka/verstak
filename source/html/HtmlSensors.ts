@@ -6,20 +6,20 @@
 // automatically licensed under the license referred above.
 
 import { transaction, trace, TraceLevel, unobservable, sensitive, Sensitivity, Ref } from 'reactronic'
-import { Sensors, grabSensorDataList, PointerButton, KeyboardModifiers } from '../core'
-import { SymSensorData } from './WebApiExt'
-import { DragStage, WebDrag } from './WebSensor'
+import { Sensors, grabSensorDataList, PointerButton, KeyboardModifiers } from '../core/api'
+import { SymSensorData } from './HtmlApiExt'
+import { DragStage, HtmlDrag } from './HtmlSensor'
 
-export class WebSensors extends Sensors {
+export class HtmlSensors extends Sensors {
   @unobservable currentEvent: Event | undefined = undefined
   element?: HTMLElement | null
 
-  readonly drag: WebDrag
+  readonly drag: HtmlDrag
 
   constructor() {
     super()
     this.element = undefined
-    this.drag = new WebDrag(Ref.to(this).currentEvent)
+    this.drag = new HtmlDrag(Ref.to(this).currentEvent)
   }
 
   preventDefault(): void {

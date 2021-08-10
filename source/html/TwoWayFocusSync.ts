@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Ref, ToggleRef } from 'reactronic'
-import { RxFragment } from '../core'
+import { RxFragment } from '../core/api'
 
 export function TwoWayFocusSync(
   id: string,

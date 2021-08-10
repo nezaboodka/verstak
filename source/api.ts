@@ -5,13 +5,18 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from './core'
+export * from './core/System'
+export * from './core/Restyler'
+export * from './core/Sensor'
+export * from './core/Sensors'
+export * from './core/SensorData'
+export * from './core/BasicRtti'
 
-export * from './web/WebRtti'
-export * from './web/WebElements'
-export * from './web/WebSensor'
-export * from './web/WebSensors'
-export * from './web/WebApiExt'
-export * from './web/TwoWayFocusSync'
+export * from './html/HtmlRtti'
+export * from './html/HtmlElements'
+export * from './html/HtmlSensor'
+export * from './html/HtmlSensors'
+export * from './html/HtmlApiExt'
+export * from './html/TwoWayFocusSync'
 
-import './web/WebApiExt' // needed to perform initialization
+import './html/HtmlApiExt'

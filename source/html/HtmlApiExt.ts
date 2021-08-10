@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { SensorData } from '../core'
+import { SensorData } from '../core/api'
 
 export const SymSensorData: unique symbol = Symbol('SensorData')
 

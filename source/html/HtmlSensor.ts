@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { unobservable, Ref } from 'reactronic'
-import { KeyboardModifiers, Sensor } from '../core'
+import { KeyboardModifiers, Sensor } from '../core/api'
 
 // Drag
 
@@ -21,7 +21,7 @@ export enum DragStage {
 }
 
 // TODO: set draggable attribute implicitly depending on presence of 'drag' property in 'sensorData'
-export class WebDrag extends Sensor {
+export class HtmlDrag extends Sensor {
   @unobservable private readonly currentEvent: Ref<Event | undefined>
 
   stage = DragStage.Finished

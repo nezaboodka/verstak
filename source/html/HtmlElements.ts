@@ -5,8 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Render, Manifest, manifest, RefreshParent, ComponentRender } from '../core'
-import { HtmlRtti, SvgRtti } from './WebRtti'
+import { Render, Manifest, manifest, RefreshParent, ComponentRender } from '../core/api'
+import { HtmlRtti, SvgRtti } from './HtmlRtti'
 
 function nullRender(e: Element): void { /* nop */ }
 
