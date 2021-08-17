@@ -14,7 +14,7 @@ export interface ResizedElement {
   readonly borderBoxSize: ReadonlyArray<ResizeObserverSize>
   readonly contentBoxSize: ReadonlyArray<ResizeObserverSize>
   readonly contentRect: DOMRectReadOnly
-  readonly associatedData: any
+  readonly resizeData: any
 }
 
 export class HtmlResize extends Sensor {

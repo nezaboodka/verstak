@@ -293,7 +293,7 @@ export class HtmlSensors extends Sensors {
         borderBoxSize: entry.borderBoxSize,
         contentBoxSize: entry.contentBoxSize,
         contentRect: entry.contentRect,
-        associatedData: element.associatedData.resize,
+        resizeData: element.associatedData.resize,
       }
     })
     r.associatedDataList = entries.map(x => {
