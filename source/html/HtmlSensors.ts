@@ -249,7 +249,9 @@ export class HtmlSensors extends Sensors {
   protected onDragOver(e: DragEvent): void {
     const path = e.composedPath()
     const d = this.drag
+    const p = this.pointer
     this.currentEvent = e
+    Sensors.rememberPointer(p, e.clientX, e.clientY)
     d.associatedDataList = grabAssociatedDataList(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataList)
     sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => d.stage = DragStage.Dragging)
     d.revision++

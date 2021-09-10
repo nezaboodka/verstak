@@ -175,7 +175,7 @@ export class Sensors implements AbstractSensors {
     return false
   }
 
-  private static rememberPointer(p: Pointer, clientX: number, clientY: number): void {
+  protected static rememberPointer(p: Pointer, clientX: number, clientY: number): void {
     if (p.down === PointerButton.None) {
       p.associatedDataList = EMPTY_ASSOCIATED_DATA_LIST
       p.up = PointerButton.None
