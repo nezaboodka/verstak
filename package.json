@@ -1,6 +1,6 @@
 {
   "name": "reactronic-front",
-  "version": "0.21.516",
+  "version": "0.21.517",
   "description": "Reactronic Front - Transactionally Reactive Frontend Development Framework",
   "main": "build/dist/source/api.js",
   "types": "build/dist/source/api.d.ts",
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/nezaboodka/reactronic-front/blob/master/README.md#readme",
   "dependencies": {
-    "reactronic": "^0.21.500"
+    "reactronic": "^0.21.512"
   },
   "devDependencies": {
     "@types/node": "15.0.2",

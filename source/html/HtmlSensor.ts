@@ -38,19 +38,23 @@ export class HtmlDrag extends Sensor {
   @unobservable private readonly currentEvent: Ref<Event | undefined>
 
   stage = DragStage.Finished
-  draggingObject: any = undefined
   draggingModifiers = KeyboardModifiers.None
-  draggingStartAtX = Infinity
-  draggingStartAtY = Infinity
-  droppedAtX = Infinity
-  droppedAtY = Infinity
+  draggingSource: any = undefined
+  draggingData: any = undefined
+  draggingStartX = Infinity
+  draggingStartY = Infinity
+  draggingPositionX = Infinity
+  draggingPositionY = Infinity
+  dropPositionX = Infinity
+  dropPositionY = Infinity
+  dropped: boolean = false
 
   constructor(currentEvent: Ref<Event | undefined>) {
     super()
     this.currentEvent = currentEvent
   }
 
-  private get event(): DragEvent {
+  private get dragEvent(): DragEvent {
     const e = this.currentEvent.value
     if (!(e instanceof DragEvent))
       throw new TypeError('\'currentEvent\' must be of type \'DragEvent\' to perform any drag operations')
@@ -59,23 +63,23 @@ export class HtmlDrag extends Sensor {
 
   // dropEffect
   get cursor(): DragCursor {
-    return this.event.dataTransfer?.dropEffect ?? 'none'
+    return this.dragEvent.dataTransfer?.dropEffect ?? 'none'
   }
 
   set cursor(operation: DragCursor) {
-    const dataTransfer = this.event.dataTransfer
+    const dataTransfer = this.dragEvent.dataTransfer
     if (dataTransfer)
       dataTransfer.dropEffect = operation
   }
 
   // effectAllowed
   get allowedCursor(): AllowedDragCursor {
-    return this.event.dataTransfer?.effectAllowed ?? 'none'
+    return this.dragEvent.dataTransfer?.effectAllowed ?? 'none'
   }
 
   set allowedCursor(operations: AllowedDragCursor) {
     if (this.stage === DragStage.Started) {
-      const dataTransfer = this.event.dataTransfer
+      const dataTransfer = this.dragEvent.dataTransfer
       if (dataTransfer)
         dataTransfer.effectAllowed = operations
     }
@@ -85,6 +89,6 @@ export class HtmlDrag extends Sensor {
   }
 
   allowDropHere(): void {
-    this.event.preventDefault()
+    this.dragEvent.preventDefault()
   }
 }

@@ -5,8 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { transaction, trace, TraceLevel, unobservable, sensitive, Sensitivity, Ref } from 'reactronic'
-import { Sensors, grabAssociatedDataList, PointerButton, KeyboardModifiers } from '../core/api'
+import { transaction, trace, TraceLevel, unobservable, sensitive, Sensitivity, Ref, Transaction } from 'reactronic'
+import { Sensors, grabAssociatedDataList, PointerButton } from '../core/api'
 import { internalInstance } from '../core/System'
 import { SymAssociatedData } from './HtmlApiExt'
 import { DragStage, HtmlDrag, HtmlResize } from './HtmlSensor'
@@ -236,12 +236,13 @@ export class HtmlSensors extends Sensors {
     const associatedDataList = grabAssociatedDataList(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataList)
     const d = this.drag
     this.currentEvent = e
-    d.associatedDataList = associatedDataList
     d.stage = DragStage.Started
-    d.draggingObject = associatedDataList[0]
-    d.draggingStartAtX = e.clientX
-    d.draggingStartAtY = e.clientY
+    d.associatedDataList = associatedDataList
+    d.draggingSource = associatedDataList[0]
+    d.draggingStartX = e.clientX
+    d.draggingStartY = e.clientY
     d.draggingModifiers = this.keyboard.modifiers
+    d.dropped = false
     d.revision++
   }
 
@@ -249,11 +250,11 @@ export class HtmlSensors extends Sensors {
   protected onDragOver(e: DragEvent): void {
     const path = e.composedPath()
     const d = this.drag
-    const p = this.pointer
     this.currentEvent = e
-    Sensors.rememberPointer(p, e.clientX, e.clientY)
-    d.associatedDataList = grabAssociatedDataList(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataList)
     sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => d.stage = DragStage.Dragging)
+    d.draggingPositionX = e.clientX
+    d.draggingPositionY = e.clientY
+    d.associatedDataList = grabAssociatedDataList(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataList)
     d.revision++
   }
 
@@ -262,10 +263,11 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     const d = this.drag
     this.currentEvent = e
-    d.associatedDataList = grabAssociatedDataList(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataList)
-    d.droppedAtX = e.clientX
-    d.droppedAtY = e.clientY
     d.stage = DragStage.Dropped
+    d.associatedDataList = grabAssociatedDataList(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataList)
+    d.dropPositionX = e.clientX
+    d.dropPositionY = e.clientY
+    d.dropped = true
     d.revision++
   }
 
@@ -273,15 +275,23 @@ export class HtmlSensors extends Sensors {
   protected onDragEnd(e: DragEvent): void {
     const path = e.composedPath()
     const d = this.drag
-    this.currentEvent = e
-    d.associatedDataList = grabAssociatedDataList(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataList)
-    d.stage = DragStage.Finished
-    d.draggingStartAtX = Infinity
-    d.draggingStartAtY = Infinity
-    d.draggingModifiers = KeyboardModifiers.None
-    d.draggingObject = undefined
-    d.droppedAtX = e.clientX
-    d.droppedAtY = e.clientY
+    Transaction.runAs({ standalone: true }, () => {
+      this.currentEvent = e
+      d.stage = DragStage.Finished
+      d.associatedDataList = grabAssociatedDataList(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataList)
+      d.dropPositionX = e.clientX
+      d.dropPositionY = e.clientY
+      d.revision++
+    })
+    d.draggingSource = undefined
+    d.draggingData = undefined
+    d.draggingStartX = Infinity
+    d.draggingStartY = Infinity
+    d.draggingPositionX = Infinity
+    d.draggingPositionY = Infinity
+    d.dropPositionX = Infinity
+    d.dropPositionY = Infinity
+    d.dropped = false
     d.revision++
   }
 
