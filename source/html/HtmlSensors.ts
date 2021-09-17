@@ -9,21 +9,21 @@ import { transaction, trace, TraceLevel, unobservable, sensitive, Sensitivity, R
 import { Sensors, grabAssociatedDataList, PointerButton } from '../core/api'
 import { internalInstance } from '../core/System'
 import { SymAssociatedData } from './HtmlApiExt'
-import { DragStage, HtmlDrag, HtmlResize } from './HtmlSensor'
+import { DragStage, DragSensor, ResizeSensor } from './HtmlSensor'
 
 export class HtmlSensors extends Sensors {
   @unobservable private readonly resizeObserver: ResizeObserver
   @unobservable currentEvent: Event | undefined = undefined
   eventSource?: HTMLElement | null
 
-  readonly drag: HtmlDrag
-  readonly resize: HtmlResize
+  readonly drag: DragSensor
+  readonly resize: ResizeSensor
 
   constructor() {
     super()
     this.eventSource = undefined
-    this.drag = new HtmlDrag(Ref.to(this).currentEvent)
-    this.resize = new HtmlResize()
+    this.drag = new DragSensor(Ref.to(this).currentEvent)
+    this.resize = new ResizeSensor()
     this.resizeObserver = new ResizeObserver(this.onResize)
   }
 
@@ -67,6 +67,8 @@ export class HtmlSensors extends Sensors {
         existing.removeEventListener('keydown', this.onKeyDown, { capture: true })
         existing.removeEventListener('keyup', this.onKeyUp, { capture: true })
         existing.removeEventListener('dragstart', this.onDragStart, { capture: true })
+        existing.removeEventListener('dragenter', this.onDragEnter, { capture: false })
+        existing.removeEventListener('dragleave', this.onDragLeave, { capture: false })
         existing.removeEventListener('dragover', this.onDragOver, { capture: true })
         existing.removeEventListener('drop', this.onDrop, { capture: true })
         existing.removeEventListener('dragend', this.onDragEnd, { capture: true })
@@ -241,9 +243,35 @@ export class HtmlSensors extends Sensors {
     d.draggingSource = associatedDataList[0]
     d.draggingStartX = e.clientX
     d.draggingStartY = e.clientY
+    d.draggingPositionX = e.clientX
+    d.draggingPositionY = e.clientY
     d.draggingModifiers = this.keyboard.modifiers
     d.dropped = false
     d.revision++
+  }
+
+  @transaction @trace(TraceLevel.Suppress)
+  protected onDragEnter(e: DragEvent): void {
+    const d = this.drag
+    this.currentEvent = e
+    d.stage = DragStage.Dragging
+    d.draggingPositionX = e.clientX
+    d.draggingPositionY = e.clientY
+    d.draggingModifiers = this.keyboard.modifiers
+    d.revision++
+    console.log('onDragEnter')
+  }
+
+  @transaction @trace(TraceLevel.Suppress)
+  protected onDragLeave(e: DragEvent): void {
+    const d = this.drag
+    this.currentEvent = e
+    d.stage = DragStage.Dragging
+    d.draggingPositionX = e.clientX
+    d.draggingPositionY = e.clientY
+    d.draggingModifiers = this.keyboard.modifiers
+    d.revision++
+    console.log('onDragLeave')
   }
 
   @transaction @trace(TraceLevel.Suppress)
