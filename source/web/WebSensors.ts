@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { transaction, trace, TraceLevel, unobservable } from 'reactronic'
+import { transaction, TraceLevel, unobservable, options } from 'reactronic'
 import { Sensors, grabSensorDataList, PointerButton } from '../core'
 import { SymSensorData } from './WebApiExt'
 
@@ -67,14 +67,14 @@ export class WebSensors extends Sensors {
     }
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   resetFocus(): void {
     const ei = this.element?.sensorData?.focus
     this.trackFocus(ei ? [ei] : [], true)
     this.element?.focus()
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   onFocusIn(e: FocusEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -82,7 +82,7 @@ export class WebSensors extends Sensors {
       grabSensorDataList(path, SymSensorData, 'focus', 'focusImportance', this.focus.sensorDataList))
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   onFocusOut(e: FocusEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -90,7 +90,7 @@ export class WebSensors extends Sensors {
       grabSensorDataList(path, SymSensorData, 'focus', 'focusImportance', this.focus.sensorDataList))
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   onPointerOver(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -100,7 +100,7 @@ export class WebSensors extends Sensors {
       e.clientX, e.clientY)
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   onPointerMove(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -109,7 +109,7 @@ export class WebSensors extends Sensors {
       e.pointerId, e.clientX, e.clientY)
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   onPointerDown(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -119,7 +119,7 @@ export class WebSensors extends Sensors {
       e.pointerId, e.buttons, e.clientX, e.clientY)
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   onPointerUp(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -129,7 +129,7 @@ export class WebSensors extends Sensors {
       e.pointerId, e.buttons, e.clientX, e.clientY)
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   onLostPointerCapture(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -139,7 +139,7 @@ export class WebSensors extends Sensors {
       e.pointerId, e.buttons, e.clientX, e.clientY)
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   onClick(e: MouseEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -149,7 +149,7 @@ export class WebSensors extends Sensors {
       PointerButton.Left, e.clientX, e.clientY)
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   onDblClick(e: MouseEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -159,7 +159,7 @@ export class WebSensors extends Sensors {
       PointerButton.Left, e.clientX, e.clientY)
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   onTouchStart(e: Event): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -168,7 +168,7 @@ export class WebSensors extends Sensors {
       grabSensorDataList(path, SymSensorData, 'focus', 'focusImportance', this.focus.sensorDataList))
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   onTouchEnd(e: Event): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -176,7 +176,7 @@ export class WebSensors extends Sensors {
       grabSensorDataList(path, SymSensorData, 'pointer', 'pointerImportance', this.pointer.sensorDataList))
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   onWheel(e: WheelEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -186,7 +186,7 @@ export class WebSensors extends Sensors {
       e.deltaX, e.deltaY, e.clientX, e.clientY)
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   onKeyDown(e: KeyboardEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -194,7 +194,7 @@ export class WebSensors extends Sensors {
       grabSensorDataList(path, SymSensorData, 'keyboard', 'keyboardImportance', this.keyboard.sensorDataList), e.key)
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   onKeyUp(e: KeyboardEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
