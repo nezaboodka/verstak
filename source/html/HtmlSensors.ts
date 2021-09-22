@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { transaction, trace, TraceLevel, unobservable, sensitive, Sensitivity, Ref, Transaction } from 'reactronic'
+import { transaction, trace, TraceLevel, sensitive, Sensitivity, Ref, Transaction } from 'reactronic'
 import { Sensors, grabAssociatedDataList, PointerButton } from '../core/api'
 import { internalInstance } from '../core/System'
 import { SymAssociatedData } from './HtmlApiExt'

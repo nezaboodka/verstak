@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Sensitivity, sensitive, ToggleRef, unobservable } from 'reactronic'
+import { Sensitivity, sensitive, ToggleRef } from 'reactronic'
 import { Sensor, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EMPTY_ASSOCIATED_DATA_LIST } from './Sensor'
 import { AssociatedData, AssociatedDataPayload, AssociatedDataImportance } from './AssociatedData'
 
