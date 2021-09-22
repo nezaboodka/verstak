@@ -12,8 +12,8 @@ import { SymAssociatedData } from './HtmlApiExt'
 import { DragStage, DragSensor, ResizeSensor } from './HtmlSensor'
 
 export class HtmlSensors extends Sensors {
-  @unobservable private readonly resizeObserver: ResizeObserver
-  @unobservable currentEvent: Event | undefined = undefined
+  private readonly resizeObserver: ResizeObserver
+  currentEvent: Event | undefined = undefined
   eventSource?: HTMLElement | null
 
   readonly drag: DragSensor
@@ -259,7 +259,6 @@ export class HtmlSensors extends Sensors {
     d.draggingPositionY = e.clientY
     d.draggingModifiers = this.keyboard.modifiers
     d.revision++
-    console.log('onDragEnter')
   }
 
   @transaction @trace(TraceLevel.Suppress)
@@ -271,7 +270,6 @@ export class HtmlSensors extends Sensors {
     d.draggingPositionY = e.clientY
     d.draggingModifiers = this.keyboard.modifiers
     d.revision++
-    console.log('onDragLeave')
   }
 
   @transaction @trace(TraceLevel.Suppress)

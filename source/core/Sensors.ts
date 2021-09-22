@@ -5,19 +5,11 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Sensitivity, sensitive, ToggleRef } from 'reactronic'
+import { Sensitivity, sensitive, ToggleRef, unobservable } from 'reactronic'
 import { Sensor, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EMPTY_ASSOCIATED_DATA_LIST } from './Sensor'
 import { AssociatedData, AssociatedDataPayload, AssociatedDataImportance } from './AssociatedData'
 
-export interface AbstractSensors {
-  readonly focus: Readonly<Sensor>
-  readonly hover: Readonly<Sensor>
-  readonly keyboard: Readonly<Keyboard>
-  readonly pointer: Readonly<Pointer>
-  readonly scroll: Readonly<Scroll>
-}
-
-export class Sensors implements AbstractSensors {
+export class Sensors {
   readonly focus = new Sensor()
   readonly hover = new Sensor()
   readonly keyboard = new Keyboard()
@@ -102,7 +94,6 @@ export class Sensors implements AbstractSensors {
     p.up = PointerButton.None
     p.down = PointerButton.None
     p.captured = false
-    // console.log('----------doPointerCancel-----------')
   }
 
   protected doClick(associatedDataList: unknown[], focus: unknown[],
