@@ -12,9 +12,9 @@ import { ObservableObject, nonreactive } from 'reactronic'
 export class Sensor extends ObservableObject {
   revision: number = 0
   nativeElements: unknown[] = []
-  private composedAssociatedDataList: unknown[] = EMPTY_ASSOCIATED_DATA_LIST
-  get associatedDataList(): unknown[] { return nonreactive(() => this.composedAssociatedDataList) }
-  set associatedDataList(value: unknown[]) { this.composedAssociatedDataList = value }
+  private composedAssociatedDataPath: unknown[] = EmptyAssociatedDataArray
+  get associatedDataPath(): unknown[] { return nonreactive(() => this.composedAssociatedDataPath) }
+  set associatedDataPath(value: unknown[]) { this.composedAssociatedDataPath = value }
 }
 
 // Keyboard
@@ -55,14 +55,16 @@ export enum PointerButton {
 export class Pointer extends Sensor {
   captured = false
   touched = false
-  positionX = 0
-  positionY = 0
-  previousPositionX = 0
-  previousPositionY = 0
+  positionX = 0 // position relative to browser's viewport
+  positionY = 0 // position relative to browser's viewport
+  previousPositionX = 0 // position relative to browser's viewport
+  previousPositionY = 0 // position relative to browser's viewport
   down = PointerButton.None
   up = PointerButton.None
   click = PointerButton.None
   doubleClick = PointerButton.None
+  associatedDataUnderPointer: unknown[] = []
+  topAssociatedDataUnderPointer: unknown = undefined
 }
 
 // Scroll
@@ -74,4 +76,4 @@ export class Scroll extends Sensor {
   deltaY = 0
 }
 
-export const EMPTY_ASSOCIATED_DATA_LIST: any[] = []
+export const EmptyAssociatedDataArray: any[] = []

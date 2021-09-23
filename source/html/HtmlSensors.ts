@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { transaction, trace, TraceLevel, sensitive, Sensitivity, Ref, Transaction } from 'reactronic'
-import { Sensors, grabAssociatedDataList, PointerButton } from '../core/api'
+import { Sensors, grabAssociatedData, PointerButton } from '../core/api'
 import { internalInstance } from '../core/System'
 import { SymAssociatedData } from './HtmlApiExt'
 import { DragStage, DragSensor, ResizeSensor } from './HtmlSensor'
@@ -109,7 +109,7 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doFocusIn(
-      grabAssociatedDataList(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataList))
+      grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath))
   }
 
   @transaction @trace(TraceLevel.Suppress)
@@ -117,7 +117,7 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doFocusOut(
-      grabAssociatedDataList(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataList))
+      grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath))
   }
 
   @transaction @trace(TraceLevel.Suppress)
@@ -125,8 +125,8 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerOver(
-      grabAssociatedDataList(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataList),
-      grabAssociatedDataList(path, SymAssociatedData, 'hover', 'hoverImportance', this.hover.associatedDataList),
+      grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataPath),
+      grabAssociatedData(path, SymAssociatedData, 'hover', 'hoverImportance', this.hover.associatedDataPath),
       e.clientX, e.clientY)
   }
 
@@ -135,7 +135,7 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerMove(
-      grabAssociatedDataList(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataList),
+      grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataPath),
       e.pointerId, e.clientX, e.clientY)
   }
 
@@ -144,8 +144,8 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerDown(
-      grabAssociatedDataList(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataList),
-      grabAssociatedDataList(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataList),
+      grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataPath),
+      grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath),
       e.pointerId, e.buttons, e.clientX, e.clientY)
   }
 
@@ -154,8 +154,8 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerUp(
-      grabAssociatedDataList(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataList),
-      grabAssociatedDataList(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataList),
+      grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataPath),
+      grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath),
       e.pointerId, e.buttons, e.clientX, e.clientY)
   }
 
@@ -164,8 +164,8 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doPointerCancel(
-      grabAssociatedDataList(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataList),
-      grabAssociatedDataList(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataList),
+      grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataPath),
+      grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath),
       e.pointerId, e.buttons, e.clientX, e.clientY)
   }
 
@@ -174,8 +174,8 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doClick(
-      grabAssociatedDataList(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataList),
-      grabAssociatedDataList(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataList),
+      grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataPath),
+      grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath),
       PointerButton.Left, e.clientX, e.clientY)
   }
 
@@ -184,8 +184,8 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doDblClick(
-      grabAssociatedDataList(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataList),
-      grabAssociatedDataList(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataList),
+      grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataPath),
+      grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath),
       PointerButton.Left, e.clientX, e.clientY)
   }
 
@@ -194,8 +194,8 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doTouchStart(
-      grabAssociatedDataList(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataList),
-      grabAssociatedDataList(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataList))
+      grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataPath),
+      grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath))
   }
 
   @transaction @trace(TraceLevel.Suppress)
@@ -203,7 +203,7 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doTouchEnd(
-      grabAssociatedDataList(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataList))
+      grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataPath))
   }
 
   @transaction @trace(TraceLevel.Suppress)
@@ -211,8 +211,8 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doWheel(
-      grabAssociatedDataList(path, SymAssociatedData, 'scroll', 'scrollImportance', this.scroll.associatedDataList),
-      grabAssociatedDataList(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataList),
+      grabAssociatedData(path, SymAssociatedData, 'scroll', 'scrollImportance', this.scroll.associatedDataPath),
+      grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath),
       e.deltaX, e.deltaY, e.clientX, e.clientY)
   }
 
@@ -221,7 +221,7 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doKeyDown(
-      grabAssociatedDataList(path, SymAssociatedData, 'keyboard', 'keyboardImportance', this.keyboard.associatedDataList), e.key)
+      grabAssociatedData(path, SymAssociatedData, 'keyboard', 'keyboardImportance', this.keyboard.associatedDataPath), e.key)
   }
 
   @transaction @trace(TraceLevel.Suppress)
@@ -229,17 +229,17 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     this.currentEvent = e
     this.doKeyUp(
-      grabAssociatedDataList(path, SymAssociatedData, 'keyboard', 'keyboardImportance', this.keyboard.associatedDataList), e.key)
+      grabAssociatedData(path, SymAssociatedData, 'keyboard', 'keyboardImportance', this.keyboard.associatedDataPath), e.key)
   }
 
   @transaction @trace(TraceLevel.Suppress)
   protected onDragStart(e: DragEvent): void {
     const path = e.composedPath()
-    const associatedDataList = grabAssociatedDataList(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataList)
+    const associatedDataList = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataPath)
     const d = this.drag
     this.currentEvent = e
     d.stage = DragStage.Started
-    d.associatedDataList = associatedDataList
+    d.associatedDataPath = associatedDataList
     d.draggingSource = associatedDataList[0]
     d.draggingStartX = e.clientX
     d.draggingStartY = e.clientY
@@ -280,7 +280,7 @@ export class HtmlSensors extends Sensors {
     sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => d.stage = DragStage.Dragging)
     d.draggingPositionX = e.clientX
     d.draggingPositionY = e.clientY
-    d.associatedDataList = grabAssociatedDataList(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataList)
+    d.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataPath)
     d.revision++
   }
 
@@ -290,7 +290,7 @@ export class HtmlSensors extends Sensors {
     const d = this.drag
     this.currentEvent = e
     d.stage = DragStage.Dropped
-    d.associatedDataList = grabAssociatedDataList(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataList)
+    d.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataPath)
     d.dropPositionX = e.clientX
     d.dropPositionY = e.clientY
     d.dropped = true
@@ -304,7 +304,7 @@ export class HtmlSensors extends Sensors {
     Transaction.runAs({ standalone: true }, () => {
       this.currentEvent = e
       d.stage = DragStage.Finished
-      d.associatedDataList = grabAssociatedDataList(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataList)
+      d.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataPath)
       d.dropPositionX = e.clientX
       d.dropPositionY = e.clientY
       d.revision++
@@ -334,7 +334,7 @@ export class HtmlSensors extends Sensors {
         resizeData: element.associatedData.resize,
       }
     })
-    r.associatedDataList = entries.map(x => {
+    r.associatedDataPath = entries.map(x => {
       const element = x.target as Element
       return element.associatedData
     })
