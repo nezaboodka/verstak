@@ -14,7 +14,7 @@ import { DragStage, DragSensor, ResizeSensor } from './HtmlSensor'
 export class HtmlSensors extends Sensors {
   private readonly resizeObserver: ResizeObserver
   currentEvent: Event | undefined = undefined
-  eventSource?: HTMLElement | null
+  eventSource: HTMLElement | undefined
 
   readonly drag: DragSensor
   readonly resize: ResizeSensor
@@ -235,12 +235,12 @@ export class HtmlSensors extends Sensors {
   @transaction @trace(TraceLevel.Suppress)
   protected onDragStart(e: DragEvent): void {
     const path = e.composedPath()
-    const associatedDataList = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataPath)
+    const associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataPath)
     const d = this.drag
     this.currentEvent = e
     d.stage = DragStage.Started
-    d.associatedDataPath = associatedDataList
-    d.draggingSource = associatedDataList[0]
+    d.associatedDataPath = associatedDataPath
+    d.draggingOriginData = associatedDataPath[0]
     d.draggingStartX = e.clientX
     d.draggingStartY = e.clientY
     d.draggingPositionX = e.clientX
@@ -309,7 +309,7 @@ export class HtmlSensors extends Sensors {
       d.dropPositionY = e.clientY
       d.revision++
     })
-    d.draggingSource = undefined
+    d.draggingOriginData = undefined
     d.draggingData = undefined
     d.draggingStartX = Infinity
     d.draggingStartY = Infinity

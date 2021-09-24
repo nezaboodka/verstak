@@ -38,7 +38,7 @@ export class DragSensor extends Sensor {
 
   stage = DragStage.Finished
   draggingModifiers = KeyboardModifiers.None
-  draggingSource: any = undefined
+  draggingOriginData: any = undefined
   draggingData: any = undefined
   draggingStartX = Infinity
   draggingStartY = Infinity
