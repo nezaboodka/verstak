@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { transaction, trace, TraceLevel, sensitive, Sensitivity, Ref, Transaction } from 'reactronic'
-import { Sensors, grabAssociatedData, PointerButton } from '../core/api'
+import { Sensors, grabAssociatedData, PointerButton, AssociatedData } from '../core/api'
 import { internalInstance } from '../core/System'
 import { SymAssociatedData } from './HtmlApiExt'
 import { DragStage, DragSensor, ResizeSensor } from './HtmlSensor'
@@ -19,12 +19,24 @@ export class HtmlSensors extends Sensors {
   readonly drag: DragSensor
   readonly resize: ResizeSensor
 
+  private draggingStartX: number
+  private draggingStartY: number
+  private draggingAssociatedDataPath: unknown[] | undefined
+  private draggingOver: boolean
+
+  static readonly DraggingThreshold = 4
+
   constructor() {
     super()
     this.eventSource = undefined
     this.drag = new DragSensor(Ref.to(this).currentEvent)
     this.resize = new ResizeSensor()
     this.resizeObserver = new ResizeObserver(this.onResize)
+
+    this.draggingStartX = Infinity
+    this.draggingStartY = Infinity
+    this.draggingAssociatedDataPath = undefined
+    this.draggingOver = false
   }
 
   observeResizeOfRenderingElement(value: boolean): void {
@@ -137,6 +149,40 @@ export class HtmlSensors extends Sensors {
     this.doPointerMove(
       grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataPath),
       e.pointerId, e.clientX, e.clientY)
+
+    if (this.draggingAssociatedDataPath) {
+      if (!this.draggingOver) {
+        if (Math.abs(e.clientX - this.draggingStartX) > HtmlSensors.DraggingThreshold ||
+          Math.abs(e.clientY - this.draggingStartY) > HtmlSensors.DraggingThreshold) {
+          this.draggingOver = true
+          Transaction.runAs({ standalone: true }, () => {
+            const d = this.drag
+            d.stage = DragStage.Started
+            if (this.draggingAssociatedDataPath) {
+              d.associatedDataPath = this.draggingAssociatedDataPath
+              d.draggingOriginData = this.draggingAssociatedDataPath[0]
+            }
+            d.draggingStartX = this.draggingStartX
+            d.draggingStartY = this.draggingStartY
+            d.draggingPositionX = e.clientX
+            d.draggingPositionY = e.clientY
+            d.draggingModifiers = this.keyboard.modifiers
+            d.dropped = false
+            d.revision++
+          })
+        }
+      }
+      if (this.draggingOver) {
+        const d = this.drag
+        this.currentEvent = e
+        d.stage = DragStage.Dragging
+        d.draggingPositionX = e.clientX
+        d.draggingPositionY = e.clientY
+        d.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataPath)
+        d.draggingModifiers = this.keyboard.modifiers
+        d.revision++
+      }
+    }
   }
 
   @transaction @trace(TraceLevel.Suppress)
@@ -147,6 +193,16 @@ export class HtmlSensors extends Sensors {
       grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataPath),
       grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath),
       e.pointerId, e.buttons, e.clientX, e.clientY)
+
+    const p = this.pointer
+    if (p.down === PointerButton.Left) {
+      const draggingSource = p.associatedDataPath[0] as AssociatedData | undefined
+      if (draggingSource && draggingSource.drag) {
+        this.draggingStartX = e.clientX
+        this.draggingStartY = e.clientY
+        this.draggingAssociatedDataPath = p.associatedDataPath
+      }
+    }
   }
 
   @transaction @trace(TraceLevel.Suppress)
@@ -157,6 +213,37 @@ export class HtmlSensors extends Sensors {
       grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataPath),
       grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath),
       e.pointerId, e.buttons, e.clientX, e.clientY)
+
+    if (this.draggingAssociatedDataPath && this.draggingOver) {
+      const d = this.drag
+      this.currentEvent = e
+      Transaction.runAs({ standalone: true }, () => {
+        d.stage = DragStage.Dropped
+        d.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataPath)
+        d.dropPositionX = e.clientX
+        d.dropPositionY = e.clientY
+        d.dropped = true
+        d.revision++
+      })
+      Transaction.runAs({ standalone: true }, () => {
+        d.stage = DragStage.Finished
+        d.revision++
+      })
+      d.draggingOriginData = undefined
+      d.draggingData = undefined
+      d.draggingStartX = Infinity
+      d.draggingStartY = Infinity
+      d.draggingPositionX = Infinity
+      d.draggingPositionY = Infinity
+      d.dropPositionX = Infinity
+      d.dropPositionY = Infinity
+      d.dropped = false
+      d.revision++
+      this.draggingStartX = Infinity
+      this.draggingStartY = Infinity
+      this.draggingAssociatedDataPath = undefined
+      this.draggingOver = false
+    }
   }
 
   @transaction @trace(TraceLevel.Suppress)
@@ -167,6 +254,10 @@ export class HtmlSensors extends Sensors {
       grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataPath),
       grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath),
       e.pointerId, e.buttons, e.clientX, e.clientY)
+
+    this.draggingStartX = Infinity
+    this.draggingStartY = Infinity
+    this.draggingAssociatedDataPath = undefined
   }
 
   @transaction @trace(TraceLevel.Suppress)
