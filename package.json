@@ -31,18 +31,18 @@
   },
   "homepage": "https://github.com/nezaboodka/reactronic-front/blob/master/README.md#readme",
   "dependencies": {
-    "reactronic": "^0.21.512"
+    "reactronic": "^0.21.513"
   },
   "devDependencies": {
-    "@types/node": "15.0.2",
-    "@typescript-eslint/eslint-plugin": "4.22.1",
-    "@typescript-eslint/parser": "4.22.1",
+    "@types/node": "16.10.1",
+    "@typescript-eslint/eslint-plugin": "4.31.2",
+    "@typescript-eslint/parser": "4.31.2",
     "ava": "3.15.0",
-    "eslint": "7.26.0",
+    "eslint": "7.32.0",
     "nyc": "15.1.0",
-    "ts-node": "9.1.1",
-    "tsconfig-paths": "3.9.0",
-    "typescript": "4.2.4"
+    "ts-node": "10.2.1",
+    "tsconfig-paths": "3.11.0",
+    "typescript": "4.4.3"
   },
   "scripts": {
     "build": "eslint source/**/*.ts test/**/*.ts && tsc",
