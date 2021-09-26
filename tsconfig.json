@@ -35,7 +35,7 @@
     "jsx": "react",
     // "paths": {
     //   "reactronic": [
-    //     "../library/reactronic/source/api.ts"
+    //     "../../library/reactronic/source/api.ts"
     //   ],
     // },
   },
