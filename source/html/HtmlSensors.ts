@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { transaction, trace, TraceLevel, sensitive, Sensitivity, Ref, Transaction } from 'reactronic'
+import { transaction, TraceLevel, sensitive, Sensitivity, Ref, Transaction, options } from 'reactronic'
 import { Sensors, grabAssociatedData, PointerButton, AssociatedData } from '../core/api'
 import { internalInstance } from '../core/System'
 import { SymAssociatedData } from './HtmlApiExt'
@@ -109,14 +109,14 @@ export class HtmlSensors extends Sensors {
     }
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   resetFocus(): void {
     const ei = this.eventSource?.associatedData?.focus
     this.trackFocus(ei ? [ei] : [], true)
     this.eventSource?.focus()
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onFocusIn(e: FocusEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -124,7 +124,7 @@ export class HtmlSensors extends Sensors {
       grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath))
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onFocusOut(e: FocusEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -132,7 +132,7 @@ export class HtmlSensors extends Sensors {
       grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath))
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onPointerOver(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -142,7 +142,7 @@ export class HtmlSensors extends Sensors {
       e.clientX, e.clientY)
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onPointerMove(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -185,7 +185,7 @@ export class HtmlSensors extends Sensors {
     }
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onPointerDown(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -205,7 +205,7 @@ export class HtmlSensors extends Sensors {
     }
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onPointerUp(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -246,7 +246,7 @@ export class HtmlSensors extends Sensors {
     }
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onLostPointerCapture(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -260,7 +260,7 @@ export class HtmlSensors extends Sensors {
     this.draggingAssociatedDataPath = undefined
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onClick(e: MouseEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -270,7 +270,7 @@ export class HtmlSensors extends Sensors {
       PointerButton.Left, e.clientX, e.clientY)
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onDblClick(e: MouseEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -280,7 +280,7 @@ export class HtmlSensors extends Sensors {
       PointerButton.Left, e.clientX, e.clientY)
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onTouchStart(e: Event): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -289,7 +289,7 @@ export class HtmlSensors extends Sensors {
       grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath))
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onTouchEnd(e: Event): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -297,7 +297,7 @@ export class HtmlSensors extends Sensors {
       grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataPath))
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onWheel(e: WheelEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -307,7 +307,7 @@ export class HtmlSensors extends Sensors {
       e.deltaX, e.deltaY, e.clientX, e.clientY)
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onKeyDown(e: KeyboardEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -315,7 +315,7 @@ export class HtmlSensors extends Sensors {
       grabAssociatedData(path, SymAssociatedData, 'keyboard', 'keyboardImportance', this.keyboard.associatedDataPath), e.key)
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onKeyUp(e: KeyboardEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -323,7 +323,7 @@ export class HtmlSensors extends Sensors {
       grabAssociatedData(path, SymAssociatedData, 'keyboard', 'keyboardImportance', this.keyboard.associatedDataPath), e.key)
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onDragStart(e: DragEvent): void {
     const path = e.composedPath()
     const associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataPath)
@@ -341,7 +341,7 @@ export class HtmlSensors extends Sensors {
     d.revision++
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onDragEnter(e: DragEvent): void {
     const d = this.drag
     this.currentEvent = e
@@ -352,7 +352,7 @@ export class HtmlSensors extends Sensors {
     d.revision++
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onDragLeave(e: DragEvent): void {
     const d = this.drag
     this.currentEvent = e
@@ -363,7 +363,7 @@ export class HtmlSensors extends Sensors {
     d.revision++
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onDragOver(e: DragEvent): void {
     const path = e.composedPath()
     const d = this.drag
@@ -375,7 +375,7 @@ export class HtmlSensors extends Sensors {
     d.revision++
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onDrop(e: DragEvent): void {
     const path = e.composedPath()
     const d = this.drag
@@ -388,7 +388,7 @@ export class HtmlSensors extends Sensors {
     d.revision++
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onDragEnd(e: DragEvent): void {
     const path = e.composedPath()
     const d = this.drag
@@ -412,7 +412,7 @@ export class HtmlSensors extends Sensors {
     d.revision++
   }
 
-  @transaction @trace(TraceLevel.Suppress)
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onResize(entries: Array<ResizeObserverEntry>): void {
     const r = this.resize
     r.revision++

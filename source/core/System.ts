@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reaction, nonreactive, Transaction, Reactronic, observableArgs } from 'reactronic'
+import { reaction, nonreactive, Transaction, Reactronic, options } from 'reactronic'
 
 // RefreshParent, Render, ComponentRender
 
@@ -172,10 +172,10 @@ class Mounted<E = unknown, O = void> {
     this.instance = instance
   }
 
-  @reaction @observableArgs(true) // @noSideEffects(true)
+  @reaction @options({ sensitiveArgs: true }) // @noSideEffects(true)
   render(m: Manifest<E, O>): void {
     renderInline(this, m)
-    Reactronic.configureCurrentMethod({ priority: this.level })
+    Reactronic.configureCurrentMethod({ order: this.level })
   }
 }
 
