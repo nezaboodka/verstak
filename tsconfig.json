@@ -33,6 +33,11 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "jsx": "react",
+    "paths": {
+      "reactronic": [
+        "../library/reactronic/source/api.ts"
+      ],
+    }
   },
   "include": [
     "source/**/*.ts",
