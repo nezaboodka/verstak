@@ -4,10 +4,10 @@
 [![Package Size](https://img.shields.io/bundlephobia/minzip/reactronic-front.svg?colorB=success)](https://bundlephobia.com/result?p=reactronic-front)
 [![CircleCI Status](https://circleci.com/gh/nezaboodka/reactronic-front.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/nezaboodka/reactronic-front)
 
-# **Reactronic Front** - Transactionally Reactive Frontend Development Framework
+# **Reactronic Front** - Transactional Reactive Frontend Development Framework
 
 Reactronic Front is a JavaScript library that provides
-[transactionally reactive](https://blog.nezaboodka.com/post/2019/593-modern-database-should-natively-support-transactionally-reactive-programming)
+[transactional reactive](https://blog.nezaboodka.com/post/2019/593-modern-database-should-natively-support-transactionally-reactive-programming)
 facilities for building frontend applications.
 
 Transactional reactivity means that state changes are being made in an
