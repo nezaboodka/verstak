@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Sensitivity, sensitive, ToggleRef } from 'reactronic'
+import { sensitive, ToggleRef } from 'reactronic'
 import { Sensor, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EmptyAssociatedDataArray } from './Sensor'
 import { AssociatedData, AssociatedDataPayload, AssociatedDataImportance } from './AssociatedData'
 import { SymAssociatedData } from '../html/HtmlApiExt'
@@ -41,7 +41,7 @@ export class Sensors {
 
     if (!this.keyboard.down) {
       const f = this.focus
-      sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () =>
+      sensitive(true, () =>
         switchAssociatedDataList(EmptyAssociatedDataArray, this.focus.associatedDataPath))
       f.revision++
     }
@@ -143,7 +143,7 @@ export class Sensors {
     const kb = this.keyboard
     kb.associatedDataPath = associatedDataList
     kb.up = ''
-    sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.down = key)
+    sensitive(true, () => kb.down = key)
     kb.modifiers |= Sensors.getKeyAsModifierIfAny(key)
     kb.revision++
   }
@@ -152,7 +152,7 @@ export class Sensors {
     const kb = this.keyboard
     kb.associatedDataPath = associatedDataList
     kb.down = ''
-    sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => kb.up = key)
+    sensitive(true, () => kb.up = key)
     kb.modifiers &= ~Sensors.getKeyAsModifierIfAny(key)
     kb.revision++
   }

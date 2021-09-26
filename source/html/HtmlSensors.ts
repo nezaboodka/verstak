@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { transaction, TraceLevel, sensitive, Sensitivity, Ref, Transaction, options } from 'reactronic'
+import { transaction, TraceLevel, sensitive, Ref, Transaction, options } from 'reactronic'
 import { Sensors, grabAssociatedData, PointerButton, AssociatedData } from '../core/api'
 import { internalInstance } from '../core/System'
 import { SymAssociatedData } from './HtmlApiExt'
@@ -368,7 +368,7 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     const d = this.drag
     this.currentEvent = e
-    sensitive(Sensitivity.ReactEvenOnSameValueAssignment, () => d.stage = DragStage.Dragging)
+    sensitive(true, () => d.stage = DragStage.Dragging)
     d.draggingPositionX = e.clientX
     d.draggingPositionY = e.clientY
     d.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataPath)
