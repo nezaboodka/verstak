@@ -1,0 +1,3 @@
+[submodule "reactronic"]
+	path = library/reactronic
+	url = https://github.com/nezaboodka/reactronic.git
