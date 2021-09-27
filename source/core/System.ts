@@ -118,8 +118,9 @@ export function unmount(m: Manifest<any, any>, owner: Manifest, cause: Manifest)
   const inst = m.mounted!.instance as Instance
   for (const x of inst.children)
     callUnmount(x, m, cause)
-  inst.native = undefined
-  m.mounted = undefined
+  // Fix: accessing undefined value when parent unmounts child that is marked for re-rendering
+  // inst.native = undefined
+  // m.mounted = undefined
 }
 
 // instance, cycle, trace, forAll
