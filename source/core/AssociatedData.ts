@@ -13,8 +13,9 @@ export interface AssociatedDataPayload {
   keyboard?: unknown
   pointer?: unknown
   scroll?: unknown
-  drag?: unknown
   resize?: unknown
+  drag?: unknown
+  htmlDrag?: unknown
 }
 
 export interface AssociatedDataImportance {

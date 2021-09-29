@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ObservableObject, nonreactive } from 'reactronic'
+import { ObservableObject, nonreactive, unobservable, Ref } from 'reactronic'
 
 // Sensor
 
@@ -74,6 +74,39 @@ export class Scroll extends Sensor {
   positionY = 0
   deltaX = 0
   deltaY = 0
+}
+
+export enum DragStage {
+  Started,
+  Dragging,
+  Dropped,
+  Finished,
+}
+
+export class DragSensor extends Sensor {
+  @unobservable protected readonly currentEvent: Ref<Event | undefined>
+
+  stage = DragStage.Finished
+  draggingModifiers = KeyboardModifiers.None
+  draggingOriginData: any = undefined
+  draggingData: any = undefined
+  draggingStartX = Infinity
+  draggingStartY = Infinity
+  draggingPositionX = Infinity
+  draggingPositionY = Infinity
+  dropPositionX = Infinity
+  dropPositionY = Infinity
+  dropped: boolean = false
+
+  constructor(currentEvent: Ref<Event | undefined>) {
+    super()
+    this.currentEvent = currentEvent
+  }
+
+  // @reaction
+  // protected debug(): void {
+  //   console.log(`stage = ${DragStage[this.stage]}`)
+  // }
 }
 
 export const EmptyAssociatedDataArray: any[] = []

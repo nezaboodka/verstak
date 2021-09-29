@@ -5,8 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { unobservable, Ref } from 'reactronic'
-import { KeyboardModifiers, Sensor } from '../core/api'
+import { Ref } from 'reactronic'
+import { DragSensor, DragStage, Sensor } from '../core/api'
 
 // Resize
 
@@ -17,7 +17,7 @@ export interface ResizedElement {
   readonly resizeData: any
 }
 
-export class ResizeSensor extends Sensor {
+export class HtmlResizeSensor extends Sensor {
   resizedElements: Array<ResizedElement> = []
 }
 
@@ -26,31 +26,10 @@ export class ResizeSensor extends Sensor {
 export type DragEffectAllowed = 'none' | 'copy' | 'copyLink' | 'copyMove' | 'link' | 'linkMove' | 'move' | 'all' | 'uninitialized'
 export type DropEffect = 'none' | 'copy' | 'link' | 'move'
 
-export enum DragStage {
-  Started,
-  Dragging,
-  Dropped,
-  Finished,
-}
-
-export class DragSensor extends Sensor {
-  @unobservable private readonly currentEvent: Ref<Event | undefined>
-
-  stage = DragStage.Finished
-  draggingModifiers = KeyboardModifiers.None
-  draggingOriginData: any = undefined
-  draggingData: any = undefined
-  draggingStartX = Infinity
-  draggingStartY = Infinity
-  draggingPositionX = Infinity
-  draggingPositionY = Infinity
-  dropPositionX = Infinity
-  dropPositionY = Infinity
-  dropped: boolean = false
+export class HtmlDragSensor extends DragSensor {
 
   constructor(currentEvent: Ref<Event | undefined>) {
-    super()
-    this.currentEvent = currentEvent
+    super(currentEvent)
   }
 
   get dragEvent(): DragEvent {
