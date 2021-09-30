@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ObservableObject, nonreactive, unobservable, Ref } from 'reactronic'
+import { ObservableObject, nonreactive, unobservable, Ref, reaction } from 'reactronic'
 
 // Sensor
 
@@ -103,10 +103,10 @@ export class DragSensor extends Sensor {
     this.currentEvent = currentEvent
   }
 
-  // @reaction
-  // protected debug(): void {
-  //   console.log(`stage = ${DragStage[this.stage]}`)
-  // }
+  @reaction
+  protected debug(): void {
+    console.log(`stage = ${DragStage[this.stage]}`)
+  }
 }
 
 export const EmptyAssociatedDataArray: any[] = []
