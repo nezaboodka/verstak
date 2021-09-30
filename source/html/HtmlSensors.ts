@@ -5,8 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { transaction, TraceLevel, sensitive, Ref, Transaction, options } from 'reactronic'
-import { Sensors, grabAssociatedData, PointerButton, AssociatedData, DragStage } from '../core/api'
+import { transaction, TraceLevel, sensitive, Ref, Transaction, options, Reentrance } from 'reactronic'
+import { Sensors, grabAssociatedData, PointerButton, AssociatedData, DragStage, DragSensor } from '../core/api'
 import { internalInstance } from '../core/System'
 import { SymAssociatedData } from './HtmlApiExt'
 import { HtmlDragSensor, HtmlResizeSensor } from './HtmlSensor'
@@ -18,12 +18,6 @@ export class HtmlSensors extends Sensors {
   readonly htmlDrag: HtmlDragSensor
   readonly resize: HtmlResizeSensor
 
-  private draggingOriginData: unknown | undefined
-  private draggingAssociatedDataPath: unknown[]
-  private draggingStartX: number
-  private draggingStartY: number
-  private draggingOver: boolean
-
   static readonly DraggingThreshold = 4
 
   constructor() {
@@ -32,12 +26,6 @@ export class HtmlSensors extends Sensors {
     this.htmlDrag = new HtmlDragSensor(Ref.to(this).currentEvent)
     this.resize = new HtmlResizeSensor()
     this.resizeObserver = new ResizeObserver(this.onResize)
-
-    this.draggingOriginData = undefined
-    this.draggingAssociatedDataPath = []
-    this.draggingStartX = Infinity
-    this.draggingStartY = Infinity
-    this.draggingOver = false
   }
 
   observeResizeOfRenderingElement(value: boolean): void {
@@ -143,7 +131,7 @@ export class HtmlSensors extends Sensors {
       e.clientX, e.clientY)
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
   protected onPointerMove(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -151,36 +139,30 @@ export class HtmlSensors extends Sensors {
       grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.pointer.associatedDataPath),
       e.pointerId, e.clientX, e.clientY)
 
-    if (this.draggingOriginData) {
-      if (!this.draggingOver) {
-        if (Math.abs(e.clientX - this.draggingStartX) > HtmlSensors.DraggingThreshold ||
-          Math.abs(e.clientY - this.draggingStartY) > HtmlSensors.DraggingThreshold) {
-          this.draggingOver = true
-          Transaction.runAs({ standalone: true }, () => {
-            const d = this.drag
-            d.stage = DragStage.Started
-            d.associatedDataPath = this.draggingAssociatedDataPath
-            d.draggingOriginData = this.draggingOriginData
-            d.draggingStartX = this.draggingStartX
-            d.draggingStartY = this.draggingStartY
-            d.draggingPositionX = e.clientX
-            d.draggingPositionY = e.clientY
-            d.draggingModifiers = this.keyboard.modifiers
-            d.dropped = false
-            d.revision++
-          })
-        }
-      }
-      if (this.draggingOver) {
-        const d = this.drag
-        this.currentEvent = e
+    const d = this.drag
+    if (d.dragStartChecking) {
+      if (Math.abs(e.clientX - d.draggingStartX) > HtmlSensors.DraggingThreshold ||
+        Math.abs(e.clientY - d.draggingStartY) > HtmlSensors.DraggingThreshold) {
+
+        console.log(`dragStartChecking = ${d.dragStartChecking}, draggingData = ${d.draggingData}`)
+
+        Transaction.runAs({ standalone: true }, () => {
+          d.dragStartChecking = false
+          d.stage = DragStage.Started
+          d.draggingPositionX = e.clientX
+          d.draggingPositionY = e.clientY
+          d.dropped = false
+          d.revision++
+        })
         d.stage = DragStage.Dragging
-        d.draggingPositionX = e.clientX
-        d.draggingPositionY = e.clientY
-        d.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.drag.associatedDataPath)
-        d.draggingModifiers = this.keyboard.modifiers
-        d.revision++
       }
+    }
+    if (d.stage === DragStage.Dragging) {
+      d.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', d.associatedDataPath)
+      d.draggingPositionX = e.clientX
+      d.draggingPositionY = e.clientY
+      d.draggingModifiers = this.keyboard.modifiers
+      d.revision++
     }
   }
 
@@ -193,15 +175,17 @@ export class HtmlSensors extends Sensors {
       grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath),
       e.pointerId, e.buttons, e.clientX, e.clientY)
 
-    const p = this.pointer
-    if (p.down === PointerButton.Left) {
+    if (this.pointer.down === PointerButton.Left) {
       const associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', [])
       const draggingOriginData = associatedDataPath[0] as AssociatedData | undefined
       if (draggingOriginData) {
-        this.draggingOriginData = draggingOriginData
-        this.draggingAssociatedDataPath = associatedDataPath
-        this.draggingStartX = e.clientX
-        this.draggingStartY = e.clientY
+        const d = this.drag
+        d.dragStartChecking = true
+        d.associatedDataPath = associatedDataPath
+        d.draggingOriginData = draggingOriginData
+        d.draggingStartX = e.clientX
+        d.draggingStartY = e.clientY
+        d.draggingModifiers = this.keyboard.modifiers
       }
     }
   }
@@ -215,14 +199,15 @@ export class HtmlSensors extends Sensors {
       grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath),
       e.pointerId, e.buttons, e.clientX, e.clientY)
 
-    if (this.draggingOver) {
-      const d = this.drag
+    const d = this.drag
+    if (d.stage === DragStage.Dragging) {
       this.currentEvent = e
       Transaction.runAs({ standalone: true }, () => {
         d.stage = DragStage.Dropped
         d.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', d.associatedDataPath)
         d.dropPositionX = e.clientX
         d.dropPositionY = e.clientY
+        d.draggingModifiers = this.keyboard.modifiers
         d.dropped = true
         d.revision++
       })
@@ -230,21 +215,8 @@ export class HtmlSensors extends Sensors {
         d.stage = DragStage.Finished
         d.revision++
       })
-      d.draggingOriginData = undefined
-      d.draggingData = undefined
-      d.draggingStartX = Infinity
-      d.draggingStartY = Infinity
-      d.draggingPositionX = Infinity
-      d.draggingPositionY = Infinity
-      d.dropPositionX = Infinity
-      d.dropPositionY = Infinity
-      d.dropped = false
+      d.reset()
       d.revision++
-      this.draggingOriginData = undefined
-      this.draggingAssociatedDataPath = []
-      this.draggingStartX = Infinity
-      this.draggingStartY = Infinity
-      this.draggingOver = false
     }
   }
 
@@ -257,31 +229,24 @@ export class HtmlSensors extends Sensors {
       grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.focus.associatedDataPath),
       e.pointerId, e.buttons, e.clientX, e.clientY)
 
-    if (this.draggingOver) {
-      const d = this.htmlDrag
-      this.currentEvent = e
+    this.tryCancelDragging(this.drag, path)
+    this.tryCancelDragging(this.htmlDrag, path)
+  }
+
+  protected tryCancelDragging(drag: DragSensor, path: any[]): void {
+    if (drag.stage !== DragStage.Finished) {
       Transaction.runAs({ standalone: true }, () => {
-        d.stage = DragStage.Finished
-        d.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'htmlDrag', 'dragImportance', d.associatedDataPath)
-        d.dropPositionX = e.clientX
-        d.dropPositionY = e.clientY
-        d.dropped = false
-        d.revision++
+        drag.stage = DragStage.Finished
+        drag.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', drag.associatedDataPath)
+        const event = this.currentEvent as PointerEvent
+        drag.dropPositionX = event.clientX
+        drag.dropPositionY = event.clientY
+        drag.draggingModifiers = this.keyboard.modifiers
+        drag.dropped = false
+        drag.revision++
       })
-      d.draggingOriginData = undefined
-      d.draggingData = undefined
-      d.draggingStartX = Infinity
-      d.draggingStartY = Infinity
-      d.draggingPositionX = Infinity
-      d.draggingPositionY = Infinity
-      d.dropPositionX = Infinity
-      d.dropPositionY = Infinity
-      d.revision++
-      this.draggingOriginData = undefined
-      this.draggingAssociatedDataPath = []
-      this.draggingStartX = Infinity
-      this.draggingStartY = Infinity
-      this.draggingOver = false
+      drag.reset()
+      drag.revision++
     }
   }
 
@@ -425,15 +390,7 @@ export class HtmlSensors extends Sensors {
       d.dropPositionY = e.clientY
       d.revision++
     })
-    d.draggingOriginData = undefined
-    d.draggingData = undefined
-    d.draggingStartX = Infinity
-    d.draggingStartY = Infinity
-    d.draggingPositionX = Infinity
-    d.draggingPositionY = Infinity
-    d.dropPositionX = Infinity
-    d.dropPositionY = Infinity
-    d.dropped = false
+    d.reset()
     d.revision++
   }
 

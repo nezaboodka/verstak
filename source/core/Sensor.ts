@@ -86,6 +86,7 @@ export enum DragStage {
 export class DragSensor extends Sensor {
   @unobservable protected readonly currentEvent: Ref<Event | undefined>
 
+  dragStartChecking: boolean = false
   stage = DragStage.Finished
   draggingModifiers = KeyboardModifiers.None
   draggingOriginData: any = undefined
@@ -103,9 +104,26 @@ export class DragSensor extends Sensor {
     this.currentEvent = currentEvent
   }
 
+  reset(): void {
+    this.dragStartChecking = false
+    this.draggingOriginData = undefined
+    this.draggingData = undefined
+    this.draggingStartX = Infinity
+    this.draggingStartY = Infinity
+    this.draggingPositionX = Infinity
+    this.draggingPositionY = Infinity
+    this.dropPositionX = Infinity
+    this.dropPositionY = Infinity
+    this.dropped = false
+  }
+
   @reaction
   protected debug(): void {
-    console.log(`stage = ${DragStage[this.stage]}`)
+    this.stage
+    nonreactive(() => {
+      console.log(`stage = ${DragStage[this.stage]}, start = (${this.draggingStartX}, ${this.draggingStartY}), pos = (${this.draggingPositionX}, ${this.draggingPositionY})`)
+      console.log(this.draggingData)
+    })
   }
 }
 
