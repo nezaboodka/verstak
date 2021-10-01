@@ -115,12 +115,13 @@ export function renderChildrenNow(): void {
 }
 
 export function unmount(m: Manifest<any, any>, owner: Manifest, cause: Manifest): void {
-  const inst = m.mounted!.instance as Instance
-  for (const x of inst.children)
-    callUnmount(x, m, cause)
-  // Fix: accessing undefined value when parent unmounts child that is marked for re-rendering
-  // inst.native = undefined
-  // m.mounted = undefined
+  const inst = m.mounted?.instance
+  if (inst instanceof Instance) {
+    for (const x of inst.children)
+      callUnmount(x, m, cause)
+    inst.native = undefined
+  }
+  m.mounted = undefined
 }
 
 // instance, cycle, trace, forAll
@@ -213,8 +214,8 @@ function callMount(m: Manifest, owner: Manifest, sibling?: Manifest): Mounted {
 function callUnmount(m: Manifest, owner: Manifest, cause: Manifest): void {
   if (gTrace && gTraceMask.indexOf('u') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
     console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.mounted!.level))}${getManifestTraceHint(m)}.unmounting`)
-  if (m.args !== RefreshParent)
-    Reactronic.dispose(m.mounted) // isolated(Cache.unmount, t.instance) // TODO: Consider creating one transaction for all un-mounts
+  if (m.args !== RefreshParent) // TODO: Consider creating one transaction for all un-mounts
+    Transaction.runAs({ standalone: true }, () => Reactronic.dispose(m.mounted))
   const rtti = m.rtti
   if (rtti.unmount)
     rtti.unmount(m, owner, cause)
