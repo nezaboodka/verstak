@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { transaction, TraceLevel, Ref, Transaction, options } from 'reactronic'
+import { transaction, TraceLevel, Transaction, options } from 'reactronic'
 import { Sensors, grabAssociatedData, PointerButton, AssociatedData, DragStage, DragSensor } from '../core/api'
 import { internalInstance } from '../core/System'
 import { SymAssociatedData } from './HtmlApiExt'
@@ -14,6 +14,7 @@ import { HtmlDragSensor, HtmlResizeSensor } from './HtmlSensor'
 export class HtmlSensors extends Sensors {
   private readonly resizeObserver: ResizeObserver
   eventSource: HTMLElement | undefined
+  protected currentEvent: Event | undefined = undefined
 
   readonly htmlDrag: HtmlDragSensor
   readonly resize: HtmlResizeSensor
@@ -23,7 +24,7 @@ export class HtmlSensors extends Sensors {
   constructor() {
     super()
     this.eventSource = undefined
-    this.htmlDrag = new HtmlDragSensor(Ref.to(this).currentEvent)
+    this.htmlDrag = new HtmlDragSensor()
     this.resize = new HtmlResizeSensor()
     this.resizeObserver = new ResizeObserver(this.onResize)
   }

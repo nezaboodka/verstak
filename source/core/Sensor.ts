@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ObservableObject, nonreactive, unobservable, Ref, reaction } from 'reactronic'
+import { ObservableObject, nonreactive, reaction } from 'reactronic'
 
 // Sensor
 
@@ -84,8 +84,7 @@ export enum DragStage {
 }
 
 export class DragSensor extends Sensor {
-  @unobservable protected readonly currentEvent: Ref<Event | undefined>
-
+  protected event: DragEvent | undefined = undefined
   dragStartChecking: boolean = false
   stage = DragStage.Finished
   draggingModifiers = KeyboardModifiers.None
@@ -98,11 +97,6 @@ export class DragSensor extends Sensor {
   dropPositionX = Infinity
   dropPositionY = Infinity
   dropped: boolean = false
-
-  constructor(currentEvent: Ref<Event | undefined>) {
-    super()
-    this.currentEvent = currentEvent
-  }
 
   reset(): void {
     this.dragStartChecking = false
@@ -119,7 +113,6 @@ export class DragSensor extends Sensor {
 
   @reaction
   protected debug(): void {
-    this.stage
     console.log(`stage = ${DragStage[this.stage]}, draggingData: ${this.draggingData}, start = (${this.draggingStartX}, ${this.draggingStartY}), pos = (${this.draggingPositionX}, ${this.draggingPositionY})`)
   }
 }

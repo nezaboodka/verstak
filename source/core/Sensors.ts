@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Ref, sensitive, ToggleRef } from 'reactronic'
+import { sensitive, ToggleRef } from 'reactronic'
 import { Sensor, Keyboard, Pointer, Scroll, PointerButton, KeyboardModifiers, EmptyAssociatedDataArray, DragSensor } from './Sensor'
 import { AssociatedData, AssociatedDataPayload, AssociatedDataImportance } from './AssociatedData'
 import { SymAssociatedData } from '../html/HtmlApiExt'
@@ -17,7 +17,6 @@ export class Sensors {
   readonly pointer: Pointer
   readonly scroll: Scroll
   readonly drag: DragSensor
-  currentEvent: Event | undefined = undefined
 
   constructor() {
     this.focus = new Sensor()
@@ -25,8 +24,7 @@ export class Sensors {
     this.keyboard = new Keyboard()
     this.pointer = new Pointer()
     this.scroll = new Scroll()
-    this.currentEvent = undefined
-    this.drag = new DragSensor(Ref.to(this).currentEvent)
+    this.drag = new DragSensor()
   }
 
   resetFocus(): void {

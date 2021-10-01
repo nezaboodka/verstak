@@ -5,7 +5,6 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Ref } from 'reactronic'
 import { DragSensor, DragStage, Sensor } from '../core/api'
 
 // Resize
@@ -28,34 +27,23 @@ export type DropEffect = 'none' | 'copy' | 'link' | 'move'
 
 export class HtmlDragSensor extends DragSensor {
 
-  constructor(currentEvent: Ref<Event | undefined>) {
-    super(currentEvent)
-  }
-
-  get dragEvent(): DragEvent {
-    const e = this.currentEvent.value
-    if (!(e instanceof DragEvent))
-      throw new TypeError('\'currentEvent\' must be of type \'DragEvent\' to perform any drag operations')
-    return e
-  }
-
   get dropEffect(): DropEffect {
-    return this.dragEvent.dataTransfer?.dropEffect ?? 'none'
+    return this.event?.dataTransfer?.dropEffect ?? 'none'
   }
 
   set dropEffect(value: DropEffect) {
-    const dataTransfer = this.dragEvent.dataTransfer
+    const dataTransfer = this.event?.dataTransfer
     if (dataTransfer)
       dataTransfer.dropEffect = value
   }
 
   get effectAllowed(): DragEffectAllowed {
-    return this.dragEvent.dataTransfer?.effectAllowed ?? 'none'
+    return this.event?.dataTransfer?.effectAllowed ?? 'none'
   }
 
   set effectAllowed(value: DragEffectAllowed) {
     if (this.stage === DragStage.Started) {
-      const dataTransfer = this.dragEvent.dataTransfer
+      const dataTransfer = this.event?.dataTransfer
       if (dataTransfer)
         dataTransfer.effectAllowed = value
     }
@@ -65,12 +53,12 @@ export class HtmlDragSensor extends DragSensor {
   }
 
   setDragImage(image: Element, x: number, y: number): void {
-    const dataTransfer = this.dragEvent.dataTransfer
+    const dataTransfer = this.event?.dataTransfer
     if (dataTransfer)
       dataTransfer.setDragImage(image, x, y)
   }
 
   allowDropHere(): void {
-    this.dragEvent.preventDefault()
+    this.event?.preventDefault()
   }
 }
