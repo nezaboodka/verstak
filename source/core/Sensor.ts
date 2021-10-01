@@ -120,10 +120,7 @@ export class DragSensor extends Sensor {
   @reaction
   protected debug(): void {
     this.stage
-    nonreactive(() => {
-      console.log(`stage = ${DragStage[this.stage]}, start = (${this.draggingStartX}, ${this.draggingStartY}), pos = (${this.draggingPositionX}, ${this.draggingPositionY})`)
-      console.log(this.draggingData)
-    })
+    console.log(`stage = ${DragStage[this.stage]}, draggingData: ${this.draggingData}, start = (${this.draggingStartX}, ${this.draggingStartY}), pos = (${this.draggingPositionX}, ${this.draggingPositionY})`)
   }
 }
 

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { transaction, TraceLevel, sensitive, Ref, Transaction, options, Reentrance } from 'reactronic'
+import { transaction, TraceLevel, Ref, Transaction, options } from 'reactronic'
 import { Sensors, grabAssociatedData, PointerButton, AssociatedData, DragStage, DragSensor } from '../core/api'
 import { internalInstance } from '../core/System'
 import { SymAssociatedData } from './HtmlApiExt'
@@ -131,7 +131,7 @@ export class HtmlSensors extends Sensors {
       e.clientX, e.clientY)
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected onPointerMove(e: PointerEvent): void {
     const path = e.composedPath()
     this.currentEvent = e
@@ -143,9 +143,6 @@ export class HtmlSensors extends Sensors {
     if (d.dragStartChecking) {
       if (Math.abs(e.clientX - d.draggingStartX) > HtmlSensors.DraggingThreshold ||
         Math.abs(e.clientY - d.draggingStartY) > HtmlSensors.DraggingThreshold) {
-
-        console.log(`dragStartChecking = ${d.dragStartChecking}, draggingData = ${d.draggingData}`)
-
         Transaction.runAs({ standalone: true }, () => {
           d.dragStartChecking = false
           d.stage = DragStage.Started
@@ -358,7 +355,7 @@ export class HtmlSensors extends Sensors {
     const path = e.composedPath()
     const d = this.htmlDrag
     this.currentEvent = e
-    sensitive(true, () => d.stage = DragStage.Dragging)
+    d.stage = DragStage.Dragging
     d.draggingPositionX = e.clientX
     d.draggingPositionY = e.clientY
     d.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'htmlDrag', 'dragImportance', this.htmlDrag.associatedDataPath)
