@@ -353,8 +353,8 @@ export class HtmlSensors extends Sensors {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected onDragOver(e: DragEvent): void {
     const path = e.composedPath()
-    const d = this.htmlDrag
     this.currentEvent = e
+    const d = this.htmlDrag
     d.stage = DragStage.Dragging
     d.draggingPositionX = e.clientX
     d.draggingPositionY = e.clientY
@@ -365,8 +365,8 @@ export class HtmlSensors extends Sensors {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected onDrop(e: DragEvent): void {
     const path = e.composedPath()
-    const d = this.htmlDrag
     this.currentEvent = e
+    const d = this.htmlDrag
     d.stage = DragStage.Dropped
     d.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'htmlDrag', 'dragImportance', this.htmlDrag.associatedDataPath)
     d.dropPositionX = e.clientX
@@ -378,6 +378,7 @@ export class HtmlSensors extends Sensors {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected onDragEnd(e: DragEvent): void {
     const path = e.composedPath()
+    this.currentEvent = e
     const d = this.htmlDrag
     Transaction.runAs({ standalone: true }, () => {
       this.currentEvent = e
