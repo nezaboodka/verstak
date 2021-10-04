@@ -5,66 +5,23 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ObservableObject, nonreactive, reaction } from 'reactronic'
-
-// Sensor
+import { ObservableObject, nonreactive, reaction, ToggleRef } from 'reactronic'
+import { AssociatedData, AssociatedDataImportance, AssociatedDataPayload } from './AssociatedData'
 
 export class Sensor extends ObservableObject {
   revision: number = 0
   nativeElements: unknown[] = []
-  private composedAssociatedDataPath: unknown[] = EmptyAssociatedDataArray
-  get associatedDataPath(): unknown[] { return nonreactive(() => this.composedAssociatedDataPath) }
-  set associatedDataPath(value: unknown[]) { this.composedAssociatedDataPath = value }
+  private internalAssociatedDataPath: unknown[] = EmptyAssociatedDataArray
+
+  get associatedDataPath(): unknown[] { return nonreactive(() => this.internalAssociatedDataPath) }
+  set associatedDataPath(value: unknown[]) { this.internalAssociatedDataPath = value }
+  get topAssociatedData(): unknown {
+    return nonreactive(() => this.internalAssociatedDataPath.length > 0 ? this.internalAssociatedDataPath[0] : undefined)
+  }
 }
 
-// Keyboard
-
-export enum KeyboardModifiers {
-  None = 0,
-  Ctrl = 1,
-  Shift = 2,
-  Alt = 4,
-  Meta = 8,
-  CtrlShift = 1 + 2,
-  CtrlAlt = 1 + 4,
-  CtrlMeta = 1 + 8,
-  CtrlShiftAlt = 1 + 2 + 4,
-  CtrlShiftAltMeta = 1 + 2 + 4 + 8,
-  CtrlShiftMeta = 1 + 2 + 8,
-  ShiftAlt = 2 + 4,
-  ShiftMeta = 2 + 8,
-  ShiftAltMeta = 2 + 4 + 8,
-  AltMeta = 4 + 8,
-}
-
-export class Keyboard extends Sensor {
-  down = ''
-  up = ''
-  modifiers = KeyboardModifiers.None
-}
-
-// Pointer
-
-export enum PointerButton {
-  None = 0,
-  Left = 1,
-  Right = 2,
-  Middle = 4,
-}
-
-export class Pointer extends Sensor {
-  captured = false
-  touched = false
-  positionX = 0 // position relative to browser's viewport
-  positionY = 0 // position relative to browser's viewport
-  previousPositionX = 0 // position relative to browser's viewport
-  previousPositionY = 0 // position relative to browser's viewport
-  down = PointerButton.None
-  up = PointerButton.None
-  click = PointerButton.None
-  doubleClick = PointerButton.None
-  associatedDataUnderPointer: unknown[] = []
-  topAssociatedDataUnderPointer: unknown = undefined
+export class HtmlElementSensor extends Sensor {
+  sourceElement: HTMLElement | undefined = undefined
 }
 
 // Scroll
@@ -76,45 +33,72 @@ export class Scroll extends Sensor {
   deltaY = 0
 }
 
-export enum DragStage {
-  Started,
-  Dragging,
-  Dropped,
-  Finished,
-}
-
-export class DragSensor extends Sensor {
-  protected event: DragEvent | undefined = undefined
-  dragStartChecking: boolean = false
-  stage = DragStage.Finished
-  draggingModifiers = KeyboardModifiers.None
-  draggingOriginData: any = undefined
-  draggingData: any = undefined
-  draggingStartX = Infinity
-  draggingStartY = Infinity
-  draggingPositionX = Infinity
-  draggingPositionY = Infinity
-  dropPositionX = Infinity
-  dropPositionY = Infinity
-  dropped: boolean = false
-
-  reset(): void {
-    this.dragStartChecking = false
-    this.draggingOriginData = undefined
-    this.draggingData = undefined
-    this.draggingStartX = Infinity
-    this.draggingStartY = Infinity
-    this.draggingPositionX = Infinity
-    this.draggingPositionY = Infinity
-    this.dropPositionX = Infinity
-    this.dropPositionY = Infinity
-    this.dropped = false
-  }
-
-  @reaction
-  protected debug(): void {
-    console.log(`stage = ${DragStage[this.stage]}, draggingData: ${this.draggingData}, start = (${this.draggingStartX}, ${this.draggingStartY}), pos = (${this.draggingPositionX}, ${this.draggingPositionY})`)
-  }
-}
-
 export const EmptyAssociatedDataArray: any[] = []
+
+export function grabAssociatedData(elements: any[], sym: symbol,
+  payloadKey: keyof AssociatedDataPayload, importanceKey: keyof AssociatedDataImportance,
+  existing: Array<unknown>): Array<unknown> {
+  let result = existing
+  let i = 0
+  let j = 0
+  let importance = Number.MIN_SAFE_INTEGER
+  while (i < elements.length) {
+    const data = elements[i][sym] as AssociatedData | undefined
+    if (data !== undefined) {
+      const payload = data[payloadKey]
+      let imp = data[importanceKey]
+      if (payload !== undefined || imp !== undefined) {
+        imp = imp ?? 0
+        if (imp === importance) {
+          // Handle event infos of the same importance
+          if (result !== existing)
+            payload !== undefined && result.push(payload)
+          else if (payload !== undefined) {
+            if (payload !== existing[j])
+              result = existing.slice(0, j), result.push(payload)
+            else
+              j++
+          }
+          else {
+            result = existing.slice(0, j)
+          }
+        }
+        else if (imp > importance) {
+          // Raise events importance and start from scratch
+          importance = imp
+          result = existing
+          if (payload !== undefined) {
+            if (payload !== existing[0])
+              result = [payload]
+            else
+              j = 1
+          }
+          else {
+            result = EmptyAssociatedDataArray
+          }
+        }
+        else {
+          // Ignore event infos with lower importance
+        }
+      }
+    }
+    i++
+  }
+  if (j === 0 && result === existing && existing.length > 0)
+    result = EmptyAssociatedDataArray
+  return result
+}
+
+// export function switchAssociatedDataList(existing: unknown[], updated: unknown[]): unknown[] {
+//   if (updated !== existing) {
+//     existing.forEach(f => {
+//       if (f instanceof ToggleRef && f.value1 !== f.value2)
+//         f.value = f.value2
+//     })
+//     updated.forEach(x => {
+//       if (x instanceof ToggleRef)
+//         x.value = x.value1
+//     })
+//   }
+//   return updated
+// }
