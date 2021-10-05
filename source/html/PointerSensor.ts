@@ -21,10 +21,10 @@ export class PointerSensor extends HtmlElementSensor {
   private internalAssociatedDataUnderPointer: unknown[] = EmptyAssociatedDataArray
   pointerEvent: PointerEvent | MouseEvent | undefined = undefined
   captured = false
-  positionX = 0 // position relative to browser's viewport
-  positionY = 0 // position relative to browser's viewport
-  previousPositionX = 0 // position relative to browser's viewport
-  previousPositionY = 0 // position relative to browser's viewport
+  positionX = Infinity // position relative to browser's viewport
+  positionY = Infinity // position relative to browser's viewport
+  previousPositionX = Infinity // position relative to browser's viewport
+  previousPositionY = Infinity // position relative to browser's viewport
   down = PointerButton.None
   up = PointerButton.None
   modifiers = KeyboardModifiers.None
@@ -88,10 +88,7 @@ export class PointerSensor extends HtmlElementSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected onLostPointerCapture(e: PointerEvent): void {
-    this.rememberPointerEvent(e)
-    this.up = PointerButton.None
-    this.down = PointerButton.None
-    this.captured = false
+    this.reset()
   }
 
   protected onClick(e: MouseEvent): void {
@@ -137,6 +134,23 @@ export class PointerSensor extends HtmlElementSensor {
     this.previousPositionY = this.positionY
     this.positionX = e.clientX
     this.positionY = e.clientY
+    this.revision++
+  }
+
+  protected reset(): void {
+    this.internalAssociatedDataUnderPointer = EmptyAssociatedDataArray
+    this.pointerEvent = undefined
+    this.captured = false
+    this.positionX = Infinity
+    this.positionY = Infinity
+    this.previousPositionX = Infinity
+    this.previousPositionY = Infinity
+    this.down = PointerButton.None
+    this.up = PointerButton.None
+    this.modifiers = KeyboardModifiers.None
+    this.click = PointerButton.None
+    this.doubleClick = PointerButton.None
+    this.auxClick = PointerButton.None
     this.revision++
   }
 }

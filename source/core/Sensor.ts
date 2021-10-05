@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ObservableObject, nonreactive, reaction, ToggleRef } from 'reactronic'
+import { ObservableObject, nonreactive } from 'reactronic'
 import { AssociatedData, AssociatedDataImportance, AssociatedDataPayload } from './AssociatedData'
 
 export class Sensor extends ObservableObject {
