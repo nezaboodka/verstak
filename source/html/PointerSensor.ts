@@ -5,10 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { nonreactive, options, Reentrance, TraceLevel, Transaction, transaction } from 'reactronic'
-import { EmptyAssociatedDataArray, grabAssociatedData, HtmlElementSensor } from '../core/Sensor'
-import { SymAssociatedData } from './HtmlApiExt'
-import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
+import { nonreactive } from 'reactronic'
+import { EmptyAssociatedDataArray, HtmlElementSensor } from '../core/Sensor'
+import { KeyboardModifiers } from './KeyboardSensor'
 
 export enum PointerButton {
   None = 0,
@@ -18,19 +17,16 @@ export enum PointerButton {
 }
 
 export class PointerSensor extends HtmlElementSensor {
-  private internalAssociatedDataUnderPointer: unknown[] = EmptyAssociatedDataArray
+  protected internalAssociatedDataUnderPointer: unknown[] = EmptyAssociatedDataArray
   pointerEvent: PointerEvent | MouseEvent | undefined = undefined
-  captured = false
-  positionX = Infinity // position relative to browser's viewport
-  positionY = Infinity // position relative to browser's viewport
-  previousPositionX = Infinity // position relative to browser's viewport
-  previousPositionY = Infinity // position relative to browser's viewport
-  down = PointerButton.None
-  up = PointerButton.None
+  // captured = false
+  // positionX = Infinity // position relative to browser's viewport
+  // positionY = Infinity // position relative to browser's viewport
+  // previousPositionX = Infinity // position relative to browser's viewport
+  // previousPositionY = Infinity // position relative to browser's viewport
+  // down = PointerButton.None
+  // up = PointerButton.None
   modifiers = KeyboardModifiers.None
-  click = PointerButton.None
-  doubleClick = PointerButton.None
-  auxClick = PointerButton.None
 
   get associatedDataUnderPointer(): unknown[] { return nonreactive(() => this.internalAssociatedDataUnderPointer) }
   set associatedDataUnderPointer(value: unknown[]) { this.internalAssociatedDataUnderPointer = value }
@@ -38,121 +34,80 @@ export class PointerSensor extends HtmlElementSensor {
     return nonreactive(() => this.internalAssociatedDataUnderPointer.length > 0 ? this.internalAssociatedDataUnderPointer[0] : undefined)
   }
 
-  @transaction
-  listen(element: HTMLElement | undefined, enabled: boolean = true): void {
-    const existing = this.sourceElement
-    if (element !== existing) {
-      if (existing) {
-        existing.removeEventListener('pointermove', this.onPointerMove, { capture: true })
-        existing.removeEventListener('pointerdown', this.onPointerDown, { capture: true })
-        existing.removeEventListener('pointerup', this.onPointerUp, { capture: true })
-        existing.removeEventListener('lostpointercapture', this.onLostPointerCapture, { capture: true })
-        existing.removeEventListener('click', this.onClick, { capture: true })
-        existing.removeEventListener('dblclick', this.onDblClick, { capture: true })
-        existing.removeEventListener('auxclick', this.onAuxClick, { capture: true })
-      }
-      this.sourceElement = element
-      if (element && enabled) {
-        element.addEventListener('pointermove', this.onPointerMove, { capture: true })
-        element.addEventListener('pointerdown', this.onPointerDown, { capture: true })
-        element.addEventListener('pointerup', this.onPointerUp, { capture: true })
-        element.addEventListener('lostpointercapture', this.onLostPointerCapture, { capture: true })
-        element.addEventListener('click', this.onClick, { capture: true })
-        element.addEventListener('dblclick', this.onDblClick, { capture: true })
-        element.addEventListener('auxclick', this.onAuxClick, { capture: true })
-      }
-    }
-  }
+  // @transaction
+  // listen(element: HTMLElement | undefined, enabled: boolean = true): void {
+  //   const existing = this.sourceElement
+  //   if (element !== existing) {
+  //     if (existing) {
+  //       existing.removeEventListener('pointermove', this.onPointerMove, { capture: true })
+  //       existing.removeEventListener('pointerdown', this.onPointerDown, { capture: true })
+  //       existing.removeEventListener('pointerup', this.onPointerUp, { capture: true })
+  //       existing.removeEventListener('lostpointercapture', this.onLostPointerCapture, { capture: true })
+  //     }
+  //     this.sourceElement = element
+  //     if (element && enabled) {
+  //       element.addEventListener('pointermove', this.onPointerMove, { capture: true })
+  //       element.addEventListener('pointerdown', this.onPointerDown, { capture: true })
+  //       element.addEventListener('pointerup', this.onPointerUp, { capture: true })
+  //       element.addEventListener('lostpointercapture', this.onLostPointerCapture, { capture: true })
+  //     }
+  //   }
+  // }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
-  protected onPointerMove(e: PointerEvent): void {
-    this.rememberPointerEvent(e)
-  }
+  // @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
+  // protected onPointerMove(e: PointerEvent): void {
+  //   this.rememberPointerEvent(e)
+  // }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected onPointerDown(e: PointerEvent): void {
-    this.rememberPointerEvent(e)
-    this.down = extractPointerButton(e)
-  }
+  // @transaction @options({ trace: TraceLevel.Suppress })
+  // protected onPointerDown(e: PointerEvent): void {
+  //   this.rememberPointerEvent(e)
+  //   this.down = extractPointerButton(e)
+  // }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected onPointerUp(e: PointerEvent): void {
-    this.rememberPointerEvent(e)
-    this.up = extractPointerButton(e)
-    this.down = PointerButton.None
-    if (this.captured) {
-      this.sourceElement?.releasePointerCapture(e.pointerId)
-      this.captured = false
-    }
-  }
+  // @transaction @options({ trace: TraceLevel.Suppress })
+  // protected onPointerUp(e: PointerEvent): void {
+  //   this.rememberPointerEvent(e)
+  //   this.up = extractPointerButton(e)
+  //   this.down = PointerButton.None
+  //   if (this.captured) {
+  //     this.sourceElement?.releasePointerCapture(e.pointerId)
+  //     this.captured = false
+  //   }
+  // }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected onLostPointerCapture(e: PointerEvent): void {
-    this.reset()
-  }
+  // @transaction @options({ trace: TraceLevel.Suppress })
+  // protected onLostPointerCapture(e: PointerEvent): void {
+  //   this.reset()
+  // }
 
-  protected onClick(e: MouseEvent): void {
-    Transaction.runAs({ standalone: true, trace: TraceLevel.Suppress }, () => {
-      this.rememberPointerEvent(e)
-      this.click = PointerButton.Left
-    })
-    Transaction.runAs({ standalone: true, trace: TraceLevel.Suppress }, () => {
-      this.click = PointerButton.None
-    })
-  }
+  // protected rememberPointerEvent(e: PointerEvent | MouseEvent): void {
+  //   this.pointerEvent = e
+  //   const path = e.composedPath()
+  //   this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.associatedDataPath)
+  //   const elements = document.elementsFromPoint(e.clientX, e.clientY)
+  //   this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'pointer', 'pointerImportance', this.associatedDataUnderPointer)
+  //   this.modifiers = extractModifierKeys(e)
+  //   this.previousPositionX = this.positionX
+  //   this.previousPositionY = this.positionY
+  //   this.positionX = e.clientX
+  //   this.positionY = e.clientY
+  //   this.revision++
+  // }
 
-  protected onDblClick(e: MouseEvent): void {
-    Transaction.runAs({ standalone: true, trace: TraceLevel.Suppress }, () => {
-      this.rememberPointerEvent(e)
-      this.doubleClick = PointerButton.Left
-    })
-    Transaction.runAs({ standalone: true, trace: TraceLevel.Suppress }, () => {
-      this.rememberPointerEvent(e)
-      this.doubleClick = PointerButton.None
-    })
-  }
-
-  protected onAuxClick(e: MouseEvent): void {
-    Transaction.runAs({ standalone: true, trace: TraceLevel.Suppress }, () => {
-      this.rememberPointerEvent(e)
-      this.auxClick = PointerButton.Right
-    })
-    Transaction.runAs({ standalone: true, trace: TraceLevel.Suppress }, () => {
-      this.rememberPointerEvent(e)
-      this.auxClick = PointerButton.None
-    })
-  }
-
-  protected rememberPointerEvent(e: PointerEvent | MouseEvent): void {
-    this.pointerEvent = e
-    const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'pointer', 'pointerImportance', this.associatedDataPath)
-    const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'pointer', 'pointerImportance', this.associatedDataUnderPointer)
-    this.modifiers = extractModifierKeys(e)
-    this.previousPositionX = this.positionX
-    this.previousPositionY = this.positionY
-    this.positionX = e.clientX
-    this.positionY = e.clientY
-    this.revision++
-  }
-
-  protected reset(): void {
-    this.internalAssociatedDataUnderPointer = EmptyAssociatedDataArray
-    this.pointerEvent = undefined
-    this.captured = false
-    this.positionX = Infinity
-    this.positionY = Infinity
-    this.previousPositionX = Infinity
-    this.previousPositionY = Infinity
-    this.down = PointerButton.None
-    this.up = PointerButton.None
-    this.modifiers = KeyboardModifiers.None
-    this.click = PointerButton.None
-    this.doubleClick = PointerButton.None
-    this.auxClick = PointerButton.None
-    this.revision++
-  }
+  // protected reset(): void {
+  //   this.internalAssociatedDataUnderPointer = EmptyAssociatedDataArray
+  //   this.pointerEvent = undefined
+  //   this.captured = false
+  //   this.positionX = Infinity
+  //   this.positionY = Infinity
+  //   this.previousPositionX = Infinity
+  //   this.previousPositionY = Infinity
+  //   this.down = PointerButton.None
+  //   this.up = PointerButton.None
+  //   this.modifiers = KeyboardModifiers.None
+  //   this.revision++
+  // }
 }
 
 export function extractPointerButton(e: MouseEvent): PointerButton {

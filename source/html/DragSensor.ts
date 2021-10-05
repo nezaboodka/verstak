@@ -5,11 +5,11 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, Reactronic, Reentrance, TraceLevel, Transaction, transaction } from 'reactronic'
+import { options, reaction, Reentrance, TraceLevel, transaction } from 'reactronic'
 import { extractPointerButton, PointerButton, PointerSensor } from './PointerSensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
-import { extractModifierKeys } from './KeyboardSensor'
+import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { AssociatedData } from '../core/AssociatedData'
 
 export enum DragStage {
@@ -20,15 +20,17 @@ export enum DragStage {
 }
 
 export class DragSensor extends PointerSensor {
-  dragEvent: DragEvent | undefined = undefined
-  trying: boolean = false
   stage = DragStage.Finished
   originData: any = undefined
   draggingData: any = undefined
-  startX = Infinity
-  startY = Infinity
-  dropX = Infinity
-  dropY = Infinity
+  button = PointerButton.None
+  startX = Infinity // position relative to browser's viewport
+  startY = Infinity // position relative to browser's viewport
+  draggingX = Infinity // position relative to browser's viewport
+  draggingY = Infinity // position relative to browser's viewport
+  dropX = Infinity // position relative to browser's viewport
+  dropY = Infinity // position relative to browser's viewport
+  trying: boolean = false
   dropped: boolean = false
 
   static readonly DraggingThreshold = 4
@@ -68,7 +70,7 @@ export class DragSensor extends PointerSensor {
   }
 
   protected onPointerDown(e: PointerEvent): void {
-    if (extractPointerButton(e) === PointerButton.Left) {
+    if (e.button === 0 || e.button === 1) {
       this.tryDragging(e)
     }
   }
@@ -105,23 +107,23 @@ export class DragSensor extends PointerSensor {
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', 'dragImportance', this.associatedDataUnderPointer)
     this.modifiers = extractModifierKeys(e)
-    this.previousPositionX = this.positionX
-    this.previousPositionY = this.positionY
-    this.positionX = e.clientX
-    this.positionY = e.clientY
+    this.draggingX = e.clientX
+    this.draggingY = e.clientY
     this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected reset(): void {
-    super.reset()
+    this.pointerEvent = undefined
     this.trying = false
     this.originData = undefined
     this.draggingData = undefined
+    this.button = PointerButton.None
     this.startX = Infinity
     this.startY = Infinity
     this.dropX = Infinity
     this.dropY = Infinity
+    this.modifiers = KeyboardModifiers.None
     this.dropped = false
   }
 
@@ -133,6 +135,7 @@ export class DragSensor extends PointerSensor {
     if (draggingOriginData) {
       this.pointerEvent = e
       this.trying = true
+      this.button = extractPointerButton(e)
       this.startX = e.clientX
       this.startY = e.clientY
       this.associatedDataUnderPointer = associatedDataUnderPointer
@@ -140,10 +143,8 @@ export class DragSensor extends PointerSensor {
       const path = e.composedPath()
       this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', EmptyAssociatedDataArray)
       this.modifiers = extractModifierKeys(e)
-      this.previousPositionX = this.positionX
-      this.previousPositionY = this.positionY
-      this.positionX = e.clientX
-      this.positionY = e.clientY
+      this.draggingX = e.clientX
+      this.draggingY = e.clientY
       this.revision++
     }
   }
@@ -166,7 +167,7 @@ export class DragSensor extends PointerSensor {
     this.rememberPointerEvent(e)
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Suppress })
   private drop(e: PointerEvent): void {
     this.rememberPointerEvent(e)
     this.stage = DragStage.Dropped
@@ -175,13 +176,13 @@ export class DragSensor extends PointerSensor {
     this.dropped = true
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Suppress })
   private finishDragging(): void {
     this.stage = DragStage.Finished
     this.revision++
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Suppress })
   private cancelDragging(): void {
     this.stage = DragStage.Finished
     this.dropped = false
@@ -189,6 +190,6 @@ export class DragSensor extends PointerSensor {
 
   @reaction
   protected debug(): void {
-    console.log(`stage = ${DragStage[this.stage]}, draggingData: ${this.draggingData}, start = (${this.startX}, ${this.startY}), pos = (${this.positionX}, ${this.positionY})`)
+    console.log(`stage = ${DragStage[this.stage]}, draggingData: ${this.draggingData}, start = (${this.startX}, ${this.startY}), pos = (${this.draggingX}, ${this.draggingY})`)
   }
 }
