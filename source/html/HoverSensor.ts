@@ -13,8 +13,8 @@ import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 export class HoverSensor extends HtmlElementSensor {
   private internalAssociatedDataUnderPointer: unknown[] = EmptyAssociatedDataArray
   hoverEvent: PointerEvent | MouseEvent | undefined = undefined
-  positionX = 0 // position relative to browser's viewport
-  positionY = 0 // position relative to browser's viewport
+  positionX = Infinity // position relative to browser's viewport
+  positionY = Infinity // position relative to browser's viewport
   modifiers = KeyboardModifiers.None
 
   get associatedDataUnderPointer(): unknown[] { return nonreactive(() => this.internalAssociatedDataUnderPointer) }
