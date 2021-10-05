@@ -21,7 +21,7 @@ export enum DragStage {
 
 export class DragSensor extends PointerSensor {
   dragEvent: DragEvent | undefined = undefined
-  startChecking: boolean = false
+  trying: boolean = false
   stage = DragStage.Finished
   originData: any = undefined
   draggingData: any = undefined
@@ -55,101 +55,46 @@ export class DragSensor extends PointerSensor {
     }
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
   protected onPointerMove(e: PointerEvent): void {
-    if (this.startChecking) {
+    if (this.trying) {
       if (Math.abs(e.clientX - this.startX) > DragSensor.DraggingThreshold ||
         Math.abs(e.clientY - this.startY) > DragSensor.DraggingThreshold) {
-        Transaction.runAs({ standalone: true, trace: TraceLevel.Suppress }, () => {
-          this.startChecking = false
-          this.stage = DragStage.Started
-          this.rememberPointerEvent(e)
-          this.dropped = false
-        })
-        Transaction.runAs({ standalone: true, trace: TraceLevel.Suppress }, () => {
-          this.stage = DragStage.Dragging
-        })
+        this.startDragging(e)
+        this.dragging()
       }
     } else if (this.stage === DragStage.Dragging) {
-      Transaction.runAs({ standalone: true, trace: TraceLevel.Suppress }, () => {
-        Reactronic.configureCurrentMethod({ reentrance: Reentrance.CancelPrevious })
-        this.rememberPointerEvent(e)
-      })
+      this.continueDragging(e)
     }
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
   protected onPointerDown(e: PointerEvent): void {
     if (extractPointerButton(e) === PointerButton.Left) {
-      const elements = document.elementsFromPoint(e.clientX, e.clientY)
-      const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', 'dragImportance', EmptyAssociatedDataArray)
-      const draggingOriginData = associatedDataUnderPointer as AssociatedData | undefined
-      if (draggingOriginData) {
-        this.pointerEvent = e
-        this.startChecking = true
-        this.startX = e.clientX
-        this.startY = e.clientY
-        this.associatedDataUnderPointer = associatedDataUnderPointer
-        this.originData = draggingOriginData
-        const path = e.composedPath()
-        this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', EmptyAssociatedDataArray)
-        this.modifiers = extractModifierKeys(e)
-        this.previousPositionX = this.positionX
-        this.previousPositionY = this.positionY
-        this.positionX = e.clientX
-        this.positionY = e.clientY
-        this.revision++
-      }
+      this.tryDragging(e)
     }
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
   protected onPointerUp(e: PointerEvent): void {
     if (this.stage === DragStage.Dragging) {
-      Transaction.runAs({ standalone: true }, () => {
-        this.rememberPointerEvent(e)
-        this.stage = DragStage.Dropped
-        this.dropX = e.clientX
-        this.dropY = e.clientY
-        this.dropped = true
-      })
-      Transaction.runAs({ standalone: true }, () => {
-        this.stage = DragStage.Finished
-        this.revision++
-      })
-      Transaction.runAs({ standalone: true }, () => {
-        this.reset()
-      })
+      this.drop(e)
+      this.finishDragging()
     }
-    else {
+    else if (this.stage === DragStage.Started) {
+      this.finishDragging()
+    }
+    this.reset()
+  }
+
+  protected onLostPointerCapture(e: PointerEvent): void {
+    if (this.stage !== DragStage.Finished) {
+      this.cancelDragging()
       this.reset()
     }
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected onLostPointerCapture(e: PointerEvent): void {
-    if (this.stage !== DragStage.Finished) {
-      Transaction.runAs({ standalone: true }, () => {
-        this.rememberPointerEvent(e)
-        this.stage = DragStage.Finished
-        this.dropped = false
-      })
-      Transaction.runAs({ standalone: true }, () => {
-        this.reset()
-      })
-    }
-  }
-
-  @transaction @options({ trace: TraceLevel.Suppress })
   protected onKeyDown(e: KeyboardEvent): void {
-    if (this.stage !== DragStage.Finished && e.key === 'Escape') {
-      Transaction.runAs({ standalone: true }, () => {
-        this.stage = DragStage.Finished
-        this.dropped = false
-      })
-      Transaction.runAs({ standalone: true }, () => {
-        this.reset()
-      })
+    if (e.key === 'Escape' && this.stage !== DragStage.Finished) {
+      this.cancelDragging()
+      this.reset()
     }
   }
 
@@ -167,15 +112,78 @@ export class DragSensor extends PointerSensor {
     this.revision++
   }
 
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected reset(): void {
     super.reset()
-    this.startChecking = false
+    this.trying = false
     this.originData = undefined
     this.draggingData = undefined
     this.startX = Infinity
     this.startY = Infinity
     this.dropX = Infinity
     this.dropY = Infinity
+    this.dropped = false
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  private tryDragging(e: PointerEvent): void {
+    const elements = document.elementsFromPoint(e.clientX, e.clientY)
+    const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', 'dragImportance', EmptyAssociatedDataArray)
+    const draggingOriginData = associatedDataUnderPointer as AssociatedData | undefined
+    if (draggingOriginData) {
+      this.pointerEvent = e
+      this.trying = true
+      this.startX = e.clientX
+      this.startY = e.clientY
+      this.associatedDataUnderPointer = associatedDataUnderPointer
+      this.originData = draggingOriginData
+      const path = e.composedPath()
+      this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', EmptyAssociatedDataArray)
+      this.modifiers = extractModifierKeys(e)
+      this.previousPositionX = this.positionX
+      this.previousPositionY = this.positionY
+      this.positionX = e.clientX
+      this.positionY = e.clientY
+      this.revision++
+    }
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  private startDragging(e: PointerEvent): void {
+    this.trying = false
+    this.stage = DragStage.Started
+    this.rememberPointerEvent(e)
+    this.dropped = false
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  private dragging(): void {
+    this.stage = DragStage.Dragging
+  }
+
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
+  private continueDragging(e: PointerEvent): void {
+    this.rememberPointerEvent(e)
+  }
+
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
+  private drop(e: PointerEvent): void {
+    this.rememberPointerEvent(e)
+    this.stage = DragStage.Dropped
+    this.dropX = e.clientX
+    this.dropY = e.clientY
+    this.dropped = true
+  }
+
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
+  private finishDragging(): void {
+    this.stage = DragStage.Finished
+    this.revision++
+  }
+
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
+  private cancelDragging(): void {
+    this.stage = DragStage.Finished
     this.dropped = false
   }
 
