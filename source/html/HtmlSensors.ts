@@ -9,7 +9,7 @@ import { transaction, TraceLevel, Transaction, options } from 'reactronic'
 import { Sensors, grabAssociatedData, PointerButton, AssociatedData, DragStage, DragSensor } from '../core/api'
 import { internalInstance } from '../core/System'
 import { SymAssociatedData } from './HtmlApiExt'
-import { HtmlDragSensor, HtmlResizeSensor } from './HtmlSensor'
+import { HtmlDragSensor, HtmlResizeSensor } from './HtmlDragSensor'
 
 export class HtmlSensors extends Sensors {
   private readonly resizeObserver: ResizeObserver
