@@ -101,7 +101,7 @@ export class DragSensor extends PointerSensor {
   }
 
   protected rememberPointerEvent(e: PointerEvent | MouseEvent): void {
-    this.pointerEvent = e
+    this.event = e
     const path = e.composedPath()
     this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.associatedDataPath)
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
@@ -114,7 +114,8 @@ export class DragSensor extends PointerSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected reset(): void {
-    this.pointerEvent = undefined
+    this.event = undefined
+    this.associatedDataPath = EmptyAssociatedDataArray
     this.trying = false
     this.originData = undefined
     this.draggingData = undefined
@@ -125,6 +126,7 @@ export class DragSensor extends PointerSensor {
     this.dropY = Infinity
     this.modifiers = KeyboardModifiers.None
     this.dropped = false
+    this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
@@ -133,7 +135,7 @@ export class DragSensor extends PointerSensor {
     const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', 'dragImportance', EmptyAssociatedDataArray)
     const draggingOriginData = associatedDataUnderPointer as AssociatedData | undefined
     if (draggingOriginData) {
-      this.pointerEvent = e
+      this.event = e
       this.trying = true
       this.button = extractPointerButton(e)
       this.startX = e.clientX

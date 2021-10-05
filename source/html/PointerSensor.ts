@@ -17,8 +17,7 @@ export enum PointerButton {
 }
 
 export class PointerSensor extends HtmlElementSensor {
-  protected internalAssociatedDataUnderPointer: unknown[] = EmptyAssociatedDataArray
-  pointerEvent: PointerEvent | MouseEvent | undefined = undefined
+  event: PointerEvent | MouseEvent | undefined = undefined
   // captured = false
   // positionX = Infinity // position relative to browser's viewport
   // positionY = Infinity // position relative to browser's viewport
@@ -27,6 +26,7 @@ export class PointerSensor extends HtmlElementSensor {
   // down = PointerButton.None
   // up = PointerButton.None
   modifiers = KeyboardModifiers.None
+  protected internalAssociatedDataUnderPointer: unknown[] = EmptyAssociatedDataArray
 
   get associatedDataUnderPointer(): unknown[] { return nonreactive(() => this.internalAssociatedDataUnderPointer) }
   set associatedDataUnderPointer(value: unknown[]) { this.internalAssociatedDataUnderPointer = value }

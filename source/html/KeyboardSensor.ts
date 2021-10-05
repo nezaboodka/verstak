@@ -28,7 +28,7 @@ export enum KeyboardModifiers {
 }
 
 export class KeyboardSensor extends HtmlElementSensor {
-  keyboardEvent: KeyboardEvent | undefined = undefined
+  event: KeyboardEvent | undefined = undefined
   down = ''
   up = ''
   modifiers = KeyboardModifiers.None
@@ -66,7 +66,7 @@ export class KeyboardSensor extends HtmlElementSensor {
   }
 
   protected rememberKeyboardEvent(e: KeyboardEvent): void {
-    this.keyboardEvent = e
+    this.event = e
     const path = e.composedPath()
     this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'keyboard', 'keyboardImportance', this.associatedDataPath)
     let modifier: KeyboardModifiers = 0

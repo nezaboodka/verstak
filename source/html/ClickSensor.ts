@@ -12,7 +12,6 @@ import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { PointerButton, PointerSensor } from './PointerSensor'
 
 export class ClickSensor extends PointerSensor {
-  pointerEvent: PointerEvent | MouseEvent | undefined = undefined
   captured = false
   positionX = Infinity // position relative to browser's viewport
   positionY = Infinity // position relative to browser's viewport
@@ -54,7 +53,7 @@ export class ClickSensor extends PointerSensor {
   }
 
   protected rememberPointerEvent(e: PointerEvent | MouseEvent): void {
-    this.pointerEvent = e
+    this.event = e
     const path = e.composedPath()
     this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'click', 'clickImportance', this.associatedDataPath)
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
@@ -85,8 +84,9 @@ export class ClickSensor extends PointerSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected reset(): void {
+    this.associatedDataPath = EmptyAssociatedDataArray
     this.internalAssociatedDataUnderPointer = EmptyAssociatedDataArray
-    this.pointerEvent = undefined
+    this.event = undefined
     this.captured = false
     this.positionX = Infinity
     this.positionY = Infinity

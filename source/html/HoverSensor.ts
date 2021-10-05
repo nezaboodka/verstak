@@ -11,11 +11,11 @@ import { SymAssociatedData } from './HtmlApiExt'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 
 export class HoverSensor extends HtmlElementSensor {
-  private internalAssociatedDataUnderPointer: unknown[] = EmptyAssociatedDataArray
-  hoverEvent: PointerEvent | MouseEvent | undefined = undefined
+  event: PointerEvent | MouseEvent | undefined = undefined
   positionX = Infinity // position relative to browser's viewport
   positionY = Infinity // position relative to browser's viewport
   modifiers = KeyboardModifiers.None
+  private internalAssociatedDataUnderPointer: unknown[] = EmptyAssociatedDataArray
 
   get associatedDataUnderPointer(): unknown[] { return nonreactive(() => this.internalAssociatedDataUnderPointer) }
   set associatedDataUnderPointer(value: unknown[]) { this.internalAssociatedDataUnderPointer = value }
@@ -33,17 +33,32 @@ export class HoverSensor extends HtmlElementSensor {
       this.sourceElement = element
       if (element && enabled) {
         element.addEventListener('pointerover', this.onPointerOver, { capture: true })
+        element.addEventListener('pointerout', this.onPointerOut, { capture: true })
       }
     }
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
   protected onPointerOver(e: PointerEvent): void {
     this.rememberPointerEvent(e)
   }
 
+  protected onPointerOut(e: PointerEvent): void {
+    this.reset()
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected reset(): void {
+    this.event = undefined
+    this.associatedDataPath = EmptyAssociatedDataArray
+    this.positionX = Infinity
+    this.positionY = Infinity
+    this.modifiers = KeyboardModifiers.None
+    this.revision++
+  }
+
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
   protected rememberPointerEvent(e: PointerEvent | MouseEvent): void {
-    this.hoverEvent = e
+    this.event = e
     const path = e.composedPath()
     this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'hover', 'hoverImportance', this.associatedDataPath)
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
