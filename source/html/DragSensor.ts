@@ -68,7 +68,7 @@ export class DragSensor extends PointerSensor {
   }
 
   protected onPointerDown(e: PointerEvent): void {
-    if (e.button === 0 || e.button === 1) {
+    if (this.stage === DragStage.Finished && (e.button === 0 || e.button === 1)) {
       this.tryDragging(e)
     }
   }
@@ -96,35 +96,6 @@ export class DragSensor extends PointerSensor {
       this.cancelDragging()
       this.reset()
     }
-  }
-
-  protected rememberPointerEvent(e: PointerEvent | MouseEvent): void {
-    this.event = e
-    const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.associatedDataPath)
-    const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', 'dragImportance', this.associatedDataUnderPointer)
-    this.modifiers = extractModifierKeys(e)
-    this.positionX = e.clientX
-    this.positionY = e.clientY
-    this.revision++
-  }
-
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected reset(): void {
-    this.event = undefined
-    this.associatedDataPath = EmptyAssociatedDataArray
-    this.trying = false
-    this.originData = undefined
-    this.draggingData = undefined
-    this.button = PointerButton.None
-    this.startX = Infinity
-    this.startY = Infinity
-    this.dropX = Infinity
-    this.dropY = Infinity
-    this.modifiers = KeyboardModifiers.None
-    this.dropped = false
-    this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
@@ -186,6 +157,35 @@ export class DragSensor extends PointerSensor {
   private cancelDragging(): void {
     this.stage = DragStage.Finished
     this.dropped = false
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected reset(): void {
+    this.event = undefined
+    this.associatedDataPath = EmptyAssociatedDataArray
+    this.trying = false
+    this.originData = undefined
+    this.draggingData = undefined
+    this.button = PointerButton.None
+    this.startX = Infinity
+    this.startY = Infinity
+    this.dropX = Infinity
+    this.dropY = Infinity
+    this.modifiers = KeyboardModifiers.None
+    this.dropped = false
+    this.revision++
+  }
+
+  protected rememberPointerEvent(e: PointerEvent | MouseEvent): void {
+    this.event = e
+    const path = e.composedPath()
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.associatedDataPath)
+    const elements = document.elementsFromPoint(e.clientX, e.clientY)
+    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', 'dragImportance', this.associatedDataUnderPointer)
+    this.modifiers = extractModifierKeys(e)
+    this.positionX = e.clientX
+    this.positionY = e.clientY
+    this.revision++
   }
 
   @reaction
