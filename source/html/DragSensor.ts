@@ -26,8 +26,6 @@ export class DragSensor extends PointerSensor {
   button = PointerButton.None
   startX = Infinity // position relative to browser's viewport
   startY = Infinity // position relative to browser's viewport
-  draggingX = Infinity // position relative to browser's viewport
-  draggingY = Infinity // position relative to browser's viewport
   dropX = Infinity // position relative to browser's viewport
   dropY = Infinity // position relative to browser's viewport
   trying: boolean = false
@@ -107,8 +105,8 @@ export class DragSensor extends PointerSensor {
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', 'dragImportance', this.associatedDataUnderPointer)
     this.modifiers = extractModifierKeys(e)
-    this.draggingX = e.clientX
-    this.draggingY = e.clientY
+    this.positionX = e.clientX
+    this.positionY = e.clientY
     this.revision++
   }
 
@@ -145,8 +143,8 @@ export class DragSensor extends PointerSensor {
       const path = e.composedPath()
       this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', EmptyAssociatedDataArray)
       this.modifiers = extractModifierKeys(e)
-      this.draggingX = e.clientX
-      this.draggingY = e.clientY
+      this.positionX = e.clientX
+      this.positionY = e.clientY
       this.revision++
     }
   }
@@ -192,6 +190,6 @@ export class DragSensor extends PointerSensor {
 
   @reaction
   protected debug(): void {
-    console.log(`stage = ${DragStage[this.stage]}, draggingData: ${this.draggingData}, start = (${this.startX}, ${this.startY}), pos = (${this.draggingX}, ${this.draggingY})`)
+    console.log(`stage = ${DragStage[this.stage]}, draggingData: ${this.draggingData}, start = (${this.startX}, ${this.startY}), pos = (${this.positionX}, ${this.positionY})`)
   }
 }

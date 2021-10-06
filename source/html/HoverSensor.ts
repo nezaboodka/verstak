@@ -5,23 +5,13 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { nonreactive, options, Reentrance, TraceLevel, transaction } from 'reactronic'
-import { EmptyAssociatedDataArray, grabAssociatedData, HtmlElementSensor } from '../core/Sensor'
+import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
+import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
+import { PointerSensor } from './PointerSensor'
 
-export class HoverSensor extends HtmlElementSensor {
-  event: PointerEvent | MouseEvent | undefined = undefined
-  positionX = Infinity // position relative to browser's viewport
-  positionY = Infinity // position relative to browser's viewport
-  modifiers = KeyboardModifiers.None
-  private internalAssociatedDataUnderPointer: unknown[] = EmptyAssociatedDataArray
-
-  get associatedDataUnderPointer(): unknown[] { return nonreactive(() => this.internalAssociatedDataUnderPointer) }
-  set associatedDataUnderPointer(value: unknown[]) { this.internalAssociatedDataUnderPointer = value }
-  get topAssociatedDataUnderPointer(): unknown {
-    return nonreactive(() => this.internalAssociatedDataUnderPointer.length > 0 ? this.internalAssociatedDataUnderPointer[0] : undefined)
-  }
+export class HoverSensor extends PointerSensor {
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {

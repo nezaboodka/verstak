@@ -12,9 +12,6 @@ import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { PointerButton, PointerSensor } from './PointerSensor'
 
 export class ClickSensor extends PointerSensor {
-  captured = false
-  positionX = Infinity // position relative to browser's viewport
-  positionY = Infinity // position relative to browser's viewport
   click = PointerButton.None
   doubleClick = PointerButton.None
   auxClick = PointerButton.None
@@ -87,7 +84,6 @@ export class ClickSensor extends PointerSensor {
     this.associatedDataPath = EmptyAssociatedDataArray
     this.internalAssociatedDataUnderPointer = EmptyAssociatedDataArray
     this.event = undefined
-    this.captured = false
     this.positionX = Infinity
     this.positionY = Infinity
     this.modifiers = KeyboardModifiers.None
