@@ -178,7 +178,7 @@ export class DragSensor extends PointerSensor {
     this.revision++
   }
 
-  protected rememberPointerEvent(e: PointerEvent | MouseEvent): void {
+  protected rememberPointerEvent(e: PointerEvent): void {
     this.event = e
     const path = e.composedPath()
     this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.associatedDataPath)

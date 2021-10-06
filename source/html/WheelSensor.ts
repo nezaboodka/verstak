@@ -11,52 +11,58 @@ import { SymAssociatedData } from './HtmlApiExt'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { PointerSensor } from './PointerSensor'
 
-export class HoverSensor extends PointerSensor {
+export class WheelSensor extends PointerSensor {
+  deltaX = Infinity
+  deltaY = Infinity
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
-        existing.removeEventListener('pointerover', this.onPointerOver, { capture: true })
-        existing.removeEventListener('pointerout', this.onPointerOut, { capture: true })
+        existing.removeEventListener('wheel', this.onWheel, { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('pointerover', this.onPointerOver, { capture: true })
-        element.addEventListener('pointerout', this.onPointerOut, { capture: true })
+        element.addEventListener('wheel', this.onWheel, { capture: true })
       }
     }
   }
 
-  protected onPointerOver(e: PointerEvent): void {
-    this.rememberPointerEvent(e)
+  protected onWheel(e: WheelEvent): void {
+    this.doWheel(e)
+    // this.reset()
   }
 
-  protected onPointerOut(e: PointerEvent): void {
-    this.reset()
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
+  protected doWheel(e: WheelEvent): void {
+    this.rememberWheelEvent(e)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected reset(): void {
     this.event = undefined
     this.associatedDataPath = EmptyAssociatedDataArray
+    this.associatedDataUnderPointer = EmptyAssociatedDataArray
+    this.modifiers = KeyboardModifiers.None
     this.positionX = Infinity
     this.positionY = Infinity
-    this.modifiers = KeyboardModifiers.None
+    this.deltaX = Infinity
+    this.deltaY = Infinity
     this.revision++
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
-  protected rememberPointerEvent(e: PointerEvent): void {
+  protected rememberWheelEvent(e: WheelEvent): void {
     this.event = e
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'hover', 'hoverImportance', this.associatedDataPath)
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'wheel', 'wheelImportance', this.associatedDataPath)
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'hover', 'hoverImportance', this.associatedDataUnderPointer)
+    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'wheel', 'wheelImportance', this.associatedDataUnderPointer)
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY
+    this.deltaX = e.deltaX
+    this.deltaY = e.deltaY
     this.revision++
   }
 }

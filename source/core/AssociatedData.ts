@@ -12,7 +12,7 @@ export interface AssociatedDataPayload {
   hover?: unknown
   keyboard?: unknown
   click?: unknown
-  scroll?: unknown
+  wheel?: unknown
   resize?: unknown
   drag?: unknown
   htmlDrag?: unknown
@@ -23,7 +23,7 @@ export interface AssociatedDataImportance {
   hoverImportance?: number
   keyboardImportance?: number
   clickImportance?: number
-  scrollImportance?: number
+  wheelImportance?: number
   dragImportance?: number
   htmlDragImportance?: number
 }

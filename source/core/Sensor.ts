@@ -24,15 +24,6 @@ export class HtmlElementSensor extends Sensor {
   sourceElement: HTMLElement | undefined = undefined
 }
 
-// Scroll
-
-export class Scroll extends Sensor {
-  positionX = 0
-  positionY = 0
-  deltaX = 0
-  deltaY = 0
-}
-
 export const EmptyAssociatedDataArray: any[] = []
 
 export function grabAssociatedData(elements: any[], sym: symbol,

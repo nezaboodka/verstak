@@ -17,7 +17,7 @@ export enum PointerButton {
 }
 
 export class PointerSensor extends HtmlElementSensor {
-  event: PointerEvent | MouseEvent | undefined = undefined
+  event: PointerEvent | MouseEvent | WheelEvent | undefined = undefined
   positionX = Infinity // position relative to browser's viewport
   positionY = Infinity // position relative to browser's viewport
   modifiers = KeyboardModifiers.None

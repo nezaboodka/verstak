@@ -49,7 +49,7 @@ export class ClickSensor extends PointerSensor {
     this.reset()
   }
 
-  protected rememberPointerEvent(e: PointerEvent | MouseEvent): void {
+  protected rememberPointerEvent(e: MouseEvent): void {
     this.event = e
     const path = e.composedPath()
     this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'click', 'clickImportance', this.associatedDataPath)
