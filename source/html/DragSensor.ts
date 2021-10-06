@@ -121,7 +121,7 @@ export class DragSensor extends PointerSensor {
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  private startDragging(e: PointerEvent): void {
+  protected startDragging(e: PointerEvent): void {
     this.trying = false
     this.stage = DragStage.Started
     this.rememberPointerEvent(e)
@@ -129,17 +129,17 @@ export class DragSensor extends PointerSensor {
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  private dragging(): void {
+  protected dragging(): void {
     this.stage = DragStage.Dragging
   }
 
   @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
-  private continueDragging(e: PointerEvent): void {
+  protected continueDragging(e: PointerEvent): void {
     this.rememberPointerEvent(e)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  private drop(e: PointerEvent): void {
+  protected drop(e: PointerEvent): void {
     this.rememberPointerEvent(e)
     this.stage = DragStage.Dropped
     this.dropX = e.clientX
@@ -148,13 +148,13 @@ export class DragSensor extends PointerSensor {
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  private finishDragging(): void {
+  protected finishDragging(): void {
     this.stage = DragStage.Finished
     this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  private cancelDragging(): void {
+  protected cancelDragging(): void {
     this.stage = DragStage.Finished
     this.dropped = false
   }
@@ -169,6 +169,8 @@ export class DragSensor extends PointerSensor {
     this.button = PointerButton.None
     this.startX = Infinity
     this.startY = Infinity
+    this.positionX = Infinity
+    this.positionY = Infinity
     this.dropX = Infinity
     this.dropY = Infinity
     this.modifiers = KeyboardModifiers.None

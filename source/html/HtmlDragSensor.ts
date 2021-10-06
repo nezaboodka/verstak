@@ -5,9 +5,10 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { nonreactive, options, TraceLevel, transaction } from 'reactronic'
-import { EmptyAssociatedDataArray, HtmlElementSensor } from '../core/Sensor'
+import { nonreactive, options, Reentrance, TraceLevel, transaction } from 'reactronic'
+import { EmptyAssociatedDataArray, grabAssociatedData, HtmlElementSensor } from '../core/Sensor'
 import { DragStage } from './DragSensor'
+import { SymAssociatedData } from './HtmlApiExt'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 
 export type DragEffectAllowed = 'none' | 'copy' | 'copyLink' | 'copyMove' | 'link' | 'linkMove' | 'move' | 'all' | 'uninitialized'
@@ -22,15 +23,21 @@ export class HtmlDragSensor extends HtmlElementSensor {
   modifiers = KeyboardModifiers.None
   startX = Infinity // position relative to browser's viewport
   startY = Infinity // position relative to browser's viewport
-  draggingX = Infinity // position relative to browser's viewport
-  draggingY = Infinity // position relative to browser's viewport
+  positionX = Infinity // position relative to browser's viewport
+  positionY = Infinity // position relative to browser's viewport
   dropX = Infinity // position relative to browser's viewport
   dropY = Infinity // position relative to browser's viewport
   dropped: boolean = false
   protected internalAssociatedDataUnderPointer: unknown[] = EmptyAssociatedDataArray
 
-  get associatedDataUnderPointer(): unknown[] { return nonreactive(() => this.internalAssociatedDataUnderPointer) }
-  set associatedDataUnderPointer(value: unknown[]) { this.internalAssociatedDataUnderPointer = value }
+  get associatedDataUnderPointer(): unknown[] {
+    return nonreactive(() => this.internalAssociatedDataUnderPointer)
+  }
+
+  set associatedDataUnderPointer(value: unknown[]) {
+    this.internalAssociatedDataUnderPointer = value
+  }
+
   get topAssociatedDataUnderPointer(): unknown {
     return nonreactive(() => this.internalAssociatedDataUnderPointer.length > 0 ? this.internalAssociatedDataUnderPointer[0] : undefined)
   }
@@ -94,85 +101,101 @@ export class HtmlDragSensor extends HtmlElementSensor {
     }
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
   protected onDragStart(e: DragEvent): void {
-    const path = e.composedPath()
-    const associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'htmlDrag', 'dragImportance', this.htmlDrag.associatedDataPath)
-    const d = this.htmlDrag
-    this.currentEvent = e
-    d.stage = DragStage.Started
-    d.associatedDataPath = associatedDataPath
-    d.draggingOriginData = associatedDataPath[0]
-    d.draggingStartX = e.clientX
-    d.draggingStartY = e.clientY
-    d.draggingPositionX = e.clientX
-    d.draggingPositionY = e.clientY
-    d.draggingModifiers = extractModifierKeys(e)
-    d.dropped = false
-    d.revision++
+    this.startDragging(e)
+    this.dragging()
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
   protected onDragEnter(e: DragEvent): void {
-    const d = this.htmlDrag
-    this.currentEvent = e
-    d.stage = DragStage.Dragging
-    d.draggingPositionX = e.clientX
-    d.draggingPositionY = e.clientY
-    d.draggingModifiers = this.keyboard.modifiers
-    d.revision++
+    this.stage = DragStage.Dragging
+    this.continueDragging(e)
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
   protected onDragLeave(e: DragEvent): void {
-    const d = this.htmlDrag
-    this.currentEvent = e
-    d.stage = DragStage.Dragging
-    d.draggingPositionX = e.clientX
-    d.draggingPositionY = e.clientY
-    d.draggingModifiers = this.keyboard.modifiers
-    d.revision++
+    this.continueDragging(e)
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
   protected onDragOver(e: DragEvent): void {
-    const path = e.composedPath()
-    this.currentEvent = e
-    const d = this.htmlDrag
-    d.stage = DragStage.Dragging
-    d.draggingPositionX = e.clientX
-    d.draggingPositionY = e.clientY
-    d.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'htmlDrag', 'dragImportance', this.htmlDrag.associatedDataPath)
-    d.revision++
+    this.continueDragging(e)
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
   protected onDrop(e: DragEvent): void {
-    const path = e.composedPath()
-    this.currentEvent = e
-    const d = this.htmlDrag
-    d.stage = DragStage.Dropped
-    d.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'htmlDrag', 'dragImportance', this.htmlDrag.associatedDataPath)
-    d.dropPositionX = e.clientX
-    d.dropPositionY = e.clientY
-    d.dropped = true
-    d.revision++
+    this.drop(e)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected onDragEnd(e: DragEvent): void {
+    this.finishDragging()
+    this.reset()
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected startDragging(e: DragEvent): void {
+    this.stage = DragStage.Started
+    this.rememberDragEvent(e)
+    this.startX = e.clientX
+    this.startY = e.clientY
+    this.dropped = false
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected dragging(): void {
+    this.stage = DragStage.Dragging
+  }
+
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
+  protected continueDragging(e: DragEvent): void {
+    this.stage = DragStage.Dragging
+    this.rememberDragEvent(e)
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected drop(e: DragEvent): void {
+    this.rememberDragEvent(e)
+    this.stage = DragStage.Dropped
+    this.dropX = e.clientX
+    this.dropY = e.clientY
+    this.dropped = true
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected finishDragging(): void {
+    this.stage = DragStage.Finished
+    this.revision++
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected cancelDragging(): void {
+    this.stage = DragStage.Finished
+    this.dropped = false
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected reset(): void {
+    this.event = undefined
+    this.associatedDataPath = EmptyAssociatedDataArray
+    this.originData = undefined
+    this.draggingData = undefined
+    this.startX = Infinity
+    this.startY = Infinity
+    this.positionX = Infinity
+    this.positionY = Infinity
+    this.dropX = Infinity
+    this.dropY = Infinity
+    this.modifiers = KeyboardModifiers.None
+    this.dropped = false
+    this.revision++
+  }
+
+  protected rememberDragEvent(e: DragEvent): void {
+    this.event = e
     const path = e.composedPath()
-    this.currentEvent = e
-    const d = this.htmlDrag
-    Transaction.runAs({ standalone: true }, () => {
-      this.currentEvent = e
-      d.stage = DragStage.Finished
-      d.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'htmlDrag', 'dragImportance', this.htmlDrag.associatedDataPath)
-      d.dropPositionX = e.clientX
-      d.dropPositionY = e.clientY
-      d.revision++
-    })
-    d.reset()
-    d.revision++
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'htmlDrag', 'htmlDragImportance', this.associatedDataPath)
+    const elements = document.elementsFromPoint(e.clientX, e.clientY)
+    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'htmlDrag', 'htmlDragImportance', this.associatedDataUnderPointer)
+    this.modifiers = extractModifierKeys(e)
+    this.positionX = e.clientX
+    this.positionY = e.clientY
+    this.revision++
   }
 }
