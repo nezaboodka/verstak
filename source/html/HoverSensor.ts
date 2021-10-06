@@ -19,6 +19,7 @@ export class HoverSensor extends PointerSensor {
     if (element !== existing) {
       if (existing) {
         existing.removeEventListener('pointerover', this.onPointerOver, { capture: true })
+        existing.removeEventListener('pointerout', this.onPointerOut, { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
