@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, Reentrance, TraceLevel, transaction } from 'reactronic'
+import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
 import { extractPointerButton, PointerButton, PointerSensor } from './PointerSensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
@@ -190,8 +190,8 @@ export class DragSensor extends PointerSensor {
     this.revision++
   }
 
-  @reaction
-  protected debug(): void {
-    console.log(`stage = ${DragStage[this.stage]}, draggingData: ${this.draggingData}, start = (${this.startX}, ${this.startY}), pos = (${this.positionX}, ${this.positionY})`)
-  }
+  // @reaction
+  // protected debug(): void {
+  //   console.log(`stage = ${DragStage[this.stage]}, draggingData: ${this.draggingData}, start = (${this.startX}, ${this.startY}), pos = (${this.positionX}, ${this.positionY})`)
+  // }
 }
