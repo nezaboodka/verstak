@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
+import { options, TraceLevel, transaction } from 'reactronic'
 import { EmptyAssociatedDataArray, grabAssociatedData, HtmlElementSensor } from '../core/Sensor'
 import { SymAssociatedData } from './HtmlApiExt'
 
@@ -38,11 +38,24 @@ export class FocusSensor extends HtmlElementSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doFocusIn(e: FocusEvent): void {
-    this.event = e
+    this.rememberFocusEvent(e)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doFocusOut(e: FocusEvent): void {
+    this.reset()
+  }
+
+  protected reset(): void {
+    this.event = undefined
+    this.associatedDataPath = EmptyAssociatedDataArray
+    this.revision++
+  }
+
+  protected rememberFocusEvent(e: FocusEvent): void {
     this.event = e
+    const path = e.composedPath()
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.associatedDataPath)
+    this.revision++
   }
 }
