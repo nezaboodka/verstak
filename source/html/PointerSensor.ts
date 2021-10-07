@@ -28,6 +28,14 @@ export class PointerSensor extends HtmlElementSensor {
   get topAssociatedDataUnderPointer(): unknown {
     return nonreactive(() => this.internalAssociatedDataUnderPointer.length > 0 ? this.internalAssociatedDataUnderPointer[0] : undefined)
   }
+
+  preventDefault(): void {
+    this.event?.preventDefault()
+  }
+
+  stopPropagation(): void {
+    this.event?.stopPropagation()
+  }
 }
 
 export function extractPointerButton(e: MouseEvent): PointerButton {

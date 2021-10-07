@@ -49,6 +49,14 @@ export class KeyboardSensor extends HtmlElementSensor {
     }
   }
 
+  preventDefault(): void {
+    this.event?.preventDefault()
+  }
+
+  stopPropagation(): void {
+    this.event?.stopPropagation()
+  }
+
   @transaction @options({ trace: TraceLevel.Suppress })
   protected onKeyDown(e: KeyboardEvent): void {
     this.rememberKeyboardEvent(e)
