@@ -23,6 +23,5 @@ export {
 } from './System'
 export * from './Restyler'
 export * from './Sensor'
-export * from './Sensors'
 export * from './AssociatedData'
 export * from './BasicRtti'
