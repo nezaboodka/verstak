@@ -38,13 +38,13 @@ export class KeyboardSensor extends HtmlElementSensor {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
-        existing.removeEventListener('keydown', this.onKeyDown, { capture: true })
-        existing.removeEventListener('keyup', this.onKeyUp, { capture: true })
+        existing.removeEventListener('keydown', this.onKeyDown.bind(this), { capture: true })
+        existing.removeEventListener('keyup', this.onKeyUp.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('keydown', this.onKeyDown, { capture: true })
-        element.addEventListener('keyup', this.onKeyUp, { capture: true })
+        element.addEventListener('keydown', this.onKeyDown.bind(this), { capture: true })
+        element.addEventListener('keyup', this.onKeyUp.bind(this), { capture: true })
       }
     }
   }
