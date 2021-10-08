@@ -18,13 +18,13 @@ export class HoverSensor extends PointerSensor {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
-        existing.removeEventListener('pointerover', this.onPointerOver, { capture: true })
-        existing.removeEventListener('pointerout', this.onPointerOut, { capture: true })
+        existing.removeEventListener('pointerover', this.onPointerOver.bind(this), { capture: true })
+        existing.removeEventListener('pointerout', this.onPointerOut.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('pointerover', this.onPointerOver, { capture: true })
-        element.addEventListener('pointerout', this.onPointerOut, { capture: true })
+        element.addEventListener('pointerover', this.onPointerOver.bind(this), { capture: true })
+        element.addEventListener('pointerout', this.onPointerOut.bind(this), { capture: true })
       }
     }
   }

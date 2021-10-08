@@ -38,19 +38,19 @@ export class DragSensor extends PointerSensor {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
-        existing.removeEventListener('pointermove', this.onPointerMove, { capture: true })
-        existing.removeEventListener('pointerdown', this.onPointerDown, { capture: true })
-        existing.removeEventListener('pointerup', this.onPointerUp, { capture: true })
-        existing.removeEventListener('lostpointercapture', this.onLostPointerCapture, { capture: true })
-        existing.removeEventListener('keydown', this.onKeyDown, { capture: true })
+        existing.removeEventListener('pointermove', this.onPointerMove.bind(this), { capture: true })
+        existing.removeEventListener('pointerdown', this.onPointerDown.bind(this), { capture: true })
+        existing.removeEventListener('pointerup', this.onPointerUp.bind(this), { capture: true })
+        existing.removeEventListener('lostpointercapture', this.onLostPointerCapture.bind(this), { capture: true })
+        existing.removeEventListener('keydown', this.onKeyDown.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('pointermove', this.onPointerMove, { capture: true })
-        element.addEventListener('pointerdown', this.onPointerDown, { capture: true })
-        element.addEventListener('pointerup', this.onPointerUp, { capture: true })
-        element.addEventListener('lostpointercapture', this.onLostPointerCapture, { capture: true })
-        element.addEventListener('keydown', this.onKeyDown, { capture: true })
+        element.addEventListener('pointermove', this.onPointerMove.bind(this), { capture: true })
+        element.addEventListener('pointerdown', this.onPointerDown.bind(this), { capture: true })
+        element.addEventListener('pointerup', this.onPointerUp.bind(this), { capture: true })
+        element.addEventListener('lostpointercapture', this.onLostPointerCapture.bind(this), { capture: true })
+        element.addEventListener('keydown', this.onKeyDown.bind(this), { capture: true })
       }
     }
   }

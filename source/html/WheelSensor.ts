@@ -20,11 +20,11 @@ export class WheelSensor extends PointerSensor {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
-        existing.removeEventListener('wheel', this.onWheel, { capture: true })
+        existing.removeEventListener('wheel', this.onWheel.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('wheel', this.onWheel, { capture: true })
+        element.addEventListener('wheel', this.onWheel.bind(this), { capture: true })
       }
     }
   }

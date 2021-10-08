@@ -82,21 +82,21 @@ export class HtmlDragSensor extends HtmlElementSensor {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
-        existing.removeEventListener('dragstart', this.onDragStart, { capture: true })
-        existing.removeEventListener('dragenter', this.onDragEnter, { capture: false })
-        existing.removeEventListener('dragleave', this.onDragLeave, { capture: false })
-        existing.removeEventListener('dragover', this.onDragOver, { capture: true })
-        existing.removeEventListener('drop', this.onDrop, { capture: true })
-        existing.removeEventListener('dragend', this.onDragEnd, { capture: true })
+        existing.removeEventListener('dragstart', this.onDragStart.bind(this), { capture: true })
+        existing.removeEventListener('dragenter', this.onDragEnter.bind(this), { capture: false })
+        existing.removeEventListener('dragleave', this.onDragLeave.bind(this), { capture: false })
+        existing.removeEventListener('dragover', this.onDragOver.bind(this), { capture: true })
+        existing.removeEventListener('drop', this.onDrop.bind(this), { capture: true })
+        existing.removeEventListener('dragend', this.onDragEnd.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('dragstart', this.onDragStart, { capture: true })
-        element.addEventListener('dragenter', this.onDragEnter, { capture: false })
-        element.addEventListener('dragleave', this.onDragLeave, { capture: false })
-        element.addEventListener('dragover', this.onDragOver, { capture: true })
-        element.addEventListener('drop', this.onDrop, { capture: true })
-        element.addEventListener('dragend', this.onDragEnd, { capture: true })
+        element.addEventListener('dragstart', this.onDragStart.bind(this), { capture: true })
+        element.addEventListener('dragenter', this.onDragEnter.bind(this), { capture: false })
+        element.addEventListener('dragleave', this.onDragLeave.bind(this), { capture: false })
+        element.addEventListener('dragover', this.onDragOver.bind(this), { capture: true })
+        element.addEventListener('drop', this.onDrop.bind(this), { capture: true })
+        element.addEventListener('dragend', this.onDragEnd.bind(this), { capture: true })
       }
     }
   }

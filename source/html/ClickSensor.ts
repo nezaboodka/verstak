@@ -21,15 +21,15 @@ export class ClickSensor extends PointerSensor {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
-        existing.removeEventListener('click', this.onClick, { capture: true })
-        existing.removeEventListener('dblclick', this.onDblClick, { capture: true })
-        existing.removeEventListener('auxclick', this.onAuxClick, { capture: true })
+        existing.removeEventListener('click', this.onClick.bind(this), { capture: true })
+        existing.removeEventListener('dblclick', this.onDblClick.bind(this), { capture: true })
+        existing.removeEventListener('auxclick', this.onAuxClick.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('click', this.onClick, { capture: true })
-        element.addEventListener('dblclick', this.onDblClick, { capture: true })
-        element.addEventListener('auxclick', this.onAuxClick, { capture: true })
+        element.addEventListener('click', this.onClick.bind(this), { capture: true })
+        element.addEventListener('dblclick', this.onDblClick.bind(this), { capture: true })
+        element.addEventListener('auxclick', this.onAuxClick.bind(this), { capture: true })
       }
     }
   }

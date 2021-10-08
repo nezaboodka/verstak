@@ -22,7 +22,7 @@ export class ResizeSensor extends Sensor {
 
   constructor() {
     super()
-    this.resizeObserver = new ResizeObserver(this.onResize)
+    this.resizeObserver = new ResizeObserver(this.onResize.bind(this))
   }
 
   @transaction

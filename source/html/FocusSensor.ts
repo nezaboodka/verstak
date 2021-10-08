@@ -17,13 +17,13 @@ export class FocusSensor extends HtmlElementSensor {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
-        existing.removeEventListener('focusin', this.onFocusIn, { capture: true })
-        existing.removeEventListener('focusout', this.onFocusOut, { capture: true })
+        existing.removeEventListener('focusin', this.onFocusIn.bind(this), { capture: true })
+        existing.removeEventListener('focusout', this.onFocusOut.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('focusin', this.onFocusIn, { capture: true })
-        element.addEventListener('focusout', this.onFocusOut, { capture: true })
+        element.addEventListener('focusin', this.onFocusIn.bind(this), { capture: true })
+        element.addEventListener('focusout', this.onFocusOut.bind(this), { capture: true })
       }
     }
   }
