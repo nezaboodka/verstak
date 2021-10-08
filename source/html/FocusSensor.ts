@@ -28,6 +28,11 @@ export class FocusSensor extends HtmlElementSensor {
     }
   }
 
+  @transaction
+  reset(): void {
+    this.doReset()
+  }
+
   preventDefault(): void {
     this.event?.preventDefault()
   }
@@ -36,22 +41,21 @@ export class FocusSensor extends HtmlElementSensor {
     this.event?.stopPropagation()
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
   protected onFocusIn(e: FocusEvent): void {
     this.rememberFocusEvent(e)
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
   protected onFocusOut(e: FocusEvent): void {
     this.reset()
   }
 
-  reset(): void {
+  protected doReset(): void {
     this.event = undefined
     this.associatedDataPath = EmptyAssociatedDataArray
     this.revision++
   }
 
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected rememberFocusEvent(e: FocusEvent): void {
     this.event = e
     const path = e.composedPath()

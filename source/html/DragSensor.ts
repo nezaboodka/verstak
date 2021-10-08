@@ -55,6 +55,11 @@ export class DragSensor extends PointerSensor {
     }
   }
 
+  @transaction
+  reset(): void {
+    this.doReset()
+  }
+
   protected onPointerMove(e: PointerEvent): void {
     if (this.trying) {
       if (Math.abs(e.clientX - this.startX) > DragSensor.DraggingThreshold ||
@@ -99,7 +104,7 @@ export class DragSensor extends PointerSensor {
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  private tryDragging(e: PointerEvent): void {
+  protected tryDragging(e: PointerEvent): void {
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', 'dragImportance', EmptyAssociatedDataArray)
     const draggingOriginData = associatedDataUnderPointer as AssociatedData | undefined
@@ -159,8 +164,7 @@ export class DragSensor extends PointerSensor {
     this.dropped = false
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected reset(): void {
+  protected doReset(): void {
     this.event = undefined
     this.associatedDataPath = EmptyAssociatedDataArray
     this.trying = false

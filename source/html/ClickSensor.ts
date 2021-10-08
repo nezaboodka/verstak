@@ -34,6 +34,11 @@ export class ClickSensor extends PointerSensor {
     }
   }
 
+  @transaction
+  reset(): void {
+    this.doReset()
+  }
+
   protected onClick(e: MouseEvent): void {
     this.doClick(e)
     this.reset()
@@ -47,18 +52,6 @@ export class ClickSensor extends PointerSensor {
   protected onAuxClick(e: MouseEvent): void {
     this.doAuxClick(e)
     this.reset()
-  }
-
-  protected rememberPointerEvent(e: MouseEvent): void {
-    this.event = e
-    const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'click', 'clickImportance', this.associatedDataPath)
-    const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'click', 'clickImportance', this.associatedDataUnderPointer)
-    this.modifiers = extractModifierKeys(e)
-    this.positionX = e.clientX
-    this.positionY = e.clientY
-    this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
@@ -79,8 +72,7 @@ export class ClickSensor extends PointerSensor {
     this.auxClicked = true
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected reset(): void {
+  protected doReset(): void {
     this.associatedDataPath = EmptyAssociatedDataArray
     this.internalAssociatedDataUnderPointer = EmptyAssociatedDataArray
     this.event = undefined
@@ -90,5 +82,17 @@ export class ClickSensor extends PointerSensor {
     this.clicked = false
     this.doubleClicked = false
     this.auxClicked = false
+  }
+
+  protected rememberPointerEvent(e: MouseEvent): void {
+    this.event = e
+    const path = e.composedPath()
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'click', 'clickImportance', this.associatedDataPath)
+    const elements = document.elementsFromPoint(e.clientX, e.clientY)
+    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'click', 'clickImportance', this.associatedDataUnderPointer)
+    this.modifiers = extractModifierKeys(e)
+    this.positionX = e.clientX
+    this.positionY = e.clientY
+    this.revision++
   }
 }

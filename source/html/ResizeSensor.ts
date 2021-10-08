@@ -25,6 +25,11 @@ export class ResizeSensor extends Sensor {
     this.resizeObserver = new ResizeObserver(this.onResize)
   }
 
+  @transaction
+  reset(): void {
+    this.doReset()
+  }
+
   observeResizeOfRenderingElement(value: boolean): void {
     const instance = internalInstance<Element>()
     if (value !== instance.isResizeSensorEnabled) {
@@ -36,8 +41,13 @@ export class ResizeSensor extends Sensor {
     }
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
   protected onResize(entries: Array<ResizeObserverEntry>): void {
+    this.resize(entries)
+    this.reset()
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected resize(entries: Array<ResizeObserverEntry>): void {
     this.revision++
     this.resizedElements = entries.map(entry => {
       const element = entry.target as Element
@@ -52,5 +62,9 @@ export class ResizeSensor extends Sensor {
       const element = x.target as Element
       return element.associatedData
     })
+  }
+
+  protected doReset(): void {
+    this.resizedElements = []
   }
 }

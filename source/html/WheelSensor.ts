@@ -29,6 +29,11 @@ export class WheelSensor extends PointerSensor {
     }
   }
 
+  @transaction
+  reset(): void {
+    this.doReset()
+  }
+
   protected onWheel(e: WheelEvent): void {
     this.doWheel(e)
     // this.reset()
@@ -39,8 +44,7 @@ export class WheelSensor extends PointerSensor {
     this.rememberWheelEvent(e)
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected reset(): void {
+  protected doReset(): void {
     this.event = undefined
     this.associatedDataPath = EmptyAssociatedDataArray
     this.associatedDataUnderPointer = EmptyAssociatedDataArray

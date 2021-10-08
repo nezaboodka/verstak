@@ -101,6 +101,11 @@ export class HtmlDragSensor extends HtmlElementSensor {
     }
   }
 
+  @transaction
+  reset(): void {
+    this.doReset()
+  }
+
   protected onDragStart(e: DragEvent): void {
     this.startDragging(e)
     this.dragging()
@@ -123,7 +128,6 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.drop(e)
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
   protected onDragEnd(e: DragEvent): void {
     this.finishDragging()
     this.reset()
@@ -170,8 +174,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.dropped = false
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected reset(): void {
+  protected doReset(): void {
     this.event = undefined
     this.associatedDataPath = EmptyAssociatedDataArray
     this.originData = undefined

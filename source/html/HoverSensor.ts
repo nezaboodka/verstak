@@ -29,6 +29,11 @@ export class HoverSensor extends PointerSensor {
     }
   }
 
+  @transaction
+  reset(): void {
+    this.doReset()
+  }
+
   protected onPointerOver(e: PointerEvent): void {
     this.rememberPointerEvent(e)
   }
@@ -37,8 +42,7 @@ export class HoverSensor extends PointerSensor {
     this.reset()
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected reset(): void {
+  protected doReset(): void {
     this.event = undefined
     this.associatedDataPath = EmptyAssociatedDataArray
     this.positionX = Infinity

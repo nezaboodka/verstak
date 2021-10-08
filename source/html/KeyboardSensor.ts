@@ -49,6 +49,11 @@ export class KeyboardSensor extends HtmlElementSensor {
     }
   }
 
+  @transaction
+  reset(): void {
+    this.doReset()
+  }
+
   preventDefault(): void {
     this.event?.preventDefault()
   }
@@ -57,8 +62,16 @@ export class KeyboardSensor extends HtmlElementSensor {
     this.event?.stopPropagation()
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
   protected onKeyDown(e: KeyboardEvent): void {
+    this.doKeyDown(e)
+  }
+
+  protected onKeyUp(e: KeyboardEvent): void {
+    this.doKeyUp(e)
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected doKeyDown(e: KeyboardEvent): void {
     this.rememberKeyboardEvent(e)
     this.up = ''
     sensitive(true, () => this.down = e.key)
@@ -66,11 +79,18 @@ export class KeyboardSensor extends HtmlElementSensor {
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  protected onKeyUp(e: KeyboardEvent): void {
+  protected doKeyUp(e: KeyboardEvent): void {
     this.rememberKeyboardEvent(e)
     this.down = ''
     sensitive(true, () => this.up = e.key)
     this.revision++
+  }
+
+  protected doReset(): void {
+    this.event = undefined
+    this.down = ''
+    this.up = ''
+    this.modifiers = KeyboardModifiers.None
   }
 
   protected rememberKeyboardEvent(e: KeyboardEvent): void {
