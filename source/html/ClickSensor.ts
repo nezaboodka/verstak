@@ -9,12 +9,12 @@ import { options, TraceLevel, transaction } from 'reactronic'
 import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
-import { PointerButton, PointerSensor } from './PointerSensor'
+import { PointerSensor } from './PointerSensor'
 
 export class ClickSensor extends PointerSensor {
-  click = PointerButton.None
-  doubleClick = PointerButton.None
-  auxClick = PointerButton.None
+  clicked = false
+  doubleClicked = false
+  auxClicked = false
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
@@ -64,19 +64,19 @@ export class ClickSensor extends PointerSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doClick(e: MouseEvent): void {
     this.rememberPointerEvent(e)
-    this.click = PointerButton.Left
+    this.clicked = true
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doDoubleClick(e: MouseEvent): void {
     this.rememberPointerEvent(e)
-    this.doubleClick = PointerButton.Left
+    this.doubleClicked = true
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doAuxClick(e: MouseEvent): void {
     this.rememberPointerEvent(e)
-    this.auxClick = PointerButton.Right
+    this.auxClicked = true
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
@@ -87,9 +87,8 @@ export class ClickSensor extends PointerSensor {
     this.positionX = Infinity
     this.positionY = Infinity
     this.modifiers = KeyboardModifiers.None
-    this.click = PointerButton.None
-    this.doubleClick = PointerButton.None
-    this.auxClick = PointerButton.None
-    this.revision++
+    this.clicked = false
+    this.doubleClicked = false
+    this.auxClicked = false
   }
 }

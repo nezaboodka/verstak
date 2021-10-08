@@ -44,7 +44,6 @@ export class HoverSensor extends PointerSensor {
     this.positionX = Infinity
     this.positionY = Infinity
     this.modifiers = KeyboardModifiers.None
-    this.revision++
   }
 
   @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })

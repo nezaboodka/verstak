@@ -184,7 +184,6 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.dropY = Infinity
     this.modifiers = KeyboardModifiers.None
     this.dropped = false
-    this.revision++
   }
 
   protected rememberDragEvent(e: DragEvent): void {

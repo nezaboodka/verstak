@@ -175,7 +175,6 @@ export class DragSensor extends PointerSensor {
     this.dropY = Infinity
     this.modifiers = KeyboardModifiers.None
     this.dropped = false
-    this.revision++
   }
 
   protected rememberPointerEvent(e: PointerEvent): void {

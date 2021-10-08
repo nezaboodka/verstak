@@ -49,7 +49,6 @@ export class WheelSensor extends PointerSensor {
     this.positionY = Infinity
     this.deltaX = Infinity
     this.deltaY = Infinity
-    this.revision++
   }
 
   protected rememberWheelEvent(e: WheelEvent): void {
