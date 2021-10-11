@@ -5,16 +5,16 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, TraceLevel, transaction } from 'reactronic'
+import { options, reaction, TraceLevel, transaction } from 'reactronic'
 import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { PointerSensor } from './PointerSensor'
 
 export class ClickSensor extends PointerSensor {
-  clicked = false
-  doubleClicked = false
-  auxClicked = false
+  clicked = 0
+  doubleClicked = 0
+  auxClicked = 0
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
@@ -34,44 +34,41 @@ export class ClickSensor extends PointerSensor {
     }
   }
 
-  @transaction
   reset(): void {
     this.doReset()
   }
 
   protected onClick(e: MouseEvent): void {
     this.doClick(e)
-    this.reset()
   }
 
   protected onDblClick(e: MouseEvent): void {
     this.doDoubleClick(e)
-    this.reset()
   }
 
   protected onAuxClick(e: MouseEvent): void {
     this.doAuxClick(e)
-    this.reset()
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doClick(e: MouseEvent): void {
     this.rememberPointerEvent(e)
-    this.clicked = true
+    this.clicked++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doDoubleClick(e: MouseEvent): void {
     this.rememberPointerEvent(e)
-    this.doubleClicked = true
+    this.doubleClicked++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doAuxClick(e: MouseEvent): void {
     this.rememberPointerEvent(e)
-    this.auxClicked = true
+    this.auxClicked++
   }
 
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected doReset(): void {
     this.associatedDataPath = EmptyAssociatedDataArray
     this.internalAssociatedDataUnderPointer = EmptyAssociatedDataArray
@@ -79,9 +76,9 @@ export class ClickSensor extends PointerSensor {
     this.positionX = Infinity
     this.positionY = Infinity
     this.modifiers = KeyboardModifiers.None
-    this.clicked = false
-    this.doubleClicked = false
-    this.auxClicked = false
+    this.clicked = 0
+    this.doubleClicked = 0
+    this.auxClicked = 0
   }
 
   protected rememberPointerEvent(e: MouseEvent): void {
@@ -94,5 +91,10 @@ export class ClickSensor extends PointerSensor {
     this.positionX = e.clientX
     this.positionY = e.clientY
     this.revision++
+  }
+
+  @reaction
+  protected debug(): void {
+    console.log(`clicked = ${this.clicked}, doubleClicked: ${this.doubleClicked}, auxClicked = ${this.auxClicked}`)
   }
 }
