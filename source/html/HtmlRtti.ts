@@ -101,6 +101,8 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
       }
     }
     else { // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}???.unmount(${ref.id} r${ref.mounted!.cycle})`)
+      if (native)
+        instance?.resizeObserver?.unobserve(native)
       unmount(m, owner, cause) // proceed
     }
   }
