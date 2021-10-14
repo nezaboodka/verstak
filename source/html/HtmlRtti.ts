@@ -87,10 +87,12 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
   }
 
   unmount(m: Manifest<E, any>, owner: Manifest, cause: Manifest): void {
-    const native = m.mounted?.instance?.native
+    const instance = m.mounted?.instance
+    const native = instance?.native
     if (!AbstractHtmlRtti.unmounting && native && native.parentElement) {
       AbstractHtmlRtti.unmounting = native // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       try { // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}${e.parentElement.id}.removeChild(${e.id} r${ref.mounted!.cycle})`)
+        instance?.resizeObserver?.unobserve(native)
         native.remove()
         unmount(m, owner, cause) // proceed
       }
