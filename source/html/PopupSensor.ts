@@ -58,15 +58,15 @@ export class PopupSensor extends PointerSensor {
   protected onPointerMove(e: PointerEvent): void {
     if (this.stage === PopupStage.Invoked) {
       this.startSelecting(e)
-      this.selecting()
-    } else if (this.stage === PopupStage.Selecting) {
-      this.continueSelecting(e)
+    }
+    if (this.stage === PopupStage.Selecting) {
+      this.selecting(e)
     }
   }
 
   protected onPointerDown(e: PointerEvent): void {
     if (this.stage === PopupStage.Finished && (e.button === 0 || e.button === 1)) {
-      this.tryDragging(e)
+      this.invoke(e)
     }
   }
 
@@ -96,17 +96,17 @@ export class PopupSensor extends PointerSensor {
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  protected tryDragging(e: PointerEvent): void {
+  protected invoke(e: PointerEvent): void {
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', 'dragImportance', EmptyAssociatedDataArray)
-    const draggingOriginData = associatedDataUnderPointer as AssociatedData | undefined
-    if (draggingOriginData) {
+    const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'popup', 'popupImportance', EmptyAssociatedDataArray)
+    const popupOriginData = associatedDataUnderPointer as AssociatedData | undefined
+    if (popupOriginData) {
       this.event = e
       this.button = extractPointerButton(e)
       this.associatedDataUnderPointer = associatedDataUnderPointer
-      this.originData = draggingOriginData
+      this.originData = popupOriginData
       const path = e.composedPath()
-      this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', EmptyAssociatedDataArray)
+      this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'popup', 'popupImportance', EmptyAssociatedDataArray)
       this.modifiers = extractModifierKeys(e)
       this.positionX = e.clientX
       this.positionY = e.clientY
@@ -116,18 +116,13 @@ export class PopupSensor extends PointerSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected startSelecting(e: PointerEvent): void {
-    this.stage = PopupStage.Invoked
+    this.stage = PopupStage.Selecting
     this.rememberPointerEvent(e)
     this.selected = false
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected selecting(): void {
-    this.stage = PopupStage.Selecting
-  }
-
   @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
-  protected continueSelecting(e: PointerEvent): void {
+  protected selecting(e: PointerEvent): void {
     this.rememberPointerEvent(e)
   }
 
