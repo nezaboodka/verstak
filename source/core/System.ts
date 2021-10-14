@@ -18,7 +18,7 @@ export type ComponentRender<O = unknown, E = void> = (render: (options: O) => O,
 export interface MountedInstance<E> {
   native?: E
   model?: any
-  isResizeSensorEnabled?: boolean
+  resizeObserver?: ResizeObserver
 }
 
 export class Manifest<E = unknown, O = void> {
