@@ -16,6 +16,7 @@ export interface AssociatedDataPayload {
   resize?: unknown
   drag?: unknown
   htmlDrag?: unknown
+  popup?: unknown
 }
 
 export interface AssociatedDataImportance {
@@ -26,4 +27,5 @@ export interface AssociatedDataImportance {
   wheelImportance?: number
   dragImportance?: number
   htmlDragImportance?: number
+  popupImportance?: number
 }
