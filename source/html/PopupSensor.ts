@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
+import { options, reaction, Reentrance, TraceLevel, transaction } from 'reactronic'
 import { extractPointerButton, PointerButton, PointerSensor } from './PointerSensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
@@ -55,18 +55,16 @@ export class PopupSensor extends PointerSensor {
     this.doReset()
   }
 
-  protected onPointerMove(e: PointerEvent): void {
-    if (this.stage === PopupStage.Invoked) {
-      this.startSelecting(e)
-    }
-    if (this.stage === PopupStage.Selecting) {
-      this.selecting(e)
-    }
-  }
-
   protected onPointerDown(e: PointerEvent): void {
     if (this.stage === PopupStage.Finished && (e.button === 0 || e.button === 1)) {
       this.invoke(e)
+      this.startSelecting(e)
+    }
+  }
+
+  protected onPointerMove(e: PointerEvent): void {
+    if (this.stage === PopupStage.Selecting) {
+      this.selecting(e)
     }
   }
 
@@ -101,6 +99,7 @@ export class PopupSensor extends PointerSensor {
     const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'popup', 'popupImportance', EmptyAssociatedDataArray)
     const popupOriginData = associatedDataUnderPointer as AssociatedData | undefined
     if (popupOriginData) {
+      this.stage = PopupStage.Invoked
       this.event = e
       this.button = extractPointerButton(e)
       this.associatedDataUnderPointer = associatedDataUnderPointer
@@ -133,7 +132,6 @@ export class PopupSensor extends PointerSensor {
     this.selectedX = e.clientX
     this.selectedY = e.clientY
     this.selected = true
-    this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
@@ -146,6 +144,7 @@ export class PopupSensor extends PointerSensor {
   protected cancel(): void {
     this.stage = PopupStage.Finished
     this.selected = false
+    this.revision++
   }
 
   protected doReset(): void {
@@ -174,8 +173,8 @@ export class PopupSensor extends PointerSensor {
     this.revision++
   }
 
-  // @reaction
-  // protected debug(): void {
-  //   console.log(`stage = ${DragStage[this.stage]}, draggingData: ${this.draggingData}, start = (${this.startX}, ${this.startY}), pos = (${this.positionX}, ${this.positionY})`)
-  // }
+  @reaction
+  protected debug(): void {
+    console.log(`stage = ${PopupStage[this.stage]}, originData = ${this.originData}, selected = ${this.selected}, selectedData = ${this.selectedData}, selectedXY = (${this.selectedX}, ${this.selectedY})`)
+  }
 }
