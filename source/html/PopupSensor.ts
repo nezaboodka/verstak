@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, Reentrance, TraceLevel, transaction } from 'reactronic'
+import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
 import { extractPointerButton, PointerButton, PointerSensor } from './PointerSensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
@@ -21,8 +21,8 @@ export enum PopupStage {
 
 export class PopupSensor extends PointerSensor {
   stage = PopupStage.Finished
-  originData: any = undefined
-  selectedData: any = undefined
+  originData: unknown = undefined
+  selectedData: unknown = undefined
   button = PointerButton.None
   selectedX = Infinity // position relative to browser's viewport
   selectedY = Infinity // position relative to browser's viewport
@@ -96,8 +96,8 @@ export class PopupSensor extends PointerSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected invoke(e: PointerEvent): void {
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'popup', 'popupImportance', EmptyAssociatedDataArray)
-    const popupOriginData = associatedDataUnderPointer as AssociatedData | undefined
+    const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'popup', EmptyAssociatedDataArray)
+    const popupOriginData = associatedDataUnderPointer[0] as AssociatedData | undefined
     if (popupOriginData) {
       this.stage = PopupStage.Invoked
       this.event = e
@@ -105,7 +105,7 @@ export class PopupSensor extends PointerSensor {
       this.associatedDataUnderPointer = associatedDataUnderPointer
       this.originData = popupOriginData
       const path = e.composedPath()
-      this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'popup', 'popupImportance', EmptyAssociatedDataArray)
+      this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'popup', EmptyAssociatedDataArray)
       this.modifiers = extractModifierKeys(e)
       this.positionX = e.clientX
       this.positionY = e.clientY
@@ -164,17 +164,18 @@ export class PopupSensor extends PointerSensor {
   protected rememberPointerEvent(e: PointerEvent): void {
     this.event = e
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'popup', 'popupImportance', this.associatedDataPath)
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'popup', this.associatedDataPath)
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'popup', 'popupImportance', this.associatedDataUnderPointer)
+    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'popup', this.associatedDataUnderPointer)
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY
     this.revision++
   }
 
-  @reaction
-  protected debug(): void {
-    console.log(`stage = ${PopupStage[this.stage]}, originData = ${this.originData}, selected = ${this.selected}, selectedData = ${this.selectedData}, selectedXY = (${this.selectedX}, ${this.selectedY})`)
-  }
+  // @reaction
+  // protected debug(): void {
+  //   console.log(`Popup: associatedDataPath.length = ${this.associatedDataPath.length}`)
+  //   console.log(`stage = ${PopupStage[this.stage]}, originData = ${this.originData}, selected = ${this.selected}, selectedData = ${this.selectedData}, selectedXY = (${this.selectedX}, ${this.selectedY})`)
+  // }
 }

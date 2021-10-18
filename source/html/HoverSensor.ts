@@ -54,9 +54,9 @@ export class HoverSensor extends PointerSensor {
   protected rememberPointerEvent(e: PointerEvent): void {
     this.event = e
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'hover', 'hoverImportance', this.associatedDataPath)
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'hover', this.associatedDataPath)
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'hover', 'hoverImportance', this.associatedDataUnderPointer)
+    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'hover', this.associatedDataUnderPointer)
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY

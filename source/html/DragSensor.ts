@@ -106,7 +106,7 @@ export class DragSensor extends PointerSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected tryDragging(e: PointerEvent): void {
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', 'dragImportance', EmptyAssociatedDataArray)
+    const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', EmptyAssociatedDataArray)
     const draggingOriginData = associatedDataUnderPointer as AssociatedData | undefined
     if (draggingOriginData) {
       this.event = e
@@ -117,7 +117,7 @@ export class DragSensor extends PointerSensor {
       this.associatedDataUnderPointer = associatedDataUnderPointer
       this.originData = draggingOriginData
       const path = e.composedPath()
-      this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', EmptyAssociatedDataArray)
+      this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', EmptyAssociatedDataArray)
       this.modifiers = extractModifierKeys(e)
       this.positionX = e.clientX
       this.positionY = e.clientY
@@ -184,9 +184,9 @@ export class DragSensor extends PointerSensor {
   protected rememberPointerEvent(e: PointerEvent): void {
     this.event = e
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', 'dragImportance', this.associatedDataPath)
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', this.associatedDataPath)
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', 'dragImportance', this.associatedDataUnderPointer)
+    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', this.associatedDataUnderPointer)
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY

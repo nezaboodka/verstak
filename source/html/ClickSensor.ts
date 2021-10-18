@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, TraceLevel, transaction } from 'reactronic'
+import { options, TraceLevel, transaction } from 'reactronic'
 import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
@@ -71,7 +71,7 @@ export class ClickSensor extends PointerSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doReset(): void {
     this.associatedDataPath = EmptyAssociatedDataArray
-    this.internalAssociatedDataUnderPointer = EmptyAssociatedDataArray
+    this.associatedDataUnderPointer = EmptyAssociatedDataArray
     this.event = undefined
     this.positionX = Infinity
     this.positionY = Infinity
@@ -84,17 +84,17 @@ export class ClickSensor extends PointerSensor {
   protected rememberPointerEvent(e: MouseEvent): void {
     this.event = e
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'click', 'clickImportance', this.associatedDataPath)
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'click', this.associatedDataPath)
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'click', 'clickImportance', this.associatedDataUnderPointer)
+    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'click', this.associatedDataUnderPointer)
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY
     this.revision++
   }
 
-  @reaction
-  protected debug(): void {
-    console.log(`clicked = ${this.clicked}, doubleClicked: ${this.doubleClicked}, auxClicked = ${this.auxClicked}`)
-  }
+  // @reaction
+  // protected debug(): void {
+  //   console.log(`clicked = ${this.clicked}, doubleClicked: ${this.doubleClicked}, auxClicked = ${this.auxClicked}`)
+  // }
 }

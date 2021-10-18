@@ -5,9 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export type AssociatedData = AssociatedDataPayload & AssociatedDataImportance
-
-export interface AssociatedDataPayload {
+export interface AssociatedData {
   focus?: unknown
   hover?: unknown
   keyboard?: unknown
@@ -17,15 +15,4 @@ export interface AssociatedDataPayload {
   drag?: unknown
   htmlDrag?: unknown
   popup?: unknown
-}
-
-export interface AssociatedDataImportance {
-  focusImportance?: number
-  hoverImportance?: number
-  keyboardImportance?: number
-  clickImportance?: number
-  wheelImportance?: number
-  dragImportance?: number
-  htmlDragImportance?: number
-  popupImportance?: number
 }

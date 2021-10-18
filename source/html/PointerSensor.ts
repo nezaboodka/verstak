@@ -21,12 +21,10 @@ export class PointerSensor extends HtmlElementSensor {
   positionX = Infinity // position relative to browser's viewport
   positionY = Infinity // position relative to browser's viewport
   modifiers = KeyboardModifiers.None
-  protected internalAssociatedDataUnderPointer: unknown[] = EmptyAssociatedDataArray
+  associatedDataUnderPointer: unknown[] = EmptyAssociatedDataArray
 
-  get associatedDataUnderPointer(): unknown[] { return nonreactive(() => this.internalAssociatedDataUnderPointer) }
-  set associatedDataUnderPointer(value: unknown[]) { this.internalAssociatedDataUnderPointer = value }
   get topAssociatedDataUnderPointer(): unknown {
-    return nonreactive(() => this.internalAssociatedDataUnderPointer.length > 0 ? this.internalAssociatedDataUnderPointer[0] : undefined)
+    return nonreactive(() => this.associatedDataUnderPointer.length > 0 ? this.associatedDataUnderPointer[0] : undefined)
   }
 
   preventDefault(): void {

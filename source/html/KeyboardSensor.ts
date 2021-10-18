@@ -96,7 +96,7 @@ export class KeyboardSensor extends HtmlElementSensor {
   protected rememberKeyboardEvent(e: KeyboardEvent): void {
     this.event = e
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'keyboard', 'keyboardImportance', this.associatedDataPath)
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'keyboard', this.associatedDataPath)
     let modifier: KeyboardModifiers = 0
     if (e.ctrlKey)
       modifier |= KeyboardModifiers.Ctrl

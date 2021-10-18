@@ -42,10 +42,16 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   protected onFocusIn(e: FocusEvent): void {
+
+    console.log(`onFocusIn: ${(e.target as HTMLElement).id}; ${(e.composedPath()[0] as HTMLElement).id}`)
+
     this.rememberFocusEvent(e)
   }
 
   protected onFocusOut(e: FocusEvent): void {
+
+    console.log(`onFocusOut: ${(e.target as HTMLElement).id}`)
+
     this.reset()
   }
 
@@ -59,7 +65,12 @@ export class FocusSensor extends HtmlElementSensor {
   protected rememberFocusEvent(e: FocusEvent): void {
     this.event = e
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'focus', 'focusImportance', this.associatedDataPath)
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'focus', this.associatedDataPath)
     this.revision++
   }
+
+  // @reaction
+  // protected debug(): void {
+  //   console.log(`Focus: associatedDataPath.length = ${this.associatedDataPath.length}`)
+  // }
 }
