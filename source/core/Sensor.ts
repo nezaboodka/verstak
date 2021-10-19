@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ObservableObject, nonreactive } from 'reactronic'
+import { ObservableObject } from 'reactronic'
 import { AssociatedData } from './AssociatedData'
 
 export class Sensor extends ObservableObject {
@@ -14,7 +14,7 @@ export class Sensor extends ObservableObject {
   associatedDataPath: unknown[] = EmptyAssociatedDataArray
 
   get topAssociatedData(): unknown {
-    return nonreactive(() => this.associatedDataPath.length > 0 ? this.associatedDataPath[0] : undefined)
+    return this.associatedDataPath.length > 0 ? this.associatedDataPath[0] : undefined
   }
 }
 

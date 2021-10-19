@@ -42,16 +42,10 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   protected onFocusIn(e: FocusEvent): void {
-
-    console.log(`onFocusIn: ${(e.target as HTMLElement).id}; ${(e.composedPath()[0] as HTMLElement).id}`)
-
     this.rememberFocusEvent(e)
   }
 
   protected onFocusOut(e: FocusEvent): void {
-
-    console.log(`onFocusOut: ${(e.target as HTMLElement).id}`)
-
     this.reset()
   }
 

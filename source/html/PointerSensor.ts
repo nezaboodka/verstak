@@ -5,7 +5,6 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { nonreactive } from 'reactronic'
 import { EmptyAssociatedDataArray, HtmlElementSensor } from '../core/Sensor'
 import { KeyboardModifiers } from './KeyboardSensor'
 
@@ -24,7 +23,7 @@ export class PointerSensor extends HtmlElementSensor {
   associatedDataUnderPointer: unknown[] = EmptyAssociatedDataArray
 
   get topAssociatedDataUnderPointer(): unknown {
-    return nonreactive(() => this.associatedDataUnderPointer.length > 0 ? this.associatedDataUnderPointer[0] : undefined)
+    return this.associatedDataUnderPointer.length > 0 ? this.associatedDataUnderPointer[0] : undefined
   }
 
   preventDefault(): void {
