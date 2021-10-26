@@ -14,5 +14,5 @@ export interface AssociatedData {
   resize?: unknown
   drag?: unknown
   htmlDrag?: unknown
-  popup?: unknown
+  button?: unknown
 }

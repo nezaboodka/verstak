@@ -12,7 +12,7 @@ import { FocusSensor } from './FocusSensor'
 import { HoverSensor } from './HoverSensor'
 import { HtmlDragSensor } from './HtmlDragSensor'
 import { KeyboardSensor } from './KeyboardSensor'
-import { PopupSensor } from './PopupSensor'
+import { ButtonSensor } from './ButtonSensor'
 import { ResizeSensor } from './ResizeSensor'
 import { WheelSensor } from './WheelSensor'
 
@@ -25,7 +25,7 @@ export class HtmlSensors {
   readonly resize: ResizeSensor
   readonly drag: DragSensor
   readonly htmlDrag: HtmlDragSensor
-  readonly popup: PopupSensor
+  readonly button: ButtonSensor
 
   constructor() {
     this.focus = new FocusSensor()
@@ -36,7 +36,7 @@ export class HtmlSensors {
     this.resize = new ResizeSensor()
     this.drag = new DragSensor()
     this.htmlDrag = new HtmlDragSensor()
-    this.popup = new PopupSensor()
+    this.button = new ButtonSensor()
   }
 
   @transaction
@@ -49,6 +49,6 @@ export class HtmlSensors {
     // this.resize doesn't have listen, this.resize.observeResizeOfRenderingElement is used instead
     this.drag.listen(element, enabled)
     this.htmlDrag.listen(element, enabled)
-    this.popup.listen(element, enabled)
+    this.button.listen(element, enabled)
   }
 }

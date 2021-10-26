@@ -12,18 +12,18 @@ import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { AssociatedData } from '../core/AssociatedData'
 
-export enum PopupStage {
-  Invoked,
+export enum ButtonState {
+  Pressed,
   Selecting,
   Selected,
-  Finished,
+  Released,
 }
 
-export class PopupSensor extends PointerSensor {
-  stage = PopupStage.Finished
+export class ButtonSensor extends PointerSensor {
+  state = ButtonState.Released
   originData: unknown = undefined
   selectedData: unknown = undefined
-  button = PointerButton.None
+  pointerButton = PointerButton.None
   selectedX = Infinity // position relative to browser's viewport
   selectedY = Infinity // position relative to browser's viewport
   selected: boolean = false
@@ -56,38 +56,38 @@ export class PopupSensor extends PointerSensor {
   }
 
   protected onPointerDown(e: PointerEvent): void {
-    if (this.stage === PopupStage.Finished && (e.button === 0 || e.button === 1)) {
+    if (this.state === ButtonState.Released && (e.button === 0 || e.button === 1)) {
       this.invoke(e)
       this.startSelecting(e)
     }
   }
 
   protected onPointerMove(e: PointerEvent): void {
-    if (this.stage === PopupStage.Selecting) {
+    if (this.state === ButtonState.Selecting) {
       this.selecting(e)
     }
   }
 
   protected onPointerUp(e: PointerEvent): void {
-    if (this.stage === PopupStage.Selecting) {
+    if (this.state === ButtonState.Selecting) {
       this.select(e)
       this.finish()
     }
-    else if (this.stage === PopupStage.Invoked) {
+    else if (this.state === ButtonState.Pressed) {
       this.finish()
     }
     this.reset()
   }
 
   protected onLostPointerCapture(e: PointerEvent): void {
-    if (this.stage !== PopupStage.Finished) {
+    if (this.state !== ButtonState.Released) {
       this.cancel()
       this.reset()
     }
   }
 
   protected onKeyDown(e: KeyboardEvent): void {
-    if (e.key === 'Escape' && this.stage !== PopupStage.Finished) {
+    if (e.key === 'Escape' && this.state !== ButtonState.Released) {
       this.cancel()
       this.reset()
     }
@@ -96,16 +96,16 @@ export class PopupSensor extends PointerSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected invoke(e: PointerEvent): void {
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'popup', EmptyAssociatedDataArray)
+    const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'button', EmptyAssociatedDataArray)
     const popupOriginData = associatedDataUnderPointer[0] as AssociatedData | undefined
     if (popupOriginData) {
-      this.stage = PopupStage.Invoked
+      this.state = ButtonState.Pressed
       this.event = e
-      this.button = extractPointerButton(e)
+      this.pointerButton = extractPointerButton(e)
       this.associatedDataUnderPointer = associatedDataUnderPointer
       this.originData = popupOriginData
       const path = e.composedPath()
-      this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'popup', EmptyAssociatedDataArray)
+      this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'button', EmptyAssociatedDataArray)
       this.modifiers = extractModifierKeys(e)
       this.positionX = e.clientX
       this.positionY = e.clientY
@@ -115,7 +115,7 @@ export class PopupSensor extends PointerSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected startSelecting(e: PointerEvent): void {
-    this.stage = PopupStage.Selecting
+    this.state = ButtonState.Selecting
     this.rememberPointerEvent(e)
     this.selected = false
   }
@@ -128,7 +128,7 @@ export class PopupSensor extends PointerSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected select(e: PointerEvent): void {
     this.rememberPointerEvent(e)
-    this.stage = PopupStage.Selected
+    this.state = ButtonState.Selected
     this.selectedX = e.clientX
     this.selectedY = e.clientY
     this.selected = true
@@ -136,13 +136,13 @@ export class PopupSensor extends PointerSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected finish(): void {
-    this.stage = PopupStage.Finished
+    this.state = ButtonState.Released
     this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected cancel(): void {
-    this.stage = PopupStage.Finished
+    this.state = ButtonState.Released
     this.selected = false
     this.revision++
   }
@@ -152,7 +152,7 @@ export class PopupSensor extends PointerSensor {
     this.associatedDataPath = EmptyAssociatedDataArray
     this.originData = undefined
     this.selectedData = undefined
-    this.button = PointerButton.None
+    this.pointerButton = PointerButton.None
     this.positionX = Infinity
     this.positionY = Infinity
     this.selectedX = Infinity
@@ -164,9 +164,9 @@ export class PopupSensor extends PointerSensor {
   protected rememberPointerEvent(e: PointerEvent): void {
     this.event = e
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'popup', this.associatedDataPath)
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'button', this.associatedDataPath)
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'popup', this.associatedDataUnderPointer)
+    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'button', this.associatedDataUnderPointer)
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY
