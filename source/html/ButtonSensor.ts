@@ -11,6 +11,7 @@ import { SymAssociatedData } from './HtmlApiExt'
 import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { AssociatedData } from '../core/AssociatedData'
+import { WindowSensor } from './WindowSensor'
 
 export enum ButtonState {
   Pressed,
@@ -20,13 +21,24 @@ export enum ButtonState {
 }
 
 export class ButtonSensor extends PointerSensor {
-  state = ButtonState.Released
-  originData: unknown = undefined
-  selectedData: unknown = undefined
-  pointerButton = PointerButton.None
-  selectedX = Infinity // position relative to browser's viewport
-  selectedY = Infinity // position relative to browser's viewport
-  selected: boolean = false
+  state: ButtonState
+  originData: unknown
+  selectedData: unknown
+  pointerButton: PointerButton
+  selectedX: number // position relative to browser's viewport
+  selectedY: number // position relative to browser's viewport
+  selected: boolean
+
+  constructor(window: WindowSensor) {
+    super(window)
+    this.state = ButtonState.Released
+    this.originData = undefined
+    this.selectedData = undefined
+    this.pointerButton = PointerButton.None
+    this.selectedX = Infinity
+    this.selectedY = Infinity
+    this.selected = false
+  }
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
@@ -96,7 +108,7 @@ export class ButtonSensor extends PointerSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected press(e: PointerEvent): void {
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'button', EmptyAssociatedDataArray)
+    const { data: associatedDataUnderPointer, window } = grabAssociatedData(elements, SymAssociatedData, 'button', EmptyAssociatedDataArray)
     const popupOriginData = associatedDataUnderPointer[0] as AssociatedData | undefined
     if (popupOriginData) {
       this.state = ButtonState.Pressed
@@ -105,12 +117,14 @@ export class ButtonSensor extends PointerSensor {
       this.associatedDataUnderPointer = associatedDataUnderPointer
       this.originData = popupOriginData
       const path = e.composedPath()
-      this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'button', EmptyAssociatedDataArray)
+      const { data: associatedData } = grabAssociatedData(path, SymAssociatedData, 'button', EmptyAssociatedDataArray)
+      this.associatedDataPath = associatedData
       this.modifiers = extractModifierKeys(e)
       this.positionX = e.clientX
       this.positionY = e.clientY
       this.revision++
     }
+    this.window?.setActiveWindow(window)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
@@ -164,9 +178,9 @@ export class ButtonSensor extends PointerSensor {
   protected rememberPointerEvent(e: PointerEvent): void {
     this.event = e
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'button', this.associatedDataPath)
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'button', this.associatedDataPath).data
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'button', this.associatedDataUnderPointer)
+    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'button', this.associatedDataUnderPointer).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY

@@ -11,6 +11,7 @@ import { SymAssociatedData } from './HtmlApiExt'
 import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { AssociatedData } from '../core/AssociatedData'
+import { WindowSensor } from './WindowSensor'
 
 export enum DragStage {
   Started,
@@ -20,18 +21,32 @@ export enum DragStage {
 }
 
 export class DragSensor extends PointerSensor {
-  stage = DragStage.Finished
-  originData: any = undefined
-  draggingData: any = undefined
-  button = PointerButton.None
-  startX = Infinity // position relative to browser's viewport
-  startY = Infinity // position relative to browser's viewport
-  dropX = Infinity // position relative to browser's viewport
-  dropY = Infinity // position relative to browser's viewport
-  trying: boolean = false
-  dropped: boolean = false
+  stage: DragStage
+  originData: any
+  draggingData: any
+  button: PointerButton
+  startX: number // position relative to browser's viewport
+  startY: number // position relative to browser's viewport
+  dropX: number // position relative to browser's viewport
+  dropY: number // position relative to browser's viewport
+  trying: boolean
+  dropped: boolean
 
   static readonly DraggingThreshold = 4
+
+  constructor(window: WindowSensor) {
+    super(window)
+    this.stage = DragStage.Finished
+    this.originData = undefined
+    this.draggingData = undefined
+    this.button = PointerButton.None
+    this.startX = Infinity // position relative to browser's viewport
+    this.startY = Infinity // position relative to browser's viewport
+    this.dropX = Infinity // position relative to browser's viewport
+    this.dropY = Infinity // position relative to browser's viewport
+    this.trying = false
+    this.dropped = false
+  }
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
@@ -106,7 +121,7 @@ export class DragSensor extends PointerSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected tryDragging(e: PointerEvent): void {
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', EmptyAssociatedDataArray)
+    const { data: associatedDataUnderPointer, window } = grabAssociatedData(elements, SymAssociatedData, 'drag', EmptyAssociatedDataArray)
     const draggingOriginData = associatedDataUnderPointer as AssociatedData | undefined
     if (draggingOriginData) {
       this.event = e
@@ -117,12 +132,13 @@ export class DragSensor extends PointerSensor {
       this.associatedDataUnderPointer = associatedDataUnderPointer
       this.originData = draggingOriginData
       const path = e.composedPath()
-      this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', EmptyAssociatedDataArray)
+      this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', EmptyAssociatedDataArray).data
       this.modifiers = extractModifierKeys(e)
       this.positionX = e.clientX
       this.positionY = e.clientY
       this.revision++
     }
+    this.window?.setActiveWindow(window)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
@@ -184,9 +200,9 @@ export class DragSensor extends PointerSensor {
   protected rememberPointerEvent(e: PointerEvent): void {
     this.event = e
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', this.associatedDataPath)
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', this.associatedDataPath).data
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', this.associatedDataUnderPointer)
+    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', this.associatedDataUnderPointer).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY

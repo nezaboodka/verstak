@@ -18,23 +18,20 @@ export class Sensor extends ObservableObject {
   }
 }
 
-export class HtmlElementSensor extends Sensor {
-  sourceElement: HTMLElement | undefined = undefined
-}
-
 export const EmptyAssociatedDataArray: any[] = []
 
 export function grabAssociatedData(elements: any[], sym: symbol,
-  payloadKey: keyof AssociatedData, existing: Array<unknown>): Array<unknown> {
+  payloadKey: keyof AssociatedData, existing: Array<unknown>): { data: Array<unknown>, window: unknown } {
   let result = existing
   let i = 0
   let j = 0
-  while (i < elements.length) {
+  let window: unknown = undefined
+  while (window === undefined && i < elements.length) {
     const data = elements[i][sym] as AssociatedData | undefined
     if (data !== undefined) {
+      window = data['window']
       const payload = data[payloadKey]
       if (payload !== undefined) {
-        // Handle event infos of the same importance
         if (result !== existing)
           payload !== undefined && result.push(payload)
         else if (payload !== undefined) {
@@ -52,5 +49,5 @@ export function grabAssociatedData(elements: any[], sym: symbol,
   }
   if (j === 0 && result === existing && existing.length > 0)
     result = EmptyAssociatedDataArray
-  return result
+  return { data: result, window }
 }

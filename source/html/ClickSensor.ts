@@ -10,11 +10,19 @@ import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { PointerSensor } from './PointerSensor'
+import { WindowSensor } from './WindowSensor'
 
 export class ClickSensor extends PointerSensor {
-  clicked = 0
-  doubleClicked = 0
-  auxClicked = 0
+  clicked: number
+  doubleClicked: number
+  auxClicked: number
+
+  constructor(window: WindowSensor) {
+    super(window)
+    this.clicked = 0
+    this.doubleClicked = 0
+    this.auxClicked = 0
+  }
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
@@ -84,13 +92,15 @@ export class ClickSensor extends PointerSensor {
   protected rememberPointerEvent(e: MouseEvent): void {
     this.event = e
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'click', this.associatedDataPath)
+    const { data: associatedDataUnderPointer, window } = grabAssociatedData(path, SymAssociatedData, 'click', this.associatedDataPath)
+    this.associatedDataPath = associatedDataUnderPointer
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'click', this.associatedDataUnderPointer)
+    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'click', this.associatedDataUnderPointer).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY
     this.revision++
+    this.window?.setActiveWindow(window)
   }
 
   // @reaction

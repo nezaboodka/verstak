@@ -5,12 +5,19 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, TraceLevel, transaction } from 'reactronic'
-import { EmptyAssociatedDataArray, grabAssociatedData, HtmlElementSensor } from '../core/Sensor'
+import { options, reaction, TraceLevel, transaction } from 'reactronic'
+import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
 import { SymAssociatedData } from './HtmlApiExt'
+import { HtmlElementSensor } from './HtmlElementSensor'
+import { WindowSensor } from './WindowSensor'
 
 export class FocusSensor extends HtmlElementSensor {
-  event: FocusEvent | undefined = undefined
+  event: FocusEvent | undefined
+
+  constructor(window: WindowSensor) {
+    super(window)
+    this.event = undefined
+  }
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
@@ -43,6 +50,7 @@ export class FocusSensor extends HtmlElementSensor {
 
   protected onFocusIn(e: FocusEvent): void {
     this.rememberFocusEvent(e)
+    console.log(e.target)
   }
 
   protected onFocusOut(e: FocusEvent): void {
@@ -59,12 +67,14 @@ export class FocusSensor extends HtmlElementSensor {
   protected rememberFocusEvent(e: FocusEvent): void {
     this.event = e
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'focus', this.associatedDataPath)
+    const { data, window } = grabAssociatedData(path, SymAssociatedData, 'focus', this.associatedDataPath)
+    this.associatedDataPath = data
     this.revision++
+    this.window?.setActiveWindow(window)
   }
 
-  // @reaction
-  // protected debug(): void {
-  //   console.log(`Focus: associatedDataPath.length = ${this.associatedDataPath.length}`)
-  // }
+  @reaction
+  protected debug(): void {
+    console.log(`Focus: topAssociatedData = ${this.topAssociatedData}`)
+  }
 }

@@ -5,41 +5,51 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { nonreactive, options, Reentrance, TraceLevel, transaction } from 'reactronic'
-import { EmptyAssociatedDataArray, grabAssociatedData, HtmlElementSensor } from '../core/Sensor'
+import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
+import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
 import { DragStage } from './DragSensor'
 import { SymAssociatedData } from './HtmlApiExt'
+import { HtmlElementSensor } from './HtmlElementSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
+import { WindowSensor } from './WindowSensor'
 
 export type DragEffectAllowed = 'none' | 'copy' | 'copyLink' | 'copyMove' | 'link' | 'linkMove' | 'move' | 'all' | 'uninitialized'
 export type DropEffect = 'none' | 'copy' | 'link' | 'move'
 
 export class HtmlDragSensor extends HtmlElementSensor {
-  event: DragEvent | undefined = undefined
-
-  stage = DragStage.Finished
-  originData: any = undefined
-  draggingData: any = undefined
+  event: DragEvent | undefined
+  stage: DragStage
+  originData: any
+  draggingData: any
   modifiers = KeyboardModifiers.None
-  startX = Infinity // position relative to browser's viewport
-  startY = Infinity // position relative to browser's viewport
-  positionX = Infinity // position relative to browser's viewport
-  positionY = Infinity // position relative to browser's viewport
-  dropX = Infinity // position relative to browser's viewport
-  dropY = Infinity // position relative to browser's viewport
-  dropped: boolean = false
-  protected internalAssociatedDataUnderPointer: unknown[] = EmptyAssociatedDataArray
+  startX: number // position relative to browser's viewport
+  startY: number // position relative to browser's viewport
+  positionX: number // position relative to browser's viewport
+  positionY: number // position relative to browser's viewport
+  dropX: number // position relative to browser's viewport
+  dropY: number // position relative to browser's viewport
+  dropped: boolean
+  associatedDataUnderPointer: unknown[]
 
-  get associatedDataUnderPointer(): unknown[] {
-    return nonreactive(() => this.internalAssociatedDataUnderPointer)
-  }
-
-  set associatedDataUnderPointer(value: unknown[]) {
-    this.internalAssociatedDataUnderPointer = value
+  constructor(window: WindowSensor) {
+    super(window)
+    this.event = undefined
+    this.stage = DragStage.Finished
+    this.originData = undefined
+    this.draggingData = undefined
+    this.modifiers = KeyboardModifiers.None
+    this.startX = Infinity
+    this.startY = Infinity
+    this.positionX = Infinity
+    this.positionY = Infinity
+    this.dropX = Infinity
+    this.dropY = Infinity
+    this.dropped = false
+    this.associatedDataUnderPointer = EmptyAssociatedDataArray
   }
 
   get topAssociatedDataUnderPointer(): unknown {
-    return nonreactive(() => this.internalAssociatedDataUnderPointer.length > 0 ? this.internalAssociatedDataUnderPointer[0] : undefined)
+    return this.associatedDataUnderPointer.length > 0 ? this.associatedDataUnderPointer[0] : undefined
   }
 
   get dropEffect(): DropEffect {
@@ -189,15 +199,18 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.dropped = false
   }
 
-  protected rememberDragEvent(e: DragEvent): void {
+  protected rememberDragEvent(e: DragEvent, setActiveWindow: boolean = false): void {
     this.event = e
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'htmlDrag', this.associatedDataPath)
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'htmlDrag', this.associatedDataUnderPointer)
+    const { data: associatedDataUnderPointer, window } = grabAssociatedData(elements, SymAssociatedData, 'htmlDrag', this.associatedDataUnderPointer)
+    this.associatedDataUnderPointer = associatedDataUnderPointer
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'htmlDrag', this.associatedDataPath).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY
     this.revision++
+    if (setActiveWindow)
+      this.window?.setActiveWindow(window)
   }
 }

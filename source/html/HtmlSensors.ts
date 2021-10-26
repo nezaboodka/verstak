@@ -15,8 +15,10 @@ import { KeyboardSensor } from './KeyboardSensor'
 import { ButtonSensor } from './ButtonSensor'
 import { ResizeSensor } from './ResizeSensor'
 import { WheelSensor } from './WheelSensor'
+import { WindowSensor } from './WindowSensor'
 
 export class HtmlSensors {
+  readonly window: WindowSensor
   readonly focus: FocusSensor
   readonly hover: HoverSensor
   readonly keyboard: KeyboardSensor
@@ -28,15 +30,16 @@ export class HtmlSensors {
   readonly button: ButtonSensor
 
   constructor() {
-    this.focus = new FocusSensor()
+    this.window = new WindowSensor()
+    this.focus = new FocusSensor(this.window)
     this.hover = new HoverSensor()
     this.keyboard = new KeyboardSensor()
-    this.click = new ClickSensor()
+    this.click = new ClickSensor(this.window)
     this.wheel = new WheelSensor()
     this.resize = new ResizeSensor()
-    this.drag = new DragSensor()
-    this.htmlDrag = new HtmlDragSensor()
-    this.button = new ButtonSensor()
+    this.drag = new DragSensor(this.window)
+    this.htmlDrag = new HtmlDragSensor(this.window)
+    this.button = new ButtonSensor(this.window)
   }
 
   @transaction

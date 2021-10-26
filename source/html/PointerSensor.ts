@@ -5,8 +5,10 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { EmptyAssociatedDataArray, HtmlElementSensor } from '../core/Sensor'
+import { EmptyAssociatedDataArray } from '../core/Sensor'
+import { HtmlElementSensor } from './HtmlElementSensor'
 import { KeyboardModifiers } from './KeyboardSensor'
+import { WindowSensor } from './WindowSensor'
 
 export enum PointerButton {
   None = 0,
@@ -16,11 +18,20 @@ export enum PointerButton {
 }
 
 export class PointerSensor extends HtmlElementSensor {
-  event: PointerEvent | MouseEvent | WheelEvent | undefined = undefined
-  positionX = Infinity // position relative to browser's viewport
-  positionY = Infinity // position relative to browser's viewport
-  modifiers = KeyboardModifiers.None
-  associatedDataUnderPointer: unknown[] = EmptyAssociatedDataArray
+  event: PointerEvent | MouseEvent | WheelEvent | undefined
+  positionX: number // position relative to browser's viewport
+  positionY: number // position relative to browser's viewport
+  modifiers: KeyboardModifiers
+  associatedDataUnderPointer: unknown[]
+
+  constructor(window?: WindowSensor) {
+    super(window)
+    this.event = undefined
+    this.positionX = Infinity
+    this.positionY = Infinity
+    this.modifiers = KeyboardModifiers.None
+    this.associatedDataUnderPointer = EmptyAssociatedDataArray
+  }
 
   get topAssociatedDataUnderPointer(): unknown {
     return this.associatedDataUnderPointer.length > 0 ? this.associatedDataUnderPointer[0] : undefined

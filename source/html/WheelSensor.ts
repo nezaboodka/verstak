@@ -12,8 +12,14 @@ import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { PointerSensor } from './PointerSensor'
 
 export class WheelSensor extends PointerSensor {
-  deltaX = Infinity
-  deltaY = Infinity
+  deltaX: number
+  deltaY: number
+
+  constructor() {
+    super()
+    this.deltaX = Infinity
+    this.deltaY = Infinity
+  }
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
@@ -58,9 +64,9 @@ export class WheelSensor extends PointerSensor {
   protected rememberWheelEvent(e: WheelEvent): void {
     this.event = e
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'wheel', this.associatedDataPath)
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'wheel', this.associatedDataPath).data
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'wheel', this.associatedDataUnderPointer)
+    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'wheel', this.associatedDataUnderPointer).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY

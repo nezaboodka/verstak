@@ -6,8 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { options, sensitive, TraceLevel, transaction } from 'reactronic'
-import { grabAssociatedData, HtmlElementSensor } from '../core/Sensor'
+import { grabAssociatedData } from '../core/Sensor'
 import { SymAssociatedData } from './HtmlApiExt'
+import { HtmlElementSensor } from './HtmlElementSensor'
 
 export enum KeyboardModifiers {
   None = 0,
@@ -28,10 +29,18 @@ export enum KeyboardModifiers {
 }
 
 export class KeyboardSensor extends HtmlElementSensor {
-  event: KeyboardEvent | undefined = undefined
-  down = ''
-  up = ''
-  modifiers = KeyboardModifiers.None
+  event: KeyboardEvent | undefined
+  down: string
+  up: string
+  modifiers: KeyboardModifiers
+
+  constructor() {
+    super()
+    this.event = undefined
+    this.down = ''
+    this.up = ''
+    this.modifiers = KeyboardModifiers.None
+  }
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
@@ -96,7 +105,7 @@ export class KeyboardSensor extends HtmlElementSensor {
   protected rememberKeyboardEvent(e: KeyboardEvent): void {
     this.event = e
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'keyboard', this.associatedDataPath)
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'keyboard', this.associatedDataPath).data
     let modifier: KeyboardModifiers = 0
     if (e.ctrlKey)
       modifier |= KeyboardModifiers.Ctrl
