@@ -57,7 +57,7 @@ export class ButtonSensor extends PointerSensor {
 
   protected onPointerDown(e: PointerEvent): void {
     if (this.state === ButtonState.Released && (e.button === 0 || e.button === 1)) {
-      this.invoke(e)
+      this.press(e)
       this.startSelecting(e)
     }
   }
@@ -71,10 +71,10 @@ export class ButtonSensor extends PointerSensor {
   protected onPointerUp(e: PointerEvent): void {
     if (this.state === ButtonState.Selecting) {
       this.select(e)
-      this.finish()
+      this.release()
     }
     else if (this.state === ButtonState.Pressed) {
-      this.finish()
+      this.release()
     }
     this.reset()
   }
@@ -94,7 +94,7 @@ export class ButtonSensor extends PointerSensor {
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  protected invoke(e: PointerEvent): void {
+  protected press(e: PointerEvent): void {
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     const associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'button', EmptyAssociatedDataArray)
     const popupOriginData = associatedDataUnderPointer[0] as AssociatedData | undefined
@@ -135,7 +135,7 @@ export class ButtonSensor extends PointerSensor {
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  protected finish(): void {
+  protected release(): void {
     this.state = ButtonState.Released
     this.revision++
   }
