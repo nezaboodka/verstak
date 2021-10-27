@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reaction, transaction } from 'reactronic'
+import { transaction } from 'reactronic'
 import { Sensor } from '../core/Sensor'
 
 export class WindowSensor extends Sensor {
@@ -20,8 +20,8 @@ export class WindowSensor extends Sensor {
     }
   }
 
-  @reaction
-  protected debug(): void {
-    console.log(`WindowSensor: activeWindow = ${this.activeData}, previousActiveWindow = ${this.previousActiveData}`)
-  }
+  // @reaction
+  // protected debug(): void {
+  //   console.log(`WindowSensor: activeWindow = ${this.activeData}, previousActiveWindow = ${this.previousActiveData}`)
+  // }
 }
