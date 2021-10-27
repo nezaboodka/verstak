@@ -122,7 +122,6 @@ export class HtmlDragSensor extends HtmlElementSensor {
   }
 
   protected onDragEnter(e: DragEvent): void {
-    this.stage = DragStage.Dragging
     this.continueDragging(e)
   }
 

@@ -68,10 +68,10 @@ export class ButtonSensor extends PointerSensor {
   }
 
   protected onPointerDown(e: PointerEvent): void {
-    if (this.state === ButtonState.Released && (e.button === 0 || e.button === 1)) {
+    if (this.state === ButtonState.Released && (e.button === 0 || e.button === 1))
       this.press(e)
+    if (this.state === ButtonState.Pressed)
       this.startSelecting(e)
-    }
   }
 
   protected onPointerMove(e: PointerEvent): void {
