@@ -5,15 +5,16 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export interface AssociatedData {
-  window?: unknown
-  focus?: unknown
-  hover?: unknown
-  keyboard?: unknown
-  click?: unknown
-  wheel?: unknown
-  resize?: unknown
-  drag?: unknown
-  htmlDrag?: unknown
-  button?: unknown
+import { unobservable } from 'reactronic'
+import { Sensor } from '../core/Sensor'
+import { WindowSensor } from './WindowSensor'
+
+export class HtmlElementSensor extends Sensor {
+  @unobservable readonly window?: WindowSensor
+  sourceElement: HTMLElement | undefined = undefined
+
+  constructor(window?: WindowSensor) {
+    super()
+    this.window = window
+  }
 }
