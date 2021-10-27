@@ -9,19 +9,19 @@ import { reaction, transaction } from 'reactronic'
 import { Sensor } from '../core/Sensor'
 
 export class WindowSensor extends Sensor {
-  activeWindow: unknown = undefined
-  previousActiveWindow: unknown = undefined
+  activeData: unknown = undefined
+  previousActiveData: unknown = undefined
 
   @transaction
   setActiveWindow(window: unknown): void {
-    if (window !== this.activeWindow) {
-      this.previousActiveWindow = this.activeWindow
-      this.activeWindow = window
+    if (window !== this.activeData) {
+      this.previousActiveData = this.activeData
+      this.activeData = window
     }
   }
 
   @reaction
   protected debug(): void {
-    console.log(`WindowSensor: activeWindow = ${this.activeWindow}, previousActiveWindow = ${this.previousActiveWindow}`)
+    console.log(`WindowSensor: activeWindow = ${this.activeData}, previousActiveWindow = ${this.previousActiveData}`)
   }
 }
