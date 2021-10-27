@@ -122,15 +122,15 @@ export class DragSensor extends PointerSensor {
   protected tryDragging(e: PointerEvent): void {
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     const { data: associatedDataUnderPointer, window } = grabAssociatedData(elements, SymAssociatedData, 'drag', EmptyAssociatedDataArray)
-    const draggingOriginData = associatedDataUnderPointer as AssociatedData | undefined
-    if (draggingOriginData) {
+    const originData = associatedDataUnderPointer[0] as AssociatedData | undefined
+    if (originData) {
+      this.originData = originData
+      this.associatedDataUnderPointer = associatedDataUnderPointer
       this.event = e
       this.trying = true
       this.button = extractPointerButton(e)
       this.startX = e.clientX
       this.startY = e.clientY
-      this.associatedDataUnderPointer = associatedDataUnderPointer
-      this.originData = draggingOriginData
       const path = e.composedPath()
       this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', EmptyAssociatedDataArray).data
       this.modifiers = extractModifierKeys(e)
@@ -199,10 +199,10 @@ export class DragSensor extends PointerSensor {
 
   protected rememberPointerEvent(e: PointerEvent): void {
     this.event = e
-    const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', this.associatedDataPath).data
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', this.associatedDataUnderPointer).data
+    const path = e.composedPath()
+    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', this.associatedDataPath).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY

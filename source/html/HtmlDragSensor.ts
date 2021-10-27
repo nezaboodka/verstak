@@ -6,6 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
+import { AssociatedData } from '../core/AssociatedData'
 import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
 import { DragStage } from './DragSensor'
 import { SymAssociatedData } from './HtmlApiExt'
@@ -144,16 +145,31 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected startDragging(e: DragEvent): void {
-    this.stage = DragStage.Started
-    this.rememberDragEvent(e)
-    this.startX = e.clientX
-    this.startY = e.clientY
-    this.dropped = false
+    this.event = e
+    const elements = document.elementsFromPoint(e.clientX, e.clientY)
+    const { data: associatedDataUnderPointer, window } = grabAssociatedData(elements, SymAssociatedData, 'htmlDrag', EmptyAssociatedDataArray)
+    const originData = associatedDataUnderPointer[0] as AssociatedData | undefined
+    if (originData) {
+      this.stage = DragStage.Started
+      this.originData = originData
+      this.associatedDataUnderPointer = associatedDataUnderPointer
+      this.startX = e.clientX
+      this.startY = e.clientY
+      const path = e.composedPath()
+      this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'htmlDrag', EmptyAssociatedDataArray).data
+      this.modifiers = extractModifierKeys(e)
+      this.positionX = e.clientX
+      this.positionY = e.clientY
+      this.dropped = false
+      this.revision++
+    }
+    this.window?.setActiveWindow(window)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected dragging(): void {
     this.stage = DragStage.Dragging
+    this.revision++
   }
 
   @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
@@ -198,18 +214,20 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.dropped = false
   }
 
-  protected rememberDragEvent(e: DragEvent, setActiveWindow: boolean = false): void {
+  protected rememberDragEvent(e: DragEvent): void {
     this.event = e
-    const path = e.composedPath()
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data: associatedDataUnderPointer, window } = grabAssociatedData(elements, SymAssociatedData, 'htmlDrag', this.associatedDataUnderPointer)
-    this.associatedDataUnderPointer = associatedDataUnderPointer
+    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'htmlDrag', this.associatedDataUnderPointer).data
+    const path = e.composedPath()
     this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'htmlDrag', this.associatedDataPath).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY
     this.revision++
-    if (setActiveWindow)
-      this.window?.setActiveWindow(window)
   }
+
+  // @reaction
+  // protected debug(): void {
+  //   console.log(`HtmlDragSensor: stage = ${DragStage[this.stage]}, originData = ${this.originData}, draggingData = ${this.draggingData}, start = (${this.startX}, ${this.startY}), pos = (${this.positionX}, ${this.positionY}, revision = ${this.revision})`)
+  // }
 }

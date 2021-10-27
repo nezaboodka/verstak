@@ -109,13 +109,13 @@ export class ButtonSensor extends PointerSensor {
   protected press(e: PointerEvent): void {
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     const { data: associatedDataUnderPointer, window } = grabAssociatedData(elements, SymAssociatedData, 'button', EmptyAssociatedDataArray)
-    const popupOriginData = associatedDataUnderPointer[0] as AssociatedData | undefined
-    if (popupOriginData) {
+    const originData = associatedDataUnderPointer[0] as AssociatedData | undefined
+    if (originData) {
       this.state = ButtonState.Pressed
       this.event = e
       this.pointerButton = extractPointerButton(e)
       this.associatedDataUnderPointer = associatedDataUnderPointer
-      this.originData = popupOriginData
+      this.originData = originData
       const path = e.composedPath()
       const { data: associatedData } = grabAssociatedData(path, SymAssociatedData, 'button', EmptyAssociatedDataArray)
       this.associatedDataPath = associatedData
