@@ -80,10 +80,9 @@ export class DragSensor extends PointerSensor {
       if (Math.abs(e.clientX - this.startX) > DragSensor.DraggingThreshold ||
         Math.abs(e.clientY - this.startY) > DragSensor.DraggingThreshold) {
         this.startDragging(e)
-        this.dragging()
       }
     } else if (this.stage === DragStage.Dragging) {
-      this.continueDragging(e)
+      this.dragging(e)
     }
   }
 
@@ -149,13 +148,9 @@ export class DragSensor extends PointerSensor {
     this.dropped = false
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected dragging(): void {
-    this.stage = DragStage.Dragging
-  }
-
   @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
-  protected continueDragging(e: PointerEvent): void {
+  protected dragging(e: PointerEvent): void {
+    this.stage = DragStage.Dragging
     this.rememberPointerEvent(e)
   }
 

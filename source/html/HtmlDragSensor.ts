@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
+import { nonreactive, options, Reentrance, TraceLevel, transaction } from 'reactronic'
 import { AssociatedData } from '../core/AssociatedData'
 import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
 import { DragStage } from './DragSensor'
@@ -85,7 +85,9 @@ export class HtmlDragSensor extends HtmlElementSensor {
   }
 
   allowDropHere(): void {
-    this.event?.preventDefault()
+    nonreactive(() => {
+      this.event?.preventDefault()
+    })
   }
 
   @transaction
@@ -119,19 +121,18 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   protected onDragStart(e: DragEvent): void {
     this.startDragging(e)
-    this.dragging()
   }
 
   protected onDragEnter(e: DragEvent): void {
-    this.continueDragging(e)
+    this.dragging(e)
   }
 
   protected onDragLeave(e: DragEvent): void {
-    this.continueDragging(e)
+    this.dragging(e)
   }
 
   protected onDragOver(e: DragEvent): void {
-    this.continueDragging(e)
+    this.dragging(e)
   }
 
   protected onDrop(e: DragEvent): void {
@@ -139,7 +140,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
   }
 
   protected onDragEnd(e: DragEvent): void {
-    this.finishDragging()
+    this.finishDragging(e)
     this.reset()
   }
 
@@ -166,16 +167,10 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.window?.setActiveWindow(window)
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected dragging(): void {
-    this.stage = DragStage.Dragging
-    this.revision++
-  }
-
   @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
-  protected continueDragging(e: DragEvent): void {
-    this.stage = DragStage.Dragging
+  protected dragging(e: DragEvent): void {
     this.rememberDragEvent(e)
+    this.stage = DragStage.Dragging
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
@@ -188,9 +183,9 @@ export class HtmlDragSensor extends HtmlElementSensor {
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  protected finishDragging(): void {
+  protected finishDragging(e: DragEvent): void {
+    this.rememberDragEvent(e)
     this.stage = DragStage.Finished
-    this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
