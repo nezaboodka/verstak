@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { nonreactive, options, TraceLevel, transaction, unobservable } from 'reactronic'
+import { options, TraceLevel, transaction } from 'reactronic'
 import { AssociatedData } from '../core/AssociatedData'
 import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
 import { DragStage } from './DragSensor'
@@ -18,10 +18,12 @@ export type DragEffectAllowed = 'none' | 'copy' | 'copyLink' | 'copyMove' | 'lin
 export type DropEffect = 'none' | 'copy' | 'link' | 'move'
 
 export class HtmlDragSensor extends HtmlElementSensor {
-  event: DragEvent | undefined
   stage: DragStage
   originData: any
   draggingData: any
+  dropEffect: DropEffect
+  effectAllowed: DragEffectAllowed
+  dropAllowed: boolean
   modifiers = KeyboardModifiers.None
   startX: number // position relative to browser's viewport
   startY: number // position relative to browser's viewport
@@ -34,7 +36,9 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   constructor(window: WindowSensor) {
     super(window)
-    this.event = undefined
+    this.dropEffect = 'none'
+    this.effectAllowed = 'uninitialized'
+    this.dropAllowed = false
     this.stage = DragStage.Finished
     this.originData = undefined
     this.draggingData = undefined
@@ -53,55 +57,13 @@ export class HtmlDragSensor extends HtmlElementSensor {
     return this.associatedDataUnderPointer.length > 0 ? this.associatedDataUnderPointer[0] : undefined
   }
 
-  get dropEffect(): DropEffect {
-    return nonreactive(() => this.event?.dataTransfer?.dropEffect ?? 'none')
-  }
-
-  set dropEffect(value: DropEffect) {
-    nonreactive(() => {
-      const dataTransfer = this.event?.dataTransfer
-      if (dataTransfer)
-        dataTransfer.dropEffect = value
-    })
-  }
-
-  get effectAllowed(): DragEffectAllowed {
-    return nonreactive(() => this.event?.dataTransfer?.effectAllowed ?? 'none')
-  }
-
-  set effectAllowed(value: DragEffectAllowed) {
-    nonreactive(() => {
-      if (this.stage === DragStage.Started) {
-        const dataTransfer = this.event?.dataTransfer
-        if (dataTransfer)
-          dataTransfer.effectAllowed = value
-      }
-      else {
-        throw new Error('\'allowedDragOperations\' must be set during \'Started\' drag stage')
-      }
-    })
-  }
-
-  setDragImage(image: Element, x: number, y: number): void {
-    nonreactive(() => {
-      const dataTransfer = this.event?.dataTransfer
-      if (dataTransfer)
-        dataTransfer.setDragImage(image, x, y)
-    })
-  }
-
-  allowDropHere(): void {
-    nonreactive(() => {
-      this.event?.preventDefault()
-    })
-  }
-
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
         existing.removeEventListener('dragstart', this.onDragStart.bind(this), { capture: true })
+        existing.removeEventListener('drag', this.onDrag.bind(this), { capture: true })
         existing.removeEventListener('dragenter', this.onDragEnter.bind(this), { capture: false })
         existing.removeEventListener('dragleave', this.onDragLeave.bind(this), { capture: false })
         existing.removeEventListener('dragover', this.onDragOver.bind(this), { capture: true })
@@ -111,6 +73,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
       this.sourceElement = element
       if (element && enabled) {
         element.addEventListener('dragstart', this.onDragStart.bind(this), { capture: true })
+        element.addEventListener('drag', this.onDrag.bind(this), { capture: true })
         element.addEventListener('dragenter', this.onDragEnter.bind(this), { capture: false })
         element.addEventListener('dragleave', this.onDragLeave.bind(this), { capture: false })
         element.addEventListener('dragover', this.onDragOver.bind(this), { capture: true })
@@ -127,18 +90,25 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   protected onDragStart(e: DragEvent): void {
     this.startDragging(e)
+    this.updateDragEventOnDragStart(e)
+  }
+
+  protected onDrag(e: DragEvent): void {
+    this.dragging(e)
+    this.updateDragEventOnDragging(e)
   }
 
   protected onDragEnter(e: DragEvent): void {
-    this.dragging(e)
+    this.draggingOver(e)
   }
 
   protected onDragLeave(e: DragEvent): void {
-    this.dragging(e)
+    this.draggingOver(e)
   }
 
   protected onDragOver(e: DragEvent): void {
-    this.dragging(e)
+    this.draggingOver(e)
+    this.updateDragEventOnDragging(e)
   }
 
   protected onDrop(e: DragEvent): void {
@@ -174,13 +144,19 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected dragging(e: DragEvent): void {
-    this.rememberDragEvent(e)
+    this.updateSensorData(e)
+    this.stage = DragStage.Dragging
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected draggingOver(e: DragEvent): void {
+    this.updateSensorData(e)
     this.stage = DragStage.Dragging
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected drop(e: DragEvent): void {
-    this.rememberDragEvent(e)
+    this.updateSensorData(e)
     this.stage = DragStage.Dropped
     this.dropX = e.clientX
     this.dropY = e.clientY
@@ -189,7 +165,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected finishDragging(e: DragEvent): void {
-    this.rememberDragEvent(e)
+    this.updateSensorData(e)
     this.stage = DragStage.Finished
   }
 
@@ -199,23 +175,41 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.dropped = false
   }
 
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected updateDragEventOnDragStart(e: DragEvent): void {
+    const d = e.dataTransfer
+    if (d) {
+      d.dropEffect = this.dropEffect
+      d.effectAllowed = this.effectAllowed
+    }
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected updateDragEventOnDragging(e: DragEvent): void {
+    if (this.dropAllowed)
+      e.preventDefault()
+  }
+
   protected doReset(): void {
-    this.event = undefined
-    this.associatedDataPath = EmptyAssociatedDataArray
+    this.dropEffect = 'none'
+    this.effectAllowed = 'uninitialized'
+    this.dropAllowed = false
+    this.stage = DragStage.Finished
     this.originData = undefined
     this.draggingData = undefined
+    this.modifiers = KeyboardModifiers.None
     this.startX = Infinity
     this.startY = Infinity
     this.positionX = Infinity
     this.positionY = Infinity
     this.dropX = Infinity
     this.dropY = Infinity
-    this.modifiers = KeyboardModifiers.None
     this.dropped = false
+    this.associatedDataUnderPointer = EmptyAssociatedDataArray
+    this.associatedDataPath = EmptyAssociatedDataArray
   }
 
-  protected rememberDragEvent(e: DragEvent): void {
-    this.event = e
+  protected updateSensorData(e: DragEvent): void {
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'htmlDrag', this.associatedDataUnderPointer).data
     const path = e.composedPath()

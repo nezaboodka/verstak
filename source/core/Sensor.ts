@@ -10,7 +10,6 @@ import { AssociatedData } from './AssociatedData'
 
 export class Sensor extends ObservableObject {
   revision: number = 0
-  nativeElements: unknown[] = []
   associatedDataPath: unknown[] = EmptyAssociatedDataArray
 
   get topAssociatedData(): unknown {
