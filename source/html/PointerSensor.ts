@@ -18,7 +18,6 @@ export enum PointerButton {
 }
 
 export class PointerSensor extends HtmlElementSensor {
-  event: PointerEvent | MouseEvent | WheelEvent | undefined
   positionX: number // position relative to browser's viewport
   positionY: number // position relative to browser's viewport
   modifiers: KeyboardModifiers
@@ -26,7 +25,6 @@ export class PointerSensor extends HtmlElementSensor {
 
   constructor(window?: WindowSensor) {
     super(window)
-    this.event = undefined
     this.positionX = Infinity
     this.positionY = Infinity
     this.modifiers = KeyboardModifiers.None
@@ -35,14 +33,6 @@ export class PointerSensor extends HtmlElementSensor {
 
   get topAssociatedDataUnderPointer(): unknown {
     return this.associatedDataUnderPointer.length > 0 ? this.associatedDataUnderPointer[0] : undefined
-  }
-
-  preventDefault(): void {
-    this.event?.preventDefault()
-  }
-
-  stopPropagation(): void {
-    this.event?.stopPropagation()
   }
 }
 

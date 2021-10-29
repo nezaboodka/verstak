@@ -48,39 +48,43 @@ export class ClickSensor extends PointerSensor {
 
   protected onClick(e: MouseEvent): void {
     this.doClick(e)
+    this.updatePreventDefaultAndStopPropagation(e)
   }
 
   protected onDblClick(e: MouseEvent): void {
     this.doDoubleClick(e)
+    this.updatePreventDefaultAndStopPropagation(e)
   }
 
   protected onAuxClick(e: MouseEvent): void {
     this.doAuxClick(e)
+    this.updatePreventDefaultAndStopPropagation(e)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doClick(e: MouseEvent): void {
-    this.rememberPointerEvent(e)
+    this.updateSensorData(e)
     this.clicked++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doDoubleClick(e: MouseEvent): void {
-    this.rememberPointerEvent(e)
+    this.updateSensorData(e)
     this.doubleClicked++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doAuxClick(e: MouseEvent): void {
-    this.rememberPointerEvent(e)
+    this.updateSensorData(e)
     this.auxClicked++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doReset(): void {
+    this.preventDefault = false
+    this.stopPropagation = false
     this.associatedDataPath = EmptyAssociatedDataArray
     this.associatedDataUnderPointer = EmptyAssociatedDataArray
-    this.event = undefined
     this.positionX = Infinity
     this.positionY = Infinity
     this.modifiers = KeyboardModifiers.None
@@ -89,8 +93,9 @@ export class ClickSensor extends PointerSensor {
     this.auxClicked = 0
   }
 
-  protected rememberPointerEvent(e: MouseEvent): void {
-    this.event = e
+  protected updateSensorData(e: MouseEvent): void {
+    this.preventDefault = false
+    this.stopPropagation = false
     const path = e.composedPath()
     const { data: associatedDataUnderPointer, window } = grabAssociatedData(path, SymAssociatedData, 'click', this.associatedDataPath)
     this.associatedDataPath = associatedDataUnderPointer

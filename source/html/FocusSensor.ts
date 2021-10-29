@@ -9,15 +9,8 @@ import { options, TraceLevel, transaction } from 'reactronic'
 import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { HtmlElementSensor } from './HtmlElementSensor'
-import { WindowSensor } from './WindowSensor'
 
 export class FocusSensor extends HtmlElementSensor {
-  event: FocusEvent | undefined
-
-  constructor(window: WindowSensor) {
-    super(window)
-    this.event = undefined
-  }
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
@@ -40,16 +33,8 @@ export class FocusSensor extends HtmlElementSensor {
     this.doReset()
   }
 
-  preventDefault(): void {
-    this.event?.preventDefault()
-  }
-
-  stopPropagation(): void {
-    this.event?.stopPropagation()
-  }
-
   protected onFocusIn(e: FocusEvent): void {
-    this.rememberFocusEvent(e)
+    this.updateSensorData(e)
   }
 
   protected onFocusOut(e: FocusEvent): void {
@@ -57,14 +42,12 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   protected doReset(): void {
-    this.event = undefined
     this.associatedDataPath = EmptyAssociatedDataArray
     this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  protected rememberFocusEvent(e: FocusEvent): void {
-    this.event = e
+  protected updateSensorData(e: FocusEvent): void {
     const path = e.composedPath()
     const { data, window } = grabAssociatedData(path, SymAssociatedData, 'focus', this.associatedDataPath)
     this.associatedDataPath = data

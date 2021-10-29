@@ -29,14 +29,12 @@ export enum KeyboardModifiers {
 }
 
 export class KeyboardSensor extends HtmlElementSensor {
-  event: KeyboardEvent | undefined
   down: string
   up: string
   modifiers: KeyboardModifiers
 
   constructor() {
     super()
-    this.event = undefined
     this.down = ''
     this.up = ''
     this.modifiers = KeyboardModifiers.None
@@ -63,25 +61,19 @@ export class KeyboardSensor extends HtmlElementSensor {
     this.doReset()
   }
 
-  preventDefault(): void {
-    this.event?.preventDefault()
-  }
-
-  stopPropagation(): void {
-    this.event?.stopPropagation()
-  }
-
   protected onKeyDown(e: KeyboardEvent): void {
     this.doKeyDown(e)
+    this.updatePreventDefaultAndStopPropagation(e)
   }
 
   protected onKeyUp(e: KeyboardEvent): void {
     this.doKeyUp(e)
+    this.updatePreventDefaultAndStopPropagation(e)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doKeyDown(e: KeyboardEvent): void {
-    this.rememberKeyboardEvent(e)
+    this.updateSensorData(e)
     this.up = ''
     sensitive(true, () => this.down = e.key)
     this.revision++
@@ -89,21 +81,23 @@ export class KeyboardSensor extends HtmlElementSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doKeyUp(e: KeyboardEvent): void {
-    this.rememberKeyboardEvent(e)
+    this.updateSensorData(e)
     this.down = ''
     sensitive(true, () => this.up = e.key)
     this.revision++
   }
 
   protected doReset(): void {
-    this.event = undefined
+    this.preventDefault = false
+    this.stopPropagation = false
     this.down = ''
     this.up = ''
     this.modifiers = KeyboardModifiers.None
   }
 
-  protected rememberKeyboardEvent(e: KeyboardEvent): void {
-    this.event = e
+  protected updateSensorData(e: KeyboardEvent): void {
+    this.preventDefault = false
+    this.stopPropagation = false
     const path = e.composedPath()
     this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'keyboard', this.associatedDataPath).data
     let modifier: KeyboardModifiers = 0

@@ -125,7 +125,6 @@ export class DragSensor extends PointerSensor {
     if (originData) {
       this.originData = originData
       this.associatedDataUnderPointer = associatedDataUnderPointer
-      this.event = e
       this.trying = true
       this.button = extractPointerButton(e)
       this.startX = e.clientX
@@ -144,19 +143,19 @@ export class DragSensor extends PointerSensor {
   protected startDragging(e: PointerEvent): void {
     this.trying = false
     this.stage = DragStage.Started
-    this.rememberPointerEvent(e)
+    this.updateSensorData(e)
     this.dropped = false
   }
 
   @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
   protected dragging(e: PointerEvent): void {
     this.stage = DragStage.Dragging
-    this.rememberPointerEvent(e)
+    this.updateSensorData(e)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected drop(e: PointerEvent): void {
-    this.rememberPointerEvent(e)
+    this.updateSensorData(e)
     this.stage = DragStage.Dropped
     this.dropX = e.clientX
     this.dropY = e.clientY
@@ -176,7 +175,6 @@ export class DragSensor extends PointerSensor {
   }
 
   protected doReset(): void {
-    this.event = undefined
     this.associatedDataPath = EmptyAssociatedDataArray
     this.trying = false
     this.originData = undefined
@@ -192,8 +190,7 @@ export class DragSensor extends PointerSensor {
     this.dropped = false
   }
 
-  protected rememberPointerEvent(e: PointerEvent): void {
-    this.event = e
+  protected updateSensorData(e: PointerEvent): void {
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', this.associatedDataUnderPointer).data
     const path = e.composedPath()

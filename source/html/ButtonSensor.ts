@@ -72,12 +72,14 @@ export class ButtonSensor extends PointerSensor {
       this.press(e)
     if (this.state === ButtonState.Pressed)
       this.startSelecting(e)
+    this.updatePreventDefaultAndStopPropagation(e)
   }
 
   protected onPointerMove(e: PointerEvent): void {
     if (this.state === ButtonState.Selecting) {
       this.selecting(e)
     }
+    this.updatePreventDefaultAndStopPropagation(e)
   }
 
   protected onPointerUp(e: PointerEvent): void {
@@ -88,6 +90,7 @@ export class ButtonSensor extends PointerSensor {
     else if (this.state === ButtonState.Pressed) {
       this.release()
     }
+    this.updatePreventDefaultAndStopPropagation(e)
     this.reset()
   }
 
@@ -107,12 +110,13 @@ export class ButtonSensor extends PointerSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected press(e: PointerEvent): void {
+    this.preventDefault = false
+    this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     const { data: associatedDataUnderPointer, window } = grabAssociatedData(elements, SymAssociatedData, 'button', EmptyAssociatedDataArray)
     const originData = associatedDataUnderPointer[0] as AssociatedData | undefined
     if (originData) {
       this.state = ButtonState.Pressed
-      this.event = e
       this.pointerButton = extractPointerButton(e)
       this.associatedDataUnderPointer = associatedDataUnderPointer
       this.originData = originData
@@ -130,18 +134,18 @@ export class ButtonSensor extends PointerSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected startSelecting(e: PointerEvent): void {
     this.state = ButtonState.Selecting
-    this.rememberPointerEvent(e)
+    this.updateSensorData(e)
     this.selected = false
   }
 
   @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
   protected selecting(e: PointerEvent): void {
-    this.rememberPointerEvent(e)
+    this.updateSensorData(e)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected select(e: PointerEvent): void {
-    this.rememberPointerEvent(e)
+    this.updateSensorData(e)
     this.state = ButtonState.Selected
     this.selectedX = e.clientX
     this.selectedY = e.clientY
@@ -162,7 +166,8 @@ export class ButtonSensor extends PointerSensor {
   }
 
   protected doReset(): void {
-    this.event = undefined
+    this.preventDefault = false
+    this.stopPropagation = false
     this.associatedDataPath = EmptyAssociatedDataArray
     this.originData = undefined
     this.selectedData = undefined
@@ -175,8 +180,9 @@ export class ButtonSensor extends PointerSensor {
     this.selected = false
   }
 
-  protected rememberPointerEvent(e: PointerEvent): void {
-    this.event = e
+  protected updateSensorData(e: PointerEvent): void {
+    this.preventDefault = false
+    this.stopPropagation = false
     const path = e.composedPath()
     this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'button', this.associatedDataPath).data
     const elements = document.elementsFromPoint(e.clientX, e.clientY)

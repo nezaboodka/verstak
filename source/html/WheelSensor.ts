@@ -47,11 +47,12 @@ export class WheelSensor extends PointerSensor {
 
   @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
   protected doWheel(e: WheelEvent): void {
-    this.rememberWheelEvent(e)
+    this.updateSensorData(e)
   }
 
   protected doReset(): void {
-    this.event = undefined
+    this.preventDefault = false
+    this.stopPropagation = false
     this.associatedDataPath = EmptyAssociatedDataArray
     this.associatedDataUnderPointer = EmptyAssociatedDataArray
     this.modifiers = KeyboardModifiers.None
@@ -61,8 +62,9 @@ export class WheelSensor extends PointerSensor {
     this.deltaY = Infinity
   }
 
-  protected rememberWheelEvent(e: WheelEvent): void {
-    this.event = e
+  protected updateSensorData(e: WheelEvent): void {
+    this.preventDefault = false
+    this.stopPropagation = false
     const path = e.composedPath()
     this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'wheel', this.associatedDataPath).data
     const elements = document.elementsFromPoint(e.clientX, e.clientY)

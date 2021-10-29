@@ -5,16 +5,32 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { unobservable } from 'reactronic'
+import { options, TraceLevel, transaction, unobservable } from 'reactronic'
 import { Sensor } from '../core/Sensor'
 import { WindowSensor } from './WindowSensor'
 
 export class HtmlElementSensor extends Sensor {
   @unobservable readonly window?: WindowSensor
   sourceElement: HTMLElement | undefined = undefined
+  preventDefault: boolean
+  stopPropagation: boolean
 
   constructor(window?: WindowSensor) {
     super()
     this.window = window
+    this.preventDefault = false
+    this.stopPropagation = false
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected updatePreventDefaultAndStopPropagation(e: Event): void {
+    if (this.preventDefault) {
+      e.preventDefault()
+      this.preventDefault = false
+    }
+    if (this.stopPropagation) {
+      e.stopPropagation()
+      this.stopPropagation = false
+    }
   }
 }

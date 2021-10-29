@@ -90,12 +90,12 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   protected onDragStart(e: DragEvent): void {
     this.startDragging(e)
-    this.updateDragEventOnDragStart(e)
+    this.updateEventOnDragStart(e)
   }
 
   protected onDrag(e: DragEvent): void {
     this.dragging(e)
-    this.updateDragEventOnDragging(e)
+    this.updateEventOnDragging(e)
   }
 
   protected onDragEnter(e: DragEvent): void {
@@ -108,7 +108,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   protected onDragOver(e: DragEvent): void {
     this.draggingOver(e)
-    this.updateDragEventOnDragging(e)
+    this.updateEventOnDragging(e)
   }
 
   protected onDrop(e: DragEvent): void {
@@ -176,7 +176,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  protected updateDragEventOnDragStart(e: DragEvent): void {
+  protected updateEventOnDragStart(e: DragEvent): void {
     const d = e.dataTransfer
     if (d) {
       d.dropEffect = this.dropEffect
@@ -185,7 +185,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  protected updateDragEventOnDragging(e: DragEvent): void {
+  protected updateEventOnDragging(e: DragEvent): void {
     if (this.dropAllowed)
       e.preventDefault()
   }

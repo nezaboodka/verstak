@@ -35,7 +35,7 @@ export class HoverSensor extends PointerSensor {
   }
 
   protected onPointerOver(e: PointerEvent): void {
-    this.rememberPointerEvent(e)
+    this.updateSensorData(e)
   }
 
   protected onPointerOut(e: PointerEvent): void {
@@ -43,7 +43,8 @@ export class HoverSensor extends PointerSensor {
   }
 
   protected doReset(): void {
-    this.event = undefined
+    this.preventDefault = false
+    this.stopPropagation = false
     this.associatedDataPath = EmptyAssociatedDataArray
     this.positionX = Infinity
     this.positionY = Infinity
@@ -51,8 +52,9 @@ export class HoverSensor extends PointerSensor {
   }
 
   @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
-  protected rememberPointerEvent(e: PointerEvent): void {
-    this.event = e
+  protected updateSensorData(e: PointerEvent): void {
+    this.preventDefault = false
+    this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'hover', this.associatedDataUnderPointer).data
     const path = e.composedPath()
