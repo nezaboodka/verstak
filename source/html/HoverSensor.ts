@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
+import { options, TraceLevel, transaction } from 'reactronic'
 import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
