@@ -58,41 +58,35 @@ export class KeyboardSensor extends HtmlElementSensor {
 
   @transaction
   reset(): void {
-    this.doReset()
-  }
-
-  protected onKeyDown(e: KeyboardEvent): void {
-    this.doKeyDown(e)
-    this.updatePreventDefaultAndStopPropagation(e)
-  }
-
-  protected onKeyUp(e: KeyboardEvent): void {
-    this.doKeyUp(e)
-    this.updatePreventDefaultAndStopPropagation(e)
-  }
-
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected doKeyDown(e: KeyboardEvent): void {
-    this.updateSensorData(e)
-    this.up = ''
-    sensitive(true, () => this.down = e.key)
-    this.revision++
-  }
-
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected doKeyUp(e: KeyboardEvent): void {
-    this.updateSensorData(e)
-    this.down = ''
-    sensitive(true, () => this.up = e.key)
-    this.revision++
-  }
-
-  protected doReset(): void {
     this.preventDefault = false
     this.stopPropagation = false
     this.down = ''
     this.up = ''
     this.modifiers = KeyboardModifiers.None
+  }
+
+  protected onKeyDown(e: KeyboardEvent): void {
+    this.keyDown(e)
+    this.setPreventDefaultAndStopPropagation(e)
+  }
+
+  protected onKeyUp(e: KeyboardEvent): void {
+    this.keyUp(e)
+    this.setPreventDefaultAndStopPropagation(e)
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected keyDown(e: KeyboardEvent): void {
+    this.updateSensorData(e)
+    this.up = ''
+    sensitive(true, () => this.down = e.key)
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected keyUp(e: KeyboardEvent): void {
+    this.updateSensorData(e)
+    this.down = ''
+    sensitive(true, () => this.up = e.key)
   }
 
   protected updateSensorData(e: KeyboardEvent): void {
@@ -110,6 +104,7 @@ export class KeyboardSensor extends HtmlElementSensor {
     if (e.metaKey)
       modifier |= KeyboardModifiers.Meta
     this.modifiers = modifier
+    this.revision++
   }
 
   protected static getKeyAsModifierIfAny(key: string): KeyboardModifiers {

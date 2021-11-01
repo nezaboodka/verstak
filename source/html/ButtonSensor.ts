@@ -70,16 +70,13 @@ export class ButtonSensor extends PointerSensor {
   protected onPointerDown(e: PointerEvent): void {
     if (this.state === ButtonState.Released && (e.button === 0 || e.button === 1))
       this.press(e)
-    if (this.state === ButtonState.Pressed)
-      this.startSelecting(e)
-    this.updatePreventDefaultAndStopPropagation(e)
+    this.setPreventDefaultAndStopPropagation(e)
   }
 
   protected onPointerMove(e: PointerEvent): void {
-    if (this.state === ButtonState.Selecting) {
+    if (this.state === ButtonState.Pressed || this.state === ButtonState.Selecting)
       this.selecting(e)
-    }
-    this.updatePreventDefaultAndStopPropagation(e)
+    this.setPreventDefaultAndStopPropagation(e)
   }
 
   protected onPointerUp(e: PointerEvent): void {
@@ -90,7 +87,7 @@ export class ButtonSensor extends PointerSensor {
     else if (this.state === ButtonState.Pressed) {
       this.release()
     }
-    this.updatePreventDefaultAndStopPropagation(e)
+    this.setPreventDefaultAndStopPropagation(e)
     this.reset()
   }
 
@@ -131,16 +128,11 @@ export class ButtonSensor extends PointerSensor {
     this.window?.setActiveWindow(window)
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected startSelecting(e: PointerEvent): void {
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
+  protected selecting(e: PointerEvent): void {
     this.state = ButtonState.Selecting
     this.updateSensorData(e)
     this.selected = false
-  }
-
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
-  protected selecting(e: PointerEvent): void {
-    this.updateSensorData(e)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })

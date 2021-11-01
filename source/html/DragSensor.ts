@@ -53,16 +53,16 @@ export class DragSensor extends PointerSensor {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
-        existing.removeEventListener('pointermove', this.onPointerMove.bind(this), { capture: true })
         existing.removeEventListener('pointerdown', this.onPointerDown.bind(this), { capture: true })
+        existing.removeEventListener('pointermove', this.onPointerMove.bind(this), { capture: true })
         existing.removeEventListener('pointerup', this.onPointerUp.bind(this), { capture: true })
         existing.removeEventListener('lostpointercapture', this.onLostPointerCapture.bind(this), { capture: true })
         existing.removeEventListener('keydown', this.onKeyDown.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('pointermove', this.onPointerMove.bind(this), { capture: true })
         element.addEventListener('pointerdown', this.onPointerDown.bind(this), { capture: true })
+        element.addEventListener('pointermove', this.onPointerMove.bind(this), { capture: true })
         element.addEventListener('pointerup', this.onPointerUp.bind(this), { capture: true })
         element.addEventListener('lostpointercapture', this.onLostPointerCapture.bind(this), { capture: true })
         element.addEventListener('keydown', this.onKeyDown.bind(this), { capture: true })
@@ -75,6 +75,13 @@ export class DragSensor extends PointerSensor {
     this.doReset()
   }
 
+  protected onPointerDown(e: PointerEvent): void {
+    if (this.stage === DragStage.Finished && (e.button === 0 || e.button === 1)) {
+      this.tryDragging(e)
+    }
+    this.setPreventDefaultAndStopPropagation(e)
+  }
+
   protected onPointerMove(e: PointerEvent): void {
     if (this.trying) {
       if (Math.abs(e.clientX - this.startX) > DragSensor.DraggingThreshold ||
@@ -84,12 +91,7 @@ export class DragSensor extends PointerSensor {
     } else if (this.stage === DragStage.Dragging) {
       this.dragging(e)
     }
-  }
-
-  protected onPointerDown(e: PointerEvent): void {
-    if (this.stage === DragStage.Finished && (e.button === 0 || e.button === 1)) {
-      this.tryDragging(e)
-    }
+    this.setPreventDefaultAndStopPropagation(e)
   }
 
   protected onPointerUp(e: PointerEvent): void {
@@ -100,21 +102,23 @@ export class DragSensor extends PointerSensor {
     else if (this.stage === DragStage.Started) {
       this.finishDragging()
     }
-    this.reset()
+    this.setPreventDefaultAndStopPropagation(e)
+    // this.reset()
   }
 
   protected onLostPointerCapture(e: PointerEvent): void {
     if (this.stage !== DragStage.Finished) {
       this.cancelDragging()
-      this.reset()
+      // this.reset()
     }
   }
 
   protected onKeyDown(e: KeyboardEvent): void {
     if (e.key === 'Escape' && this.stage !== DragStage.Finished) {
       this.cancelDragging()
-      this.reset()
+      // this.reset()
     }
+    this.setPreventDefaultAndStopPropagation(e)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
@@ -165,13 +169,16 @@ export class DragSensor extends PointerSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected finishDragging(): void {
     this.stage = DragStage.Finished
+    this.trying = false
     this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected cancelDragging(): void {
     this.stage = DragStage.Finished
+    this.trying = false
     this.dropped = false
+    this.revision++
   }
 
   protected doReset(): void {

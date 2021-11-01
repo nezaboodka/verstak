@@ -28,31 +28,33 @@ export class FocusSensor extends HtmlElementSensor {
     }
   }
 
-  @transaction
   reset(): void {
-    this.doReset()
+    this.doFocusOut()
   }
 
   protected onFocusIn(e: FocusEvent): void {
-    this.updateSensorData(e)
+    this.doFocusIn(e)
+    this.setPreventDefaultAndStopPropagation(e)
   }
 
   protected onFocusOut(e: FocusEvent): void {
-    this.reset()
-  }
-
-  protected doReset(): void {
-    this.associatedDataPath = EmptyAssociatedDataArray
-    this.revision++
+    this.doFocusOut()
+    this.setPreventDefaultAndStopPropagation(e)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  protected updateSensorData(e: FocusEvent): void {
+  protected doFocusIn(e: FocusEvent): void {
     const path = e.composedPath()
     const { data, window } = grabAssociatedData(path, SymAssociatedData, 'focus', this.associatedDataPath)
     this.associatedDataPath = data
     this.revision++
     this.window?.setActiveWindow(window)
+  }
+
+  @transaction
+  protected doFocusOut(): void {
+    this.associatedDataPath = EmptyAssociatedDataArray
+    this.revision++
   }
 
   // @reaction

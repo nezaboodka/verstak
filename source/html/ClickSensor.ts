@@ -48,17 +48,17 @@ export class ClickSensor extends PointerSensor {
 
   protected onClick(e: MouseEvent): void {
     this.doClick(e)
-    this.updatePreventDefaultAndStopPropagation(e)
+    this.setPreventDefaultAndStopPropagation(e)
   }
 
   protected onDblClick(e: MouseEvent): void {
     this.doDoubleClick(e)
-    this.updatePreventDefaultAndStopPropagation(e)
+    this.setPreventDefaultAndStopPropagation(e)
   }
 
   protected onAuxClick(e: MouseEvent): void {
     this.doAuxClick(e)
-    this.updatePreventDefaultAndStopPropagation(e)
+    this.setPreventDefaultAndStopPropagation(e)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })

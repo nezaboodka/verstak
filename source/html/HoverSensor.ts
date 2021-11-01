@@ -29,30 +29,16 @@ export class HoverSensor extends PointerSensor {
     }
   }
 
-  @transaction
-  reset(): void {
-    this.doReset()
-  }
-
   protected onPointerOver(e: PointerEvent): void {
-    this.updateSensorData(e)
+    this.doPointerOver(e)
   }
 
   protected onPointerOut(e: PointerEvent): void {
-    this.reset()
+    this.doPointerOut()
   }
 
-  protected doReset(): void {
-    this.preventDefault = false
-    this.stopPropagation = false
-    this.associatedDataPath = EmptyAssociatedDataArray
-    this.positionX = Infinity
-    this.positionY = Infinity
-    this.modifiers = KeyboardModifiers.None
-  }
-
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
-  protected updateSensorData(e: PointerEvent): void {
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected doPointerOver(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
@@ -63,5 +49,15 @@ export class HoverSensor extends PointerSensor {
     this.positionX = e.clientX
     this.positionY = e.clientY
     this.revision++
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected doPointerOut(): void {
+    this.preventDefault = false
+    this.stopPropagation = false
+    this.associatedDataPath = EmptyAssociatedDataArray
+    this.positionX = Infinity
+    this.positionY = Infinity
+    this.modifiers = KeyboardModifiers.None
   }
 }
