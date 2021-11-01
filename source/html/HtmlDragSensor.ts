@@ -83,11 +83,6 @@ export class HtmlDragSensor extends HtmlElementSensor {
     }
   }
 
-  @transaction
-  reset(): void {
-    this.doReset()
-  }
-
   protected onDragStart(e: DragEvent): void {
     this.startDragging(e)
     this.updateEventOnDragStart(e)
@@ -122,6 +117,8 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected startDragging(e: DragEvent): void {
+    this.preventDefault = false
+    this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     const { data: associatedDataUnderPointer, window } = grabAssociatedData(elements, SymAssociatedData, 'htmlDrag', EmptyAssociatedDataArray)
     const originData = associatedDataUnderPointer[0] as AssociatedData | undefined
@@ -170,12 +167,6 @@ export class HtmlDragSensor extends HtmlElementSensor {
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  protected cancelDragging(): void {
-    this.stage = DragStage.Finished
-    this.dropped = false
-  }
-
-  @transaction @options({ trace: TraceLevel.Suppress })
   protected updateEventOnDragStart(e: DragEvent): void {
     const d = e.dataTransfer
     if (d) {
@@ -190,7 +181,8 @@ export class HtmlDragSensor extends HtmlElementSensor {
       e.preventDefault()
   }
 
-  protected doReset(): void {
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected reset(): void {
     this.dropEffect = 'none'
     this.effectAllowed = 'uninitialized'
     this.dropAllowed = false
@@ -210,6 +202,8 @@ export class HtmlDragSensor extends HtmlElementSensor {
   }
 
   protected updateSensorData(e: DragEvent): void {
+    this.preventDefault = false
+    this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'htmlDrag', this.associatedDataUnderPointer).data
     const path = e.composedPath()

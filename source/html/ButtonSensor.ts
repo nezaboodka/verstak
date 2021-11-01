@@ -130,8 +130,8 @@ export class ButtonSensor extends PointerSensor {
 
   @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
   protected selecting(e: PointerEvent): void {
-    this.state = ButtonState.Selecting
     this.updateSensorData(e)
+    this.state = ButtonState.Selecting
     this.selected = false
   }
 
@@ -146,6 +146,8 @@ export class ButtonSensor extends PointerSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected release(): void {
+    this.preventDefault = false
+    this.stopPropagation = false
     this.state = ButtonState.Released
     this.revision++
   }

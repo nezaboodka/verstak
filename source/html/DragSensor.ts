@@ -70,11 +70,6 @@ export class DragSensor extends PointerSensor {
     }
   }
 
-  @transaction
-  reset(): void {
-    this.doReset()
-  }
-
   protected onPointerDown(e: PointerEvent): void {
     if (this.stage === DragStage.Finished && (e.button === 0 || e.button === 1)) {
       this.tryDragging(e)
@@ -102,15 +97,16 @@ export class DragSensor extends PointerSensor {
     else if (this.stage === DragStage.Started) {
       this.finishDragging()
     }
+    this.reset()
     this.setPreventDefaultAndStopPropagation(e)
-    // this.reset()
   }
 
   protected onLostPointerCapture(e: PointerEvent): void {
     if (this.stage !== DragStage.Finished) {
       this.cancelDragging()
-      // this.reset()
+      this.reset()
     }
+    this.setPreventDefaultAndStopPropagation(e)
   }
 
   protected onKeyDown(e: KeyboardEvent): void {
@@ -123,6 +119,8 @@ export class DragSensor extends PointerSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected tryDragging(e: PointerEvent): void {
+    this.preventDefault = false
+    this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     const { data: associatedDataUnderPointer, window } = grabAssociatedData(elements, SymAssociatedData, 'drag', EmptyAssociatedDataArray)
     const originData = associatedDataUnderPointer[0] as AssociatedData | undefined
@@ -145,16 +143,16 @@ export class DragSensor extends PointerSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected startDragging(e: PointerEvent): void {
-    this.trying = false
-    this.stage = DragStage.Started
     this.updateSensorData(e)
+    this.stage = DragStage.Started
+    this.trying = false
     this.dropped = false
   }
 
   @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
   protected dragging(e: PointerEvent): void {
-    this.stage = DragStage.Dragging
     this.updateSensorData(e)
+    this.stage = DragStage.Dragging
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
@@ -181,7 +179,8 @@ export class DragSensor extends PointerSensor {
     this.revision++
   }
 
-  protected doReset(): void {
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected reset(): void {
     this.associatedDataPath = EmptyAssociatedDataArray
     this.trying = false
     this.originData = undefined
@@ -198,6 +197,8 @@ export class DragSensor extends PointerSensor {
   }
 
   protected updateSensorData(e: PointerEvent): void {
+    this.preventDefault = false
+    this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', this.associatedDataUnderPointer).data
     const path = e.composedPath()

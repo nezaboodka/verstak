@@ -44,6 +44,8 @@ export class FocusSensor extends HtmlElementSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected doFocusIn(e: FocusEvent): void {
+    this.preventDefault = false
+    this.stopPropagation = false
     const path = e.composedPath()
     const { data, window } = grabAssociatedData(path, SymAssociatedData, 'focus', this.associatedDataPath)
     this.associatedDataPath = data
@@ -53,6 +55,8 @@ export class FocusSensor extends HtmlElementSensor {
 
   @transaction
   protected doFocusOut(): void {
+    this.preventDefault = false
+    this.stopPropagation = false
     this.associatedDataPath = EmptyAssociatedDataArray
     this.revision++
   }
