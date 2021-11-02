@@ -7,7 +7,7 @@
 
 import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
 import { EmptyDataArray, grabElementData } from '../core/Sensor'
-import { SymSensorData } from './HtmlApiExt'
+import { SymDataForSensor } from './HtmlApiExt'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { PointerSensor } from './PointerSensor'
 
@@ -66,9 +66,9 @@ export class WheelSensor extends PointerSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const path = e.composedPath()
-    this.elementDataList = grabElementData(path, SymSensorData, 'wheel', this.elementDataList).data
+    this.elementDataList = grabElementData(path, SymDataForSensor, 'wheel', this.elementDataList).data
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.elementDataUnderPointer = grabElementData(elements, SymSensorData, 'wheel', this.elementDataUnderPointer).data
+    this.elementDataUnderPointer = grabElementData(elements, SymDataForSensor, 'wheel', this.elementDataUnderPointer).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY

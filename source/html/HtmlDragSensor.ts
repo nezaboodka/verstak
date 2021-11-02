@@ -9,7 +9,7 @@ import { options, TraceLevel, transaction } from 'reactronic'
 import { SensorData } from '../core/SensorData'
 import { EmptyDataArray, grabElementData } from '../core/Sensor'
 import { DragStage } from './DragSensor'
-import { SymSensorData } from './HtmlApiExt'
+import { SymDataForSensor } from './HtmlApiExt'
 import { HtmlElementSensor } from './HtmlElementSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
@@ -120,7 +120,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data: elementDataUnderPointer, window } = grabElementData(elements, SymSensorData, 'htmlDrag', EmptyDataArray)
+    const { data: elementDataUnderPointer, window } = grabElementData(elements, SymDataForSensor, 'htmlDrag', EmptyDataArray)
     const originData = elementDataUnderPointer[0] as SensorData | undefined
     if (originData) {
       this.stage = DragStage.Started
@@ -129,7 +129,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
       this.startX = e.clientX
       this.startY = e.clientY
       const path = e.composedPath()
-      this.elementDataList = grabElementData(path, SymSensorData, 'htmlDrag', EmptyDataArray).data
+      this.elementDataList = grabElementData(path, SymDataForSensor, 'htmlDrag', EmptyDataArray).data
       this.modifiers = extractModifierKeys(e)
       this.positionX = e.clientX
       this.positionY = e.clientY
@@ -205,9 +205,9 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.elementDataUnderPointer = grabElementData(elements, SymSensorData, 'htmlDrag', this.elementDataUnderPointer).data
+    this.elementDataUnderPointer = grabElementData(elements, SymDataForSensor, 'htmlDrag', this.elementDataUnderPointer).data
     const path = e.composedPath()
-    this.elementDataList = grabElementData(path, SymSensorData, 'htmlDrag', this.elementDataList).data
+    this.elementDataList = grabElementData(path, SymDataForSensor, 'htmlDrag', this.elementDataList).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY

@@ -60,12 +60,12 @@ export class ResizeSensor extends Sensor {
         borderBoxSize: entry.borderBoxSize,
         contentBoxSize: entry.contentBoxSize,
         contentRect: entry.contentRect,
-        resizeData: element.sensorData.resize,
+        resizeData: element.dataForSensor.resize,
       }
     })
     this.elementDataList = entries.map(x => {
       const element = x.target as Element
-      return element.sensorData
+      return element.dataForSensor
     })
   }
 

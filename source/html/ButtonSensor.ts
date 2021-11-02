@@ -7,7 +7,7 @@
 
 import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
 import { extractPointerButton, PointerButton, PointerSensor } from './PointerSensor'
-import { SymSensorData } from './HtmlApiExt'
+import { SymDataForSensor } from './HtmlApiExt'
 import { EmptyDataArray, grabElementData } from '../core/Sensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { SensorData } from '../core/SensorData'
@@ -110,7 +110,7 @@ export class ButtonSensor extends PointerSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data: elementDataUnderPointer, window } = grabElementData(elements, SymSensorData, 'button', EmptyDataArray)
+    const { data: elementDataUnderPointer, window } = grabElementData(elements, SymDataForSensor, 'button', EmptyDataArray)
     const originData = elementDataUnderPointer[0] as SensorData | undefined
     if (originData) {
       this.state = ButtonState.Pressed
@@ -118,7 +118,7 @@ export class ButtonSensor extends PointerSensor {
       this.elementDataUnderPointer = elementDataUnderPointer
       this.originData = originData
       const path = e.composedPath()
-      const { data: elementData } = grabElementData(path, SymSensorData, 'button', EmptyDataArray)
+      const { data: elementData } = grabElementData(path, SymDataForSensor, 'button', EmptyDataArray)
       this.elementDataList = elementData
       this.modifiers = extractModifierKeys(e)
       this.positionX = e.clientX
@@ -178,9 +178,9 @@ export class ButtonSensor extends PointerSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const path = e.composedPath()
-    this.elementDataList = grabElementData(path, SymSensorData, 'button', this.elementDataList).data
+    this.elementDataList = grabElementData(path, SymDataForSensor, 'button', this.elementDataList).data
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.elementDataUnderPointer = grabElementData(elements, SymSensorData, 'button', this.elementDataUnderPointer).data
+    this.elementDataUnderPointer = grabElementData(elements, SymDataForSensor, 'button', this.elementDataUnderPointer).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY

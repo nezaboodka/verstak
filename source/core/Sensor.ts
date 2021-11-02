@@ -7,7 +7,7 @@
 
 import { ObservableObject } from 'reactronic'
 
-export interface SensorData {
+export interface DataForSensor {
   window?: unknown
   focus?: unknown
   hover?: unknown
@@ -32,13 +32,13 @@ export class Sensor extends ObservableObject {
 export const EmptyDataArray: any[] = []
 
 export function grabElementData(elements: any[], sym: symbol,
-  payloadKey: keyof SensorData, existing: Array<unknown>): { data: Array<unknown>, window: unknown } {
+  payloadKey: keyof DataForSensor, existing: Array<unknown>): { data: Array<unknown>, window: unknown } {
   let result = existing
   let i = 0
   let j = 0
   let window: unknown = undefined
   while (window === undefined && i < elements.length) {
-    const data = elements[i][sym] as SensorData | undefined
+    const data = elements[i][sym] as DataForSensor | undefined
     if (data !== undefined) {
       window = data['window']
       const payload = data[payloadKey]

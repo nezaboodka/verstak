@@ -7,7 +7,7 @@
 
 import { options, sensitive, TraceLevel, transaction } from 'reactronic'
 import { grabElementData } from '../core/Sensor'
-import { SymSensorData } from './HtmlApiExt'
+import { SymDataForSensor } from './HtmlApiExt'
 import { HtmlElementSensor } from './HtmlElementSensor'
 
 export enum KeyboardModifiers {
@@ -93,7 +93,7 @@ export class KeyboardSensor extends HtmlElementSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const path = e.composedPath()
-    this.elementDataList = grabElementData(path, SymSensorData, 'keyboard', this.elementDataList).data
+    this.elementDataList = grabElementData(path, SymDataForSensor, 'keyboard', this.elementDataList).data
     let modifier: KeyboardModifiers = 0
     if (e.ctrlKey)
       modifier |= KeyboardModifiers.Ctrl

@@ -5,29 +5,29 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { SensorData } from '../core/api'
+import { DataForSensor } from '../core/api'
 
-export const SymSensorData: unique symbol = Symbol('SensorData')
+export const SymDataForSensor: unique symbol = Symbol('DataForSensor')
 
 declare global {
   interface Element {
-    sensorData: SensorData
+    dataForSensor: DataForSensor
   }
 }
 
 const ElementType = global.Element
 
 if (ElementType !== undefined) {
-  Object.defineProperty(ElementType.prototype, 'sensorData', {
+  Object.defineProperty(ElementType.prototype, 'dataForSensor', {
     configurable: false, enumerable: false,
     get(): unknown {
-      let result = this[SymSensorData]
+      let result = this[SymDataForSensor]
       if (result === undefined)
-        result = this[SymSensorData] = {}
+        result = this[SymDataForSensor] = {}
       return result
     },
     set(value: unknown) {
-      this[SymSensorData] = value
+      this[SymDataForSensor] = value
     },
   })
 }
