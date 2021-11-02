@@ -6,8 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, TraceLevel, transaction } from 'reactronic'
-import { SensorData } from '../core/SensorData'
-import { EmptyDataArray, grabElementData } from '../core/Sensor'
+import { DataForSensor, EmptyDataArray, grabElementData } from '../core/Sensor'
 import { DragStage } from './DragSensor'
 import { SymDataForSensor } from './HtmlApiExt'
 import { HtmlElementSensor } from './HtmlElementSensor'
@@ -121,7 +120,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     const { data: elementDataUnderPointer, window } = grabElementData(elements, SymDataForSensor, 'htmlDrag', EmptyDataArray)
-    const originData = elementDataUnderPointer[0] as SensorData | undefined
+    const originData = elementDataUnderPointer[0] as DataForSensor | undefined
     if (originData) {
       this.stage = DragStage.Started
       this.originData = originData

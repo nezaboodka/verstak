@@ -8,9 +8,8 @@
 import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
 import { extractPointerButton, PointerButton, PointerSensor } from './PointerSensor'
 import { SymDataForSensor } from './HtmlApiExt'
-import { EmptyDataArray, grabElementData } from '../core/Sensor'
+import { DataForSensor, EmptyDataArray, grabElementData } from '../core/Sensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
-import { SensorData } from '../core/SensorData'
 import { WindowSensor } from './WindowSensor'
 
 export enum DragStage {
@@ -123,7 +122,7 @@ export class DragSensor extends PointerSensor {
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     const { data: elementDataUnderPointer, window } = grabElementData(elements, SymDataForSensor, 'drag', EmptyDataArray)
-    const originData = elementDataUnderPointer[0] as SensorData | undefined
+    const originData = elementDataUnderPointer[0] as DataForSensor | undefined
     if (originData) {
       this.originData = originData
       this.elementDataUnderPointer = elementDataUnderPointer
