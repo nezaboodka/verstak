@@ -7,7 +7,7 @@
 
 import { SensorData } from '../core/api'
 
-export const SymAssociatedData: unique symbol = Symbol('AssociatedData')
+export const SymSensorData: unique symbol = Symbol('SensorData')
 
 declare global {
   interface Element {
@@ -18,16 +18,16 @@ declare global {
 const ElementType = global.Element
 
 if (ElementType !== undefined) {
-  Object.defineProperty(ElementType.prototype, 'associatedData', {
+  Object.defineProperty(ElementType.prototype, 'sensorData', {
     configurable: false, enumerable: false,
     get(): unknown {
-      let result = this[SymAssociatedData]
+      let result = this[SymSensorData]
       if (result === undefined)
-        result = this[SymAssociatedData] = {}
+        result = this[SymSensorData] = {}
       return result
     },
     set(value: unknown) {
-      this[SymAssociatedData] = value
+      this[SymSensorData] = value
     },
   })
 }

@@ -7,7 +7,7 @@
 
 import { options, TraceLevel, transaction } from 'reactronic'
 import { EmptyDataArray, grabElementData } from '../core/Sensor'
-import { SymAssociatedData } from './HtmlApiExt'
+import { SymSensorData } from './HtmlApiExt'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { PointerSensor } from './PointerSensor'
 
@@ -42,9 +42,9 @@ export class HoverSensor extends PointerSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.elementDataUnderPointer = grabElementData(elements, SymAssociatedData, 'hover', this.elementDataUnderPointer).data
+    this.elementDataUnderPointer = grabElementData(elements, SymSensorData, 'hover', this.elementDataUnderPointer).data
     const path = e.composedPath()
-    this.elementDataList = grabElementData(path, SymAssociatedData, 'hover', this.elementDataList).data
+    this.elementDataList = grabElementData(path, SymSensorData, 'hover', this.elementDataList).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY

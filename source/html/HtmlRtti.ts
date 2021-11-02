@@ -35,16 +35,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
       AbstractHtmlRtti.current = native // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}render(${e.id} r${ref.mounted!.cycle})`)
       render(m) // proceed
 
-      // TODO: refactor
-      // const data = native.associatedData
-      // if (data.drag !== undefined) {
-      //   if (native instanceof HTMLElement && !native.draggable)
-      //     native.draggable = true
-      // }
-      // else {
-      //   if (native instanceof HTMLElement && native.draggable)
-      //     native.draggable = false
-      // }
+      // TODO: native.sensorData.drag handling?
 
       AbstractHtmlRtti.blinkingEffect && blink(native, mounted.cycle)
       if (AbstractHtmlRtti.isDebugAttributeEnabled)

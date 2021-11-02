@@ -7,7 +7,7 @@
 
 import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
 import { extractPointerButton, PointerButton, PointerSensor } from './PointerSensor'
-import { SymAssociatedData } from './HtmlApiExt'
+import { SymSensorData } from './HtmlApiExt'
 import { EmptyDataArray, grabElementData } from '../core/Sensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { SensorData } from '../core/SensorData'
@@ -110,16 +110,16 @@ export class ButtonSensor extends PointerSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data: associatedDataUnderPointer, window } = grabElementData(elements, SymAssociatedData, 'button', EmptyDataArray)
-    const originData = associatedDataUnderPointer[0] as SensorData | undefined
+    const { data: elementDataUnderPointer, window } = grabElementData(elements, SymSensorData, 'button', EmptyDataArray)
+    const originData = elementDataUnderPointer[0] as SensorData | undefined
     if (originData) {
       this.state = ButtonState.Pressed
       this.pointerButton = extractPointerButton(e)
-      this.elementDataUnderPointer = associatedDataUnderPointer
+      this.elementDataUnderPointer = elementDataUnderPointer
       this.originData = originData
       const path = e.composedPath()
-      const { data: associatedData } = grabElementData(path, SymAssociatedData, 'button', EmptyDataArray)
-      this.elementDataList = associatedData
+      const { data: elementData } = grabElementData(path, SymSensorData, 'button', EmptyDataArray)
+      this.elementDataList = elementData
       this.modifiers = extractModifierKeys(e)
       this.positionX = e.clientX
       this.positionY = e.clientY
@@ -178,9 +178,9 @@ export class ButtonSensor extends PointerSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const path = e.composedPath()
-    this.elementDataList = grabElementData(path, SymAssociatedData, 'button', this.elementDataList).data
+    this.elementDataList = grabElementData(path, SymSensorData, 'button', this.elementDataList).data
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.elementDataUnderPointer = grabElementData(elements, SymAssociatedData, 'button', this.elementDataUnderPointer).data
+    this.elementDataUnderPointer = grabElementData(elements, SymSensorData, 'button', this.elementDataUnderPointer).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY
@@ -189,7 +189,7 @@ export class ButtonSensor extends PointerSensor {
 
   // @reaction
   // protected debug(): void {
-  //   console.log(`Popup: associatedDataPath.length = ${this.associatedDataPath.length}`)
-  //   console.log(`stage = ${PopupStage[this.stage]}, originData = ${this.originData}, selected = ${this.selected}, selectedData = ${this.selectedData}, selectedXY = (${this.selectedX}, ${this.selectedY})`)
+  //   console.log(`Popup: elementDataList.length = ${this.elementDataList.length}`)
+  //   console.log(`stage = ${ButtonState[this.state]}, originData = ${this.originData}, selected = ${this.selected}, selectedData = ${this.selectedData}, selectedXY = (${this.selectedX}, ${this.selectedY})`)
   // }
 }

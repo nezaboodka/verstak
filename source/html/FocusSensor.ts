@@ -7,7 +7,7 @@
 
 import { options, TraceLevel, transaction } from 'reactronic'
 import { EmptyDataArray, grabElementData } from '../core/Sensor'
-import { SymAssociatedData } from './HtmlApiExt'
+import { SymSensorData } from './HtmlApiExt'
 import { HtmlElementSensor } from './HtmlElementSensor'
 
 export class FocusSensor extends HtmlElementSensor {
@@ -47,7 +47,7 @@ export class FocusSensor extends HtmlElementSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const path = e.composedPath()
-    const { data, window } = grabElementData(path, SymAssociatedData, 'focus', this.elementDataList)
+    const { data, window } = grabElementData(path, SymSensorData, 'focus', this.elementDataList)
     this.elementDataList = data
     this.revision++
     this.window?.setActiveWindow(window)
@@ -63,6 +63,6 @@ export class FocusSensor extends HtmlElementSensor {
 
   // @reaction
   // protected debug(): void {
-  //   console.log(`Focus: topAssociatedData = ${this.topAssociatedData}`)
+  //   console.log(`Focus: topElementData = ${this.topElementData}`)
   // }
 }

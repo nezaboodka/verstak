@@ -7,7 +7,7 @@
 
 import { options, TraceLevel, transaction } from 'reactronic'
 import { EmptyDataArray, grabElementData } from '../core/Sensor'
-import { SymAssociatedData } from './HtmlApiExt'
+import { SymSensorData } from './HtmlApiExt'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { PointerSensor } from './PointerSensor'
 import { WindowSensor } from './WindowSensor'
@@ -97,10 +97,10 @@ export class ClickSensor extends PointerSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const path = e.composedPath()
-    const { data: associatedDataUnderPointer, window } = grabElementData(path, SymAssociatedData, 'click', this.elementDataList)
-    this.elementDataList = associatedDataUnderPointer
+    const { data: elementDataUnderPointer, window } = grabElementData(path, SymSensorData, 'click', this.elementDataList)
+    this.elementDataList = elementDataUnderPointer
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.elementDataUnderPointer = grabElementData(elements, SymAssociatedData, 'click', this.elementDataUnderPointer).data
+    this.elementDataUnderPointer = grabElementData(elements, SymSensorData, 'click', this.elementDataUnderPointer).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY

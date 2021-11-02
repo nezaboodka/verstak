@@ -7,7 +7,7 @@
 
 import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
 import { extractPointerButton, PointerButton, PointerSensor } from './PointerSensor'
-import { SymAssociatedData } from './HtmlApiExt'
+import { SymSensorData } from './HtmlApiExt'
 import { EmptyDataArray, grabElementData } from '../core/Sensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { SensorData } from '../core/SensorData'
@@ -122,17 +122,17 @@ export class DragSensor extends PointerSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data: associatedDataUnderPointer, window } = grabElementData(elements, SymAssociatedData, 'drag', EmptyDataArray)
-    const originData = associatedDataUnderPointer[0] as SensorData | undefined
+    const { data: elementDataUnderPointer, window } = grabElementData(elements, SymSensorData, 'drag', EmptyDataArray)
+    const originData = elementDataUnderPointer[0] as SensorData | undefined
     if (originData) {
       this.originData = originData
-      this.elementDataUnderPointer = associatedDataUnderPointer
+      this.elementDataUnderPointer = elementDataUnderPointer
       this.trying = true
       this.button = extractPointerButton(e)
       this.startX = e.clientX
       this.startY = e.clientY
       const path = e.composedPath()
-      this.elementDataList = grabElementData(path, SymAssociatedData, 'drag', EmptyDataArray).data
+      this.elementDataList = grabElementData(path, SymSensorData, 'drag', EmptyDataArray).data
       this.modifiers = extractModifierKeys(e)
       this.positionX = e.clientX
       this.positionY = e.clientY
@@ -200,9 +200,9 @@ export class DragSensor extends PointerSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.elementDataUnderPointer = grabElementData(elements, SymAssociatedData, 'drag', this.elementDataUnderPointer).data
+    this.elementDataUnderPointer = grabElementData(elements, SymSensorData, 'drag', this.elementDataUnderPointer).data
     const path = e.composedPath()
-    this.elementDataList = grabElementData(path, SymAssociatedData, 'drag', this.elementDataList).data
+    this.elementDataList = grabElementData(path, SymSensorData, 'drag', this.elementDataList).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY
