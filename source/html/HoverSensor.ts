@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, TraceLevel, transaction } from 'reactronic'
-import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
+import { EmptyDataArray, grabElementData } from '../core/Sensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { PointerSensor } from './PointerSensor'
@@ -42,9 +42,9 @@ export class HoverSensor extends PointerSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'hover', this.associatedDataUnderPointer).data
+    this.elementDataUnderPointer = grabElementData(elements, SymAssociatedData, 'hover', this.elementDataUnderPointer).data
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'hover', this.associatedDataPath).data
+    this.elementDataList = grabElementData(path, SymAssociatedData, 'hover', this.elementDataList).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY
@@ -55,7 +55,7 @@ export class HoverSensor extends PointerSensor {
   protected doPointerOut(): void {
     this.preventDefault = false
     this.stopPropagation = false
-    this.associatedDataPath = EmptyAssociatedDataArray
+    this.elementDataList = EmptyDataArray
     this.positionX = Infinity
     this.positionY = Infinity
     this.modifiers = KeyboardModifiers.None

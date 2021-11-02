@@ -5,13 +5,13 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { AssociatedData } from '../core/api'
+import { SensorData } from '../core/api'
 
 export const SymAssociatedData: unique symbol = Symbol('AssociatedData')
 
 declare global {
   interface Element {
-    associatedData: AssociatedData
+    sensorData: SensorData
   }
 }
 

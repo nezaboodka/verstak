@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { EmptyAssociatedDataArray } from '../core/Sensor'
+import { EmptyDataArray } from '../core/Sensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 import { KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
@@ -21,18 +21,18 @@ export class PointerSensor extends HtmlElementSensor {
   positionX: number // position relative to browser's viewport
   positionY: number // position relative to browser's viewport
   modifiers: KeyboardModifiers
-  associatedDataUnderPointer: unknown[]
+  elementDataUnderPointer: unknown[]
 
   constructor(window?: WindowSensor) {
     super(window)
     this.positionX = Infinity
     this.positionY = Infinity
     this.modifiers = KeyboardModifiers.None
-    this.associatedDataUnderPointer = EmptyAssociatedDataArray
+    this.elementDataUnderPointer = EmptyDataArray
   }
 
-  get topAssociatedDataUnderPointer(): unknown {
-    return this.associatedDataUnderPointer.length > 0 ? this.associatedDataUnderPointer[0] : undefined
+  get topElementDataUnderPointer(): unknown {
+    return this.elementDataUnderPointer.length > 0 ? this.elementDataUnderPointer[0] : undefined
   }
 }
 

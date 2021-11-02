@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { options, TraceLevel, transaction } from 'reactronic'
-import { AssociatedData } from '../core/AssociatedData'
-import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
+import { SensorData } from '../core/SensorData'
+import { EmptyDataArray, grabElementData } from '../core/Sensor'
 import { DragStage } from './DragSensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { HtmlElementSensor } from './HtmlElementSensor'
@@ -50,7 +50,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.dropX = Infinity
     this.dropY = Infinity
     this.dropped = false
-    this.associatedDataUnderPointer = EmptyAssociatedDataArray
+    this.associatedDataUnderPointer = EmptyDataArray
   }
 
   get topAssociatedDataUnderPointer(): unknown {
@@ -120,8 +120,8 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data: associatedDataUnderPointer, window } = grabAssociatedData(elements, SymAssociatedData, 'htmlDrag', EmptyAssociatedDataArray)
-    const originData = associatedDataUnderPointer[0] as AssociatedData | undefined
+    const { data: associatedDataUnderPointer, window } = grabElementData(elements, SymAssociatedData, 'htmlDrag', EmptyDataArray)
+    const originData = associatedDataUnderPointer[0] as SensorData | undefined
     if (originData) {
       this.stage = DragStage.Started
       this.originData = originData
@@ -129,7 +129,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
       this.startX = e.clientX
       this.startY = e.clientY
       const path = e.composedPath()
-      this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'htmlDrag', EmptyAssociatedDataArray).data
+      this.elementDataList = grabElementData(path, SymAssociatedData, 'htmlDrag', EmptyDataArray).data
       this.modifiers = extractModifierKeys(e)
       this.positionX = e.clientX
       this.positionY = e.clientY
@@ -197,17 +197,17 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.dropX = Infinity
     this.dropY = Infinity
     this.dropped = false
-    this.associatedDataUnderPointer = EmptyAssociatedDataArray
-    this.associatedDataPath = EmptyAssociatedDataArray
+    this.associatedDataUnderPointer = EmptyDataArray
+    this.elementDataList = EmptyDataArray
   }
 
   protected updateSensorData(e: DragEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'htmlDrag', this.associatedDataUnderPointer).data
+    this.associatedDataUnderPointer = grabElementData(elements, SymAssociatedData, 'htmlDrag', this.associatedDataUnderPointer).data
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'htmlDrag', this.associatedDataPath).data
+    this.elementDataList = grabElementData(path, SymAssociatedData, 'htmlDrag', this.elementDataList).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY

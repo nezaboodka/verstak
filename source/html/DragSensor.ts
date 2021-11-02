@@ -8,9 +8,9 @@
 import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
 import { extractPointerButton, PointerButton, PointerSensor } from './PointerSensor'
 import { SymAssociatedData } from './HtmlApiExt'
-import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
+import { EmptyDataArray, grabElementData } from '../core/Sensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
-import { AssociatedData } from '../core/AssociatedData'
+import { SensorData } from '../core/SensorData'
 import { WindowSensor } from './WindowSensor'
 
 export enum DragStage {
@@ -122,17 +122,17 @@ export class DragSensor extends PointerSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data: associatedDataUnderPointer, window } = grabAssociatedData(elements, SymAssociatedData, 'drag', EmptyAssociatedDataArray)
-    const originData = associatedDataUnderPointer[0] as AssociatedData | undefined
+    const { data: associatedDataUnderPointer, window } = grabElementData(elements, SymAssociatedData, 'drag', EmptyDataArray)
+    const originData = associatedDataUnderPointer[0] as SensorData | undefined
     if (originData) {
       this.originData = originData
-      this.associatedDataUnderPointer = associatedDataUnderPointer
+      this.elementDataUnderPointer = associatedDataUnderPointer
       this.trying = true
       this.button = extractPointerButton(e)
       this.startX = e.clientX
       this.startY = e.clientY
       const path = e.composedPath()
-      this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', EmptyAssociatedDataArray).data
+      this.elementDataList = grabElementData(path, SymAssociatedData, 'drag', EmptyDataArray).data
       this.modifiers = extractModifierKeys(e)
       this.positionX = e.clientX
       this.positionY = e.clientY
@@ -181,7 +181,7 @@ export class DragSensor extends PointerSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected reset(): void {
-    this.associatedDataPath = EmptyAssociatedDataArray
+    this.elementDataList = EmptyDataArray
     this.trying = false
     this.originData = undefined
     this.draggingData = undefined
@@ -200,9 +200,9 @@ export class DragSensor extends PointerSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'drag', this.associatedDataUnderPointer).data
+    this.elementDataUnderPointer = grabElementData(elements, SymAssociatedData, 'drag', this.elementDataUnderPointer).data
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'drag', this.associatedDataPath).data
+    this.elementDataList = grabElementData(path, SymAssociatedData, 'drag', this.elementDataList).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY

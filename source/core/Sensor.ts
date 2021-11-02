@@ -6,27 +6,39 @@
 // automatically licensed under the license referred above.
 
 import { ObservableObject } from 'reactronic'
-import { AssociatedData } from './AssociatedData'
+
+export interface SensorData {
+  window?: unknown
+  focus?: unknown
+  hover?: unknown
+  keyboard?: unknown
+  click?: unknown
+  wheel?: unknown
+  resize?: unknown
+  drag?: unknown
+  htmlDrag?: unknown
+  button?: unknown
+}
 
 export class Sensor extends ObservableObject {
   revision: number = 0
-  associatedDataPath: unknown[] = EmptyAssociatedDataArray
+  elementDataList: unknown[] = EmptyDataArray
 
-  get topAssociatedData(): unknown {
-    return this.associatedDataPath.length > 0 ? this.associatedDataPath[0] : undefined
+  get topElementData(): unknown {
+    return this.elementDataList.length > 0 ? this.elementDataList[0] : undefined
   }
 }
 
-export const EmptyAssociatedDataArray: any[] = []
+export const EmptyDataArray: any[] = []
 
-export function grabAssociatedData(elements: any[], sym: symbol,
-  payloadKey: keyof AssociatedData, existing: Array<unknown>): { data: Array<unknown>, window: unknown } {
+export function grabElementData(elements: any[], sym: symbol,
+  payloadKey: keyof SensorData, existing: Array<unknown>): { data: Array<unknown>, window: unknown } {
   let result = existing
   let i = 0
   let j = 0
   let window: unknown = undefined
   while (window === undefined && i < elements.length) {
-    const data = elements[i][sym] as AssociatedData | undefined
+    const data = elements[i][sym] as SensorData | undefined
     if (data !== undefined) {
       window = data['window']
       const payload = data[payloadKey]
@@ -47,6 +59,6 @@ export function grabAssociatedData(elements: any[], sym: symbol,
     i++
   }
   if (j === 0 && result === existing && existing.length > 0)
-    result = EmptyAssociatedDataArray
+    result = EmptyDataArray
   return { data: result, window }
 }

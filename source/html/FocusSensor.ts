@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, TraceLevel, transaction } from 'reactronic'
-import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
+import { EmptyDataArray, grabElementData } from '../core/Sensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { HtmlElementSensor } from './HtmlElementSensor'
 
@@ -47,8 +47,8 @@ export class FocusSensor extends HtmlElementSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const path = e.composedPath()
-    const { data, window } = grabAssociatedData(path, SymAssociatedData, 'focus', this.associatedDataPath)
-    this.associatedDataPath = data
+    const { data, window } = grabElementData(path, SymAssociatedData, 'focus', this.elementDataList)
+    this.elementDataList = data
     this.revision++
     this.window?.setActiveWindow(window)
   }
@@ -57,7 +57,7 @@ export class FocusSensor extends HtmlElementSensor {
   protected doFocusOut(): void {
     this.preventDefault = false
     this.stopPropagation = false
-    this.associatedDataPath = EmptyAssociatedDataArray
+    this.elementDataList = EmptyDataArray
     this.revision++
   }
 

@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, sensitive, TraceLevel, transaction } from 'reactronic'
-import { grabAssociatedData } from '../core/Sensor'
+import { grabElementData } from '../core/Sensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { HtmlElementSensor } from './HtmlElementSensor'
 
@@ -93,7 +93,7 @@ export class KeyboardSensor extends HtmlElementSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'keyboard', this.associatedDataPath).data
+    this.elementDataList = grabElementData(path, SymAssociatedData, 'keyboard', this.elementDataList).data
     let modifier: KeyboardModifiers = 0
     if (e.ctrlKey)
       modifier |= KeyboardModifiers.Ctrl

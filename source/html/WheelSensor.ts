@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
-import { EmptyAssociatedDataArray, grabAssociatedData } from '../core/Sensor'
+import { EmptyDataArray, grabElementData } from '../core/Sensor'
 import { SymAssociatedData } from './HtmlApiExt'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { PointerSensor } from './PointerSensor'
@@ -53,8 +53,8 @@ export class WheelSensor extends PointerSensor {
   protected doReset(): void {
     this.preventDefault = false
     this.stopPropagation = false
-    this.associatedDataPath = EmptyAssociatedDataArray
-    this.associatedDataUnderPointer = EmptyAssociatedDataArray
+    this.elementDataList = EmptyDataArray
+    this.elementDataUnderPointer = EmptyDataArray
     this.modifiers = KeyboardModifiers.None
     this.positionX = Infinity
     this.positionY = Infinity
@@ -66,9 +66,9 @@ export class WheelSensor extends PointerSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const path = e.composedPath()
-    this.associatedDataPath = grabAssociatedData(path, SymAssociatedData, 'wheel', this.associatedDataPath).data
+    this.elementDataList = grabElementData(path, SymAssociatedData, 'wheel', this.elementDataList).data
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.associatedDataUnderPointer = grabAssociatedData(elements, SymAssociatedData, 'wheel', this.associatedDataUnderPointer).data
+    this.elementDataUnderPointer = grabElementData(elements, SymAssociatedData, 'wheel', this.elementDataUnderPointer).data
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY
