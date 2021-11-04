@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, TraceLevel, transaction } from 'reactronic'
+import { options, reaction, TraceLevel, transaction } from 'reactronic'
 import { DataForSensor, EmptyDataArray, grabElementData } from '../core/Sensor'
 import { DragStage } from './DragSensor'
 import { SymDataForSensor } from './HtmlApiExt'
@@ -17,13 +17,17 @@ export type DragEffectAllowed = 'none' | 'copy' | 'copyLink' | 'copyMove' | 'lin
 export type DropEffect = 'none' | 'copy' | 'link' | 'move'
 
 export class HtmlDragSensor extends HtmlElementSensor {
+  private eventClientX: number
+  private eventClientY: number
+  private eventModifiers: KeyboardModifiers
+  private eventElementDataList: unknown[]
   stage: DragStage
   originData: any
   draggingData: any
   dropEffect: DropEffect
   effectAllowed: DragEffectAllowed
   dropAllowed: boolean
-  modifiers = KeyboardModifiers.None
+  modifiers: KeyboardModifiers
   startX: number // position relative to browser's viewport
   startY: number // position relative to browser's viewport
   positionX: number // position relative to browser's viewport
@@ -35,12 +39,16 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   constructor(window: WindowSensor) {
     super(window)
-    this.dropEffect = 'none'
-    this.effectAllowed = 'uninitialized'
-    this.dropAllowed = false
+    this.eventClientX = Infinity
+    this.eventClientY = Infinity
+    this.eventModifiers = KeyboardModifiers.None
+    this.eventElementDataList = EmptyDataArray
     this.stage = DragStage.Finished
     this.originData = undefined
     this.draggingData = undefined
+    this.dropEffect = 'none'
+    this.effectAllowed = 'uninitialized'
+    this.dropAllowed = false
     this.modifiers = KeyboardModifiers.None
     this.startX = Infinity
     this.startY = Infinity
@@ -83,29 +91,35 @@ export class HtmlDragSensor extends HtmlElementSensor {
   }
 
   protected onDragStart(e: DragEvent): void {
+    console.log(`onDragStart: clientX = ${e.clientX}, target = ${(e.target as HTMLElement).id}, left = ${(e.target as HTMLElement).offsetLeft}`)
     this.startDragging(e)
     this.updateEventOnDragStart(e)
   }
 
   protected onDrag(e: DragEvent): void {
+    console.log(`onDrag: clientX = ${e.clientX}, target = ${(e.target as HTMLElement).id}, left = ${(e.target as HTMLElement).offsetLeft}`)
     this.dragging(e)
     this.setPreventDefaultOnDropAllowed(e)
   }
 
   protected onDragEnter(e: DragEvent): void {
-    this.draggingOver(e)
+    console.log(`onDragEnter: clientX = ${e.clientX}, target = ${(e.target as HTMLElement).id}, left = ${(e.target as HTMLElement).offsetLeft}`)
+    this.draggingEnter(e)
   }
 
   protected onDragLeave(e: DragEvent): void {
-    this.draggingOver(e)
+    console.log(`onDragLeave: clientX = ${e.clientX}, target = ${(e.target as HTMLElement).id}, left = ${(e.target as HTMLElement).offsetLeft}`)
+    this.draggingLeave(e)
   }
 
   protected onDragOver(e: DragEvent): void {
+    console.log(`onDragOver: clientX = ${e.clientX}, target = ${(e.target as HTMLElement).id}, left = ${(e.target as HTMLElement).offsetLeft}`)
     this.draggingOver(e)
     this.setPreventDefaultOnDropAllowed(e)
   }
 
   protected onDrop(e: DragEvent): void {
+    console.log(`onDrop: clientX = ${e.clientX}, target = ${(e.target as HTMLElement).id}, left = ${(e.target as HTMLElement).offsetLeft}`)
     this.drop(e)
   }
 
@@ -140,13 +154,28 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected dragging(e: DragEvent): void {
-    this.updateSensorData(e)
     this.stage = DragStage.Dragging
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
+  protected draggingEnter(e: DragEvent): void {
+    this.stage = DragStage.Dragging
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected draggingLeave(e: DragEvent): void {
+    // Nothing to do
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
   protected draggingOver(e: DragEvent): void {
-    this.updateSensorData(e)
+    this.preventDefault = false
+    this.stopPropagation = false
+    const path = e.composedPath()
+    this.eventElementDataList = grabElementData(path, SymDataForSensor, 'htmlDrag', this.elementDataList).data
+    this.eventModifiers = extractModifierKeys(e)
+    this.eventClientX = e.clientX
+    this.eventClientY = e.clientY
     this.stage = DragStage.Dragging
   }
 
@@ -211,6 +240,24 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.positionX = e.clientX
     this.positionY = e.clientY
     this.revision++
+  }
+
+  @reaction @options({ throttling: 0 })
+  protected whenDragging(): void {
+    const stage = this.stage
+    if (stage === DragStage.Dragging) {
+      const clientX = this.eventClientX
+      const clientY = this.eventClientY
+      this.positionX = clientX
+      this.positionY = clientY
+      this.modifiers = this.eventModifiers
+      this.elementDataList = this.eventElementDataList
+      if (clientX !== Infinity && clientY !== Infinity) {
+        const elements = document.elementsFromPoint(clientX, clientY)
+        this.elementDataUnderPointer = grabElementData(elements, SymDataForSensor, 'htmlDrag', this.elementDataUnderPointer).data
+      }
+      this.revision++
+    }
   }
 
   // @reaction
