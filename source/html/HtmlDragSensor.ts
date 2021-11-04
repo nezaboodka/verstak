@@ -91,41 +91,35 @@ export class HtmlDragSensor extends HtmlElementSensor {
   }
 
   protected onDragStart(e: DragEvent): void {
-    console.log(`onDragStart: clientX = ${e.clientX}, target = ${(e.target as HTMLElement).id}, left = ${(e.target as HTMLElement).offsetLeft}`)
     this.startDragging(e)
     this.updateEventOnDragStart(e)
   }
 
   protected onDrag(e: DragEvent): void {
-    console.log(`onDrag: clientX = ${e.clientX}, target = ${(e.target as HTMLElement).id}, left = ${(e.target as HTMLElement).offsetLeft}`)
     this.dragging(e)
     this.setPreventDefaultOnDropAllowed(e)
   }
 
   protected onDragEnter(e: DragEvent): void {
-    console.log(`onDragEnter: clientX = ${e.clientX}, target = ${(e.target as HTMLElement).id}, left = ${(e.target as HTMLElement).offsetLeft}`)
     this.draggingEnter(e)
   }
 
   protected onDragLeave(e: DragEvent): void {
-    console.log(`onDragLeave: clientX = ${e.clientX}, target = ${(e.target as HTMLElement).id}, left = ${(e.target as HTMLElement).offsetLeft}`)
     this.draggingLeave(e)
   }
 
   protected onDragOver(e: DragEvent): void {
-    console.log(`onDragOver: clientX = ${e.clientX}, target = ${(e.target as HTMLElement).id}, left = ${(e.target as HTMLElement).offsetLeft}`)
     this.draggingOver(e)
     this.setPreventDefaultOnDropAllowed(e)
   }
 
   protected onDrop(e: DragEvent): void {
-    console.log(`onDrop: clientX = ${e.clientX}, target = ${(e.target as HTMLElement).id}, left = ${(e.target as HTMLElement).offsetLeft}`)
     this.drop(e)
   }
 
   protected onDragEnd(e: DragEvent): void {
     this.finishDragging(e)
-    // this.reset()
+    this.reset()
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
