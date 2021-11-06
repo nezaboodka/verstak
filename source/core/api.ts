@@ -8,7 +8,7 @@
 export {
   RefreshParent,
   Render,
-  ComponentRender,
+  SuperRender,
   InternalInstance,
   Manifest,
   Rtti,

@@ -7,11 +7,11 @@
 
 import { reaction, nonreactive, Transaction, Reactronic, options } from 'reactronic'
 
-// RefreshParent, Render, ComponentRender
+// RefreshParent, Render, SuperRender
 
 export const RefreshParent = Symbol('RefreshParent') as unknown as void
 export type Render<E = unknown, O = void> = (element: E, options: O) => void
-export type ComponentRender<O = unknown, E = void> = (render: (options: O) => O, element: E) => void
+export type SuperRender<O = unknown, E = void> = (render: (options: O) => O, element: E) => void
 
 // Manifest
 
@@ -26,7 +26,7 @@ export class Manifest<E = unknown, O = void> {
     readonly id: string,
     readonly args: any,
     readonly render: Render<E, O>,
-    readonly componentRender: ComponentRender<O, E> | undefined,
+    readonly superRender: SuperRender<O, E> | undefined,
     readonly rtti: Rtti<E, O>,
     public instance?: {
       readonly level: number
@@ -56,12 +56,12 @@ export interface Rtti<E = unknown, O = void> { // Run-Time Type Info
 
 export function manifest<E = unknown, O = void>(
   id: string, args: any, render: Render<E, O>,
-  componentRender: ComponentRender<O, E> | undefined, rtti: Rtti<E, O>): Manifest<E, O> {
+  superRender: SuperRender<O, E> | undefined, rtti: Rtti<E, O>): Manifest<E, O> {
 
   const owner = gOwner // shorthand
   if (!owner.instance?.mounted)
     throw new Error('element must be mounted before children')
-  const m = new Manifest<any, any>(id, args, render, componentRender, rtti)
+  const m = new Manifest<any, any>(id, args, render, superRender, rtti)
   if (owner !== RootManifest) {
     if (gPending === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -85,8 +85,8 @@ export function render(m: Manifest<any, any>): void {
     gPending = []
     if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.instance!.level))}${getManifestTraceHint(m)}.render/${m.instance?.revision}${m.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
-    if (m.componentRender)
-      m.componentRender(componentRender, mounted.native)
+    if (m.superRender)
+      m.superRender(superRender, mounted.native)
     else
       m.render(mounted.native, undefined)
     renderChildrenNow() // ignored if rendered already
@@ -97,7 +97,7 @@ export function render(m: Manifest<any, any>): void {
   }
 }
 
-function componentRender(options: any): any {
+function superRender(options: any): any {
   const t = gOwner
   const mounted = t.instance?.mounted as (Mounted | undefined)
   if (!mounted)
