@@ -15,9 +15,10 @@ export type SuperRender<O = unknown, E = void> = (render: (options: O) => O, ele
 
 // Manifest
 
-export interface InternalInstance<E> {
+export class Mounted<E = unknown> {
   native?: E
   model?: any
+  children: ReadonlyArray<Manifest> = EMPTY
   resizeObserver?: ResizeObserver
 }
 
@@ -31,7 +32,7 @@ export class Manifest<E = unknown, O = void> {
     public instance?: {
       readonly level: number
       readonly revision: number
-      mounted?: InternalInstance<E>
+      mounted?: Mounted<E>
     }
   ) {
   }
@@ -134,7 +135,7 @@ export function selfInstance<T>(): { model?: T } {
   return mounted
 }
 
-export function selfInstanceInternal<T>(): InternalInstance<T> {
+export function selfInstanceInternal<E>(): Mounted<E> {
   const result = gOwner.instance?.mounted
   if (!result)
     throw new Error('getMountedInstance function can be called only inside rendering function')
@@ -158,11 +159,6 @@ export function forAll<E>(action: (e: E) => void): void {
 
 const EMPTY: Array<Manifest> = []
 Object.freeze(EMPTY)
-
-class Mounted<E = unknown> {
-  native?: E = undefined
-  children: ReadonlyArray<Manifest> = EMPTY
-}
 
 class Instance<E = unknown, O = void> {
   readonly level: number
@@ -338,7 +334,7 @@ function getManifestTraceHint(m: Manifest): string {
   return `${m.rtti.name}:${m.id}`
 }
 
-function forEachChildRecursively<E>(m: Manifest, action: (e: E) => void): void {
+function forEachChildRecursively(m: Manifest, action: (e: any) => void): void {
   const mounted = m.instance?.mounted
   if (mounted instanceof Mounted) {
     const native = mounted.native

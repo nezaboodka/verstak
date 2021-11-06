@@ -9,7 +9,7 @@ export {
   RefreshParent,
   Render,
   SuperRender,
-  InternalInstance,
+  Mounted,
   Manifest,
   Rtti,
   manifest,
