@@ -133,7 +133,7 @@ export function selfInstance<T>(): { model?: T } {
   return mounted
 }
 
-export function internalSelfInstance<T>(): InternalInstance<T> {
+export function selfInstanceInternal<T>(): InternalInstance<T> {
   const result = gOwner.instance?.mounted
   if (!result)
     throw new Error('getMountedInstance function can be called only inside rendering function')
