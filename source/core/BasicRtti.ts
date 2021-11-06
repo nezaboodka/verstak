@@ -15,5 +15,10 @@ export function RxSortingFragment<E = unknown, O = void>(id: string, args: any, 
   return manifest(id, args, render, undefined, RTTI_RX_SORTING_FRAGMENT)
 }
 
+export function ForeignFragment<E = unknown, O = void>(id: string, args: any, foreign: Manifest<E, O>, render: Render<E, O>): Manifest<E, O> {
+  return manifest(id, args, render, undefined, RTTI_FOREIGN_FRAGMENT)
+}
+
 const RTTI_RX_FRAGMENT: Rtti<any, any> = { name: 'RxFragment', sorting: false }
 const RTTI_RX_SORTING_FRAGMENT: Rtti<any, any> = { name: 'RxSortingFragment', sorting: true }
+const RTTI_FOREIGN_FRAGMENT: Rtti<any, any> = { name: 'ForeignFragment', sorting: true }

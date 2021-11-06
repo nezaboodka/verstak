@@ -56,7 +56,8 @@ export interface Rtti<E = unknown, O = void> { // Run-Time Type Info
 
 export function manifest<E = unknown, O = void>(
   id: string, args: any, render: Render<E, O>,
-  superRender: SuperRender<O, E> | undefined, rtti: Rtti<E, O>): Manifest<E, O> {
+  superRender: SuperRender<O, E> | undefined,
+  rtti: Rtti<E, O>): Manifest<E, O> {
 
   const owner = gOwner // shorthand
   if (!owner.instance?.mounted)
@@ -234,36 +235,36 @@ function reconcileOrdinaryChildren(owner: Manifest): void {
     let i = 0, j = 0
     while (i < mounted.children.length) {
       const existing = mounted.children[i]
-      let e = children[j]
-      const diff = e !== undefined ? compareManifests(e, existing) : 1
+      let x = children[j]
+      const diff = x !== undefined ? compareManifests(x, existing) : 1
       if (diff <= 0) {
-        if (sibling !== undefined && e.id === sibling.id)
+        if (sibling !== undefined && x.id === sibling.id)
           throw new Error(`duplicate id '${sibling.id}' inside '${owner.id}'`)
         if (diff === 0) {
-          e.instance = existing.instance // reuse existing instance for re-rendering
-          if (e.args !== RefreshParent && argsAreEqual(e.args, existing.args))
-            e = e.annex = children[j] = existing // skip re-rendering and preserve existing token
+          x.instance = existing.instance // reuse existing instance for re-rendering
+          if (x.args !== RefreshParent && argsAreEqual(x.args, existing.args))
+            x = x.annex = children[j] = existing // skip re-rendering and preserve existing token
           i++, j++
         }
         else // diff < 0
           j++ // mount/reorder is performed below
-        sibling = e
+        sibling = x
       }
       else // diff > 0
         callUnmount(existing, owner, existing), i++
     }
     // Mount and render
     sibling = undefined
-    for (let e of buffer) {
-      const existing = e.annex
-      e = existing ?? e
-      const instEx = e.instance ?? callMount(e, owner, sibling)
-      if (instEx.revision > 0) {
-        if (e.rtti.reorder)
-          e.rtti.reorder(e, owner, sibling)
+    for (let x of buffer) {
+      const existing = x.annex
+      x = existing ?? x
+      const instance = x.instance ?? callMount(x, owner, sibling)
+      if (instance.revision > 0) {
+        if (x.rtti.reorder)
+          x.rtti.reorder(x, owner, sibling)
       }
-      e !== existing && callRender(e, owner)
-      sibling = e
+      x !== existing && callRender(x, owner)
+      sibling = x
     }
     mounted.children = children
   }
@@ -278,21 +279,21 @@ function reconcileSortedChildren(owner: Manifest): void {
     let i = 0, j = 0
     while (i < mounted.children.length || j < children.length) {
       const existing = mounted.children[i]
-      let e = children[j]
-      const diff = compareNullable(e, existing, compareManifests)
+      let x = children[j]
+      const diff = compareNullable(x, existing, compareManifests)
       if (diff <= 0) {
-        if (sibling !== undefined && e.id === sibling.id)
+        if (sibling !== undefined && x.id === sibling.id)
           throw new Error(`duplicate id '${sibling.id}' inside '${owner.id}'`)
         if (diff === 0) { // diff === 0
-          e.instance = existing.instance // reuse existing instance for re-rendering
-          if (e.args !== RefreshParent && argsAreEqual(e.args, existing.args))
-            e = children[j] = existing // skip re-rendering and preserve existing token
+          x.instance = existing.instance // reuse existing instance for re-rendering
+          if (x.args !== RefreshParent && argsAreEqual(x.args, existing.args))
+            x = children[j] = existing // skip re-rendering and preserve existing token
           i++, j++
         }
         else // diff < 0
-          callMount(e, owner, sibling), j++
-        e !== existing && callRender(e, owner)
-        sibling = e
+          callMount(x, owner, sibling), j++
+        x !== existing && callRender(x, owner)
+        sibling = x
       }
       else // diff > 0
         callUnmount(existing, owner, existing), i++

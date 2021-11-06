@@ -8,16 +8,6 @@
 import { Reactronic } from 'reactronic'
 import { render, unmount, Manifest, Rtti, forAll } from '../core/api'
 
-export function usingParent<T>(e: HTMLElement, func: (...args: any[]) => T, ...args: any[]): T {
-  const outer = AbstractHtmlRtti.current
-  try {
-    return func(...args)
-  }
-  finally {
-    AbstractHtmlRtti.current = outer
-  }
-}
-
 export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any> {
   static isDebugAttributeEnabled: boolean = false
 
