@@ -29,17 +29,17 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
   render(m: Manifest<E, any>): void {
     const outer = AbstractHtmlRtti.current
     try { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const mounted = m.mounted! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const instance = mounted.instance! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const native = instance.native!
+      const instance = m.instance! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const mounted = instance.mounted! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const native = mounted.native!
       AbstractHtmlRtti.current = native // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}render(${e.id} r${ref.mounted!.cycle})`)
       render(m) // proceed
 
       // TODO: native.sensorData.drag handling?
 
-      AbstractHtmlRtti.blinkingEffect && blink(native, mounted.cycle)
+      AbstractHtmlRtti.blinkingEffect && blink(native, instance.revision)
       if (AbstractHtmlRtti.isDebugAttributeEnabled)
-        native.setAttribute('rdbg', `${mounted.cycle}:    ${Reactronic.why()}`)
+        native.setAttribute('rdbg', `${instance.revision}:    ${Reactronic.why()}`)
     }
     finally {
       AbstractHtmlRtti.current = outer
@@ -47,12 +47,12 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
   }
 
   mount(m: Manifest<E, any>, owner: Manifest, sibling?: Manifest): void {
-    const parent = owner.mounted?.instance?.native as Element ?? AbstractHtmlRtti.current // TODO: To get rid of this workaround
+    const parent = owner.instance?.mounted?.native as Element ?? AbstractHtmlRtti.current // TODO: To get rid of this workaround
     const native = this.createElement(m) // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     native.id = m.id // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}${parent.id}.appendChild(${e.id} r${ref.mounted!.cycle})`)
     if (!owner.rtti.sorting) {
       if (sibling !== undefined) {
-        const prev = sibling.mounted?.instance?.native
+        const prev = sibling.instance?.mounted?.native
         if (prev instanceof Element)
           parent.insertBefore(native, prev.nextSibling)
       }
@@ -62,15 +62,15 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     else
       parent.appendChild(native)
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    m.mounted!.instance!.native = native
+    m.instance!.mounted!.native = native
   }
 
   protected abstract createElement(m: Manifest<E, any>): E
 
   reorder(m: Manifest<E, any>, owner: Manifest, sibling?: Manifest): void {
-    const parent = owner.mounted?.instance?.native as Element ?? AbstractHtmlRtti.current // TODO: To get rid of this workaround
-    const prev = sibling?.mounted?.instance?.native
-    const native = m.mounted?.instance?.native
+    const parent = owner.instance?.mounted?.native as Element ?? AbstractHtmlRtti.current // TODO: To get rid of this workaround
+    const prev = sibling?.instance?.mounted?.native
+    const native = m.instance?.mounted?.native
     if (native && prev instanceof Element && prev.nextSibling !== native) { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}${parent.id}.insertBefore(${(prev.nextSibling! as any)?.id})`)
       parent.insertBefore(native, prev.nextSibling)
@@ -78,12 +78,12 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
   }
 
   unmount(m: Manifest<E, any>, owner: Manifest, cause: Manifest): void {
-    const instance = m.mounted?.instance
-    const native = instance?.native
+    const mounted = m.instance?.mounted
+    const native = mounted?.native
     if (!AbstractHtmlRtti.unmounting && native && native.parentElement) {
       AbstractHtmlRtti.unmounting = native // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       try { // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}${e.parentElement.id}.removeChild(${e.id} r${ref.mounted!.cycle})`)
-        instance?.resizeObserver?.unobserve(native)
+        mounted?.resizeObserver?.unobserve(native)
         native.remove()
         unmount(m, owner, cause) // proceed
       }
@@ -93,7 +93,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     }
     else { // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}???.unmount(${ref.id} r${ref.mounted!.cycle})`)
       if (native)
-        instance?.resizeObserver?.unobserve(native)
+        mounted?.resizeObserver?.unobserve(native)
       unmount(m, owner, cause) // proceed
     }
   }
