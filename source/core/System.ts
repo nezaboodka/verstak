@@ -48,68 +48,66 @@ export function manifest<E = unknown, O = void>(
   superRender: SuperRender<O, E> | undefined,
   rtti: Rtti<E, O>): Manifest<E, O> {
 
-  const owner = gOwner // shorthand
-  if (!owner.instance)
+  const self = gCurrent.instance
+  if (!self)
     throw new Error('element must be mounted before children')
   const m = new Manifest<any, any>(id, args, render, superRender, rtti)
-  if (owner !== RootManifest) {
-    if (gPending === undefined)
+  if (self !== RootManifest.instance) {
+    if (self.pending === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    gPending.push(m)
+    self.pending.push(m)
   }
   else { // render root immediately
-    gPending = [m]
+    self.pending = [m]
     Transaction.run(renderChildrenNow)
   }
   return m
 }
 
 export function render(m: Manifest<any, any>): void {
-  const native = m.instance?.native
-  if (!native)
+  const self = m.instance
+  if (!self)
     throw new Error('element must be mounted before rendering')
-  const outerOwner = gOwner
-  const outerPending = gPending
+  const outer = gCurrent
   try {
-    gOwner = m
-    gPending = []
+    gCurrent = m
+    self.pending = []
     if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.instance!.level))}${getManifestTraceHint(m)}.render/${m.instance?.revision}${m.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
     if (m.superRender)
-      m.superRender(superRender, native)
+      m.superRender(superRender, self.native)
     else
-      m.render(native, undefined)
+      m.render(self.native, undefined)
     renderChildrenNow() // ignored if rendered already
   }
   finally {
-    gPending = outerPending
-    gOwner = outerOwner
+    gCurrent = outer
   }
 }
 
 function superRender(options: any): any {
-  const t = gOwner
-  const native = t.instance?.native
+  const c = gCurrent
+  const native = c.instance?.native
   if (!native)
     throw new Error('element must be mounted before rendering')
-  t.render(native, options)
+  c.render(native, options)
   return options
 }
 
 export function renderChildrenNow(): void {
-  const x = gOwner
-  if (x.rtti.sorting)
-    reconcileSortedChildren(x)
+  const c = gCurrent
+  if (c.rtti.sorting)
+    reconcileSortedChildren(c)
   else
-    reconcileOrdinaryChildren(x)
+    reconcileOrdinaryChildren(c)
 }
 
 export function unmount(m: Manifest<any, any>, owner: Manifest, cause: Manifest): void {
-  const instance = m.instance
-  if (instance) {
-    for (const x of instance.children)
+  const self = m.instance
+  if (self) {
+    for (const x of self.children)
       callUnmount(x, m, cause)
-    instance.native = undefined
+    self.native = undefined
   }
   m.instance = undefined
 }
@@ -117,21 +115,21 @@ export function unmount(m: Manifest<any, any>, owner: Manifest, cause: Manifest)
 // mountedModel, revision, trace, forAll
 
 export function selfInstance<T>(): { model?: T } {
-  const instance = gOwner.instance
-  if (!instance)
+  const self = gCurrent.instance
+  if (!self)
     throw new Error('instance function can be called only inside rendering function')
-  return instance
+  return self
 }
 
 export function selfInstanceInternal<E>(): Instance<E> {
-  const result = gOwner.instance
-  if (!result)
+  const self = gCurrent.instance
+  if (!self)
     throw new Error('getMountedInstance function can be called only inside rendering function')
-  return result
+  return self
 }
 
 export function selfRevision(): number {
-  return gOwner.instance?.revision ?? 0
+  return gCurrent.instance?.revision ?? 0
 }
 
 export function trace(enabled: boolean, mask: string, regexp: string): void {
@@ -154,6 +152,7 @@ class Instance<E = unknown, O = void> {
   native?: E = undefined
   model?: any = undefined
   children: ReadonlyArray<Manifest> = EMPTY
+  pending: Array<Manifest> | undefined = undefined
   resizeObserver?: ResizeObserver = undefined
 
   constructor(level: number) {
@@ -173,27 +172,26 @@ function renderInline<E, O>(instance: Instance<E, O>, m: Manifest<E, O>): void {
 }
 
 function callRender(m: Manifest, owner: Manifest): void {
-  const instance = m.instance!
+  const self = m.instance!
   if (m.args === RefreshParent) // inline elements are always rendered
-    renderInline(instance, m)
+    renderInline(self, m)
   else // rendering of reactive elements is cached to avoid redundant calls
-    nonreactive(instance.render, m)
+    nonreactive(self.render, m)
 }
 
 function callMount(m: Manifest, owner: Manifest, sibling?: Manifest): Instance {
   // TODO: Make the code below exception-safe
   const rtti = m.rtti
-  const instance = new Instance(owner.instance!.level + 1)
-  m.instance = instance
+  const self = m.instance = new Instance(owner.instance!.level + 1)
   if (rtti.mount)
     rtti.mount(m, owner, sibling)
   else
-    instance.native = owner.instance?.native // default mount
+    self.native = owner.instance?.native // default mount
   if (m.args !== RefreshParent)
-    Reactronic.setTraceHint(instance, Reactronic.isTraceEnabled ? getManifestTraceHint(m) : m.id)
+    Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? getManifestTraceHint(m) : m.id)
   if (gTrace && gTraceMask.indexOf('m') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
     console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.instance!.level))}${getManifestTraceHint(m)}.mounted`)
-  return instance
+  return self
 }
 
 function callUnmount(m: Manifest, owner: Manifest, cause: Manifest): void {
@@ -209,16 +207,16 @@ function callUnmount(m: Manifest, owner: Manifest, cause: Manifest): void {
 }
 
 function reconcileOrdinaryChildren(owner: Manifest): void {
-  const instance = owner.instance
-  if (instance !== undefined && gPending !== undefined) {
-    const buffer = gPending
+  const self = owner.instance
+  if (self !== undefined && self.pending !== undefined) {
+    const buffer = self.pending
     const children = buffer.slice().sort(compareManifests)
-    gPending = undefined
+    self.pending = undefined
     // Unmount or resolve existing
     let sibling: Manifest | undefined = undefined
     let i = 0, j = 0
-    while (i < instance.children.length) {
-      const existing = instance.children[i]
+    while (i < self.children.length) {
+      const existing = self.children[i]
       let x = children[j]
       const diff = x !== undefined ? compareManifests(x, existing) : 1
       if (diff <= 0) {
@@ -242,27 +240,27 @@ function reconcileOrdinaryChildren(owner: Manifest): void {
     for (let x of buffer) {
       const existing = x.annex
       x = existing ?? x
-      const instance = x.instance ?? callMount(x, owner, sibling)
-      if (instance.revision > 0) {
+      const mounted = x.instance ?? callMount(x, owner, sibling)
+      if (mounted.revision > 0) {
         if (x.rtti.reorder)
           x.rtti.reorder(x, owner, sibling)
       }
       x !== existing && callRender(x, owner)
       sibling = x
     }
-    instance.children = children
+    self.children = children
   }
 }
 
 function reconcileSortedChildren(owner: Manifest): void {
-  const instance = owner.instance
-  if (instance !== undefined && gPending !== undefined) {
-    const children = gPending.sort(compareManifests)
-    gPending = undefined
+  const self = owner.instance
+  if (self !== undefined && self.pending !== undefined) {
+    const children = self.pending.sort(compareManifests)
+    self.pending = undefined
     let sibling: Manifest | undefined = undefined
     let i = 0, j = 0
-    while (i < instance.children.length || j < children.length) {
-      const existing = instance.children[i]
+    while (i < self.children.length || j < children.length) {
+      const existing = self.children[i]
       let x = children[j]
       const diff = compareNullable(x, existing, compareManifests)
       if (diff <= 0) {
@@ -282,7 +280,7 @@ function reconcileSortedChildren(owner: Manifest): void {
       else // diff > 0
         callUnmount(existing, owner, existing), i++
     }
-    instance.children = children
+    self.children = children
   }
 }
 
@@ -323,11 +321,11 @@ function getManifestTraceHint(m: Manifest): string {
 }
 
 function forEachChildRecursively(m: Manifest, action: (e: any) => void): void {
-  const instance = m.instance
-  if (instance) {
-    const native = instance.native
+  const self = m.instance
+  if (self) {
+    const native = self.native
     native && action(native)
-    instance.children.forEach(x => forEachChildRecursively(x, action))
+    self.children.forEach(x => forEachChildRecursively(x, action))
   }
 }
 
@@ -340,7 +338,6 @@ const RootManifest = new Manifest<any, any>(
   new Instance(0),                  // mounted
 )
 
-let gOwner: Manifest<any, any> = RootManifest
-let gPending: Manifest[] | undefined = undefined
+let gCurrent: Manifest<any, any> = RootManifest
 let gTrace: string | undefined = undefined
 let gTraceMask: string = 'r'

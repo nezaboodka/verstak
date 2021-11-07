@@ -19,16 +19,16 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
   render(m: Manifest<E, any>): void {
     const outer = AbstractHtmlRtti.current
     try { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const instance = m.instance! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const native = instance.native!
+      const self = m.instance! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const native = self.native!
       AbstractHtmlRtti.current = native // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}render(${e.id} r${ref.mounted!.cycle})`)
       render(m) // proceed
 
       // TODO: native.sensorData.drag handling?
 
-      AbstractHtmlRtti.blinkingEffect && blink(native, instance.revision)
+      AbstractHtmlRtti.blinkingEffect && blink(native, self.revision)
       if (AbstractHtmlRtti.isDebugAttributeEnabled)
-        native.setAttribute('rdbg', `${instance.revision}:    ${Reactronic.why()}`)
+        native.setAttribute('rdbg', `${self.revision}:    ${Reactronic.why()}`)
     }
     finally {
       AbstractHtmlRtti.current = outer
@@ -67,12 +67,12 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
   }
 
   unmount(m: Manifest<E, any>, owner: Manifest, cause: Manifest): void {
-    const instance = m.instance
-    const native = instance?.native
+    const self = m.instance
+    const native = self?.native
     if (!AbstractHtmlRtti.unmounting && native && native.parentElement) {
       AbstractHtmlRtti.unmounting = native // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       try { // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}${e.parentElement.id}.removeChild(${e.id} r${ref.mounted!.cycle})`)
-        instance?.resizeObserver?.unobserve(native)
+        self?.resizeObserver?.unobserve(native)
         native.remove()
         unmount(m, owner, cause) // proceed
       }
@@ -82,7 +82,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     }
     else { // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}???.unmount(${ref.id} r${ref.mounted!.cycle})`)
       if (native)
-        instance?.resizeObserver?.unobserve(native)
+        self?.resizeObserver?.unobserve(native)
       unmount(m, owner, cause) // proceed
     }
   }
