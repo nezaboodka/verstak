@@ -112,7 +112,7 @@ export function unmount(m: Manifest<any, any>, owner: Manifest, cause: Manifest)
   m.instance = undefined
 }
 
-// mountedModel, revision, trace, forAll
+// selfInstance, revision, trace, forAll
 
 export function selfInstance<T>(): { model?: T } {
   const self = gCurrent.instance
