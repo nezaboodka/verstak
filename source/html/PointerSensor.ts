@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { EmptyDataArray } from '../core/Sensor'
+import { EmptyDataArray } from './Sensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 import { KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'

@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, TraceLevel, transaction } from 'reactronic'
-import { Sensor } from '../core/Sensor'
+import { Sensor } from './Sensor'
 import { selfInstanceInternal } from '../core/System'
 
 export interface ResizedElement {

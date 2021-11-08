@@ -21,5 +21,4 @@ export {
   forAll,
 } from './System'
 export * from './Restyler'
-export * from './Sensor'
 export * from './BasicRtti'

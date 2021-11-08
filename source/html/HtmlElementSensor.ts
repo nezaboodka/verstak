@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { unobservable } from 'reactronic'
-import { Sensor } from '../core/Sensor'
+import { Sensor } from './Sensor'
 import { WindowSensor } from './WindowSensor'
 
 export class HtmlElementSensor extends Sensor {

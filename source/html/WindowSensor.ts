@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { transaction } from 'reactronic'
-import { Sensor } from '../core/Sensor'
+import { Sensor } from './Sensor'
 
 export class WindowSensor extends Sensor {
   activeData: unknown = undefined

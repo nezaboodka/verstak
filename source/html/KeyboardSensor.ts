@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, sensitive, TraceLevel, transaction } from 'reactronic'
-import { grabElementData } from '../core/Sensor'
+import { grabElementData } from './Sensor'
 import { SymDataForSensor } from './HtmlApiExt'
 import { HtmlElementSensor } from './HtmlElementSensor'
 

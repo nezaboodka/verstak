@@ -7,9 +7,9 @@
 
 export * from './core/System'
 export * from './core/Restyler'
-export * from './core/Sensor'
 export * from './core/BasicRtti'
 
+export * from './html/Sensor'
 export * from './html/HtmlRtti'
 export * from './html/HtmlElements'
 export * from './html/PointerSensor'

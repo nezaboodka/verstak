@@ -7,6 +7,7 @@
 
 export * from './HtmlRtti'
 export * from './HtmlElements'
+export * from './Sensor'
 export * from './ClickSensor'
 export * from './HoverSensor'
 export * from './DragSensor'
