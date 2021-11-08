@@ -5,13 +5,24 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { DataForSensor } from './Sensor'
+export interface TypedDataForSensor {
+  window?: unknown
+  focus?: unknown
+  hover?: unknown
+  keyboard?: unknown
+  click?: unknown
+  wheel?: unknown
+  resize?: unknown
+  drag?: unknown
+  htmlDrag?: unknown
+  button?: unknown
+}
 
 export const SymDataForSensor: unique symbol = Symbol('DataForSensor')
 
 declare global {
   interface Element {
-    dataForSensor: DataForSensor
+    dataForSensor: TypedDataForSensor
   }
 }
 
