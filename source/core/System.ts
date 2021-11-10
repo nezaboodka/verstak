@@ -22,6 +22,7 @@ export class Manifest<E = unknown, O = void> {
     readonly render: Render<E, O>,
     readonly superRender: SuperRender<O, E> | undefined,
     readonly rtti: Rtti<E, O>,
+    readonly nativeParent?: Manifest,
     public instance?: Instance<E>) {
   }
   annex?: Manifest<E, O>
@@ -335,7 +336,8 @@ const RootManifest = new Manifest<any, any>(
   () => { /* nop */ },              // render
   undefined,                        // override
   { name: 'root', sorting: false }, // rtti
-  new Instance(0),                  // mounted
+  undefined,                        // native parent
+  new Instance(0),                  // instance
 )
 
 let gCurrent: Manifest<any, any> = RootManifest

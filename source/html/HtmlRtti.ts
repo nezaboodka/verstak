@@ -8,7 +8,7 @@
 import { Reactronic } from 'reactronic'
 import { render, unmount, Manifest, Rtti, forAll, Render } from '../core/api'
 
-export function useNativeParent<E>(m: Manifest<E>, render: Render<E>): void {
+export function spoofNativeParent<E>(m: Manifest<E>, render: Render<E>): void {
   const native = m.instance?.native
   if (native) {
     const outer = AbstractHtmlRtti.current
