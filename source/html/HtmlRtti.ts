@@ -70,7 +70,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     if (!AbstractHtmlRtti.unmounting && native && native.parentElement) {
       AbstractHtmlRtti.unmounting = native // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       try { // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}${e.parentElement.id}.removeChild(${e.id} r${ref.mounted!.cycle})`)
-        self?.resizeObserver?.unobserve(native)
+        self?.resizing?.unobserve(native)
         native.remove()
         unmount(m, cause) // proceed
       }
@@ -80,7 +80,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     }
     else { // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}???.unmount(${ref.id} r${ref.mounted!.cycle})`)
       if (native)
-        self?.resizeObserver?.unobserve(native)
+        self?.resizing?.unobserve(native)
       unmount(m, cause) // proceed
     }
   }

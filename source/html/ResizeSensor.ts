@@ -17,12 +17,12 @@ export interface ResizedElement {
 }
 
 export class ResizeSensor extends Sensor {
-  private readonly resizeObserver: ResizeObserver
+  private readonly observer: ResizeObserver
   resizedElements: Array<ResizedElement> = []
 
   constructor() {
     super()
-    this.resizeObserver = new ResizeObserver(this.onResize.bind(this))
+    this.observer = new ResizeObserver(this.onResize.bind(this))
   }
 
   @transaction
@@ -33,15 +33,15 @@ export class ResizeSensor extends Sensor {
   observeResizeOfRenderingElement(value: boolean): void {
     const self = selfInstanceInternal<Element>()
     if (value) {
-      if (self.resizeObserver !== undefined && self.resizeObserver !== this.resizeObserver)
-        self.resizeObserver.unobserve(self.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      self.resizeObserver = this.resizeObserver
-      this.resizeObserver.observe(self.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      if (self.resizing !== undefined && self.resizing !== this.observer)
+        self.resizing.unobserve(self.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      self.resizing = this.observer
+      this.observer.observe(self.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
     }
     else {
-      if (self.resizeObserver === this.resizeObserver) {
-        this.resizeObserver.unobserve(self.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
-        self.resizeObserver = undefined
+      if (self.resizing === this.observer) {
+        this.observer.unobserve(self.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+        self.resizing = undefined
       }
     }
   }
