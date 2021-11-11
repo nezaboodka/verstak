@@ -187,6 +187,7 @@ class Instance<E = unknown, O = void> {
   model?: unknown = undefined
   children: ReadonlyArray<Manifest> = EMPTY
   pending: Array<Manifest> | undefined = undefined
+  nephews: ReadonlyArray<Manifest> = EMPTY
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
