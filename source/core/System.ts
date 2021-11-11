@@ -18,7 +18,7 @@ export type SuperRender<O = unknown, E = void> = (render: (options: O) => O, ele
 export class Manifest<E = unknown, O = void> {
   constructor(
     readonly id: string,
-    readonly args: any,
+    readonly args: unknown,
     readonly render: Render<E, O>,
     readonly superRender: SuperRender<O, E> | undefined,
     readonly rtti: Rtti<E, O>,
@@ -46,7 +46,7 @@ export interface Rtti<E = unknown, O = void> { // Run-Time Type Info
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 export function manifest<E = unknown, O = void>(
-  id: string, args: any, render: Render<E, O>,
+  id: string, args: unknown, render: Render<E, O>,
   superRender: SuperRender<O, E> | undefined, rtti: Rtti<E, O>,
   managingParent?: Manifest, renderingParent?: Manifest): Manifest<E, O> {
 
@@ -91,7 +91,7 @@ export function render(m: Manifest<any, any>): void {
   }
 }
 
-function superRender(options: any): any {
+function superRender(options: unknown): unknown {
   const m = gManagingParent
   const native = m.instance?.native
   if (!native)
@@ -152,7 +152,7 @@ export function selfInstance<T>(): { model?: T } {
   const self = gManagingParent.instance
   if (!self)
     throw new Error('instance function can be called only inside rendering function')
-  return self
+  return self as { model?: T }
 }
 
 export function selfInstanceInternal<E>(): Instance<E> {
@@ -184,7 +184,7 @@ class Instance<E = unknown, O = void> {
   readonly level: number
   revision: number = 0
   native?: E = undefined
-  model?: any = undefined
+  model?: unknown = undefined
   children: ReadonlyArray<Manifest> = EMPTY
   pending: Array<Manifest> | undefined = undefined
   resizeObserver?: ResizeObserver = undefined
