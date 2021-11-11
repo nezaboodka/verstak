@@ -22,7 +22,8 @@ export class Manifest<E = unknown, O = void> {
     readonly render: Render<E, O>,
     readonly superRender: SuperRender<O, E> | undefined,
     readonly rtti: Rtti<E, O>,
-    readonly nativeParent?: Manifest,
+    readonly managingParent: Manifest,
+    readonly renderingParent: Manifest,
     public instance?: Instance<E>) {
   }
   annex?: Manifest<E, O>
@@ -46,14 +47,16 @@ export interface Rtti<E = unknown, O = void> { // Run-Time Type Info
 
 export function manifest<E = unknown, O = void>(
   id: string, args: any, render: Render<E, O>,
-  superRender: SuperRender<O, E> | undefined,
-  rtti: Rtti<E, O>): Manifest<E, O> {
+  superRender: SuperRender<O, E> | undefined, rtti: Rtti<E, O>,
+  managingParent?: Manifest, renderingParent?: Manifest): Manifest<E, O> {
 
-  const self = gCurrent.instance
+  const mParent = managingParent ?? gManagingParent
+  const rParent = renderingParent ?? gRenderingParent
+  const self = mParent.instance
   if (!self)
     throw new Error('element must be mounted before children')
-  const m = new Manifest<any, any>(id, args, render, superRender, rtti)
-  if (self !== RootManifest.instance) {
+  const m = new Manifest<any, any>(id, args, render, superRender, rtti, mParent, rParent)
+  if (self !== ROOT.instance) {
     if (self.pending === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     self.pending.push(m)
@@ -69,9 +72,10 @@ export function render(m: Manifest<any, any>): void {
   const self = m.instance
   if (!self)
     throw new Error('element must be mounted before rendering')
-  const outer = gCurrent
+  const managingOuter = gManagingParent   // remember
+  const renderingOuter = gRenderingParent // remember
   try {
-    gCurrent = m
+    gManagingParent = gRenderingParent = m
     self.pending = []
     if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.instance!.level))}${getManifestTraceHint(m)}.render/${m.instance?.revision}${m.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
@@ -82,25 +86,26 @@ export function render(m: Manifest<any, any>): void {
     renderChildrenNow() // ignored if rendered already
   }
   finally {
-    gCurrent = outer
+    gRenderingParent = renderingOuter // restore
+    gManagingParent = managingOuter   // restore
   }
 }
 
 function superRender(options: any): any {
-  const c = gCurrent
-  const native = c.instance?.native
+  const m = gManagingParent
+  const native = m.instance?.native
   if (!native)
     throw new Error('element must be mounted before rendering')
-  c.render(native, options)
+  m.render(native, options)
   return options
 }
 
 export function renderChildrenNow(): void {
-  const c = gCurrent
-  if (c.rtti.sorting)
-    reconcileSortedChildren(c)
+  const m = gManagingParent
+  if (m.rtti.sorting)
+    reconcileSortedChildren(m)
   else
-    reconcileOrdinaryChildren(c)
+    reconcileOrdinaryChildren(m)
 }
 
 export function unmount(m: Manifest<any, any>, owner: Manifest, cause: Manifest): void {
@@ -113,24 +118,52 @@ export function unmount(m: Manifest<any, any>, owner: Manifest, cause: Manifest)
   m.instance = undefined
 }
 
+// export function useAnotherManagingParent<E>(m: Manifest<E>, render: Render<E>): void {
+//   const native = m.instance?.native
+//   if (native) {
+//     const outer = gManagingParent
+//     try {
+//       gManagingParent = m
+//       render(native)
+//     }
+//     finally {
+//       gManagingParent = outer
+//     }
+//   }
+// }
+
+export function useAnotherRenderingParent<E>(m: Manifest<E>, render: Render<E>): void {
+  const native = m.instance?.native
+  if (native) {
+    const outer = gRenderingParent
+    try {
+      gRenderingParent = m
+      render(native)
+    }
+    finally {
+      gRenderingParent = outer
+    }
+  }
+}
+
 // selfInstance, revision, trace, forAll
 
 export function selfInstance<T>(): { model?: T } {
-  const self = gCurrent.instance
+  const self = gManagingParent.instance
   if (!self)
     throw new Error('instance function can be called only inside rendering function')
   return self
 }
 
 export function selfInstanceInternal<E>(): Instance<E> {
-  const self = gCurrent.instance
+  const self = gManagingParent.instance
   if (!self)
     throw new Error('getMountedInstance function can be called only inside rendering function')
   return self
 }
 
 export function selfRevision(): number {
-  return gCurrent.instance?.revision ?? 0
+  return gManagingParent.instance?.revision ?? 0
 }
 
 export function trace(enabled: boolean, mask: string, regexp: string): void {
@@ -139,7 +172,7 @@ export function trace(enabled: boolean, mask: string, regexp: string): void {
 }
 
 export function forAll<E>(action: (e: E) => void): void {
-  forEachChildRecursively(RootManifest, action)
+  forEachChildRecursively(ROOT, action)
 }
 
 // Internal
@@ -330,16 +363,22 @@ function forEachChildRecursively(m: Manifest, action: (e: any) => void): void {
   }
 }
 
-const RootManifest = new Manifest<any, any>(
+const ROOT = new Manifest<any, any>(
   'root',                           // id
   RefreshParent,                    // state
   () => { /* nop */ },              // render
   undefined,                        // override
   { name: 'root', sorting: false }, // rtti
-  undefined,                        // native parent
+  {} as Manifest,                   // managing parent
+  {} as Manifest,                   // rendering parent
   new Instance(0),                  // instance
 )
+// Initialize
+const ROOT_AS_ANY = ROOT as any
+ROOT_AS_ANY['managingParent'] = ROOT
+ROOT_AS_ANY['renderingParent'] = ROOT
 
-let gCurrent: Manifest<any, any> = RootManifest
+let gManagingParent: Manifest<any, any> = ROOT
+let gRenderingParent: Manifest<any, any> = ROOT
 let gTrace: string | undefined = undefined
 let gTraceMask: string = 'r'

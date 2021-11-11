@@ -6,20 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Reactronic } from 'reactronic'
-import { render, unmount, Manifest, Rtti, forAll, Render } from '../core/api'
-
-export function spoofNativeParent<E>(m: Manifest<E>, render: Render<E>): void {
-  const native = m.instance?.native
-  if (native) {
-    const outer = AbstractHtmlRtti.current
-    try {
-      render(native)
-    }
-    finally {
-      AbstractHtmlRtti.current = outer
-    }
-  }
-}
+import { render, unmount, Manifest, Rtti, forAll } from '../core/api'
 
 export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any> {
   static isDebugAttributeEnabled: boolean = false
