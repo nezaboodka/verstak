@@ -6,9 +6,10 @@
 // automatically licensed under the license referred above.
 
 import { options, reaction, TraceLevel, transaction } from 'reactronic'
-import { DataForSensor, EmptyDataArray, grabElementData } from './DataForSensor'
+import { EmptyDataArray, grabElementData } from './DataForSensor'
 import { DragStage } from './DragSensor'
-import { SymDataForSensor } from './HtmlApiExt'
+import { SymDataForSensor, TypedDataForSensor } from './HtmlApiExt'
+import { DragSourceStage, HtmlDragSensorModel } from './HtmlDragSensorModel'
 import { HtmlElementSensor } from './HtmlElementSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
@@ -20,48 +21,18 @@ export class HtmlDragSensor extends HtmlElementSensor {
   private eventClientX: number
   private eventClientY: number
   private eventModifiers: KeyboardModifiers
-  private eventElementDataList: unknown[]
-  stage: DragStage
-  originData: any
-  draggingData: any
-  dropEffect: DropEffect
-  effectAllowed: DragEffectAllowed
-  dropAllowed: boolean
-  modifiers: KeyboardModifiers
-  startX: number // position relative to browser's viewport
-  startY: number // position relative to browser's viewport
-  positionX: number // position relative to browser's viewport
-  positionY: number // position relative to browser's viewport
-  dropX: number // position relative to browser's viewport
-  dropY: number // position relative to browser's viewport
-  dropped: boolean
-  elementDataUnderPointer: unknown[]
+  dragSource: HtmlDragSensorModel | undefined
+  dragTarget: HtmlDragSensorModel | undefined
+  previousDragTarget: HtmlDragSensorModel | undefined
 
   constructor(window: WindowSensor) {
     super(window)
     this.eventClientX = Infinity
     this.eventClientY = Infinity
     this.eventModifiers = KeyboardModifiers.None
-    this.eventElementDataList = EmptyDataArray
-    this.stage = DragStage.Finished
-    this.originData = undefined
-    this.draggingData = undefined
-    this.dropEffect = 'none'
-    this.effectAllowed = 'uninitialized'
-    this.dropAllowed = false
-    this.modifiers = KeyboardModifiers.None
-    this.startX = Infinity
-    this.startY = Infinity
-    this.positionX = Infinity
-    this.positionY = Infinity
-    this.dropX = Infinity
-    this.dropY = Infinity
-    this.dropped = false
-    this.elementDataUnderPointer = EmptyDataArray
-  }
-
-  get topElementDataUnderPointer(): unknown {
-    return this.elementDataUnderPointer.length > 0 ? this.elementDataUnderPointer[0] : undefined
+    this.dragSource = undefined
+    this.dragTarget = undefined
+    this.previousDragTarget = undefined
   }
 
   @transaction
@@ -97,7 +68,6 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   protected onDrag(e: DragEvent): void {
     this.dragging(e)
-    this.setPreventDefaultOnDropAllowed(e)
   }
 
   protected onDragEnter(e: DragEvent): void {
@@ -110,7 +80,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   protected onDragOver(e: DragEvent): void {
     this.draggingOver(e)
-    this.setPreventDefaultOnDropAllowed(e)
+    this.updateEventOnDropAllowed(e)
   }
 
   protected onDrop(e: DragEvent): void {
@@ -128,32 +98,50 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     const { data: elementDataUnderPointer, window } = grabElementData(elements, SymDataForSensor, 'htmlDrag', EmptyDataArray)
-    const originData = elementDataUnderPointer[0] as DataForSensor | undefined
-    if (originData) {
-      this.stage = DragStage.Started
-      this.originData = originData
-      this.elementDataUnderPointer = elementDataUnderPointer
-      this.startX = e.clientX
-      this.startY = e.clientY
-      const path = e.composedPath()
-      this.elementDataList = grabElementData(path, SymDataForSensor, 'htmlDrag', EmptyDataArray).data
-      this.modifiers = extractModifierKeys(e)
-      this.positionX = e.clientX
-      this.positionY = e.clientY
-      this.dropped = false
+    const dataForSensor = elementDataUnderPointer[0] as TypedDataForSensor | undefined
+    const dragSource = dataForSensor?.htmlDrag
+    if (dragSource) {
+      dragSource.sourceStage = DragSourceStage.Started
+      dragSource.startX = e.clientX
+      dragSource.startY = e.clientY
+      dragSource.modifiers = extractModifierKeys(e)
+      dragSource.positionX = e.clientX
+      dragSource.positionY = e.clientY
+      dragSource.dropped = false
       this.revision++
     }
+    this.dragSource = dragSource
+    this.dragTarget = undefined
+    this.previousDragTarget = undefined
     this.window?.setActiveWindow(window)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected dragging(e: DragEvent): void {
-    this.stage = DragStage.Dragging
+    if (this.dragSource) {
+      this.dragSource.sourceStage = DragSourceStage.Dragging
+      this.revision++
+    }
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected finishDragging(e: DragEvent): void {
+    const dragSource = this.dragSource
+    if (dragSource) {
+      dragSource.sourceStage = DragSourceStage.Finished
+      this.revision++
+    }
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected draggingEnter(e: DragEvent): void {
-    this.stage = DragStage.Dragging
+    const window = this.updateDragTarget(e)
+    this.updateDragTargetData(e)
+    if (this.dragTarget) {
+      this.dragTarget.draggingOver = true
+      this.dragTarget.dropped = false
+    }
+    this.window?.setActiveWindow(window)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
@@ -163,77 +151,87 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected draggingOver(e: DragEvent): void {
-    this.preventDefault = false
-    this.stopPropagation = false
-    const path = e.composedPath()
-    this.eventElementDataList = grabElementData(path, SymDataForSensor, 'htmlDrag', this.elementDataList).data
-    this.eventModifiers = extractModifierKeys(e)
-    this.eventClientX = e.clientX
-    this.eventClientY = e.clientY
-    this.stage = DragStage.Dragging
-  }
-
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected drop(e: DragEvent): void {
-    this.updateSensorData(e)
-    this.stage = DragStage.Dropped
-    this.dropX = e.clientX
-    this.dropY = e.clientY
-    this.dropped = true
-  }
-
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected finishDragging(e: DragEvent): void {
-    this.updateSensorData(e)
-    this.stage = DragStage.Finished
-  }
-
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected updateEventOnDragStart(e: DragEvent): void {
-    const d = e.dataTransfer
-    if (d) {
-      d.dropEffect = this.dropEffect
-      d.effectAllowed = this.effectAllowed
+    this.updateDragTarget(e)
+    this.updateDragTargetData(e)
+    if (this.dragTarget) {
+      this.dragTarget.draggingOver = true
+      this.dragTarget.dropped = false
     }
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  protected setPreventDefaultOnDropAllowed(e: DragEvent): void {
-    if (this.dropAllowed)
+  protected drop(e: DragEvent): void {
+    this.updateDragTarget(e)
+    this.updateDragTargetData(e)
+    if (this.dragTarget) {
+      this.dragTarget.draggingOver = true
+      this.dragTarget.dropped = true
+    }
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected updateEventOnDragStart(e: DragEvent): void {
+    const data = e.dataTransfer
+    const dragSource = this.dragSource
+    if (data && dragSource) {
+      data.dropEffect = dragSource.dropEffect
+      data.effectAllowed = dragSource.effectAllowed
+    }
+  }
+
+  @transaction @options({ trace: TraceLevel.Suppress })
+  protected updateEventOnDropAllowed(e: DragEvent): void {
+    if (this.dragTarget?.dropAllowed)
       e.preventDefault()
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected reset(): void {
-    this.dropEffect = 'none'
-    this.effectAllowed = 'uninitialized'
-    this.dropAllowed = false
-    this.stage = DragStage.Finished
-    this.originData = undefined
-    this.draggingData = undefined
-    this.modifiers = KeyboardModifiers.None
-    this.startX = Infinity
-    this.startY = Infinity
-    this.positionX = Infinity
-    this.positionY = Infinity
-    this.dropX = Infinity
-    this.dropY = Infinity
-    this.dropped = false
-    this.elementDataUnderPointer = EmptyDataArray
+    this.eventClientX = Infinity
+    this.eventClientY = Infinity
+    this.eventModifiers = KeyboardModifiers.None
+    const dragSource = this.dragSource
+    if (dragSource)
+      dragSource.reset()
+    const dragTarget = this.dragTarget
+    if (dragTarget && dragTarget !== dragSource)
+      dragTarget.reset()
+    const previousDragTarget = this.previousDragTarget
+    if (previousDragTarget && previousDragTarget !== dragTarget)
+      previousDragTarget.reset()
+    this.dragSource = undefined
+    this.dragTarget = undefined
+    this.previousDragTarget = undefined
     this.elementDataList = EmptyDataArray
   }
 
-  protected updateSensorData(e: DragEvent): void {
-    this.preventDefault = false
-    this.stopPropagation = false
-    const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.elementDataUnderPointer = grabElementData(elements, SymDataForSensor, 'htmlDrag', this.elementDataUnderPointer).data
+  protected updateDragTarget(e: DragEvent): unknown {
     const path = e.composedPath()
     this.elementDataList = grabElementData(path, SymDataForSensor, 'htmlDrag', this.elementDataList).data
-    this.modifiers = extractModifierKeys(e)
-    this.positionX = e.clientX
-    this.positionY = e.clientY
-    this.revision++
+    const elements = document.elementsFromPoint(e.clientX, e.clientY)
+    const { data: elementDataUnderPointer, window } = grabElementData(elements, SymDataForSensor, 'htmlDrag', EmptyDataArray)
+    const dataForSensor = elementDataUnderPointer[0] as TypedDataForSensor | undefined
+    const dragTarget = dataForSensor?.htmlDrag
+    if (dragTarget !== this.dragTarget) {
+      this.previousDragTarget = this.dragTarget
+      this.dragTarget = dragTarget
+      const dragSource = this.dragSource
+      if (dragSource && dragTarget) {
+        dragTarget.startX = dragSource.startX
+        dragTarget.startY = dragSource.startY
+      }
+    }
+    return window
+  }
+
+  protected updateDragTargetData(e: DragEvent): void {
+    const dragTarget = this.dragTarget
+    const dragSource = this.dragSource
+    if (dragSource && dragTarget) {
+      dragTarget.immediateModifiers = extractModifierKeys(e)
+      dragTarget.immediatePositionX = e.clientX
+      dragTarget.immediatePositionY = e.clientY
+    }
   }
 
   @reaction @options({ throttling: 0 })

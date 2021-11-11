@@ -5,6 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
+import { HtmlDragSensorModel } from './HtmlDragSensorModel'
+
 export interface TypedDataForSensor {
   window?: unknown
   focus?: unknown
@@ -14,7 +16,7 @@ export interface TypedDataForSensor {
   wheel?: unknown
   resize?: unknown
   drag?: unknown
-  htmlDrag?: unknown
+  htmlDrag?: HtmlDragSensorModel
   button?: unknown
 }
 

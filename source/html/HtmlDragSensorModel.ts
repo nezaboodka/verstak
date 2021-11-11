@@ -22,6 +22,8 @@ export class HtmlDragSensorModel extends ObservableObject {
   @unobservable private dataByFormat: Map<string, unknown>
   @unobservable dropEffect: DropEffect
   sourceStage: DragSourceStage
+  startX: number // position relative to browser's viewport
+  startY: number // position relative to browser's viewport
 
   @unobservable targetId: string | undefined
   @unobservable dataTypesAllowed: string[]
@@ -30,14 +32,16 @@ export class HtmlDragSensorModel extends ObservableObject {
   draggingOver: boolean
   draggingDataType: string | undefined
   draggingData: string | undefined
-  modifiers: KeyboardModifiers
-  startX: number // position relative to browser's viewport
-  startY: number // position relative to browser's viewport
   positionX: number // position relative to browser's viewport
   positionY: number // position relative to browser's viewport
+  modifiers: KeyboardModifiers
   dropX: number // position relative to browser's viewport
   dropY: number // position relative to browser's viewport
   dropped: boolean
+
+  immediatePositionX: number // position relative to browser's viewport
+  immediatePositionY: number // position relative to browser's viewport
+  immediateModifiers: KeyboardModifiers
 
   constructor() {
     super()
@@ -52,14 +56,17 @@ export class HtmlDragSensorModel extends ObservableObject {
     this.draggingOver = false
     this.draggingDataType = undefined
     this.draggingData = undefined
-    this.modifiers = KeyboardModifiers.None
     this.startX = Infinity
     this.startY = Infinity
     this.positionX = Infinity
     this.positionY = Infinity
+    this.modifiers = KeyboardModifiers.None
     this.dropX = Infinity
     this.dropY = Infinity
     this.dropped = false
+    this.immediatePositionX = Infinity
+    this.immediatePositionY = Infinity
+    this.immediateModifiers = KeyboardModifiers.None
   }
 
   getData(format: string): unknown {
@@ -77,8 +84,7 @@ export class HtmlDragSensorModel extends ObservableObject {
       this.dataByFormat.clear()
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
-  protected reset(): void {
+  reset(): void {
     this.dataByFormat.clear()
     this.dropEffect = 'none'
     this.effectAllowed = 'uninitialized'
