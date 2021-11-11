@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Reactronic } from 'reactronic'
-import { render, unmount, Manifest, Rtti, forAll } from '../core/api'
+import { render, unmount, Manifest, Rtti, forAll, manifest } from '../core/api'
 
 export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any> {
   static isDebugAttributeEnabled: boolean = false
@@ -17,29 +17,27 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
   }
 
   render(m: Manifest<E, any>): void {
-    const outer = AbstractHtmlRtti.current
+    const self = m.instance! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const native = self.native!
+    const outer = AbstractHtmlRtti.gRenderingContext
     try { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const self = m.instance! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const native = self.native!
-      AbstractHtmlRtti.current = native // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}render(${e.id} r${ref.mounted!.cycle})`)
+      AbstractHtmlRtti.gRenderingContext = m // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}render(${e.id} r${ref.mounted!.cycle})`)
       render(m) // proceed
-
       // TODO: native.sensorData.drag handling?
-
       AbstractHtmlRtti.blinkingEffect && blink(native, self.revision)
       if (AbstractHtmlRtti.isDebugAttributeEnabled)
         native.setAttribute('rdbg', `${self.revision}:    ${Reactronic.why()}`)
     }
     finally {
-      AbstractHtmlRtti.current = outer
+      AbstractHtmlRtti.gRenderingContext = outer
     }
   }
 
-  mount(m: Manifest<E, any>, owner: Manifest, sibling?: Manifest): void {
-    const parent = owner.instance?.native as Element ?? AbstractHtmlRtti.current // TODO: To get rid of this workaround
+  mount(m: Manifest<E, any>, sibling?: Manifest): void {
+    const parent = m.renderingParent.instance?.native as Element ?? global.document.body // TODO: Get rid of document.body here
     const native = this.createElement(m) // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     native.id = m.id // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}${parent.id}.appendChild(${e.id} r${ref.mounted!.cycle})`)
-    if (!owner.rtti.sorting) {
+    if (!m.managingParent.rtti.sorting) {
       if (sibling !== undefined) {
         const prev = sibling.instance?.native
         if (prev instanceof Element)
@@ -56,8 +54,8 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
 
   protected abstract createElement(m: Manifest<E, any>): E
 
-  reorder(m: Manifest<E, any>, owner: Manifest, sibling?: Manifest): void {
-    const parent = owner.instance?.native as Element ?? AbstractHtmlRtti.current // TODO: To get rid of this workaround
+  reorder(m: Manifest<E, any>, sibling?: Manifest): void {
+    const parent = m.renderingParent.instance?.native as Element ?? global.document.body // TODO: Get rid of document.body here
     const prev = sibling?.instance?.native
     const native = m.instance?.native
     if (native && prev instanceof Element && prev.nextSibling !== native) { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -66,7 +64,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     }
   }
 
-  unmount(m: Manifest<E, any>, owner: Manifest, cause: Manifest): void {
+  unmount(m: Manifest<E, any>, cause: Manifest): void {
     const self = m.instance
     const native = self?.native
     if (!AbstractHtmlRtti.unmounting && native && native.parentElement) {
@@ -74,7 +72,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
       try { // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}${e.parentElement.id}.removeChild(${e.id} r${ref.mounted!.cycle})`)
         self?.resizeObserver?.unobserve(native)
         native.remove()
-        unmount(m, owner, cause) // proceed
+        unmount(m, cause) // proceed
       }
       finally {
         AbstractHtmlRtti.unmounting = undefined
@@ -83,11 +81,16 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     else { // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}???.unmount(${ref.id} r${ref.mounted!.cycle})`)
       if (native)
         self?.resizeObserver?.unobserve(native)
-      unmount(m, owner, cause) // proceed
+      unmount(m, cause) // proceed
     }
   }
 
-  static current: Element = global.document?.body
+  static gRenderingContext: Manifest<any, any> = manifest(
+    'global.document.body',
+    undefined,
+    () => { /* nop */ },
+    undefined,
+    { name: 'global.document.body', sorting: false })
   static unmounting?: Element = undefined
 
   private static _blinkingEffect: string | undefined = undefined
