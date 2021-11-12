@@ -39,16 +39,16 @@ export class HtmlDragSensorModel extends ObservableObject {
   immediatePositionY: number // position relative to browser's viewport
   immediateModifiers: KeyboardModifiers
 
-  constructor(sourceId: string = '', targetId: string = '') {
+  constructor() {
     super()
-    this.sourceId = sourceId
+    this.sourceId = undefined
     this.dataByFormat = new Map<string, unknown>()
     this.dropEffect = 'none'
     this.started = false
     this.finished = false
     this.startX = Infinity
     this.startY = Infinity
-    this.targetId = targetId
+    this.targetId = undefined
     this.dataTypesAllowed = []
     this.effectAllowed = 'uninitialized'
     this.dropAllowed = false
