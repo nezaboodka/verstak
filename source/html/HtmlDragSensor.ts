@@ -5,31 +5,21 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, TraceLevel, transaction } from 'reactronic'
+import { options, TraceLevel, transaction } from 'reactronic'
 import { EmptyDataArray, grabElementData } from './DataForSensor'
-import { DragStage } from './DragSensor'
 import { SymDataForSensor, TypedDataForSensor } from './HtmlApiExt'
-import { DragSourceStage, HtmlDragSensorModel } from './HtmlDragSensorModel'
+import { HtmlDragSensorModel } from './HtmlDragSensorModel'
 import { HtmlElementSensor } from './HtmlElementSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
 
-export type DragEffectAllowed = 'none' | 'copy' | 'copyLink' | 'copyMove' | 'link' | 'linkMove' | 'move' | 'all' | 'uninitialized'
-export type DropEffect = 'none' | 'copy' | 'link' | 'move'
-
 export class HtmlDragSensor extends HtmlElementSensor {
-  private eventClientX: number
-  private eventClientY: number
-  private eventModifiers: KeyboardModifiers
   dragSource: HtmlDragSensorModel | undefined
   dragTarget: HtmlDragSensorModel | undefined
   previousDragTarget: HtmlDragSensorModel | undefined
 
   constructor(window: WindowSensor) {
     super(window)
-    this.eventClientX = Infinity
-    this.eventClientY = Infinity
-    this.eventModifiers = KeyboardModifiers.None
     this.dragSource = undefined
     this.dragTarget = undefined
     this.previousDragTarget = undefined
@@ -101,7 +91,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     const dataForSensor = elementDataUnderPointer[0] as TypedDataForSensor | undefined
     const dragSource = dataForSensor?.htmlDrag
     if (dragSource) {
-      dragSource.sourceStage = DragSourceStage.Started
+      dragSource.started = true
       dragSource.startX = e.clientX
       dragSource.startY = e.clientY
       dragSource.modifiers = extractModifierKeys(e)
@@ -118,8 +108,9 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected dragging(e: DragEvent): void {
-    if (this.dragSource) {
-      this.dragSource.sourceStage = DragSourceStage.Dragging
+    const dragSource = this.dragSource
+    if (dragSource) {
+      dragSource.started = true
       this.revision++
     }
   }
@@ -128,7 +119,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
   protected finishDragging(e: DragEvent): void {
     const dragSource = this.dragSource
     if (dragSource) {
-      dragSource.sourceStage = DragSourceStage.Finished
+      dragSource.finished = true
       this.revision++
     }
   }
@@ -136,9 +127,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected draggingEnter(e: DragEvent): void {
     const window = this.updateDragTarget(e)
-    this.updateDragTargetData(e)
     if (this.dragTarget) {
-      this.dragTarget.draggingOver = true
       this.dragTarget.dropped = false
     }
     this.window?.setActiveWindow(window)
@@ -152,9 +141,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected draggingOver(e: DragEvent): void {
     this.updateDragTarget(e)
-    this.updateDragTargetData(e)
     if (this.dragTarget) {
-      this.dragTarget.draggingOver = true
       this.dragTarget.dropped = false
     }
   }
@@ -162,9 +149,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected drop(e: DragEvent): void {
     this.updateDragTarget(e)
-    this.updateDragTargetData(e)
     if (this.dragTarget) {
-      this.dragTarget.draggingOver = true
       this.dragTarget.dropped = true
     }
   }
@@ -187,9 +172,6 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected reset(): void {
-    this.eventClientX = Infinity
-    this.eventClientY = Infinity
-    this.eventModifiers = KeyboardModifiers.None
     const dragSource = this.dragSource
     if (dragSource)
       dragSource.reset()
@@ -211,49 +193,62 @@ export class HtmlDragSensor extends HtmlElementSensor {
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     const { data: elementDataUnderPointer, window } = grabElementData(elements, SymDataForSensor, 'htmlDrag', EmptyDataArray)
     const dataForSensor = elementDataUnderPointer[0] as TypedDataForSensor | undefined
+    const dragSource = this.dragSource
     const dragTarget = dataForSensor?.htmlDrag
     if (dragTarget !== this.dragTarget) {
       this.previousDragTarget = this.dragTarget
       this.dragTarget = dragTarget
-      const dragSource = this.dragSource
       if (dragSource && dragTarget) {
-        dragTarget.startX = dragSource.startX
-        dragTarget.startY = dragSource.startY
+        dragTarget.draggingOver = true
+        let draggingDataTypes = dragTarget.draggingDataTypes
+        const types = e.dataTransfer?.types
+        if (types) {
+          if (!areEqualArrays(types, draggingDataTypes)) {
+            draggingDataTypes = new Array<string>()
+            for (let i = 0; i < types.length; i++)
+              draggingDataTypes.push(types[i])
+            dragTarget.draggingDataTypes = draggingDataTypes
+          }
+        }
+        if (dragTarget !== dragSource) {
+          dragTarget.startX = dragSource.startX
+          dragTarget.startY = dragSource.startY
+        }
       }
     }
-    return window
-  }
-
-  protected updateDragTargetData(e: DragEvent): void {
-    const dragTarget = this.dragTarget
-    const dragSource = this.dragSource
     if (dragSource && dragTarget) {
       dragTarget.immediateModifiers = extractModifierKeys(e)
       dragTarget.immediatePositionX = e.clientX
       dragTarget.immediatePositionY = e.clientY
     }
-  }
-
-  @reaction @options({ throttling: 0 })
-  protected whenDragging(): void {
-    const stage = this.stage
-    if (stage === DragStage.Dragging) {
-      const clientX = this.eventClientX
-      const clientY = this.eventClientY
-      this.positionX = clientX
-      this.positionY = clientY
-      this.modifiers = this.eventModifiers
-      this.elementDataList = this.eventElementDataList
-      if (clientX !== Infinity && clientY !== Infinity) {
-        const elements = document.elementsFromPoint(clientX, clientY)
-        this.elementDataUnderPointer = grabElementData(elements, SymDataForSensor, 'htmlDrag', this.elementDataUnderPointer).data
+    const previousDragTarget = this.previousDragTarget
+    if (previousDragTarget && previousDragTarget !== dragTarget) {
+      previousDragTarget.draggingOver = false
+      previousDragTarget.draggingDataTypes = []
+      previousDragTarget.draggingDataType = undefined
+      previousDragTarget.draggingData = undefined
+      previousDragTarget.dropped = false
+      if (previousDragTarget !== dragSource) {
+        previousDragTarget.startX = Infinity
+        previousDragTarget.startY = Infinity
       }
-      this.revision++
     }
+    return window
   }
 
   // @reaction
   // protected debug(): void {
   //   console.log(`HtmlDragSensor: stage = ${DragStage[this.stage]}, originData = ${this.originData}, draggingData = ${this.draggingData}, start = (${this.startX}, ${this.startY}), pos = (${this.positionX}, ${this.positionY}, revision = ${this.revision})`)
   // }
+}
+
+function areEqualArrays(array1: readonly string[], array2: string[]): boolean {
+  let result = true
+  for (let i = 0; i < array1.length; i++) {
+    if (array1[i] !== array2[i]) {
+      result = false
+      break
+    }
+  }
+  return result
 }
