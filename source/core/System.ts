@@ -123,7 +123,7 @@ export function unmount(m: Manifest<any, any>, cause: Manifest): void {
   m.instance = undefined
 }
 
-export function useAnotherParentForNativeDom<E>(m: Manifest<E>, render: Render<E>): void {
+export function useAnotherRenderingParent<E>(m: Manifest<E>, render: Render<E>): void {
   const native = m.instance?.native
   if (native) {
     const outer = gRenderingParent
@@ -137,7 +137,7 @@ export function useAnotherParentForNativeDom<E>(m: Manifest<E>, render: Render<E
   }
 }
 
-export function useAnotherParentForReactions<E>(m: Manifest<E>, render: Render<E>): void {
+export function useAnotherReactivityParent<E>(m: Manifest<E>, render: Render<E>): void {
   const native = m.instance?.native
   if (native) {
     const outer = gReactivityParent
@@ -151,7 +151,7 @@ export function useAnotherParentForReactions<E>(m: Manifest<E>, render: Render<E
   }
 }
 
-// selfInstance, revision, trace, forAll
+// selfInstance, selfRevision, trace, forAll
 
 export function selfInstance<T>(): { model?: T } {
   const self = gParent.instance
