@@ -60,12 +60,12 @@ export function manifest<E = unknown, O = void>(
     throw new Error('element must be mounted before children')
   const m = new Manifest<any, any>(id, args, render, superRender, rtti, p1, p2, p3)
   if (self !== ROOT.instance) {
-    if (self.pending === undefined)
+    if (self.updates === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    self.pending.push(m)
+    self.updates.push(m)
   }
   else { // render root immediately
-    self.pending = [m]
+    self.updates = [m]
     Transaction.run(renderChildrenNow)
   }
   return m
@@ -80,7 +80,7 @@ export function render(m: Manifest<any, any>): void {
   const rOuter = gReactionParent // remember
   try {
     gParent = gMountingParent = gReactionParent = m
-    self.pending = []
+    self.updates = []
     if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.instance!.level))}${getManifestTraceHint(m)}.render/${m.instance?.revision}${m.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
     if (m.superRender)
@@ -190,9 +190,10 @@ class Instance<E = unknown, O = void> {
   revision: number = 0
   native?: E = undefined
   model?: unknown = undefined
+  updates: Array<Manifest> | undefined = undefined
   children: ReadonlyArray<Manifest> = EMPTY
-  pending: Array<Manifest> | undefined = undefined
-  nephews: ReadonlyArray<Manifest> = EMPTY
+  mountingNephews: ReadonlyArray<Manifest> = EMPTY
+  reactionNephews: ReadonlyArray<Manifest> = EMPTY
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
@@ -248,10 +249,10 @@ function callUnmount(m: Manifest, cause: Manifest): void {
 
 function reconcileOrdinaryChildren(m: Manifest): void {
   const self = m.instance
-  if (self !== undefined && self.pending !== undefined) {
-    const buffer = self.pending
-    const children = buffer.slice().sort(compareManifests)
-    self.pending = undefined
+  if (self !== undefined && self.updates !== undefined) {
+    const updates = self.updates
+    const children = updates.slice().sort(compareManifests)
+    self.updates = undefined
     // Unmount or resolve existing
     let sibling: Manifest | undefined = undefined
     let i = 0, j = 0
@@ -265,7 +266,7 @@ function reconcileOrdinaryChildren(m: Manifest): void {
         if (diff === 0) {
           x.instance = existing.instance // reuse existing instance for re-rendering
           if (x.args !== RefreshParent && argsAreEqual(x.args, existing.args))
-            x = x.annex = children[j] = existing // skip re-rendering and preserve existing token
+            x = x.annex = children[j] = existing // skip re-rendering and preserve existing manifest
           i++, j++
         }
         else // diff < 0
@@ -277,7 +278,7 @@ function reconcileOrdinaryChildren(m: Manifest): void {
     }
     // Mount and render
     sibling = undefined
-    for (let x of buffer) {
+    for (let x of updates) {
       const existing = x.annex
       x = existing ?? x
       const mounted = x.instance ?? callMount(x, sibling)
@@ -294,14 +295,14 @@ function reconcileOrdinaryChildren(m: Manifest): void {
 
 function reconcileSortedChildren(m: Manifest): void {
   const self = m.instance
-  if (self !== undefined && self.pending !== undefined) {
-    const children = self.pending.sort(compareManifests)
-    self.pending = undefined
+  if (self !== undefined && self.updates !== undefined) {
+    const updates = self.updates.sort(compareManifests)
+    self.updates = undefined
     let sibling: Manifest | undefined = undefined
     let i = 0, j = 0
-    while (i < self.children.length || j < children.length) {
+    while (i < self.children.length || j < updates.length) {
       const existing = self.children[i]
-      let x = children[j]
+      let x = updates[j]
       const diff = compareNullable(x, existing, compareManifests)
       if (diff <= 0) {
         if (sibling !== undefined && x.id === sibling.id)
@@ -309,7 +310,7 @@ function reconcileSortedChildren(m: Manifest): void {
         if (diff === 0) { // diff === 0
           x.instance = existing.instance // reuse existing instance for re-rendering
           if (x.args !== RefreshParent && argsAreEqual(x.args, existing.args))
-            x = children[j] = existing // skip re-rendering and preserve existing token
+            x = updates[j] = existing // skip re-rendering and preserve existing manifest
           i++, j++
         }
         else // diff < 0
@@ -320,7 +321,7 @@ function reconcileSortedChildren(m: Manifest): void {
       else // diff > 0
         callUnmount(existing, existing), i++
     }
-    self.children = children
+    self.children = updates
   }
 }
 
