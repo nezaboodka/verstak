@@ -19,9 +19,9 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
   render(m: Manifest<E, any>): void {
     const self = m.instance! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const native = self.native!
-    const outer = AbstractHtmlRtti.gContext
+    const outer = AbstractHtmlRtti.gNativeParent
     try { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      AbstractHtmlRtti.gContext = m // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}render(${e.id} r${ref.mounted!.cycle})`)
+      AbstractHtmlRtti.gNativeParent = m // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}render(${e.id} r${ref.mounted!.cycle})`)
       render(m) // proceed
       // TODO: native.sensorData.drag handling?
       AbstractHtmlRtti.blinkingEffect && blink(native, self.revision)
@@ -29,7 +29,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
         native.setAttribute('rdbg', `${self.revision}:    ${Reactronic.why()}`)
     }
     finally {
-      AbstractHtmlRtti.gContext = outer
+      AbstractHtmlRtti.gNativeParent = outer
     }
   }
 
@@ -85,7 +85,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     }
   }
 
-  static gContext: Manifest<any, any> = manifest(
+  static gNativeParent: Manifest<any, any> = manifest(
     'global.document.body',
     undefined,
     () => { /* nop */ },
