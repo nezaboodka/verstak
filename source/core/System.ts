@@ -27,8 +27,8 @@ export class Manifest<E = unknown, O = void> {
     readonly reactivityParent: Manifest,
     public instance?: Instance<E>) {
   }
-  annex?: Manifest<E, O>
 
+  annex?: Manifest<E, O>
   get native(): E | undefined { return this.instance?.native }
 
   static createRoot(id: string, native: unknown): Manifest {
