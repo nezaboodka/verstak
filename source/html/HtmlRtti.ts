@@ -37,7 +37,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     const parent = m.mountingParent.instance?.native as Element ?? global.document.body // TODO: Get rid of document.body here
     const native = this.createElement(m) // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     native.id = m.id // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}${parent.id}.appendChild(${e.id} r${ref.mounted!.cycle})`)
-    if (!m.lifecycleParent.rtti.sorting) {
+    if (!m.parent.rtti.sorting) {
       if (sibling !== undefined) {
         const prev = sibling.instance?.native
         if (prev instanceof Element)
