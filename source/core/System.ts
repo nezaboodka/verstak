@@ -24,7 +24,7 @@ export class Manifest<E = unknown, O = void> {
     readonly rtti: Rtti<E, O>,
     readonly parent: Manifest,
     readonly mountingParent: Manifest,
-    readonly reactionParent: Manifest,
+    readonly reactingParent: Manifest,
     public instance?: Instance<E>) {
   }
   annex?: Manifest<E, O>
@@ -50,15 +50,15 @@ export function manifest<E = unknown, O = void>(
   id: string, args: unknown, render: Render<E, O>,
   superRender: SuperRender<O, E> | undefined,
   rtti: Rtti<E, O>, parent?: Manifest,
-  mountingParent?: Manifest, reactionParent?: Manifest): Manifest<E, O> {
+  mountingParent?: Manifest, reactingParent?: Manifest): Manifest<E, O> {
 
-  const p1 = parent ?? gParent
-  const p2 = mountingParent ?? gMountingParent
-  const p3 = reactionParent ?? gReactionParent
-  const self = p1.instance
+  const p = parent ?? gParent
+  const mp = mountingParent ?? gMountingParent
+  const rp = reactingParent ?? gReactingParent
+  const self = p.instance
   if (!self)
     throw new Error('element must be mounted before children')
-  const m = new Manifest<any, any>(id, args, render, superRender, rtti, p1, p2, p3)
+  const m = new Manifest<any, any>(id, args, render, superRender, rtti, p, mp, rp)
   if (self !== ROOT.instance) {
     if (self.updates === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -77,9 +77,9 @@ export function render(m: Manifest<any, any>): void {
     throw new Error('element must be mounted before rendering')
   const outer = gParent   // remember
   const mOuter = gMountingParent // remember
-  const rOuter = gReactionParent // remember
+  const rOuter = gReactingParent // remember
   try {
-    gParent = gMountingParent = gReactionParent = m
+    gParent = gMountingParent = gReactingParent = m
     self.updates = []
     if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.instance!.level))}${getManifestTraceHint(m)}.render/${m.instance?.revision}${m.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
@@ -90,7 +90,7 @@ export function render(m: Manifest<any, any>): void {
     renderChildrenNow() // ignored if rendered already
   }
   finally {
-    gReactionParent = rOuter // restore
+    gReactingParent = rOuter // restore
     gMountingParent = mOuter // restore
     gParent = outer   // restore
   }
@@ -137,16 +137,16 @@ export function useAnotherMountingParent<E>(m: Manifest<E>, render: Render<E>): 
   }
 }
 
-export function useAnotherReactionParent<E>(m: Manifest<E>, render: Render<E>): void {
+export function useAnotherReactingParent<E>(m: Manifest<E>, render: Render<E>): void {
   const native = m.instance?.native
   if (native) {
-    const outer = gReactionParent
+    const outer = gReactingParent
     try {
-      gReactionParent = m
+      gReactingParent = m
       render(native)
     }
     finally {
-      gReactionParent = outer
+      gReactingParent = outer
     }
   }
 }
@@ -192,8 +192,8 @@ class Instance<E = unknown, O = void> {
   model?: unknown = undefined
   updates: Array<Manifest> | undefined = undefined
   children: ReadonlyArray<Manifest> = EMPTY
-  mountingNephews: ReadonlyArray<Manifest> = EMPTY
-  reactionNephews: ReadonlyArray<Manifest> = EMPTY
+  mountedNephews: ReadonlyArray<Manifest> = EMPTY
+  reactedNephews: ReadonlyArray<Manifest> = EMPTY
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
@@ -385,10 +385,10 @@ const ROOT = new Manifest<any, any>(
 const ROOT_AS_ANY = ROOT as any
 ROOT_AS_ANY['parent'] = ROOT
 ROOT_AS_ANY['mountingParent'] = ROOT
-ROOT_AS_ANY['reactionParent'] = ROOT
+ROOT_AS_ANY['reactingParent'] = ROOT
 
 let gParent: Manifest<any, any> = ROOT
 let gMountingParent: Manifest<any, any> = ROOT
-let gReactionParent: Manifest<any, any> = ROOT
+let gReactingParent: Manifest<any, any> = ROOT
 let gTrace: string | undefined = undefined
 let gTraceMask: string = 'r'
