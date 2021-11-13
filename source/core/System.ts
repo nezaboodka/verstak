@@ -42,7 +42,7 @@ export class Manifest<E = unknown, O = void> {
       { } as Manifest,              // parent (lifecycle)
       { } as Manifest,              // rendering parent
       { } as Manifest,              // reactivity parent
-      self)                     // instance
+      self)                         // instance
     // Initialize
     const a: any = m
     a['parent'] = m
@@ -74,12 +74,12 @@ export function manifest<E = unknown, O = void>(
   renderingParent?: Manifest, reactivityParent?: Manifest): Manifest<E, O> {
 
   const p = parent ?? gParent
-  const p4nd = renderingParent ?? gRenderingParent
-  const p4r = reactivityParent ?? gReactivityParent
+  const p2 = renderingParent ?? gRenderingParent
+  const p3 = reactivityParent ?? gReactivityParent
   const self = p.instance
   if (!self)
     throw new Error('element must be mounted before children')
-  const m = new Manifest<any, any>(id, args, render, superRender, rtti, p, p4nd, p4r)
+  const m = new Manifest<any, any>(id, args, render, superRender, rtti, p, p2, p3)
   if (self.updates === undefined)
     throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   self.updates.push(m)
