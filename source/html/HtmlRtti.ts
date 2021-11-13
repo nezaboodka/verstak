@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Reactronic } from 'reactronic'
-import { render, unmount, Manifest, Rtti, forAll, manifest } from '../core/api'
+import { render, unmount, Manifest, Rtti, forAll } from '../core/api'
 
 export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any> {
   static isDebugAttributeEnabled: boolean = false
@@ -34,7 +34,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
   }
 
   mount(m: Manifest<E, any>, sibling?: Manifest): void {
-    const parent = m.renderingParent.instance?.native as Element ?? global.document.body // TODO: Get rid of document.body here
+    const parent = m.renderingParent.instance?.native as Element
     const native = this.createElement(m) // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     native.id = m.id // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}${parent.id}.appendChild(${e.id} r${ref.mounted!.cycle})`)
     if (!m.parent.rtti.sorting) {
@@ -55,7 +55,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
   protected abstract createElement(m: Manifest<E, any>): E
 
   reorder(m: Manifest<E, any>, sibling?: Manifest): void {
-    const parent = m.renderingParent.instance?.native as Element ?? global.document.body // TODO: Get rid of document.body here
+    const parent = m.renderingParent.instance?.native as Element
     const prev = sibling?.instance?.native
     const native = m.instance?.native
     if (native && prev instanceof Element && prev.nextSibling !== native) { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -64,6 +64,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     }
   }
 
+  static unmounting?: Element = undefined
   unmount(m: Manifest<E, any>, cause: Manifest): void {
     const self = m.instance
     const native = self?.native
@@ -85,13 +86,8 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     }
   }
 
-  static gNativeParent: Manifest<any, any> = manifest(
-    'global.document.body',
-    undefined,
-    () => { /* nop */ },
-    undefined,
-    { name: 'global.document.body', sorting: false })
-  static unmounting?: Element = undefined
+  static gNativeParent: Manifest<any, any> =
+    Manifest.createRoot('global.document.body', global.document.body)
 
   private static _blinkingEffect: string | undefined = undefined
   static set blinkingEffect(value: string | undefined) {

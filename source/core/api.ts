@@ -14,6 +14,7 @@ export {
   manifest,
   render,
   renderChildrenNow,
+  mount,
   unmount,
   selfInstance,
   selfRevision,

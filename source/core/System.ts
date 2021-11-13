@@ -30,6 +30,27 @@ export class Manifest<E = unknown, O = void> {
   annex?: Manifest<E, O>
 
   get native(): E | undefined { return this.instance?.native }
+
+  static createRoot(id: string, native: unknown): Manifest {
+    const self = new Instance(0)
+    const m = new Manifest(
+      id,                           // id
+      null,                         // args
+      () => { /* nop */ },          // render
+      undefined,                    // superRender
+      { name: id, sorting: false }, // rtti
+      { } as Manifest,              // parent (lifecycle)
+      { } as Manifest,              // rendering parent
+      { } as Manifest,              // reactivity parent
+      self)                     // instance
+    // Initialize
+    const a: any = m
+    a['parent'] = m
+    a['renderingParent'] = m
+    a['reactivityParent'] = m
+    self.native = native
+    return m
+  }
 }
 
 // Rtti
@@ -43,7 +64,7 @@ export interface Rtti<E = unknown, O = void> { // Run-Time Type Info
   unmount?(m: Manifest<E, O>, cause: Manifest): void
 }
 
-// manifest, render, renderChildrenNow, unmount
+// manifest, render, renderChildrenNow, mount, unmount, initializeNativeSubSystem
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 export function manifest<E = unknown, O = void>(
@@ -59,15 +80,9 @@ export function manifest<E = unknown, O = void>(
   if (!self)
     throw new Error('element must be mounted before children')
   const m = new Manifest<any, any>(id, args, render, superRender, rtti, p, p4nd, p4r)
-  if (self !== ROOT.instance) {
-    if (self.updates === undefined)
-      throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    self.updates.push(m)
-  }
-  else { // render root immediately
-    self.updates = [m]
-    Transaction.run(renderChildrenNow)
-  }
+  if (self.updates === undefined)
+    throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  self.updates.push(m)
   return m
 }
 
@@ -111,6 +126,10 @@ export function renderChildrenNow(): void {
     reconcileSortedChildren(m)
   else
     reconcileOrdinaryChildren(m)
+}
+
+export function mount(m: Manifest): void {
+  callMount(m)
 }
 
 export function unmount(m: Manifest<any, any>, cause: Manifest): void {
@@ -185,15 +204,13 @@ export function forAll<E>(action: (e: E) => void): void {
 const EMPTY: Array<Manifest> = []
 Object.freeze(EMPTY)
 
-class Instance<E = unknown, O = void> {
+export class Instance<E = unknown, O = void> {
   readonly level: number
   revision: number = 0
   native?: E = undefined
   model?: unknown = undefined
   updates: Array<Manifest> | undefined = undefined
   children: ReadonlyArray<Manifest> = EMPTY
-  mountedNephews: ReadonlyArray<Manifest> = EMPTY
-  reactedNephews: ReadonlyArray<Manifest> = EMPTY
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
@@ -370,23 +387,7 @@ function forEachChildRecursively(m: Manifest, action: (e: any) => void): void {
   }
 }
 
-const ROOT = new Manifest<any, any>(
-  'root',                           // id
-  RefreshParent,                    // state
-  () => { /* nop */ },              // render
-  undefined,                        // override
-  { name: 'root', sorting: false }, // rtti
-  {} as Manifest,                   // parent (lifecycle)
-  {} as Manifest,                   // rendering parent
-  {} as Manifest,                   // reactivity parent
-  new Instance(0),                  // instance
-)
-// Initialize
-const ROOT_AS_ANY = ROOT as any
-ROOT_AS_ANY['parent'] = ROOT
-ROOT_AS_ANY['renderingParent'] = ROOT
-ROOT_AS_ANY['reactivityParent'] = ROOT
-
+export const ROOT = Manifest.createRoot('ROOT', undefined)
 let gParent: Manifest<any, any> = ROOT
 let gRenderingParent: Manifest<any, any> = ROOT
 let gReactivityParent: Manifest<any, any> = ROOT

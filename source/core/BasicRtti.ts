@@ -5,7 +5,17 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Render, Manifest, Rtti, manifest } from './System'
+import { Transaction } from 'reactronic'
+import { Render, Manifest, Rtti, manifest, renderChildrenNow, ROOT } from './System'
+
+export function ReactronicFront(render: Render): void {
+  const self = ROOT.instance!
+  if (self.updates)
+    throw new Error('ReactronicFrontRendering should not be called recursively')
+  self.updates = []
+  render(self.native)
+  Transaction.run(renderChildrenNow)
+}
 
 export function RxFragment<E = unknown, O = void>(id: string, args: any, render: Render<E, O>): Manifest<E, O> {
   return manifest(id, args, render, undefined, RTTI_RX_FRAGMENT)

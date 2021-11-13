@@ -8,8 +8,17 @@
 import { Render, Manifest, manifest, RefreshParent, SuperRender } from '../core/api'
 import { HtmlRtti, SvgRtti } from './HtmlRtti'
 
-function nullRender(e: Element): void { /* nop */ }
+export function HtmlBody(id: string, args: any, render: Render<HTMLElement>): Manifest<HTMLElement> {
+  return manifest(id, args, render, undefined, {
+    name: 'global.document.body',
+    sorting: false,
+    mount(m: Manifest<HTMLElement, any>, sibling?: Manifest): void {
+      m.instance!.native = global.document.body
+    },
+  })
+}
 
+function nullRender(e: Element): void { /* nop */ }
 export function RxA<O = void>(id: string, args: any, render: Render<HTMLAnchorElement, O>, superRender?: SuperRender<O, HTMLAnchorElement>): Manifest<HTMLAnchorElement, O> { return manifest(id, args, render, superRender, HtmlTags.a) }
 export function RxAbbr<O = void>(id: string, args: any, render: Render<HTMLElement, O>, superRender?: SuperRender<O, HTMLElement>): Manifest<HTMLElement, O> { return manifest(id, args, render, superRender, HtmlTags.abbr) }
 export function RxAddress<O = void>(id: string, args: any, render: Render<HTMLElement, O>, superRender?: SuperRender<O, HTMLElement>): Manifest<HTMLElement, O> { return manifest(id, args, render, superRender, HtmlTags.address) }
