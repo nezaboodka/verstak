@@ -34,7 +34,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
   }
 
   mount(m: Manifest<E, any>, sibling?: Manifest): void {
-    const parent = m.mountingParent.instance?.native as Element ?? global.document.body // TODO: Get rid of document.body here
+    const parent = m.parentForNativeDom.instance?.native as Element ?? global.document.body // TODO: Get rid of document.body here
     const native = this.createElement(m) // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     native.id = m.id // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}${parent.id}.appendChild(${e.id} r${ref.mounted!.cycle})`)
     if (!m.parent.rtti.sorting) {
@@ -55,7 +55,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
   protected abstract createElement(m: Manifest<E, any>): E
 
   reorder(m: Manifest<E, any>, sibling?: Manifest): void {
-    const parent = m.mountingParent.instance?.native as Element ?? global.document.body // TODO: Get rid of document.body here
+    const parent = m.parentForNativeDom.instance?.native as Element ?? global.document.body // TODO: Get rid of document.body here
     const prev = sibling?.instance?.native
     const native = m.instance?.native
     if (native && prev instanceof Element && prev.nextSibling !== native) { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
