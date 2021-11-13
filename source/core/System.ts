@@ -23,8 +23,8 @@ export class Manifest<E = unknown, O = void> {
     readonly superRender: SuperRender<O, E> | undefined,
     readonly rtti: Rtti<E, O>,
     readonly parent: Manifest,
-    readonly parentForNativeDom: Manifest,
-    readonly parentForReactions: Manifest,
+    readonly renderingParent: Manifest,
+    readonly reactivityParent: Manifest,
     public instance?: Instance<E>) {
   }
   annex?: Manifest<E, O>
@@ -50,11 +50,11 @@ export function manifest<E = unknown, O = void>(
   id: string, args: unknown, render: Render<E, O>,
   superRender: SuperRender<O, E> | undefined,
   rtti: Rtti<E, O>, parent?: Manifest,
-  parentForNativeDom?: Manifest, parentForReactions?: Manifest): Manifest<E, O> {
+  renderingParent?: Manifest, reactivityParent?: Manifest): Manifest<E, O> {
 
   const p = parent ?? gParent
-  const p4nd = parentForNativeDom ?? gParentForNativeDom
-  const p4r = parentForReactions ?? gParentForReactions
+  const p4nd = renderingParent ?? gRenderingParent
+  const p4r = reactivityParent ?? gReactivityParent
   const self = p.instance
   if (!self)
     throw new Error('element must be mounted before children')
@@ -76,10 +76,10 @@ export function render(m: Manifest<any, any>): void {
   if (!self)
     throw new Error('element must be mounted before rendering')
   const outer = gParent   // remember
-  const outer4nd = gParentForNativeDom // remember
-  const outer4r = gParentForReactions // remember
+  const renderingOuter = gRenderingParent // remember
+  const reactivityOuter = gReactivityParent // remember
   try {
-    gParent = gParentForNativeDom = gParentForReactions = m
+    gParent = gRenderingParent = gReactivityParent = m
     self.updates = []
     if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.instance!.level))}${getManifestTraceHint(m)}.render/${m.instance?.revision}${m.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
@@ -90,8 +90,8 @@ export function render(m: Manifest<any, any>): void {
     renderChildrenNow() // ignored if rendered already
   }
   finally {
-    gParentForReactions = outer4r // restore
-    gParentForNativeDom = outer4nd // restore
+    gReactivityParent = reactivityOuter // restore
+    gRenderingParent = renderingOuter // restore
     gParent = outer   // restore
   }
 }
@@ -126,13 +126,13 @@ export function unmount(m: Manifest<any, any>, cause: Manifest): void {
 export function useAnotherParentForNativeDom<E>(m: Manifest<E>, render: Render<E>): void {
   const native = m.instance?.native
   if (native) {
-    const outer = gParentForNativeDom
+    const outer = gRenderingParent
     try {
-      gParentForNativeDom = m
+      gRenderingParent = m
       render(native)
     }
     finally {
-      gParentForNativeDom = outer
+      gRenderingParent = outer
     }
   }
 }
@@ -140,13 +140,13 @@ export function useAnotherParentForNativeDom<E>(m: Manifest<E>, render: Render<E
 export function useAnotherParentForReactions<E>(m: Manifest<E>, render: Render<E>): void {
   const native = m.instance?.native
   if (native) {
-    const outer = gParentForReactions
+    const outer = gReactivityParent
     try {
-      gParentForReactions = m
+      gReactivityParent = m
       render(native)
     }
     finally {
-      gParentForReactions = outer
+      gReactivityParent = outer
     }
   }
 }
@@ -227,7 +227,7 @@ function callMount(m: Manifest, sibling?: Manifest): Instance {
   if (rtti.mount)
     rtti.mount(m, sibling)
   else
-    self.native = m.parentForNativeDom.instance?.native // default mount
+    self.native = m.renderingParent.instance?.native // default mount
   if (m.args !== RefreshParent)
     Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? getManifestTraceHint(m) : m.id)
   if (gTrace && gTraceMask.indexOf('m') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
@@ -377,18 +377,18 @@ const ROOT = new Manifest<any, any>(
   undefined,                        // override
   { name: 'root', sorting: false }, // rtti
   {} as Manifest,                   // parent (lifecycle)
-  {} as Manifest,                   // native parent
+  {} as Manifest,                   // rendering parent
   {} as Manifest,                   // reactivity parent
   new Instance(0),                  // instance
 )
 // Initialize
 const ROOT_AS_ANY = ROOT as any
 ROOT_AS_ANY['parent'] = ROOT
-ROOT_AS_ANY['parentForNativeDom'] = ROOT
-ROOT_AS_ANY['parentForReactions'] = ROOT
+ROOT_AS_ANY['renderingParent'] = ROOT
+ROOT_AS_ANY['reactivityParent'] = ROOT
 
 let gParent: Manifest<any, any> = ROOT
-let gParentForNativeDom: Manifest<any, any> = ROOT
-let gParentForReactions: Manifest<any, any> = ROOT
+let gRenderingParent: Manifest<any, any> = ROOT
+let gReactivityParent: Manifest<any, any> = ROOT
 let gTrace: string | undefined = undefined
 let gTraceMask: string = 'r'
