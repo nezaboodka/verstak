@@ -75,9 +75,9 @@ export function render(m: Manifest<any, any>): void {
   const self = m.instance
   if (!self)
     throw new Error('element must be mounted before rendering')
-  const outer = gParent   // remember
-  const renderingOuter = gRenderingParent // remember
-  const reactivityOuter = gReactivityParent // remember
+  const outer = gParent
+  const renderingOuter = gRenderingParent
+  const reactivityOuter = gReactivityParent
   try {
     gParent = gRenderingParent = gReactivityParent = m
     self.updates = []
@@ -90,9 +90,9 @@ export function render(m: Manifest<any, any>): void {
     renderChildrenNow() // ignored if rendered already
   }
   finally {
-    gReactivityParent = reactivityOuter // restore
-    gRenderingParent = renderingOuter // restore
-    gParent = outer   // restore
+    gReactivityParent = reactivityOuter
+    gRenderingParent = renderingOuter
+    gParent = outer
   }
 }
 
