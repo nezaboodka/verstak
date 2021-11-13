@@ -25,7 +25,7 @@ export class Manifest<E = unknown, O = void> {
     readonly parent: Manifest,
     readonly renderingParent: Manifest,
     readonly reactivityParent: Manifest,
-    public instance?: Instance<E>) {
+    public instance?: Instance<E, O>) {
   }
 
   annex?: Manifest<E, O>
@@ -79,7 +79,7 @@ export function manifest<E = unknown, O = void>(
   const self = p.instance
   if (!self)
     throw new Error('element must be mounted before children')
-  const m = new Manifest<any, any>(id, args, render, superRender, rtti, p, p2, p3)
+  const m = new Manifest<E, O>(id, args, render, superRender, rtti, p, p2, p3)
   if (self.updates === undefined)
     throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   self.updates.push(m)
@@ -209,8 +209,8 @@ export class Instance<E = unknown, O = void> {
   revision: number = 0
   native?: E = undefined
   model?: unknown = undefined
-  updates: Array<Manifest> | undefined = undefined
-  children: ReadonlyArray<Manifest> = EMPTY
+  updates: Array<Manifest<any, any>> | undefined = undefined
+  children: ReadonlyArray<Manifest<any, any>> = EMPTY
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
