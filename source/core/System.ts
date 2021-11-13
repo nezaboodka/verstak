@@ -31,9 +31,9 @@ export class Manifest<E = unknown, O = void> {
   annex?: Manifest<E, O>
   get native(): E | undefined { return this.instance?.native }
 
-  static createRoot(id: string, native: unknown): Manifest {
-    const self = new Instance(0)
-    const m = new Manifest(
+  static createRoot<E>(id: string, native: E): Manifest<E> {
+    const self = new Instance<E>(0)
+    const m = new Manifest<E>(
       id,                           // id
       null,                         // args
       () => { /* nop */ },          // render
@@ -387,7 +387,7 @@ function forEachChildRecursively(m: Manifest, action: (e: any) => void): void {
   }
 }
 
-export const ROOT = Manifest.createRoot('ROOT', undefined)
+export const ROOT = Manifest.createRoot<unknown>('ROOT', undefined)
 let gParent: Manifest<any, any> = ROOT
 let gRenderingParent: Manifest<any, any> = ROOT
 let gReactivityParent: Manifest<any, any> = ROOT
