@@ -13,7 +13,9 @@ export function HtmlBody(id: string, args: any, render: Render<HTMLElement>): Ma
     name: 'global.document.body',
     sorting: false,
     mount(m: Manifest<HTMLElement, any>, sibling?: Manifest): void {
-      m.instance!.native = global.document.body
+      const native = global.document.body
+      native.id = m.id
+      m.instance!.native = native
     },
   })
 }
