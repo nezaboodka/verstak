@@ -375,7 +375,7 @@ const ROOT = new Manifest<any, any>(
   () => { /* nop */ },              // render
   undefined,                        // override
   { name: 'root', sorting: false }, // rtti
-  {} as Manifest,                   // lifecycle parent
+  {} as Manifest,                   // parent (lifecycle)
   {} as Manifest,                   // mounting parent
   {} as Manifest,                   // reaction parent
   new Instance(0),                  // instance
