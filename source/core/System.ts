@@ -53,9 +53,9 @@ export class Declaration<E = unknown, O = void> {
   }
 }
 
-// Rtti
+// Rtti - Run-Time Type Info
 
-export interface Rtti<E = unknown, O = void> { // Run-Time Type Info
+export interface Rtti<E = unknown, O = void> {
   readonly name: string
   readonly sorting: boolean
   render?(d: Declaration<E, O>): void
@@ -64,7 +64,7 @@ export interface Rtti<E = unknown, O = void> { // Run-Time Type Info
   unmount?(d: Declaration<E, O>, cause: Declaration): void
 }
 
-// declare, render, renderChildrenNow, mount, unmount, initializeNativeSubSystem
+// declare, render, renderChildrenNow, mount, unmount
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 export function declare<E = unknown, O = void>(
