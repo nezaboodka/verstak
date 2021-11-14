@@ -7,11 +7,11 @@
 
 import { reaction, nonreactive, Transaction, Reactronic, options } from 'reactronic'
 
-// RefreshParent, Render, SuperRender
+// Render, SuperRender, RefreshParent
 
-export const RefreshParent = Symbol('RefreshParent') as unknown as void
 export type Render<E = unknown, O = void> = (element: E, options: O) => void
 export type SuperRender<O = unknown, E = void> = (render: (options: O) => O, element: E) => void
+export const RefreshParent = Symbol('RefreshParent') as unknown as void
 
 // Declaration
 
