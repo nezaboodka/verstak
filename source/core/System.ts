@@ -28,7 +28,7 @@ export class Declaration<E = unknown, O = void> {
     public instance?: Instance<E, O>) {
   }
 
-  annex?: Declaration<E, O>
+  old?: Declaration<E, O>
   get native(): E | undefined { return this.instance?.native }
 
   static createRoot<E>(id: string, native: E): Declaration<E> {
@@ -225,6 +225,8 @@ export class Instance<E = unknown, O = void> {
 }
 
 function renderInline<E, O>(instance: Instance<E, O>, d: Declaration<E, O>): void {
+  if (instance === undefined || instance === null)
+    debugger // temporary, TODO: debug
   instance.revision++
   d.rtti.render ? d.rtti.render(d) : render(d)
 }
@@ -278,15 +280,14 @@ function renderOrdinaryChildren(d: Declaration): void {
     let i = 0, j = 0
     while (i < oldList.length) {
       const old = oldList[i]
-      let x = newList[j]
+      const x = newList[j]
       const diff = x !== undefined ? compareDeclarations(x, old) : 1
       if (diff <= 0) {
         if (sibling !== undefined && x.id === sibling.id)
           throw new Error(`duplicate id '${sibling.id}' inside '${d.id}'`)
         if (diff === 0) {
           x.instance = old.instance // reuse existing instance for re-rendering
-          if (x.args !== RefreshParent && argsAreEqual(x.args, old.args))
-            x = x.annex = newList[j] = old // skip re-rendering and preserve existing declaration
+          x.old = old
           i++, j++
         }
         else // diff < 0
@@ -298,15 +299,17 @@ function renderOrdinaryChildren(d: Declaration): void {
     }
     // Reconciliation loop - mount and render
     sibling = undefined
-    for (let x of buffer) {
-      const existing = x.annex
-      x = existing ?? x
-      const mounted = x.instance ?? callMount(x, sibling)
-      if (mounted.revision > 0) {
+    for (const x of buffer) {
+      x.instance ?? callMount(x, sibling)
+      if (x.old) {
         if (x.rtti.reorder)
           x.rtti.reorder(x, sibling)
+        if (x.args === RefreshParent || !argsAreEqual(x.args, x.old.args))
+          callRender(x)
+        x.old = undefined
       }
-      x !== existing && callRender(x)
+      else
+        callRender(x)
       sibling = x
     }
   }
@@ -325,20 +328,19 @@ function renderSortedChildren(d: Declaration): void {
     let i = 0, j = 0
     while (i < oldList.length || j < newList.length) {
       const old = oldList[i]
-      let x = newList[j]
+      const x = newList[j]
       const diff = compareNullable(x, old, compareDeclarations)
       if (diff <= 0) {
         if (sibling !== undefined && x.id === sibling.id)
           throw new Error(`duplicate id '${sibling.id}' inside '${d.id}'`)
         if (diff === 0) { // diff === 0
           x.instance = old.instance // reuse existing instance for re-rendering
-          if (x.args !== RefreshParent && argsAreEqual(x.args, old.args))
-            x = newList[j] = old // skip re-rendering and preserve existing declaration
+          if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
+            callRender(x)
           i++, j++
         }
         else // diff < 0
-          callMount(x, sibling), j++
-        x !== old && callRender(x)
+          callMount(x, sibling), callRender(x), j++
         sibling = x
       }
       else // diff > 0
