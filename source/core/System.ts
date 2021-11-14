@@ -123,9 +123,9 @@ function superRender(options: unknown): unknown {
 export function renderChildrenNow(): void {
   const d = gParent
   if (d.rtti.sorting)
-    reconcileSortedChildren(d)
+    renderSortedChildren(d) // reconciliation algorithm
   else
-    reconcileOrdinaryChildren(d)
+    renderOrdinaryChildren(d) // reconciliation algorithm
 }
 
 export function mount(d: Declaration): void {
@@ -264,7 +264,7 @@ function callUnmount(d: Declaration, cause: Declaration): void {
     unmount(d, cause) // default unmount
 }
 
-function reconcileOrdinaryChildren(d: Declaration): void {
+function renderOrdinaryChildren(d: Declaration): void {
   const self = d.instance
   if (self !== undefined && self.updates !== undefined) {
     const updates = self.updates
@@ -310,7 +310,7 @@ function reconcileOrdinaryChildren(d: Declaration): void {
   }
 }
 
-function reconcileSortedChildren(d: Declaration): void {
+function renderSortedChildren(d: Declaration): void {
   const self = d.instance
   if (self !== undefined && self.updates !== undefined) {
     const updates = self.updates.sort(compareDeclarations)
