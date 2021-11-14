@@ -10,9 +10,9 @@ import { Render, Declaration, Rtti, declare, renderChildrenNow, ROOT } from './S
 
 export function ReactronicFront(render: Render): void {
   const self = ROOT.instance!
-  if (self.updates)
+  if (self.buffer)
     throw new Error('ReactronicFrontRendering should not be called recursively')
-  self.updates = []
+  self.buffer = []
   render(self.native)
   Transaction.run(renderChildrenNow)
 }

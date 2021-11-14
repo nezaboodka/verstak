@@ -80,9 +80,9 @@ export function declare<E = unknown, O = void>(
   if (!self)
     throw new Error('element must be mounted before children')
   const d = new Declaration<E, O>(id, args, render, superRender, rtti, p, p2, p3)
-  if (self.updates === undefined)
+  if (self.buffer === undefined)
     throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  self.updates.push(d)
+  self.buffer.push(d)
   return d
 }
 
@@ -95,7 +95,7 @@ export function render(d: Declaration<any, any>): void {
   const reactivityOuter = gReactivityParent
   try {
     gParent = gRenderingParent = gReactivityParent = d
-    self.updates = []
+    self.buffer = []
     if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getTraceHint(d)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.render/${d.instance?.revision}${d.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
     if (d.superRender)
@@ -209,7 +209,7 @@ export class Instance<E = unknown, O = void> {
   revision: number = 0
   native?: E = undefined
   model?: unknown = undefined
-  updates: Array<Declaration<any, any>> | undefined = undefined
+  buffer: Array<Declaration<any, any>> | undefined = undefined
   children: ReadonlyArray<Declaration<any, any>> = EMPTY
   resizing?: ResizeObserver = undefined
 
@@ -266,24 +266,25 @@ function callUnmount(d: Declaration, cause: Declaration): void {
 
 function renderOrdinaryChildren(d: Declaration): void {
   const self = d.instance
-  if (self !== undefined && self.updates !== undefined) {
-    const updates = self.updates
-    const children = updates.slice().sort(compareDeclarations)
-    self.updates = undefined
+  if (self !== undefined && self.buffer !== undefined) {
+    const oldList = self.children
+    const buffer = self.buffer
+    const newList = buffer.slice().sort(compareDeclarations)
+    self.buffer = undefined
     // Unmount or resolve existing
     let sibling: Declaration | undefined = undefined
     let i = 0, j = 0
-    while (i < self.children.length) {
-      const existing = self.children[i]
-      let x = children[j]
-      const diff = x !== undefined ? compareDeclarations(x, existing) : 1
+    while (i < oldList.length) {
+      const old = oldList[i]
+      let x = newList[j]
+      const diff = x !== undefined ? compareDeclarations(x, old) : 1
       if (diff <= 0) {
         if (sibling !== undefined && x.id === sibling.id)
           throw new Error(`duplicate id '${sibling.id}' inside '${d.id}'`)
         if (diff === 0) {
-          x.instance = existing.instance // reuse existing instance for re-rendering
-          if (x.args !== RefreshParent && argsAreEqual(x.args, existing.args))
-            x = x.annex = children[j] = existing // skip re-rendering and preserve existing declaration
+          x.instance = old.instance // reuse existing instance for re-rendering
+          if (x.args !== RefreshParent && argsAreEqual(x.args, old.args))
+            x = x.annex = newList[j] = old // skip re-rendering and preserve existing declaration
           i++, j++
         }
         else // diff < 0
@@ -291,11 +292,11 @@ function renderOrdinaryChildren(d: Declaration): void {
         sibling = x
       }
       else // diff > 0
-        callUnmount(existing, existing), i++
+        callUnmount(old, old), i++
     }
     // Mount and render
     sibling = undefined
-    for (let x of updates) {
+    for (let x of buffer) {
       const existing = x.annex
       x = existing ?? x
       const mounted = x.instance ?? callMount(x, sibling)
@@ -306,39 +307,40 @@ function renderOrdinaryChildren(d: Declaration): void {
       x !== existing && callRender(x)
       sibling = x
     }
-    self.children = children
+    self.children = newList
   }
 }
 
 function renderSortedChildren(d: Declaration): void {
   const self = d.instance
-  if (self !== undefined && self.updates !== undefined) {
-    const updates = self.updates.sort(compareDeclarations)
-    self.updates = undefined
+  if (self !== undefined && self.buffer !== undefined) {
+    const oldList = self.children
+    const newList = self.buffer.sort(compareDeclarations)
+    self.buffer = undefined
     let sibling: Declaration | undefined = undefined
     let i = 0, j = 0
-    while (i < self.children.length || j < updates.length) {
-      const existing = self.children[i]
-      let x = updates[j]
-      const diff = compareNullable(x, existing, compareDeclarations)
+    while (i < oldList.length || j < newList.length) {
+      const old = oldList[i]
+      let x = newList[j]
+      const diff = compareNullable(x, old, compareDeclarations)
       if (diff <= 0) {
         if (sibling !== undefined && x.id === sibling.id)
           throw new Error(`duplicate id '${sibling.id}' inside '${d.id}'`)
         if (diff === 0) { // diff === 0
-          x.instance = existing.instance // reuse existing instance for re-rendering
-          if (x.args !== RefreshParent && argsAreEqual(x.args, existing.args))
-            x = updates[j] = existing // skip re-rendering and preserve existing declaration
+          x.instance = old.instance // reuse existing instance for re-rendering
+          if (x.args !== RefreshParent && argsAreEqual(x.args, old.args))
+            x = newList[j] = old // skip re-rendering and preserve existing declaration
           i++, j++
         }
         else // diff < 0
           callMount(x, sibling), j++
-        x !== existing && callRender(x)
+        x !== old && callRender(x)
         sibling = x
       }
       else // diff > 0
-        callUnmount(existing, existing), i++
+        callUnmount(old, old), i++
     }
-    self.children = updates
+    self.children = newList
   }
 }
 
