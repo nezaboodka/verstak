@@ -270,6 +270,7 @@ function renderOrdinaryChildren(d: Declaration): void {
     const oldList = self.children
     const buffer = self.buffer
     const newList = buffer.slice().sort(compareDeclarations)
+    // Switch to the new list
     self.buffer = undefined
     self.children = newList
     // Reconciliation loop - unmount or resolve existing
@@ -316,6 +317,7 @@ function renderSortedChildren(d: Declaration): void {
   if (self !== undefined && self.buffer !== undefined) {
     const oldList = self.children
     const newList = self.buffer.sort(compareDeclarations)
+    // Switch to the new list
     self.buffer = undefined
     self.children = newList
     // Reconciliation loop - resolve, unmount, mount, render
