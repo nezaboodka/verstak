@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Transaction } from 'reactronic'
-import { Render, Manifest, Rtti, manifest, renderChildrenNow, ROOT } from './System'
+import { Render, Declaration, Rtti, declare, renderChildrenNow, ROOT } from './System'
 
 export function ReactronicFront(render: Render): void {
   const self = ROOT.instance!
@@ -17,16 +17,16 @@ export function ReactronicFront(render: Render): void {
   Transaction.run(renderChildrenNow)
 }
 
-export function RxFragment<E = unknown, O = void>(id: string, args: any, render: Render<E, O>): Manifest<E, O> {
-  return manifest(id, args, render, undefined, RTTI_RX_FRAGMENT)
+export function RxFragment<E = unknown, O = void>(id: string, args: any, render: Render<E, O>): Declaration<E, O> {
+  return declare(id, args, render, undefined, RTTI_RX_FRAGMENT)
 }
 
-export function RxSortingFragment<E = unknown, O = void>(id: string, args: any, render: Render<E, O>): Manifest<E, O> {
-  return manifest(id, args, render, undefined, RTTI_RX_SORTING_FRAGMENT)
+export function RxSortingFragment<E = unknown, O = void>(id: string, args: any, render: Render<E, O>): Declaration<E, O> {
+  return declare(id, args, render, undefined, RTTI_RX_SORTING_FRAGMENT)
 }
 
-export function ForeignFragment<E = unknown, O = void>(id: string, args: any, foreign: Manifest<E, O>, render: Render<E, O>): Manifest<E, O> {
-  return manifest(id, args, render, undefined, RTTI_FOREIGN_FRAGMENT)
+export function ForeignFragment<E = unknown, O = void>(id: string, args: any, foreign: Declaration<E, O>, render: Render<E, O>): Declaration<E, O> {
+  return declare(id, args, render, undefined, RTTI_FOREIGN_FRAGMENT)
 }
 
 const RTTI_RX_FRAGMENT: Rtti<any, any> = { name: 'RxFragment', sorting: false }

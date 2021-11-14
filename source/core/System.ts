@@ -13,35 +13,35 @@ export const RefreshParent = Symbol('RefreshParent') as unknown as void
 export type Render<E = unknown, O = void> = (element: E, options: O) => void
 export type SuperRender<O = unknown, E = void> = (render: (options: O) => O, element: E) => void
 
-// Manifest
+// Declaration
 
-export class Manifest<E = unknown, O = void> {
+export class Declaration<E = unknown, O = void> {
   constructor(
     readonly id: string,
     readonly args: unknown,
     readonly render: Render<E, O>,
     readonly superRender: SuperRender<O, E> | undefined,
     readonly rtti: Rtti<E, O>,
-    readonly parent: Manifest,
-    readonly renderingParent: Manifest,
-    readonly reactivityParent: Manifest,
+    readonly parent: Declaration,
+    readonly renderingParent: Declaration,
+    readonly reactivityParent: Declaration,
     public instance?: Instance<E, O>) {
   }
 
-  annex?: Manifest<E, O>
+  annex?: Declaration<E, O>
   get native(): E | undefined { return this.instance?.native }
 
-  static createRoot<E>(id: string, native: E): Manifest<E> {
+  static createRoot<E>(id: string, native: E): Declaration<E> {
     const self = new Instance<E>(0)
-    const m = new Manifest<E>(
+    const m = new Declaration<E>(
       id,                           // id
       null,                         // args
       () => { /* nop */ },          // render
       undefined,                    // superRender
       { name: id, sorting: false }, // rtti
-      { } as Manifest,              // parent (lifecycle)
-      { } as Manifest,              // rendering parent
-      { } as Manifest,              // reactivity parent
+      { } as Declaration,              // parent (lifecycle)
+      { } as Declaration,              // rendering parent
+      { } as Declaration,              // reactivity parent
       self)                         // instance
     // Initialize
     const a: any = m
@@ -58,20 +58,20 @@ export class Manifest<E = unknown, O = void> {
 export interface Rtti<E = unknown, O = void> { // Run-Time Type Info
   readonly name: string
   readonly sorting: boolean
-  render?(m: Manifest<E, O>): void
-  mount?(m: Manifest<E, O>, sibling?: Manifest): void
-  reorder?(m: Manifest<E, O>, sibling?: Manifest): void
-  unmount?(m: Manifest<E, O>, cause: Manifest): void
+  render?(d: Declaration<E, O>): void
+  mount?(d: Declaration<E, O>, sibling?: Declaration): void
+  reorder?(d: Declaration<E, O>, sibling?: Declaration): void
+  unmount?(d: Declaration<E, O>, cause: Declaration): void
 }
 
-// manifest, render, renderChildrenNow, mount, unmount, initializeNativeSubSystem
+// declare, render, renderChildrenNow, mount, unmount, initializeNativeSubSystem
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-export function manifest<E = unknown, O = void>(
+export function declare<E = unknown, O = void>(
   id: string, args: unknown, render: Render<E, O>,
   superRender: SuperRender<O, E> | undefined,
-  rtti: Rtti<E, O>, parent?: Manifest,
-  renderingParent?: Manifest, reactivityParent?: Manifest): Manifest<E, O> {
+  rtti: Rtti<E, O>, parent?: Declaration,
+  renderingParent?: Declaration, reactivityParent?: Declaration): Declaration<E, O> {
 
   const p = parent ?? gParent
   const p2 = renderingParent ?? gRenderingParent
@@ -79,29 +79,29 @@ export function manifest<E = unknown, O = void>(
   const self = p.instance
   if (!self)
     throw new Error('element must be mounted before children')
-  const m = new Manifest<E, O>(id, args, render, superRender, rtti, p, p2, p3)
+  const d = new Declaration<E, O>(id, args, render, superRender, rtti, p, p2, p3)
   if (self.updates === undefined)
     throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  self.updates.push(m)
-  return m
+  self.updates.push(d)
+  return d
 }
 
-export function render(m: Manifest<any, any>): void {
-  const self = m.instance
+export function render(d: Declaration<any, any>): void {
+  const self = d.instance
   if (!self)
     throw new Error('element must be mounted before rendering')
   const outer = gParent
   const renderingOuter = gRenderingParent
   const reactivityOuter = gReactivityParent
   try {
-    gParent = gRenderingParent = gReactivityParent = m
+    gParent = gRenderingParent = gReactivityParent = d
     self.updates = []
-    if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
-      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.instance!.level))}${getManifestTraceHint(m)}.render/${m.instance?.revision}${m.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
-    if (m.superRender)
-      m.superRender(superRender, self.native)
+    if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getTraceHint(d)))
+      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.render/${d.instance?.revision}${d.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
+    if (d.superRender)
+      d.superRender(superRender, self.native)
     else
-      m.render(self.native, undefined)
+      d.render(self.native, undefined)
     renderChildrenNow() // ignored if rendered already
   }
   finally {
@@ -112,42 +112,42 @@ export function render(m: Manifest<any, any>): void {
 }
 
 function superRender(options: unknown): unknown {
-  const m = gParent
-  const native = m.instance?.native
+  const d = gParent
+  const native = d.instance?.native
   if (!native)
     throw new Error('element must be mounted before rendering')
-  m.render(native, options)
+  d.render(native, options)
   return options
 }
 
 export function renderChildrenNow(): void {
-  const m = gParent
-  if (m.rtti.sorting)
-    reconcileSortedChildren(m)
+  const d = gParent
+  if (d.rtti.sorting)
+    reconcileSortedChildren(d)
   else
-    reconcileOrdinaryChildren(m)
+    reconcileOrdinaryChildren(d)
 }
 
-export function mount(m: Manifest): void {
-  callMount(m)
+export function mount(d: Declaration): void {
+  callMount(d)
 }
 
-export function unmount(m: Manifest<any, any>, cause: Manifest): void {
-  const self = m.instance
+export function unmount(d: Declaration<any, any>, cause: Declaration): void {
+  const self = d.instance
   if (self) {
     for (const x of self.children)
       callUnmount(x, cause)
     self.native = undefined
   }
-  m.instance = undefined
+  d.instance = undefined
 }
 
-export function useAnotherRenderingParent<E>(m: Manifest<E>, render: Render<E>): void {
-  const native = m.instance?.native
+export function useAnotherRenderingParent<E>(d: Declaration<E>, render: Render<E>): void {
+  const native = d.instance?.native
   if (native) {
     const outer = gRenderingParent
     try {
-      gRenderingParent = m
+      gRenderingParent = d
       render(native)
     }
     finally {
@@ -156,12 +156,12 @@ export function useAnotherRenderingParent<E>(m: Manifest<E>, render: Render<E>):
   }
 }
 
-export function useAnotherReactivityParent<E>(m: Manifest<E>, render: Render<E>): void {
-  const native = m.instance?.native
+export function useAnotherReactivityParent<E>(d: Declaration<E>, render: Render<E>): void {
+  const native = d.instance?.native
   if (native) {
     const outer = gReactivityParent
     try {
-      gReactivityParent = m
+      gReactivityParent = d
       render(native)
     }
     finally {
@@ -201,7 +201,7 @@ export function forAll<E>(action: (e: E) => void): void {
 
 // Internal
 
-const EMPTY: Array<Manifest> = []
+const EMPTY: Array<Declaration> = []
 Object.freeze(EMPTY)
 
 export class Instance<E = unknown, O = void> {
@@ -209,8 +209,8 @@ export class Instance<E = unknown, O = void> {
   revision: number = 0
   native?: E = undefined
   model?: unknown = undefined
-  updates: Array<Manifest<any, any>> | undefined = undefined
-  children: ReadonlyArray<Manifest<any, any>> = EMPTY
+  updates: Array<Declaration<any, any>> | undefined = undefined
+  children: ReadonlyArray<Declaration<any, any>> = EMPTY
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
@@ -218,72 +218,72 @@ export class Instance<E = unknown, O = void> {
   }
 
   @reaction @options({ sensitiveArgs: true }) // @noSideEffects(true)
-  render(m: Manifest<E, O>): void {
-    renderInline(this, m)
+  render(d: Declaration<E, O>): void {
+    renderInline(this, d)
     Reactronic.configureCurrentMethod({ order: this.level })
   }
 }
 
-function renderInline<E, O>(instance: Instance<E, O>, m: Manifest<E, O>): void {
+function renderInline<E, O>(instance: Instance<E, O>, d: Declaration<E, O>): void {
   instance.revision++
-  m.rtti.render ? m.rtti.render(m) : render(m)
+  d.rtti.render ? d.rtti.render(d) : render(d)
 }
 
-function callRender(m: Manifest): void {
-  const self = m.instance!
-  if (m.args === RefreshParent) // inline elements are always rendered
-    renderInline(self, m)
+function callRender(d: Declaration): void {
+  const self = d.instance!
+  if (d.args === RefreshParent) // inline elements are always rendered
+    renderInline(self, d)
   else // rendering of reactive elements is cached to avoid redundant calls
-    nonreactive(self.render, m)
+    nonreactive(self.render, d)
 }
 
-function callMount(m: Manifest, sibling?: Manifest): Instance {
+function callMount(d: Declaration, sibling?: Declaration): Instance {
   // TODO: Make the code below exception-safe
-  const rtti = m.rtti
-  const self = m.instance = new Instance(m.parent.instance!.level + 1)
+  const rtti = d.rtti
+  const self = d.instance = new Instance(d.parent.instance!.level + 1)
   if (rtti.mount)
-    rtti.mount(m, sibling)
+    rtti.mount(d, sibling)
   else
-    self.native = m.renderingParent.instance?.native // default mount
-  if (m.args !== RefreshParent)
-    Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? getManifestTraceHint(m) : m.id)
-  if (gTrace && gTraceMask.indexOf('m') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
-    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.instance!.level))}${getManifestTraceHint(m)}.mounted`)
+    self.native = d.renderingParent.instance?.native // default mount
+  if (d.args !== RefreshParent)
+    Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? getTraceHint(d) : d.id)
+  if (gTrace && gTraceMask.indexOf('m') >= 0 && new RegExp(gTrace, 'gi').test(getTraceHint(d)))
+    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.mounted`)
   return self
 }
 
-function callUnmount(m: Manifest, cause: Manifest): void {
-  if (gTrace && gTraceMask.indexOf('u') >= 0 && new RegExp(gTrace, 'gi').test(getManifestTraceHint(m)))
-    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(m.instance!.level))}${getManifestTraceHint(m)}.unmounting`)
-  if (m.args !== RefreshParent) // TODO: Consider creating one transaction for all un-mounts
-    Transaction.runAs({ standalone: true }, () => Reactronic.dispose(m.instance))
-  const rtti = m.rtti
+function callUnmount(d: Declaration, cause: Declaration): void {
+  if (gTrace && gTraceMask.indexOf('u') >= 0 && new RegExp(gTrace, 'gi').test(getTraceHint(d)))
+    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.unmounting`)
+  if (d.args !== RefreshParent) // TODO: Consider creating one transaction for all un-mounts
+    Transaction.runAs({ standalone: true }, () => Reactronic.dispose(d.instance))
+  const rtti = d.rtti
   if (rtti.unmount)
-    rtti.unmount(m, cause)
+    rtti.unmount(d, cause)
   else
-    unmount(m, cause) // default unmount
+    unmount(d, cause) // default unmount
 }
 
-function reconcileOrdinaryChildren(m: Manifest): void {
-  const self = m.instance
+function reconcileOrdinaryChildren(d: Declaration): void {
+  const self = d.instance
   if (self !== undefined && self.updates !== undefined) {
     const updates = self.updates
-    const children = updates.slice().sort(compareManifests)
+    const children = updates.slice().sort(compareDeclarations)
     self.updates = undefined
     // Unmount or resolve existing
-    let sibling: Manifest | undefined = undefined
+    let sibling: Declaration | undefined = undefined
     let i = 0, j = 0
     while (i < self.children.length) {
       const existing = self.children[i]
       let x = children[j]
-      const diff = x !== undefined ? compareManifests(x, existing) : 1
+      const diff = x !== undefined ? compareDeclarations(x, existing) : 1
       if (diff <= 0) {
         if (sibling !== undefined && x.id === sibling.id)
-          throw new Error(`duplicate id '${sibling.id}' inside '${m.id}'`)
+          throw new Error(`duplicate id '${sibling.id}' inside '${d.id}'`)
         if (diff === 0) {
           x.instance = existing.instance // reuse existing instance for re-rendering
           if (x.args !== RefreshParent && argsAreEqual(x.args, existing.args))
-            x = x.annex = children[j] = existing // skip re-rendering and preserve existing manifest
+            x = x.annex = children[j] = existing // skip re-rendering and preserve existing declaration
           i++, j++
         }
         else // diff < 0
@@ -310,24 +310,24 @@ function reconcileOrdinaryChildren(m: Manifest): void {
   }
 }
 
-function reconcileSortedChildren(m: Manifest): void {
-  const self = m.instance
+function reconcileSortedChildren(d: Declaration): void {
+  const self = d.instance
   if (self !== undefined && self.updates !== undefined) {
-    const updates = self.updates.sort(compareManifests)
+    const updates = self.updates.sort(compareDeclarations)
     self.updates = undefined
-    let sibling: Manifest | undefined = undefined
+    let sibling: Declaration | undefined = undefined
     let i = 0, j = 0
     while (i < self.children.length || j < updates.length) {
       const existing = self.children[i]
       let x = updates[j]
-      const diff = compareNullable(x, existing, compareManifests)
+      const diff = compareNullable(x, existing, compareDeclarations)
       if (diff <= 0) {
         if (sibling !== undefined && x.id === sibling.id)
-          throw new Error(`duplicate id '${sibling.id}' inside '${m.id}'`)
+          throw new Error(`duplicate id '${sibling.id}' inside '${d.id}'`)
         if (diff === 0) { // diff === 0
           x.instance = existing.instance // reuse existing instance for re-rendering
           if (x.args !== RefreshParent && argsAreEqual(x.args, existing.args))
-            x = updates[j] = existing // skip re-rendering and preserve existing manifest
+            x = updates[j] = existing // skip re-rendering and preserve existing declaration
           i++, j++
         }
         else // diff < 0
@@ -342,8 +342,8 @@ function reconcileSortedChildren(m: Manifest): void {
   }
 }
 
-function compareManifests(m1: Manifest, m2: Manifest): number {
-  return m1.id.localeCompare(m2.id)
+function compareDeclarations(d1: Declaration, d2: Declaration): number {
+  return d1.id.localeCompare(d2.id)
 }
 
 function compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T, b: T) => number): number {
@@ -374,12 +374,12 @@ function argsAreEqual(a1: any, a2: any): boolean {
   return result
 }
 
-function getManifestTraceHint(m: Manifest): string {
-  return `${m.rtti.name}:${m.id}`
+function getTraceHint(d: Declaration): string {
+  return `${d.rtti.name}:${d.id}`
 }
 
-function forEachChildRecursively(m: Manifest, action: (e: any) => void): void {
-  const self = m.instance
+function forEachChildRecursively(d: Declaration, action: (e: any) => void): void {
+  const self = d.instance
   if (self) {
     const native = self.native
     native && action(native)
@@ -387,9 +387,9 @@ function forEachChildRecursively(m: Manifest, action: (e: any) => void): void {
   }
 }
 
-export const ROOT = Manifest.createRoot<unknown>('ROOT', undefined)
-let gParent: Manifest<any, any> = ROOT
-let gRenderingParent: Manifest<any, any> = ROOT
-let gReactivityParent: Manifest<any, any> = ROOT
+export const ROOT = Declaration.createRoot<unknown>('ROOT', undefined)
+let gParent: Declaration<any, any> = ROOT
+let gRenderingParent: Declaration<any, any> = ROOT
+let gReactivityParent: Declaration<any, any> = ROOT
 let gTrace: string | undefined = undefined
 let gTraceMask: string = 'r'
