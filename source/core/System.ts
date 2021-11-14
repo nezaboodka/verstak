@@ -285,30 +285,30 @@ function renderOrdinaryChildren(d: Declaration): void {
       if (diff <= 0) {
         if (sibling !== undefined && x.id === sibling.id)
           throw new Error(`duplicate id '${sibling.id}' inside '${d.id}'`)
-        if (diff === 0) { // re-rendering is below
+        if (diff === 0) {
           x.instance = old.instance
           x.old = old
-          i++, j++
+          i++, j++ // re-rendering is called below
         }
-        else // mounting and initial rendering is below (diff < 0)
-          j++ // mount/reorder is performed below
+        else // diff < 0
+          j++ // initial rendering is called below (with mounting)
         sibling = x
       }
-      else // unmounting (diff > 0)
+      else // diff > 0
         callUnmount(old, old), i++
     }
     // Reconciliation loop - mount, render, re-render
     sibling = undefined
     for (const x of buffer) {
-      if (x.old) { // re-rendering
+      if (x.old) {
         if (x.rtti.reorder)
           x.rtti.reorder(x, sibling)
         if (x.args === RefreshParent || !argsAreEqual(x.args, x.old.args))
-          callRender(x)
+          callRender(x) // re-rendering
         x.old = undefined
       }
-      else // mounting and initial rendering
-        callMount(x, sibling), callRender(x)
+      else
+        callMount(x, sibling), callRender(x) // initial rendering
       sibling = x
     }
   }
@@ -332,17 +332,17 @@ function renderSortedChildren(d: Declaration): void {
       if (diff <= 0) {
         if (sibling !== undefined && x.id === sibling.id)
           throw new Error(`duplicate id '${sibling.id}' inside '${d.id}'`)
-        if (diff === 0) { // re-rendering (diff === 0)
-          x.instance = old.instance // reuse existing instance for re-rendering
+        if (diff === 0) {
+          x.instance = old.instance // link to the existing instance
           if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
-            callRender(x)
+            callRender(x) // re-rendering
           i++, j++
         }
-        else // mounting and initial rendering (diff < 0)
-          callMount(x, sibling), callRender(x), j++
+        else // diff < 0
+          callMount(x, sibling), callRender(x), j++ // initial rendering
         sibling = x
       }
-      else // unmounting (diff > 0)
+      else // diff > 0
         callUnmount(old, old), i++
     }
   }
