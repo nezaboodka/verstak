@@ -272,7 +272,7 @@ function renderOrdinaryChildren(d: Declaration): void {
     const newList = buffer.slice().sort(compareDeclarations)
     self.buffer = undefined
     self.children = newList
-    // Unmount or resolve existing
+    // Reconciliation loop - unmount or resolve existing
     let sibling: Declaration | undefined = undefined
     let i = 0, j = 0
     while (i < oldList.length) {
@@ -295,7 +295,7 @@ function renderOrdinaryChildren(d: Declaration): void {
       else // diff > 0
         callUnmount(old, old), i++
     }
-    // Mount and render
+    // Reconciliation loop - mount and render
     sibling = undefined
     for (let x of buffer) {
       const existing = x.annex
@@ -318,6 +318,7 @@ function renderSortedChildren(d: Declaration): void {
     const newList = self.buffer.sort(compareDeclarations)
     self.buffer = undefined
     self.children = newList
+    // Reconciliation loop - resolve, unmount, mount, render
     let sibling: Declaration | undefined = undefined
     let i = 0, j = 0
     while (i < oldList.length || j < newList.length) {
