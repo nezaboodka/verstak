@@ -285,31 +285,30 @@ function renderOrdinaryChildren(d: Declaration): void {
       if (diff <= 0) {
         if (sibling !== undefined && x.id === sibling.id)
           throw new Error(`duplicate id '${sibling.id}' inside '${d.id}'`)
-        if (diff === 0) {
-          x.instance = old.instance // reuse existing instance for re-rendering
+        if (diff === 0) { // re-rendering is below
+          x.instance = old.instance
           x.old = old
           i++, j++
         }
-        else // diff < 0
+        else // mounting and initial rendering is below (diff < 0)
           j++ // mount/reorder is performed below
         sibling = x
       }
-      else // diff > 0
+      else // unmounting (diff > 0)
         callUnmount(old, old), i++
     }
-    // Reconciliation loop - mount and render
+    // Reconciliation loop - mount, render, re-render
     sibling = undefined
     for (const x of buffer) {
-      x.instance ?? callMount(x, sibling)
-      if (x.old) {
+      if (x.old) { // re-rendering
         if (x.rtti.reorder)
           x.rtti.reorder(x, sibling)
         if (x.args === RefreshParent || !argsAreEqual(x.args, x.old.args))
           callRender(x)
         x.old = undefined
       }
-      else
-        callRender(x)
+      else // mounting and initial rendering
+        callMount(x, sibling), callRender(x)
       sibling = x
     }
   }
@@ -333,17 +332,17 @@ function renderSortedChildren(d: Declaration): void {
       if (diff <= 0) {
         if (sibling !== undefined && x.id === sibling.id)
           throw new Error(`duplicate id '${sibling.id}' inside '${d.id}'`)
-        if (diff === 0) { // diff === 0
+        if (diff === 0) { // re-rendering (diff === 0)
           x.instance = old.instance // reuse existing instance for re-rendering
           if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
             callRender(x)
           i++, j++
         }
-        else // diff < 0
+        else // mounting and initial rendering (diff < 0)
           callMount(x, sibling), callRender(x), j++
         sibling = x
       }
-      else // diff > 0
+      else // unmounting (diff > 0)
         callUnmount(old, old), i++
     }
   }
