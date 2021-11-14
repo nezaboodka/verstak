@@ -305,7 +305,7 @@ function renderOrdinaryChildren(d: Declaration): void {
           x.rtti.reorder(x, sibling)
         if (x.args === RefreshParent || !argsAreEqual(x.args, x.old.args))
           callRender(x) // re-rendering
-        x.old = undefined
+        x.old = undefined // unlink to make it available for garbage collection
       }
       else
         callMount(x, sibling), callRender(x) // initial rendering
