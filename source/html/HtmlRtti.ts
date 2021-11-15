@@ -52,18 +52,6 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     d.instance!.native = native
   }
 
-  protected abstract createElement(m: Declaration<E, any>): E
-
-  reorder(d: Declaration<E, any>, sibling?: Declaration): void {
-    const parent = d.renderingParent.instance?.native as Element
-    const prev = sibling?.instance?.native
-    const native = d.instance?.native
-    if (native && prev instanceof Element && prev.nextSibling !== native) { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.insertBefore(${(prev.nextSibling! as any)?.id})`)
-      parent.insertBefore(native, prev.nextSibling)
-    }
-  }
-
   static finalizing?: Element = undefined
   finalize(d: Declaration<E, any>, cause: Declaration): void {
     const self = d.instance
@@ -85,6 +73,18 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
       finalize(d, cause) // proceed
     }
   }
+
+  reorder(d: Declaration<E, any>, sibling?: Declaration): void {
+    const parent = d.renderingParent.instance?.native as Element
+    const prev = sibling?.instance?.native
+    const native = d.instance?.native
+    if (native && prev instanceof Element && prev.nextSibling !== native) { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.insertBefore(${(prev.nextSibling! as any)?.id})`)
+      parent.insertBefore(native, prev.nextSibling)
+    }
+  }
+
+  protected abstract createElement(m: Declaration<E, any>): E
 
   static gNativeParent: Declaration<any, any> =
     Declaration.createRoot('global.document.body', global.document.body)
