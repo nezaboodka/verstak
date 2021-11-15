@@ -7,7 +7,7 @@
 
 export * from './core/System'
 export * from './core/Restyler'
-export * from './core/BasicRtti'
+export * from './core/BasicElements'
 
 export * from './html/Sensor'
 export * from './html/HtmlRtti'
