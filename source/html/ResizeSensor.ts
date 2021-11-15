@@ -7,7 +7,7 @@
 
 import { options, TraceLevel, transaction } from 'reactronic'
 import { Sensor } from './Sensor'
-import { RxDom } from '../core/System'
+import { RxDom } from '../core/RxDom'
 
 export interface ResizedElement {
   readonly borderBoxSize: ReadonlyArray<ResizeObserverSize>

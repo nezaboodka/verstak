@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Render, Rtti, Declaration } from './Data'
-import { RxDom } from './System'
+import { RxDom } from './RxDom'
 
 export function RxFragment<E = unknown, O = void>(id: string, args: any, render: Render<E, O>): Declaration<E, O> {
   return RxDom.declare(id, args, render, undefined, RTTI_RX_FRAGMENT)

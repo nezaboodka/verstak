@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 export * from './core/Data'
-export * from './core/System'
+export * from './core/RxDom'
 export * from './core/Restyler'
 export * from './core/Elements'
 

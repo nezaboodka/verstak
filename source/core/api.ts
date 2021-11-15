@@ -6,6 +6,6 @@
 // automatically licensed under the license referred above.
 
 export * from './Data'
-export { RxDom } from './System'
+export { RxDom } from './RxDom'
 export * from './Restyler'
 export * from './Elements'
