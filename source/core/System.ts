@@ -59,12 +59,12 @@ export interface Rtti<E = unknown, O = void> {
   readonly name: string
   readonly sorting: boolean
   render?(d: Declaration<E, O>): void
-  mount?(d: Declaration<E, O>, sibling?: Declaration): void
+  initialize?(d: Declaration<E, O>, sibling?: Declaration): void
+  finalize?(d: Declaration<E, O>, cause: Declaration): void
   reorder?(d: Declaration<E, O>, sibling?: Declaration): void
-  unmount?(d: Declaration<E, O>, cause: Declaration): void
 }
 
-// declare, render, renderChildrenNow, mount, unmount
+// declare, render, renderChildrenNow, initialize, finalize
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 export function declare<E = unknown, O = void>(
@@ -78,7 +78,7 @@ export function declare<E = unknown, O = void>(
   const p3 = reactivityParent ?? gReactivityParent
   const self = p.instance
   if (!self)
-    throw new Error('element must be mounted before children')
+    throw new Error('element must be initialized before children')
   const d = new Declaration<E, O>(id, args, render, superRender, rtti, p, p2, p3)
   if (self.buffer === undefined)
     throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -89,7 +89,7 @@ export function declare<E = unknown, O = void>(
 export function render(d: Declaration<any, any>): void {
   const self = d.instance
   if (!self)
-    throw new Error('element must be mounted before rendering')
+    throw new Error('element must be initialized before rendering')
   const outer = gParent
   const renderingOuter = gRenderingParent
   const reactivityOuter = gReactivityParent
@@ -115,7 +115,7 @@ function superRender(options: unknown): unknown {
   const d = gParent
   const native = d.instance?.native
   if (!native)
-    throw new Error('element must be mounted before rendering')
+    throw new Error('element must be initialized before rendering')
   d.render(native, options)
   return options
 }
@@ -128,15 +128,15 @@ export function renderChildrenNow(): void {
     renderOrdinaryChildren(d) // reconciliation algorithm
 }
 
-export function mount(d: Declaration): void {
-  callMount(d)
+export function initialize(d: Declaration): void {
+  callInitialize(d)
 }
 
-export function unmount(d: Declaration<any, any>, cause: Declaration): void {
+export function finalize(d: Declaration<any, any>, cause: Declaration): void {
   const self = d.instance
   if (self) {
     for (const x of self.children)
-      callUnmount(x, cause)
+      callFinalize(x, cause)
     self.native = undefined
   }
   d.instance = undefined
@@ -182,7 +182,7 @@ export function selfInstance<T>(): { model?: T } {
 export function selfInstanceInternal<E>(): Instance<E> {
   const self = gParent.instance
   if (!self)
-    throw new Error('getMountedInstance function can be called only inside rendering function')
+    throw new Error('selfInstanceInternal function can be called only inside rendering function')
   return self
 }
 
@@ -239,31 +239,31 @@ function callRender(d: Declaration): void {
     nonreactive(self.render, d)
 }
 
-function callMount(d: Declaration, sibling?: Declaration): Instance {
+function callInitialize(d: Declaration, sibling?: Declaration): Instance {
   // TODO: Make the code below exception-safe
   const rtti = d.rtti
   const self = d.instance = new Instance(d.parent.instance!.level + 1)
-  if (rtti.mount)
-    rtti.mount(d, sibling)
+  if (rtti.initialize)
+    rtti.initialize(d, sibling)
   else
-    self.native = d.renderingParent.instance?.native // default mount
+    self.native = d.renderingParent.instance?.native // default initialize
   if (d.args !== RefreshParent)
     Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? getTraceHint(d) : d.id)
   if (gTrace && gTraceMask.indexOf('m') >= 0 && new RegExp(gTrace, 'gi').test(getTraceHint(d)))
-    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.mounted`)
+    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.initialized`)
   return self
 }
 
-function callUnmount(d: Declaration, cause: Declaration): void {
+function callFinalize(d: Declaration, cause: Declaration): void {
   if (gTrace && gTraceMask.indexOf('u') >= 0 && new RegExp(gTrace, 'gi').test(getTraceHint(d)))
-    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.unmounting`)
-  if (d.args !== RefreshParent) // TODO: Consider creating one transaction for all un-mounts
+    console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.finalizing`)
+  if (d.args !== RefreshParent) // TODO: Consider creating one transaction for all finalizations at once
     Transaction.runAs({ standalone: true }, () => Reactronic.dispose(d.instance))
   const rtti = d.rtti
-  if (rtti.unmount)
-    rtti.unmount(d, cause)
+  if (rtti.finalize)
+    rtti.finalize(d, cause)
   else
-    unmount(d, cause) // default unmount
+    finalize(d, cause) // default finalize
 }
 
 function renderOrdinaryChildren(d: Declaration): void {
@@ -275,7 +275,7 @@ function renderOrdinaryChildren(d: Declaration): void {
     // Switch to the new list
     self.buffer = undefined
     self.children = newList
-    // Reconciliation loop - unmount or resolve existing
+    // Reconciliation loop - link to existing or finalize
     let sibling: Declaration | undefined = undefined
     let i = 0, j = 0
     while (i < oldList.length) {
@@ -291,13 +291,13 @@ function renderOrdinaryChildren(d: Declaration): void {
           i++, j++ // re-rendering is called below
         }
         else // diff < 0
-          j++ // initial rendering is called below (with mounting)
+          j++ // initial rendering is called below
         sibling = x
       }
       else // diff > 0
-        callUnmount(old, old), i++
+        callFinalize(old, old), i++
     }
-    // Reconciliation loop - mount, render, re-render
+    // Reconciliation loop - initialize, render, re-render
     sibling = undefined
     for (const x of buffer) {
       if (x.old) {
@@ -308,7 +308,7 @@ function renderOrdinaryChildren(d: Declaration): void {
         x.old = undefined // unlink to make it available for garbage collection
       }
       else
-        callMount(x, sibling), callRender(x) // initial rendering
+        callInitialize(x, sibling), callRender(x) // initial rendering
       sibling = x
     }
   }
@@ -322,7 +322,7 @@ function renderSortedChildren(d: Declaration): void {
     // Switch to the new list
     self.buffer = undefined
     self.children = newList
-    // Reconciliation loop - resolve, unmount, mount, render
+    // Reconciliation loop - link, render, initialize, finalize
     let sibling: Declaration | undefined = undefined
     let i = 0, j = 0
     while (i < oldList.length || j < newList.length) {
@@ -339,11 +339,11 @@ function renderSortedChildren(d: Declaration): void {
           i++, j++
         }
         else // diff < 0
-          callMount(x, sibling), callRender(x), j++ // initial rendering
+          callInitialize(x, sibling), callRender(x), j++ // initial rendering
         sibling = x
       }
       else // diff > 0
-        callUnmount(old, old), i++
+        callFinalize(old, old), i++
     }
   }
 }

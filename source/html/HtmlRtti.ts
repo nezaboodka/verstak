@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Reactronic } from 'reactronic'
-import { render, unmount, Declaration, Rtti, forAll } from '../core/api'
+import { render, finalize, Declaration, Rtti, forAll } from '../core/api'
 
 export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any> {
   static isDebugAttributeEnabled: boolean = false
@@ -21,7 +21,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     const native = self.native!
     const outer = AbstractHtmlRtti.gNativeParent
     try { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      AbstractHtmlRtti.gNativeParent = d // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}render(${e.id} r${ref.mounted!.cycle})`)
+      AbstractHtmlRtti.gNativeParent = d // console.log(`${'  '.repeat(Math.abs(self.level))}render(${e.id} r${self.revision})`)
       render(d) // proceed
       // TODO: native.sensorData.drag handling?
       AbstractHtmlRtti.blinkingEffect && blink(native, self.revision)
@@ -33,10 +33,10 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     }
   }
 
-  mount(d: Declaration<E, any>, sibling?: Declaration): void {
+  initialize(d: Declaration<E, any>, sibling?: Declaration): void {
     const parent = d.renderingParent.instance?.native as Element
     const native = this.createElement(d) // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    native.id = d.id // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}${parent.id}.appendChild(${e.id} r${ref.mounted!.cycle})`)
+    native.id = d.id // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.appendChild(${e.id} r${self.revision})`)
     if (!d.parent.rtti.sorting) {
       if (sibling !== undefined) {
         const prev = sibling.instance?.native
@@ -59,30 +59,30 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     const prev = sibling?.instance?.native
     const native = d.instance?.native
     if (native && prev instanceof Element && prev.nextSibling !== native) { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}${parent.id}.insertBefore(${(prev.nextSibling! as any)?.id})`)
+      // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.insertBefore(${(prev.nextSibling! as any)?.id})`)
       parent.insertBefore(native, prev.nextSibling)
     }
   }
 
-  static unmounting?: Element = undefined
-  unmount(d: Declaration<E, any>, cause: Declaration): void {
+  static finalizing?: Element = undefined
+  finalize(d: Declaration<E, any>, cause: Declaration): void {
     const self = d.instance
     const native = self?.native
-    if (!AbstractHtmlRtti.unmounting && native && native.parentElement) {
-      AbstractHtmlRtti.unmounting = native // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      try { // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}${e.parentElement.id}.removeChild(${e.id} r${ref.mounted!.cycle})`)
+    if (!AbstractHtmlRtti.finalizing && native && native.parentElement) {
+      AbstractHtmlRtti.finalizing = native // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      try { // console.log(`${'  '.repeat(Math.abs(self.level))}${e.parentElement.id}.removeChild(${e.id} r${self.revision})`)
         self?.resizing?.unobserve(native)
         native.remove()
-        unmount(d, cause) // proceed
+        finalize(d, cause) // proceed
       }
       finally {
-        AbstractHtmlRtti.unmounting = undefined
+        AbstractHtmlRtti.finalizing = undefined
       }
     }
-    else { // console.log(`${'  '.repeat(Math.abs(ref.mounted!.level))}???.unmount(${ref.id} r${ref.mounted!.cycle})`)
+    else { // console.log(`${'  '.repeat(Math.abs(self.level))}???.finalize(${ref.id} r${self.revision})`)
       if (native)
         self?.resizing?.unobserve(native)
-      unmount(d, cause) // proceed
+      finalize(d, cause) // proceed
     }
   }
 

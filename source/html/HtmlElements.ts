@@ -10,9 +10,9 @@ import { HtmlRtti, SvgRtti } from './HtmlRtti'
 
 export function HtmlBody(id: string, args: any, render: Render<HTMLElement>): Declaration<HTMLElement> {
   return declare(id, args, render, undefined, {
-    name: 'global.document.body',
+    name: id,
     sorting: false,
-    mount(d: Declaration<HTMLElement, any>, sibling?: Declaration): void {
+    initialize(d: Declaration<HTMLElement, any>, sibling?: Declaration): void {
       const native = global.document.body
       native.id = d.id
       d.instance!.native = native
