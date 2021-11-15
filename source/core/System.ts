@@ -195,7 +195,7 @@ export class RxDom {
     return RxDom.gParent.instance?.revision ?? 0
   }
 
-  static setTraceEnabled(enabled: boolean, mask: string, regexp: string): void {
+  static setTraceMode(enabled: boolean, mask: string, regexp: string): void {
     RxDom.gTrace = enabled ? regexp : undefined
     RxDom.gTraceMask = mask
   }
