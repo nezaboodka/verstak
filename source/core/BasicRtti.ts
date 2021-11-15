@@ -21,14 +21,9 @@ export function RxFragment<E = unknown, O = void>(id: string, args: any, render:
   return declare(id, args, render, undefined, RTTI_RX_FRAGMENT)
 }
 
-export function RxSortingFragment<E = unknown, O = void>(id: string, args: any, render: Render<E, O>): Declaration<E, O> {
-  return declare(id, args, render, undefined, RTTI_RX_SORTING_FRAGMENT)
+export function RxUnorderedFragment<E = unknown, O = void>(id: string, args: any, render: Render<E, O>): Declaration<E, O> {
+  return declare(id, args, render, undefined, RTTI_RX_UNORDERED_FRAGMENT)
 }
 
-export function ForeignFragment<E = unknown, O = void>(id: string, args: any, foreign: Declaration<E, O>, render: Render<E, O>): Declaration<E, O> {
-  return declare(id, args, render, undefined, RTTI_FOREIGN_FRAGMENT)
-}
-
-const RTTI_RX_FRAGMENT: Rtti<any, any> = { name: 'RxFragment', sorting: false }
-const RTTI_RX_SORTING_FRAGMENT: Rtti<any, any> = { name: 'RxSortingFragment', sorting: true }
-const RTTI_FOREIGN_FRAGMENT: Rtti<any, any> = { name: 'ForeignFragment', sorting: true }
+const RTTI_RX_FRAGMENT: Rtti<any, any> = { name: 'RxFragment', unordered: false }
+const RTTI_RX_UNORDERED_FRAGMENT: Rtti<any, any> = { name: 'RxSortingFragment', unordered: true }

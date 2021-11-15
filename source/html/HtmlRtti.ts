@@ -16,7 +16,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
 
   constructor(
     readonly name: string,
-    readonly sorting: boolean = false) {
+    readonly unordered: boolean = false) {
   }
 
   initialize(d: Declaration<E, any>): void {

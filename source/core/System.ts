@@ -38,7 +38,7 @@ export class Declaration<E = unknown, O = void> {
       null,                         // args
       () => { /* nop */ },          // render
       undefined,                    // superRender
-      { name: id, sorting: false }, // rtti
+      { name: id, unordered: false }, // rtti
       { } as Declaration,              // parent (lifecycle)
       { } as Declaration,              // rendering parent
       { } as Declaration,              // reactivity parent
@@ -57,7 +57,7 @@ export class Declaration<E = unknown, O = void> {
 
 export interface Rtti<E = unknown, O = void> {
   readonly name: string
-  readonly sorting: boolean
+  readonly unordered: boolean
   initialize?(d: Declaration<E, O>): void
   place?(d: Declaration<E, O>, sibling?: Declaration): void
   render?(d: Declaration<E, O>): void
@@ -122,10 +122,10 @@ function superRender(options: unknown): unknown {
 
 export function renderChildrenNow(): void {
   const d = gParent
-  if (d.rtti.sorting)
-    renderSortedChildren(d) // reconciliation algorithm
+  if (d.rtti.unordered)
+    renderUnorderedChildren(d)
   else
-    renderOrdinaryChildren(d) // reconciliation algorithm
+    renderOrdinaryChildren(d)
 }
 
 export function initialize(d: Declaration): void {
@@ -316,7 +316,7 @@ function renderOrdinaryChildren(d: Declaration): void {
   }
 }
 
-function renderSortedChildren(d: Declaration): void {
+function renderUnorderedChildren(d: Declaration): void {
   const self = d.instance
   if (self !== undefined && self.buffer !== undefined) {
     const oldList = self.children
