@@ -59,9 +59,9 @@ export interface Rtti<E = unknown, O = void> {
   readonly name: string
   readonly sorting: boolean
   render?(d: Declaration<E, O>): void
+  arrange?(d: Declaration<E, O>, sibling?: Declaration): void
   initialize?(d: Declaration<E, O>, sibling?: Declaration): void
   finalize?(d: Declaration<E, O>, cause: Declaration): void
-  reorder?(d: Declaration<E, O>, sibling?: Declaration): void
 }
 
 // declare, render, renderChildrenNow, initialize, finalize
@@ -301,8 +301,8 @@ function renderOrdinaryChildren(d: Declaration): void {
     sibling = undefined
     for (const x of buffer) {
       if (x.old) {
-        if (x.rtti.reorder)
-          x.rtti.reorder(x, sibling)
+        if (x.rtti.arrange)
+          x.rtti.arrange(x, sibling)
         if (x.args === RefreshParent || !argsAreEqual(x.args, x.old.args))
           callRender(x) // re-rendering
         x.old = undefined // unlink to make it available for garbage collection

@@ -33,6 +33,16 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     }
   }
 
+  arrange(d: Declaration<E, any>, sibling?: Declaration): void {
+    const parent = d.renderingParent.instance?.native as Element
+    const native = d.instance?.native
+    const nativeSibling = sibling?.instance?.native
+    if (native && nativeSibling instanceof Element && nativeSibling.nextSibling !== native) { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.insertBefore(${(prev.nextSibling! as any)?.id})`)
+      parent.insertBefore(native, nativeSibling.nextSibling)
+    }
+  }
+
   initialize(d: Declaration<E, any>, sibling?: Declaration): void {
     const parent = d.renderingParent.instance?.native as Element
     const native = this.createElement(d) // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -71,16 +81,6 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
       if (native)
         self?.resizing?.unobserve(native)
       finalize(d, cause) // proceed
-    }
-  }
-
-  reorder(d: Declaration<E, any>, sibling?: Declaration): void {
-    const parent = d.renderingParent.instance?.native as Element
-    const native = d.instance?.native
-    const nativeSibling = sibling?.instance?.native
-    if (native && nativeSibling instanceof Element && nativeSibling.nextSibling !== native) { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.insertBefore(${(prev.nextSibling! as any)?.id})`)
-      parent.insertBefore(native, nativeSibling.nextSibling)
     }
   }
 
