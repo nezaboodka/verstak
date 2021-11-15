@@ -78,8 +78,8 @@ export class RxDom {
     try {
       RxDom.gParent = RxDom.gRenderingParent = RxDom.gReactivityParent = d
       self.buffer = []
-      if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(RxDom.getTraceHint(d)))
-        console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${RxDom.getTraceHint(d)}.render/${d.instance?.revision}${d.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
+      if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(d)))
+        console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.render/${d.instance?.revision}${d.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
       if (d.superRender)
         d.superRender(RxDom.superRenderImpl, self.native)
       else
@@ -228,15 +228,15 @@ export class RxDom {
     else
       self.native = d.renderingParent.instance?.native // default initialize
     if (d.args !== RefreshParent)
-      Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? RxDom.getTraceHint(d) : d.id)
-    if (RxDom.gTrace && RxDom.gTraceMask.indexOf('m') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(RxDom.getTraceHint(d)))
-      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${RxDom.getTraceHint(d)}.initialized`)
+      Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? getTraceHint(d) : d.id)
+    if (RxDom.gTrace && RxDom.gTraceMask.indexOf('m') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(d)))
+      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.initialized`)
     return self
   }
 
   private static doFinalize(d: Declaration, cause: Declaration): void {
-    if (RxDom.gTrace && RxDom.gTraceMask.indexOf('u') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(RxDom.getTraceHint(d)))
-      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${RxDom.getTraceHint(d)}.finalizing`)
+    if (RxDom.gTrace && RxDom.gTraceMask.indexOf('u') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(d)))
+      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.finalizing`)
     if (d.args !== RefreshParent) // TODO: Consider creating one transaction for all finalizations at once
       Transaction.runAs({ standalone: true }, () => Reactronic.dispose(d.instance))
     const rtti = d.rtti
@@ -251,7 +251,7 @@ export class RxDom {
     if (self !== undefined && self.buffer !== undefined) {
       const oldList = self.children
       const buffer = self.buffer
-      const newList = buffer.slice().sort(RxDom.compareDeclarations)
+      const newList = buffer.slice().sort(compareDeclarations)
       // Switch to the new list
       self.buffer = undefined
       self.children = newList
@@ -261,7 +261,7 @@ export class RxDom {
       while (i < oldList.length) {
         const old = oldList[i]
         const x = newList[j]
-        const diff = x !== undefined ? RxDom.compareDeclarations(x, old) : 1
+        const diff = x !== undefined ? compareDeclarations(x, old) : 1
         if (diff <= 0) {
           if (sibling !== undefined && x.id === sibling.id)
             throw new Error(`duplicate id '${sibling.id}' inside '${d.id}'`)
@@ -282,7 +282,7 @@ export class RxDom {
       for (const x of buffer) {
         if (x.old) {
           x.rtti.place?.(x, sibling)
-          if (x.args === RefreshParent || !RxDom.argsAreEqual(x.args, x.old.args))
+          if (x.args === RefreshParent || !argsAreEqual(x.args, x.old.args))
             RxDom.doRender(x) // re-rendering
           x.old = undefined // unlink to make it available for garbage collection
         }
@@ -300,7 +300,7 @@ export class RxDom {
     const self = d.instance
     if (self !== undefined && self.buffer !== undefined) {
       const oldList = self.children
-      const newList = self.buffer.sort(RxDom.compareDeclarations)
+      const newList = self.buffer.sort(compareDeclarations)
       // Switch to the new list
       self.buffer = undefined
       self.children = newList
@@ -310,13 +310,13 @@ export class RxDom {
       while (i < oldList.length || j < newList.length) {
         const old = oldList[i]
         const x = newList[j]
-        const diff = RxDom.compareNullable(x, old, RxDom.compareDeclarations)
+        const diff = compareNullable(x, old, compareDeclarations)
         if (diff <= 0) {
           if (sibling !== undefined && x.id === sibling.id)
             throw new Error(`duplicate id '${sibling.id}' inside '${d.id}'`)
           if (diff === 0) {
             x.instance = old.instance // link to the existing instance
-            if (x.args === RefreshParent || !RxDom.argsAreEqual(x.args, old.args))
+            if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
               RxDom.doRender(x) // re-rendering
             i++, j++
           }
@@ -334,42 +334,6 @@ export class RxDom {
     }
   }
 
-  private static compareDeclarations(d1: Declaration, d2: Declaration): number {
-    return d1.id.localeCompare(d2.id)
-  }
-
-  private static compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T, b: T) => number): number {
-    let diff: number
-    if (b !== undefined)
-      diff = a !== undefined ? comparer(a, b) : 1
-    else
-      diff = a !== undefined ? -1 : 0
-    return diff
-  }
-
-  private static argsAreEqual(a1: any, a2: any): boolean {
-    let result = a1 === a2
-    if (!result) {
-      if (Array.isArray(a1)) {
-        result = Array.isArray(a2) &&
-          a1.length === a2.length &&
-          a1.every((t, i) => t === a2[i])
-      }
-      else if (a1 === Object(a1) && a2 === Object(a2)) {
-        for (const p in a1) {
-          result = a1[p] === a2[p]
-          if (!result)
-            break
-        }
-      }
-    }
-    return result
-  }
-
-  private static getTraceHint(d: Declaration): string {
-    return `${d.rtti.name}:${d.id}`
-  }
-
   private static forEachChildRecursively(d: Declaration, action: (e: any) => void): void {
     const self = d.instance
     if (self) {
@@ -378,4 +342,40 @@ export class RxDom {
       self.children.forEach(x => RxDom.forEachChildRecursively(x, action))
     }
   }
+}
+
+function compareDeclarations(d1: Declaration, d2: Declaration): number {
+  return d1.id.localeCompare(d2.id)
+}
+
+function compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T, b: T) => number): number {
+  let diff: number
+  if (b !== undefined)
+    diff = a !== undefined ? comparer(a, b) : 1
+  else
+    diff = a !== undefined ? -1 : 0
+  return diff
+}
+
+function argsAreEqual(a1: any, a2: any): boolean {
+  let result = a1 === a2
+  if (!result) {
+    if (Array.isArray(a1)) {
+      result = Array.isArray(a2) &&
+        a1.length === a2.length &&
+        a1.every((t, i) => t === a2[i])
+    }
+    else if (a1 === Object(a1) && a2 === Object(a2)) {
+      for (const p in a1) {
+        result = a1[p] === a2[p]
+        if (!result)
+          break
+      }
+    }
+  }
+  return result
+}
+
+function getTraceHint(d: Declaration): string {
+  return `${d.rtti.name}:${d.id}`
 }
