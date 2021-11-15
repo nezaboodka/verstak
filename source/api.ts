@@ -5,9 +5,10 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
+export * from './core/Data'
 export * from './core/System'
 export * from './core/Restyler'
-export * from './core/BasicElements'
+export * from './core/Elements'
 
 export * from './html/Sensor'
 export * from './html/HtmlRtti'

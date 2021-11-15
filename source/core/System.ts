@@ -6,67 +6,11 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, Reactronic, options } from 'reactronic'
-
-// Render, SuperRender, RefreshParent
-
-export type Render<E = unknown, O = void> = (element: E, options: O) => void
-export type SuperRender<O = unknown, E = void> = (render: (options: O) => O, element: E) => void
-export const RefreshParent = Symbol('RefreshParent') as unknown as void
-
-// Declaration
-
-export class Declaration<E = unknown, O = void> {
-  constructor(
-    readonly id: string,
-    readonly args: unknown,
-    readonly render: Render<E, O>,
-    readonly superRender: SuperRender<O, E> | undefined,
-    readonly rtti: Rtti<E, O>,
-    readonly parent: Declaration,
-    readonly renderingParent: Declaration,
-    readonly reactivityParent: Declaration,
-    public instance?: Instance<E, O>) {
-  }
-
-  old?: Declaration<E, O>
-  get native(): E | undefined { return this.instance?.native }
-
-  static createRoot<E>(id: string, native: E): Declaration<E> {
-    const self = new Instance<E>(0)
-    const m = new Declaration<E>(
-      id,                           // id
-      null,                         // args
-      () => { /* nop */ },          // render
-      undefined,                    // superRender
-      { name: id, unordered: false }, // rtti
-      { } as Declaration,              // parent (lifecycle)
-      { } as Declaration,              // rendering parent
-      { } as Declaration,              // reactivity parent
-      self)                         // instance
-    // Initialize
-    const a: any = m
-    a['parent'] = m
-    a['renderingParent'] = m
-    a['reactivityParent'] = m
-    self.native = native
-    return m
-  }
-}
-
-// Rtti - Run-Time Type Info
-
-export interface Rtti<E = unknown, O = void> {
-  readonly name: string
-  readonly unordered: boolean
-  initialize?(d: Declaration<E, O>): void
-  place?(d: Declaration<E, O>, sibling?: Declaration): void
-  render?(d: Declaration<E, O>): void
-  finalize?(d: Declaration<E, O>, cause: Declaration): void
-}
+import { Render, SuperRender, RefreshParent, Rtti, AbstractInstance, Declaration } from './Data'
 
 // Instance
 
-export class Instance<E = unknown, O = void> {
+export class Instance<E = unknown, O = void> implements AbstractInstance<E, O> {
   readonly level: number
   revision: number = 0
   native?: E = undefined
@@ -86,17 +30,26 @@ export class Instance<E = unknown, O = void> {
   }
 }
 
-export const ROOT = Declaration.createRoot<unknown>('ROOT', undefined)
 
 // declare, render, renderChildrenNow, initialize, finalize
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 export class RxDom {
-  static gParent: Declaration<any, any> = ROOT
-  static gRenderingParent: Declaration<any, any> = ROOT
-  static gReactivityParent: Declaration<any, any> = ROOT
+  static readonly ROOT = RxDom.createRootDeclaration<unknown>('ROOT', undefined)
+  static gParent: Declaration<any, any> = RxDom.ROOT
+  static gRenderingParent: Declaration<any, any> = RxDom.ROOT
+  static gReactivityParent: Declaration<any, any> = RxDom.ROOT
   static gTrace: string | undefined = undefined
   static gTraceMask: string = 'r'
+
+  static Root(render: Render): void {
+    const self = RxDom.ROOT.instance!
+    if (self.buffer)
+      throw new Error('ReactronicFrontRendering should not be called recursively')
+    self.buffer = []
+    render(self.native)
+    Transaction.run(RxDom.renderChildrenNow)
+  }
 
   static declare<E = unknown, O = void>(
     id: string, args: unknown, render: Render<E, O>,
@@ -201,6 +154,27 @@ export class RxDom {
     }
   }
 
+  static createRootDeclaration<E>(id: string, native: E): Declaration<E> {
+    const self = new Instance<E>(0)
+    const m = new Declaration<E>(
+      id,                           // id
+      null,                         // args
+      () => { /* nop */ },          // render
+      undefined,                    // superRender
+      { name: id, unordered: false }, // rtti
+      { } as Declaration,              // parent (lifecycle)
+      { } as Declaration,              // rendering parent
+      { } as Declaration,              // reactivity parent
+      self)                         // instance
+    // Initialize
+    const a: any = m
+    a['parent'] = m
+    a['renderingParent'] = m
+    a['reactivityParent'] = m
+    self.native = native
+    return m
+  }
+
   // selfInstance, selfRevision, trace, forAll
 
   static selfInstance<T>(): { model?: T } {
@@ -221,13 +195,13 @@ export class RxDom {
     return RxDom.gParent.instance?.revision ?? 0
   }
 
-  static trace(enabled: boolean, mask: string, regexp: string): void {
+  static setTraceEnabled(enabled: boolean, mask: string, regexp: string): void {
     RxDom.gTrace = enabled ? regexp : undefined
     RxDom.gTraceMask = mask
   }
 
   static forAll<E>(action: (e: E) => void): void {
-    RxDom.forEachChildRecursively(ROOT, action)
+    RxDom.forEachChildRecursively(RxDom.ROOT, action)
   }
 
   static renderInline<E, O>(instance: Instance<E, O>, d: Declaration<E, O>): void {
@@ -237,7 +211,9 @@ export class RxDom {
     d.rtti.render ? d.rtti.render(d) : RxDom.render(d)
   }
 
-  static doRender(d: Declaration): void {
+  // Internal
+
+  private static doRender(d: Declaration): void {
     const self = d.instance!
     if (d.args === RefreshParent) // inline elements are always rendered
       RxDom.renderInline(self, d)
@@ -245,7 +221,7 @@ export class RxDom {
       nonreactive(self.render, d)
   }
 
-  static doInitialize(d: Declaration): Instance {
+  private static doInitialize(d: Declaration): Instance {
     // TODO: Make the code below exception-safe
     const rtti = d.rtti
     const self = d.instance = new Instance(d.parent.instance!.level + 1)
@@ -260,7 +236,7 @@ export class RxDom {
     return self
   }
 
-  static doFinalize(d: Declaration, cause: Declaration): void {
+  private static doFinalize(d: Declaration, cause: Declaration): void {
     if (RxDom.gTrace && RxDom.gTraceMask.indexOf('u') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(RxDom.getTraceHint(d)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${RxDom.getTraceHint(d)}.finalizing`)
     if (d.args !== RefreshParent) // TODO: Consider creating one transaction for all finalizations at once
@@ -272,7 +248,7 @@ export class RxDom {
       RxDom.finalize(d, cause) // default finalize
   }
 
-  static renderOrdinaryChildren(d: Declaration): void {
+  private static renderOrdinaryChildren(d: Declaration): void {
     const self = d.instance
     if (self !== undefined && self.buffer !== undefined) {
       const oldList = self.children
@@ -322,7 +298,7 @@ export class RxDom {
     }
   }
 
-  static renderUnorderedChildren(d: Declaration): void {
+  private static renderUnorderedChildren(d: Declaration): void {
     const self = d.instance
     if (self !== undefined && self.buffer !== undefined) {
       const oldList = self.children
@@ -360,11 +336,11 @@ export class RxDom {
     }
   }
 
-  static compareDeclarations(d1: Declaration, d2: Declaration): number {
+  private static compareDeclarations(d1: Declaration, d2: Declaration): number {
     return d1.id.localeCompare(d2.id)
   }
 
-  static compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T, b: T) => number): number {
+  private static compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T, b: T) => number): number {
     let diff: number
     if (b !== undefined)
       diff = a !== undefined ? comparer(a, b) : 1
@@ -373,7 +349,7 @@ export class RxDom {
     return diff
   }
 
-  static argsAreEqual(a1: any, a2: any): boolean {
+  private static argsAreEqual(a1: any, a2: any): boolean {
     let result = a1 === a2
     if (!result) {
       if (Array.isArray(a1)) {
@@ -392,11 +368,11 @@ export class RxDom {
     return result
   }
 
-  static getTraceHint(d: Declaration): string {
+  private static getTraceHint(d: Declaration): string {
     return `${d.rtti.name}:${d.id}`
   }
 
-  static forEachChildRecursively(d: Declaration, action: (e: any) => void): void {
+  private static forEachChildRecursively(d: Declaration, action: (e: any) => void): void {
     const self = d.instance
     if (self) {
       const native = self.native

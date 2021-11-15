@@ -5,17 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Transaction } from 'reactronic'
-import { Render, Declaration, Rtti, RxDom, ROOT } from './System'
-
-export function ReactronicFront(render: Render): void {
-  const self = ROOT.instance!
-  if (self.buffer)
-    throw new Error('ReactronicFrontRendering should not be called recursively')
-  self.buffer = []
-  render(self.native)
-  Transaction.run(RxDom.renderChildrenNow)
-}
+import { Render, Rtti, Declaration } from './Data'
+import { RxDom } from './System'
 
 export function RxFragment<E = unknown, O = void>(id: string, args: any, render: Render<E, O>): Declaration<E, O> {
   return RxDom.declare(id, args, render, undefined, RTTI_RX_FRAGMENT)
