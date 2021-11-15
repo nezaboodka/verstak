@@ -58,9 +58,9 @@ export class Declaration<E = unknown, O = void> {
 export interface Rtti<E = unknown, O = void> {
   readonly name: string
   readonly sorting: boolean
-  render?(d: Declaration<E, O>): void
-  placement?(d: Declaration<E, O>, sibling?: Declaration): void
   initialize?(d: Declaration<E, O>): void
+  place?(d: Declaration<E, O>, sibling?: Declaration): void
+  render?(d: Declaration<E, O>): void
   finalize?(d: Declaration<E, O>, cause: Declaration): void
 }
 
@@ -301,14 +301,14 @@ function renderOrdinaryChildren(d: Declaration): void {
     sibling = undefined
     for (const x of buffer) {
       if (x.old) {
-        x.rtti.placement?.(x, sibling)
+        x.rtti.place?.(x, sibling)
         if (x.args === RefreshParent || !argsAreEqual(x.args, x.old.args))
           callRender(x) // re-rendering
         x.old = undefined // unlink to make it available for garbage collection
       }
       else {
         callInitialize(x)
-        x.rtti.placement?.(x, sibling)
+        x.rtti.place?.(x, sibling)
         callRender(x) // initial rendering
       }
       sibling = x
@@ -342,7 +342,7 @@ function renderSortedChildren(d: Declaration): void {
         }
         else { // diff < 0
           callInitialize(x)
-          x.rtti.placement?.(x)
+          x.rtti.place?.(x)
           callRender(x) // initial rendering
           j++
         }
