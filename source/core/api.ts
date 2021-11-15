@@ -11,15 +11,7 @@ export {
   SuperRender,
   Declaration,
   Rtti,
-  declare,
-  baseInitialize,
-  baseRender,
-  baseFinalize,
-  renderChildrenNow,
-  selfInstance,
-  selfRevision,
-  trace,
-  forAll,
+  RxDom,
 } from './System'
 export * from './Restyler'
 export * from './BasicElements'

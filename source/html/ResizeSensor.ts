@@ -7,7 +7,7 @@
 
 import { options, TraceLevel, transaction } from 'reactronic'
 import { Sensor } from './Sensor'
-import { selfInstanceInternal } from '../core/System'
+import { RxDom } from '../core/System'
 
 export interface ResizedElement {
   readonly borderBoxSize: ReadonlyArray<ResizeObserverSize>
@@ -31,7 +31,7 @@ export class ResizeSensor extends Sensor {
   }
 
   observeResizeOfRenderingElement(value: boolean): void {
-    const self = selfInstanceInternal<Element>()
+    const self = RxDom.selfInstanceInternal<Element>()
     if (value) {
       if (self.resizing !== undefined && self.resizing !== this.observer)
         self.resizing.unobserve(self.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
