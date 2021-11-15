@@ -10,7 +10,7 @@ import { RxDom, Declaration, Rtti } from '../core/api'
 
 export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any> {
   static isDebugAttributeEnabled: boolean = false
-  static gNativeParent: Declaration<any, any> = RxDom.createRootDeclaration('html > body', global.document.body)
+  static gNativeParent: Declaration<any, any> = RxDom.createStaticDeclaration('html > body', global.document.body)
   static gFinalizing?: Element = undefined
   private static _blinkingEffect: string | undefined = undefined
 

@@ -33,7 +33,7 @@ export class Instance<E = unknown, O = void> implements AbstractInstance<E, O> {
 // RxDom
 
 export class RxDom {
-  static readonly ROOT = RxDom.createRootDeclaration<unknown>('ROOT', undefined)
+  static readonly ROOT = RxDom.createStaticDeclaration<unknown>('ROOT', undefined)
   static gParent: Declaration<any, any> = RxDom.ROOT
   static gRenderingParent: Declaration<any, any> = RxDom.ROOT
   static gReactivityParent: Declaration<any, any> = RxDom.ROOT
@@ -81,7 +81,7 @@ export class RxDom {
       if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(d)))
         console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.render/${d.instance?.revision}${d.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
       if (d.superRender)
-        d.superRender(RxDom.superRenderImpl, self.native)
+        d.superRender(RxDom.superRender, self.native)
       else
         d.render(self.native, undefined)
       RxDom.renderChildrenNow() // ignored if rendered already
@@ -93,7 +93,7 @@ export class RxDom {
     }
   }
 
-  private static superRenderImpl(options: unknown): unknown {
+  private static superRender(options: unknown): unknown {
     const d = RxDom.gParent
     const native = d.instance?.native
     if (!native)
@@ -152,7 +152,7 @@ export class RxDom {
     }
   }
 
-  static createRootDeclaration<E>(id: string, native: E): Declaration<E> {
+  static createStaticDeclaration<E>(id: string, native: E): Declaration<E> {
     const self = new Instance<E>(0)
     const m = new Declaration<E>(
       id,                           // id
