@@ -86,7 +86,7 @@ export function declare<E = unknown, O = void>(
   return d
 }
 
-export function render(d: Declaration<any, any>): void {
+export function baseRender(d: Declaration<any, any>): void {
   const self = d.instance
   if (!self)
     throw new Error('element must be initialized before rendering')
@@ -99,7 +99,7 @@ export function render(d: Declaration<any, any>): void {
     if (gTrace && gTraceMask.indexOf('r') >= 0 && new RegExp(gTrace, 'gi').test(getTraceHint(d)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.render/${d.instance?.revision}${d.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
     if (d.superRender)
-      d.superRender(superRender, self.native)
+      d.superRender(superRenderImpl, self.native)
     else
       d.render(self.native, undefined)
     renderChildrenNow() // ignored if rendered already
@@ -111,7 +111,7 @@ export function render(d: Declaration<any, any>): void {
   }
 }
 
-function superRender(options: unknown): unknown {
+function superRenderImpl(options: unknown): unknown {
   const d = gParent
   const native = d.instance?.native
   if (!native)
@@ -128,15 +128,15 @@ export function renderChildrenNow(): void {
     renderOrdinaryChildren(d)
 }
 
-export function initialize(d: Declaration): void {
-  callInitialize(d)
+export function baseInitialize(d: Declaration): void {
+  doInitialize(d)
 }
 
-export function finalize(d: Declaration<any, any>, cause: Declaration): void {
+export function baseFinalize(d: Declaration<any, any>, cause: Declaration): void {
   const self = d.instance
   if (self) {
     for (const x of self.children)
-      callFinalize(x, cause)
+      doFinalize(x, cause)
     self.native = undefined
   }
   d.instance = undefined
@@ -228,10 +228,10 @@ function renderInline<E, O>(instance: Instance<E, O>, d: Declaration<E, O>): voi
   if (instance === undefined || instance === null)
     debugger // temporary, TODO: debug
   instance.revision++
-  d.rtti.render ? d.rtti.render(d) : render(d)
+  d.rtti.render ? d.rtti.render(d) : baseRender(d)
 }
 
-function callRender(d: Declaration): void {
+function doRender(d: Declaration): void {
   const self = d.instance!
   if (d.args === RefreshParent) // inline elements are always rendered
     renderInline(self, d)
@@ -239,7 +239,7 @@ function callRender(d: Declaration): void {
     nonreactive(self.render, d)
 }
 
-function callInitialize(d: Declaration): Instance {
+function doInitialize(d: Declaration): Instance {
   // TODO: Make the code below exception-safe
   const rtti = d.rtti
   const self = d.instance = new Instance(d.parent.instance!.level + 1)
@@ -254,7 +254,7 @@ function callInitialize(d: Declaration): Instance {
   return self
 }
 
-function callFinalize(d: Declaration, cause: Declaration): void {
+function doFinalize(d: Declaration, cause: Declaration): void {
   if (gTrace && gTraceMask.indexOf('u') >= 0 && new RegExp(gTrace, 'gi').test(getTraceHint(d)))
     console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.finalizing`)
   if (d.args !== RefreshParent) // TODO: Consider creating one transaction for all finalizations at once
@@ -263,7 +263,7 @@ function callFinalize(d: Declaration, cause: Declaration): void {
   if (rtti.finalize)
     rtti.finalize(d, cause)
   else
-    finalize(d, cause) // default finalize
+    baseFinalize(d, cause) // default finalize
 }
 
 function renderOrdinaryChildren(d: Declaration): void {
@@ -295,7 +295,7 @@ function renderOrdinaryChildren(d: Declaration): void {
         sibling = x
       }
       else // diff > 0
-        callFinalize(old, old), i++
+        doFinalize(old, old), i++
     }
     // Reconciliation loop - initialize, render, re-render
     sibling = undefined
@@ -303,13 +303,13 @@ function renderOrdinaryChildren(d: Declaration): void {
       if (x.old) {
         x.rtti.place?.(x, sibling)
         if (x.args === RefreshParent || !argsAreEqual(x.args, x.old.args))
-          callRender(x) // re-rendering
+          doRender(x) // re-rendering
         x.old = undefined // unlink to make it available for garbage collection
       }
       else {
-        callInitialize(x)
+        doInitialize(x)
         x.rtti.place?.(x, sibling)
-        callRender(x) // initial rendering
+        doRender(x) // initial rendering
       }
       sibling = x
     }
@@ -337,19 +337,19 @@ function renderUnorderedChildren(d: Declaration): void {
         if (diff === 0) {
           x.instance = old.instance // link to the existing instance
           if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
-            callRender(x) // re-rendering
+            doRender(x) // re-rendering
           i++, j++
         }
         else { // diff < 0
-          callInitialize(x)
+          doInitialize(x)
           x.rtti.place?.(x)
-          callRender(x) // initial rendering
+          doRender(x) // initial rendering
           j++
         }
         sibling = x
       }
       else // diff > 0
-        callFinalize(old, old), i++
+        doFinalize(old, old), i++
     }
   }
 }

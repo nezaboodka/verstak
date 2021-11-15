@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Reactronic } from 'reactronic'
-import { render, finalize, Declaration, Rtti, forAll } from '../core/api'
+import { baseRender, baseFinalize, Declaration, Rtti, forAll } from '../core/api'
 
 export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any> {
   static isDebugAttributeEnabled: boolean = false
@@ -54,7 +54,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     const outer = AbstractHtmlRtti.gNativeParent
     try { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       AbstractHtmlRtti.gNativeParent = d // console.log(`${'  '.repeat(Math.abs(self.level))}render(${e.id} r${self.revision})`)
-      render(d) // proceed
+      baseRender(d)
       // TODO: native.sensorData.drag handling?
       AbstractHtmlRtti.blinkingEffect && blink(native, self.revision)
       if (AbstractHtmlRtti.isDebugAttributeEnabled)
@@ -73,7 +73,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
       try { // console.log(`${'  '.repeat(Math.abs(self.level))}${e.parentElement.id}.removeChild(${e.id} r${self.revision})`)
         self?.resizing?.unobserve(native)
         native.remove()
-        finalize(d, cause) // proceed
+        baseFinalize(d, cause) // proceed
       }
       finally {
         AbstractHtmlRtti.gFinalizing = undefined
@@ -82,7 +82,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     else { // console.log(`${'  '.repeat(Math.abs(self.level))}???.finalize(${ref.id} r${self.revision})`)
       if (native)
         self?.resizing?.unobserve(native)
-      finalize(d, cause) // proceed
+      baseFinalize(d, cause) // proceed
     }
   }
 
