@@ -30,9 +30,7 @@ export class Instance<E = unknown, O = void> implements AbstractInstance<E, O> {
   }
 }
 
-
-// declare, render, renderChildrenNow, initialize, finalize
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+// RxDom
 
 export class RxDom {
   static readonly ROOT = RxDom.createRootDeclaration<unknown>('ROOT', undefined)
@@ -381,5 +379,3 @@ export class RxDom {
     }
   }
 }
-
-// Internal
