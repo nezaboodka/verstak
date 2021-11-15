@@ -59,8 +59,8 @@ export interface Rtti<E = unknown, O = void> {
   readonly name: string
   readonly sorting: boolean
   render?(d: Declaration<E, O>): void
-  arrange?(d: Declaration<E, O>, sibling?: Declaration): void
-  initialize?(d: Declaration<E, O>, sibling?: Declaration): void
+  placement?(d: Declaration<E, O>, sibling?: Declaration): void
+  initialize?(d: Declaration<E, O>): void
   finalize?(d: Declaration<E, O>, cause: Declaration): void
 }
 
@@ -239,12 +239,12 @@ function callRender(d: Declaration): void {
     nonreactive(self.render, d)
 }
 
-function callInitialize(d: Declaration, sibling?: Declaration): Instance {
+function callInitialize(d: Declaration): Instance {
   // TODO: Make the code below exception-safe
   const rtti = d.rtti
   const self = d.instance = new Instance(d.parent.instance!.level + 1)
   if (rtti.initialize)
-    rtti.initialize(d, sibling)
+    rtti.initialize(d)
   else
     self.native = d.renderingParent.instance?.native // default initialize
   if (d.args !== RefreshParent)
@@ -301,14 +301,16 @@ function renderOrdinaryChildren(d: Declaration): void {
     sibling = undefined
     for (const x of buffer) {
       if (x.old) {
-        if (x.rtti.arrange)
-          x.rtti.arrange(x, sibling)
+        x.rtti.placement?.(x, sibling)
         if (x.args === RefreshParent || !argsAreEqual(x.args, x.old.args))
           callRender(x) // re-rendering
         x.old = undefined // unlink to make it available for garbage collection
       }
-      else
-        callInitialize(x, sibling), callRender(x) // initial rendering
+      else {
+        callInitialize(x)
+        x.rtti.placement?.(x, sibling)
+        callRender(x) // initial rendering
+      }
       sibling = x
     }
   }
@@ -338,8 +340,12 @@ function renderSortedChildren(d: Declaration): void {
             callRender(x) // re-rendering
           i++, j++
         }
-        else // diff < 0
-          callInitialize(x, sibling), callRender(x), j++ // initial rendering
+        else { // diff < 0
+          callInitialize(x)
+          x.rtti.placement?.(x)
+          callRender(x) // initial rendering
+          j++
+        }
         sibling = x
       }
       else // diff > 0

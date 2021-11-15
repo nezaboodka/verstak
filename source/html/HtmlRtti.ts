@@ -33,33 +33,33 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     }
   }
 
-  arrange(d: Declaration<E, any>, sibling?: Declaration): void {
-    const parent = d.renderingParent.instance?.native as Element
-    const native = d.instance?.native
-    const nativeSibling = sibling?.instance?.native
-    if (native && nativeSibling instanceof Element && nativeSibling.nextSibling !== native) { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.insertBefore(${(prev.nextSibling! as any)?.id})`)
-      parent.insertBefore(native, nativeSibling.nextSibling)
+  placement(d: Declaration<E, any>, sibling?: Declaration): void {
+    const self = d.instance
+    const native = self?.native
+    if (native) {
+      const parent = d.renderingParent
+      const nParent = parent.instance?.native
+      if (nParent !== native.parentNode) {
+        native.remove() // remove from previous parent
+        if (nParent instanceof Element) {
+          if (sibling) {
+            const nSibling = sibling.instance?.native
+            if (nSibling instanceof Element && nSibling.nextSibling !== native)
+              nParent.insertBefore(native, nSibling.nextSibling)
+          }
+          else
+            nParent.appendChild(native)
+          // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.insertBefore(${sibling?.id ?? '<null>'})`)
+        }
+      }
     }
   }
 
-  initialize(d: Declaration<E, any>, sibling?: Declaration): void {
-    const parent = d.renderingParent.instance?.native as Element
-    const native = this.createElement(d) // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    native.id = d.id // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.appendChild(${e.id} r${self.revision})`)
-    if (!d.parent.rtti.sorting) {
-      if (sibling !== undefined) {
-        const prev = sibling.instance?.native
-        if (prev instanceof Element)
-          parent.insertBefore(native, prev.nextSibling)
-      }
-      else
-        parent.insertBefore(native, parent.firstChild)
-    }
-    else
-      parent.appendChild(native)
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  initialize(d: Declaration<E, any>): void {
+    const native = this.createElement(d)
+    native.id = d.id
     d.instance!.native = native
+    // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.appendChild(${e.id} r${self.revision})`)
   }
 
   static finalizing?: Element = undefined
