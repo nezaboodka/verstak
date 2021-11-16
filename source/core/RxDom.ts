@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, Reactronic, options } from 'reactronic'
-import { Render, SuperRender, RefreshParent, Rtti, AbstractInstance, Declaration } from './Data'
+import { Render, SuperRender, RefreshParent, Rtti, AbstractInstance, NodeInfo } from './Data'
 
 // Instance
 
@@ -15,8 +15,8 @@ export class Instance<E = unknown, O = void> implements AbstractInstance<E, O> {
   revision: number = 0
   native?: E = undefined
   model?: unknown = undefined
-  buffer: Array<Declaration<any, any>> | undefined = undefined
-  children: ReadonlyArray<Declaration<any, any>> = Object.freeze([])
+  buffer: Array<NodeInfo<any, any>> | undefined = undefined
+  children: ReadonlyArray<NodeInfo<any, any>> = Object.freeze([])
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
@@ -24,8 +24,8 @@ export class Instance<E = unknown, O = void> implements AbstractInstance<E, O> {
   }
 
   @reaction @options({ sensitiveArgs: true }) // @noSideEffects(true)
-  render(d: Declaration<E, O>): void {
-    RxDom.renderInline(this, d)
+  render(ni: NodeInfo<E, O>): void {
+    RxDom.renderInline(this, ni)
     Reactronic.configureCurrentMethod({ order: this.level })
   }
 }
@@ -34,9 +34,9 @@ export class Instance<E = unknown, O = void> implements AbstractInstance<E, O> {
 
 export class RxDom {
   static readonly ROOT = RxDom.createStaticDeclaration<unknown>('ROOT', undefined)
-  static gParent: Declaration<any, any> = RxDom.ROOT
-  static gRenderingParent: Declaration<any, any> = RxDom.ROOT
-  static gReactivityParent: Declaration<any, any> = RxDom.ROOT
+  static gParent: NodeInfo<any, any> = RxDom.ROOT
+  static gRenderingParent: NodeInfo<any, any> = RxDom.ROOT
+  static gReactivityParent: NodeInfo<any, any> = RxDom.ROOT
   static gTrace: string | undefined = undefined
   static gTraceMask: string = 'r'
 
@@ -52,8 +52,8 @@ export class RxDom {
   static declare<E = unknown, O = void>(
     id: string, args: unknown, render: Render<E, O>,
     superRender: SuperRender<O, E> | undefined,
-    rtti: Rtti<E, O>, parent?: Declaration,
-    renderingParent?: Declaration, reactivityParent?: Declaration): Declaration<E, O> {
+    rtti: Rtti<E, O>, parent?: NodeInfo,
+    renderingParent?: NodeInfo, reactivityParent?: NodeInfo): NodeInfo<E, O> {
 
     const p = parent ?? RxDom.gParent
     const p2 = renderingParent ?? RxDom.gRenderingParent
@@ -61,32 +61,32 @@ export class RxDom {
     const self = p.instance
     if (!self)
       throw new Error('element must be initialized before children')
-    const d = new Declaration<E, O>(id, args, render, superRender, rtti, p, p2, p3)
+    const ni = new NodeInfo<E, O>(id, args, render, superRender, rtti, p, p2, p3)
     if (self.buffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    self.buffer.push(d)
-    return d
+    self.buffer.push(ni)
+    return ni
   }
 
-  static render(d: Declaration<any, any>): void {
-    const self = d.instance
+  static render(ni: NodeInfo<any, any>): void {
+    const self = ni.instance
     if (!self)
       throw new Error('element must be initialized before rendering')
     const outer = RxDom.gParent
     const renderingOuter = RxDom.gRenderingParent
     const reactivityOuter = RxDom.gReactivityParent
     try {
-      RxDom.gParent = RxDom.gRenderingParent = RxDom.gReactivityParent = d
+      RxDom.gParent = RxDom.gRenderingParent = RxDom.gReactivityParent = ni
       self.buffer = []
-      if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(d)))
-        console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.render/${d.instance?.revision}${d.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
-      if (d.superRender)
-        d.superRender(options => {
-          d.render(self.native, options)
+      if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(ni)))
+        console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(ni.instance!.level))}${getTraceHint(ni)}.render/${ni.instance?.revision}${ni.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
+      if (ni.superRender)
+        ni.superRender(options => {
+          ni.render(self.native, options)
           return options
         }, self.native)
       else
-        d.render(self.native, undefined)
+        ni.render(self.native, undefined)
       RxDom.renderChildrenNow() // ignored if rendered already
     }
     finally {
@@ -97,33 +97,33 @@ export class RxDom {
   }
 
   static renderChildrenNow(): void {
-    const d = RxDom.gParent
-    if (d.rtti.unordered)
-      RxDom.renderUnorderedChildren(d)
+    const ni = RxDom.gParent
+    if (ni.rtti.unordered)
+      RxDom.renderUnorderedChildren(ni)
     else
-      RxDom.renderNaturallyOrderedChildren(d)
+      RxDom.renderNaturallyOrderedChildren(ni)
   }
 
-  static initialize(d: Declaration): void {
-    RxDom.doInitialize(d)
+  static initialize(ni: NodeInfo): void {
+    RxDom.doInitialize(ni)
   }
 
-  static finalize(d: Declaration<any, any>, cause: Declaration): void {
-    const self = d.instance
+  static finalize(ni: NodeInfo<any, any>, cause: NodeInfo): void {
+    const self = ni.instance
     if (self) {
       for (const x of self.children)
         RxDom.doFinalize(x, cause)
       self.native = undefined
     }
-    d.instance = undefined
+    ni.instance = undefined
   }
 
-  static useAnotherRenderingParent<E>(d: Declaration<E>, render: Render<E>): void {
-    const native = d.instance?.native
+  static useAnotherRenderingParent<E>(ni: NodeInfo<E>, render: Render<E>): void {
+    const native = ni.instance?.native
     if (native) {
       const outer = RxDom.gRenderingParent
       try {
-        RxDom.gRenderingParent = d
+        RxDom.gRenderingParent = ni
         render(native)
       }
       finally {
@@ -132,12 +132,12 @@ export class RxDom {
     }
   }
 
-  static useAnotherReactivityParent<E>(d: Declaration<E>, render: Render<E>): void {
-    const native = d.instance?.native
+  static useAnotherReactivityParent<E>(ni: NodeInfo<E>, render: Render<E>): void {
+    const native = ni.instance?.native
     if (native) {
       const outer = RxDom.gReactivityParent
       try {
-        RxDom.gReactivityParent = d
+        RxDom.gReactivityParent = ni
         render(native)
       }
       finally {
@@ -146,25 +146,25 @@ export class RxDom {
     }
   }
 
-  static createStaticDeclaration<E>(id: string, native: E): Declaration<E> {
+  static createStaticDeclaration<E>(id: string, native: E): NodeInfo<E> {
     const self = new Instance<E>(0)
-    const m = new Declaration<E>(
+    const ni = new NodeInfo<E>(
       id,                           // id
       null,                         // args
       () => { /* nop */ },          // render
       undefined,                    // superRender
       { name: id, unordered: false }, // rtti
-      { } as Declaration,              // parent (lifecycle)
-      { } as Declaration,              // rendering parent
-      { } as Declaration,              // reactivity parent
+      { } as NodeInfo,              // parent (lifecycle)
+      { } as NodeInfo,              // rendering parent
+      { } as NodeInfo,              // reactivity parent
       self)                         // instance
     // Initialize
-    const a: any = m
-    a['parent'] = m
-    a['renderingParent'] = m
-    a['reactivityParent'] = m
+    const a: any = ni
+    a['parent'] = ni
+    a['renderingParent'] = ni
+    a['reactivityParent'] = ni
     self.native = native
-    return m
+    return ni
   }
 
   // selfInstance, selfRevision, trace, forAll
@@ -196,52 +196,52 @@ export class RxDom {
     RxDom.forEachChildRecursively(RxDom.ROOT, action)
   }
 
-  static renderInline<E, O>(instance: Instance<E, O>, d: Declaration<E, O>): void {
+  static renderInline<E, O>(instance: Instance<E, O>, ni: NodeInfo<E, O>): void {
     if (instance === undefined || instance === null)
       debugger // temporary, TODO: debug
     instance.revision++
-    d.rtti.render ? d.rtti.render(d) : RxDom.render(d)
+    ni.rtti.render ? ni.rtti.render(ni) : RxDom.render(ni)
   }
 
   // Internal
 
-  private static doRender(d: Declaration): void {
-    const self = d.instance!
-    if (d.args === RefreshParent) // inline elements are always rendered
-      RxDom.renderInline(self, d)
+  private static doRender(ni: NodeInfo): void {
+    const self = ni.instance!
+    if (ni.args === RefreshParent) // inline elements are always rendered
+      RxDom.renderInline(self, ni)
     else // rendering of reactive elements is cached to avoid redundant calls
-      nonreactive(self.render, d)
+      nonreactive(self.render, ni)
   }
 
-  private static doInitialize(d: Declaration): Instance {
+  private static doInitialize(ni: NodeInfo): Instance {
     // TODO: Make the code below exception-safe
-    const rtti = d.rtti
-    const self = d.instance = new Instance(d.parent.instance!.level + 1)
+    const rtti = ni.rtti
+    const self = ni.instance = new Instance(ni.parent.instance!.level + 1)
     if (rtti.initialize)
-      rtti.initialize(d)
+      rtti.initialize(ni)
     else
-      self.native = d.renderingParent.instance?.native // default initialize
-    if (d.args !== RefreshParent)
-      Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? getTraceHint(d) : d.id)
-    if (RxDom.gTrace && RxDom.gTraceMask.indexOf('m') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(d)))
-      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.initialized`)
+      self.native = ni.renderingParent.instance?.native // default initialize
+    if (ni.args !== RefreshParent)
+      Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? getTraceHint(ni) : ni.id)
+    if (RxDom.gTrace && RxDom.gTraceMask.indexOf('m') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(ni)))
+      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(ni.instance!.level))}${getTraceHint(ni)}.initialized`)
     return self
   }
 
-  private static doFinalize(d: Declaration, cause: Declaration): void {
-    if (RxDom.gTrace && RxDom.gTraceMask.indexOf('u') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(d)))
-      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.finalizing`)
-    if (d.args !== RefreshParent) // TODO: Consider creating one transaction for all finalizations at once
-      Transaction.runAs({ standalone: true }, () => Reactronic.dispose(d.instance))
-    const rtti = d.rtti
+  private static doFinalize(ni: NodeInfo, cause: NodeInfo): void {
+    if (RxDom.gTrace && RxDom.gTraceMask.indexOf('u') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(ni)))
+      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(ni.instance!.level))}${getTraceHint(ni)}.finalizing`)
+    if (ni.args !== RefreshParent) // TODO: Consider creating one transaction for all finalizations at once
+      Transaction.runAs({ standalone: true }, () => Reactronic.dispose(ni.instance))
+    const rtti = ni.rtti
     if (rtti.finalize)
-      rtti.finalize(d, cause)
+      rtti.finalize(ni, cause)
     else
-      RxDom.finalize(d, cause) // default finalize
+      RxDom.finalize(ni, cause) // default finalize
   }
 
-  private static renderNaturallyOrderedChildren(d: Declaration): void {
-    const self = d.instance
+  private static renderNaturallyOrderedChildren(ni: NodeInfo): void {
+    const self = ni.instance
     if (self !== undefined && self.buffer !== undefined) {
       const oldList = self.children
       const buffer = self.buffer
@@ -250,7 +250,7 @@ export class RxDom {
       self.buffer = undefined
       self.children = newList
       // Reconciliation loop - link to existing or finalize
-      let sibling: Declaration | undefined = undefined
+      let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
       while (i < oldList.length) {
         const old = oldList[i]
@@ -258,7 +258,7 @@ export class RxDom {
         const diff = x !== undefined ? compareDeclarations(x, old) : 1
         if (diff <= 0) {
           if (sibling !== undefined && x.id === sibling.id)
-            throw new Error(`duplicate id '${sibling.id}' inside '${d.id}'`)
+            throw new Error(`duplicate id '${sibling.id}' inside '${ni.id}'`)
           if (diff === 0) {
             x.instance = old.instance
             x.old = old
@@ -290,8 +290,8 @@ export class RxDom {
     }
   }
 
-  private static renderUnorderedChildren(d: Declaration): void {
-    const self = d.instance
+  private static renderUnorderedChildren(ni: NodeInfo): void {
+    const self = ni.instance
     if (self !== undefined && self.buffer !== undefined) {
       const oldList = self.children
       const newList = self.buffer.sort(compareDeclarations)
@@ -299,7 +299,7 @@ export class RxDom {
       self.buffer = undefined
       self.children = newList
       // Reconciliation loop - link, render, initialize, finalize
-      let sibling: Declaration | undefined = undefined
+      let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
       while (i < oldList.length || j < newList.length) {
         const old = oldList[i]
@@ -307,7 +307,7 @@ export class RxDom {
         const diff = compareNullable(x, old, compareDeclarations)
         if (diff <= 0) {
           if (sibling !== undefined && x.id === sibling.id)
-            throw new Error(`duplicate id '${sibling.id}' inside '${d.id}'`)
+            throw new Error(`duplicate id '${sibling.id}' inside '${ni.id}'`)
           if (diff === 0) {
             x.instance = old.instance // link to the existing instance
             if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
@@ -328,8 +328,8 @@ export class RxDom {
     }
   }
 
-  private static forEachChildRecursively(d: Declaration, action: (e: any) => void): void {
-    const self = d.instance
+  private static forEachChildRecursively(ni: NodeInfo, action: (e: any) => void): void {
+    const self = ni.instance
     if (self) {
       const native = self.native
       native && action(native)
@@ -338,8 +338,8 @@ export class RxDom {
   }
 }
 
-function compareDeclarations(d1: Declaration, d2: Declaration): number {
-  return d1.id.localeCompare(d2.id)
+function compareDeclarations(ni1: NodeInfo, ni2: NodeInfo): number {
+  return ni1.id.localeCompare(ni2.id)
 }
 
 function compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T, b: T) => number): number {
@@ -370,6 +370,6 @@ function argsAreEqual(a1: any, a2: any): boolean {
   return result
 }
 
-function getTraceHint(d: Declaration): string {
-  return `${d.rtti.name}:${d.id}`
+function getTraceHint(ni: NodeInfo): string {
+  return `${ni.rtti.name}:${ni.id}`
 }

@@ -5,14 +5,14 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Render, Rtti, Declaration } from './Data'
+import { Render, Rtti, NodeInfo } from './Data'
 import { RxDom } from './RxDom'
 
-export function RxFragment<E = unknown, O = void>(id: string, args: any, render: Render<E, O>): Declaration<E, O> {
+export function RxFragment<E = unknown, O = void>(id: string, args: any, render: Render<E, O>): NodeInfo<E, O> {
   return RxDom.declare(id, args, render, undefined, RTTI_RX_FRAGMENT)
 }
 
-export function RxUnorderedFragment<E = unknown, O = void>(id: string, args: any, render: Render<E, O>): Declaration<E, O> {
+export function RxUnorderedFragment<E = unknown, O = void>(id: string, args: any, render: Render<E, O>): NodeInfo<E, O> {
   return RxDom.declare(id, args, render, undefined, RTTI_RX_UNORDERED_FRAGMENT)
 }
 

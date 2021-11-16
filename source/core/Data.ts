@@ -12,10 +12,10 @@ export const RefreshParent = Symbol('RefreshParent') as unknown as void
 export interface Rtti<E = unknown, O = void> {
   readonly name: string
   readonly unordered: boolean
-  initialize?(d: Declaration<E, O>): void
-  place?(d: Declaration<E, O>, sibling?: Declaration): void
-  render?(d: Declaration<E, O>): void
-  finalize?(d: Declaration<E, O>, cause: Declaration): void
+  initialize?(ni: NodeInfo<E, O>): void
+  place?(ni: NodeInfo<E, O>, sibling?: NodeInfo): void
+  render?(ni: NodeInfo<E, O>): void
+  finalize?(ni: NodeInfo<E, O>, cause: NodeInfo): void
 }
 
 export interface AbstractInstance<E = unknown, O = void> {
@@ -23,15 +23,15 @@ export interface AbstractInstance<E = unknown, O = void> {
   revision: number
   native?: E
   model?: unknown
-  buffer: Array<Declaration<any, any>> | undefined
-  children: ReadonlyArray<Declaration<any, any>>
+  buffer: Array<NodeInfo<any, any>> | undefined
+  children: ReadonlyArray<NodeInfo<any, any>>
   resizing?: ResizeObserver
 
-  render(d: Declaration<E, O>): void
+  render(ni: NodeInfo<E, O>): void
 }
 
-export class Declaration<E = unknown, O = void> {
-  old?: Declaration<E, O> = undefined
+export class NodeInfo<E = unknown, O = void> {
+  old?: NodeInfo<E, O> = undefined
   get native(): E | undefined { return this.instance?.native }
 
   constructor(
@@ -40,9 +40,9 @@ export class Declaration<E = unknown, O = void> {
     readonly render: Render<E, O>,
     readonly superRender: SuperRender<O, E> | undefined,
     readonly rtti: Rtti<E, O>,
-    readonly parent: Declaration,
-    readonly renderingParent: Declaration,
-    readonly reactivityParent: Declaration,
+    readonly parent: NodeInfo,
+    readonly renderingParent: NodeInfo,
+    readonly reactivityParent: NodeInfo,
     public instance?: AbstractInstance<E, O>) {
   }
 }
