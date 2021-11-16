@@ -80,8 +80,12 @@ export class RxDom {
       self.buffer = []
       if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(d)))
         console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.render/${d.instance?.revision}${d.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
-      if (d.superRender)
-        d.superRender(RxDom.superRender, self.native)
+      if (d.superRender) {
+        d.superRender(options => {
+          d.render(self.native, options)
+          return options
+        }, self.native)
+      }
       else
         d.render(self.native, undefined)
       RxDom.renderChildrenNow() // ignored if rendered already
@@ -91,15 +95,6 @@ export class RxDom {
       RxDom.gRenderingParent = renderingOuter
       RxDom.gParent = outer
     }
-  }
-
-  private static superRender(options: unknown): unknown {
-    const d = RxDom.gParent
-    const native = d.instance?.native
-    if (!native)
-      throw new Error('element must be initialized before rendering')
-    d.render(native, options)
-    return options
   }
 
   static renderChildrenNow(): void {
