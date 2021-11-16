@@ -101,7 +101,7 @@ export class RxDom {
     if (d.rtti.unordered)
       RxDom.renderUnorderedChildren(d)
     else
-      RxDom.renderOrdinaryChildren(d)
+      RxDom.renderNaturallyOrderedChildren(d)
   }
 
   static initialize(d: Declaration): void {
@@ -240,7 +240,7 @@ export class RxDom {
       RxDom.finalize(d, cause) // default finalize
   }
 
-  private static renderOrdinaryChildren(d: Declaration): void {
+  private static renderNaturallyOrderedChildren(d: Declaration): void {
     const self = d.instance
     if (self !== undefined && self.buffer !== undefined) {
       const oldList = self.children
