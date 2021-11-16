@@ -80,12 +80,11 @@ export class RxDom {
       self.buffer = []
       if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(d)))
         console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(d.instance!.level))}${getTraceHint(d)}.render/${d.instance?.revision}${d.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
-      if (d.superRender) {
+      if (d.superRender)
         d.superRender(options => {
           d.render(self.native, options)
           return options
         }, self.native)
-      }
       else
         d.render(self.native, undefined)
       RxDom.renderChildrenNow() // ignored if rendered already
