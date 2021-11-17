@@ -341,10 +341,11 @@ export class RxDom {
 }
 
 function compareNodeInfos(ni1: NodeInfo, ni2: NodeInfo): number {
-  let result = ni1.renderingParent.id.localeCompare(ni2.renderingParent.id)
-  if (result === 0)
-    result = ni1.id.localeCompare(ni2.id)
-  return result
+  // let result = ni1.renderingParent.id.localeCompare(ni2.renderingParent.id)
+  // if (result === 0)
+  //   result = ni1.id.localeCompare(ni2.id)
+  // return result
+  return ni1.id.localeCompare(ni2.id)
 }
 
 function compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T, b: T) => number): number {
