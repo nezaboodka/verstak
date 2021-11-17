@@ -245,42 +245,42 @@ export class RxDom {
   private static renderNaturallyOrderedChildren(ni: NodeInfo): void {
     const self = ni.instance
     if (self !== undefined && self.buffer !== undefined) {
-      const oldList = self.children
+      const theirList = self.children
       const buffer = self.buffer
-      const newList = buffer.slice().sort(compareDeclarations)
+      const ourList = buffer.slice().sort(compareNodeInfos)
       // Switch to the new list
       self.buffer = undefined
-      self.children = newList
+      self.children = ourList
       // Reconciliation loop - link to existing or finalize
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
-      while (i < oldList.length) {
-        const old = oldList[i]
-        const x = newList[j]
-        const diff = x !== undefined ? compareDeclarations(x, old) : 1
+      while (i < theirList.length) {
+        const theirs = theirList[i]
+        const ours = ourList[j]
+        const diff = ours !== undefined ? compareNodeInfos(ours, theirs) : 1
         if (diff <= 0) {
-          if (sibling !== undefined && x.id === sibling.id)
+          if (sibling !== undefined && ours.id === sibling.id)
             throw new Error(`duplicate id '${sibling.id}' inside '${ni.id}'`)
           if (diff === 0) {
-            x.instance = old.instance
-            x.old = old
+            ours.instance = theirs.instance
+            ours.previous = theirs
             i++, j++ // re-rendering is called below
           }
           else // diff < 0
             j++ // initial rendering is called below
-          sibling = x
+          sibling = ours
         }
         else // diff > 0
-          RxDom.doFinalize(old, old), i++
+          RxDom.doFinalize(theirs, theirs), i++
       }
       // Reconciliation loop - initialize, render, re-render
       sibling = undefined
       for (const x of buffer) {
-        if (x.old) {
+        if (x.previous) {
           x.rtti.place?.(x, sibling)
-          if (x.args === RefreshParent || !argsAreEqual(x.args, x.old.args))
+          if (x.args === RefreshParent || !argsAreEqual(x.args, x.previous.args))
             RxDom.doRender(x) // re-rendering
-          x.old = undefined // unlink to make it available for garbage collection
+          x.previous = undefined // unlink to make it available for garbage collection
         }
         else {
           RxDom.doInitialize(x)
@@ -295,37 +295,37 @@ export class RxDom {
   private static renderUnorderedChildren(ni: NodeInfo): void {
     const self = ni.instance
     if (self !== undefined && self.buffer !== undefined) {
-      const oldList = self.children
-      const newList = self.buffer.sort(compareDeclarations)
+      const theirList = self.children
+      const ourList = self.buffer.sort(compareNodeInfos)
       // Switch to the new list
       self.buffer = undefined
-      self.children = newList
+      self.children = ourList
       // Reconciliation loop - link, render, initialize, finalize
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
-      while (i < oldList.length || j < newList.length) {
-        const old = oldList[i]
-        const x = newList[j]
-        const diff = compareNullable(x, old, compareDeclarations)
+      while (i < theirList.length || j < ourList.length) {
+        const theirs = theirList[i]
+        const ours = ourList[j]
+        const diff = compareNullable(ours, theirs, compareNodeInfos)
         if (diff <= 0) {
-          if (sibling !== undefined && x.id === sibling.id)
+          if (sibling !== undefined && ours.id === sibling.id)
             throw new Error(`duplicate id '${sibling.id}' inside '${ni.id}'`)
           if (diff === 0) {
-            x.instance = old.instance // link to the existing instance
-            if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
-              RxDom.doRender(x) // re-rendering
+            ours.instance = theirs.instance // link to the existing instance
+            if (ours.args === RefreshParent || !argsAreEqual(ours.args, theirs.args))
+              RxDom.doRender(ours) // re-rendering
             i++, j++
           }
           else { // diff < 0
-            RxDom.doInitialize(x)
-            x.rtti.place?.(x)
-            RxDom.doRender(x) // initial rendering
+            RxDom.doInitialize(ours)
+            ours.rtti.place?.(ours)
+            RxDom.doRender(ours) // initial rendering
             j++
           }
-          sibling = x
+          sibling = ours
         }
         else // diff > 0
-          RxDom.doFinalize(old, old), i++
+          RxDom.doFinalize(theirs, theirs), i++
       }
     }
   }
@@ -340,8 +340,11 @@ export class RxDom {
   }
 }
 
-function compareDeclarations(ni1: NodeInfo, ni2: NodeInfo): number {
-  return ni1.id.localeCompare(ni2.id)
+function compareNodeInfos(ni1: NodeInfo, ni2: NodeInfo): number {
+  let result = ni1.renderingParent.id.localeCompare(ni2.renderingParent.id)
+  if (result === 0)
+    result = ni1.id.localeCompare(ni2.id)
+  return result
 }
 
 function compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T, b: T) => number): number {

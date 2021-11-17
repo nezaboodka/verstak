@@ -32,7 +32,7 @@ export interface AbstractInstance<E = unknown, O = void> {
 }
 
 export class NodeInfo<E = unknown, O = void> {
-  old?: NodeInfo<E, O> = undefined
+  previous?: NodeInfo<E, O> = undefined
   get native(): E | undefined { return this.instance?.native }
 
   constructor(
