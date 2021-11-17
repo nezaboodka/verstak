@@ -49,7 +49,7 @@ export class RxDom {
     Transaction.run(RxDom.renderChildrenNow)
   }
 
-  static declare<E = unknown, O = void>(
+  static emit<E = unknown, O = void>(
     id: string, args: unknown, render: Render<E, O>,
     superRender: SuperRender<O, E> | undefined,
     rtti: Rtti<E, O>, parent?: NodeInfo,
