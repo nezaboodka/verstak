@@ -157,7 +157,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.draggableData = (dragElement[SymDataForSensor] as DataForSensor | undefined)?.htmlDraggableData
     const sourceElements = document.elementsFromPoint(e.clientX, e.clientY)
     const { data: elementDataUnderPointer, window } = grabElementData(sourceElements, SymDataForSensor, 'htmlDrag', EmptyDataArray)
-    this.dragSource = (elementDataUnderPointer[0] as DataForSensor | undefined)?.htmlDrag
+    this.dragSource = elementDataUnderPointer[0]
     this.started = true
     this.startX = e.clientX
     this.startY = e.clientY
@@ -169,6 +169,13 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.previousDragTarget = undefined
     this.revision++
     this.window?.setActiveWindow(window)
+
+    console.log('startDragging')
+    console.log(sourceElements)
+    console.log(elementDataUnderPointer)
+    console.log(this.dragSource)
+    console.log(`draggableData = ${this.draggableData}, `)
+    console.log()
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
