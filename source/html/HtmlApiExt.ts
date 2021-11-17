@@ -5,9 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { HtmlDragSensorModel } from './HtmlDragSensorModel'
-
-export interface TypedDataForSensor {
+export interface DataForSensor {
   window?: unknown
   focus?: unknown
   hover?: unknown
@@ -16,7 +14,8 @@ export interface TypedDataForSensor {
   wheel?: unknown
   resize?: unknown
   drag?: unknown
-  htmlDrag?: HtmlDragSensorModel
+  htmlDrag?: unknown
+  htmlDraggableData?: unknown
   button?: unknown
 }
 
@@ -24,7 +23,7 @@ export const SymDataForSensor: unique symbol = Symbol('DataForSensor')
 
 declare global {
   interface Element {
-    dataForSensor: TypedDataForSensor
+    dataForSensor: DataForSensor
   }
 }
 

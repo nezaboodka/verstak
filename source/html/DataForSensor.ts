@@ -5,18 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export interface DataForSensor {
-  window?: unknown
-  focus?: unknown
-  hover?: unknown
-  keyboard?: unknown
-  click?: unknown
-  wheel?: unknown
-  resize?: unknown
-  drag?: unknown
-  htmlDrag?: unknown
-  button?: unknown
-}
+import { DataForSensor } from './HtmlApiExt'
 
 export const EmptyDataArray: any[] = []
 
