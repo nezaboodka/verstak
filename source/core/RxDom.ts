@@ -9,6 +9,7 @@ import { reaction, nonreactive, Transaction, Reactronic, options } from 'reactro
 import { Render, SuperRender, RefreshParent, Rtti, AbstractInstance, NodeInfo } from './Data'
 
 // Instance
+const EMPTY: ReadonlyArray<NodeInfo<any, any>> = Object.freeze([])
 
 export class Instance<E = unknown, O = void> implements AbstractInstance<E, O> {
   readonly level: number
@@ -16,7 +17,8 @@ export class Instance<E = unknown, O = void> implements AbstractInstance<E, O> {
   native?: E = undefined
   model?: unknown = undefined
   buffer: Array<NodeInfo<any, any>> | undefined = undefined
-  children: ReadonlyArray<NodeInfo<any, any>> = Object.freeze([])
+  children: ReadonlyArray<NodeInfo<any, any>> = EMPTY
+  nephews: ReadonlyArray<NodeInfo<any, any>> = EMPTY
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {

@@ -25,6 +25,7 @@ export interface AbstractInstance<E = unknown, O = void> {
   model?: unknown
   buffer: Array<NodeInfo<any, any>> | undefined
   children: ReadonlyArray<NodeInfo<any, any>>
+  nephews: ReadonlyArray<NodeInfo<any, any>>
   resizing?: ResizeObserver
 
   render(ni: NodeInfo<E, O>): void
