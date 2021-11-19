@@ -268,6 +268,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.finished = false
     this.startX = Infinity
     this.startY = Infinity
+    this.draggingOver = false
     this.positionX = Infinity
     this.positionY = Infinity
     this.modifiers = KeyboardModifiers.None
@@ -318,8 +319,18 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   @reaction
   protected debug(): void {
-    const status = this.started ? 'started' : (this.finished ? 'finished' : 'initial')
-    console.log(`HtmlDragSensor: ${status}, dragSource = ${this.dragSource}, dragTarget = ${this.dragTarget}, start = (${this.startX}, ${this.startY}), pos = (${this.positionX}, ${this.positionY})`)
+    this.revision // subscribe
+    const status: string[] = []
+    if (this.started)
+      status.push('started')
+    if (this.draggingOver)
+      status.push('dragging')
+    if (this.dropped)
+      status.push('dropped')
+    if (this.finished)
+      status.push('finished')
+    console.log(`HtmlDragSensor: (${status.join(', ')}), revision=${this.revision}`)
+    console.log(`    dragSource=${this.dragSource}, dragTarget=${this.dragTarget}, start=(${this.startX}, ${this.startY}), pos=(${this.positionX}, ${this.positionY})`)
   }
 }
 
