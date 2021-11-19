@@ -126,12 +126,12 @@ export class HtmlDragSensor extends HtmlElementSensor {
   }
 
   protected onDragEnter(e: DragEvent): void {
-    this.dragEnter(e)
+    this.enterTarget(e)
     this.updateEventOnDropAllowed(e)
   }
 
   protected onDragLeave(e: DragEvent): void {
-    this.dragLeave(e)
+    this.leaveTarget(e)
   }
 
   protected onDragOver(e: DragEvent): void {
@@ -190,14 +190,15 @@ export class HtmlDragSensor extends HtmlElementSensor {
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  protected dragEnter(e: DragEvent): void {
+  protected enterTarget(e: DragEvent): void {
     const window = this.updateDragTarget(e)
     this.dropped = false
+    this.revision++
     this.window?.setActiveWindow(window)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
-  protected dragLeave(e: DragEvent): void {
+  protected leaveTarget(e: DragEvent): void {
     // Nothing to do
   }
 
@@ -205,6 +206,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
   protected dragOver(e: DragEvent): void {
     this.updateDragTarget(e)
     this.dropped = false
+    this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
@@ -227,6 +229,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
         }
       })
     }
+    this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
@@ -274,6 +277,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.immediatePositionX = Infinity
     this.immediatePositionY = Infinity
     this.immediateModifiers = KeyboardModifiers.None
+    this.revision++
   }
 
   protected updateDragTarget(e: DragEvent): unknown {
