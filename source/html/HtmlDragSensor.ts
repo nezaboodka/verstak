@@ -6,7 +6,6 @@
 // automatically licensed under the license referred above.
 
 import { options, reaction, TraceLevel, transaction, unobservable } from 'reactronic'
-import { isString } from 'util'
 import { EmptyDataArray, grabElementData } from './DataForSensor'
 import { DataForSensor, SymDataForSensor } from './HtmlApiExt'
 import { HtmlElementSensor } from './HtmlElementSensor'
