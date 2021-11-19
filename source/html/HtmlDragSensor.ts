@@ -317,7 +317,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     }
   }
 
-  @reaction
+  // @reaction
   protected debug(): void {
     this.revision // subscribe
     const status: string[] = []
