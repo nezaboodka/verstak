@@ -32,8 +32,6 @@ export class HtmlDragSensor extends HtmlElementSensor {
   @unobservable dropAllowed: boolean
   draggingOver: boolean
   draggingDataTypes: string[]
-  draggingDataType: string | undefined
-  draggingData: string | undefined
   positionX: number // position relative to browser's viewport
   positionY: number // position relative to browser's viewport
   modifiers: KeyboardModifiers
@@ -62,8 +60,6 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.dropAllowed = false
     this.draggingOver = false
     this.draggingDataTypes = []
-    this.draggingDataType = undefined
-    this.draggingData = undefined
     this.positionX = Infinity
     this.positionY = Infinity
     this.modifiers = KeyboardModifiers.None
