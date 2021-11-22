@@ -5,46 +5,63 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
+import { options, reaction, Reentrance, TraceLevel, transaction, unobservable } from 'reactronic'
 import { extractPointerButton, PointerButton, PointerSensor } from './PointerSensor'
 import { DataForSensor, SymDataForSensor } from './HtmlApiExt'
 import { EmptyDataArray, grabElementData } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
 
-export enum DragStage {
-  Started,
-  Dragging,
-  Dropped,
-  Finished,
-}
-
 export class DragSensor extends PointerSensor {
-  stage: DragStage
-  originData: any
-  draggingData: any
   button: PointerButton
+  trying: boolean
+  draggableData: unknown
+  dragSource: unknown
+  dragTarget: unknown
+  previousDragTarget: unknown
+  started: boolean
+  finished: boolean
   startX: number // position relative to browser's viewport
   startY: number // position relative to browser's viewport
+  @unobservable draggingData: unknown
+  @unobservable dropAllowed: boolean
+  draggingOver: boolean
+  positionX: number // position relative to browser's viewport
+  positionY: number // position relative to browser's viewport
+  modifiers: KeyboardModifiers
   dropX: number // position relative to browser's viewport
   dropY: number // position relative to browser's viewport
-  trying: boolean
   dropped: boolean
+  immediatePositionX: number // position relative to browser's viewport
+  immediatePositionY: number // position relative to browser's viewport
+  immediateModifiers: KeyboardModifiers
 
   static readonly DraggingThreshold = 4
 
   constructor(window: WindowSensor) {
     super(window)
-    this.stage = DragStage.Finished
-    this.originData = undefined
-    this.draggingData = undefined
     this.button = PointerButton.None
-    this.startX = Infinity // position relative to browser's viewport
-    this.startY = Infinity // position relative to browser's viewport
-    this.dropX = Infinity // position relative to browser's viewport
-    this.dropY = Infinity // position relative to browser's viewport
     this.trying = false
+    this.draggableData = undefined
+    this.dragSource = undefined
+    this.dragTarget = undefined
+    this.previousDragTarget = undefined
+    this.started = false
+    this.finished = false
+    this.startX = Infinity
+    this.startY = Infinity
+    this.draggingData = undefined
+    this.dropAllowed = false
+    this.draggingOver = false
+    this.positionX = Infinity
+    this.positionY = Infinity
+    this.modifiers = KeyboardModifiers.None
+    this.dropX = Infinity
+    this.dropY = Infinity
     this.dropped = false
+    this.immediatePositionX = Infinity
+    this.immediatePositionY = Infinity
+    this.immediateModifiers = KeyboardModifiers.None
   }
 
   @transaction
@@ -70,10 +87,9 @@ export class DragSensor extends PointerSensor {
   }
 
   protected onPointerDown(e: PointerEvent): void {
-    if (this.stage === DragStage.Finished && (e.button === 0 || e.button === 1)) {
+    if (!this.started && (e.button === 0 || e.button === 1)) {
       this.tryDragging(e)
     }
-    this.setPreventDefaultAndStopPropagation(e)
   }
 
   protected onPointerMove(e: PointerEvent): void {
@@ -82,97 +98,100 @@ export class DragSensor extends PointerSensor {
         Math.abs(e.clientY - this.startY) > DragSensor.DraggingThreshold) {
         this.startDragging(e)
       }
-    } else if (this.stage === DragStage.Dragging) {
-      this.dragging(e)
+    } else if (this.started) {
+      this.dragOver(e)
     }
-    this.setPreventDefaultAndStopPropagation(e)
   }
 
   protected onPointerUp(e: PointerEvent): void {
-    if (this.stage === DragStage.Dragging) {
+    if (this.draggingOver) {
       this.drop(e)
       this.finishDragging()
     }
-    else if (this.stage === DragStage.Started) {
+    else if (this.started) {
       this.finishDragging()
     }
     this.reset()
-    this.setPreventDefaultAndStopPropagation(e)
   }
 
   protected onLostPointerCapture(e: PointerEvent): void {
-    if (this.stage !== DragStage.Finished) {
+    if (this.started) {
       this.cancelDragging()
       this.reset()
     }
-    this.setPreventDefaultAndStopPropagation(e)
   }
 
   protected onKeyDown(e: KeyboardEvent): void {
-    if (e.key === 'Escape' && this.stage !== DragStage.Finished) {
+    if (e.key === 'Escape' && this.started) {
       this.cancelDragging()
-      // this.reset()
+      this.reset()
     }
-    this.setPreventDefaultAndStopPropagation(e)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected tryDragging(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
-    const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data: elementDataUnderPointer, window } = grabElementData(elements, SymDataForSensor, 'drag', EmptyDataArray)
-    const originData = elementDataUnderPointer[0] as DataForSensor | undefined
-    if (originData) {
-      this.originData = originData
-      this.elementDataUnderPointer = elementDataUnderPointer
+    const dragElement: any = e.target
+    const draggableData = (dragElement[SymDataForSensor] as DataForSensor | undefined)?.draggableData
+    if (draggableData) {
+      this.draggableData = draggableData
+      const sourceElements = document.elementsFromPoint(e.clientX, e.clientY)
+      const { data: elementDataUnderPointer, window } = grabElementData(sourceElements, SymDataForSensor, 'drag', EmptyDataArray)
+      this.dragSource = elementDataUnderPointer[0]
       this.trying = true
       this.button = extractPointerButton(e)
       this.startX = e.clientX
       this.startY = e.clientY
-      const path = e.composedPath()
-      this.elementDataList = grabElementData(path, SymDataForSensor, 'drag', EmptyDataArray).data
       this.modifiers = extractModifierKeys(e)
       this.positionX = e.clientX
       this.positionY = e.clientY
+      this.dropped = false
+      this.dragTarget = undefined
+      this.previousDragTarget = undefined
       this.revision++
+      this.window?.setActiveWindow(window)
     }
-    this.window?.setActiveWindow(window)
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected startDragging(e: PointerEvent): void {
-    this.updateSensorData(e)
-    this.stage = DragStage.Started
+    this.updateDragTarget(e)
+    this.started = true
+    this.finished = false
     this.trying = false
     this.dropped = false
+    this.revision++
   }
 
   @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
-  protected dragging(e: PointerEvent): void {
-    this.updateSensorData(e)
-    this.stage = DragStage.Dragging
+  protected dragOver(e: PointerEvent): void {
+    this.updateDragTarget(e)
+    this.draggingOver = true
+    this.dropped = false
+    this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected drop(e: PointerEvent): void {
-    this.updateSensorData(e)
-    this.stage = DragStage.Dropped
+    this.updateDragTarget(e)
+    this.modifiers = this.immediateModifiers
     this.dropX = e.clientX
     this.dropY = e.clientY
     this.dropped = true
+    this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected finishDragging(): void {
-    this.stage = DragStage.Finished
+    this.finished = true
     this.trying = false
     this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Suppress })
   protected cancelDragging(): void {
-    this.stage = DragStage.Finished
+    this.finished = true
     this.trying = false
     this.dropped = false
     this.revision++
@@ -181,35 +200,70 @@ export class DragSensor extends PointerSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected reset(): void {
     this.elementDataList = EmptyDataArray
-    this.trying = false
-    this.originData = undefined
-    this.draggingData = undefined
     this.button = PointerButton.None
+    this.trying = false
+    this.draggableData = undefined
+    this.dragSource = undefined
+    this.dragTarget = undefined
+    this.previousDragTarget = undefined
+    this.started = false
+    this.finished = false
     this.startX = Infinity
     this.startY = Infinity
+    this.draggingData = undefined
+    this.dropAllowed = false
+    this.draggingOver = false
     this.positionX = Infinity
     this.positionY = Infinity
+    this.modifiers = KeyboardModifiers.None
     this.dropX = Infinity
     this.dropY = Infinity
-    this.modifiers = KeyboardModifiers.None
     this.dropped = false
+    this.immediatePositionX = Infinity
+    this.immediatePositionY = Infinity
+    this.immediateModifiers = KeyboardModifiers.None
+    this.revision++
   }
 
-  protected updateSensorData(e: PointerEvent): void {
-    this.preventDefault = false
-    this.stopPropagation = false
-    const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.elementDataUnderPointer = grabElementData(elements, SymDataForSensor, 'drag', this.elementDataUnderPointer).data
+  protected updateDragTarget(e: PointerEvent): unknown {
     const path = e.composedPath()
     this.elementDataList = grabElementData(path, SymDataForSensor, 'drag', this.elementDataList).data
-    this.modifiers = extractModifierKeys(e)
-    this.positionX = e.clientX
-    this.positionY = e.clientY
-    this.revision++
+    const targetElements = document.elementsFromPoint(e.clientX, e.clientY)
+    const { data: elementDataUnderPointer, window } = grabElementData(targetElements, SymDataForSensor, 'drag', EmptyDataArray)
+    const dataForSensor = elementDataUnderPointer[0] as DataForSensor | undefined
+    const dragTarget = dataForSensor?.drag
+    if (dragTarget !== this.dragTarget) {
+      this.previousDragTarget = this.dragTarget
+      this.dragTarget = dragTarget
+    }
+    this.immediateModifiers = extractModifierKeys(e)
+    this.immediatePositionX = e.clientX
+    this.immediatePositionY = e.clientY
+    return window
+  }
+
+  @reaction @options({ throttling: 0 })
+  protected whenDragging(): void {
+    if (this.draggingOver) {
+      this.positionX = this.immediatePositionX
+      this.positionY = this.immediatePositionY
+      this.modifiers = this.immediateModifiers
+    }
   }
 
   // @reaction
   // protected debug(): void {
-  //   console.log(`stage = ${DragStage[this.stage]}, draggingData: ${this.draggingData}, start = (${this.startX}, ${this.startY}), pos = (${this.positionX}, ${this.positionY})`)
+  //   this.revision // subscribe
+  //   const status: string[] = []
+  //   if (this.started)
+  //     status.push('started')
+  //   if (this.draggingOver)
+  //     status.push('dragging')
+  //   if (this.dropped)
+  //     status.push('dropped')
+  //   if (this.finished)
+  //     status.push('finished')
+  //   console.log(`DragSensor: (${status.join(', ')}), revision=${this.revision}`)
+  //   console.log(`    dragSource=${this.dragSource}, dragTarget=${this.dragTarget}, start=(${this.startX}, ${this.startY}), pos=(${this.positionX}, ${this.positionY})`)
   // }
 }

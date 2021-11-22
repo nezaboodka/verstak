@@ -20,13 +20,12 @@ export class HtmlDragSensor extends HtmlElementSensor {
   dragSource: unknown
   dragTarget: unknown
   previousDragTarget: unknown
-
-  @unobservable private dataByFormat: Map<string, unknown>
-  @unobservable dropEffect: DropEffect
   started: boolean
   finished: boolean
   startX: number // position relative to browser's viewport
   startY: number // position relative to browser's viewport
+  @unobservable private dataByFormat: Map<string, unknown>
+  @unobservable dropEffect: DropEffect
   @unobservable dataTypesAllowed: string[]
   @unobservable effectAllowed: DragEffectAllowed
   @unobservable dropAllowed: boolean
@@ -48,13 +47,12 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.dragSource = undefined
     this.dragTarget = undefined
     this.previousDragTarget = undefined
-
-    this.dataByFormat = new Map<string, unknown>()
-    this.dropEffect = 'none'
     this.started = false
     this.finished = false
     this.startX = Infinity
     this.startY = Infinity
+    this.dataByFormat = new Map<string, unknown>()
+    this.dropEffect = 'none'
     this.dataTypesAllowed = []
     this.effectAllowed = 'uninitialized'
     this.dropAllowed = false
@@ -154,6 +152,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     const { data: elementDataUnderPointer, window } = grabElementData(sourceElements, SymDataForSensor, 'htmlDrag', EmptyDataArray)
     this.dragSource = elementDataUnderPointer[0]
     this.started = true
+    this.finished = false
     this.startX = e.clientX
     this.startY = e.clientY
     this.modifiers = extractModifierKeys(e)
@@ -169,6 +168,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected dragging(e: DragEvent): void {
     this.started = true
+    this.finished = false
     this.revision++
   }
 
@@ -243,21 +243,21 @@ export class HtmlDragSensor extends HtmlElementSensor {
   @transaction @options({ trace: TraceLevel.Suppress })
   protected reset(): void {
     this.elementDataList = EmptyDataArray
-
     this.draggableData = undefined
     this.dragSource = undefined
     this.dragTarget = undefined
     this.previousDragTarget = undefined
-
-    this.dataByFormat.clear()
-    this.dropEffect = 'none'
-    this.effectAllowed = 'uninitialized'
-    this.dropAllowed = false
     this.started = false
     this.finished = false
     this.startX = Infinity
     this.startY = Infinity
+    this.dataByFormat.clear()
+    this.dropEffect = 'none'
+    this.dataTypesAllowed = []
+    this.effectAllowed = 'uninitialized'
+    this.dropAllowed = false
     this.draggingOver = false
+    this.draggingDataTypes = []
     this.positionX = Infinity
     this.positionY = Infinity
     this.modifiers = KeyboardModifiers.None

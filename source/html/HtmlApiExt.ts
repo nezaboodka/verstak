@@ -14,6 +14,7 @@ export interface DataForSensor {
   wheel?: unknown
   resize?: unknown
   drag?: unknown
+  draggableData?: unknown
   htmlDrag?: unknown
   htmlDraggableData?: unknown
   button?: unknown
