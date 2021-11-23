@@ -23,7 +23,7 @@ export class DragSensor extends PointerSensor {
   finished: boolean
   startX: number // position relative to browser's viewport
   startY: number // position relative to browser's viewport
-  @unobservable draggingData: unknown
+  @unobservable private draggingData: unknown
   @unobservable dropAllowed: boolean
   draggingOver: boolean
   positionX: number // position relative to browser's viewport
@@ -62,6 +62,14 @@ export class DragSensor extends PointerSensor {
     this.immediatePositionX = Infinity
     this.immediatePositionY = Infinity
     this.immediateModifiers = KeyboardModifiers.None
+  }
+
+  getData(): unknown {
+    return this.draggingData
+  }
+
+  setData(value: unknown): void {
+    this.draggingData = value
   }
 
   @transaction
