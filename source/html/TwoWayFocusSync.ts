@@ -14,9 +14,9 @@ export function TwoWayFocusSync(
   focusToggle: ToggleRef<any>,
   setNativeFocus?: (() => void)
 ): void {
-  let data = target.dataForSensor
-  if (data !== undefined)
-    data = target.dataForSensor = {}
+  const data = target.dataForSensor
+  // if (data !== undefined)
+  //   data = target.dataForSensor = {}
   data.focus = focusToggle
   if (setNativeFocus === undefined)
     setNativeFocus = () => target.focus()
