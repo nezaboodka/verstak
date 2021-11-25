@@ -47,6 +47,9 @@ export class ClickSensor extends PointerSensor {
   }
 
   protected onClick(e: MouseEvent): void {
+
+    console.log('====> onClick')
+
     this.doClick(e)
     this.setPreventDefaultAndStopPropagation(e)
   }
@@ -105,6 +108,10 @@ export class ClickSensor extends PointerSensor {
     this.positionX = e.clientX
     this.positionY = e.clientY
     this.revision++
+
+    console.log('====> onClick --> updateSensorData')
+    console.log(path)
+
     this.window?.setActiveWindow(window)
   }
 

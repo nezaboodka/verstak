@@ -67,7 +67,9 @@ export class ButtonSensor extends PointerSensor {
   }
 
   protected onPointerDown(e: PointerEvent): void {
+
     // this.sourceElement?.setPointerCapture(e.pointerId)
+
     if (this.state === ButtonState.Released && (e.button === 0 || e.button === 1))
       this.press(e)
     this.setPreventDefaultAndStopPropagation(e)
@@ -80,7 +82,9 @@ export class ButtonSensor extends PointerSensor {
   }
 
   protected onPointerUp(e: PointerEvent): void {
-    // this.sourceElement?.releasePointerCapture(e.pointerId)
+
+    console.log('====> onPointerUp')
+
     if (this.state === ButtonState.Selecting) {
       this.select(e)
       this.release()
@@ -90,6 +94,8 @@ export class ButtonSensor extends PointerSensor {
     }
     this.setPreventDefaultAndStopPropagation(e)
     this.reset()
+
+    // this.sourceElement?.releasePointerCapture(e.pointerId)
   }
 
   protected onLostPointerCapture(e: PointerEvent): void {

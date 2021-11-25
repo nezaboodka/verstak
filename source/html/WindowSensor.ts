@@ -14,6 +14,10 @@ export class WindowSensor extends Sensor {
 
   @transaction
   setActiveWindow(window: unknown): void {
+
+    console.log('====> setActiveWindow')
+    console.log(window)
+
     if (window !== this.activeData) {
       this.previousActiveData = this.activeData
       this.activeData = window
