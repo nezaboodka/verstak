@@ -67,6 +67,7 @@ export class ButtonSensor extends PointerSensor {
   }
 
   protected onPointerDown(e: PointerEvent): void {
+    // this.sourceElement?.setPointerCapture(e.pointerId)
     if (this.state === ButtonState.Released && (e.button === 0 || e.button === 1))
       this.press(e)
     this.setPreventDefaultAndStopPropagation(e)
@@ -79,6 +80,7 @@ export class ButtonSensor extends PointerSensor {
   }
 
   protected onPointerUp(e: PointerEvent): void {
+    // this.sourceElement?.releasePointerCapture(e.pointerId)
     if (this.state === ButtonState.Selecting) {
       this.select(e)
       this.release()
@@ -104,7 +106,7 @@ export class ButtonSensor extends PointerSensor {
     }
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected press(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -127,14 +129,14 @@ export class ButtonSensor extends PointerSensor {
     this.window?.setActiveWindow(window)
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Silent })
   protected selecting(e: PointerEvent): void {
     this.updateSensorData(e)
     this.state = ButtonState.Selecting
     this.selected = false
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected select(e: PointerEvent): void {
     this.updateSensorData(e)
     this.state = ButtonState.Selected
@@ -143,7 +145,7 @@ export class ButtonSensor extends PointerSensor {
     this.selected = true
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected release(): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -151,7 +153,7 @@ export class ButtonSensor extends PointerSensor {
     this.revision++
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected cancel(): void {
     this.state = ButtonState.Released
     this.selected = false

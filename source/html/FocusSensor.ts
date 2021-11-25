@@ -42,7 +42,7 @@ export class FocusSensor extends HtmlElementSensor {
     this.setPreventDefaultAndStopPropagation(e)
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected doFocusIn(e: FocusEvent): void {
     this.preventDefault = false
     this.stopPropagation = false

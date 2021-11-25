@@ -113,6 +113,7 @@ export class DragSensor extends PointerSensor {
   }
 
   protected onPointerUp(e: PointerEvent): void {
+    // this.sourceElement?.releasePointerCapture(e.pointerId)
     if (this.draggingOver) {
       this.drop(e)
       this.finishDragging()
@@ -121,7 +122,6 @@ export class DragSensor extends PointerSensor {
       this.finishDragging()
     }
     this.reset()
-    // this.sourceElement?.releasePointerCapture(e.pointerId)
   }
 
   protected onLostPointerCapture(e: PointerEvent): void {
@@ -138,7 +138,7 @@ export class DragSensor extends PointerSensor {
     }
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected tryDragging(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -164,7 +164,7 @@ export class DragSensor extends PointerSensor {
     }
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected startDragging(e: PointerEvent): void {
     this.updateDragTarget(e)
     this.started = true
@@ -174,7 +174,7 @@ export class DragSensor extends PointerSensor {
     this.revision++
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Suppress })
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Silent })
   protected dragOver(e: PointerEvent): void {
     this.updateDragTarget(e)
     this.draggingOver = true
@@ -182,7 +182,7 @@ export class DragSensor extends PointerSensor {
     this.revision++
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected drop(e: PointerEvent): void {
     this.updateDragTarget(e)
     this.modifiers = this.immediateModifiers
@@ -192,14 +192,14 @@ export class DragSensor extends PointerSensor {
     this.revision++
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected finishDragging(): void {
     this.finished = true
     this.trying = false
     this.revision++
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected cancelDragging(): void {
     this.finished = true
     this.trying = false
@@ -207,7 +207,7 @@ export class DragSensor extends PointerSensor {
     this.revision++
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected reset(): void {
     this.elementDataList = EmptyDataArray
     this.button = PointerButton.None

@@ -51,7 +51,7 @@ export class ResizeSensor extends Sensor {
     this.reset()
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected resize(entries: Array<ResizeObserverEntry>): void {
     this.revision++
     this.resizedElements = entries.map(entry => {

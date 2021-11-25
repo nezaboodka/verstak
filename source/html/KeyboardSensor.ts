@@ -75,14 +75,14 @@ export class KeyboardSensor extends HtmlElementSensor {
     this.setPreventDefaultAndStopPropagation(e)
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected keyDown(e: KeyboardEvent): void {
     this.updateSensorData(e)
     this.up = ''
     sensitive(true, () => this.down = e.key)
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected keyUp(e: KeyboardEvent): void {
     this.updateSensorData(e)
     this.down = ''

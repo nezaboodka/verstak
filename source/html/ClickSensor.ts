@@ -61,25 +61,25 @@ export class ClickSensor extends PointerSensor {
     this.setPreventDefaultAndStopPropagation(e)
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected doClick(e: MouseEvent): void {
     this.updateSensorData(e)
     this.clicked++
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected doDoubleClick(e: MouseEvent): void {
     this.updateSensorData(e)
     this.doubleClicked++
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected doAuxClick(e: MouseEvent): void {
     this.updateSensorData(e)
     this.auxClicked++
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected doReset(): void {
     this.preventDefault = false
     this.stopPropagation = false

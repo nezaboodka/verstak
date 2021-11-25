@@ -37,7 +37,7 @@ export class HoverSensor extends PointerSensor {
     this.doPointerOut()
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected doPointerOver(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -51,7 +51,7 @@ export class HoverSensor extends PointerSensor {
     this.revision++
   }
 
-  @transaction @options({ trace: TraceLevel.Suppress })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected doPointerOut(): void {
     this.preventDefault = false
     this.stopPropagation = false
