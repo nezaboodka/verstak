@@ -95,7 +95,7 @@ export class DragSensor extends PointerSensor {
   }
 
   protected onPointerDown(e: PointerEvent): void {
-    this.sourceElement?.setPointerCapture(e.pointerId)
+    // this.sourceElement?.setPointerCapture(e.pointerId)
     if (!this.started && (e.button === 0 || e.button === 1)) {
       this.tryDragging(e)
     }
@@ -121,7 +121,7 @@ export class DragSensor extends PointerSensor {
       this.finishDragging()
     }
     this.reset()
-    this.sourceElement?.releasePointerCapture(e.pointerId)
+    // this.sourceElement?.releasePointerCapture(e.pointerId)
   }
 
   protected onLostPointerCapture(e: PointerEvent): void {
