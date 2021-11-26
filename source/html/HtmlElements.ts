@@ -12,10 +12,10 @@ export function HtmlBody(id: string, args: any, render: Render<HTMLElement>): No
   return RxDom.emit(id, args, render, undefined, {
     name: id,
     unordered: false,
-    initialize(ni: NodeInfo<HTMLElement, any>, sibling?: NodeInfo): void {
+    initialize(node: NodeInfo<HTMLElement, any>, sibling?: NodeInfo): void {
       const native = global.document.body
-      native.id = ni.id
-      ni.instance!.native = native
+      native.id = node.id
+      node.instance!.native = native
     },
   })
 }

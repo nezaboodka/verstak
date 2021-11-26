@@ -19,18 +19,18 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     readonly unordered: boolean = false) {
   }
 
-  initialize(ni: NodeInfo<E, any>): void {
-    const native = this.createElement(ni)
-    native.id = ni.id
-    ni.instance!.native = native
+  initialize(node: NodeInfo<E, any>): void {
+    const native = this.createElement(node)
+    native.id = node.id
+    node.instance!.native = native
     // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.appendChild(${e.id} r${self.revision})`)
   }
 
-  place(ni: NodeInfo<E, any>, sibling?: NodeInfo): void {
-    const self = ni.instance
+  place(node: NodeInfo<E, any>, sibling?: NodeInfo): void {
+    const self = node.instance
     const native = self?.native
     if (native) {
-      const parent = ni.renderingParent
+      const parent = node.renderingParent
       const nParent = parent.instance?.native
       if (nParent !== native.parentNode) {
         native.remove() // remove from previous parent
@@ -48,13 +48,13 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     }
   }
 
-  render(ni: NodeInfo<E, any>): void {
-    const self = ni.instance! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  render(node: NodeInfo<E, any>): void {
+    const self = node.instance! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const native = self.native!
     const outer = AbstractHtmlRtti.gNativeParent
     try { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      AbstractHtmlRtti.gNativeParent = ni // console.log(`${'  '.repeat(Math.abs(self.level))}render(${e.id} r${self.revision})`)
-      RxDom.render(ni)
+      AbstractHtmlRtti.gNativeParent = node // console.log(`${'  '.repeat(Math.abs(self.level))}render(${e.id} r${self.revision})`)
+      RxDom.render(node)
       // TODO: native.sensorData.drag handling?
       AbstractHtmlRtti.blinkingEffect && blink(native, self.revision)
       if (AbstractHtmlRtti.isDebugAttributeEnabled)
@@ -65,15 +65,15 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     }
   }
 
-  finalize(ni: NodeInfo<E, any>, cause: NodeInfo): void {
-    const self = ni.instance
+  finalize(node: NodeInfo<E, any>, cause: NodeInfo): void {
+    const self = node.instance
     const native = self?.native
     if (!AbstractHtmlRtti.gFinalizing && native && native.parentElement) {
       AbstractHtmlRtti.gFinalizing = native // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       try { // console.log(`${'  '.repeat(Math.abs(self.level))}${e.parentElement.id}.removeChild(${e.id} r${self.revision})`)
         self?.resizing?.unobserve(native)
         native.remove()
-        RxDom.finalize(ni, cause) // proceed
+        RxDom.finalize(node, cause) // proceed
       }
       finally {
         AbstractHtmlRtti.gFinalizing = undefined
@@ -82,7 +82,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     else { // console.log(`${'  '.repeat(Math.abs(self.level))}???.finalize(${ref.id} r${self.revision})`)
       if (native)
         self?.resizing?.unobserve(native)
-      RxDom.finalize(ni, cause) // proceed
+      RxDom.finalize(node, cause) // proceed
     }
   }
 
@@ -111,13 +111,13 @@ function blink(e: Element, cycle: number): void {
 }
 
 export class HtmlRtti<E extends HTMLElement> extends AbstractHtmlRtti<E> {
-  protected createElement(ni: NodeInfo<E, any>): E {
-    return document.createElement(ni.rtti.name) as E
+  protected createElement(node: NodeInfo<E, any>): E {
+    return document.createElement(node.rtti.name) as E
   }
 }
 
 export class SvgRtti<E extends SVGElement> extends AbstractHtmlRtti<E> {
-  protected createElement(ni: NodeInfo<E, any>): E {
-    return document.createElementNS('http://www.w3.org/2000/svg', ni.rtti.name) as E
+  protected createElement(node: NodeInfo<E, any>): E {
+    return document.createElementNS('http://www.w3.org/2000/svg', node.rtti.name) as E
   }
 }
