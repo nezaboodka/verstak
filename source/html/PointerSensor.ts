@@ -41,10 +41,14 @@ export function extractPointerButton(e: MouseEvent): PointerButton {
     case 0:
       return PointerButton.Left
     case 1:
-      return PointerButton.Right
-    case 2:
       return PointerButton.Middle
+    case 2:
+      return PointerButton.Right
     default:
       return PointerButton.None
   }
+}
+
+export function isPointerButtonDown(button: PointerButton, buttonsMask: number): boolean {
+  return (buttonsMask & (1 * button)) !== 0
 }

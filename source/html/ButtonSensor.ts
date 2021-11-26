@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
-import { extractPointerButton, PointerButton, PointerSensor } from './PointerSensor'
+import { extractPointerButton, isPointerButtonDown, PointerButton, PointerSensor } from './PointerSensor'
 import { DataForSensor, SymDataForSensor } from './HtmlApiExt'
 import { EmptyDataArray, grabElementData } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
@@ -21,9 +21,9 @@ export enum ButtonState {
 
 export class ButtonSensor extends PointerSensor {
   state: ButtonState
+  pointerButton: PointerButton
   originData: unknown
   selectedData: unknown
-  pointerButton: PointerButton
   selectedX: number // position relative to browser's viewport
   selectedY: number // position relative to browser's viewport
   selected: boolean
@@ -31,9 +31,9 @@ export class ButtonSensor extends PointerSensor {
   constructor(window: WindowSensor) {
     super(window)
     this.state = ButtonState.Released
+    this.pointerButton = PointerButton.None
     this.originData = undefined
     this.selectedData = undefined
-    this.pointerButton = PointerButton.None
     this.selectedX = Infinity
     this.selectedY = Infinity
     this.selected = false
@@ -44,16 +44,16 @@ export class ButtonSensor extends PointerSensor {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
-        existing.removeEventListener('pointermove', this.onPointerMove.bind(this), { capture: true })
         existing.removeEventListener('pointerdown', this.onPointerDown.bind(this), { capture: true })
+        existing.removeEventListener('pointermove', this.onPointerMove.bind(this), { capture: true })
         existing.removeEventListener('pointerup', this.onPointerUp.bind(this), { capture: true })
         existing.removeEventListener('lostpointercapture', this.onLostPointerCapture.bind(this), { capture: true })
         existing.removeEventListener('keydown', this.onKeyDown.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('pointermove', this.onPointerMove.bind(this), { capture: true })
         element.addEventListener('pointerdown', this.onPointerDown.bind(this), { capture: true })
+        element.addEventListener('pointermove', this.onPointerMove.bind(this), { capture: true })
         element.addEventListener('pointerup', this.onPointerUp.bind(this), { capture: true })
         element.addEventListener('lostpointercapture', this.onLostPointerCapture.bind(this), { capture: true })
         element.addEventListener('keydown', this.onKeyDown.bind(this), { capture: true })
@@ -61,40 +61,41 @@ export class ButtonSensor extends PointerSensor {
     }
   }
 
-  @transaction
-  reset(): void {
-    this.doReset()
-  }
-
   protected onPointerDown(e: PointerEvent): void {
-
     // this.sourceElement?.setPointerCapture(e.pointerId)
-
-    if (this.state === ButtonState.Released && (e.button === 0 || e.button === 1))
+    if (this.state === ButtonState.Released && (this.pointerButton === PointerButton.None))
       this.press(e)
     this.setPreventDefaultAndStopPropagation(e)
   }
 
   protected onPointerMove(e: PointerEvent): void {
-    if (this.state === ButtonState.Pressed || this.state === ButtonState.Selecting)
-      this.selecting(e)
+    const state = this.state
+    if (isPointerButtonDown(this.pointerButton, e.buttons)) {
+      if (state === ButtonState.Pressed || state === ButtonState.Selecting)
+        this.selecting(e)
+    }
+    else if (state !== ButtonState.Released) {
+      this.cancel()
+      this.reset()
+    }
     this.setPreventDefaultAndStopPropagation(e)
   }
 
   protected onPointerUp(e: PointerEvent): void {
-
-    console.log('====> onPointerUp')
-
-    if (this.state === ButtonState.Selecting) {
-      this.select(e)
-      this.release()
+    const button = extractPointerButton(e)
+    if (button === this.pointerButton) {
+      if (this.state === ButtonState.Selecting) {
+        this.select(e)
+        this.release()
+      }
+      else if (this.state === ButtonState.Pressed) {
+        this.release()
+      }
     }
-    else if (this.state === ButtonState.Pressed) {
-      this.release()
-    }
-    this.setPreventDefaultAndStopPropagation(e)
+    else
+      this.cancel()
     this.reset()
-
+    this.setPreventDefaultAndStopPropagation(e)
     // this.sourceElement?.releasePointerCapture(e.pointerId)
   }
 
@@ -166,10 +167,12 @@ export class ButtonSensor extends PointerSensor {
     this.revision++
   }
 
-  protected doReset(): void {
+  @transaction @options({ trace: TraceLevel.Silent })
+  protected reset(): void {
     this.preventDefault = false
     this.stopPropagation = false
     this.elementDataList = EmptyDataArray
+    this.state = ButtonState.Released
     this.originData = undefined
     this.selectedData = undefined
     this.pointerButton = PointerButton.None

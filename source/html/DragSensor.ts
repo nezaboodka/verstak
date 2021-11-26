@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, reaction, Reentrance, TraceLevel, transaction, unobservable } from 'reactronic'
-import { extractPointerButton, PointerButton, PointerSensor } from './PointerSensor'
+import { extractPointerButton, isPointerButtonDown, PointerButton, PointerSensor } from './PointerSensor'
 import { DataForSensor, SymDataForSensor } from './HtmlApiExt'
 import { EmptyDataArray, grabElementData } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
@@ -96,19 +96,28 @@ export class DragSensor extends PointerSensor {
 
   protected onPointerDown(e: PointerEvent): void {
     // this.sourceElement?.setPointerCapture(e.pointerId)
-    if (!this.started && (e.button === 0 || e.button === 1)) {
+    const button = extractPointerButton(e)
+    if (!this.started && (button === PointerButton.Left || button === PointerButton.Right)) {
       this.tryDragging(e)
     }
   }
 
   protected onPointerMove(e: PointerEvent): void {
-    if (this.trying) {
-      if (Math.abs(e.clientX - this.startX) > DragSensor.DraggingThreshold ||
-        Math.abs(e.clientY - this.startY) > DragSensor.DraggingThreshold) {
-        this.startDragging(e)
+    if (isPointerButtonDown(this.button, e.buttons)) {
+      if (this.trying) {
+        if (Math.abs(e.clientX - this.startX) > DragSensor.DraggingThreshold ||
+          Math.abs(e.clientY - this.startY) > DragSensor.DraggingThreshold) {
+          this.startDragging(e)
+        }
+      } else if (this.started) {
+        this.dragOver(e)
       }
-    } else if (this.started) {
-      this.dragOver(e)
+    }
+    else {
+      if (this.started) {
+        this.cancelDragging()
+        this.reset()
+      }
     }
   }
 
