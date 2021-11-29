@@ -19,6 +19,7 @@ export interface Rtti<E = unknown, O = void> {
 }
 
 export interface AbstractInstance<E = unknown, O = void> {
+  readonly uuid: number
   readonly level: number
   revision: number
   native?: E

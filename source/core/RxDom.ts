@@ -13,6 +13,8 @@ const EMPTY: ReadonlyArray<NodeInfo<any, any>> = Object.freeze([])
 // Instance
 
 export class Instance<E = unknown, O = void> implements AbstractInstance<E, O> {
+  private static gUuid: number = 0
+  readonly uuid: number
   readonly level: number
   revision: number = 0
   native?: E = undefined
@@ -23,6 +25,7 @@ export class Instance<E = unknown, O = void> implements AbstractInstance<E, O> {
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
+    this.uuid = ++Instance.gUuid
     this.level = level
   }
 
@@ -248,7 +251,7 @@ export class RxDom {
     if (self !== undefined && self.buffer !== undefined) {
       const theirList = self.children
       const buffer = self.buffer
-      const ourList = buffer.slice().sort(compareNodeInfos)
+      const ourList = buffer.slice().sort(compareNodes)
       // Switch to the new list
       self.buffer = undefined
       self.children = ourList
@@ -258,7 +261,7 @@ export class RxDom {
       while (i < theirList.length) {
         const theirs = theirList[i]
         const ours = ourList[j]
-        const diff = ours !== undefined ? compareNodeInfos(ours, theirs) : 1
+        const diff = ours !== undefined ? compareNodes(ours, theirs) : 1
         if (diff <= 0) {
           if (sibling !== undefined && ours.id === sibling.id)
             throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
@@ -297,7 +300,7 @@ export class RxDom {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
       const theirList = self.children
-      const ourList = self.buffer.sort(compareNodeInfos)
+      const ourList = self.buffer.sort(compareNodes)
       // Switch to the new list
       self.buffer = undefined
       self.children = ourList
@@ -307,7 +310,7 @@ export class RxDom {
       while (i < theirList.length || j < ourList.length) {
         const theirs = theirList[i]
         const ours = ourList[j]
-        const diff = compareNullable(ours, theirs, compareNodeInfos)
+        const diff = compareNullable(ours, theirs, compareNodes)
         if (diff <= 0) {
           if (sibling !== undefined && ours.id === sibling.id)
             throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
@@ -341,12 +344,8 @@ export class RxDom {
   }
 }
 
-function compareNodeInfos(ni1: NodeInfo, ni2: NodeInfo): number {
-  // let result = ni1.renderingParent.id.localeCompare(ni2.renderingParent.id)
-  // if (result === 0)
-  //   result = ni1.id.localeCompare(ni2.id)
-  // return result
-  return ni1.id.localeCompare(ni2.id)
+function compareNodes(node1: NodeInfo, node2: NodeInfo): number {
+  return node1.id.localeCompare(node2.id)
 }
 
 function compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T, b: T) => number): number {
@@ -356,6 +355,15 @@ function compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T,
   else
     diff = a !== undefined ? -1 : 0
   return diff
+}
+
+function compareNodesGroupedByRenderingParent(node1: NodeInfo, node2: NodeInfo): number {
+  const p1 = node1.renderingParent.instance!
+  const p2 = node2.renderingParent.instance!
+  let result: number = p1.uuid - p2.uuid
+  if (result === 0)
+    result = compareNodes(node1, node2)
+  return result
 }
 
 function argsAreEqual(a1: any, a2: any): boolean {
