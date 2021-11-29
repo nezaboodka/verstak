@@ -41,7 +41,7 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
 export class RxDom {
   static readonly ROOT = RxDom.createStaticDeclaration<unknown>('ROOT', undefined)
   static gParent: NodeInfo<any, any> = RxDom.ROOT
-  static gRenderingParent: NodeInfo<any, any> = RxDom.ROOT
+  static gHostingParent: NodeInfo<any, any> = RxDom.ROOT
   static gReactivityParent: NodeInfo<any, any> = RxDom.ROOT
   static gTrace: string | undefined = undefined
   static gTraceMask: string = 'r'
@@ -59,10 +59,10 @@ export class RxDom {
     id: string, args: unknown, render: Render<E, O>,
     superRender: SuperRender<O, E> | undefined,
     rtti: Rtti<E, O>, parent?: NodeInfo,
-    renderingParent?: NodeInfo, reactivityParent?: NodeInfo): NodeInfo<E, O> {
+    hostingParent?: NodeInfo, reactivityParent?: NodeInfo): NodeInfo<E, O> {
 
     const p = parent ?? RxDom.gParent
-    const p2 = renderingParent ?? RxDom.gRenderingParent
+    const p2 = hostingParent ?? RxDom.gHostingParent
     const p3 = reactivityParent ?? RxDom.gReactivityParent
     const self = p.instance
     if (!self)
@@ -79,10 +79,10 @@ export class RxDom {
     if (!self)
       throw new Error('element must be initialized before rendering')
     const outer = RxDom.gParent
-    const renderingOuter = RxDom.gRenderingParent
+    const hostingOuter = RxDom.gHostingParent
     const reactivityOuter = RxDom.gReactivityParent
     try {
-      RxDom.gParent = RxDom.gRenderingParent = RxDom.gReactivityParent = node
+      RxDom.gParent = RxDom.gHostingParent = RxDom.gReactivityParent = node
       self.buffer = []
       if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
         console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${node.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
@@ -97,7 +97,7 @@ export class RxDom {
     }
     finally {
       RxDom.gReactivityParent = reactivityOuter
-      RxDom.gRenderingParent = renderingOuter
+      RxDom.gHostingParent = hostingOuter
       RxDom.gParent = outer
     }
   }
@@ -123,16 +123,16 @@ export class RxDom {
     }
   }
 
-  static useAnotherRenderingParent<E>(node: NodeInfo<E>, render: Render<E>): void {
+  static useAnotherHostingParent<E>(node: NodeInfo<E>, render: Render<E>): void {
     const native = node.instance?.native
     if (native) {
-      const outer = RxDom.gRenderingParent
+      const outer = RxDom.gHostingParent
       try {
-        RxDom.gRenderingParent = node
+        RxDom.gHostingParent = node
         render(native)
       }
       finally {
-        RxDom.gRenderingParent = outer
+        RxDom.gHostingParent = outer
       }
     }
   }
@@ -166,7 +166,7 @@ export class RxDom {
     // Initialize
     const a: any = node
     a['parent'] = node
-    a['renderingParent'] = node
+    a['hostingParent'] = node
     a['reactivityParent'] = node
     self.native = native
     return node
@@ -225,7 +225,7 @@ export class RxDom {
     if (rtti.initialize)
       rtti.initialize(node)
     else
-      self.native = node.renderingParent.instance?.native // default initialize
+      self.native = node.hostingParent.instance?.native // default initialize
     if (node.args !== RefreshParent)
       Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? getTraceHint(node) : node.id)
     if (RxDom.gTrace && RxDom.gTraceMask.indexOf('m') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
@@ -280,14 +280,14 @@ export class RxDom {
       sibling = undefined
       for (const x of buffer) {
         if (x.previous) {
-          x.rtti.place?.(x, sibling)
+          x.rtti.host?.(x, sibling)
           if (x.args === RefreshParent || !argsAreEqual(x.args, x.previous.args))
             RxDom.doRender(x) // re-rendering
           x.previous = undefined // unlink to make it available for garbage collection
         }
         else {
           RxDom.doInitialize(x)
-          x.rtti.place?.(x, sibling)
+          x.rtti.host?.(x, sibling)
           RxDom.doRender(x) // initial rendering
         }
         sibling = x
@@ -321,7 +321,7 @@ export class RxDom {
           }
           else { // diff < 0
             RxDom.doInitialize(ours)
-            ours.rtti.place?.(ours)
+            ours.rtti.host?.(ours)
             RxDom.doRender(ours) // initial rendering
             j++
           }
@@ -345,10 +345,10 @@ export class RxDom {
 
 function compareNodes(node1: NodeInfo, node2: NodeInfo): number {
   let result: number = 0
-  const p1 = node1.renderingParent.instance
-  const p2 = node2.renderingParent.instance
-  if (p1 !== p2) {
-    result = p1!.uuid - p2!.uuid
+  const hp1 = node1.hostingParent.instance
+  const hp2 = node2.hostingParent.instance
+  if (hp1 !== hp2) {
+    result = hp1!.uuid - hp2!.uuid
     if (result === 0)
       result = node1.id.localeCompare(node2.id)
   }

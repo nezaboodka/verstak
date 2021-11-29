@@ -13,7 +13,7 @@ export interface Rtti<E = unknown, O = void> {
   readonly name: string
   readonly unordered: boolean
   initialize?(node: NodeInfo<E, O>): void
-  place?(node: NodeInfo<E, O>, sibling?: NodeInfo): void
+  host?(node: NodeInfo<E, O>, sibling?: NodeInfo): void
   render?(node: NodeInfo<E, O>): void
   finalize?(node: NodeInfo<E, O>, cause: NodeInfo): void
 }
@@ -43,7 +43,7 @@ export class NodeInfo<E = unknown, O = void> {
     readonly superRender: SuperRender<O, E> | undefined,
     readonly rtti: Rtti<E, O>,
     readonly parent: NodeInfo,
-    readonly renderingParent: NodeInfo,
+    readonly hostingParent: NodeInfo,
     readonly reactivityParent: NodeInfo,
     public instance?: AbstractNodeInstance<E, O>) {
   }

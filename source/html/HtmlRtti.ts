@@ -26,22 +26,21 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.appendChild(${e.id} r${self.revision})`)
   }
 
-  place(node: NodeInfo<E, any>, sibling?: NodeInfo): void {
+  host(node: NodeInfo<E, any>, sibling?: NodeInfo): void {
     const self = node.instance
     const native = self?.native
     if (native) {
-      const parent = node.renderingParent
-      const nParent = parent.instance?.native
-      if (nParent !== native.parentNode) {
+      const nativeParentNode = node.hostingParent.instance?.native
+      if (nativeParentNode !== native.parentNode) {
         native.remove() // remove from previous parent
-        if (nParent instanceof Element) {
+        if (nativeParentNode instanceof Element) {
           if (sibling) {
             const nSibling = sibling.instance?.native
             if (nSibling instanceof Element && nSibling.nextSibling !== native)
-              nParent.insertBefore(native, nSibling.nextSibling)
+              nativeParentNode.insertBefore(native, nSibling.nextSibling)
           }
           else
-            nParent.appendChild(native)
+            nativeParentNode.appendChild(native)
           // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.insertBefore(${sibling?.id ?? '<null>'})`)
         }
       }
