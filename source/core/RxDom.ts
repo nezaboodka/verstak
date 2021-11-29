@@ -345,7 +345,17 @@ export class RxDom {
 }
 
 function compareNodes(node1: NodeInfo, node2: NodeInfo): number {
-  return node1.id.localeCompare(node2.id)
+  let result: number = 0
+  const p1 = node1.renderingParent.instance
+  const p2 = node2.renderingParent.instance
+  if (p1 !== p2) {
+    result = p1!.uuid - p2!.uuid
+    if (result === 0)
+      result = node1.id.localeCompare(node2.id)
+  }
+  else
+    result = node1.id.localeCompare(node2.id)
+  return result
 }
 
 function compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T, b: T) => number): number {
@@ -356,17 +366,6 @@ function compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T,
     diff = a !== undefined ? -1 : 0
   return diff
 }
-
-// function compareNodesGroupedByRenderingParent(node1: NodeInfo, node2: NodeInfo): number {
-//   let result: number = 0
-//   const p1 = node1.renderingParent.instance!
-//   const p2 = node2.renderingParent.instance!
-//   if (p1 !== p2)
-//     result = p1.uuid - p2.uuid
-//   if (result === 0)
-//     result = compareNodes(node1, node2)
-//   return result
-// }
 
 function argsAreEqual(a1: any, a2: any): boolean {
   let result = a1 === a2
