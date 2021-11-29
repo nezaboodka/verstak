@@ -121,7 +121,6 @@ export class RxDom {
         RxDom.doFinalize(x, cause)
       self.native = undefined
     }
-    node.instance = undefined
   }
 
   static useAnotherRenderingParent<E>(node: NodeInfo<E>, render: Render<E>): void {
