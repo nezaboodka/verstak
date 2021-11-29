@@ -357,14 +357,16 @@ function compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T,
   return diff
 }
 
-function compareNodesGroupedByRenderingParent(node1: NodeInfo, node2: NodeInfo): number {
-  const p1 = node1.renderingParent.instance!
-  const p2 = node2.renderingParent.instance!
-  let result: number = p1.uuid - p2.uuid
-  if (result === 0)
-    result = compareNodes(node1, node2)
-  return result
-}
+// function compareNodesGroupedByRenderingParent(node1: NodeInfo, node2: NodeInfo): number {
+//   let result: number = 0
+//   const p1 = node1.renderingParent.instance!
+//   const p2 = node2.renderingParent.instance!
+//   if (p1 !== p2)
+//     result = p1.uuid - p2.uuid
+//   if (result === 0)
+//     result = compareNodes(node1, node2)
+//   return result
+// }
 
 function argsAreEqual(a1: any, a2: any): boolean {
   let result = a1 === a2
