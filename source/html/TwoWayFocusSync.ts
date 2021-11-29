@@ -19,8 +19,8 @@ export function TwoWayFocusSync(
     setNativeFocus = () => target.focus()
   RxFragment(id, { focusToggle }, (e, o) => {
     const f = focusToggle.value
-    const f1 = focusToggle.value1
-    const active = f === focusToggle.value1 || (
+    const f1 = focusToggle.valueOn
+    const active = f === focusToggle.valueOn || (
       f instanceof Ref && f1 instanceof Ref && Ref.sameRefs(f, f1))
     // console.log(`${(entity as any).constructor.name}.${member.toString()} === ${entity[member]} => ${member}:${activeValue}.setFocused(${active}) // ${Reactronic.why()}`)
     active && setNativeFocus && setNativeFocus()

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, Reentrance, TraceLevel, transaction, unobservable } from 'reactronic'
+import { options, reaction, Reentrance, standalone, TraceLevel, transaction, unobservable } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, PointerSensor } from './PointerSensor'
 import { DataForSensor, SymDataForSensor } from './HtmlApiExt'
 import { EmptyDataArray, grabElementData } from './DataForSensor'
@@ -13,7 +13,7 @@ import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
 
 export class DragSensor extends PointerSensor {
-  button: PointerButton
+  pointerButton: PointerButton
   trying: boolean
   draggableData: unknown
   dragSource: unknown
@@ -40,7 +40,7 @@ export class DragSensor extends PointerSensor {
 
   constructor(window: WindowSensor) {
     super(window)
-    this.button = PointerButton.None
+    this.pointerButton = PointerButton.None
     this.trying = false
     this.draggableData = undefined
     this.dragSource = undefined
@@ -103,7 +103,7 @@ export class DragSensor extends PointerSensor {
   }
 
   protected onPointerMove(e: PointerEvent): void {
-    if (isPointerButtonDown(this.button, e.buttons)) {
+    if (isPointerButtonDown(this.pointerButton, e.buttons)) {
       if (this.trying) {
         if (Math.abs(e.clientX - this.startX) > DragSensor.DraggingThreshold ||
           Math.abs(e.clientY - this.startY) > DragSensor.DraggingThreshold) {
@@ -159,7 +159,7 @@ export class DragSensor extends PointerSensor {
       const { data: elementDataUnderPointer, window } = grabElementData(sourceElements, SymDataForSensor, 'drag', EmptyDataArray)
       this.dragSource = elementDataUnderPointer[0]
       this.trying = true
-      this.button = extractPointerButton(e)
+      this.pointerButton = extractPointerButton(e)
       this.startX = e.clientX
       this.startY = e.clientY
       this.modifiers = extractModifierKeys(e)
@@ -169,7 +169,9 @@ export class DragSensor extends PointerSensor {
       this.dragTarget = undefined
       this.previousDragTarget = undefined
       this.revision++
-      this.window?.setActiveWindow(window)
+      standalone(() => {
+        this.window?.setActiveWindow(window, 'drag')
+      })
     }
   }
 
@@ -219,7 +221,7 @@ export class DragSensor extends PointerSensor {
   @transaction @options({ trace: TraceLevel.Silent })
   protected reset(): void {
     this.elementDataList = EmptyDataArray
-    this.button = PointerButton.None
+    this.pointerButton = PointerButton.None
     this.trying = false
     this.draggableData = undefined
     this.dragSource = undefined

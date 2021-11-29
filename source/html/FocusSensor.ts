@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, TraceLevel, transaction } from 'reactronic'
+import { options, standalone, TraceLevel, transaction } from 'reactronic'
 import { EmptyDataArray, grabElementData } from './DataForSensor'
 import { SymDataForSensor } from './HtmlApiExt'
 import { HtmlElementSensor } from './HtmlElementSensor'
@@ -50,7 +50,9 @@ export class FocusSensor extends HtmlElementSensor {
     const { data, window } = grabElementData(path, SymDataForSensor, 'focus', this.elementDataList)
     this.elementDataList = data
     this.revision++
-    this.window?.setActiveWindow(window)
+    standalone(() => {
+      this.window?.setActiveWindow(window, 'focus')
+    })
   }
 
   @transaction

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
+import { options, Reentrance, standalone, TraceLevel, transaction } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, PointerSensor } from './PointerSensor'
 import { DataForSensor, SymDataForSensor } from './HtmlApiExt'
 import { EmptyDataArray, grabElementData } from './DataForSensor'
@@ -133,7 +133,9 @@ export class ButtonSensor extends PointerSensor {
       this.positionY = e.clientY
       this.revision++
     }
-    this.window?.setActiveWindow(window)
+    standalone(() => {
+      this.window?.setActiveWindow(window, 'button')
+    })
   }
 
   @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Silent })
@@ -199,7 +201,6 @@ export class ButtonSensor extends PointerSensor {
 
   // @reaction
   // protected debug(): void {
-  //   console.log(`Popup: elementDataList.length = ${this.elementDataList.length}`)
-  //   console.log(`stage = ${ButtonState[this.state]}, originData = ${this.originData}, selected = ${this.selected}, selectedData = ${this.selectedData}, selectedXY = (${this.selectedX}, ${this.selectedY})`)
+  //   console.log(`Button stage = ${ButtonState[this.state]}, originData = ${this.originData}, selected = ${this.selected}, selectedData = ${this.selectedData}, selectedXY = (${this.selectedX}, ${this.selectedY})`)
   // }
 }

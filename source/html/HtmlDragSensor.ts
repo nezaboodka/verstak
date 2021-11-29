@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, TraceLevel, transaction, unobservable } from 'reactronic'
+import { options, reaction, standalone, TraceLevel, transaction, unobservable } from 'reactronic'
 import { EmptyDataArray, grabElementData } from './DataForSensor'
 import { DataForSensor, SymDataForSensor } from './HtmlApiExt'
 import { HtmlElementSensor } from './HtmlElementSensor'
@@ -162,7 +162,9 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.dragTarget = undefined
     this.previousDragTarget = undefined
     this.revision++
-    this.window?.setActiveWindow(window)
+    standalone(() => {
+      this.window?.setActiveWindow(window, 'htmlDrag')
+    })
   }
 
   @transaction @options({ trace: TraceLevel.Silent })
@@ -183,7 +185,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     const window = this.updateDragTarget(e)
     this.dropped = false
     this.revision++
-    this.window?.setActiveWindow(window)
+    this.window?.setActiveWindow(window, 'htmlDrag')
   }
 
   @transaction @options({ trace: TraceLevel.Silent })

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, TraceLevel, transaction } from 'reactronic'
+import { options, standalone, TraceLevel, transaction } from 'reactronic'
 import { EmptyDataArray, grabElementData } from './DataForSensor'
 import { SymDataForSensor } from './HtmlApiExt'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
@@ -105,7 +105,9 @@ export class ClickSensor extends PointerSensor {
     this.positionX = e.clientX
     this.positionY = e.clientY
     this.revision++
-    this.window?.setActiveWindow(window)
+    standalone(() => {
+      this.window?.setActiveWindow(window, 'click')
+    })
   }
 
   // @reaction

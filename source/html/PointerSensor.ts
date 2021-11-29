@@ -50,5 +50,5 @@ export function extractPointerButton(e: MouseEvent): PointerButton {
 }
 
 export function isPointerButtonDown(button: PointerButton, buttonsMask: number): boolean {
-  return (buttonsMask & (1 * button)) !== 0
+  return (buttonsMask & button) !== 0
 }

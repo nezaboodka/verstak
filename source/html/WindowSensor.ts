@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { transaction } from 'reactronic'
+import { reaction, transaction } from 'reactronic'
 import { Sensor } from './Sensor'
 
 export class WindowSensor extends Sensor {
@@ -13,9 +13,9 @@ export class WindowSensor extends Sensor {
   previousActiveData: unknown = undefined
 
   @transaction
-  setActiveWindow(window: unknown): void {
+  setActiveWindow(window: unknown, debugHint: string = ''): void {
 
-    // console.log('====> setActiveWindow')
+    // console.log(`====> setActiveWindow, ${debugHint}`)
     // console.log(window)
 
     if (window !== this.activeData) {
@@ -24,8 +24,10 @@ export class WindowSensor extends Sensor {
     }
   }
 
-  // @reaction
-  // protected debug(): void {
-  //   console.log(`WindowSensor: activeWindow = ${this.activeData}, previousActiveWindow = ${this.previousActiveData}`)
-  // }
+  @reaction
+  protected debug(): void {
+    console.log('WindowSensor - activeWindow, previousActiveWindow:')
+    console.log(this.activeData)
+    console.log(this.previousActiveData)
+  }
 }
