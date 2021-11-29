@@ -18,7 +18,7 @@ export interface Rtti<E = unknown, O = void> {
   finalize?(node: NodeInfo<E, O>, cause: NodeInfo): void
 }
 
-export interface AbstractInstance<E = unknown, O = void> {
+export interface AbstractNodeInstance<E = unknown, O = void> {
   readonly uuid: number
   readonly level: number
   revision: number
@@ -33,7 +33,7 @@ export interface AbstractInstance<E = unknown, O = void> {
 }
 
 export class NodeInfo<E = unknown, O = void> {
-  previous?: NodeInfo<E, O> = undefined
+  previous?: NodeInfo<E, O> = undefined // internal
   get native(): E | undefined { return this.instance?.native }
 
   constructor(
@@ -45,6 +45,6 @@ export class NodeInfo<E = unknown, O = void> {
     readonly parent: NodeInfo,
     readonly renderingParent: NodeInfo,
     readonly reactivityParent: NodeInfo,
-    public instance?: AbstractInstance<E, O>) {
+    public instance?: AbstractNodeInstance<E, O>) {
   }
 }

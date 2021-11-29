@@ -6,13 +6,13 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, Reactronic, options } from 'reactronic'
-import { Render, SuperRender, RefreshParent, Rtti, AbstractInstance, NodeInfo } from './Data'
+import { Render, SuperRender, RefreshParent, Rtti, AbstractNodeInstance, NodeInfo } from './Data'
 
 const EMPTY: ReadonlyArray<NodeInfo<any, any>> = Object.freeze([])
 
-// Instance
+// NodeInstance
 
-export class Instance<E = unknown, O = void> implements AbstractInstance<E, O> {
+export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance<E, O> {
   private static gUuid: number = 0
   readonly uuid: number
   readonly level: number
@@ -25,7 +25,7 @@ export class Instance<E = unknown, O = void> implements AbstractInstance<E, O> {
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
-    this.uuid = ++Instance.gUuid
+    this.uuid = ++NodeInstance.gUuid
     this.level = level
   }
 
@@ -152,7 +152,7 @@ export class RxDom {
   }
 
   static createStaticDeclaration<E>(id: string, native: E): NodeInfo<E> {
-    const self = new Instance<E>(0)
+    const self = new NodeInstance<E>(0)
     const node = new NodeInfo<E>(
       id,                           // id
       null,                         // args
@@ -181,7 +181,7 @@ export class RxDom {
     return self as { model?: T }
   }
 
-  static selfInstanceInternal<E>(): Instance<E> {
+  static selfInstanceInternal<E>(): NodeInstance<E> {
     const self = RxDom.gParent.instance
     if (!self)
       throw new Error('selfInstanceInternal function can be called only inside rendering function')
@@ -201,7 +201,7 @@ export class RxDom {
     RxDom.forEachChildRecursively(RxDom.ROOT, action)
   }
 
-  static renderInline<E, O>(instance: Instance<E, O>, node: NodeInfo<E, O>): void {
+  static renderInline<E, O>(instance: NodeInstance<E, O>, node: NodeInfo<E, O>): void {
     if (instance === undefined || instance === null)
       debugger // temporary, TODO: debug
     instance.revision++
@@ -218,10 +218,10 @@ export class RxDom {
       nonreactive(self.render, node)
   }
 
-  private static doInitialize(node: NodeInfo): Instance {
+  private static doInitialize(node: NodeInfo): NodeInstance {
     // TODO: Make the code below exception-safe
     const rtti = node.rtti
-    const self = node.instance = new Instance(node.parent.instance!.level + 1)
+    const self = node.instance = new NodeInstance(node.parent.instance!.level + 1)
     if (rtti.initialize)
       rtti.initialize(node)
     else
