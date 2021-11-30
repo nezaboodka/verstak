@@ -21,7 +21,7 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
   model?: unknown = undefined
   children: ReadonlyArray<NodeInfo<any, any>> = EMPTY
   buffer: Array<NodeInfo<any, any>> | undefined = undefined
-  nephews: ReadonlyArray<NodeInfo<any, any>> = EMPTY
+  aliens: ReadonlyArray<NodeInfo<any, any>> = EMPTY
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
@@ -121,7 +121,7 @@ export class RxDom {
       self.native = undefined
       for (const x of self.children)
         RxDom.doFinalize(x, cause)
-      for (const x of self.nephews)
+      for (const x of self.aliens)
         RxDom.doFinalize(x, cause)
     }
   }
@@ -259,7 +259,7 @@ export class RxDom {
       self.children = ourList
       // Reconciliation loop - link to existing or finalize
       let host = self
-      let nephews: Array<NodeInfo<any, any>> = EMPTY
+      let aliens: Array<NodeInfo<any, any>> = EMPTY
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
       while (i < theirList.length) {
@@ -279,11 +279,11 @@ export class RxDom {
           const oursHost = ours.hostingParent.instance
           if (oursHost !== self) {
             if (oursHost !== host) {
-              RxDom.mergeNephews(host, nephews)
-              nephews = []
+              RxDom.mergeAliens(host, aliens)
+              aliens = []
               host = oursHost!
             }
-            nephews.push(ours)
+            aliens.push(ours)
           }
           sibling = ours
         }
@@ -291,7 +291,7 @@ export class RxDom {
           RxDom.doFinalize(theirs, theirs), i++
       }
       if (host !== self)
-        RxDom.mergeNephews(host, nephews)
+        RxDom.mergeAliens(host, aliens)
       // Reconciliation loop - initialize, render, re-render
       sibling = undefined
       for (const x of buffer) {
@@ -321,7 +321,7 @@ export class RxDom {
       self.children = ourList
       // Reconciliation loop - link, render, initialize, finalize
       let host = self
-      let nephews: Array<NodeInfo<any, any>> = EMPTY
+      let aliens: Array<NodeInfo<any, any>> = EMPTY
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
       while (i < theirList.length || j < ourList.length) {
@@ -346,11 +346,11 @@ export class RxDom {
           const oursHost = ours.hostingParent.instance
           if (oursHost !== self) {
             if (oursHost !== host) {
-              RxDom.mergeNephews(host, nephews)
-              nephews = []
+              RxDom.mergeAliens(host, aliens)
+              aliens = []
               host = oursHost!
             }
-            nephews.push(ours)
+            aliens.push(ours)
           }
           sibling = ours
         }
@@ -358,17 +358,17 @@ export class RxDom {
           RxDom.doFinalize(theirs, theirs), i++
       }
       if (host !== self)
-        RxDom.mergeNephews(host, nephews)
+        RxDom.mergeAliens(host, aliens)
     }
   }
 
-  private static mergeNephews(host: AbstractNodeInstance, nephews: Array<NodeInfo<any, any>>): void {
-    const theirList = host.nephews
+  private static mergeAliens(host: AbstractNodeInstance, aliens: Array<NodeInfo<any, any>>): void {
+    const theirList = host.aliens
     const merged: Array<NodeInfo<any, any>> = []
     let i = 0, j = 0 // TODO: Consider using binary search to find initial index
-    while (i < theirList.length || j < nephews.length) {
+    while (i < theirList.length || j < aliens.length) {
       const theirs = theirList[i]
-      const ours = nephews[j]
+      const ours = aliens[j]
       const diff = compareNullable(ours, theirs, compareNodes)
       if (diff <= 0) {
         merged.push(ours)
@@ -383,7 +383,7 @@ export class RxDom {
         i++
       }
     }
-    host.nephews = merged
+    host.aliens = merged
   }
 
   private static forEachChildRecursively(node: NodeInfo, action: (e: any) => void): void {
