@@ -8,7 +8,7 @@
 import { reaction, nonreactive, Transaction, Reactronic, options } from 'reactronic'
 import { Render, SuperRender, RefreshParent, Rtti, AbstractNodeInstance, NodeInfo } from './Data'
 
-const EMPTY: ReadonlyArray<NodeInfo<any, any>> = Object.freeze([])
+const EMPTY: Array<NodeInfo<any, any>> = Object.freeze([]) as any
 
 // NodeInstance
 
@@ -20,9 +20,8 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
   native?: E = undefined
   model?: unknown = undefined
   children: ReadonlyArray<NodeInfo<any, any>> = EMPTY
-  nephews: ReadonlyArray<NodeInfo<any, any>> = EMPTY
   emittedChildren: Array<NodeInfo<any, any>> | undefined = undefined
-  emittedNephews: Array<NodeInfo<any, any>> | undefined = undefined
+  nephews: ReadonlyArray<NodeInfo<any, any>> = EMPTY
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
@@ -40,7 +39,7 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
 // RxDom
 
 export class RxDom {
-  static readonly ROOT = RxDom.createStaticDeclaration<unknown>('ROOT', undefined)
+  static readonly ROOT = RxDom.createStaticDeclaration<unknown>('ROOT', 'ROOT')
   static gParent: NodeInfo<any, any> = RxDom.ROOT
   static gHostingParent: NodeInfo<any, any> = RxDom.ROOT
   static gReactivityParent: NodeInfo<any, any> = RxDom.ROOT
@@ -63,15 +62,16 @@ export class RxDom {
     hostingParent?: NodeInfo, reactivityParent?: NodeInfo): NodeInfo<E, O> {
 
     const p = parent ?? RxDom.gParent
-    const p2 = hostingParent ?? RxDom.gHostingParent
-    const p3 = reactivityParent ?? RxDom.gReactivityParent
+    const hp = hostingParent ?? RxDom.gHostingParent
+    const rp = reactivityParent ?? RxDom.gReactivityParent
     const self = p.instance
     if (!self)
       throw new Error('element must be initialized before children')
-    const node = new NodeInfo<E, O>(id, args, render, superRender, rtti, p, p2, p3)
+    const node = new NodeInfo<E, O>(id, args, render, superRender, rtti, p, hp, rp)
     if (self.emittedChildren === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    self.emittedChildren.push(node)
+    if (hp?.instance?.native) // emit only if hosting parent is alive
+      self.emittedChildren.push(node)
     return node
   }
 
@@ -106,9 +106,9 @@ export class RxDom {
   static renderChildrenNow(): void {
     const node = RxDom.gParent
     if (node.rtti.unordered)
-      RxDom.renderUnorderedChildren(node)
+      RxDom.mergeAndRenderUnorderedChildren(node)
     else
-      RxDom.renderNaturallyOrderedChildren(node)
+      RxDom.mergeAndRenderNaturallyOrderedChildren(node)
   }
 
   static initialize(node: NodeInfo): void {
@@ -116,11 +116,13 @@ export class RxDom {
   }
 
   static finalize(node: NodeInfo<any, any>, cause: NodeInfo): void {
-    const self = node.instance
-    if (self) {
+    const self = node.instance!
+    if (self.native) {
+      self.native = undefined
       for (const x of self.children)
         RxDom.doFinalize(x, cause)
-      self.native = undefined
+      for (const x of self.nephews)
+        RxDom.doFinalize(x, cause)
     }
   }
 
@@ -246,7 +248,7 @@ export class RxDom {
       RxDom.finalize(node, cause) // default finalize
   }
 
-  private static renderNaturallyOrderedChildren(node: NodeInfo): void {
+  private static mergeAndRenderNaturallyOrderedChildren(node: NodeInfo): void {
     const self = node.instance
     if (self !== undefined && self.emittedChildren !== undefined) {
       const theirList = self.children
@@ -257,6 +259,7 @@ export class RxDom {
       self.children = ourList
       // Reconciliation loop - link to existing or finalize
       let host = self
+      let nephews: Array<NodeInfo<any, any>> = EMPTY
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
       while (i < theirList.length) {
@@ -273,13 +276,22 @@ export class RxDom {
           }
           else // diff < 0
             j++ // initial rendering is called below
-          if (ours.hostingParent.instance !== self)
-            host = RxDom.emitNephew(host, ours)
+          const oursHost = ours.hostingParent.instance
+          if (oursHost !== self) {
+            if (oursHost !== host) {
+              RxDom.mergeNephews(host, nephews)
+              nephews = []
+              host = oursHost!
+            }
+            nephews.push(ours)
+          }
           sibling = ours
         }
         else // diff > 0
           RxDom.doFinalize(theirs, theirs), i++
       }
+      if (host !== self)
+        RxDom.mergeNephews(host, nephews)
       // Reconciliation loop - initialize, render, re-render
       sibling = undefined
       for (const x of emitted) {
@@ -299,7 +311,7 @@ export class RxDom {
     }
   }
 
-  private static renderUnorderedChildren(node: NodeInfo): void {
+  private static mergeAndRenderUnorderedChildren(node: NodeInfo): void {
     const self = node.instance
     if (self !== undefined && self.emittedChildren !== undefined) {
       const theirList = self.children
@@ -309,6 +321,7 @@ export class RxDom {
       self.children = ourList
       // Reconciliation loop - link, render, initialize, finalize
       let host = self
+      let nephews: Array<NodeInfo<any, any>> = EMPTY
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
       while (i < theirList.length || j < ourList.length) {
@@ -330,27 +343,47 @@ export class RxDom {
             RxDom.doRender(ours) // initial rendering
             j++
           }
-          if (ours.hostingParent.instance !== self)
-            host = RxDom.emitNephew(host, ours)
+          const oursHost = ours.hostingParent.instance
+          if (oursHost !== self) {
+            if (oursHost !== host) {
+              RxDom.mergeNephews(host, nephews)
+              nephews = []
+              host = oursHost!
+            }
+            nephews.push(ours)
+          }
           sibling = ours
         }
         else // diff > 0
           RxDom.doFinalize(theirs, theirs), i++
       }
+      if (host !== self)
+        RxDom.mergeNephews(host, nephews)
     }
   }
 
-  private static emitNephew(host: AbstractNodeInstance, child: NodeInfo): AbstractNodeInstance {
-    const hp = child.hostingParent.instance
-    if (hp?.native) {
-      if (hp !== host) {
-        // merge host.emittedNephews
-        hp.emittedNephews = []
-        host = hp
+  private static mergeNephews(host: AbstractNodeInstance, nephews: Array<NodeInfo<any, any>>): void {
+    const theirList = host.nephews
+    const merged: Array<NodeInfo<any, any>> = []
+    let i = 0, j = 0 // TODO: Consider using binary search to find initial index
+    while (i < theirList.length || j < nephews.length) {
+      const theirs = theirList[i]
+      const ours = nephews[j]
+      const diff = compareNullable(ours, theirs, compareNodes)
+      if (diff <= 0) {
+        merged.push(ours)
+        if (diff === 0)
+          i++, j++
+        else // diff < 0
+          j++
       }
-      host.emittedNephews?.push(child)
+      else { // diff > 0
+        if (ours.hostingParent.instance !== theirs.hostingParent.instance)
+          merged.push(theirs)
+        i++
+      }
     }
-    return host
+    host.nephews = merged
   }
 
   private static forEachChildRecursively(node: NodeInfo, action: (e: any) => void): void {
