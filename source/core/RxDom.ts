@@ -378,7 +378,7 @@ export class RxDom {
           j++
       }
       else { // diff > 0
-        if (ours.hostingParent.instance !== theirs.hostingParent.instance)
+        if (theirs.hostingParent.instance !== host)
           merged.push(theirs)
         i++
       }
