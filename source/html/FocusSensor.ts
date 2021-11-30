@@ -51,7 +51,7 @@ export class FocusSensor extends HtmlElementSensor {
     this.elementDataList = data
     this.revision++
     standalone(() => {
-      this.window?.setActiveWindow(window, 'focus')
+      this.windowSensor?.setActiveWindow(window, 'focus')
     })
   }
 

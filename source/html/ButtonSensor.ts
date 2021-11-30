@@ -28,8 +28,8 @@ export class ButtonSensor extends PointerSensor {
   selectedY: number // position relative to browser's viewport
   selected: boolean
 
-  constructor(window: WindowSensor) {
-    super(window)
+  constructor(windowSensor: WindowSensor) {
+    super(windowSensor)
     this.state = ButtonState.Released
     this.pointerButton = PointerButton.None
     this.originData = undefined
@@ -134,7 +134,7 @@ export class ButtonSensor extends PointerSensor {
       this.revision++
     }
     standalone(() => {
-      this.window?.setActiveWindow(window, 'button')
+      this.windowSensor?.setActiveWindow(window, 'button')
     })
   }
 

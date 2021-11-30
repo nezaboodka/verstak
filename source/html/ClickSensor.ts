@@ -17,8 +17,8 @@ export class ClickSensor extends PointerSensor {
   doubleClicked: number
   auxClicked: number
 
-  constructor(window: WindowSensor) {
-    super(window)
+  constructor(windowSensor: WindowSensor) {
+    super(windowSensor)
     this.clicked = 0
     this.doubleClicked = 0
     this.auxClicked = 0
@@ -106,7 +106,7 @@ export class ClickSensor extends PointerSensor {
     this.positionY = e.clientY
     this.revision++
     standalone(() => {
-      this.window?.setActiveWindow(window, 'click')
+      this.windowSensor?.setActiveWindow(window, 'click')
     })
   }
 

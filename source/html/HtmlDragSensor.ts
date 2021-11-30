@@ -41,8 +41,8 @@ export class HtmlDragSensor extends HtmlElementSensor {
   immediatePositionY: number // position relative to browser's viewport
   immediateModifiers: KeyboardModifiers
 
-  constructor(window: WindowSensor) {
-    super(window)
+  constructor(windowSensor: WindowSensor) {
+    super(windowSensor)
     this.draggableData = undefined
     this.dragSource = undefined
     this.dragTarget = undefined
@@ -163,7 +163,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.previousDragTarget = undefined
     this.revision++
     standalone(() => {
-      this.window?.setActiveWindow(window, 'htmlDrag')
+      this.windowSensor?.setActiveWindow(window, 'htmlDrag')
     })
   }
 
@@ -185,7 +185,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     const window = this.updateDragTarget(e)
     this.dropped = false
     this.revision++
-    this.window?.setActiveWindow(window, 'htmlDrag')
+    this.windowSensor?.setActiveWindow(window, 'htmlDrag')
   }
 
   @transaction @options({ trace: TraceLevel.Silent })

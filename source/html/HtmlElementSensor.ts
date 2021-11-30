@@ -10,14 +10,14 @@ import { Sensor } from './Sensor'
 import { WindowSensor } from './WindowSensor'
 
 export class HtmlElementSensor extends Sensor {
-  @unobservable readonly window?: WindowSensor
+  @unobservable readonly windowSensor?: WindowSensor
   sourceElement: HTMLElement | undefined = undefined
   @unobservable preventDefault: boolean
   @unobservable stopPropagation: boolean
 
-  constructor(window?: WindowSensor) {
+  constructor(windowSensor?: WindowSensor) {
     super()
-    this.window = window
+    this.windowSensor = windowSensor
     this.preventDefault = false
     this.stopPropagation = false
   }

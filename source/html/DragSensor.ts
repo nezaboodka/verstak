@@ -38,8 +38,8 @@ export class DragSensor extends PointerSensor {
 
   static readonly DraggingThreshold = 4
 
-  constructor(window: WindowSensor) {
-    super(window)
+  constructor(windowSensor: WindowSensor) {
+    super(windowSensor)
     this.pointerButton = PointerButton.None
     this.trying = false
     this.draggableData = undefined
@@ -170,7 +170,7 @@ export class DragSensor extends PointerSensor {
       this.previousDragTarget = undefined
       this.revision++
       standalone(() => {
-        this.window?.setActiveWindow(window, 'drag')
+        this.windowSensor?.setActiveWindow(window, 'drag')
       })
     }
   }
