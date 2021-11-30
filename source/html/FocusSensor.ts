@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, standalone, TraceLevel, transaction } from 'reactronic'
+import { options, reaction, standalone, TraceLevel, transaction } from 'reactronic'
 import { EmptyDataArray, grabElementData } from './DataForSensor'
 import { SymDataForSensor } from './HtmlApiExt'
 import { HtmlElementSensor } from './HtmlElementSensor'
@@ -65,6 +65,7 @@ export class FocusSensor extends HtmlElementSensor {
 
   // @reaction
   // protected debug(): void {
-  //   console.log(`Focus: topElementData = ${this.topElementData}`)
+  //   console.log('Focus')
+  //   console.log(this.topElementData)
   // }
 }
