@@ -19,9 +19,10 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
   revision: number = 0
   native?: E = undefined
   model?: unknown = undefined
-  buffer: Array<NodeInfo<any, any>> | undefined = undefined
   children: ReadonlyArray<NodeInfo<any, any>> = EMPTY
   nephews: ReadonlyArray<NodeInfo<any, any>> = EMPTY
+  emittedChildren: Array<NodeInfo<any, any>> | undefined = undefined
+  emittedNephews: Array<NodeInfo<any, any>> | undefined = undefined
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
@@ -48,9 +49,9 @@ export class RxDom {
 
   static Root(render: Render): void {
     const self = RxDom.ROOT.instance!
-    if (self.buffer)
+    if (self.emittedChildren)
       throw new Error('ReactronicFrontRendering should not be called recursively')
-    self.buffer = []
+    self.emittedChildren = []
     render(self.native)
     Transaction.run(RxDom.renderChildrenNow)
   }
@@ -68,9 +69,9 @@ export class RxDom {
     if (!self)
       throw new Error('element must be initialized before children')
     const node = new NodeInfo<E, O>(id, args, render, superRender, rtti, p, p2, p3)
-    if (self.buffer === undefined)
+    if (self.emittedChildren === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    self.buffer.push(node)
+    self.emittedChildren.push(node)
     return node
   }
 
@@ -83,7 +84,7 @@ export class RxDom {
     const reactivityOuter = RxDom.gReactivityParent
     try {
       RxDom.gParent = RxDom.gHostingParent = RxDom.gReactivityParent = node
-      self.buffer = []
+      self.emittedChildren = []
       if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
         console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${node.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
       if (node.superRender)
@@ -247,12 +248,12 @@ export class RxDom {
 
   private static renderNaturallyOrderedChildren(node: NodeInfo): void {
     const self = node.instance
-    if (self !== undefined && self.buffer !== undefined) {
+    if (self !== undefined && self.emittedChildren !== undefined) {
       const theirList = self.children
-      const buffer = self.buffer
-      const ourList = buffer.slice().sort(compareNodes)
+      const emitted = self.emittedChildren
+      const ourList = emitted.slice().sort(compareNodes)
       // Switch to the new list
-      self.buffer = undefined
+      self.emittedChildren = undefined
       self.children = ourList
       // Reconciliation loop - link to existing or finalize
       let sibling: NodeInfo | undefined = undefined
@@ -278,7 +279,7 @@ export class RxDom {
       }
       // Reconciliation loop - initialize, render, re-render
       sibling = undefined
-      for (const x of buffer) {
+      for (const x of emitted) {
         if (x.previous) {
           x.rtti.host?.(x, sibling)
           if (x.args === RefreshParent || !argsAreEqual(x.args, x.previous.args))
@@ -297,11 +298,11 @@ export class RxDom {
 
   private static renderUnorderedChildren(node: NodeInfo): void {
     const self = node.instance
-    if (self !== undefined && self.buffer !== undefined) {
+    if (self !== undefined && self.emittedChildren !== undefined) {
       const theirList = self.children
-      const ourList = self.buffer.sort(compareNodes)
+      const ourList = self.emittedChildren.sort(compareNodes)
       // Switch to the new list
-      self.buffer = undefined
+      self.emittedChildren = undefined
       self.children = ourList
       // Reconciliation loop - link, render, initialize, finalize
       let sibling: NodeInfo | undefined = undefined
