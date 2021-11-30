@@ -256,6 +256,7 @@ export class RxDom {
       self.emittedChildren = undefined
       self.children = ourList
       // Reconciliation loop - link to existing or finalize
+      let host = self
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
       while (i < theirList.length) {
@@ -272,6 +273,16 @@ export class RxDom {
           }
           else // diff < 0
             j++ // initial rendering is called below
+          // Maintain hosting parent and sibling
+          const hp = ours.hostingParent.instance
+          if (hp !== self && hp?.native) {
+            if (hp !== host) {
+              RxDom.mergeNephews(host)
+              hp.emittedNephews = []
+              host = hp
+            }
+            hp.emittedNephews?.push(ours)
+          }
           sibling = ours
         }
         else // diff > 0
@@ -305,6 +316,7 @@ export class RxDom {
       self.emittedChildren = undefined
       self.children = ourList
       // Reconciliation loop - link, render, initialize, finalize
+      let host = self
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
       while (i < theirList.length || j < ourList.length) {
@@ -326,12 +338,26 @@ export class RxDom {
             RxDom.doRender(ours) // initial rendering
             j++
           }
+          // Maintain hosting parent and sibling
+          const hp = ours.hostingParent.instance
+          if (hp !== self && hp?.native) {
+            if (hp !== host) {
+              RxDom.mergeNephews(host)
+              hp.emittedNephews = []
+              host = hp
+            }
+            hp.emittedNephews?.push(ours)
+          }
           sibling = ours
         }
         else // diff > 0
           RxDom.doFinalize(theirs, theirs), i++
       }
     }
+  }
+
+  private static mergeNephews(self: AbstractNodeInstance): void {
+    throw new Error('to be implemented')
   }
 
   private static forEachChildRecursively(node: NodeInfo, action: (e: any) => void): void {
