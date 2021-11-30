@@ -273,16 +273,8 @@ export class RxDom {
           }
           else // diff < 0
             j++ // initial rendering is called below
-          // Maintain hosting parent and sibling
-          const hp = ours.hostingParent.instance
-          if (hp !== self && hp?.native) {
-            if (hp !== host) {
-              RxDom.mergeNephews(host)
-              hp.emittedNephews = []
-              host = hp
-            }
-            hp.emittedNephews?.push(ours)
-          }
+          if (ours.hostingParent.instance !== self)
+            host = RxDom.emitNephew(host, ours)
           sibling = ours
         }
         else // diff > 0
@@ -338,16 +330,8 @@ export class RxDom {
             RxDom.doRender(ours) // initial rendering
             j++
           }
-          // Maintain hosting parent and sibling
-          const hp = ours.hostingParent.instance
-          if (hp !== self && hp?.native) {
-            if (hp !== host) {
-              RxDom.mergeNephews(host)
-              hp.emittedNephews = []
-              host = hp
-            }
-            hp.emittedNephews?.push(ours)
-          }
+          if (ours.hostingParent.instance !== self)
+            host = RxDom.emitNephew(host, ours)
           sibling = ours
         }
         else // diff > 0
@@ -356,8 +340,17 @@ export class RxDom {
     }
   }
 
-  private static mergeNephews(self: AbstractNodeInstance): void {
-    throw new Error('to be implemented')
+  private static emitNephew(host: AbstractNodeInstance, child: NodeInfo): AbstractNodeInstance {
+    const hp = child.hostingParent.instance
+    if (hp?.native) {
+      if (hp !== host) {
+        // merge host.emittedNephews
+        hp.emittedNephews = []
+        host = hp
+      }
+      host.emittedNephews?.push(child)
+    }
+    return host
   }
 
   private static forEachChildRecursively(node: NodeInfo, action: (e: any) => void): void {
