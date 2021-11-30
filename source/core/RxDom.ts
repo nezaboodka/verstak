@@ -251,20 +251,20 @@ export class RxDom {
   private static mergeAndRenderNaturallyOrderedChildren(node: NodeInfo): void {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
-      const theirList = self.children
-      const buffer = self.buffer
-      const ourList = buffer.slice().sort(compareNodes)
+      const children = self.children
+      const naturalBuffer = self.buffer
+      const sortedBuffer = naturalBuffer.slice().sort(compareNodes)
       // Switch to the new list
       self.buffer = undefined
-      self.children = ourList
+      self.children = sortedBuffer
       // Reconciliation loop - link to existing or finalize
       let host = self
       let aliens: Array<NodeInfo<any, any>> = EMPTY
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
-      while (i < theirList.length) {
-        const theirs = theirList[i]
-        const ours = ourList[j]
+      while (i < children.length) {
+        const theirs = children[i]
+        const ours = sortedBuffer[j]
         const diff = ours !== undefined ? compareNodes(ours, theirs) : 1
         if (diff <= 0) {
           if (sibling !== undefined && ours.id === sibling.id)
@@ -294,7 +294,7 @@ export class RxDom {
         RxDom.mergeAliens(host, aliens)
       // Reconciliation loop - initialize, render, re-render
       sibling = undefined
-      for (const x of buffer) {
+      for (const x of naturalBuffer) {
         if (x.previous) {
           x.rtti.host?.(x, sibling)
           if (x.args === RefreshParent || !argsAreEqual(x.args, x.previous.args))
@@ -314,19 +314,19 @@ export class RxDom {
   private static mergeAndRenderUnorderedChildren(node: NodeInfo): void {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
-      const theirList = self.children
-      const ourList = self.buffer.sort(compareNodes)
+      const children = self.children
+      const buffer = self.buffer.sort(compareNodes)
       // Switch to the new list
       self.buffer = undefined
-      self.children = ourList
+      self.children = buffer
       // Reconciliation loop - link, render, initialize, finalize
       let host = self
       let aliens: Array<NodeInfo<any, any>> = EMPTY
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
-      while (i < theirList.length || j < ourList.length) {
-        const theirs = theirList[i]
-        const ours = ourList[j]
+      while (i < children.length || j < buffer.length) {
+        const theirs = children[i]
+        const ours = buffer[j]
         const diff = compareNullable(ours, theirs, compareNodes)
         if (diff <= 0) {
           if (sibling !== undefined && ours.id === sibling.id)
@@ -363,11 +363,11 @@ export class RxDom {
   }
 
   private static mergeAliens(host: AbstractNodeInstance, aliens: Array<NodeInfo<any, any>>): void {
-    const theirList = host.aliens
+    const existing = host.aliens
     const merged: Array<NodeInfo<any, any>> = []
     let i = 0, j = 0 // TODO: Consider using binary search to find initial index
-    while (i < theirList.length || j < aliens.length) {
-      const theirs = theirList[i]
+    while (i < existing.length || j < aliens.length) {
+      const theirs = existing[i]
       const ours = aliens[j]
       const diff = compareNullable(ours, theirs, compareNodes)
       if (diff <= 0) {
