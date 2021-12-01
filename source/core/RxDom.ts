@@ -276,12 +276,12 @@ export class RxDom {
           }
           else // diff < 0
             j++ // initial rendering is called below
-          const oursHost = ours.hostingParent.instance
-          if (oursHost !== self) {
-            if (oursHost !== host) {
+          const h = ours.hostingParent.instance
+          if (h !== self) {
+            if (h !== host) {
               RxDom.mergeAliens(host, aliens)
               aliens = []
-              host = oursHost!
+              host = h!
             }
             aliens.push(ours)
           }
@@ -343,12 +343,12 @@ export class RxDom {
             RxDom.doRender(ours) // initial rendering
             j++
           }
-          const oursHost = ours.hostingParent.instance
-          if (oursHost !== self) {
-            if (oursHost !== host) {
+          const h = ours.hostingParent.instance
+          if (h !== self) {
+            if (h !== host) {
               RxDom.mergeAliens(host, aliens)
               aliens = []
-              host = oursHost!
+              host = h!
             }
             aliens.push(ours)
           }
