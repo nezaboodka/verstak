@@ -128,7 +128,7 @@ export class RxDom {
 
   static useAnotherHostingParent<E>(node: NodeInfo<E>, render: Render<E>): void {
     const native = node.instance?.native
-    if (native) {
+    if (native !== undefined) {
       const outer = RxDom.gHostingParent
       try {
         RxDom.gHostingParent = node
@@ -142,7 +142,7 @@ export class RxDom {
 
   static useAnotherReactivityParent<E>(node: NodeInfo<E>, render: Render<E>): void {
     const native = node.instance?.native
-    if (native) {
+    if (native !== undefined) {
       const outer = RxDom.gReactivityParent
       try {
         RxDom.gReactivityParent = node
