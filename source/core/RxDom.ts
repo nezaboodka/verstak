@@ -267,15 +267,6 @@ export class RxDom {
         const ours = sortedBuffer[j]
         const diff = ours !== undefined ? compareNodes(ours, theirs) : 1
         if (diff <= 0) {
-          if (sibling !== undefined && ours.id === sibling.id)
-            throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
-          if (diff === 0) {
-            ours.instance = theirs.instance
-            ours.previous = theirs
-            i++, j++ // re-rendering is called below
-          }
-          else // diff < 0
-            j++ // initial rendering is called below
           const h = ours.hostingParent.instance
           if (h !== self) {
             if (h !== host) {
@@ -285,6 +276,15 @@ export class RxDom {
             }
             aliens.push(ours)
           }
+          if (sibling !== undefined && ours.id === sibling.id)
+            throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
+          if (diff === 0) {
+            ours.instance = theirs.instance
+            ours.previous = theirs
+            i++, j++ // re-rendering is called below
+          }
+          else // diff < 0
+            j++ // initial rendering is called below
           sibling = ours
         }
         else // diff > 0
@@ -329,6 +329,15 @@ export class RxDom {
         const ours = buffer[j]
         const diff = compareNullable(ours, theirs, compareNodes)
         if (diff <= 0) {
+          const h = ours.hostingParent.instance
+          if (h !== self) {
+            if (h !== host) {
+              RxDom.mergeAliens(host, self, aliens)
+              aliens = []
+              host = h!
+            }
+            aliens.push(ours)
+          }
           if (sibling !== undefined && ours.id === sibling.id)
             throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
           if (diff === 0) {
@@ -342,15 +351,6 @@ export class RxDom {
             ours.rtti.host?.(ours)
             RxDom.doRender(ours) // initial rendering
             j++
-          }
-          const h = ours.hostingParent.instance
-          if (h !== self) {
-            if (h !== host) {
-              RxDom.mergeAliens(host, self, aliens)
-              aliens = []
-              host = h!
-            }
-            aliens.push(ours)
           }
           sibling = ours
         }
