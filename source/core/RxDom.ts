@@ -363,27 +363,29 @@ export class RxDom {
   }
 
   private static mergeAliens(host: AbstractNodeInstance, parent: AbstractNodeInstance, aliens: Array<NodeInfo<any, any>>): void {
-    const existing = host.aliens
-    const merged: Array<NodeInfo<any, any>> = []
-    let i = 0, j = 0 // TODO: Consider using binary search to find initial index
-    while (i < existing.length || j < aliens.length) {
-      const theirs = existing[i]
-      const ours = aliens[j]
-      const diff = compareNullable(ours, theirs, compareNodes)
-      if (diff <= 0) {
-        merged.push(ours)
-        if (diff === 0)
-          i++, j++
-        else // diff < 0
-          j++
+    if (host !== parent) {
+      const existing = host.aliens
+      const merged: Array<NodeInfo<any, any>> = []
+      let i = 0, j = 0 // TODO: Consider using binary search to find initial index
+      while (i < existing.length || j < aliens.length) {
+        const theirs = existing[i]
+        const ours = aliens[j]
+        const diff = compareNullable(ours, theirs, compareNodes)
+        if (diff <= 0) {
+          merged.push(ours)
+          if (diff === 0)
+            i++, j++
+          else // diff < 0
+            j++
+        }
+        else { // diff > 0
+          if (theirs.parent.instance !== parent)
+            merged.push(theirs) // leave children of other parent untouched
+          i++
+        }
       }
-      else { // diff > 0
-        if (theirs.parent.instance !== parent)
-          merged.push(theirs) // leave children of other parent untouched
-        i++
-      }
+      host.aliens = merged
     }
-    host.aliens = merged
   }
 
   private static forEachChildRecursively(node: NodeInfo, action: (e: any) => void): void {
