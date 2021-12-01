@@ -279,7 +279,7 @@ export class RxDom {
           const h = ours.hostingParent.instance
           if (h !== self) {
             if (h !== host) {
-              RxDom.mergeAliens(host, aliens)
+              RxDom.mergeAliens(host, self, aliens)
               aliens = []
               host = h!
             }
@@ -291,7 +291,7 @@ export class RxDom {
           RxDom.doFinalize(theirs, theirs), i++
       }
       if (host !== self)
-        RxDom.mergeAliens(host, aliens)
+        RxDom.mergeAliens(host, self, aliens)
       // Reconciliation loop - initialize, render, re-render
       sibling = undefined
       for (const x of naturalBuffer) {
@@ -346,7 +346,7 @@ export class RxDom {
           const h = ours.hostingParent.instance
           if (h !== self) {
             if (h !== host) {
-              RxDom.mergeAliens(host, aliens)
+              RxDom.mergeAliens(host, self, aliens)
               aliens = []
               host = h!
             }
@@ -358,11 +358,11 @@ export class RxDom {
           RxDom.doFinalize(theirs, theirs), i++
       }
       if (host !== self)
-        RxDom.mergeAliens(host, aliens)
+        RxDom.mergeAliens(host, self, aliens)
     }
   }
 
-  private static mergeAliens(host: AbstractNodeInstance, aliens: Array<NodeInfo<any, any>>): void {
+  private static mergeAliens(host: AbstractNodeInstance, parent: AbstractNodeInstance, aliens: Array<NodeInfo<any, any>>): void {
     const existing = host.aliens
     const merged: Array<NodeInfo<any, any>> = []
     let i = 0, j = 0 // TODO: Consider using binary search to find initial index
@@ -378,8 +378,8 @@ export class RxDom {
           j++
       }
       else { // diff > 0
-        if (theirs.hostingParent.instance !== host)
-          merged.push(theirs)
+        if (theirs.parent.instance !== parent)
+          merged.push(theirs) // leave children of other parent untouched
         i++
       }
     }
