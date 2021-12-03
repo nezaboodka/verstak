@@ -45,18 +45,19 @@ export class RxDom {
   static gTrace: string | undefined = undefined
   static gTraceMask: string = 'r'
 
-  static Root<T>(render: () => (T | Promise<T>)): void {
+  static Root<T>(render: () => T): T {
     const self = RxDom.ROOT.instance!
     if (self.buffer)
       throw new Error('ReactronicFrontRendering should not be called recursively')
     self.buffer = []
-    const result: T | Promise<T> = render()
+    let result: any = render()
     if (result instanceof Promise)
-      result.then( // causes wrapping of then/catch to execute within current parent and hosting parent
+      result = result.then( // causes wrapping of then/catch to execute within current parent and hosting parent
         value => { Transaction.run(RxDom.renderChildrenNow); return value }, // ignored if rendered already
         error => { console.log(error); Transaction.run(RxDom.renderChildrenNow) }) // try to render children regardless the parent
     else
       Transaction.run(RxDom.renderChildrenNow) // ignored if rendered already
+    return result
   }
 
   static emit<E = unknown, O = void>(
