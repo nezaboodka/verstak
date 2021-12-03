@@ -23,6 +23,21 @@ export function TwoWayFocusSync(
     const active = f === focusToggle.valueOn || (
       f instanceof Ref && f1 instanceof Ref && Ref.sameRefs(f, f1))
     // console.log(`${(entity as any).constructor.name}.${member.toString()} === ${entity[member]} => ${member}:${activeValue}.setFocused(${active}) // ${Reactronic.why()}`)
-    active && setNativeFocus && setNativeFocus()
+    if (active && setNativeFocus)
+      setNativeFocus()
+  })
+}
+
+export function RxFocus(id: string, focusToggle: ToggleRef<any>): void {
+  RxFragment(id, { focusToggle }, e => {
+    if (e instanceof HTMLElement) {
+      e.dataForSensor.focus = focusToggle
+      const value = focusToggle.value
+      const valueOn = focusToggle.valueOn
+      const active = value === valueOn ||
+        (value instanceof Ref && valueOn instanceof Ref && Ref.sameRefs(value, valueOn))
+      if (active)
+        e.focus()
+    }
   })
 }

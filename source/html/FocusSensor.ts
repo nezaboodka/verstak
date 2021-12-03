@@ -5,8 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, standalone, TraceLevel, transaction } from 'reactronic'
-import { EmptyDataArray, grabElementData } from './DataForSensor'
+import { options, standalone, ToggleRef, TraceLevel, transaction } from 'reactronic'
+import { grabElementData } from './DataForSensor'
 import { SymDataForSensor } from './HtmlApiExt'
 import { HtmlElementSensor } from './HtmlElementSensor'
 
@@ -48,7 +48,7 @@ export class FocusSensor extends HtmlElementSensor {
     this.stopPropagation = false
     const path = e.composedPath()
     const { data, window } = grabElementData(path, SymDataForSensor, 'focus', this.elementDataList)
-    this.elementDataList = data
+    this.elementDataList = toggleFocusRefs(this.elementDataList, data)
     this.revision++
     standalone(() => {
       this.windowSensor?.setActiveWindow(window, 'focus')
@@ -59,7 +59,7 @@ export class FocusSensor extends HtmlElementSensor {
   protected doFocusOut(): void {
     this.preventDefault = false
     this.stopPropagation = false
-    this.elementDataList = EmptyDataArray
+    // this.elementDataList = toggleFocusRefs(this.elementDataList, EmptyDataArray)
     this.revision++
   }
 
@@ -68,4 +68,18 @@ export class FocusSensor extends HtmlElementSensor {
   //   console.log('Focus')
   //   console.log(this.topElementData)
   // }
+}
+
+function toggleFocusRefs(existing: unknown[], updated: unknown[]): unknown[] {
+  if (updated !== existing) {
+    existing.forEach(f => {
+      if (f instanceof ToggleRef && f.valueOn !== f.valueOff)
+        f.value = f.valueOff
+    })
+    updated.forEach(x => {
+      if (x instanceof ToggleRef)
+        x.value = x.valueOn
+    })
+  }
+  return updated
 }
