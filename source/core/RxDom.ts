@@ -102,7 +102,7 @@ export class RxDom {
     }
   }
 
-  static render(node: NodeInfo<any, any>): void | Promise<void> {
+  static render(node: NodeInfo<any, any>): void {
     const self = node.instance
     if (!self)
       throw new Error('element must be initialized before rendering')
@@ -130,7 +130,6 @@ export class RxDom {
           error => { console.log(error); RxDom.renderChildrenNow() }) // do not render children in case of parent error
       else
         RxDom.renderChildrenNow() // ignored if rendered already
-      return result
     }
     finally {
       RxDom.gHostingParent = hostingOuter
@@ -161,13 +160,13 @@ export class RxDom {
     }
   }
 
-  static useAnotherHostingParent<E>(node: NodeInfo<E>, render: Render<E>): void {
+  static useAnotherHostingParent<E>(node: NodeInfo<E>, run: (e: E) => void): void {
     const native = node.instance?.native
     if (native !== undefined) {
       const outer = RxDom.gHostingParent
       try {
         RxDom.gHostingParent = node
-        render(native)
+        run(native)
       }
       finally {
         RxDom.gHostingParent = outer
@@ -223,21 +222,21 @@ export class RxDom {
     RxDom.forEachChildRecursively(RxDom.ROOT, action)
   }
 
-  static renderInline<E, O>(instance: NodeInstance<E, O>, node: NodeInfo<E, O>): void | Promise<void> {
+  static renderInline<E, O>(instance: NodeInstance<E, O>, node: NodeInfo<E, O>): void {
     if (instance === undefined || instance === null)
       debugger // temporary, TODO: debug
     instance.revision++
-    return node.rtti.render ? node.rtti.render(node) : RxDom.render(node)
+    node.rtti.render ? node.rtti.render(node) : RxDom.render(node)
   }
 
   // Internal
 
-  private static doRender(node: NodeInfo): void | Promise<void> {
+  private static doRender(node: NodeInfo): void {
     const self = node.instance!
     if (node.args === RefreshParent) // inline elements are always rendered
-      return RxDom.renderInline(self, node)
+      RxDom.renderInline(self, node)
     else // rendering of reactive elements is cached to avoid redundant calls
-      return nonreactive(self.render, node)
+      nonreactive(self.render, node)
   }
 
   private static doInitialize(node: NodeInfo): NodeInstance {

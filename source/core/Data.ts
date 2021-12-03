@@ -14,7 +14,7 @@ export interface Rtti<E = unknown, O = void> {
   readonly unordered: boolean
   initialize?(node: NodeInfo<E, O>): void
   host?(node: NodeInfo<E, O>, sibling?: NodeInfo): void
-  render?(node: NodeInfo<E, O>): void | Promise<void>
+  render?(node: NodeInfo<E, O>): void
   finalize?(node: NodeInfo<E, O>, cause: NodeInfo): void
 }
 
@@ -28,7 +28,7 @@ export interface AbstractNodeInstance<E = unknown, O = void> {
   buffer: Array<NodeInfo<any, any>> | undefined
   aliens: ReadonlyArray<NodeInfo<any, any>>
   resizing?: ResizeObserver
-  render(node: NodeInfo<E, O>): void | Promise<void>
+  render(node: NodeInfo<E, O>): void
 }
 
 export class NodeInfo<E = unknown, O = void> {
