@@ -43,7 +43,6 @@ export class NodeInfo<E = unknown, O = void> {
     readonly rtti: Rtti<E, O>,
     readonly parent: NodeInfo,
     readonly hostingParent: NodeInfo,
-    readonly reactivityParent: NodeInfo,
     public instance?: AbstractNodeInstance<E, O>) {
   }
 }

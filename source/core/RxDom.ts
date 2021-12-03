@@ -42,7 +42,6 @@ export class RxDom {
   static readonly ROOT = RxDom.createStaticDeclaration<unknown>('ROOT', 'ROOT')
   static gParent: NodeInfo<any, any> = RxDom.ROOT
   static gHostingParent: NodeInfo<any, any> = RxDom.ROOT
-  static gReactivityParent: NodeInfo<any, any> = RxDom.ROOT
   static gTrace: string | undefined = undefined
   static gTraceMask: string = 'r'
 
@@ -57,22 +56,34 @@ export class RxDom {
 
   static emit<E = unknown, O = void>(
     id: string, args: unknown, render: Render<E, O>,
-    superRender: SuperRender<O, E> | undefined,
-    rtti: Rtti<E, O>, parent?: NodeInfo,
-    hostingParent?: NodeInfo, reactivityParent?: NodeInfo): NodeInfo<E, O> {
+    superRender: SuperRender<O, E> | undefined, rtti: Rtti<E, O>,
+    parent?: NodeInfo, hostingParent?: NodeInfo): NodeInfo<E, O> {
 
     const p = parent ?? RxDom.gParent
     const hp = hostingParent ?? RxDom.gHostingParent
-    const rp = reactivityParent ?? RxDom.gReactivityParent
     const self = p.instance
     if (!self)
       throw new Error('element must be initialized before children')
-    const node = new NodeInfo<E, O>(id, args, render, superRender, rtti, p, hp, rp)
+    const node = new NodeInfo<E, O>(id, args, render, superRender, rtti, p, hp)
     if (self.buffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (hp?.instance?.native) // emit only if hosting parent is alive
       self.buffer.push(node)
     return node
+  }
+
+  static within(parent: NodeInfo, hostingParent: NodeInfo, func: (...args: any[]) => void, ...args: any[]): void {
+    const outer = RxDom.gParent
+    const hostingOuter = RxDom.gHostingParent
+    try {
+      RxDom.gParent = parent
+      RxDom.gHostingParent = hostingParent
+      func(...args)
+    }
+    finally {
+      RxDom.gHostingParent = hostingOuter
+      RxDom.gParent = outer
+    }
   }
 
   static render(node: NodeInfo<any, any>): void {
@@ -81,9 +92,8 @@ export class RxDom {
       throw new Error('element must be initialized before rendering')
     const outer = RxDom.gParent
     const hostingOuter = RxDom.gHostingParent
-    const reactivityOuter = RxDom.gReactivityParent
     try {
-      RxDom.gParent = RxDom.gHostingParent = RxDom.gReactivityParent = node
+      RxDom.gParent = RxDom.gHostingParent = node
       self.buffer = []
       if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
         console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${node.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
@@ -97,7 +107,6 @@ export class RxDom {
       RxDom.renderChildrenNow() // ignored if rendered already
     }
     finally {
-      RxDom.gReactivityParent = reactivityOuter
       RxDom.gHostingParent = hostingOuter
       RxDom.gParent = outer
     }
@@ -140,20 +149,6 @@ export class RxDom {
     }
   }
 
-  static useAnotherReactivityParent<E>(node: NodeInfo<E>, render: Render<E>): void {
-    const native = node.instance?.native
-    if (native !== undefined) {
-      const outer = RxDom.gReactivityParent
-      try {
-        RxDom.gReactivityParent = node
-        render(native)
-      }
-      finally {
-        RxDom.gReactivityParent = outer
-      }
-    }
-  }
-
   static createStaticDeclaration<E>(id: string, native: E): NodeInfo<E> {
     const self = new NodeInstance<E>(0)
     const node = new NodeInfo<E>(
@@ -164,13 +159,11 @@ export class RxDom {
       { name: id, unordered: false }, // rtti
       { } as NodeInfo,              // parent (lifecycle)
       { } as NodeInfo,              // rendering parent
-      { } as NodeInfo,              // reactivity parent
       self)                         // instance
     // Initialize
     const a: any = node
     a['parent'] = node
     a['hostingParent'] = node
-    a['reactivityParent'] = node
     self.native = native
     return node
   }
