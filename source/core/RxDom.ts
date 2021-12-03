@@ -30,10 +30,9 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
   }
 
   @reaction @options({ sensitiveArgs: true }) // @noSideEffects(true)
-  render(node: NodeInfo<E, O>): void | Promise<void> {
-    const result = RxDom.renderInline(this, node)
+  render(node: NodeInfo<E, O>): void {
+    RxDom.renderInline(this, node)
     Reactronic.configureCurrentMethod({ order: this.level })
-    return result
   }
 }
 
