@@ -47,17 +47,18 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     }
   }
 
-  render(node: NodeInfo<E, any>): void {
+  render(node: NodeInfo<E, any>): void | Promise<void> {
     const self = node.instance! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const native = self.native!
     const outer = AbstractHtmlRtti.gNativeParent
     try { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       AbstractHtmlRtti.gNativeParent = node // console.log(`${'  '.repeat(Math.abs(self.level))}render(${e.id} r${self.revision})`)
-      RxDom.render(node)
+      const result = RxDom.render(node)
       // TODO: native.sensorData.drag handling?
       AbstractHtmlRtti.blinkingEffect && blink(native, self.revision)
       if (AbstractHtmlRtti.isDebugAttributeEnabled)
         native.setAttribute('rdbg', `${self.revision}:    ${Reactronic.why()}`)
+      return result
     }
     finally {
       AbstractHtmlRtti.gNativeParent = outer

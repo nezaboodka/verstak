@@ -30,9 +30,10 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
   }
 
   @reaction @options({ sensitiveArgs: true }) // @noSideEffects(true)
-  render(node: NodeInfo<E, O>): void {
-    RxDom.renderInline(this, node)
+  render(node: NodeInfo<E, O>): void | Promise<void> {
+    const result = RxDom.renderInline(this, node)
     Reactronic.configureCurrentMethod({ order: this.level })
+    return result
   }
 }
 
@@ -45,13 +46,18 @@ export class RxDom {
   static gTrace: string | undefined = undefined
   static gTraceMask: string = 'r'
 
-  static Root(render: Render): void {
+  static Root<T>(render: () => (T | Promise<T>)): void {
     const self = RxDom.ROOT.instance!
     if (self.buffer)
       throw new Error('ReactronicFrontRendering should not be called recursively')
     self.buffer = []
-    render(self.native)
-    Transaction.run(RxDom.renderChildrenNow)
+    const result: T | Promise<T> = render()
+    if (result instanceof Promise)
+      result.then( // causes wrapping of then/catch to execute within current parent and hosting parent
+        value => { Transaction.run(RxDom.renderChildrenNow); return value }, // ignored if rendered already
+        error => { console.log(error); Transaction.run(RxDom.renderChildrenNow) }) // try to render children regardless the parent
+    else
+      Transaction.run(RxDom.renderChildrenNow) // ignored if rendered already
   }
 
   static emit<E = unknown, O = void>(
@@ -72,6 +78,16 @@ export class RxDom {
     return node
   }
 
+  static wrap(func: (...args: any[]) => any): (...args: any[]) => any {
+    const parent = RxDom.gParent
+    const hostingParent = RxDom.gHostingParent
+    const wrappedRendering = (...args: any[]): any => {
+      const result = RxDom.within(parent, hostingParent, func, ...args)
+      return result
+    }
+    return wrappedRendering
+  }
+
   static within(parent: NodeInfo, hostingParent: NodeInfo, func: (...args: any[]) => void, ...args: any[]): void {
     const outer = RxDom.gParent
     const hostingOuter = RxDom.gHostingParent
@@ -86,7 +102,7 @@ export class RxDom {
     }
   }
 
-  static render(node: NodeInfo<any, any>): void {
+  static render(node: NodeInfo<any, any>): void | Promise<void> {
     const self = node.instance
     if (!self)
       throw new Error('element must be initialized before rendering')
@@ -97,14 +113,24 @@ export class RxDom {
       self.buffer = []
       if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
         console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${node.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
+      let result: any
       if (node.superRender)
-        node.superRender(options => {
-          node.render(self.native, options)
-          return options
+        result = node.superRender(options => {
+          const res = node.render(self.native, options)
+          if (res instanceof Promise)
+            return res.then() // causes wrapping of then/catch to execute within current parent and hosting parent
+          else
+            return options
         }, self.native)
       else
-        node.render(self.native, undefined)
-      RxDom.renderChildrenNow() // ignored if rendered already
+        result = node.render(self.native, undefined)
+      if (result instanceof Promise)
+        result = result.then( // causes wrapping of then/catch to execute within current parent and hosting parent
+          value => { RxDom.renderChildrenNow(); return value }, // ignored if rendered already
+          error => { console.log(error); RxDom.renderChildrenNow() }) // do not render children in case of parent error
+      else
+        RxDom.renderChildrenNow() // ignored if rendered already
+      return result
     }
     finally {
       RxDom.gHostingParent = hostingOuter
@@ -197,21 +223,21 @@ export class RxDom {
     RxDom.forEachChildRecursively(RxDom.ROOT, action)
   }
 
-  static renderInline<E, O>(instance: NodeInstance<E, O>, node: NodeInfo<E, O>): void {
+  static renderInline<E, O>(instance: NodeInstance<E, O>, node: NodeInfo<E, O>): void | Promise<void> {
     if (instance === undefined || instance === null)
       debugger // temporary, TODO: debug
     instance.revision++
-    node.rtti.render ? node.rtti.render(node) : RxDom.render(node)
+    return node.rtti.render ? node.rtti.render(node) : RxDom.render(node)
   }
 
   // Internal
 
-  private static doRender(node: NodeInfo): void {
+  private static doRender(node: NodeInfo): void | Promise<void> {
     const self = node.instance!
     if (node.args === RefreshParent) // inline elements are always rendered
-      RxDom.renderInline(self, node)
+      return RxDom.renderInline(self, node)
     else // rendering of reactive elements is cached to avoid redundant calls
-      nonreactive(self.render, node)
+      return nonreactive(self.render, node)
   }
 
   private static doInitialize(node: NodeInfo): NodeInstance {
@@ -436,3 +462,26 @@ function argsAreEqual(a1: any, a2: any): boolean {
 function getTraceHint(node: NodeInfo): string {
   return `${node.rtti.name}:${node.id}`
 }
+
+const ORIGINAL_PROMISE_THEN = Promise.prototype.then
+
+function reactronicFrontHookedThen(this: any,
+  resolve?: ((value: any) => any | PromiseLike<any>) | undefined | null,
+  reject?: ((reason: any) => never | PromiseLike<never>) | undefined | null): Promise<any | never>
+{
+  resolve = resolve ? RxDom.wrap(resolve) : resolveReturn
+  reject = reject ? RxDom.wrap(reject) : rejectRethrow
+  return ORIGINAL_PROMISE_THEN.call(this, resolve, reject)
+}
+
+/* istanbul ignore next */
+export function resolveReturn(value: any): any {
+  return value
+}
+
+/* istanbul ignore next */
+export function rejectRethrow(error: any): never {
+  throw error
+}
+
+Promise.prototype.then = reactronicFrontHookedThen
