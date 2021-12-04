@@ -160,7 +160,7 @@ export class RxDom {
     }
   }
 
-  static useAnotherHost<E>(node: NodeInfo<E>, run: (e: E) => void): void {
+  static usingAnotherHost<E>(node: NodeInfo<E>, run: (e: E) => void): void {
     const native = node.instance?.native
     if (native !== undefined) {
       const outer = RxDom.gHost
