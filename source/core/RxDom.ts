@@ -40,7 +40,7 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
 
 export class RxDom {
   static readonly ROOT = RxDom.createStaticDeclaration<unknown>('ROOT', 'ROOT')
-  static gParent: NodeInfo<any, any> = RxDom.ROOT
+  static gOwner: NodeInfo<any, any> = RxDom.ROOT
   static gHost: NodeInfo<any, any> = RxDom.ROOT
   static gTrace: string | undefined = undefined
   static gTraceMask: string = 'r'
@@ -52,9 +52,9 @@ export class RxDom {
     self.buffer = []
     let result: any = render()
     if (result instanceof Promise)
-      result = result.then( // causes wrapping of then/catch to execute within current parent and hosting parent
+      result = result.then( // causes wrapping of then/catch to execute within current owner and host
         value => { Transaction.run(RxDom.renderChildrenNow); return value }, // ignored if rendered already
-        error => { console.log(error); Transaction.run(RxDom.renderChildrenNow) }) // try to render children regardless the parent
+        error => { console.log(error); Transaction.run(RxDom.renderChildrenNow) }) // try to render children regardless the owner
     else
       Transaction.run(RxDom.renderChildrenNow) // ignored if rendered already
     return result
@@ -63,42 +63,42 @@ export class RxDom {
   static emit<E = unknown, O = void>(
     id: string, args: unknown, render: Render<E, O>,
     superRender: SuperRender<O, E> | undefined, rtti: Rtti<E, O>,
-    parent?: NodeInfo, host?: NodeInfo): NodeInfo<E, O> {
+    owner?: NodeInfo, host?: NodeInfo): NodeInfo<E, O> {
 
-    const p = parent ?? RxDom.gParent
+    const o = owner ?? RxDom.gOwner
     const h = host ?? RxDom.gHost
-    const self = p.instance
+    const self = o.instance
     if (!self)
       throw new Error('element must be initialized before children')
-    const node = new NodeInfo<E, O>(id, args, render, superRender, rtti, p, h)
+    const node = new NodeInfo<E, O>(id, args, render, superRender, rtti, o, h)
     if (self.buffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (h?.instance?.native) // emit only if hosting parent is alive
+    if (h?.instance?.native) // emit only if host is alive
       self.buffer.push(node)
     return node
   }
 
   static wrap(func: (...args: any[]) => any): (...args: any[]) => any {
-    const parent = RxDom.gParent
+    const owner = RxDom.gOwner
     const host = RxDom.gHost
     const wrappedRendering = (...args: any[]): any => {
-      const result = RxDom.within(parent, host, func, ...args)
+      const result = RxDom.within(owner, host, func, ...args)
       return result
     }
     return wrappedRendering
   }
 
-  static within(parent: NodeInfo, host: NodeInfo, func: (...args: any[]) => void, ...args: any[]): void {
-    const outer = RxDom.gParent
-    const hostingOuter = RxDom.gHost
+  static within(owner: NodeInfo, host: NodeInfo, func: (...args: any[]) => void, ...args: any[]): void {
+    const outer = RxDom.gOwner
+    const hostOuter = RxDom.gHost
     try {
-      RxDom.gParent = parent
+      RxDom.gOwner = owner
       RxDom.gHost = host
       func(...args)
     }
     finally {
-      RxDom.gHost = hostingOuter
-      RxDom.gParent = outer
+      RxDom.gHost = hostOuter
+      RxDom.gOwner = outer
     }
   }
 
@@ -108,10 +108,10 @@ export class RxDom {
       throw new Error('element must be initialized before rendering')
     if (self.buffer)
       throw new Error('rendering re-entrance is not supported yet')
-    const outer = RxDom.gParent
-    const hostingOuter = RxDom.gHost
+    const outer = RxDom.gOwner
+    const hostOuter = RxDom.gHost
     try {
-      RxDom.gParent = RxDom.gHost = node
+      RxDom.gOwner = RxDom.gHost = node
       self.buffer = []
       if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
         console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${node.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
@@ -120,27 +120,27 @@ export class RxDom {
         result = node.superRender(options => {
           const res = node.render(self.native, options)
           if (res instanceof Promise)
-            return res.then() // causes wrapping of then/catch to execute within current parent and hosting parent
+            return res.then() // causes wrapping of then/catch to execute within current owner and host
           else
             return options
         }, self.native)
       else
         result = node.render(self.native, undefined)
       if (result instanceof Promise)
-        result = result.then( // causes wrapping of then/catch to execute within current parent and hosting parent
+        result = result.then( // causes wrapping of then/catch to execute within current owner and host
           value => { RxDom.renderChildrenNow(); return value }, // ignored if rendered already
-          error => { console.log(error); RxDom.renderChildrenNow() }) // do not render children in case of parent error
+          error => { console.log(error); RxDom.renderChildrenNow() }) // do not render children in case of owner error
       else
         RxDom.renderChildrenNow() // ignored if rendered already
     }
     finally {
-      RxDom.gHost = hostingOuter
-      RxDom.gParent = outer
+      RxDom.gHost = hostOuter
+      RxDom.gOwner = outer
     }
   }
 
   static renderChildrenNow(): void {
-    const node = RxDom.gParent
+    const node = RxDom.gOwner
     if (node.rtti.unordered)
       RxDom.mergeAndRenderUnorderedChildren(node)
     else
@@ -184,12 +184,12 @@ export class RxDom {
       () => { /* nop */ },          // render
       undefined,                    // superRender
       { name: id, unordered: false }, // rtti
-      { } as NodeInfo,              // parent (lifecycle)
-      { } as NodeInfo,              // rendering parent
+      { } as NodeInfo,              // owner (lifecycle manager)
+      { } as NodeInfo,              // host (rendering parent)
       self)                         // instance
     // Initialize
     const a: any = node
-    a['parent'] = node
+    a['owner'] = node
     a['host'] = node
     self.native = native
     return node
@@ -198,21 +198,21 @@ export class RxDom {
   // selfInstance, selfRevision, trace, forAll
 
   static selfInstance<T>(): { model?: T } {
-    const self = RxDom.gParent.instance
+    const self = RxDom.gOwner.instance
     if (!self)
       throw new Error('instance function can be called only inside rendering function')
     return self as { model?: T }
   }
 
   static selfInstanceInternal<E>(): NodeInstance<E> {
-    const self = RxDom.gParent.instance
+    const self = RxDom.gOwner.instance
     if (!self)
       throw new Error('selfInstanceInternal function can be called only inside rendering function')
     return self
   }
 
   static selfRevision(): number {
-    return RxDom.gParent.instance?.revision ?? 0
+    return RxDom.gOwner.instance?.revision ?? 0
   }
 
   static setTraceMode(enabled: boolean, mask: string, regexp: string): void {
@@ -244,7 +244,7 @@ export class RxDom {
   private static doInitialize(node: NodeInfo): NodeInstance {
     // TODO: Make the code below exception-safe
     const rtti = node.rtti
-    const self = node.instance = new NodeInstance(node.parent.instance!.level + 1)
+    const self = node.instance = new NodeInstance(node.owner.instance!.level + 1)
     if (rtti.initialize)
       rtti.initialize(node)
     else
@@ -382,8 +382,8 @@ export class RxDom {
     }
   }
 
-  private static mergeAliens(host: AbstractNodeInstance, parent: AbstractNodeInstance, aliens: Array<NodeInfo<any, any>>): void {
-    if (host !== parent) {
+  private static mergeAliens(host: AbstractNodeInstance, owner: AbstractNodeInstance, aliens: Array<NodeInfo<any, any>>): void {
+    if (host !== owner) {
       const existing = host.aliens
       const merged: Array<NodeInfo<any, any>> = []
       let i = 0, j = 0 // TODO: Consider using binary search to find initial index
@@ -399,8 +399,8 @@ export class RxDom {
             j++
         }
         else { // diff > 0
-          if (theirs.parent.instance !== parent)
-            merged.push(theirs) // leave children of other parent untouched
+          if (theirs.owner.instance !== owner)
+            merged.push(theirs) // leave children of other owners untouched
           i++
         }
       }
