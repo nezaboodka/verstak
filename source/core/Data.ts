@@ -45,7 +45,7 @@ export class NodeInfo<E = unknown, O = void> {
     readonly superRender: SuperRender<O, E> | undefined,
     readonly rtti: Rtti<E, O>,
     readonly parent: NodeInfo,
-    readonly hostingParent: NodeInfo,
+    readonly host: NodeInfo,
     public instance?: AbstractNodeInstance<E, O>) {
   }
 }

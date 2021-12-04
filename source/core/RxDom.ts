@@ -41,7 +41,7 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
 export class RxDom {
   static readonly ROOT = RxDom.createStaticDeclaration<unknown>('ROOT', 'ROOT')
   static gParent: NodeInfo<any, any> = RxDom.ROOT
-  static gHostingParent: NodeInfo<any, any> = RxDom.ROOT
+  static gHost: NodeInfo<any, any> = RxDom.ROOT
   static gTrace: string | undefined = undefined
   static gTraceMask: string = 'r'
 
@@ -63,41 +63,41 @@ export class RxDom {
   static emit<E = unknown, O = void>(
     id: string, args: unknown, render: Render<E, O>,
     superRender: SuperRender<O, E> | undefined, rtti: Rtti<E, O>,
-    parent?: NodeInfo, hostingParent?: NodeInfo): NodeInfo<E, O> {
+    parent?: NodeInfo, host?: NodeInfo): NodeInfo<E, O> {
 
     const p = parent ?? RxDom.gParent
-    const hp = hostingParent ?? RxDom.gHostingParent
+    const h = host ?? RxDom.gHost
     const self = p.instance
     if (!self)
       throw new Error('element must be initialized before children')
-    const node = new NodeInfo<E, O>(id, args, render, superRender, rtti, p, hp)
+    const node = new NodeInfo<E, O>(id, args, render, superRender, rtti, p, h)
     if (self.buffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (hp?.instance?.native) // emit only if hosting parent is alive
+    if (h?.instance?.native) // emit only if hosting parent is alive
       self.buffer.push(node)
     return node
   }
 
   static wrap(func: (...args: any[]) => any): (...args: any[]) => any {
     const parent = RxDom.gParent
-    const hostingParent = RxDom.gHostingParent
+    const host = RxDom.gHost
     const wrappedRendering = (...args: any[]): any => {
-      const result = RxDom.within(parent, hostingParent, func, ...args)
+      const result = RxDom.within(parent, host, func, ...args)
       return result
     }
     return wrappedRendering
   }
 
-  static within(parent: NodeInfo, hostingParent: NodeInfo, func: (...args: any[]) => void, ...args: any[]): void {
+  static within(parent: NodeInfo, host: NodeInfo, func: (...args: any[]) => void, ...args: any[]): void {
     const outer = RxDom.gParent
-    const hostingOuter = RxDom.gHostingParent
+    const hostingOuter = RxDom.gHost
     try {
       RxDom.gParent = parent
-      RxDom.gHostingParent = hostingParent
+      RxDom.gHost = host
       func(...args)
     }
     finally {
-      RxDom.gHostingParent = hostingOuter
+      RxDom.gHost = hostingOuter
       RxDom.gParent = outer
     }
   }
@@ -107,9 +107,9 @@ export class RxDom {
     if (!self)
       throw new Error('element must be initialized before rendering')
     const outer = RxDom.gParent
-    const hostingOuter = RxDom.gHostingParent
+    const hostingOuter = RxDom.gHost
     try {
-      RxDom.gParent = RxDom.gHostingParent = node
+      RxDom.gParent = RxDom.gHost = node
       self.buffer = []
       if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
         console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${node.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
@@ -132,7 +132,7 @@ export class RxDom {
         RxDom.renderChildrenNow() // ignored if rendered already
     }
     finally {
-      RxDom.gHostingParent = hostingOuter
+      RxDom.gHost = hostingOuter
       RxDom.gParent = outer
     }
   }
@@ -160,16 +160,16 @@ export class RxDom {
     }
   }
 
-  static useAnotherHostingParent<E>(node: NodeInfo<E>, run: (e: E) => void): void {
+  static useAnotherHost<E>(node: NodeInfo<E>, run: (e: E) => void): void {
     const native = node.instance?.native
     if (native !== undefined) {
-      const outer = RxDom.gHostingParent
+      const outer = RxDom.gHost
       try {
-        RxDom.gHostingParent = node
+        RxDom.gHost = node
         run(native)
       }
       finally {
-        RxDom.gHostingParent = outer
+        RxDom.gHost = outer
       }
     }
   }
@@ -188,7 +188,7 @@ export class RxDom {
     // Initialize
     const a: any = node
     a['parent'] = node
-    a['hostingParent'] = node
+    a['host'] = node
     self.native = native
     return node
   }
@@ -246,7 +246,7 @@ export class RxDom {
     if (rtti.initialize)
       rtti.initialize(node)
     else
-      self.native = node.hostingParent.instance?.native // default initialize
+      self.native = node.host.instance?.native // default initialize
     if (node.args !== RefreshParent)
       Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? getTraceHint(node) : node.id)
     if (RxDom.gTrace && RxDom.gTraceMask.indexOf('m') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
@@ -285,7 +285,7 @@ export class RxDom {
         const ours = sortedBuffer[j]
         const diff = ours !== undefined ? compareNodes(ours, theirs) : 1
         if (diff <= 0) {
-          const h = ours.hostingParent.instance
+          const h = ours.host.instance
           if (h !== self) {
             if (h !== host) {
               RxDom.mergeAliens(host, self, aliens)
@@ -347,7 +347,7 @@ export class RxDom {
         const ours = buffer[j]
         const diff = compareNullable(ours, theirs, compareNodes)
         if (diff <= 0) {
-          const h = ours.hostingParent.instance
+          const h = ours.host.instance
           if (h !== self) {
             if (h !== host) {
               RxDom.mergeAliens(host, self, aliens)
@@ -418,8 +418,8 @@ export class RxDom {
 
 function compareNodes(node1: NodeInfo, node2: NodeInfo): number {
   let result: number = 0
-  const hp1 = node1.hostingParent.instance
-  const hp2 = node2.hostingParent.instance
+  const hp1 = node1.host.instance
+  const hp2 = node2.host.instance
   if (hp1 !== hp2) {
     result = hp1!.uuid - hp2!.uuid
     if (result === 0)

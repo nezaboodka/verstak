@@ -30,7 +30,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     const self = node.instance
     const native = self?.native
     if (native) {
-      const nativeParentNode = node.hostingParent.instance?.native
+      const nativeParentNode = node.host.instance?.native
       if (nativeParentNode !== native.parentNode) {
         native.remove() // remove from previous parent
         if (nativeParentNode instanceof Element) {
