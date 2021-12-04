@@ -31,7 +31,7 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
 
   @reaction @options({ sensitiveArgs: true }) // @noSideEffects(true)
   render(node: NodeInfo<E, O>): void {
-    RxDom.renderInline(this, node)
+    RxDom.renderUsingRttiOrDirectly(this, node)
     Reactronic.configureCurrentMethod({ order: this.level })
   }
 }
@@ -224,7 +224,7 @@ export class RxDom {
     RxDom.forEachChildRecursively(RxDom.ROOT, action)
   }
 
-  static renderInline<E, O>(instance: NodeInstance<E, O>, node: NodeInfo<E, O>): void {
+  static renderUsingRttiOrDirectly<E, O>(instance: NodeInstance<E, O>, node: NodeInfo<E, O>): void {
     if (instance === undefined || instance === null)
       debugger // temporary, TODO: debug
     instance.revision++
@@ -236,7 +236,7 @@ export class RxDom {
   private static doRender(node: NodeInfo): void {
     const self = node.instance!
     if (node.args === RefreshParent) // inline elements are always rendered
-      RxDom.renderInline(self, node)
+      RxDom.renderUsingRttiOrDirectly(self, node)
     else // rendering of reactive elements is cached to avoid redundant calls
       nonreactive(self.render, node)
   }
@@ -283,6 +283,10 @@ export class RxDom {
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
       while (i < children.length) {
+        if (Transaction.isTimeOver()) {
+          // console.log(`Time is over: T${Transaction.current.id} ${Transaction.current.hint} (${node.id})`)
+          // await Transaction.requestMoreTime()
+        }
         const theirs = children[i]
         const ours = sortedBuffer[j]
         const diff = ours !== undefined ? compareNodes(ours, theirs) : 1
