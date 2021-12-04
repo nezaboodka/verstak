@@ -283,10 +283,6 @@ export class RxDom {
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
       while (i < children.length) {
-        if (Transaction.isTimeOver()) {
-          // console.log(`Time is over: T${Transaction.current.id} ${Transaction.current.hint} (${node.id})`)
-          // await Transaction.requestMoreTime()
-        }
         const theirs = children[i]
         const ours = sortedBuffer[j]
         const diff = ours !== undefined ? compareNodes(ours, theirs) : 1
@@ -319,6 +315,10 @@ export class RxDom {
       // Reconciliation loop - initialize, render, re-render
       sibling = undefined
       for (const x of naturalBuffer) {
+        // if (Transaction.isTimeOver())
+        //   await Transaction.requestMoreTime()
+        // if (Transaction.isCanceled)
+        //   throw new Error('fatal error: render canceling is not implemented yet')
         if (x.previous) {
           x.rtti.host?.(x, sibling)
           if (x.args === RefreshParent || !argsAreEqual(x.args, x.previous.args))
@@ -349,6 +349,10 @@ export class RxDom {
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
       while (i < children.length || j < buffer.length) {
+        // if (Transaction.isTimeOver())
+        //   await Transaction.requestMoreTime()
+        // if (Transaction.isCanceled)
+        //   throw new Error('fatal error: render canceling is not implemented yet')
         const theirs = children[i]
         const ours = buffer[j]
         const diff = compareNullable(ours, theirs, compareNodes)
