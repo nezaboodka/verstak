@@ -48,7 +48,7 @@ export class RxDom {
   static Root<T>(render: () => T): T {
     const self = RxDom.ROOT.instance!
     if (self.buffer)
-      throw new Error('ReactronicFrontRendering should not be called recursively')
+      throw new Error('rendering re-entrance is not supported yet')
     self.buffer = []
     let result: any = render()
     if (result instanceof Promise)
@@ -106,6 +106,8 @@ export class RxDom {
     const self = node.instance
     if (!self)
       throw new Error('element must be initialized before rendering')
+    if (self.buffer)
+      throw new Error('rendering re-entrance is not supported yet')
     const outer = RxDom.gParent
     const hostingOuter = RxDom.gHost
     try {
