@@ -39,7 +39,7 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
 // RxDom
 
 export class RxDom {
-  static readonly ROOT = RxDom.createStaticDeclaration<unknown>('ROOT', 'ROOT')
+  static readonly ROOT = RxDom.createRootNode<unknown>('ROOT', 'ROOT')
   static gOwner: NodeInfo<any, any> = RxDom.ROOT
   static gHost: NodeInfo<any, any> = RxDom.ROOT
   static gTrace: string | undefined = undefined
@@ -176,7 +176,7 @@ export class RxDom {
     }
   }
 
-  static createStaticDeclaration<E>(id: string, native: E): NodeInfo<E> {
+  static createRootNode<E>(id: string, native: E): NodeInfo<E> {
     const self = new NodeInstance<E>(0)
     const node = new NodeInfo<E>(
       id,                           // id
