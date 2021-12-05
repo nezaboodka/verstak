@@ -7,7 +7,7 @@
 
 import { unobservable } from 'reactronic'
 import { Sensor } from './Sensor'
-import { WindowSensor } from './WindowSensor'
+import { WindowSensor } from './sensors/WindowSensor'
 
 export class HtmlElementSensor extends Sensor {
   @unobservable readonly windowSensor?: WindowSensor

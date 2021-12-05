@@ -6,9 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { options, reaction, standalone, TraceLevel, transaction, unobservable } from 'reactronic'
-import { EmptyDataArray, grabElementData } from './DataForSensor'
-import { DataForSensor, SymDataForSensor } from './HtmlApiExt'
-import { HtmlElementSensor } from './HtmlElementSensor'
+import { EmptyDataArray, grabElementData } from '../DataForSensor'
+import { DataForSensor, SymDataForSensor } from '../HtmlApiExt'
+import { HtmlElementSensor } from '../HtmlElementSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
 
