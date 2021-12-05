@@ -29,7 +29,7 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
     this.level = level
   }
 
-  @reaction @options({ sensitiveArgs: true }) // @noSideEffects(true)
+  @reaction @options({ sensitiveArgs: true, noSideEffects: true })
   render(node: NodeInfo<E, O>): void {
     RxDom.renderUsingRttiOrDirectly(this, node)
     Reactronic.configureCurrentMethod({ order: this.level })
