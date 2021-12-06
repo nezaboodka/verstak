@@ -82,19 +82,18 @@ export class RxDom {
     const owner = RxDom.gOwner
     const host = RxDom.gHost
     const wrappedRendering = (...args: any[]): any => {
-      const result = RxDom.runUnder(owner, host, func, ...args)
-      return result
+      return RxDom.runUnder(owner, host, func, ...args)
     }
     return wrappedRendering
   }
 
-  static runUnder(owner: NodeInfo, host: NodeInfo, func: (...args: any[]) => void, ...args: any[]): void {
+  static runUnder(owner: NodeInfo, host: NodeInfo, func: (...args: any[]) => any, ...args: any[]): any {
     const outer = RxDom.gOwner
     const hostOuter = RxDom.gHost
     try {
       RxDom.gOwner = owner
       RxDom.gHost = host
-      func(...args)
+      return func(...args)
     }
     finally {
       RxDom.gHost = hostOuter
