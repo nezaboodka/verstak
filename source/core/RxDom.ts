@@ -221,23 +221,23 @@ export class RxDom {
     return node
   }
 
-  // selfInstance, selfRevision, trace, forAll
+  // currentNodeInstance, currentNodeRevision, trace, forAll
 
-  static selfInstance<T>(): { model?: T } {
+  static currentNodeInstance<T>(): { model?: T } {
     const self = RxDom.gOwner.instance
     if (!self)
-      throw new Error('instance function can be called only inside rendering function')
+      throw new Error('currentNodeInstance function can be called only inside rendering function')
     return self as { model?: T }
   }
 
-  static selfInstanceInternal<E>(): NodeInstance<E> {
+  static currentNodeInstanceInternal<E>(): NodeInstance<E> {
     const self = RxDom.gOwner.instance
     if (!self)
-      throw new Error('selfInstanceInternal function can be called only inside rendering function')
+      throw new Error('currentNodeInstanceInternal function can be called only inside rendering function')
     return self
   }
 
-  static selfRevision(): number {
+  static currentNodeRevision(): number {
     return RxDom.gOwner.instance?.revision ?? 0
   }
 
