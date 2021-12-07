@@ -279,7 +279,7 @@ export class RxDom {
   private static doFinalize(node: NodeInfo, cause: NodeInfo): void {
     if (RxDom.gTrace && RxDom.gTraceMask.indexOf('u') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.finalizing`)
-    if (node.args !== RefreshParent) // TODO: Consider creating one transaction for all finalizations at once
+    if (node.args !== RefreshParent && node.instance) // TODO: Consider creating one transaction for all finalizations at once
       Transaction.runAs({ standalone: true }, () => Reactronic.dispose(node.instance))
     const rtti = node.rtti
     if (rtti.finalize)
