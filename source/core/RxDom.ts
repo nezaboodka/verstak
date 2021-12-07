@@ -16,7 +16,6 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
   private static gUuid: number = 0
   readonly uuid: number
   readonly level: number
-  info: NodeInfo<E, O> = RxDom.ROOT as NodeInfo<any, any>
   revision: number = 0
   native?: E = undefined
   model?: unknown = undefined
@@ -31,15 +30,14 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
   }
 
   @reaction @options({ sensitiveArgs: true, noSideEffects: true })
-  render(node?: NodeInfo<E, O>): void {
-    this.info = node ?? this.info
-    RxDom.renderUsingRttiOrDirectly(this, this.info)
+  render(node: NodeInfo<E, O>): void {
+    RxDom.renderUsingRttiOrDirectly(this, node)
     Reactronic.configureCurrentOperation({ order: this.level })
   }
 
-  get ['#this'](): string {
-    return `${this.info.rtti.name}.${this.info.id}`
-  }
+  // get ['#this'](): string {
+  //   return `${this.info.rtti.name}.${this.info.id}`
+  // }
 }
 
 // RxDom
