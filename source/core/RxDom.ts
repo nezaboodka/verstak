@@ -497,7 +497,7 @@ export class RxDom {
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
       while (i < children.length || j < buffer.length) {
-        if (Transaction.isFrameOver())
+        if (Transaction.isFrameOver(20))
           await Transaction.requestNextFrame()
         const theirs = children[i]
         const ours = buffer[j]
@@ -532,7 +532,7 @@ export class RxDom {
             i++, j++
           }
           else { // diff < 0
-            if (Transaction.isCanceled) {
+            if (!Transaction.isCanceled) {
               RxDom.doInitialize(ours)
               ours.rtti.host?.(ours)
               RxDom.doRender(ours) // initial rendering
