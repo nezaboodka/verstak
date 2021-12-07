@@ -74,7 +74,7 @@ export class RxDom {
     const self = o.instance
     if (!self)
       throw new Error('element must be initialized before children')
-    const node = new NodeInfo<E, O>(id, args, render, superRender, rtti, o, h)
+    const node = new NodeInfo<E, O>(id, args, render, superRender, rtti, o, h, false)
     if (self.buffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (h?.instance?.native) // emit only if host is alive
@@ -144,10 +144,24 @@ export class RxDom {
 
   static renderChildrenNow(): void {
     const node = RxDom.gOwner
-    if (node.rtti.unordered)
-      RxDom.mergeAndRenderUnorderedChildren(node)
-    else
-      RxDom.mergeAndRenderNaturallyOrderedChildren(node)
+    if (node.rtti.unordered) {
+      if (node.incremental)
+        void RxDom.mergeAndRenderUnorderedChildrenAsync(node).then(
+          success => { /* nop */ },
+          error => { console.log(error) }
+        )
+      else
+        RxDom.mergeAndRenderUnorderedChildren(node)
+    }
+    else {
+      if (node.incremental)
+        void RxDom.mergeAndRenderNaturallyOrderedChildrenAsync(node).then(
+          success => { /* nop */ },
+          error => { console.log(error) }
+        )
+      else
+        RxDom.mergeAndRenderNaturallyOrderedChildren(node)
+    }
   }
 
   static initialize(node: NodeInfo): void {
@@ -189,6 +203,7 @@ export class RxDom {
       { name: id, unordered: false }, // rtti
       { } as NodeInfo,              // owner (lifecycle manager)
       { } as NodeInfo,              // host (rendering parent)
+      false,
       self)                         // instance
     // Initialize
     const a: any = node
@@ -228,8 +243,8 @@ export class RxDom {
   }
 
   static renderUsingRttiOrDirectly<E, O>(instance: NodeInstance<E, O>, node: NodeInfo<E, O>): void {
-    if (instance === undefined || instance === null)
-      debugger // temporary, TODO: debug
+    // if (instance === undefined || instance === null)
+    //   debugger // temporary, TODO: debug
     instance.revision++
     node.rtti.render ? node.rtti.render(node) : RxDom.render(node)
   }
@@ -318,10 +333,6 @@ export class RxDom {
       // Reconciliation loop - initialize, render, re-render
       sibling = undefined
       for (const x of naturalBuffer) {
-        // if (Transaction.isTimeOver())
-        //   await Transaction.requestMoreTime()
-        // if (Transaction.isCanceled)
-        //   throw new Error('fatal error: render canceling is not implemented yet')
         if (x.previous) {
           x.rtti.host?.(x, sibling)
           if (x.args === RefreshParent || !argsAreEqual(x.args, x.previous.args))
@@ -332,6 +343,75 @@ export class RxDom {
           RxDom.doInitialize(x)
           x.rtti.host?.(x, sibling)
           RxDom.doRender(x) // initial rendering
+        }
+        sibling = x
+      }
+    }
+  }
+
+  private static async mergeAndRenderNaturallyOrderedChildrenAsync(node: NodeInfo): Promise<void> {
+    const self = node.instance
+    if (self !== undefined && self.buffer !== undefined) {
+      const children = self.children
+      const naturalBuffer = self.buffer
+      const sortedBuffer = naturalBuffer.slice().sort(compareNodes)
+      // Switch to the new list
+      self.buffer = undefined
+      self.children = sortedBuffer
+      // Reconciliation loop - link to existing or finalize
+      let host = self
+      let aliens: Array<NodeInfo<any, any>> = EMPTY
+      let sibling: NodeInfo | undefined = undefined
+      let i = 0, j = 0
+      while (i < children.length) {
+        const theirs = children[i]
+        const ours = sortedBuffer[j]
+        const diff = ours !== undefined ? compareNodes(ours, theirs) : 1
+        if (diff <= 0) {
+          const h = ours.host.instance
+          if (h !== self) {
+            if (h !== host) {
+              RxDom.mergeAliens(host, self, aliens)
+              aliens = []
+              host = h!
+            }
+            aliens.push(ours)
+          }
+          if (sibling !== undefined && ours.id === sibling.id)
+            throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
+          if (diff === 0) {
+            ours.instance = theirs.instance
+            ours.previous = theirs
+            i++, j++ // re-rendering is called below
+          }
+          else // diff < 0
+            j++ // initial rendering is called below
+          sibling = ours
+        }
+        else // diff > 0
+          RxDom.doFinalize(theirs, theirs), i++
+      }
+      if (host !== self)
+        RxDom.mergeAliens(host, self, aliens)
+      // Reconciliation loop - initialize, render, re-render
+      sibling = undefined
+      for (const x of naturalBuffer) {
+        if (Transaction.isFrameOver())
+          await Transaction.requestNextFrame()
+        if (x.previous) {
+          x.rtti.host?.(x, sibling)
+          if (x.args === RefreshParent || !argsAreEqual(x.args, x.previous.args)) {
+            if (!Transaction.isCanceled)
+              RxDom.doRender(x) // re-rendering
+          }
+          x.previous = undefined // unlink to make it available for garbage collection
+        }
+        else {
+          if (!Transaction.isCanceled) {
+            RxDom.doInitialize(x)
+            x.rtti.host?.(x, sibling)
+            RxDom.doRender(x) // initial rendering
+          }
         }
         sibling = x
       }
@@ -352,10 +432,6 @@ export class RxDom {
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
       while (i < children.length || j < buffer.length) {
-        // if (Transaction.isTimeOver())
-        //   await Transaction.requestMoreTime()
-        // if (Transaction.isCanceled)
-        //   throw new Error('fatal error: render canceling is not implemented yet')
         const theirs = children[i]
         const ours = buffer[j]
         const diff = compareNullable(ours, theirs, compareNodes)
@@ -387,6 +463,65 @@ export class RxDom {
         }
         else // diff > 0
           RxDom.doFinalize(theirs, theirs), i++
+      }
+      if (host !== self)
+        RxDom.mergeAliens(host, self, aliens)
+    }
+  }
+
+  private static async mergeAndRenderUnorderedChildrenAsync(node: NodeInfo): Promise<void> {
+    const self = node.instance
+    if (self !== undefined && self.buffer !== undefined) {
+      const children = self.children
+      const buffer = self.buffer.sort(compareNodes)
+      // Switch to the new list
+      self.buffer = undefined
+      self.children = buffer
+      // Reconciliation loop - link, render, initialize, finalize
+      let host = self
+      let aliens: Array<NodeInfo<any, any>> = EMPTY
+      let sibling: NodeInfo | undefined = undefined
+      let i = 0, j = 0
+      while (i < children.length || j < buffer.length) {
+        if (Transaction.isFrameOver())
+          await Transaction.requestNextFrame()
+        const theirs = children[i]
+        const ours = buffer[j]
+        const diff = compareNullable(ours, theirs, compareNodes)
+        if (diff <= 0) {
+          const h = ours.host.instance
+          if (h !== self) {
+            if (h !== host) {
+              RxDom.mergeAliens(host, self, aliens)
+              aliens = []
+              host = h!
+            }
+            aliens.push(ours)
+          }
+          if (sibling !== undefined && ours.id === sibling.id)
+            throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
+          if (diff === 0) {
+            ours.instance = theirs.instance // link to the existing instance
+            if (ours.args === RefreshParent || !argsAreEqual(ours.args, theirs.args)) {
+              if (!Transaction.isCanceled)
+                RxDom.doRender(ours) // re-rendering
+            }
+            i++, j++
+          }
+          else { // diff < 0
+            if (Transaction.isCanceled) {
+              RxDom.doInitialize(ours)
+              ours.rtti.host?.(ours)
+              RxDom.doRender(ours) // initial rendering
+            }
+            j++
+          }
+          sibling = ours
+        }
+        else { // diff > 0
+          RxDom.doFinalize(theirs, theirs)
+          i++
+        }
       }
       if (host !== self)
         RxDom.mergeAliens(host, self, aliens)
