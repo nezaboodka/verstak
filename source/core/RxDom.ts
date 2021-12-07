@@ -144,21 +144,19 @@ export class RxDom {
 
   static renderChildrenNow(): void {
     const node = RxDom.gOwner
-    if (node.rtti.unordered) {
-      if (node.incremental)
-        void RxDom.mergeAndRenderUnorderedChildrenAsync(node).then(
+    if (node.incremental) {
+      if (node.rtti.unordered)
+        void RxDom.incrementalMergeAndRenderUnorderedChildren(node).then(
           success => { /* nop */ },
-          error => { console.log(error) }
-        )
+          error => { console.log(error) })
       else
-        RxDom.mergeAndRenderUnorderedChildren(node)
+        void RxDom.incrementalMergeAndRenderNaturallyOrderedChildren(node).then(
+          success => { /* nop */ },
+          error => { console.log(error) })
     }
     else {
-      if (node.incremental)
-        void RxDom.mergeAndRenderNaturallyOrderedChildrenAsync(node).then(
-          success => { /* nop */ },
-          error => { console.log(error) }
-        )
+      if (node.rtti.unordered)
+        RxDom.mergeAndRenderUnorderedChildren(node)
       else
         RxDom.mergeAndRenderNaturallyOrderedChildren(node)
     }
@@ -349,7 +347,7 @@ export class RxDom {
     }
   }
 
-  private static async mergeAndRenderNaturallyOrderedChildrenAsync(node: NodeInfo): Promise<void> {
+  private static async incrementalMergeAndRenderNaturallyOrderedChildren(node: NodeInfo): Promise<void> {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
       const children = self.children
@@ -469,7 +467,7 @@ export class RxDom {
     }
   }
 
-  private static async mergeAndRenderUnorderedChildrenAsync(node: NodeInfo): Promise<void> {
+  private static async incrementalMergeAndRenderUnorderedChildren(node: NodeInfo): Promise<void> {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
       const children = self.children
