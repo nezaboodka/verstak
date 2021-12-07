@@ -277,8 +277,8 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.elementDataList = grabElementData(path, SymDataForSensor, 'htmlDrag', this.elementDataList).data
     const targetElements = document.elementsFromPoint(e.clientX, e.clientY)
     const { data: elementDataUnderPointer, window } = grabElementData(targetElements, SymDataForSensor, 'htmlDrag', EmptyDataArray)
-    const dataForSensor = elementDataUnderPointer[0] as DataForSensor | undefined
-    const dragTarget = dataForSensor?.htmlDrag
+    const dataForSensor = elementDataUnderPointer[0]
+    const dragTarget = dataForSensor
     if (dragTarget !== this.dragTarget) {
       this.previousDragTarget = this.dragTarget
       this.dragTarget = dragTarget

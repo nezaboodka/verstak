@@ -251,8 +251,8 @@ export class DragSensor extends PointerSensor {
     this.elementDataList = grabElementData(path, SymDataForSensor, 'drag', this.elementDataList).data
     const targetElements = document.elementsFromPoint(e.clientX, e.clientY)
     const { data: elementDataUnderPointer, window } = grabElementData(targetElements, SymDataForSensor, 'drag', EmptyDataArray)
-    const dataForSensor = elementDataUnderPointer[0] as DataForSensor | undefined
-    const dragTarget = dataForSensor?.drag
+    const dataForSensor = elementDataUnderPointer[0]
+    const dragTarget = dataForSensor
     if (dragTarget !== this.dragTarget) {
       this.previousDragTarget = this.dragTarget
       this.dragTarget = dragTarget

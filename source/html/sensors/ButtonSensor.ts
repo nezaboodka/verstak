@@ -119,7 +119,7 @@ export class ButtonSensor extends PointerSensor {
     this.stopPropagation = false
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     const { data: elementDataUnderPointer, window } = grabElementData(elements, SymDataForSensor, 'button', EmptyDataArray)
-    const originData = elementDataUnderPointer[0] as DataForSensor | undefined
+    const originData = elementDataUnderPointer[0]
     if (originData) {
       this.state = ButtonState.Pressed
       this.pointerButton = extractPointerButton(e)

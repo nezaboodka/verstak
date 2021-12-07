@@ -24,8 +24,10 @@ export function grabElementData(elements: any[], sym: symbol,
         if (result !== existing)
           payload !== undefined && result.push(payload)
         else if (payload !== undefined) {
-          if (payload !== existing[j])
-            result = existing.slice(0, j), result.push(payload)
+          if (payload !== existing[j]) {
+            result = existing.slice(0, j)
+            result.push(payload)
+          }
           else
             j++
         }
