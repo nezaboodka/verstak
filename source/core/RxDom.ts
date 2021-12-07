@@ -31,9 +31,9 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
   }
 
   @reaction @options({ sensitiveArgs: true, noSideEffects: true })
-  render(node: NodeInfo<E, O>): void {
-    this.info = node
-    RxDom.renderUsingRttiOrDirectly(this, node)
+  render(node?: NodeInfo<E, O>): void {
+    this.info = node ?? this.info
+    RxDom.renderUsingRttiOrDirectly(this, this.info)
     Reactronic.configureCurrentOperation({ order: this.level })
   }
 
