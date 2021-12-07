@@ -8,7 +8,6 @@
 export * from './core/Data'
 export * from './core/RxDom'
 export * from './core/Restyler'
-export * from './core/Elements'
 
 export * from './html/Sensor'
 export * from './html/HtmlRtti'

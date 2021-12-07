@@ -8,4 +8,3 @@
 export * from './Data'
 export { RxDom } from './RxDom'
 export * from './Restyler'
-export * from './Elements'

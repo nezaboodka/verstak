@@ -9,6 +9,8 @@ import { reaction, nonreactive, Transaction, Reactronic, options } from 'reactro
 import { Render, SuperRender, RefreshParent, Rtti, AbstractNodeInstance, NodeInfo } from './Data'
 
 const EMPTY: Array<NodeInfo<any, any>> = Object.freeze([]) as any
+const RTTI: Rtti<any, any> = { name: 'RxDom.Node', unordered: false }
+const RTTI_UNORDERED: Rtti<any, any> = { name: 'RxDom.NodeUnordered', unordered: true }
 
 // NodeInstance
 
@@ -64,22 +66,26 @@ export class RxDom {
     return result
   }
 
-  static emit<E = unknown, O = void>(
-    id: string, args: unknown, render: Render<E, O>,
-    superRender: SuperRender<O, E> | undefined, rtti: Rtti<E, O>,
-    owner?: NodeInfo, host?: NodeInfo): NodeInfo<E, O> {
-
+  static Node<E = unknown, O = void>(id: string, args: any,
+    render: Render<E, O>, superRender?: SuperRender<O, E>,
+    rtti?: Rtti<E, O>, owner?: NodeInfo, host?: NodeInfo): NodeInfo<E, O> {
     const o = owner ?? RxDom.gOwner
     const h = host ?? RxDom.gHost
     const self = o.instance
     if (!self)
       throw new Error('element must be initialized before children')
-    const node = new NodeInfo<E, O>(id, args, render, superRender, rtti, o, h, false)
+    const node = new NodeInfo<E, O>(id, args, render, superRender, rtti ?? RTTI, o, h, false)
     if (self.buffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (h?.instance?.native) // emit only if host is alive
       self.buffer.push(node)
     return node
+  }
+
+  static NodeWithUnorderedChildren<E = unknown, O = void>(id: string,
+    args: any, render: Render<E, O>, superRender?: SuperRender<O, E>,
+    owner?: NodeInfo, host?: NodeInfo): NodeInfo<E, O> {
+    return RxDom.Node(id, args, render, superRender, RTTI_UNORDERED, owner, host)
   }
 
   static wrap(func: (...args: any[]) => any): (...args: any[]) => any {
