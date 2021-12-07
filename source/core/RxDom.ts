@@ -191,6 +191,10 @@ export class RxDom {
     }
   }
 
+  static usingIncrementalRendering(value: boolean): void {
+    RxDom.gOwner.incremental = value
+  }
+
   static createRootNode<E>(id: string, native: E): NodeInfo<E> {
     const self = new NodeInstance<E>(0)
     const node = new NodeInfo<E>(
@@ -199,8 +203,8 @@ export class RxDom {
       () => { /* nop */ },          // render
       undefined,                    // superRender
       { name: id, unordered: false }, // rtti
-      { } as NodeInfo,              // owner (lifecycle manager)
-      { } as NodeInfo,              // host (rendering parent)
+      {} as NodeInfo,               // owner (lifecycle manager)
+      {} as NodeInfo,               // host (rendering parent)
       false,
       self)                         // instance
     // Initialize
@@ -386,8 +390,11 @@ export class RxDom {
             j++ // initial rendering is called below
           sibling = ours
         }
-        else // diff > 0
-          RxDom.doFinalize(theirs, theirs), i++
+        else { // diff > 0
+          if (theirs.instance)
+            RxDom.doFinalize(theirs, theirs)
+          i++
+        }
       }
       if (host !== self)
         RxDom.mergeAliens(host, self, aliens)
@@ -397,10 +404,19 @@ export class RxDom {
         if (Transaction.isFrameOver())
           await Transaction.requestNextFrame()
         if (x.previous) {
-          x.rtti.host?.(x, sibling)
-          if (x.args === RefreshParent || !argsAreEqual(x.args, x.previous.args)) {
-            if (!Transaction.isCanceled)
-              RxDom.doRender(x) // re-rendering
+          if (x.instance) {
+            x.rtti.host?.(x, sibling)
+            if (x.args === RefreshParent || !argsAreEqual(x.args, x.previous.args)) {
+              if (!Transaction.isCanceled)
+                RxDom.doRender(x) // re-rendering
+            }
+          }
+          else {
+            if (!Transaction.isCanceled) {
+              RxDom.doInitialize(x)
+              x.rtti.host?.(x, sibling)
+              RxDom.doRender(x) // initial rendering
+            }
           }
           x.previous = undefined // unlink to make it available for garbage collection
         }
@@ -499,10 +515,19 @@ export class RxDom {
           if (sibling !== undefined && ours.id === sibling.id)
             throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
           if (diff === 0) {
-            ours.instance = theirs.instance // link to the existing instance
-            if (ours.args === RefreshParent || !argsAreEqual(ours.args, theirs.args)) {
-              if (!Transaction.isCanceled)
-                RxDom.doRender(ours) // re-rendering
+            if (theirs.instance) {
+              ours.instance = theirs.instance // link to the existing instance
+              if (ours.args === RefreshParent || !argsAreEqual(ours.args, theirs.args)) {
+                if (!Transaction.isCanceled)
+                  RxDom.doRender(ours) // re-rendering
+              }
+            }
+            else {
+              if (!Transaction.isCanceled) {
+                RxDom.doInitialize(ours)
+                ours.rtti.host?.(ours)
+                RxDom.doRender(ours) // initial rendering
+              }
             }
             i++, j++
           }
@@ -517,7 +542,8 @@ export class RxDom {
           sibling = ours
         }
         else { // diff > 0
-          RxDom.doFinalize(theirs, theirs)
+          if (theirs.instance)
+            RxDom.doFinalize(theirs, theirs)
           i++
         }
       }
@@ -612,8 +638,7 @@ const ORIGINAL_PROMISE_THEN = Promise.prototype.then
 
 function reactronicFrontHookedThen(this: any,
   resolve?: ((value: any) => any | PromiseLike<any>) | undefined | null,
-  reject?: ((reason: any) => never | PromiseLike<never>) | undefined | null): Promise<any | never>
-{
+  reject?: ((reason: any) => never | PromiseLike<never>) | undefined | null): Promise<any | never> {
   resolve = resolve ? RxDom.wrap(resolve) : resolveReturn
   reject = reject ? RxDom.wrap(reject) : rejectRethrow
   return ORIGINAL_PROMISE_THEN.call(this, resolve, reject)
