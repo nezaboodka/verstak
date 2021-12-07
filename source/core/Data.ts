@@ -24,6 +24,7 @@ export interface Rtti<E = unknown, O = void> {
 export interface AbstractNodeInstance<E = unknown, O = void> {
   readonly uuid: number
   readonly level: number
+  info: NodeInfo<E, O>
   revision: number
   native?: E
   model?: unknown
@@ -32,6 +33,7 @@ export interface AbstractNodeInstance<E = unknown, O = void> {
   aliens: ReadonlyArray<NodeInfo<any, any>>
   resizing?: ResizeObserver
   render(node: NodeInfo<E, O>): void
+  ['#this']: string
 }
 
 export class NodeInfo<E = unknown, O = void> {
