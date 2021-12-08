@@ -97,8 +97,8 @@ export class ClickSensor extends PointerSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const path = e.composedPath()
-    const { data: elementDataUnderPointer, window } = grabElementData(path, SymDataForSensor, 'click', this.elementDataList)
-    this.elementDataList = elementDataUnderPointer
+    const { data, window } = grabElementData(path, SymDataForSensor, 'click', this.elementDataList)
+    this.elementDataList = data
     const elements = document.elementsFromPoint(e.clientX, e.clientY)
     this.elementDataUnderPointer = grabElementData(elements, SymDataForSensor, 'click', this.elementDataUnderPointer).data
     this.modifiers = extractModifierKeys(e)
