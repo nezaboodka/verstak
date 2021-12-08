@@ -17,7 +17,7 @@ export function TwoWayFocusSync(
   target.dataForSensor.focus = focusToggle
   if (setNativeFocus === undefined)
     setNativeFocus = () => target.focus()
-  RxDom.Node(id, { focusToggle }, (e, o) => {
+  RxDom.Node(id, { focusToggle }, () => {
     const f = focusToggle.value
     const f1 = focusToggle.valueOn
     const active = f === focusToggle.valueOn || (
