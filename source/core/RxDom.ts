@@ -407,7 +407,7 @@ export class RxDom {
       // Reconciliation loop - initialize, render, re-render
       sibling = undefined
       for (const x of naturalBuffer) {
-        if (Transaction.isFrameOver())
+        if (Transaction.isFrameOver(20))
           await Transaction.requestNextFrame()
         if (x.previous) {
           if (x.instance) {
