@@ -509,7 +509,7 @@ export class RxDom {
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
       while (i < children.length || j < buffer.length) {
-        if (Transaction.isFrameOver(20, 80))
+        if (Transaction.isFrameOver(10, 40))
           await Transaction.requestNextFrame()
         const theirs = children[i]
         const ours = buffer[j]
@@ -575,7 +575,7 @@ export class RxDom {
         RxDom.mergeAliens(host, self, aliens)
       // Secondary priority loop
       if (!Transaction.isCanceled) {
-        if (Transaction.isFrameOver(20, 30))
+        if (Transaction.isFrameOver(5, 14))
           await Transaction.requestNextFrame()
         if (!Transaction.isCanceled) {
           secondary.sort(compareNodesByPriority)
