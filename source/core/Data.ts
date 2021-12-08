@@ -16,7 +16,7 @@ export interface Rtti<E = unknown, O = void> {
   readonly name: string
   readonly unordered: boolean
   initialize?(node: NodeInfo<E, O>): void
-  host?(node: NodeInfo<E, O>, sibling?: NodeInfo): void
+  mount?(node: NodeInfo<E, O>, sibling?: NodeInfo): void
   render?(node: NodeInfo<E, O>): void
   finalize?(node: NodeInfo<E, O>, cause: NodeInfo): void
 }

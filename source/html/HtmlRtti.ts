@@ -26,23 +26,26 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.appendChild(${e.id} r${self.revision})`)
   }
 
-  host(node: NodeInfo<E, any>, sibling?: NodeInfo): void {
+  mount(node: NodeInfo<E, any>, sibling?: NodeInfo): void {
     const self = node.instance
     const native = self?.native
     if (native) {
-      const nativeParentNode = node.host.instance?.native
-      if (nativeParentNode !== native.parentNode) {
-        native.remove() // remove from previous parent
-        if (nativeParentNode instanceof Element) {
-          if (sibling) {
-            const nSibling = sibling.instance?.native
-            if (nSibling instanceof Element && nSibling.nextSibling !== native)
-              nativeParentNode.insertBefore(native, nSibling.nextSibling)
-          }
-          else
-            nativeParentNode.appendChild(native)
-          // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.insertBefore(${sibling?.id ?? '<null>'})`)
+      const nativeHost = node.host.native
+      if (nativeHost instanceof Element) {
+        if (sibling === undefined) {
+          if (nativeHost !== native.parentNode || native.previousSibling !== null)
+            nativeHost.prepend(native)
         }
+        else if (sibling !== node) {
+          const nativeSibling = sibling.native
+          if (nativeSibling instanceof Element) {
+            if (nativeSibling.nextSibling !== native)
+              nativeHost.insertBefore(native, nativeSibling.nextSibling)
+          }
+        }
+        else // unordered
+          nativeHost.appendChild(native)
+        // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.insertBefore(${sibling?.id ?? '<null>'})`)
       }
     }
   }

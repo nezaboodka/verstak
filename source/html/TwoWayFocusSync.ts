@@ -28,16 +28,14 @@ export function TwoWayFocusSync(
   })
 }
 
-export function RxFocus(id: string, focusToggle: ToggleRef<any>): void {
-  RxDom.Node(id, { focusToggle }, e => {
-    if (e instanceof HTMLElement) {
-      e.dataForSensor.focus = focusToggle
-      const value = focusToggle.value
-      const valueOn = focusToggle.valueOn
-      const active = value === valueOn ||
-        (value instanceof Ref && valueOn instanceof Ref && Ref.sameRefs(value, valueOn))
-      if (active)
-        e.focus()
-    }
+export function RxFocus(id: string, target: HTMLElement, focusToggle: ToggleRef<any>): void {
+  RxDom.Node(id, { target, focusToggle }, () => {
+    target.dataForSensor.focus = focusToggle
+    const value = focusToggle.value
+    const valueOn = focusToggle.valueOn
+    const active = value === valueOn ||
+      (value instanceof Ref && valueOn instanceof Ref && Ref.sameRefs(value, valueOn))
+    if (active)
+      target.focus()
   })
 }

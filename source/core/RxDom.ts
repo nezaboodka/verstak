@@ -345,14 +345,14 @@ export class RxDom {
       sibling = undefined
       for (const x of naturalBuffer) {
         if (x.previous) {
-          x.rtti.host?.(x, sibling)
+          x.rtti.mount?.(x, sibling)
           if (x.args === RefreshParent || !argsAreEqual(x.args, x.previous.args))
             RxDom.doRender(x) // re-rendering
           x.previous = undefined // unlink to make it available for garbage collection
         }
         else {
           RxDom.doInitialize(x)
-          x.rtti.host?.(x, sibling)
+          x.rtti.mount?.(x, sibling)
           RxDom.doRender(x) // initial rendering
         }
         sibling = x
@@ -414,7 +414,7 @@ export class RxDom {
           await Transaction.requestNextFrame()
         if (x.previous) {
           if (x.instance) {
-            x.rtti.host?.(x, sibling)
+            x.rtti.mount?.(x, sibling)
             if (x.args === RefreshParent || !argsAreEqual(x.args, x.previous.args)) {
               if (!Transaction.isCanceled)
                 RxDom.doRender(x) // re-rendering
@@ -423,7 +423,7 @@ export class RxDom {
           else {
             if (!Transaction.isCanceled) {
               RxDom.doInitialize(x)
-              x.rtti.host?.(x, sibling)
+              x.rtti.mount?.(x, sibling)
               RxDom.doRender(x) // initial rendering
             }
           }
@@ -432,7 +432,7 @@ export class RxDom {
         else {
           if (!Transaction.isCanceled) {
             RxDom.doInitialize(x)
-            x.rtti.host?.(x, sibling)
+            x.rtti.mount?.(x, sibling)
             RxDom.doRender(x) // initial rendering
           }
         }
@@ -478,7 +478,7 @@ export class RxDom {
           }
           else { // diff < 0
             RxDom.doInitialize(ours)
-            ours.rtti.host?.(ours)
+            ours.rtti.mount?.(ours, ours)
             RxDom.doRender(ours) // initial rendering
             j++
           }
@@ -540,7 +540,7 @@ export class RxDom {
               if (!Transaction.isCanceled) {
                 if (ours.priority === 0) {
                   RxDom.doInitialize(ours)
-                  ours.rtti.host?.(ours)
+                  ours.rtti.mount?.(ours, ours)
                   RxDom.doRender(ours) // initial rendering
                 }
                 else
@@ -553,7 +553,7 @@ export class RxDom {
             if (!Transaction.isCanceled) {
               if (ours.priority === 0) {
                 RxDom.doInitialize(ours)
-                ours.rtti.host?.(ours)
+                ours.rtti.mount?.(ours, ours)
                 RxDom.doRender(ours) // initial rendering
               }
               else
@@ -580,7 +580,7 @@ export class RxDom {
           for (const ours of secondary) {
             if (!ours.instance) {
               RxDom.doInitialize(ours)
-              ours.rtti.host?.(ours)
+              ours.rtti.mount?.(ours, ours)
             }
             RxDom.doRender(ours)
             if (Transaction.isCanceled)
