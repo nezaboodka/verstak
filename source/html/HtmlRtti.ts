@@ -37,10 +37,12 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
             nativeHost.prepend(native)
         }
         else if (sibling !== node) {
-          const nativeSibling = sibling.native
-          if (nativeSibling instanceof Element) {
-            if (nativeSibling.nextSibling !== native)
-              nativeHost.insertBefore(native, nativeSibling.nextSibling)
+          if (sibling.host.native === nativeHost) {
+            const nativeSibling = sibling.native
+            if (nativeSibling instanceof Element) {
+              if (nativeSibling.nextSibling !== native)
+                nativeHost.insertBefore(native, nativeSibling.nextSibling)
+            }
           }
         }
         else // unordered

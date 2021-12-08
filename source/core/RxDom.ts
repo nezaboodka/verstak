@@ -355,7 +355,8 @@ export class RxDom {
           x.rtti.mount?.(x, sibling)
           RxDom.doRender(x) // initial rendering
         }
-        sibling = x
+        if (x.rtti.mount)
+          sibling = x
       }
     }
   }
@@ -436,7 +437,8 @@ export class RxDom {
             RxDom.doRender(x) // initial rendering
           }
         }
-        sibling = x
+        if (x.rtti.mount)
+          sibling = x
       }
     }
   }
