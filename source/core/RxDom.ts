@@ -68,13 +68,18 @@ export class RxDom {
 
   static Node<E = unknown, O = void>(id: string, args: any,
     render: Render<E, O>, superRender?: SuperRender<O, E>,
-    rtti?: Rtti<E, O>, owner?: NodeInfo, host?: NodeInfo): NodeInfo<E, O> {
+    priority?: number, rtti?: Rtti<E, O>,
+    owner?: NodeInfo, host?: NodeInfo): NodeInfo<E, O> {
     const o = owner ?? RxDom.gOwner
     const h = host ?? RxDom.gHost
     const self = o.instance
     if (!self)
       throw new Error('element must be initialized before children')
-    const node = new NodeInfo<E, O>(id, args, render, superRender, rtti ?? RTTI, o, h, false)
+    if (priority === undefined)
+      priority = 0
+    else if (priority > 0)
+      o.incremental = true
+    const node = new NodeInfo<E, O>(id, args, render, superRender, priority, rtti ?? RTTI, o, h, false)
     if (self.buffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (h?.instance?.native) // emit only if host is alive
@@ -84,8 +89,8 @@ export class RxDom {
 
   static NodeWithUnorderedChildren<E = unknown, O = void>(id: string,
     args: any, render: Render<E, O>, superRender?: SuperRender<O, E>,
-    owner?: NodeInfo, host?: NodeInfo): NodeInfo<E, O> {
-    return RxDom.Node(id, args, render, superRender, RTTI_UNORDERED, owner, host)
+    priority?: number, owner?: NodeInfo, host?: NodeInfo): NodeInfo<E, O> {
+    return RxDom.Node(id, args, render, superRender, priority, RTTI_UNORDERED, owner, host)
   }
 
   static wrap(func: (...args: any[]) => any): (...args: any[]) => any {
@@ -121,6 +126,7 @@ export class RxDom {
     const hostOuter = RxDom.gHost
     try {
       RxDom.gOwner = RxDom.gHost = node
+      node.incremental = false
       self.buffer = []
       if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
         console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${node.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
@@ -173,8 +179,8 @@ export class RxDom {
   }
 
   static finalize(node: NodeInfo<any, any>, cause: NodeInfo): void {
-    const self = node.instance!
-    if (self.native) {
+    const self = node.instance
+    if (self?.native) {
       self.native = undefined
       for (const x of self.children)
         RxDom.doFinalize(x, cause)
@@ -197,10 +203,6 @@ export class RxDom {
     }
   }
 
-  static usingIncrementalRendering(value: boolean): void {
-    RxDom.gOwner.incremental = value
-  }
-
   static createRootNode<E>(id: string, native: E): NodeInfo<E> {
     const self = new NodeInstance<E>(0)
     const node = new NodeInfo<E>(
@@ -208,6 +210,7 @@ export class RxDom {
       null,                         // args
       () => { /* nop */ },          // render
       undefined,                    // superRender
+      0,
       { name: id, unordered: false }, // rtti
       {} as NodeInfo,               // owner (lifecycle manager)
       {} as NodeInfo,               // host (rendering parent)
@@ -494,6 +497,7 @@ export class RxDom {
     if (self !== undefined && self.buffer !== undefined) {
       const children = self.children
       const buffer = self.buffer.sort(compareNodes)
+      const secondary = new Array<NodeInfo<any, any>>()
       // Switch to the new list
       self.buffer = undefined
       self.children = buffer
@@ -503,7 +507,7 @@ export class RxDom {
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
       while (i < children.length || j < buffer.length) {
-        if (Transaction.isFrameOver(20))
+        if (Transaction.isFrameOver(20, 80))
           await Transaction.requestNextFrame()
         const theirs = children[i]
         const ours = buffer[j]
@@ -524,24 +528,36 @@ export class RxDom {
             if (theirs.instance) {
               ours.instance = theirs.instance // link to the existing instance
               if (ours.args === RefreshParent || !argsAreEqual(ours.args, theirs.args)) {
-                if (!Transaction.isCanceled)
-                  RxDom.doRender(ours) // re-rendering
+                if (!Transaction.isCanceled) {
+                  if (ours.priority === 0)
+                    RxDom.doRender(ours) // re-rendering
+                  else
+                    secondary.push(ours)
+                }
               }
             }
             else {
               if (!Transaction.isCanceled) {
-                RxDom.doInitialize(ours)
-                ours.rtti.host?.(ours)
-                RxDom.doRender(ours) // initial rendering
+                if (ours.priority === 0) {
+                  RxDom.doInitialize(ours)
+                  ours.rtti.host?.(ours)
+                  RxDom.doRender(ours) // initial rendering
+                }
+                else
+                  secondary.push(ours)
               }
             }
             i++, j++
           }
           else { // diff < 0
             if (!Transaction.isCanceled) {
-              RxDom.doInitialize(ours)
-              ours.rtti.host?.(ours)
-              RxDom.doRender(ours) // initial rendering
+              if (ours.priority === 0) {
+                RxDom.doInitialize(ours)
+                ours.rtti.host?.(ours)
+                RxDom.doRender(ours) // initial rendering
+              }
+              else
+                secondary.push(ours)
             }
             j++
           }
@@ -555,6 +571,27 @@ export class RxDom {
       }
       if (host !== self)
         RxDom.mergeAliens(host, self, aliens)
+      // Secondary priority loop
+      if (!Transaction.isCanceled) {
+        if (Transaction.isFrameOver(20, 30))
+          await Transaction.requestNextFrame()
+        if (!Transaction.isCanceled) {
+          secondary.sort(compareNodesByPriority)
+          for (const ours of secondary) {
+            if (!ours.instance) {
+              RxDom.doInitialize(ours)
+              ours.rtti.host?.(ours)
+            }
+            RxDom.doRender(ours)
+            if (Transaction.isCanceled)
+              break
+            if (Transaction.isFrameOver(20, 14))
+              await Transaction.requestNextFrame()
+            if (Transaction.isCanceled)
+              break
+          }
+        }
+      }
     }
   }
 
@@ -606,6 +643,10 @@ function compareNodes(node1: NodeInfo, node2: NodeInfo): number {
   else
     result = node1.id.localeCompare(node2.id)
   return result
+}
+
+function compareNodesByPriority(node1: NodeInfo, node2: NodeInfo): number {
+  return node1.priority - node2.priority
 }
 
 function compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T, b: T) => number): number {

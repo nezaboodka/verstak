@@ -44,6 +44,7 @@ export class NodeInfo<E = unknown, O = void> {
     readonly args: unknown,
     readonly render: Render<E, O>,
     readonly superRender: SuperRender<O, E> | undefined,
+    readonly priority: number,
     readonly rtti: Rtti<E, O>,
     readonly owner: NodeInfo,
     readonly host: NodeInfo,
