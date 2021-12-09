@@ -6,16 +6,16 @@
 // automatically licensed under the license referred above.
 
 import { transaction } from 'reactronic'
-import { ClickSensor } from './sensors/ClickSensor'
-import { DragSensor } from './sensors/DragSensor'
-import { FocusSensor } from './sensors/FocusSensor'
-import { HoverSensor } from './sensors/HoverSensor'
-import { HtmlDragSensor } from './sensors/HtmlDragSensor'
-import { KeyboardSensor } from './sensors/KeyboardSensor'
-import { ButtonSensor } from './sensors/ButtonSensor'
-import { ResizeSensor } from './sensors/ResizeSensor'
-import { WheelSensor } from './sensors/WheelSensor'
-import { WindowSensor } from './sensors/WindowSensor'
+import { ClickSensor } from './ClickSensor'
+import { DragSensor } from './DragSensor'
+import { FocusSensor } from './FocusSensor'
+import { HoverSensor } from './HoverSensor'
+import { HtmlDragSensor } from './HtmlDragSensor'
+import { KeyboardSensor } from './KeyboardSensor'
+import { ButtonSensor } from './ButtonSensor'
+import { ResizeSensor } from './ResizeSensor'
+import { WheelSensor } from './WheelSensor'
+import { WindowSensor } from './WindowSensor'
 
 export class HtmlSensors {
   readonly window: WindowSensor

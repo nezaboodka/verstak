@@ -6,9 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { options, standalone, ToggleRef, TraceLevel, transaction } from 'reactronic'
-import { grabElementData } from '../DataForSensor'
+import { grabElementData } from './DataForSensor'
 import { SymDataForSensor } from '../HtmlApiExt'
-import { HtmlElementSensor } from '../HtmlElementSensor'
+import { HtmlElementSensor } from './HtmlElementSensor'
 
 export class FocusSensor extends HtmlElementSensor {
 

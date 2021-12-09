@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { DataForSensor } from './HtmlApiExt'
+import { DataForSensor } from '../HtmlApiExt'
 
 export const EmptyDataArray: any[] = []
 
