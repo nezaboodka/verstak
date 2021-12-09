@@ -14,9 +14,12 @@ import { WindowSensor } from './WindowSensor'
 
 export class ClickDragSensor extends PointerSensor {
   pointerButton: PointerButton
-  tryingDragging: boolean
-  tryingClicking: boolean
-  clickData: unknown
+  @unobservable private clickable: unknown
+  clicking: unknown
+  clicked: unknown
+  clickX: number // position relative to browser's viewport
+  clickY: number // position relative to browser's viewport
+  @unobservable private tryingDragging: boolean
   draggableData: unknown
   dragSource: unknown
   dragTarget: unknown
@@ -44,7 +47,11 @@ export class ClickDragSensor extends PointerSensor {
     super(windowSensor)
     this.pointerButton = PointerButton.None
     this.tryingDragging = false
-    this.tryingClicking = false
+    this.clickable = undefined
+    this.clicking = undefined
+    this.clicked = undefined
+    this.clickX = Infinity
+    this.clickY = Infinity
     this.draggableData = undefined
     this.dragSource = undefined
     this.dragTarget = undefined
@@ -100,7 +107,8 @@ export class ClickDragSensor extends PointerSensor {
   protected onPointerDown(e: PointerEvent): void {
     // this.sourceElement?.setPointerCapture(e.pointerId)
     const button = extractPointerButton(e)
-    if (!this.dragStarted && (button === PointerButton.Left || button === PointerButton.Right)) {
+    if (!this.dragStarted && this.clickable === undefined &&
+      (button === PointerButton.Left || button === PointerButton.Right)) {
       this.tryClickingOrDragging(e)
     }
   }
@@ -112,13 +120,20 @@ export class ClickDragSensor extends PointerSensor {
           Math.abs(e.clientY - this.startY) > ClickDragSensor.DraggingThreshold) {
           this.startDragging(e)
         }
-      } else if (this.dragStarted) {
+      }
+      else if (this.dragStarted) {
         this.dragOver(e)
+      }
+      else if (this.clickable) {
+        this.clickingOver(e)
       }
     }
     else {
       if (this.dragStarted) {
         this.cancelDragging()
+        this.reset()
+      }
+      else if (this.clickable) {
         this.reset()
       }
     }
@@ -132,6 +147,9 @@ export class ClickDragSensor extends PointerSensor {
     }
     else if (this.dragStarted) {
       this.finishDragging()
+    }
+    else if (this.clickable) {
+      this.click(e)
     }
     this.reset()
   }
@@ -156,16 +174,15 @@ export class ClickDragSensor extends PointerSensor {
     this.stopPropagation = false
     const target: any = e.target
     const targetData = target[SymDataForSensor] as DataForSensor | undefined
-    const clickData = targetData?.click
-    const draggableData = targetData?.draggableData
-    if (clickData || draggableData) {
-      this.clickData = clickData
-      this.tryingClicking = clickData !== undefined
+    const clickableData = targetData?.click
+    const draggableData = targetData?.draggable
+    if (clickableData || draggableData) {
+      this.clickable = clickableData
       this.draggableData = draggableData
-      this.tryingDragging = draggableData !== undefined
-      const sourceElements = document.elementsFromPoint(e.clientX, e.clientY)
-      const { data: elementDataUnderPointer, window } = grabElementData(sourceElements, SymDataForSensor, 'drag', EmptyDataArray)
-      this.dragSource = elementDataUnderPointer[0]
+      this.tryingDragging = true
+      const sourceElements = e.composedPath()
+      const { data, window } = grabElementData(sourceElements, SymDataForSensor, 'drag', EmptyDataArray)
+      this.dragSource = data[0]
       this.pointerButton = extractPointerButton(e)
       this.startX = e.clientX
       this.startY = e.clientY
@@ -176,15 +193,34 @@ export class ClickDragSensor extends PointerSensor {
       this.dragTarget = undefined
       this.previousDragTarget = undefined
       this.revision++
+      e.stopPropagation()
       standalone(() => {
-        this.windowSensor?.setActiveWindow(window, 'drag')
+        this.windowSensor?.setActiveWindow(window, 'pointer')
       })
     }
+  }
+
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Silent })
+  protected clickingOver(e: PointerEvent): void {
+    this.updateClicking(e)
+  }
+
+  @transaction @options({ trace: TraceLevel.Silent })
+  protected click(e: PointerEvent): void {
+    if (this.updateClicking(e)) {
+      this.modifiers = this.immediateModifiers
+      this.clickX = e.clientX
+      this.clickY = e.clientY
+      this.clicked = this.clicking
+    }
+    this.clickable = undefined
+    this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Silent })
   protected startDragging(e: PointerEvent): void {
     this.updateDragTarget(e)
+    this.clickable = undefined
     this.dragStarted = true
     this.dragFinished = false
     this.tryingDragging = false
@@ -229,8 +265,12 @@ export class ClickDragSensor extends PointerSensor {
   protected reset(): void {
     this.elementDataList = EmptyDataArray
     this.pointerButton = PointerButton.None
+    this.clickable = undefined
+    this.clicking = undefined
+    this.clicked = undefined
+    this.clickX = Infinity
+    this.clickY = Infinity
     this.tryingDragging = false
-    this.tryingClicking = false
     this.draggableData = undefined
     this.dragSource = undefined
     this.dragTarget = undefined
@@ -254,6 +294,21 @@ export class ClickDragSensor extends PointerSensor {
     this.revision++
   }
 
+  protected updateClicking(e: PointerEvent): boolean {
+    const target: any = e.target
+    const targetData = target[SymDataForSensor] as DataForSensor | undefined
+    const clickableData = targetData?.click
+    const isSameClickable = this.clickable === clickableData
+    if (isSameClickable) {
+      this.clicking = clickableData
+      e.stopPropagation()
+    }
+    this.immediateModifiers = extractModifierKeys(e)
+    this.immediatePositionX = e.clientX
+    this.immediatePositionY = e.clientY
+    return isSameClickable
+  }
+
   protected updateDragTarget(e: PointerEvent): unknown {
     const path = e.composedPath()
     this.elementDataList = grabElementData(path, SymDataForSensor, 'drag', this.elementDataList).data
@@ -272,8 +327,8 @@ export class ClickDragSensor extends PointerSensor {
   }
 
   @reaction @options({ throttling: 0 })
-  protected whenDragging(): void {
-    if (this.draggingOver) {
+  protected whenClickingOrDragging(): void {
+    if (this.draggingOver || this.clickable) {
       this.positionX = this.immediatePositionX
       this.positionY = this.immediatePositionY
       this.modifiers = this.immediateModifiers
