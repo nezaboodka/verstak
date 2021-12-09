@@ -182,6 +182,7 @@ export class ClickDragSensor extends PointerSensor {
       this.tryingDragging = true
       const sourceElements = e.composedPath()
       const { data, window } = grabElementData(sourceElements, SymDataForSensor, 'drag', EmptyDataArray)
+      this.elementDataList = data
       this.dragSource = data[0]
       this.pointerButton = extractPointerButton(e)
       this.startX = e.clientX
@@ -228,7 +229,7 @@ export class ClickDragSensor extends PointerSensor {
     this.revision++
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Silent })
+  @transaction @options({ trace: TraceLevel.Silent })
   protected dragOver(e: PointerEvent): void {
     this.updateDragTarget(e)
     this.draggingOver = true
@@ -311,11 +312,9 @@ export class ClickDragSensor extends PointerSensor {
 
   protected updateDragTarget(e: PointerEvent): unknown {
     const path = e.composedPath()
-    this.elementDataList = grabElementData(path, SymDataForSensor, 'drag', this.elementDataList).data
-    const targetElements = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data: elementDataUnderPointer, window } = grabElementData(targetElements, SymDataForSensor, 'drag', EmptyDataArray)
-    const dataForSensor = elementDataUnderPointer[0]
-    const dragTarget = dataForSensor
+    const { data, window } = grabElementData(path, SymDataForSensor, 'drag', this.elementDataList)
+    this.elementDataList = data
+    const dragTarget = data[0]
     if (dragTarget !== this.dragTarget) {
       this.previousDragTarget = this.dragTarget
       this.dragTarget = dragTarget

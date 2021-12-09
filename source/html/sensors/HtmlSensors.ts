@@ -16,6 +16,7 @@ import { ButtonSensor } from './ButtonSensor'
 import { ResizeSensor } from './ResizeSensor'
 import { WheelSensor } from './WheelSensor'
 import { WindowSensor } from './WindowSensor'
+import { ClickDragSensor } from './ClickDragSensor'
 
 export class HtmlSensors {
   readonly window: WindowSensor
@@ -28,6 +29,7 @@ export class HtmlSensors {
   readonly drag: DragSensor
   readonly htmlDrag: HtmlDragSensor
   readonly button: ButtonSensor
+  readonly pointer: ClickDragSensor
 
   constructor() {
     this.window = new WindowSensor()
@@ -40,6 +42,7 @@ export class HtmlSensors {
     this.drag = new DragSensor(this.window)
     this.htmlDrag = new HtmlDragSensor(this.window)
     this.button = new ButtonSensor(this.window)
+    this.pointer = new ClickDragSensor(this.window)
   }
 
   @transaction
