@@ -16,7 +16,7 @@ export type DragEffectAllowed = 'none' | 'copy' | 'copyLink' | 'copyMove' | 'lin
 export type DropEffect = 'none' | 'copy' | 'link' | 'move'
 
 export class HtmlDragSensor extends HtmlElementSensor {
-  draggableData: unknown
+  draggable: unknown
   dragSource: unknown
   dragTarget: unknown
   previousDragTarget: unknown
@@ -43,7 +43,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   constructor(windowSensor: WindowSensor) {
     super(windowSensor)
-    this.draggableData = undefined
+    this.draggable = undefined
     this.dragSource = undefined
     this.dragTarget = undefined
     this.previousDragTarget = undefined
@@ -147,7 +147,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const dragElement: any = e.target
-    this.draggableData = (dragElement[SymDataForSensor] as DataForSensor | undefined)?.htmlDraggableData
+    this.draggable = (dragElement[SymDataForSensor] as DataForSensor | undefined)?.htmlDraggable
     const sourceElements = document.elementsFromPoint(e.clientX, e.clientY)
     const { data: elementDataUnderPointer, window } = grabElementData(sourceElements, SymDataForSensor, 'htmlDrag', EmptyDataArray)
     this.dragSource = elementDataUnderPointer[0]
@@ -245,7 +245,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
   @transaction @options({ trace: TraceLevel.Silent })
   protected reset(): void {
     this.elementDataList = EmptyDataArray
-    this.draggableData = undefined
+    this.draggable = undefined
     this.dragSource = undefined
     this.dragTarget = undefined
     this.previousDragTarget = undefined

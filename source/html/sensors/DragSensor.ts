@@ -15,7 +15,7 @@ import { WindowSensor } from './WindowSensor'
 export class DragSensor extends PointerSensor {
   pointerButton: PointerButton
   trying: boolean
-  draggableData: unknown
+  draggable: unknown
   dragSource: unknown
   dragTarget: unknown
   previousDragTarget: unknown
@@ -42,7 +42,7 @@ export class DragSensor extends PointerSensor {
     super(windowSensor)
     this.pointerButton = PointerButton.None
     this.trying = false
-    this.draggableData = undefined
+    this.draggable = undefined
     this.dragSource = undefined
     this.dragTarget = undefined
     this.previousDragTarget = undefined
@@ -152,9 +152,9 @@ export class DragSensor extends PointerSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const dragElement: any = e.target
-    const draggableData = (dragElement[SymDataForSensor] as DataForSensor | undefined)?.draggableData
-    if (draggableData) {
-      this.draggableData = draggableData
+    const draggable = (dragElement[SymDataForSensor] as DataForSensor | undefined)?.draggable
+    if (draggable) {
+      this.draggable = draggable
       const sourceElements = document.elementsFromPoint(e.clientX, e.clientY)
       const { data: elementDataUnderPointer, window } = grabElementData(sourceElements, SymDataForSensor, 'drag', EmptyDataArray)
       this.dragSource = elementDataUnderPointer[0]
@@ -223,7 +223,7 @@ export class DragSensor extends PointerSensor {
     this.elementDataList = EmptyDataArray
     this.pointerButton = PointerButton.None
     this.trying = false
-    this.draggableData = undefined
+    this.draggable = undefined
     this.dragSource = undefined
     this.dragTarget = undefined
     this.previousDragTarget = undefined
