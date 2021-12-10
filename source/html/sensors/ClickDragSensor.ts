@@ -7,7 +7,7 @@
 
 import { options, reaction, Reentrance, standalone, TraceLevel, transaction, unobservable } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, PointerSensor } from './PointerSensor'
-import { DataForSensor, EmptyDataArray, grabElementData, SymDataForSensor } from './DataForSensor'
+import { DataForSensor, EmptyDataArray, findTargetElementData, grabElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
 
@@ -104,9 +104,6 @@ export class ClickDragSensor extends PointerSensor {
   }
 
   protected onPointerDown(e: PointerEvent): void {
-
-    console.log('ClickDragSensor: ====== onPointerDown')
-
     // this.sourceElement?.setPointerCapture(e.pointerId)
     const button = extractPointerButton(e)
     if (!this.dragStarted && this.clickable === undefined &&
@@ -184,9 +181,10 @@ export class ClickDragSensor extends PointerSensor {
       this.draggableData = draggable
       this.tryingDragging = draggable !== undefined
       const sourceElements = e.composedPath()
-      const { data, window } = grabElementData(sourceElements, SymDataForSensor, 'drag', EmptyDataArray)
-      this.elementDataList = data
-      this.dragSource = data[0]
+      const elementsUnderPointer = document.elementsFromPoint(e.clientX, e.clientY)
+      const { data, window } = findTargetElementData(elementsUnderPointer, sourceElements, SymDataForSensor, 'drag')
+      this.elementDataList = grabElementData(sourceElements, SymDataForSensor, 'drag', EmptyDataArray).data
+      this.dragSource = data
       this.pointerButton = extractPointerButton(e)
       this.startX = e.clientX
       this.startY = e.clientY
