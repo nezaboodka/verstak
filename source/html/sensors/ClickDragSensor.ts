@@ -155,14 +155,14 @@ export class ClickDragSensor extends PointerSensor {
   }
 
   protected onLostPointerCapture(e: PointerEvent): void {
-    if (this.dragStarted) {
+    if (this.dragStarted || this.clickable) {
       this.cancelDragging()
       this.reset()
     }
   }
 
   protected onKeyDown(e: KeyboardEvent): void {
-    if (e.key === 'Escape' && this.dragStarted) {
+    if (e.key === 'Escape' && (this.dragStarted || this.clickable)) {
       this.cancelDragging()
       this.reset()
     }
@@ -174,12 +174,13 @@ export class ClickDragSensor extends PointerSensor {
     this.stopPropagation = false
     const target: any = e.target
     const targetData = target[SymDataForSensor] as DataForSensor | undefined
-    const clickableData = targetData?.click
-    const draggableData = targetData?.draggable
-    if (clickableData || draggableData) {
-      this.clickable = clickableData
-      this.draggableData = draggableData
-      this.tryingDragging = true
+    const clickable = targetData?.click
+    const draggable = targetData?.draggable
+    if (clickable || draggable) {
+      this.clickable = clickable
+      this.clicking = clickable
+      this.draggableData = draggable
+      this.tryingDragging = draggable !== undefined
       const sourceElements = e.composedPath()
       const { data, window } = grabElementData(sourceElements, SymDataForSensor, 'drag', EmptyDataArray)
       this.elementDataList = data
@@ -193,17 +194,17 @@ export class ClickDragSensor extends PointerSensor {
       this.dropped = false
       this.dragTarget = undefined
       this.previousDragTarget = undefined
-      this.revision++
-      e.stopPropagation()
       standalone(() => {
         this.windowSensor?.setActiveWindow(window, 'pointer')
       })
     }
+    this.revision++
   }
 
   @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Silent })
   protected clickingOver(e: PointerEvent): void {
     this.updateClicking(e)
+    this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Silent })
@@ -298,12 +299,10 @@ export class ClickDragSensor extends PointerSensor {
   protected updateClicking(e: PointerEvent): boolean {
     const target: any = e.target
     const targetData = target[SymDataForSensor] as DataForSensor | undefined
-    const clickableData = targetData?.click
-    const isSameClickable = this.clickable === clickableData
-    if (isSameClickable) {
-      this.clicking = clickableData
-      e.stopPropagation()
-    }
+    const clickable = targetData?.click
+    const isSameClickable = this.clickable === clickable
+    if (isSameClickable)
+      this.clicking = clickable
     this.immediateModifiers = extractModifierKeys(e)
     this.immediatePositionX = e.clientX
     this.immediatePositionY = e.clientY
@@ -335,18 +334,30 @@ export class ClickDragSensor extends PointerSensor {
   }
 
   // @reaction
-  // protected debug(): void {
-  //   this.revision // subscribe
-  //   const status: string[] = []
-  //   if (this.started)
-  //     status.push('started')
-  //   if (this.draggingOver)
-  //     status.push('dragging')
-  //   if (this.dropped)
-  //     status.push('dropped')
-  //   if (this.finished)
-  //     status.push('finished')
-  //   console.log(`DragSensor: (${status.join(', ')}), revision=${this.revision}`)
-  //   console.log(`    dragSource=${this.dragSource}, dragTarget=${this.dragTarget}, start=(${this.startX}, ${this.startY}), pos=(${this.positionX}, ${this.positionY})`)
-  // }
+  protected debug(): void {
+    this.revision // subscribe
+    const status = this.getDebugStatus()
+    console.log(`ClickDragSensor: (${status.join(', ')}), revision=${this.revision}`)
+    if (this.clicking || this.clicked)
+      console.log(`  ^==> clicking=${this.clicking}, clicked=${this.clicked}, start=(${this.startX}, ${this.startY}), pos=(${this.positionX}, ${this.positionY})`)
+    if (this.dragStarted || this.draggingOver || this.dropped || this.dragFinished)
+      console.log(`  ^==> dragSource=${this.dragSource}, dragTarget=${this.dragTarget}, start=(${this.startX}, ${this.startY}), pos=(${this.positionX}, ${this.positionY})`)
+  }
+
+  private getDebugStatus(): string[] {
+    const status: string[] = []
+    if (this.clicking)
+      status.push('clicking')
+    if (this.clicked)
+      status.push('clicked')
+    if (this.dragStarted)
+      status.push('dragStarted')
+    if (this.draggingOver)
+      status.push('dragging')
+    if (this.dropped)
+      status.push('dropped')
+    if (this.dragFinished)
+      status.push('dragFinished')
+    return status
+  }
 }
