@@ -7,8 +7,7 @@
 
 import { options, reaction, Reentrance, standalone, TraceLevel, transaction, unobservable } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, PointerSensor } from './PointerSensor'
-import { DataForSensor, SymDataForSensor } from '../HtmlApiExt'
-import { EmptyDataArray, grabElementData } from './DataForSensor'
+import { DataForSensor, EmptyDataArray, grabElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
 
@@ -105,6 +104,9 @@ export class ClickDragSensor extends PointerSensor {
   }
 
   protected onPointerDown(e: PointerEvent): void {
+
+    console.log('ClickDragSensor: ====== onPointerDown')
+
     // this.sourceElement?.setPointerCapture(e.pointerId)
     const button = extractPointerButton(e)
     if (!this.dragStarted && this.clickable === undefined &&

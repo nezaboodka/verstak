@@ -56,5 +56,6 @@ export class HtmlSensors {
     this.drag.listen(element, enabled)
     this.htmlDrag.listen(element, enabled)
     this.button.listen(element, enabled)
+    this.pointer.listen(element, enabled)
   }
 }

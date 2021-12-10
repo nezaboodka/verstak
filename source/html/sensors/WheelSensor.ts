@@ -6,8 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
-import { EmptyDataArray, grabElementData } from './DataForSensor'
-import { SymDataForSensor } from '../HtmlApiExt'
+import { EmptyDataArray, grabElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { PointerSensor } from './PointerSensor'
 

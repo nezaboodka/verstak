@@ -7,8 +7,7 @@
 
 import { options, Reentrance, standalone, TraceLevel, transaction } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, PointerSensor } from './PointerSensor'
-import { SymDataForSensor } from '../HtmlApiExt'
-import { EmptyDataArray, grabElementData } from './DataForSensor'
+import { EmptyDataArray, grabElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
 

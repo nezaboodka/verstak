@@ -5,7 +5,22 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { DataForSensor } from '../HtmlApiExt'
+export interface DataForSensor {
+  window?: unknown
+  focus?: unknown
+  hover?: unknown
+  keyboard?: unknown
+  click?: unknown
+  wheel?: unknown
+  resize?: unknown
+  drag?: unknown
+  draggable?: unknown
+  htmlDrag?: unknown
+  htmlDraggable?: unknown
+  button?: unknown
+}
+
+export const SymDataForSensor: unique symbol = Symbol('DataForSensor')
 
 export const EmptyDataArray: any[] = []
 
