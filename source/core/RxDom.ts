@@ -23,7 +23,6 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
   children: ReadonlyArray<NodeInfo<any, any>> = EMPTY
   buffer: Array<NodeInfo<any, any>> | undefined = undefined
   aliens: ReadonlyArray<NodeInfo<any, any>> = EMPTY
-  sibling?: AbstractNodeInstance<any, any> = undefined
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
@@ -187,7 +186,7 @@ export class RxDom {
       null,                         // args
       () => { /* nop */ },          // render
       undefined,                    // superRender
-      0,
+      0,                            // priority
       { name: id, sequential },     // rtti
       {} as NodeInfo,               // owner (lifecycle manager)
       {} as NodeInfo,               // host (rendering parent)
@@ -255,7 +254,6 @@ export class RxDom {
     else
       self.native = node.host.instance?.native // default initialize
     rtti.mount?.(node, sibling)
-    self.sibling = sibling?.instance
     if (node.args !== RefreshParent)
       Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? getTraceHint(node) : node.id)
     if (RxDom.gTrace && RxDom.gTraceMask.indexOf('m') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
@@ -320,11 +318,13 @@ export class RxDom {
       // Merge loop - initialize, render, re-render
       sibling = undefined
       for (const x of sequenced) {
+        x.sibling = sibling
+        const old = x.old
         const instance = x.instance
-        if (x.old && instance) {
-          if (instance.sibling !== sibling?.instance) // do not call mount if sequence is not changed
+        if (old && instance) {
+          if (sibling?.instance !== old?.sibling?.instance) // if sequence is changed
             x.rtti.mount?.(x, sibling)
-          if (x.args === RefreshParent || !argsAreEqual(x.args, x.old.args))
+          if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
             RxDom.doRender(x) // re-rendering
         }
         else {
