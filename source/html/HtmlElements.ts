@@ -8,10 +8,10 @@
 import { RxDom, Render, NodeInfo, RefreshParent, SuperRender } from '../core/api'
 import { HtmlRtti, SvgRtti } from './HtmlRtti'
 
-export function HtmlBody(id: string, args: any, render: Render<HTMLElement>, priority?: number): NodeInfo<HTMLElement> {
+export function HtmlBody(id: string, args: any, render: Render<HTMLElement>): NodeInfo<HTMLElement> {
   return RxDom.Node(id, args, render, undefined, undefined, {
     name: id,
-    nonsequential: false,
+    sequential: true,
     initialize(node: NodeInfo<HTMLElement, any>, sibling?: NodeInfo): void {
       const native = global.document.body
       native.id = node.id

@@ -14,7 +14,7 @@ export const RefreshParent = Symbol('RefreshParent') as unknown as void
 
 export interface Rtti<E = unknown, O = void> {
   readonly name: string
-  readonly nonsequential: boolean
+  readonly sequential: boolean
   initialize?(node: NodeInfo<E, O>): void
   mount?(node: NodeInfo<E, O>, sibling?: NodeInfo): void
   render?(node: NodeInfo<E, O>): void

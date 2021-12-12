@@ -10,13 +10,13 @@ import { RxDom, NodeInfo, Rtti } from '../core/api'
 
 export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any> {
   static isDebugAttributeEnabled: boolean = false
-  static gNativeParent: NodeInfo<any, any> = RxDom.createRootNode('html > body', global.document.body)
+  static gNativeParent: NodeInfo<any, any> = RxDom.createRootNode('html > body', true, global.document.body)
   static gFinalizing?: Element = undefined
   private static _blinkingEffect: string | undefined = undefined
 
   constructor(
     readonly name: string,
-    readonly nonsequential: boolean = false) {
+    readonly sequential: boolean = true) {
   }
 
   initialize(node: NodeInfo<E, any>): void {

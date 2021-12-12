@@ -9,8 +9,7 @@ import { reaction, nonreactive, Transaction, Reactronic, options } from 'reactro
 import { Render, SuperRender, RefreshParent, Rtti, AbstractNodeInstance, NodeInfo } from './Data'
 
 const EMPTY: Array<NodeInfo<any, any>> = Object.freeze([]) as any
-const RTTI: Rtti<any, any> = { name: 'RxDom.Node', nonsequential: false }
-const RTTI_NONSEQUENTIAL: Rtti<any, any> = { name: 'RxDom.NodeWithNonsequentialChildren', nonsequential: true }
+const DEFAULT_RTTI: Rtti<any, any> = { name: 'RxDom.Node', sequential: false }
 
 // NodeInstance
 
@@ -46,7 +45,7 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
 // RxDom
 
 export class RxDom {
-  static readonly ROOT = RxDom.createRootNode<unknown>('ROOT', 'ROOT')
+  static readonly ROOT = RxDom.createRootNode<unknown>('ROOT', false, 'ROOT')
   static gOwner: NodeInfo<any, any> = RxDom.ROOT
   static gHost: NodeInfo<any, any> = RxDom.ROOT
   static gTrace: string | undefined = undefined
@@ -76,18 +75,12 @@ export class RxDom {
     const self = o.instance
     if (!self)
       throw new Error('element must be initialized before children')
-    const node = new NodeInfo<E, O>(id, args, render, superRender, priority ?? 0, rtti ?? RTTI, o, h)
+    const node = new NodeInfo<E, O>(id, args, render, superRender, priority ?? 0, rtti ?? DEFAULT_RTTI, o, h)
     if (self.buffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (h?.instance?.native) // emit only if host is alive
       self.buffer.push(node)
     return node
-  }
-
-  static NodeWithUnorderedChildren<E = unknown, O = void>(id: string,
-    args: any, render: Render<E, O>, superRender?: SuperRender<O, E>,
-    priority?: number, owner?: NodeInfo, host?: NodeInfo): NodeInfo<E, O> {
-    return RxDom.Node(id, args, render, superRender, priority, RTTI_NONSEQUENTIAL, owner, host)
   }
 
   static wrap(func: (...args: any[]) => any): (...args: any[]) => any {
@@ -152,10 +145,10 @@ export class RxDom {
 
   static renderChildrenNow(): void {
     const node = RxDom.gOwner
-    if (node.rtti.nonsequential)
-      RxDom.mergeAndRenderNonsequentialChildren(node)
-    else
+    if (node.rtti.sequential)
       RxDom.mergeAndRenderSequentialChildren(node)
+    else
+      RxDom.mergeAndRenderNonsequentialChildren(node)
   }
 
   static initialize(node: NodeInfo): void {
@@ -187,7 +180,7 @@ export class RxDom {
     }
   }
 
-  static createRootNode<E>(id: string, native: E): NodeInfo<E> {
+  static createRootNode<E>(id: string, sequential: boolean, native: E): NodeInfo<E> {
     const self = new NodeInstance<E>(0)
     const node = new NodeInfo<E>(
       id,                           // id
@@ -195,7 +188,7 @@ export class RxDom {
       () => { /* nop */ },          // render
       undefined,                    // superRender
       0,
-      { name: id, nonsequential: false }, // rtti
+      { name: id, sequential },     // rtti
       {} as NodeInfo,               // owner (lifecycle manager)
       {} as NodeInfo,               // host (rendering parent)
       self)                         // instance
