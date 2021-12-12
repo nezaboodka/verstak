@@ -148,7 +148,7 @@ export class RxDom {
     if (node.rtti.sequential)
       RxDom.mergeAndRenderSequentialChildren(node)
     else
-      RxDom.mergeAndRenderNonsequentialChildren(node)
+      RxDom.mergeAndRenderChildren(node)
   }
 
   static initialize(node: NodeInfo): void {
@@ -340,7 +340,7 @@ export class RxDom {
   }
 
 
-  private static mergeAndRenderNonsequentialChildren(node: NodeInfo): void {
+  private static mergeAndRenderChildren(node: NodeInfo): void {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
       const children = self.children
