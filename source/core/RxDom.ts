@@ -310,7 +310,7 @@ export class RxDom {
             throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
           if (diff === 0) {
             ours.instance = theirs.instance
-            ours.previous = theirs
+            ours.old = theirs
             i++, j++ // re-rendering is called below
           }
           else // diff < 0
@@ -325,11 +325,11 @@ export class RxDom {
       // Reconciliation loop - initialize, render, re-render
       sibling = undefined
       for (const x of naturalBuffer) {
-        if (x.previous) {
+        if (x.old) {
           x.rtti.mount?.(x, sibling)
-          if (x.args === RefreshParent || !argsAreEqual(x.args, x.previous.args))
+          if (x.args === RefreshParent || !argsAreEqual(x.args, x.old.args))
             RxDom.doRender(x) // re-rendering
-          x.previous = undefined // unlink to make it available for garbage collection
+          x.old = undefined // unlink to make it available for garbage collection
         }
         else {
           RxDom.doInitialize(x, sibling)

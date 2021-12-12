@@ -36,7 +36,7 @@ export interface AbstractNodeInstance<E = unknown, O = void> {
 }
 
 export class NodeInfo<E = unknown, O = void> {
-  previous?: NodeInfo<E, O> = undefined // internal
+  old?: NodeInfo<E, O> = undefined // internal
   get native(): E | undefined { return this.instance?.native }
 
   constructor(
