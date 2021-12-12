@@ -9,8 +9,8 @@ import { reaction, nonreactive, Transaction, Reactronic, options } from 'reactro
 import { Render, SuperRender, RefreshParent, Rtti, AbstractNodeInstance, NodeInfo } from './Data'
 
 const EMPTY: Array<NodeInfo<any, any>> = Object.freeze([]) as any
-const RTTI: Rtti<any, any> = { name: 'RxDom.Node', unordered: false }
-const RTTI_UNORDERED: Rtti<any, any> = { name: 'RxDom.NodeUnordered', unordered: true }
+const RTTI: Rtti<any, any> = { name: 'RxDom.Node', nonsequential: false }
+const RTTI_NONSEQUENTIAL: Rtti<any, any> = { name: 'RxDom.NodeWithNonsequentialChildren', nonsequential: true }
 
 // NodeInstance
 
@@ -24,6 +24,7 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
   children: ReadonlyArray<NodeInfo<any, any>> = EMPTY
   buffer: Array<NodeInfo<any, any>> | undefined = undefined
   aliens: ReadonlyArray<NodeInfo<any, any>> = EMPTY
+  sibling?: AbstractNodeInstance<any, any> = undefined
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
@@ -86,7 +87,7 @@ export class RxDom {
   static NodeWithUnorderedChildren<E = unknown, O = void>(id: string,
     args: any, render: Render<E, O>, superRender?: SuperRender<O, E>,
     priority?: number, owner?: NodeInfo, host?: NodeInfo): NodeInfo<E, O> {
-    return RxDom.Node(id, args, render, superRender, priority, RTTI_UNORDERED, owner, host)
+    return RxDom.Node(id, args, render, superRender, priority, RTTI_NONSEQUENTIAL, owner, host)
   }
 
   static wrap(func: (...args: any[]) => any): (...args: any[]) => any {
@@ -151,10 +152,10 @@ export class RxDom {
 
   static renderChildrenNow(): void {
     const node = RxDom.gOwner
-    if (node.rtti.unordered)
-      RxDom.mergeAndRenderUnorderedChildren(node)
+    if (node.rtti.nonsequential)
+      RxDom.mergeAndRenderNonsequentialChildren(node)
     else
-      RxDom.mergeAndRenderNaturallyOrderedChildren(node)
+      RxDom.mergeAndRenderSequentialChildren(node)
   }
 
   static initialize(node: NodeInfo): void {
@@ -194,7 +195,7 @@ export class RxDom {
       () => { /* nop */ },          // render
       undefined,                    // superRender
       0,
-      { name: id, unordered: false }, // rtti
+      { name: id, nonsequential: false }, // rtti
       {} as NodeInfo,               // owner (lifecycle manager)
       {} as NodeInfo,               // host (rendering parent)
       self)                         // instance
@@ -261,6 +262,7 @@ export class RxDom {
     else
       self.native = node.host.instance?.native // default initialize
     rtti.mount?.(node, sibling)
+    self.sibling = sibling?.instance
     if (node.args !== RefreshParent)
       Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? getTraceHint(node) : node.id)
     if (RxDom.gTrace && RxDom.gTraceMask.indexOf('m') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
@@ -280,7 +282,7 @@ export class RxDom {
       RxDom.finalize(node, cause) // default finalize
   }
 
-  private static mergeAndRenderNaturallyOrderedChildren(node: NodeInfo): void {
+  private static mergeAndRenderSequentialChildren(node: NodeInfo): void {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
       const children = self.children
@@ -326,7 +328,9 @@ export class RxDom {
       sibling = undefined
       for (const x of sequenced) {
         if (x.old) {
-          x.rtti.mount?.(x, sibling)
+          const instance = x.instance
+          if (instance?.sibling !== sibling?.instance) // do not call mount if sequence is not changed
+            x.rtti.mount?.(x, sibling)
           if (x.args === RefreshParent || !argsAreEqual(x.args, x.old.args))
             RxDom.doRender(x) // re-rendering
           x.old = undefined // unlink to make it available for garbage collection
@@ -343,7 +347,7 @@ export class RxDom {
   }
 
 
-  private static mergeAndRenderUnorderedChildren(node: NodeInfo): void {
+  private static mergeAndRenderNonsequentialChildren(node: NodeInfo): void {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
       const children = self.children

@@ -11,7 +11,7 @@ import { HtmlRtti, SvgRtti } from './HtmlRtti'
 export function HtmlBody(id: string, args: any, render: Render<HTMLElement>, priority?: number): NodeInfo<HTMLElement> {
   return RxDom.Node(id, args, render, undefined, undefined, {
     name: id,
-    unordered: false,
+    nonsequential: false,
     initialize(node: NodeInfo<HTMLElement, any>, sibling?: NodeInfo): void {
       const native = global.document.body
       native.id = node.id

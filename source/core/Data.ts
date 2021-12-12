@@ -14,7 +14,7 @@ export const RefreshParent = Symbol('RefreshParent') as unknown as void
 
 export interface Rtti<E = unknown, O = void> {
   readonly name: string
-  readonly unordered: boolean
+  readonly nonsequential: boolean
   initialize?(node: NodeInfo<E, O>): void
   mount?(node: NodeInfo<E, O>, sibling?: NodeInfo): void
   render?(node: NodeInfo<E, O>): void
@@ -30,6 +30,7 @@ export interface AbstractNodeInstance<E = unknown, O = void> {
   children: ReadonlyArray<NodeInfo<any, any>>
   buffer: Array<NodeInfo<any, any>> | undefined
   aliens: ReadonlyArray<NodeInfo<any, any>>
+  sibling?: AbstractNodeInstance<any, any> // undefined means first
   resizing?: ResizeObserver
   render(node: NodeInfo<E, O>): void
   // ['#this']: string

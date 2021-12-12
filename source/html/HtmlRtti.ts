@@ -16,7 +16,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
 
   constructor(
     readonly name: string,
-    readonly unordered: boolean = false) {
+    readonly nonsequential: boolean = false) {
   }
 
   initialize(node: NodeInfo<E, any>): void {
@@ -45,7 +45,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
             }
           }
         }
-        else // unordered
+        else // nonsequential
           nativeHost.appendChild(native)
         // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.insertBefore(${sibling?.id ?? '<null>'})`)
       }
