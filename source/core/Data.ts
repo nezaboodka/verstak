@@ -48,7 +48,6 @@ export class NodeInfo<E = unknown, O = void> {
     readonly rtti: Rtti<E, O>,
     readonly owner: NodeInfo,
     readonly host: NodeInfo,
-    public incremental: boolean,
     public instance?: AbstractNodeInstance<E, O>) {
   }
 }
