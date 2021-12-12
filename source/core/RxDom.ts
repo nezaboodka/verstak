@@ -284,8 +284,8 @@ export class RxDom {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
       const children = self.children
-      const naturalBuffer = self.buffer
-      const sortedBuffer = naturalBuffer.slice().sort(compareNodes)
+      const sequenced = self.buffer
+      const sorted = sequenced.slice().sort(compareNodes)
       self.buffer = undefined
       // Merge loop (always synchronous) - link to existing or finalize
       let host = self
@@ -294,7 +294,7 @@ export class RxDom {
       let i = 0, j = 0
       while (i < children.length) {
         const theirs = children[i]
-        const ours = sortedBuffer[j]
+        const ours = sorted[j]
         const diff = ours !== undefined ? compareNodes(ours, theirs) : 1
         if (diff <= 0) {
           const h = ours.host.instance
@@ -324,7 +324,7 @@ export class RxDom {
         RxDom.mergeAliens(host, self, aliens)
       // Reconciliation loop - initialize, render, re-render
       sibling = undefined
-      for (const x of naturalBuffer) {
+      for (const x of sequenced) {
         if (x.old) {
           x.rtti.mount?.(x, sibling)
           if (x.args === RefreshParent || !argsAreEqual(x.args, x.old.args))
@@ -338,7 +338,7 @@ export class RxDom {
         if (x.rtti.mount)
           sibling = x
       }
-      self.children = sortedBuffer // switch to the new list
+      self.children = sorted // switch to the new list
     }
   }
 
@@ -348,7 +348,7 @@ export class RxDom {
     if (self !== undefined && self.buffer !== undefined) {
       const children = self.children
       const buffer = self.buffer.sort(compareNodes)
-      const secondary = new Array<NodeInfo<any, any>>()
+      const postponed = new Array<NodeInfo<any, any>>()
       self.buffer = undefined
       // Merge loop (always synchronous): link, render/initialize (priority 0), finalize
       let host = self
@@ -379,7 +379,7 @@ export class RxDom {
                   if (ours.priority === 0)
                     RxDom.doRender(ours) // re-rendering
                   else
-                    secondary.push(ours)
+                    postponed.push(ours)
                 }
               }
             }
@@ -390,7 +390,7 @@ export class RxDom {
                   RxDom.doRender(ours) // initial rendering
                 }
                 else
-                  secondary.push(ours)
+                  postponed.push(ours)
               }
             }
             i++, j++
@@ -402,7 +402,7 @@ export class RxDom {
                 RxDom.doRender(ours) // initial rendering
               }
               else
-                secondary.push(ours)
+                postponed.push(ours)
             }
             j++
           }
@@ -418,8 +418,8 @@ export class RxDom {
         RxDom.mergeAliens(host, self, aliens)
       self.children = buffer // switch to the new list
       // Secondary priority loop
-      if (!Transaction.isCanceled && secondary.length > 0) {
-        RxDom.renderUsingIncrementalFrames(secondary).catch(error => { console.log(error) })
+      if (!Transaction.isCanceled && postponed.length > 0) {
+        RxDom.renderUsingIncrementalFrames(postponed).catch(error => { console.log(error) })
       }
     }
   }
