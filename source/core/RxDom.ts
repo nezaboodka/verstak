@@ -287,7 +287,7 @@ export class RxDom {
       const naturalBuffer = self.buffer
       const sortedBuffer = naturalBuffer.slice().sort(compareNodes)
       self.buffer = undefined
-      // Reconciliation loop - link to existing or finalize
+      // Merge loop (always synchronous) - link to existing or finalize
       let host = self
       let aliens: Array<NodeInfo<any, any>> = EMPTY
       let sibling: NodeInfo | undefined = undefined
@@ -350,7 +350,7 @@ export class RxDom {
       const buffer = self.buffer.sort(compareNodes)
       const secondary = new Array<NodeInfo<any, any>>()
       self.buffer = undefined
-      // Reconciliation loop - link, render/initialize (priority 0), finalize - should always be synchronous
+      // Merge loop (always synchronous): link, render/initialize (priority 0), finalize
       let host = self
       let aliens: Array<NodeInfo<any, any>> = EMPTY
       let sibling: NodeInfo | undefined = undefined
