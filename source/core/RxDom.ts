@@ -317,21 +317,21 @@ export class RxDom {
       }
       if (host !== self)
         RxDom.mergeAliens(host, self, aliens)
-      // Reconciliation loop - initialize, render, re-render
+      // Merge loop - initialize, render, re-render
       sibling = undefined
       for (const x of sequenced) {
-        if (x.old) {
-          const instance = x.instance
-          if (instance?.sibling !== sibling?.instance) // do not call mount if sequence is not changed
+        const instance = x.instance
+        if (x.old && instance) {
+          if (instance.sibling !== sibling?.instance) // do not call mount if sequence is not changed
             x.rtti.mount?.(x, sibling)
           if (x.args === RefreshParent || !argsAreEqual(x.args, x.old.args))
             RxDom.doRender(x) // re-rendering
-          x.old = undefined // unlink to make it available for garbage collection
         }
         else {
           RxDom.doInitialize(x, sibling)
           RxDom.doRender(x) // initial rendering
         }
+        x.old = undefined // unlink to make it available for garbage collection
         if (x.rtti.mount)
           sibling = x
       }
@@ -414,14 +414,13 @@ export class RxDom {
       if (host !== self)
         RxDom.mergeAliens(host, self, aliens)
       self.children = buffer // switch to the new list
-      // Secondary priority loop
-      if (!Transaction.isCanceled && postponed.length > 0) {
-        RxDom.renderUsingIncrementalFrames(postponed).catch(error => { console.log(error) })
-      }
+      // Incremental rendering (if any)
+      if (!Transaction.isCanceled && postponed.length > 0)
+        RxDom.renderChildrenIncrementally(postponed).catch(error => { console.log(error) })
     }
   }
 
-  private static async renderUsingIncrementalFrames(nodes: Array<NodeInfo>): Promise<void> {
+  private static async renderChildrenIncrementally(nodes: Array<NodeInfo>): Promise<void> {
     if (Transaction.isFrameOver(30, 12))
       await Transaction.requestNextFrame()
     if (!Transaction.isCanceled) {
