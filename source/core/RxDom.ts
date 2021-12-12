@@ -318,9 +318,10 @@ export class RxDom {
       // Merge loop - initialize, render, re-render
       sibling = undefined
       for (const x of sequenced) {
-        x.sibling = sibling
-        const old = x.old
         const instance = x.instance
+        const old = x.old
+        x.old = undefined // unlink to make it available for garbage collection
+        x.sibling = sibling // link with sibling
         if (old && instance) {
           if (sibling?.instance !== old?.sibling?.instance) // if sequence is changed
             x.rtti.mount?.(x, sibling)
@@ -331,7 +332,6 @@ export class RxDom {
           RxDom.doInitialize(x, sibling)
           RxDom.doRender(x) // initial rendering
         }
-        x.old = undefined // unlink to make it available for garbage collection
         if (x.rtti.mount)
           sibling = x
       }
