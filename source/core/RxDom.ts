@@ -152,7 +152,7 @@ export class RxDom {
   static renderChildrenNow(): void {
     const node = RxDom.gOwner
     if (node.rtti.unordered)
-      RxDom.incrementalMergeAndRenderUnorderedChildren(node)
+      RxDom.mergeAndRenderUnorderedChildren(node)
     else
       RxDom.mergeAndRenderNaturallyOrderedChildren(node)
   }
@@ -344,57 +344,7 @@ export class RxDom {
   }
 
 
-  // private static mergeAndRenderUnorderedChildren(node: NodeInfo): void {
-  //   const self = node.instance
-  //   if (self !== undefined && self.buffer !== undefined) {
-  //     const children = self.children
-  //     const buffer = self.buffer.sort(compareNodes)
-  //     // Switch to the new list
-  //     self.buffer = undefined
-  //     self.children = buffer
-  //     // Reconciliation loop - link, render, initialize, finalize
-  //     let host = self
-  //     let aliens: Array<NodeInfo<any, any>> = EMPTY
-  //     let sibling: NodeInfo | undefined = undefined
-  //     let i = 0, j = 0
-  //     while (i < children.length || j < buffer.length) {
-  //       const theirs = children[i]
-  //       const ours = buffer[j]
-  //       const diff = compareNullable(ours, theirs, compareNodes)
-  //       if (diff <= 0) {
-  //         const h = ours.host.instance
-  //         if (h !== self) {
-  //           if (h !== host) {
-  //             RxDom.mergeAliens(host, self, aliens)
-  //             aliens = []
-  //             host = h!
-  //           }
-  //           aliens.push(ours)
-  //         }
-  //         if (sibling !== undefined && ours.id === sibling.id)
-  //           throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
-  //         if (diff === 0) {
-  //           ours.instance = theirs.instance // link to the existing instance
-  //           if (ours.args === RefreshParent || !argsAreEqual(ours.args, theirs.args))
-  //             RxDom.doRender(ours) // re-rendering
-  //           i++, j++
-  //         }
-  //         else { // diff < 0
-  //           RxDom.doInitialize(ours, ours)
-  //           RxDom.doRender(ours) // initial rendering
-  //           j++
-  //         }
-  //         sibling = ours
-  //       }
-  //       else // diff > 0
-  //         RxDom.doFinalize(theirs, theirs), i++
-  //     }
-  //     if (host !== self)
-  //       RxDom.mergeAliens(host, self, aliens)
-  //   }
-  // }
-
-  private static incrementalMergeAndRenderUnorderedChildren(node: NodeInfo): void {
+  private static mergeAndRenderUnorderedChildren(node: NodeInfo): void {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
       const children = self.children
@@ -483,10 +433,10 @@ export class RxDom {
       await Transaction.requestNextFrame()
     if (!Transaction.isCanceled) {
       nodes.sort(compareNodesByPriority)
-      for (const ours of nodes) {
-        if (!ours.instance)
-          RxDom.doInitialize(ours, ours)
-        RxDom.doRender(ours)
+      for (const x of nodes) {
+        if (!x.instance)
+          RxDom.doInitialize(x, x)
+        RxDom.doRender(x)
         if (Transaction.isCanceled)
           break
         if (Transaction.isFrameOver(30, 12))
