@@ -286,9 +286,7 @@ export class RxDom {
       const children = self.children
       const naturalBuffer = self.buffer
       const sortedBuffer = naturalBuffer.slice().sort(compareNodes)
-      // Switch to the new list
       self.buffer = undefined
-      self.children = sortedBuffer
       // Reconciliation loop - link to existing or finalize
       let host = self
       let aliens: Array<NodeInfo<any, any>> = EMPTY
@@ -340,6 +338,7 @@ export class RxDom {
         if (x.rtti.mount)
           sibling = x
       }
+      self.children = sortedBuffer // switch to the new list
     }
   }
 
@@ -350,9 +349,7 @@ export class RxDom {
       const children = self.children
       const buffer = self.buffer.sort(compareNodes)
       const secondary = new Array<NodeInfo<any, any>>()
-      // Switch to the new list
       self.buffer = undefined
-      self.children = buffer
       // Reconciliation loop - link, render/initialize (priority 0), finalize - should always be synchronous
       let host = self
       let aliens: Array<NodeInfo<any, any>> = EMPTY
@@ -419,6 +416,7 @@ export class RxDom {
       }
       if (host !== self)
         RxDom.mergeAliens(host, self, aliens)
+      self.children = buffer // switch to the new list
       // Secondary priority loop
       if (!Transaction.isCanceled && secondary.length > 0) {
         RxDom.renderUsingIncrementalFrames(secondary).then(
