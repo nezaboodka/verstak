@@ -419,9 +419,7 @@ export class RxDom {
       self.children = buffer // switch to the new list
       // Secondary priority loop
       if (!Transaction.isCanceled && secondary.length > 0) {
-        RxDom.renderUsingIncrementalFrames(secondary).then(
-          success => { /* nop */ },
-          error => { console.log(error) })
+        RxDom.renderUsingIncrementalFrames(secondary).catch(error => { console.log(error) })
       }
     }
   }
