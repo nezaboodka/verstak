@@ -276,7 +276,7 @@ export class RxDom {
   private static mergeAndRenderSequentialChildren(node: NodeInfo): void {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
-      const children = self.children
+      const existing = self.children
       const sequenced = self.buffer
       const sorted = sequenced.slice().sort(compareNodes)
       self.buffer = undefined
@@ -285,33 +285,33 @@ export class RxDom {
       let aliens: Array<NodeInfo<any, any>> = EMPTY
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
-      while (i < children.length) {
-        const theirs = children[i]
-        const ours = sorted[j]
-        const diff = ours !== undefined ? compareNodes(ours, theirs) : 1
+      while (i < existing.length) {
+        const old = existing[i]
+        const x = sorted[j]
+        const diff = x !== undefined ? compareNodes(x, old) : 1
         if (diff <= 0) {
-          const h = ours.host.instance
+          const h = x.host.instance
           if (h !== self) {
             if (h !== host) {
               RxDom.mergeAliens(host, self, aliens)
               aliens = []
               host = h!
             }
-            aliens.push(ours)
+            aliens.push(x)
           }
-          if (sibling !== undefined && ours.id === sibling.id)
+          if (sibling !== undefined && x.id === sibling.id)
             throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
           if (diff === 0) {
-            ours.instance = theirs.instance
-            ours.old = theirs
+            x.instance = old.instance
+            x.old = old
             i++, j++ // re-rendering is called below
           }
           else // diff < 0
             j++ // initial rendering is called below
-          sibling = ours
+          sibling = x
         }
         else // diff > 0
-          RxDom.doFinalize(theirs, theirs), i++
+          RxDom.doFinalize(old, old), i++
       }
       if (host !== self)
         RxDom.mergeAliens(host, self, aliens)
@@ -343,7 +343,7 @@ export class RxDom {
   private static mergeAndRenderChildren(node: NodeInfo): void {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
-      const children = self.children
+      const existing = self.children
       const buffer = self.buffer.sort(compareNodes)
       const postponed = new Array<NodeInfo<any, any>>()
       self.buffer = undefined
@@ -352,62 +352,62 @@ export class RxDom {
       let aliens: Array<NodeInfo<any, any>> = EMPTY
       let sibling: NodeInfo | undefined = undefined
       let i = 0, j = 0
-      while (i < children.length || j < buffer.length) {
-        const theirs = children[i]
-        const ours = buffer[j]
-        const diff = compareNullable(ours, theirs, compareNodes)
+      while (i < existing.length || j < buffer.length) {
+        const old = existing[i]
+        const x = buffer[j]
+        const diff = compareNullable(x, old, compareNodes)
         if (diff <= 0) {
-          const h = ours.host.instance
+          const h = x.host.instance
           if (h !== self) {
             if (h !== host) {
               RxDom.mergeAliens(host, self, aliens)
               aliens = []
               host = h!
             }
-            aliens.push(ours)
+            aliens.push(x)
           }
-          if (sibling !== undefined && ours.id === sibling.id)
+          if (sibling !== undefined && x.id === sibling.id)
             throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
           if (diff === 0) {
-            if (theirs.instance) {
-              ours.instance = theirs.instance // link to the existing instance
-              if (ours.args === RefreshParent || !argsAreEqual(ours.args, theirs.args)) {
+            if (old.instance) {
+              x.instance = old.instance // link to the existing instance
+              if (x.args === RefreshParent || !argsAreEqual(x.args, old.args)) {
                 if (!Transaction.isCanceled) {
-                  if (ours.priority === 0)
-                    RxDom.doRender(ours) // re-rendering
+                  if (x.priority === 0)
+                    RxDom.doRender(x) // re-rendering
                   else
-                    postponed.push(ours)
+                    postponed.push(x)
                 }
               }
             }
             else {
               if (!Transaction.isCanceled) {
-                if (ours.priority === 0) {
-                  RxDom.doInitialize(ours)
-                  RxDom.doRender(ours) // initial rendering
+                if (x.priority === 0) {
+                  RxDom.doInitialize(x)
+                  RxDom.doRender(x) // initial rendering
                 }
                 else
-                  postponed.push(ours)
+                  postponed.push(x)
               }
             }
             i++, j++
           }
           else { // diff < 0
             if (!Transaction.isCanceled) {
-              if (ours.priority === 0) {
-                RxDom.doInitialize(ours)
-                RxDom.doRender(ours) // initial rendering
+              if (x.priority === 0) {
+                RxDom.doInitialize(x)
+                RxDom.doRender(x) // initial rendering
               }
               else
-                postponed.push(ours)
+                postponed.push(x)
             }
             j++
           }
-          sibling = ours
+          sibling = x
         }
         else { // diff > 0
-          if (theirs.instance)
-            RxDom.doFinalize(theirs, theirs)
+          if (old.instance)
+            RxDom.doFinalize(old, old)
           i++
         }
       }
@@ -446,19 +446,19 @@ export class RxDom {
       const merged: Array<NodeInfo<any, any>> = []
       let i = 0, j = 0 // TODO: Consider using binary search to find initial index
       while (i < existing.length || j < aliens.length) {
-        const theirs = existing[i]
-        const ours = aliens[j]
-        const diff = compareNullable(ours, theirs, compareNodes)
+        const old = existing[i]
+        const x = aliens[j]
+        const diff = compareNullable(x, old, compareNodes)
         if (diff <= 0) {
-          merged.push(ours)
+          merged.push(x)
           if (diff === 0)
             i++, j++
           else // diff < 0
             j++
         }
         else { // diff > 0
-          if (theirs.owner.instance !== owner)
-            merged.push(theirs) // leave children of other owners untouched
+          if (old.owner.instance !== owner)
+            merged.push(old) // leave children of other owners untouched
           i++
         }
       }
