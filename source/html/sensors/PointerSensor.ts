@@ -11,7 +11,7 @@ import { EmptyDataArray, findTargetElementData, SymDataForSensor } from './DataF
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
 
-export class ClickDragSensor extends BasePointerSensor {
+export class PointerSensor extends BasePointerSensor {
   pointerButton: PointerButton
   @unobservable private clickable: unknown
   clicking: unknown
@@ -115,8 +115,8 @@ export class ClickDragSensor extends BasePointerSensor {
   protected onPointerMove(e: PointerEvent): void {
     if (isPointerButtonDown(this.pointerButton, e.buttons)) {
       if (this.tryingDragging) {
-        if (Math.abs(e.clientX - this.startX) > ClickDragSensor.DraggingThreshold ||
-          Math.abs(e.clientY - this.startY) > ClickDragSensor.DraggingThreshold) {
+        if (Math.abs(e.clientX - this.startX) > PointerSensor.DraggingThreshold ||
+          Math.abs(e.clientY - this.startY) > PointerSensor.DraggingThreshold) {
           this.startDragging(e)
         }
       }
