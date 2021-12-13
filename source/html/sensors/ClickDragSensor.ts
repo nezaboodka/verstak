@@ -7,7 +7,7 @@
 
 import { options, reaction, Reentrance, standalone, TraceLevel, transaction, unobservable } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, PointerSensor } from './PointerSensor'
-import { DataForSensor, EmptyDataArray, findTargetElementData, grabElementData, SymDataForSensor } from './DataForSensor'
+import { DataForSensor, EmptyDataArray, findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
 
@@ -171,19 +171,16 @@ export class ClickDragSensor extends PointerSensor {
   protected tryClickingOrDragging(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
-    const target: any = e.target
-    const targetData = target[SymDataForSensor] as DataForSensor | undefined
-    const clickable = targetData?.click
-    const draggable = targetData?.draggable
+    const targetPath = e.composedPath()
+    const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
+    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['click', 'draggable'])
+    const clickable = data?.click
+    const draggable = data?.draggable
     if (clickable || draggable) {
       this.clickable = clickable
       this.clicking = clickable
       this.draggableData = draggable
       this.tryingDragging = draggable !== undefined
-      const sourceElements = e.composedPath()
-      const elementsUnderPointer = document.elementsFromPoint(e.clientX, e.clientY)
-      const { data, window } = findTargetElementData(elementsUnderPointer, sourceElements, SymDataForSensor, 'drag')
-      this.elementDataList = grabElementData(sourceElements, SymDataForSensor, 'drag', EmptyDataArray).data
       this.dragSource = data
       this.pointerButton = extractPointerButton(e)
       this.startX = e.clientX
@@ -297,8 +294,9 @@ export class ClickDragSensor extends PointerSensor {
   }
 
   protected updateClicking(e: PointerEvent): boolean {
-    const target: any = e.target
-    const targetData = target[SymDataForSensor] as DataForSensor | undefined
+    const targetPath = e.composedPath()
+    const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
+    const targetData = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['click']).data
     const clickable = targetData?.click
     const isSameClickable = this.clickable === clickable
     if (isSameClickable)
@@ -310,10 +308,10 @@ export class ClickDragSensor extends PointerSensor {
   }
 
   protected updateDragTarget(e: PointerEvent): unknown {
-    const path = e.composedPath()
-    const { data, window } = grabElementData(path, SymDataForSensor, 'drag', this.elementDataList)
-    this.elementDataList = data
-    const dragTarget = data[0]
+    const targetPath = e.composedPath()
+    const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
+    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['drag'])
+    const dragTarget = data?.drag
     if (dragTarget !== this.dragTarget) {
       this.previousDragTarget = this.dragTarget
       this.dragTarget = dragTarget
@@ -333,7 +331,7 @@ export class ClickDragSensor extends PointerSensor {
     }
   }
 
-  // @reaction
+  @reaction
   protected debug(): void {
     this.revision // subscribe
     const status = this.getDebugStatus()

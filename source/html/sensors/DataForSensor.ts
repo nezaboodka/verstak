@@ -58,27 +58,27 @@ export function grabElementData(elements: any[], sym: symbol,
   return { data: result, window }
 }
 
-export function findTargetElementData(candidates: any[], composedPath: any[], sym: symbol,
-  payloadKey: keyof DataForSensor): { data: unknown, window: unknown } {
-  let result = undefined
+export function findTargetElementData(targetPath: any[], underPointer: any[], sym: symbol,
+  payloadKeys: Array<keyof DataForSensor>): { data?: DataForSensor, window: unknown } {
+  let result: DataForSensor | undefined = undefined
   let i = 0
-  let candidate = undefined
-  let candidateData = undefined
   let window: unknown = undefined
-  while (window === undefined && i < composedPath.length) {
-    const element = composedPath[i]
-    const data = element[sym] as DataForSensor | undefined
-    if (data !== undefined) {
-      window = data['window']
-      candidateData = data[payloadKey]
-      if (candidateData !== undefined) {
-        candidate = element
-        break
+  while (window === undefined && i < targetPath.length) {
+    const candidate = targetPath[i]
+    const candidateData = candidate[sym] as DataForSensor | undefined
+    if (candidateData !== undefined) {
+      window = candidateData['window']
+      if (result === undefined) {
+        for (const payloadKey of payloadKeys) {
+          const payload = candidateData[payloadKey]
+          if (payload !== undefined && underPointer.includes(candidate)) {
+            result = candidateData
+            break
+          }
+        }
       }
     }
     i++
   }
-  if (candidate && candidates.includes(candidate))
-    result = candidateData
   return { data: result, window }
 }
