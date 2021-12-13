@@ -77,7 +77,8 @@ export class RxDom {
     const node = new NodeInfo<E, O>(id, args, render, superRender, priority ?? 0, rtti ?? DEFAULT_RTTI, o, h)
     if (self.buffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (h?.instance?.native) // emit only if host is alive
+    const rev = h?.instance?.revision ?? -1
+    if (rev >= 0) // emit only if host is alive
       self.buffer.push(node)
     return node
   }
@@ -156,7 +157,8 @@ export class RxDom {
 
   static finalize(node: NodeInfo<any, any>, cause: NodeInfo): void {
     const self = node.instance
-    if (self?.native) {
+    if (self && self.revision >= 0) {
+      self.revision = -self.revision
       self.native = undefined
       for (const x of self.children)
         RxDom.doFinalize(x, cause)
