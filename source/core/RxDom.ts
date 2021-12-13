@@ -245,7 +245,7 @@ export class RxDom {
       nonreactive(self.render, node)
   }
 
-  private static doInitialize(node: NodeInfo, sibling?: NodeInfo): NodeInstance {
+  private static doInitialize(node: NodeInfo): NodeInstance {
     // TODO: Make the code below exception-safe
     const rtti = node.rtti
     const self = node.instance = new NodeInstance(node.owner.instance!.level + 1)
@@ -253,7 +253,7 @@ export class RxDom {
       rtti.initialize(node)
     else
       self.native = node.host.instance?.native // default initialize
-    rtti.mount?.(node, sibling)
+    rtti.mount?.(node)
     if (node.args !== RefreshParent)
       Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? getTraceHint(node) : node.id)
     if (RxDom.gTrace && RxDom.gTraceMask.indexOf('m') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
@@ -324,12 +324,12 @@ export class RxDom {
         x.sibling = sibling // link with sibling
         if (old && instance) {
           if (sibling?.instance !== old?.sibling?.instance) // if sequence is changed
-            x.rtti.mount?.(x, sibling)
+            x.rtti.mount?.(x)
           if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
             RxDom.doRender(x) // re-rendering
         }
         else {
-          RxDom.doInitialize(x, sibling)
+          RxDom.doInitialize(x)
           RxDom.doRender(x) // initial rendering
         }
         if (x.rtti.mount)
@@ -383,7 +383,7 @@ export class RxDom {
             else {
               if (!Transaction.isCanceled) {
                 if (ours.priority === 0) {
-                  RxDom.doInitialize(ours, ours)
+                  RxDom.doInitialize(ours)
                   RxDom.doRender(ours) // initial rendering
                 }
                 else
@@ -395,7 +395,7 @@ export class RxDom {
           else { // diff < 0
             if (!Transaction.isCanceled) {
               if (ours.priority === 0) {
-                RxDom.doInitialize(ours, ours)
+                RxDom.doInitialize(ours)
                 RxDom.doRender(ours) // initial rendering
               }
               else
@@ -428,7 +428,7 @@ export class RxDom {
       nodes.sort(compareNodesByPriority)
       for (const x of nodes) {
         if (!x.instance)
-          RxDom.doInitialize(x, x)
+          RxDom.doInitialize(x)
         RxDom.doRender(x)
         if (Transaction.isCanceled)
           break
