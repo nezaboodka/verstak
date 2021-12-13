@@ -416,12 +416,13 @@ export class RxDom {
       self.children = buffer // switch to the new list
       // Incremental rendering (if any)
       if (!Transaction.isCanceled && postponed.length > 0)
-        RxDom.renderChildrenIncrementally(postponed).catch(error => { console.log(error) })
+        RxDom.renderIncrementally(postponed).catch(error => { console.log(error) })
     }
   }
 
-  private static async renderChildrenIncrementally(nodes: Array<NodeInfo>): Promise<void> {
-    if (Transaction.isFrameOver(30, 12))
+  private static async renderIncrementally(nodes: Array<NodeInfo>,
+    checkEveryN: number = 30, timeLimit: number = 12): Promise<void> {
+    if (Transaction.isFrameOver(checkEveryN, timeLimit))
       await Transaction.requestNextFrame()
     if (!Transaction.isCanceled) {
       nodes.sort(compareNodesByPriority)
@@ -431,7 +432,7 @@ export class RxDom {
         RxDom.doRender(x)
         if (Transaction.isCanceled)
           break
-        if (Transaction.isFrameOver(30, 12))
+        if (Transaction.isFrameOver(checkEveryN, timeLimit))
           await Transaction.requestNextFrame()
         if (Transaction.isCanceled)
           break
