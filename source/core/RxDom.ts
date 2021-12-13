@@ -317,25 +317,35 @@ export class RxDom {
         RxDom.mergeAliens(host, self, aliens)
       // Merge loop - initialize, render, re-render
       sibling = undefined
-      for (const x of sequenced) {
-        const instance = x.instance
+      i = 0, j = -1
+      while (i < sequenced.length) {
+        const x = sequenced[i]
         const old = x.old
         x.old = undefined // unlink to make it available for garbage collection
         x.sibling = sibling // link with sibling
-        if (old && instance) {
-          if (sibling?.instance !== old.sibling?.instance) // if sequence is changed
-            x.rtti.mount?.(x)
-          if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
-            RxDom.doRender(x) // re-rendering
-        }
-        else {
-          RxDom.doInitialize(x)
-          RxDom.doRender(x) // initial rendering
+        if (x.priority > 0 && j < 0)
+          j = i
+        if (!Transaction.isCanceled) {
+          const instance = x.instance
+          if (old && instance) {
+            if (sibling?.instance !== old.sibling?.instance) // if sequence is changed
+              x.rtti.mount?.(x)
+            if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
+              RxDom.doRender(x) // re-rendering
+          }
+          else {
+            RxDom.doInitialize(x)
+            RxDom.doRender(x) // initial rendering
+          }
         }
         if (x.native)
           sibling = x
+        i++
       }
       self.children = sorted // switch to the new list
+      // Incremental rendering (if any)
+      if (!Transaction.isCanceled && j >= 0)
+        RxDom.renderIncrementally(sequenced, j).catch(error => { console.log(error) })
     }
   }
 
@@ -416,17 +426,19 @@ export class RxDom {
       self.children = buffer // switch to the new list
       // Incremental rendering (if any)
       if (!Transaction.isCanceled && postponed.length > 0)
-        RxDom.renderIncrementally(postponed).catch(error => { console.log(error) })
+        RxDom.renderIncrementally(postponed, 0).catch(error => { console.log(error) })
     }
   }
 
-  private static async renderIncrementally(nodes: Array<NodeInfo>,
+  private static async renderIncrementally(nodes: Array<NodeInfo>, startIndex: number,
     checkEveryN: number = 30, timeLimit: number = 12): Promise<void> {
     if (Transaction.isFrameOver(checkEveryN, timeLimit))
       await Transaction.requestNextFrame()
     if (!Transaction.isCanceled) {
       nodes.sort(compareNodesByPriority)
-      for (const x of nodes) {
+      let i = startIndex
+      while (i < nodes.length) {
+        const x = nodes[i]
         if (!x.instance)
           RxDom.doInitialize(x)
         RxDom.doRender(x)
@@ -436,6 +448,7 @@ export class RxDom {
           await Transaction.requestNextFrame()
         if (Transaction.isCanceled)
           break
+        i++
       }
     }
   }
