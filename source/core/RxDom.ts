@@ -323,8 +323,6 @@ export class RxDom {
         const old = x.old
         x.old = undefined // unlink to make it available for garbage collection
         x.sibling = sibling // link with sibling
-        if (x.priority > 0 && j < 0)
-          j = i
         if (!Transaction.isCanceled) {
           const instance = x.instance
           if (old && instance) {
@@ -340,6 +338,8 @@ export class RxDom {
         }
         if (x.native)
           sibling = x
+        if (x.priority > 0 && j < 0)
+          j = i
         i++
       }
       self.children = sorted // switch to the new list
