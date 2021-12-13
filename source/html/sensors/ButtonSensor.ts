@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, Reentrance, standalone, TraceLevel, transaction } from 'reactronic'
-import { extractPointerButton, isPointerButtonDown, PointerButton, PointerSensor } from './PointerSensor'
+import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from './BasePointerSensor'
 import { EmptyDataArray, findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
@@ -18,7 +18,7 @@ export enum ButtonState {
   Released,
 }
 
-export class ButtonSensor extends PointerSensor {
+export class ButtonSensor extends BasePointerSensor {
   state: ButtonState
   pointerButton: PointerButton
   originData: unknown

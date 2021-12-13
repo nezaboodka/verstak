@@ -8,10 +8,10 @@
 import { options, standalone, TraceLevel, transaction } from 'reactronic'
 import { EmptyDataArray, grabElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
-import { PointerSensor } from './PointerSensor'
+import { BasePointerSensor } from './BasePointerSensor'
 import { WindowSensor } from './WindowSensor'
 
-export class ClickSensor extends PointerSensor {
+export class ClickSensor extends BasePointerSensor {
   clicked: number
   doubleClicked: number
   auxClicked: number

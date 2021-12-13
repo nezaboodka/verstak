@@ -8,9 +8,9 @@
 import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
 import { EmptyDataArray, grabElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
-import { PointerSensor } from './PointerSensor'
+import { BasePointerSensor } from './BasePointerSensor'
 
-export class WheelSensor extends PointerSensor {
+export class WheelSensor extends BasePointerSensor {
   deltaX: number
   deltaY: number
 

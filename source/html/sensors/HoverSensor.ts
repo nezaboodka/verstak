@@ -8,9 +8,9 @@
 import { options, TraceLevel, transaction } from 'reactronic'
 import { EmptyDataArray, grabElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
-import { PointerSensor } from './PointerSensor'
+import { BasePointerSensor } from './BasePointerSensor'
 
-export class HoverSensor extends PointerSensor {
+export class HoverSensor extends BasePointerSensor {
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {

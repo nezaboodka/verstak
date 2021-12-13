@@ -17,7 +17,7 @@ export enum PointerButton {
   Middle = 4,
 }
 
-export class PointerSensor extends HtmlElementSensor {
+export class BasePointerSensor extends HtmlElementSensor {
   positionX: number // position relative to browser's viewport
   positionY: number // position relative to browser's viewport
   modifiers: KeyboardModifiers

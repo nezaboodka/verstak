@@ -6,12 +6,12 @@
 // automatically licensed under the license referred above.
 
 import { options, reaction, Reentrance, standalone, TraceLevel, transaction, unobservable } from 'reactronic'
-import { extractPointerButton, isPointerButtonDown, PointerButton, PointerSensor } from './PointerSensor'
+import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from './BasePointerSensor'
 import { DataForSensor, EmptyDataArray, grabElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
 
-export class DragSensor extends PointerSensor {
+export class DragSensor extends BasePointerSensor {
   pointerButton: PointerButton
   trying: boolean
   draggable: unknown
