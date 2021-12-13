@@ -7,7 +7,7 @@
 
 import { options, Reentrance, standalone, TraceLevel, transaction } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, PointerSensor } from './PointerSensor'
-import { EmptyDataArray, grabElementData, SymDataForSensor } from './DataForSensor'
+import { EmptyDataArray, findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
 
@@ -116,17 +116,14 @@ export class ButtonSensor extends PointerSensor {
   protected press(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
-    const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data: elementDataUnderPointer, window } = grabElementData(elements, SymDataForSensor, 'button', EmptyDataArray)
-    const originData = elementDataUnderPointer[0]
+    const targetPath = e.composedPath()
+    const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
+    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['button'])
+    const originData = data?.button
     if (originData) {
       this.state = ButtonState.Pressed
       this.pointerButton = extractPointerButton(e)
-      this.elementDataUnderPointer = elementDataUnderPointer
       this.originData = originData
-      const path = e.composedPath()
-      const { data: elementData } = grabElementData(path, SymDataForSensor, 'button', EmptyDataArray)
-      this.elementDataList = elementData
       this.modifiers = extractModifierKeys(e)
       this.positionX = e.clientX
       this.positionY = e.clientY
@@ -188,10 +185,9 @@ export class ButtonSensor extends PointerSensor {
   protected updateSensorData(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
-    const path = e.composedPath()
-    this.elementDataList = grabElementData(path, SymDataForSensor, 'button', this.elementDataList).data
-    const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.elementDataUnderPointer = grabElementData(elements, SymDataForSensor, 'button', this.elementDataUnderPointer).data
+    // const targetPath = e.composedPath()
+    // const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
+    // const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['button'])
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY
