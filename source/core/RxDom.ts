@@ -323,7 +323,7 @@ export class RxDom {
         x.old = undefined // unlink to make it available for garbage collection
         x.sibling = sibling // link with sibling
         if (old && instance) {
-          if (sibling?.instance !== old?.sibling?.instance) // if sequence is changed
+          if (sibling?.instance !== old.sibling?.instance) // if sequence is changed
             x.rtti.mount?.(x)
           if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
             RxDom.doRender(x) // re-rendering
@@ -332,7 +332,7 @@ export class RxDom {
           RxDom.doInitialize(x)
           RxDom.doRender(x) // initial rendering
         }
-        if (x.rtti.mount)
+        if (x.rtti.mount) // TODO: To find better solution than checking rtti.mount
           sibling = x
       }
       self.children = sorted // switch to the new list
