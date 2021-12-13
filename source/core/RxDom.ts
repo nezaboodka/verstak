@@ -93,16 +93,16 @@ export class RxDom {
   }
 
   static runUnder(owner: NodeInfo, host: NodeInfo, func: (...args: any[]) => any, ...args: any[]): any {
-    const outer = RxDom.gOwner
-    const hostOuter = RxDom.gHost
+    const outerOwner = RxDom.gOwner
+    const outerHost = RxDom.gHost
     try {
       RxDom.gOwner = owner
       RxDom.gHost = host
       return func(...args)
     }
     finally {
-      RxDom.gHost = hostOuter
-      RxDom.gOwner = outer
+      RxDom.gHost = outerHost
+      RxDom.gOwner = outerOwner
     }
   }
 
@@ -112,10 +112,11 @@ export class RxDom {
       throw new Error('element must be initialized before rendering')
     if (self.buffer)
       throw new Error('rendering re-entrance is not supported yet')
-    const outer = RxDom.gOwner
-    const hostOuter = RxDom.gHost
+    const outerOwner = RxDom.gOwner
+    const outerHost = RxDom.gHost
     try {
-      RxDom.gOwner = RxDom.gHost = node
+      RxDom.gOwner = node
+      RxDom.gHost = self.native ? node : node.host
       self.buffer = []
       if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
         console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${node.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
@@ -138,8 +139,8 @@ export class RxDom {
         RxDom.renderChildrenNow() // ignored if rendered already
     }
     finally {
-      RxDom.gHost = hostOuter
-      RxDom.gOwner = outer
+      RxDom.gHost = outerHost
+      RxDom.gOwner = outerOwner
     }
   }
 
@@ -251,10 +252,7 @@ export class RxDom {
     // TODO: Make the code below exception-safe
     const rtti = node.rtti
     const self = node.instance = new NodeInstance(node.owner.instance!.level + 1)
-    if (rtti.initialize)
-      rtti.initialize(node)
-    else
-      self.native = node.host.instance?.native // default initialize
+    rtti.initialize?.(node)
     rtti.mount?.(node)
     if (node.args !== RefreshParent)
       Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? getTraceHint(node) : node.id)
@@ -334,7 +332,7 @@ export class RxDom {
           RxDom.doInitialize(x)
           RxDom.doRender(x) // initial rendering
         }
-        if (x.rtti.mount) // TODO: To find better solution than checking rtti.mount
+        if (x.native)
           sibling = x
       }
       self.children = sorted // switch to the new list
