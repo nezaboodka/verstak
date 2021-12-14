@@ -304,20 +304,20 @@ export class HtmlDragSensor extends HtmlElementSensor {
     }
   }
 
-  @reaction
-  protected debug(): void {
-    const status: string[] = []
-    if (this.dragStarted)
-      status.push('started')
-    if (this.draggingOver)
-      status.push('dragging')
-    if (this.dropped)
-      status.push('dropped')
-    if (this.dragFinished)
-      status.push('finished')
-    console.log(`HtmlDragSensor: (${status.join(', ')})`)
-    console.log(`    dragSource=${this.dragSource}, dragTarget=${this.dragTarget}, start=(${this.startX}, ${this.startY}), pos=(${this.positionX}, ${this.positionY})`)
-  }
+  // @reaction
+  // protected debug(): void {
+  //   const status: string[] = []
+  //   if (this.dragStarted)
+  //     status.push('started')
+  //   if (this.draggingOver)
+  //     status.push('dragging')
+  //   if (this.dropped)
+  //     status.push('dropped')
+  //   if (this.dragFinished)
+  //     status.push('finished')
+  //   console.log(`HtmlDragSensor: (${status.join(', ')})`)
+  //   console.log(`    dragSource=${this.dragSource}, dragTarget=${this.dragTarget}, start=(${this.startX}, ${this.startY}), pos=(${this.positionX}, ${this.positionY})`)
+  // }
 }
 
 function areEqualArrays(array1: readonly string[], array2: string[]): boolean {
