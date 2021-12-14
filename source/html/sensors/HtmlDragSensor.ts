@@ -149,7 +149,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
     this.draggable = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDraggable']).data?.htmlDraggable
     const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDrag'])
-    this.dragSource = data
+    this.dragSource = data?.htmlDrag
     this.dragStarted = true
     this.dragFinished = false
     this.startX = e.clientX
@@ -305,21 +305,20 @@ export class HtmlDragSensor extends HtmlElementSensor {
     }
   }
 
-  // @reaction
-  // protected debug(): void {
-  //   this.revision // subscribe
-  //   const status: string[] = []
-  //   if (this.started)
-  //     status.push('started')
-  //   if (this.draggingOver)
-  //     status.push('dragging')
-  //   if (this.dropped)
-  //     status.push('dropped')
-  //   if (this.finished)
-  //     status.push('finished')
-  //   console.log(`HtmlDragSensor: (${status.join(', ')}), revision=${this.revision}`)
-  //   console.log(`    dragSource=${this.dragSource}, dragTarget=${this.dragTarget}, start=(${this.startX}, ${this.startY}), pos=(${this.positionX}, ${this.positionY})`)
-  // }
+  @reaction
+  protected debug(): void {
+    const status: string[] = []
+    if (this.dragStarted)
+      status.push('started')
+    if (this.draggingOver)
+      status.push('dragging')
+    if (this.dropped)
+      status.push('dropped')
+    if (this.dragFinished)
+      status.push('finished')
+    console.log(`HtmlDragSensor: (${status.join(', ')})`)
+    console.log(`    dragSource=${this.dragSource}, dragTarget=${this.dragTarget}, start=(${this.startX}, ${this.startY}), pos=(${this.positionX}, ${this.positionY})`)
+  }
 }
 
 function areEqualArrays(array1: readonly string[], array2: string[]): boolean {
