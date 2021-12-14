@@ -63,10 +63,6 @@ export class ResizeSensor extends Sensor {
         resizeData: element.dataForSensor.resize,
       }
     })
-    this.elementDataList = entries.map(x => {
-      const element = x.target as Element
-      return element.dataForSensor
-    })
   }
 
   protected doReset(): void {

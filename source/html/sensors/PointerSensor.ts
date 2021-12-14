@@ -7,7 +7,7 @@
 
 import { options, reaction, Reentrance, standalone, TraceLevel, transaction, unobservable } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from './BasePointerSensor'
-import { EmptyDataArray, findTargetElementData, SymDataForSensor } from './DataForSensor'
+import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
 
@@ -262,7 +262,6 @@ export class PointerSensor extends BasePointerSensor {
 
   @transaction @options({ trace: TraceLevel.Silent })
   protected reset(): void {
-    this.elementDataList = EmptyDataArray
     this.pointerButton = PointerButton.None
     this.clickable = undefined
     this.clicking = undefined

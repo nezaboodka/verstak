@@ -7,7 +7,7 @@
 
 import { options, Reentrance, standalone, TraceLevel, transaction } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from './BasePointerSensor'
-import { EmptyDataArray, findTargetElementData, SymDataForSensor } from './DataForSensor'
+import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
 
@@ -169,7 +169,6 @@ export class ButtonSensor extends BasePointerSensor {
   protected reset(): void {
     this.preventDefault = false
     this.stopPropagation = false
-    this.elementDataList = EmptyDataArray
     this.state = ButtonState.Released
     this.originData = undefined
     this.selectedData = undefined

@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, reaction, standalone, TraceLevel, transaction, unobservable } from 'reactronic'
-import { EmptyDataArray, findTargetElementData, SymDataForSensor } from './DataForSensor'
+import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
@@ -243,7 +243,6 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   @transaction @options({ trace: TraceLevel.Silent })
   protected reset(): void {
-    this.elementDataList = EmptyDataArray
     this.draggable = undefined
     this.dragSource = undefined
     this.dragTarget = undefined
