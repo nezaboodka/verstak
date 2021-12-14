@@ -24,14 +24,14 @@ export const SymDataForSensor: unique symbol = Symbol('DataForSensor')
 
 export const EmptyDataArray: any[] = []
 
-export function grabElementData(elements: any[], sym: symbol,
+export function grabElementData(targetPath: any[], sym: symbol,
   payloadKey: keyof DataForSensor, existing: Array<unknown>): { data: Array<unknown>, window: unknown } {
   let result = existing
   let i = 0
   let j = 0
   let window: unknown = undefined
-  while (window === undefined && i < elements.length) {
-    const data = elements[i][sym] as DataForSensor | undefined
+  while (window === undefined && i < targetPath.length) {
+    const data = targetPath[i][sym] as DataForSensor | undefined
     if (data !== undefined) {
       window = data['window']
       const payload = data[payloadKey]
