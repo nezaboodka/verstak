@@ -6,16 +6,18 @@
 // automatically licensed under the license referred above.
 
 import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
-import { EmptyDataArray, grabElementData, SymDataForSensor } from './DataForSensor'
+import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { BasePointerSensor } from './BasePointerSensor'
 
 export class WheelSensor extends BasePointerSensor {
+  target: unknown = undefined
   deltaX: number
   deltaY: number
 
   constructor() {
     super()
+    this.target = undefined
     this.deltaX = Infinity
     this.deltaY = Infinity
   }
@@ -52,11 +54,10 @@ export class WheelSensor extends BasePointerSensor {
   protected doReset(): void {
     this.preventDefault = false
     this.stopPropagation = false
-    this.elementDataList = EmptyDataArray
-    this.elementDataUnderPointer = EmptyDataArray
     this.modifiers = KeyboardModifiers.None
     this.positionX = Infinity
     this.positionY = Infinity
+    this.target = undefined
     this.deltaX = Infinity
     this.deltaY = Infinity
   }
@@ -64,10 +65,9 @@ export class WheelSensor extends BasePointerSensor {
   protected updateSensorData(e: WheelEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
-    const path = e.composedPath()
-    this.elementDataList = grabElementData(path, SymDataForSensor, 'wheel', this.elementDataList).data
-    const elements = document.elementsFromPoint(e.clientX, e.clientY)
-    this.elementDataUnderPointer = grabElementData(elements, SymDataForSensor, 'wheel', this.elementDataUnderPointer).data
+    const targetPath = e.composedPath()
+    const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
+    this.target = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['wheel']).data?.wheel
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY
