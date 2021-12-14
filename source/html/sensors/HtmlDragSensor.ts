@@ -19,8 +19,8 @@ export class HtmlDragSensor extends HtmlElementSensor {
   dragSource: unknown
   dragTarget: unknown
   previousDragTarget: unknown
-  started: boolean
-  finished: boolean
+  dragStarted: boolean
+  dragFinished: boolean
   startX: number // position relative to browser's viewport
   startY: number // position relative to browser's viewport
   @unobservable private dataByFormat: Map<string, unknown>
@@ -46,8 +46,8 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.dragSource = undefined
     this.dragTarget = undefined
     this.previousDragTarget = undefined
-    this.started = false
-    this.finished = false
+    this.dragStarted = false
+    this.dragFinished = false
     this.startX = Infinity
     this.startY = Infinity
     this.dataByFormat = new Map<string, unknown>()
@@ -150,8 +150,8 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.draggable = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDraggable']).data?.htmlDraggable
     const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDrag'])
     this.dragSource = data
-    this.started = true
-    this.finished = false
+    this.dragStarted = true
+    this.dragFinished = false
     this.startX = e.clientX
     this.startY = e.clientY
     this.modifiers = extractModifierKeys(e)
@@ -168,14 +168,14 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   @transaction @options({ trace: TraceLevel.Silent })
   protected dragging(e: DragEvent): void {
-    this.started = true
-    this.finished = false
+    this.dragStarted = true
+    this.dragFinished = false
     this.revision++
   }
 
   @transaction @options({ trace: TraceLevel.Silent })
   protected finishDragging(e: DragEvent): void {
-    this.finished = true
+    this.dragFinished = true
     this.revision++
   }
 
@@ -248,8 +248,8 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.dragSource = undefined
     this.dragTarget = undefined
     this.previousDragTarget = undefined
-    this.started = false
-    this.finished = false
+    this.dragStarted = false
+    this.dragFinished = false
     this.startX = Infinity
     this.startY = Infinity
     this.dataByFormat.clear()
