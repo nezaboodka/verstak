@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, reaction, standalone, TraceLevel, transaction, unobservable } from 'reactronic'
-import { DataForSensor, EmptyDataArray, grabElementData, SymDataForSensor } from './DataForSensor'
+import { EmptyDataArray, findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
@@ -145,11 +145,11 @@ export class HtmlDragSensor extends HtmlElementSensor {
   protected startDragging(e: DragEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
-    const dragElement: any = e.target
-    this.draggable = (dragElement[SymDataForSensor] as DataForSensor | undefined)?.htmlDraggable
-    const sourceElements = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data: elementDataUnderPointer, window } = grabElementData(sourceElements, SymDataForSensor, 'htmlDrag', EmptyDataArray)
-    this.dragSource = elementDataUnderPointer[0]
+    const targetPath = e.composedPath()
+    const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
+    this.draggable = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDraggable']).data?.htmlDraggable
+    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDrag'])
+    this.dragSource = data
     this.started = true
     this.finished = false
     this.startX = e.clientX
@@ -272,12 +272,10 @@ export class HtmlDragSensor extends HtmlElementSensor {
   }
 
   protected updateDragTarget(e: DragEvent): unknown {
-    const path = e.composedPath()
-    this.elementDataList = grabElementData(path, SymDataForSensor, 'htmlDrag', this.elementDataList).data
-    const targetElements = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data: elementDataUnderPointer, window } = grabElementData(targetElements, SymDataForSensor, 'htmlDrag', EmptyDataArray)
-    const dataForSensor = elementDataUnderPointer[0]
-    const dragTarget = dataForSensor
+    const targetPath = e.composedPath()
+    const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
+    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDrag'])
+    const dragTarget = data?.htmlDrag
     if (dragTarget !== this.dragTarget) {
       this.previousDragTarget = this.dragTarget
       this.dragTarget = dragTarget
