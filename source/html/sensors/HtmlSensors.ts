@@ -6,7 +6,6 @@
 // automatically licensed under the license referred above.
 
 import { transaction } from 'reactronic'
-import { DragSensor } from './DragSensor'
 import { FocusSensor } from './FocusSensor'
 import { HoverSensor } from './HoverSensor'
 import { HtmlDragSensor } from './HtmlDragSensor'
@@ -24,7 +23,6 @@ export class HtmlSensors {
   readonly keyboard: KeyboardSensor
   readonly wheel: WheelSensor
   readonly resize: ResizeSensor
-  readonly drag: DragSensor
   readonly htmlDrag: HtmlDragSensor
   readonly button: ButtonSensor
   readonly pointer: PointerSensor
@@ -36,7 +34,6 @@ export class HtmlSensors {
     this.keyboard = new KeyboardSensor()
     this.wheel = new WheelSensor()
     this.resize = new ResizeSensor()
-    this.drag = new DragSensor(this.window)
     this.htmlDrag = new HtmlDragSensor(this.window)
     this.button = new ButtonSensor(this.window)
     this.pointer = new PointerSensor(this.window)
@@ -49,7 +46,6 @@ export class HtmlSensors {
     this.keyboard.listen(element, enabled)
     this.wheel.listen(element, enabled)
     // this.resize doesn't have listen, this.resize.observeResizeOfRenderingElement is used instead
-    this.drag.listen(element, enabled)
     this.htmlDrag.listen(element, enabled)
     this.button.listen(element, enabled)
     this.pointer.listen(element, enabled)
