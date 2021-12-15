@@ -93,16 +93,7 @@ export class KeyboardSensor extends HtmlElementSensor {
     this.stopPropagation = false
     const path = e.composedPath()
     this.elementDataList = grabElementData(path, SymDataForSensor, 'keyboard', this.elementDataList).data
-    let modifier: KeyboardModifiers = 0
-    if (e.ctrlKey)
-      modifier |= KeyboardModifiers.Ctrl
-    if (e.shiftKey)
-      modifier |= KeyboardModifiers.Shift
-    if (e.altKey)
-      modifier |= KeyboardModifiers.Alt
-    if (e.metaKey)
-      modifier |= KeyboardModifiers.Meta
-    this.modifiers = modifier
+    this.modifiers = extractModifierKeys(e)
     this.revision++
   }
 
