@@ -10,6 +10,7 @@ import { Render, SuperRender, RefreshParent, Rtti, AbstractNodeInstance, NodeInf
 
 const EMPTY: Array<NodeInfo<any, any>> = Object.freeze([]) as any
 const DEFAULT_RTTI: Rtti<any, any> = { name: 'RxDom.Node', sequential: false }
+const NOP = (): void => { /* nop */ }
 
 // NodeInstance
 
@@ -58,10 +59,10 @@ export class RxDom {
     let result: any = render()
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current owner and host
-        value => { Transaction.run(RxDom.renderChildrenNow); return value }, // ignored if rendered already
-        error => { console.log(error); Transaction.run(RxDom.renderChildrenNow) }) // try to render children regardless the owner
+        value => { Transaction.run(RxDom.renderChildrenThenDo, NOP); return value }, // ignored if rendered already
+        error => { console.log(error); Transaction.run(RxDom.renderChildrenThenDo, NOP) }) // try to render children regardless the owner
     else
-      Transaction.run(RxDom.renderChildrenNow) // ignored if rendered already
+      Transaction.run(RxDom.renderChildrenThenDo, NOP) // ignored if rendered already
     return result
   }
 
@@ -133,10 +134,10 @@ export class RxDom {
         result = node.render(self.native, undefined)
       if (result instanceof Promise)
         result = result.then( // causes wrapping of then/catch to execute within current owner and host
-          value => { RxDom.renderChildrenNow(); return value }, // ignored if rendered already
-          error => { console.log(error); RxDom.renderChildrenNow() }) // do not render children in case of owner error
+          value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
+          error => { console.log(error); RxDom.renderChildrenThenDo(NOP) }) // do not render children in case of owner error
       else
-        RxDom.renderChildrenNow() // ignored if rendered already
+        RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
     }
     finally {
       RxDom.gHost = outerHost
@@ -144,12 +145,12 @@ export class RxDom {
     }
   }
 
-  static renderChildrenNow(): void {
+  static renderChildrenThenDo(action: () => void): void {
     const node = RxDom.gOwner
     if (node.rtti.sequential)
-      RxDom.mergeAndRenderSequentialChildren(node)
+      RxDom.mergeAndRenderSequentialChildren(node, action)
     else
-      RxDom.mergeAndRenderChildren(node)
+      RxDom.mergeAndRenderChildren(node, action)
   }
 
   static initialize(node: NodeInfo): void {
@@ -273,7 +274,7 @@ export class RxDom {
       RxDom.finalize(node, cause) // default finalize
   }
 
-  private static mergeAndRenderSequentialChildren(node: NodeInfo): void {
+  private static mergeAndRenderSequentialChildren(node: NodeInfo, finish: () => void): void {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
       const existing = self.children
@@ -344,13 +345,18 @@ export class RxDom {
       }
       self.children = sorted // switch to the new list
       // Incremental rendering (if any)
-      if (!Transaction.isCanceled && j >= 0)
-        RxDom.renderIncrementally(sequenced, j).catch(error => { console.log(error) })
+      if (!Transaction.isCanceled) {
+        if (j >= 0)
+          RxDom.renderIncrementally(sequenced, j).then(finish, error => { console.log(error) })
+        else
+          finish()
+      }
+
     }
   }
 
 
-  private static mergeAndRenderChildren(node: NodeInfo): void {
+  private static mergeAndRenderChildren(node: NodeInfo, finish: () => void): void {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
       const existing = self.children
@@ -425,8 +431,12 @@ export class RxDom {
         RxDom.mergeAliens(host, self, aliens)
       self.children = buffer // switch to the new list
       // Incremental rendering (if any)
-      if (!Transaction.isCanceled && postponed.length > 0)
-        RxDom.renderIncrementally(postponed, 0).catch(error => { console.log(error) })
+      if (!Transaction.isCanceled) {
+        if (postponed.length > 0)
+          RxDom.renderIncrementally(postponed, 0).then(finish, error => { console.log(error) })
+        else
+          finish()
+      }
     }
   }
 
