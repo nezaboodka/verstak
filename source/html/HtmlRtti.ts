@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Reactronic } from 'reactronic'
+import { Rx } from 'reactronic'
 import { RxDom, NodeInfo, Rtti } from '../core/api'
 
 export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any> {
@@ -46,7 +46,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
             }
           }
         }
-        else // nonsequential
+        else // non-sequential
           nativeHost.appendChild(native)
         // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.insertBefore(${sibling?.id ?? '<null>'})`)
       }
@@ -63,7 +63,7 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
       // TODO: native.sensorData.drag handling?
       AbstractHtmlRtti.blinkingEffect && blink(native, self.revision)
       if (AbstractHtmlRtti.isDebugAttributeEnabled)
-        native.setAttribute('rdbg', `${self.revision}:    ${Reactronic.why()}`)
+        native.setAttribute('rdbg', `${self.revision}:    ${Rx.why()}`)
     }
     finally {
       AbstractHtmlRtti.gNativeParent = outer

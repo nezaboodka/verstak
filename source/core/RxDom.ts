@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reaction, nonreactive, Transaction, Reactronic, options, Reentrance } from 'reactronic'
+import { reaction, nonreactive, Transaction, Rx, options, Reentrance } from 'reactronic'
 import { Render, SuperRender, RefreshParent, Rtti, AbstractNodeInstance, NodeInfo } from './Data'
 
 const EMPTY: Array<NodeInfo<any, any>> = Object.freeze([]) as any
@@ -37,7 +37,7 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
     noSideEffects: true })
   render(node: NodeInfo<E, O>): void {
     RxDom.renderUsingRttiOrDirectly(this, node)
-    Reactronic.configureCurrentOperation({ order: this.level })
+    Rx.configureCurrentOperation({ order: this.level })
   }
 
   // get ['#this'](): string {
@@ -123,7 +123,7 @@ export class RxDom {
       RxDom.gHost = self.native ? node : node.host
       self.buffer = []
       if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
-        console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${node.args !== RefreshParent ? `  <<  ${Reactronic.why(true)}` : ''}`)
+        console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${node.args !== RefreshParent ? `  <<  ${Rx.why(true)}` : ''}`)
       let result: any
       if (node.superRender)
         result = node.superRender(options => {
@@ -259,7 +259,7 @@ export class RxDom {
     rtti.initialize?.(node)
     rtti.mount?.(node)
     if (node.args !== RefreshParent)
-      Reactronic.setTraceHint(self, Reactronic.isTraceEnabled ? getTraceHint(node) : node.id)
+      Rx.setTraceHint(self, Rx.isTraceEnabled ? getTraceHint(node) : node.id)
     if (RxDom.gTrace && RxDom.gTraceMask.indexOf('m') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.initialized`)
     return self
@@ -269,7 +269,7 @@ export class RxDom {
     if (RxDom.gTrace && RxDom.gTraceMask.indexOf('u') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.finalizing`)
     if (node.args !== RefreshParent && node.instance) // TODO: Consider creating one transaction for all finalizations at once
-      Transaction.runAs({ standalone: true }, () => Reactronic.dispose(node.instance))
+      Transaction.runAs({ standalone: true }, () => Rx.dispose(node.instance))
     const rtti = node.rtti
     if (rtti.finalize)
       rtti.finalize(node, cause)
