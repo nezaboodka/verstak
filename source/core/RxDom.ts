@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reaction, nonreactive, Transaction, Reactronic, options } from 'reactronic'
+import { reaction, nonreactive, Transaction, Reactronic, options, Reentrance } from 'reactronic'
 import { Render, SuperRender, RefreshParent, Rtti, AbstractNodeInstance, NodeInfo } from './Data'
 
 const EMPTY: Array<NodeInfo<any, any>> = Object.freeze([]) as any
@@ -31,7 +31,10 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
     this.level = level
   }
 
-  @reaction @options({ sensitiveArgs: true, noSideEffects: true })
+  @reaction @options({
+    reentrance: Reentrance.CancelPrevious,
+    sensitiveArgs: true,
+    noSideEffects: true })
   render(node: NodeInfo<E, O>): void {
     RxDom.renderUsingRttiOrDirectly(this, node)
     Reactronic.configureCurrentOperation({ order: this.level })
