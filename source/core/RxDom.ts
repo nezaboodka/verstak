@@ -277,81 +277,83 @@ export class RxDom {
   private static mergeAndRenderSequentialChildren(node: NodeInfo, finish: () => void): void {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
-      const existing = self.children
-      const sequenced = self.buffer
-      const sorted = sequenced.slice().sort(compareNodes)
-      self.buffer = undefined
-      // Merge loop (always synchronous) - link to existing or finalize
-      let host = self
-      let aliens: Array<NodeInfo<any, any>> = EMPTY
-      let sibling: NodeInfo | undefined = undefined
-      let i = 0, j = 0
-      while (i < existing.length) {
-        const old = existing[i]
-        const x = sorted[j]
-        const diff = x !== undefined ? compareNodes(x, old) : 1
-        if (diff <= 0) {
-          const h = x.host.instance
-          if (h !== self) {
-            if (h !== host) {
-              RxDom.mergeAliens(host, self, aliens)
-              aliens = []
-              host = h!
+      let promised: Promise<void> | undefined = undefined
+      try {
+        const existing = self.children
+        const sequenced = self.buffer
+        const sorted = sequenced.slice().sort(compareNodes)
+        self.buffer = undefined
+        // Merge loop (always synchronous) - link to existing or finalize
+        let host = self
+        let aliens: Array<NodeInfo<any, any>> = EMPTY
+        let sibling: NodeInfo | undefined = undefined
+        let i = 0, j = 0
+        while (i < existing.length) {
+          const old = existing[i]
+          const x = sorted[j]
+          const diff = x !== undefined ? compareNodes(x, old) : 1
+          if (diff <= 0) {
+            const h = x.host.instance
+            if (h !== self) {
+              if (h !== host) {
+                RxDom.mergeAliens(host, self, aliens)
+                aliens = []
+                host = h!
+              }
+              aliens.push(x)
             }
-            aliens.push(x)
+            if (sibling !== undefined && x.id === sibling.id)
+              throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
+            if (diff === 0) {
+              x.instance = old.instance
+              x.old = old
+              i++, j++ // re-rendering is called below
+            }
+            else // diff < 0
+              j++ // initial rendering is called below
+            sibling = x
           }
-          if (sibling !== undefined && x.id === sibling.id)
-            throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
-          if (diff === 0) {
-            x.instance = old.instance
-            x.old = old
-            i++, j++ // re-rendering is called below
-          }
-          else // diff < 0
-            j++ // initial rendering is called below
-          sibling = x
+          else // diff > 0
+            RxDom.doFinalize(old, old), i++
         }
-        else // diff > 0
-          RxDom.doFinalize(old, old), i++
-      }
-      if (host !== self)
-        RxDom.mergeAliens(host, self, aliens)
-      // Merge loop - initialize, render, re-render
-      sibling = undefined
-      i = 0, j = -1
-      while (i < sequenced.length) {
-        const x = sequenced[i]
-        const old = x.old
-        x.old = undefined // unlink to make it available for garbage collection
-        x.sibling = sibling // link with sibling
-        if (!Transaction.isCanceled) {
-          const instance = x.instance
-          if (old && instance) {
-            if (sibling?.instance !== old.sibling?.instance) // if sequence is changed
-              x.rtti.mount?.(x)
-            if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
-              RxDom.doRender(x) // re-rendering
+        if (host !== self)
+          RxDom.mergeAliens(host, self, aliens)
+        // Merge loop - initialize, render, re-render
+        sibling = undefined
+        i = 0, j = -1
+        while (i < sequenced.length) {
+          const x = sequenced[i]
+          const old = x.old
+          x.old = undefined // unlink to make it available for garbage collection
+          x.sibling = sibling // link with sibling
+          if (!Transaction.isCanceled) {
+            const instance = x.instance
+            if (old && instance) {
+              if (sibling?.instance !== old.sibling?.instance) // if sequence is changed
+                x.rtti.mount?.(x)
+              if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
+                RxDom.doRender(x) // re-rendering
+            }
+            else {
+              RxDom.doInitialize(x)
+              RxDom.doRender(x) // initial rendering
+            }
           }
-          else {
-            RxDom.doInitialize(x)
-            RxDom.doRender(x) // initial rendering
-          }
+          if (x.native)
+            sibling = x
+          if (x.priority > 0 && j < 0)
+            j = i
+          i++
         }
-        if (x.native)
-          sibling = x
-        if (x.priority > 0 && j < 0)
-          j = i
-        i++
+        self.children = sorted // switch to the new list
+        // Incremental rendering (if any)
+        if (!Transaction.isCanceled && j >= 0)
+          promised = RxDom.renderIncrementally(sequenced, j).then(finish, finish)
       }
-      self.children = sorted // switch to the new list
-      // Incremental rendering (if any)
-      if (!Transaction.isCanceled) {
-        if (j >= 0)
-          RxDom.renderIncrementally(sequenced, j).then(finish, error => { console.log(error) })
-        else
+      finally {
+        if (promised)
           finish()
       }
-
     }
   }
 
@@ -359,44 +361,58 @@ export class RxDom {
   private static mergeAndRenderChildren(node: NodeInfo, finish: () => void): void {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
-      const existing = self.children
-      const buffer = self.buffer.sort(compareNodes)
-      const postponed = new Array<NodeInfo<any, any>>()
-      self.buffer = undefined
-      // Merge loop (always synchronous): link, render/initialize (priority 0), finalize
-      let host = self
-      let aliens: Array<NodeInfo<any, any>> = EMPTY
-      let sibling: NodeInfo | undefined = undefined
-      let i = 0, j = 0
-      while (i < existing.length || j < buffer.length) {
-        const old = existing[i]
-        const x = buffer[j]
-        const diff = compareNullable(x, old, compareNodes)
-        if (diff <= 0) {
-          const h = x.host.instance
-          if (h !== self) {
-            if (h !== host) {
-              RxDom.mergeAliens(host, self, aliens)
-              aliens = []
-              host = h!
+      let promised: Promise<void> | undefined = undefined
+      try {
+        const existing = self.children
+        const buffer = self.buffer.sort(compareNodes)
+        const postponed = new Array<NodeInfo<any, any>>()
+        self.buffer = undefined
+        // Merge loop (always synchronous): link, render/initialize (priority 0), finalize
+        let host = self
+        let aliens: Array<NodeInfo<any, any>> = EMPTY
+        let sibling: NodeInfo | undefined = undefined
+        let i = 0, j = 0
+        while (i < existing.length || j < buffer.length) {
+          const old = existing[i]
+          const x = buffer[j]
+          const diff = compareNullable(x, old, compareNodes)
+          if (diff <= 0) {
+            const h = x.host.instance
+            if (h !== self) {
+              if (h !== host) {
+                RxDom.mergeAliens(host, self, aliens)
+                aliens = []
+                host = h!
+              }
+              aliens.push(x)
             }
-            aliens.push(x)
-          }
-          if (sibling !== undefined && x.id === sibling.id)
-            throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
-          if (diff === 0) {
-            if (old.instance) {
-              x.instance = old.instance // link to the existing instance
-              if (x.args === RefreshParent || !argsAreEqual(x.args, old.args)) {
+            if (sibling !== undefined && x.id === sibling.id)
+              throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
+            if (diff === 0) {
+              if (old.instance) {
+                x.instance = old.instance // link to the existing instance
+                if (x.args === RefreshParent || !argsAreEqual(x.args, old.args)) {
+                  if (!Transaction.isCanceled) {
+                    if (x.priority === 0)
+                      RxDom.doRender(x) // re-rendering
+                    else
+                      postponed.push(x)
+                  }
+                }
+              }
+              else {
                 if (!Transaction.isCanceled) {
-                  if (x.priority === 0)
-                    RxDom.doRender(x) // re-rendering
+                  if (x.priority === 0) {
+                    RxDom.doInitialize(x)
+                    RxDom.doRender(x) // initial rendering
+                  }
                   else
                     postponed.push(x)
                 }
               }
+              i++, j++
             }
-            else {
+            else { // diff < 0
               if (!Transaction.isCanceled) {
                 if (x.priority === 0) {
                   RxDom.doInitialize(x)
@@ -405,36 +421,25 @@ export class RxDom {
                 else
                   postponed.push(x)
               }
+              j++
             }
-            i++, j++
+            sibling = x
           }
-          else { // diff < 0
-            if (!Transaction.isCanceled) {
-              if (x.priority === 0) {
-                RxDom.doInitialize(x)
-                RxDom.doRender(x) // initial rendering
-              }
-              else
-                postponed.push(x)
-            }
-            j++
+          else { // diff > 0
+            if (old.instance)
+              RxDom.doFinalize(old, old)
+            i++
           }
-          sibling = x
         }
-        else { // diff > 0
-          if (old.instance)
-            RxDom.doFinalize(old, old)
-          i++
-        }
+        if (host !== self)
+          RxDom.mergeAliens(host, self, aliens)
+        self.children = buffer // switch to the new list
+        // Incremental rendering (if any)
+        if (!Transaction.isCanceled && postponed.length > 0)
+          promised = RxDom.renderIncrementally(postponed, 0).then(finish, finish)
       }
-      if (host !== self)
-        RxDom.mergeAliens(host, self, aliens)
-      self.children = buffer // switch to the new list
-      // Incremental rendering (if any)
-      if (!Transaction.isCanceled) {
-        if (postponed.length > 0)
-          RxDom.renderIncrementally(postponed, 0).then(finish, error => { console.log(error) })
-        else
+      finally {
+        if (!promised)
           finish()
       }
     }
