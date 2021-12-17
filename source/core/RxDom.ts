@@ -314,7 +314,8 @@ export class RxDom {
             sibling = x
           }
           else { // diff > 0
-            RxDom.doFinalize(old, old)
+            if (!Transaction.isCanceled)
+              RxDom.doFinalize(old, old)
             i++
           }
         }
@@ -323,23 +324,21 @@ export class RxDom {
         // Merge loop - initialize, render, re-render
         sibling = undefined
         i = 0, j = -1
-        while (i < sequenced.length) {
+        while (i < sequenced.length && !Transaction.isCanceled) {
           const x = sequenced[i]
           const old = x.old
           x.old = undefined // unlink to make it available for garbage collection
           x.sibling = sibling // link with sibling
-          if (!Transaction.isCanceled) {
-            const instance = x.instance
-            if (old && instance) {
-              if (sibling?.instance !== old.sibling?.instance) // if sequence is changed
-                x.rtti.mount?.(x)
-              if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
-                RxDom.doRender(x) // re-rendering
-            }
-            else {
-              RxDom.doInitialize(x)
-              RxDom.doRender(x) // initial rendering
-            }
+          const instance = x.instance
+          if (old && instance) {
+            if (sibling?.instance !== old.sibling?.instance) // if sequence is changed
+              x.rtti.mount?.(x)
+            if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
+              RxDom.doRender(x) // re-rendering
+          }
+          else {
+            RxDom.doInitialize(x)
+            RxDom.doRender(x) // initial rendering
           }
           if (x.native)
             sibling = x
@@ -347,10 +346,11 @@ export class RxDom {
             j = i
           i++
         }
-        self.children = sorted // switch to the new list
-        // Incremental rendering (if any)
-        if (!Transaction.isCanceled && j >= 0)
-          promised = RxDom.renderIncrementally(sequenced, j).then(finish, finish)
+        if (!Transaction.isCanceled) {
+          self.children = sorted // switch to the new list
+          if (j >= 0) // Incremental rendering (if any)
+            promised = RxDom.renderIncrementally(node, sequenced, j).then(finish, finish)
+        }
       }
       finally {
         if (promised)
@@ -428,16 +428,18 @@ export class RxDom {
             sibling = x
           }
           else { // diff > 0
-            RxDom.doFinalize(old, old)
+            if (!Transaction.isCanceled)
+              RxDom.doFinalize(old, old)
             i++
           }
         }
         if (host !== self)
           RxDom.mergeAliens(host, self, aliens)
-        self.children = buffer // switch to the new list
-        // Incremental rendering (if any)
-        if (!Transaction.isCanceled && postponed.length > 0)
-          promised = RxDom.renderIncrementally(postponed, 0).then(finish, finish)
+        if (!Transaction.isCanceled) {
+          self.children = buffer // switch to the new list
+          if (postponed.length > 0) // Incremental rendering (if any)
+            promised = RxDom.renderIncrementally(node, postponed,  0).then(finish, finish)
+        }
       }
       finally {
         if (!promised)
@@ -446,15 +448,15 @@ export class RxDom {
     }
   }
 
-  private static async renderIncrementally(nodes: Array<NodeInfo>, startIndex: number,
+  private static async renderIncrementally(parent: NodeInfo, children: Array<NodeInfo>, startIndex: number,
     checkEveryN: number = 30, timeLimit: number = 12): Promise<void> {
     if (Transaction.isFrameOver(checkEveryN, timeLimit))
       await Transaction.requestNextFrame()
     if (!Transaction.isCanceled) {
-      nodes.sort(compareNodesByPriority)
+      children.sort(compareNodesByPriority)
       let i = startIndex
-      while (i < nodes.length) {
-        const x = nodes[i]
+      while (i < children.length) {
+        const x = children[i]
         if (!x.instance)
           RxDom.doInitialize(x)
         RxDom.doRender(x)
