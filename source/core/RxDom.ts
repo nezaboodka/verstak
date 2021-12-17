@@ -313,8 +313,10 @@ export class RxDom {
               j++ // initial rendering is called below
             sibling = x
           }
-          else // diff > 0
-            RxDom.doFinalize(old, old), i++
+          else { // diff > 0
+            RxDom.doFinalize(old, old)
+            i++
+          }
         }
         if (host !== self)
           RxDom.mergeAliens(host, self, aliens)
@@ -426,8 +428,7 @@ export class RxDom {
             sibling = x
           }
           else { // diff > 0
-            if (old.instance)
-              RxDom.doFinalize(old, old)
+            RxDom.doFinalize(old, old)
             i++
           }
         }

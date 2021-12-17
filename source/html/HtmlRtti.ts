@@ -11,7 +11,7 @@ import { RxDom, NodeInfo, Rtti } from '../core/api'
 export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any> {
   static isDebugAttributeEnabled: boolean = false
   static gNativeParent: NodeInfo<any, any> = RxDom.createRootNode('html > body', true, global.document.body)
-  static gFinalizing?: Element = undefined
+  static gSubTreeFinalization?: Element = undefined
   private static _blinkingEffect: string | undefined = undefined
 
   constructor(
@@ -73,20 +73,20 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
   finalize(node: NodeInfo<E, any>, cause: NodeInfo): void {
     const self = node.instance
     const native = self?.native
-    if (!AbstractHtmlRtti.gFinalizing && native && native.parentElement) {
-      AbstractHtmlRtti.gFinalizing = native // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    if (!AbstractHtmlRtti.gSubTreeFinalization && native && native.parentElement) {
+      AbstractHtmlRtti.gSubTreeFinalization = native // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       try { // console.log(`${'  '.repeat(Math.abs(self.level))}${e.parentElement.id}.removeChild(${e.id} r${self.revision})`)
-        self?.resizing?.unobserve(native)
+        self.resizing?.unobserve(native)
         native.remove()
         RxDom.finalize(node, cause) // proceed
       }
       finally {
-        AbstractHtmlRtti.gFinalizing = undefined
+        AbstractHtmlRtti.gSubTreeFinalization = undefined
       }
     }
     else { // console.log(`${'  '.repeat(Math.abs(self.level))}???.finalize(${ref.id} r${self.revision})`)
       if (native)
-        self?.resizing?.unobserve(native)
+        self.resizing?.unobserve(native)
       RxDom.finalize(node, cause) // proceed
     }
   }
