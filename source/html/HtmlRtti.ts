@@ -59,7 +59,7 @@ export abstract class AbstractHtmlNodeType<E extends Element> implements RxNodeT
     const outer = AbstractHtmlNodeType.gNativeParent
     try { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       AbstractHtmlNodeType.gNativeParent = node // console.log(`${'  '.repeat(Math.abs(self.level))}render(${e.id} r${self.revision})`)
-      RxDom.render(node)
+      RxDom.basic.render(node)
       // TODO: native.sensorData.drag handling?
       AbstractHtmlNodeType.blinkingEffect && blink(native, self.revision)
       if (AbstractHtmlNodeType.isDebugAttributeEnabled)
@@ -78,7 +78,7 @@ export abstract class AbstractHtmlNodeType<E extends Element> implements RxNodeT
       try { // console.log(`${'  '.repeat(Math.abs(self.level))}${e.parentElement.id}.removeChild(${e.id} r${self.revision})`)
         self.resizing?.unobserve(native)
         native.remove()
-        RxDom.finalize(node, cause) // proceed
+        RxDom.basic.finalize(node, cause) // proceed
       }
       finally {
         AbstractHtmlNodeType.gSubTreeFinalization = undefined
@@ -87,7 +87,7 @@ export abstract class AbstractHtmlNodeType<E extends Element> implements RxNodeT
     else { // console.log(`${'  '.repeat(Math.abs(self.level))}???.finalize(${ref.id} r${self.revision})`)
       if (native)
         self.resizing?.unobserve(native)
-      RxDom.finalize(node, cause) // proceed
+      RxDom.basic.finalize(node, cause) // proceed
     }
   }
 

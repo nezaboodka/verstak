@@ -145,7 +145,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
 // RxDomik
 
 export class RxDom {
-  public static readonly sys = new BaseNodeType<any, any>('sys', false)
+  public static readonly basic = new BaseNodeType<any, any>('basic', false)
 
   static Root<T>(render: () => T): T {
     let result: any = render()
@@ -172,7 +172,7 @@ export class RxDom {
       const existing = owner.children.get(id)
       if (!existing) { // new node
         if (type === undefined)
-          type = RxDom.sys
+          type = RxDom.basic
         node = new RxNodeImpl<E, O>(owner.level + 1, id, type, inline ?? false,
           args, render, superRender, priority, owner, host)
         owner.children.set(id, node)
@@ -399,7 +399,7 @@ function invokeRender(node: RxNode, args: unknown): void {
     if (type.render)
       type.render(node, args) // type-defined rendering
     else
-      RxDom.sys.render(node, args) // default rendering
+      RxDom.basic.render(node, args) // default rendering
   })
 }
 
@@ -408,7 +408,7 @@ function invokeFinalize(node: RxNode, cause: RxNode): void {
   if (t.finalize)
     t.finalize(node, cause)
   else
-    RxDom.sys.finalize(node, cause) // default finalize
+    RxDom.basic.finalize(node, cause) // default finalize
 }
 
 function wrap(func: (...args: any[]) => any): (...args: any[]) => any {
@@ -484,7 +484,7 @@ Promise.prototype.then = reactronicFrontHookedThen
 // Globals
 
 const NOP = (): void => { /* nop */ }
-const NUL = RxDom.createRootNode<any, any>('NUL', false, 'SYS', undefined)
+const NUL = RxDom.createRootNode<any, any>('NUL', false, 'NUL', undefined)
 const SYS = RxDom.createRootNode<unknown, void>('SYS', false, 'SYS', undefined)
 let gContext: RxNode = SYS
 let gHost: RxNode = SYS

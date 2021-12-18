@@ -12,6 +12,57 @@ const EMPTY: Array<RxNode> = Object.freeze([]) as any
 const NOP = (): void => { /* nop */ }
 const SYS: RxNodeType<any, any> = { name: 'RxDom.Node', sequential: false }
 
+// BaseNodeType
+
+export class BaseNodeType<E, O> implements RxNodeType<E, O> {
+  constructor(
+    readonly name: string,
+    readonly sequential: boolean) {
+  }
+
+  initialize(node: RxNode<E, O>): void {
+    if (!node.inline)
+      Rx.setTraceHint(node, node.id)
+  }
+
+  render(node: RxNode<E, O>, args?: unknown): void {
+    const self = node.instance
+    if (!self)
+      throw new Error('element must be initialized before rendering')
+    if (self.buffer)
+      throw new Error('rendering re-entrance is not supported yet')
+    self.buffer = []
+    let result: any
+    if (node.superRender)
+      result = node.superRender(options => {
+        const res = node.render(self.native!, options)
+        if (res instanceof Promise)
+          return res.then() // causes wrapping of then/catch to execute within current owner and host
+        else
+          return options
+      }, self.native!)
+    else
+      result = node.render(self.native!, args as O)
+    if (result instanceof Promise)
+      result = result.then( // causes wrapping of then/catch to execute within current owner and host
+        value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
+        error => { console.log(error); RxDom.renderChildrenThenDo(NOP) }) // do not render children in case of owner error
+    else
+      RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
+  }
+
+  finalize(node: RxNode<E, O>, cause: RxNode): void {
+    const self = node.instance
+    if (self) {
+      self.native = undefined
+      for (const x of self.children)
+        tryToFinalize(x, cause)
+      for (const x of self.aliens)
+        tryToFinalize(x, cause)
+    }
+  }
+}
+
 // RxNodeInstanceImpl
 
 export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance<E, O> {
@@ -44,10 +95,11 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
 // RxDom
 
 export class RxDom {
-  static readonly ROOT = RxDom.createRootNode<unknown>('ROOT', false, 'ROOT')
+  public static readonly basic = new BaseNodeType<any, any>('basic', false)
+  static readonly system = RxDom.createRootNode<unknown>('system', false, 'system')
 
   static Root<T>(render: () => T): T {
-    const self = RxDom.ROOT.instance!
+    const self = RxDom.system.instance!
     if (self.buffer)
       throw new Error('rendering re-entrance is not supported yet')
     self.buffer = []
@@ -79,32 +131,6 @@ export class RxDom {
     return node
   }
 
-  static render(node: RxNode): void {
-    const self = node.instance
-    if (!self)
-      throw new Error('element must be initialized before rendering')
-    if (self.buffer)
-      throw new Error('rendering re-entrance is not supported yet')
-    self.buffer = []
-    let result: any
-    if (node.superRender)
-      result = node.superRender(options => {
-        const res = node.render(self.native, options)
-        if (res instanceof Promise)
-          return res.then() // causes wrapping of then/catch to execute within current owner and host
-        else
-          return options
-      }, self.native)
-    else
-      result = node.render(self.native, undefined)
-    if (result instanceof Promise)
-      result = result.then( // causes wrapping of then/catch to execute within current owner and host
-        value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
-        error => { console.log(error); RxDom.renderChildrenThenDo(NOP) }) // do not render children in case of owner error
-    else
-      RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
-  }
-
   static renderChildrenThenDo(action: () => void): void {
     const node = gContext
     if (node.type.sequential)
@@ -115,17 +141,6 @@ export class RxDom {
 
   static initialize(node: RxNode): void {
     tryToInitialize(node)
-  }
-
-  static finalize(node: RxNode, cause: RxNode): void {
-    const self = node.instance
-    if (self) {
-      self.native = undefined
-      for (const x of self.children)
-        tryToFinalize(x, cause)
-      for (const x of self.aliens)
-        tryToFinalize(x, cause)
-    }
   }
 
   static usingAnotherHost<E>(host: RxNode<E>, run: (e: E) => void): void {
@@ -184,7 +199,7 @@ export class RxDom {
   }
 
   static forAll<E>(action: (e: E) => void): void {
-    RxDom.forEachChildRecursively(RxDom.ROOT, action)
+    RxDom.forEachChildRecursively(RxDom.system, action)
   }
 
   private static mergeAndRenderSequentialChildren(node: RxNode, finish: () => void): void {
@@ -428,7 +443,7 @@ function invokeRender<E, O>(instance: RxNodeInstanceImpl<E, O>, node: RxNode<E, 
     if (type.render)
       type.render(node)
     else
-      RxDom.render(node)
+      RxDom.basic.render(node)
   })
 }
 
@@ -463,7 +478,7 @@ function tryToFinalize(node: RxNode, cause: RxNode): void {
     if (type.finalize)
       type.finalize(node, cause)
     else
-      RxDom.finalize(node, cause) // default finalize
+      RxDom.basic.finalize(node, cause) // default finalize
   }
 }
 
@@ -564,5 +579,5 @@ Promise.prototype.then = reactronicFrontHookedThen
 
 // Globals
 
-let gContext: RxNode = RxDom.ROOT
-let gHost: RxNode = RxDom.ROOT
+let gContext: RxNode = RxDom.system
+let gHost: RxNode = RxDom.system
