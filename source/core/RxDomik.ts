@@ -404,9 +404,9 @@ function invokeRender(node: RxNode, args: unknown): void {
 }
 
 function invokeFinalize(node: RxNode, cause: RxNode): void {
-  const t = node.type
-  if (t.finalize)
-    t.finalize(node, cause)
+  const type = node.type
+  if (type.finalize)
+    type.finalize(node, cause)
   else
     RxDom.basic.finalize(node, cause) // default finalize
 }

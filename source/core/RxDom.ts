@@ -435,18 +435,6 @@ export class RxDom {
 
 // Internal
 
-function invokeRender<E, O>(instance: RxNodeInstanceImpl<E, O>, node: RxNode<E, O>): void {
-  const host = node.native !== undefined ? node : node.host
-  runUnder(node, host, () => {
-    instance.revision++
-    const type = node.type
-    if (type.render)
-      type.render(node)
-    else
-      RxDom.basic.render(node)
-  })
-}
-
 function tryToRender(node: RxNode): void {
   const self = node.instance!
   if (node.inline) // inline elements are always rendered
@@ -470,12 +458,28 @@ function tryToFinalize(node: RxNode, cause: RxNode): void {
   const self = node.instance
   if (self && self.revision >= 0) {
     self.revision = -self.revision
-    const type = node.type
-    if (type.finalize)
-      type.finalize(node, cause)
-    else
-      RxDom.basic.finalize(node, cause) // default finalize
+    invokeFinalize(node, cause)
   }
+}
+
+function invokeRender<E, O>(instance: RxNodeInstanceImpl<E, O>, node: RxNode<E, O>): void {
+  const host = node.native !== undefined ? node : node.host
+  runUnder(node, host, () => {
+    instance.revision++
+    const type = node.type
+    if (type.render)
+      type.render(node)
+    else
+      RxDom.basic.render(node)
+  })
+}
+
+function invokeFinalize(node: RxNode, cause: RxNode): void {
+  const type = node.type
+  if (type.finalize)
+    type.finalize(node, cause)
+  else
+    RxDom.basic.finalize(node, cause) // default finalize
 }
 
 function wrap(func: (...args: any[]) => any): (...args: any[]) => any {
