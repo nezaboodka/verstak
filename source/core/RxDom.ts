@@ -21,7 +21,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
       Rx.setTraceHint(node, node.id)
   }
 
-  render(node: RxNode<E, O>, args?: unknown): void {
+  render(node: RxNode<E, O>, args: unknown): void {
     const self = node.instance
     if (!self)
       throw new Error('element must be initialized before rendering')
@@ -85,7 +85,7 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
     sensitiveArgs: true,
     noSideEffects: true })
   render(node: RxNode<E, O>): void {
-    invokeRender(this, node)
+    invokeRender(this, node, node.args)
     Rx.configureCurrentOperation({ order: this.level })
   }
 }
@@ -438,7 +438,7 @@ export class RxDom {
 function tryToRender(node: RxNode): void {
   const self = node.instance!
   if (node.inline) // inline elements are always rendered
-    invokeRender(self, node)
+    invokeRender(self, node, node.args)
   else // rendering of reactive elements is cached to avoid redundant calls
     nonreactive(self.render, node)
 }
@@ -462,15 +462,15 @@ function tryToFinalize(node: RxNode, cause: RxNode): void {
   }
 }
 
-function invokeRender<E, O>(instance: RxNodeInstanceImpl<E, O>, node: RxNode<E, O>): void {
+function invokeRender<E, O>(instance: RxNodeInstanceImpl<E, O>, node: RxNode<E, O>, args: unknown): void {
   const host = node.native !== undefined ? node : node.host
   runUnder(node, host, () => {
     instance.revision++
     const type = node.type
     if (type.render)
-      type.render(node)
+      type.render(node, args)
     else
-      RxDom.basic.render(node)
+      RxDom.basic.render(node, args)
   })
 }
 

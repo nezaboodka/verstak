@@ -54,13 +54,13 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
     }
   }
 
-  render(node: RxNode<E, any>): void {
+  render(node: RxNode<E, any>, args: unknown): void {
     const self = node.instance! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const native = self.native!
     const outer = AbstractHtmlNodeType.gNativeParent
     try { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       AbstractHtmlNodeType.gNativeParent = node // console.log(`${'  '.repeat(Math.abs(self.level))}render(${e.id} r${self.revision})`)
-      super.render(node)
+      super.render(node, args)
       // TODO: native.sensorData.drag handling?
       AbstractHtmlNodeType.blinkingEffect && blink(native, self.revision)
       if (AbstractHtmlNodeType.isDebugAttributeEnabled)

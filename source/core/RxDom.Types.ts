@@ -16,7 +16,7 @@ export interface RxNodeType<E = unknown, O = void> {
   readonly sequential: boolean
   initialize?(node: RxNode<E, O>): void
   mount?(node: RxNode<E, O>): void
-  render?(node: RxNode<E, O>, args?: unknown): void
+  render?(node: RxNode<E, O>, args: unknown): void
   finalize?(node: RxNode<E, O>, cause: RxNode): void
 }
 
