@@ -8,9 +8,6 @@
 import { reaction, nonreactive, Transaction, Rx, options, Reentrance } from 'reactronic'
 import { Render, SuperRender, RxNodeType, RxNodeInstance, RxNode } from './RxDom.Types'
 
-const EMPTY: Array<RxNode> = Object.freeze([]) as any
-const NOP = (): void => { /* nop */ }
-
 // BasicNodeType
 
 export class BasicNodeType<E, O> implements RxNodeType<E, O> {
@@ -580,6 +577,8 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
+const NOP = (): void => { /* nop */ }
+const EMPTY: Array<RxNode> = Object.freeze([]) as any
 const SYSTEM = RxDom.createRootNode<unknown>('SYSTEM', false, 'SYSTEM')
 let gContext: RxNode = SYSTEM
 let gHost: RxNode = SYSTEM
