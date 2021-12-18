@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, Rx, options, Reentrance } from 'reactronic'
-import { Render, SuperRender, RefreshParent, Rtti, AbstractNodeInstance, NodeInfo } from './Data'
+import { Render, SuperRender, RefreshParent, Rtti, AbstractNodeInstance, NodeInfo } from './RxDom.Types'
 
 const EMPTY: Array<NodeInfo<any, any>> = Object.freeze([]) as any
 const DEFAULT_RTTI: Rtti<any, any> = { name: 'RxDom.Node', sequential: false }
