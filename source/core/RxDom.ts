@@ -6,15 +6,15 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, Rx, options, Reentrance } from 'reactronic'
-import { Render, SuperRender, RxNodeType, AbstractNodeInstance, RxNode } from './RxDom.Types'
+import { Render, SuperRender, RxNodeType, AbstractRxNodeImpl, RxNode } from './RxDom.Types'
 
 const EMPTY: Array<RxNode<any, any>> = Object.freeze([]) as any
 const NOP = (): void => { /* nop */ }
 const SYS: RxNodeType<any, any> = { name: 'RxDom.Node', sequential: false }
 
-// NodeInstance
+// RxNodeImpl
 
-export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance<E, O> {
+export class RxNodeImpl<E = unknown, O = void> implements AbstractRxNodeImpl<E, O> {
   private static gUuid: number = 0
   readonly uuid: number
   readonly level: number
@@ -27,7 +27,7 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
-    this.uuid = ++NodeInstance.gUuid
+    this.uuid = ++RxNodeImpl.gUuid
     this.level = level
   }
 
@@ -36,7 +36,7 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
     sensitiveArgs: true,
     noSideEffects: true })
   render(node: RxNode<E, O>): void {
-    RxDom.renderUsingRttiOrDirectly(this, node)
+    RxDom.invokeRender(this, node)
     Rx.configureCurrentOperation({ order: this.level })
   }
 
@@ -49,8 +49,6 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
 
 export class RxDom {
   static readonly ROOT = RxDom.createRootNode<unknown>('ROOT', false, 'ROOT')
-  static gOwner: RxNode<any, any> = RxDom.ROOT
-  static gHost: RxNode<any, any> = RxDom.ROOT
   static gTrace: string | undefined = undefined
   static gTraceMask: string = 'r'
 
@@ -73,8 +71,8 @@ export class RxDom {
     render: Render<E, O>, superRender?: SuperRender<O, E>,
     priority?: number, type?: RxNodeType<E, O>, inline?: boolean,
     owner?: RxNode, host?: RxNode): RxNode<E, O> {
-    const o = owner ?? RxDom.gOwner
-    const h = host ?? RxDom.gHost
+    const o = owner ?? gContext
+    const h = host ?? gHost
     const self = o.instance
     if (!self)
       throw new Error('element must be initialized before children')
@@ -87,40 +85,17 @@ export class RxDom {
     return node
   }
 
-  static wrap(func: (...args: any[]) => any): (...args: any[]) => any {
-    const owner = RxDom.gOwner
-    const host = RxDom.gHost
-    const wrappedRendering = (...args: any[]): any => {
-      return RxDom.runUnder(owner, host, func, ...args)
-    }
-    return wrappedRendering
-  }
-
-  static runUnder(owner: RxNode, host: RxNode, func: (...args: any[]) => any, ...args: any[]): any {
-    const outerOwner = RxDom.gOwner
-    const outerHost = RxDom.gHost
-    try {
-      RxDom.gOwner = owner
-      RxDom.gHost = host
-      return func(...args)
-    }
-    finally {
-      RxDom.gHost = outerHost
-      RxDom.gOwner = outerOwner
-    }
-  }
-
   static render(node: RxNode<any, any>): void {
     const self = node.instance
     if (!self)
       throw new Error('element must be initialized before rendering')
     if (self.buffer)
       throw new Error('rendering re-entrance is not supported yet')
-    const outerOwner = RxDom.gOwner
-    const outerHost = RxDom.gHost
+    const outerOwner = gContext
+    const outerHost = gHost
     try {
-      RxDom.gOwner = node
-      RxDom.gHost = self.native ? node : node.host
+      gContext = node
+      gHost = self.native ? node : node.host
       self.buffer = []
       if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
         console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${!node.inline ? `  <<  ${Rx.why(true)}` : ''}`)
@@ -143,13 +118,13 @@ export class RxDom {
         RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
     }
     finally {
-      RxDom.gHost = outerHost
-      RxDom.gOwner = outerOwner
+      gHost = outerHost
+      gContext = outerOwner
     }
   }
 
   static renderChildrenThenDo(action: () => void): void {
-    const node = RxDom.gOwner
+    const node = gContext
     if (node.type.sequential)
       RxDom.mergeAndRenderSequentialChildren(node, action)
     else
@@ -175,19 +150,19 @@ export class RxDom {
   static usingAnotherHost<E>(host: RxNode<E>, run: (e: E) => void): void {
     const native = host.instance?.native
     if (native !== undefined) {
-      const outer = RxDom.gHost
+      const outer = gHost
       try {
-        RxDom.gHost = host
+        gHost = host
         run(native)
       }
       finally {
-        RxDom.gHost = outer
+        gHost = outer
       }
     }
   }
 
   static createRootNode<E>(id: string, sequential: boolean, native: E): RxNode<E> {
-    const self = new NodeInstance<E>(0)
+    const self = new RxNodeImpl<E>(0)
     const node = new RxNode<E>(
       id,                       // id
       null,                     // args
@@ -210,21 +185,21 @@ export class RxDom {
   // currentNodeInstance, currentNodeRevision, trace, forAll
 
   static currentNodeInstance<T>(): { model?: T } {
-    const self = RxDom.gOwner.instance
+    const self = gContext.instance
     if (!self)
       throw new Error('currentNodeInstance function can be called only inside rendering function')
     return self as { model?: T }
   }
 
-  static currentNodeInstanceInternal<E>(): NodeInstance<E> {
-    const self = RxDom.gOwner.instance
+  static currentNodeInstanceInternal<E>(): RxNodeImpl<E> {
+    const self = gContext.instance
     if (!self)
       throw new Error('currentNodeInstanceInternal function can be called only inside rendering function')
     return self
   }
 
   static currentNodeRevision(): number {
-    return RxDom.gOwner.instance?.revision ?? 0
+    return gContext.instance?.revision ?? 0
   }
 
   static setTraceMode(enabled: boolean, mask: string, regexp: string): void {
@@ -236,11 +211,12 @@ export class RxDom {
     RxDom.forEachChildRecursively(RxDom.ROOT, action)
   }
 
-  static renderUsingRttiOrDirectly<E, O>(instance: NodeInstance<E, O>, node: RxNode<E, O>): void {
-    // if (instance === undefined || instance === null)
-    //   debugger // temporary, TODO: debug
+  static invokeRender<E, O>(instance: RxNodeImpl<E, O>, node: RxNode<E, O>): void {
     instance.revision++
-    node.type.render ? node.type.render(node) : RxDom.render(node)
+    if (node.type.render)
+      node.type.render(node)
+    else
+      RxDom.render(node)
   }
 
   // Internal
@@ -248,15 +224,15 @@ export class RxDom {
   private static doRender(node: RxNode): void {
     const self = node.instance!
     if (node.inline) // inline elements are always rendered
-      RxDom.renderUsingRttiOrDirectly(self, node)
+      RxDom.invokeRender(self, node)
     else // rendering of reactive elements is cached to avoid redundant calls
       nonreactive(self.render, node)
   }
 
-  private static doInitialize(node: RxNode): NodeInstance {
+  private static doInitialize(node: RxNode): RxNodeImpl {
     // TODO: Make the code below exception-safe
     const rtti = node.type
-    const self = node.instance = new NodeInstance(node.owner.instance!.level + 1)
+    const self = node.instance = new RxNodeImpl(node.owner.instance!.level + 1)
     rtti.initialize?.(node)
     rtti.mount?.(node)
     if (!node.inline)
@@ -475,7 +451,7 @@ export class RxDom {
     }
   }
 
-  private static mergeAliens(host: AbstractNodeInstance, owner: AbstractNodeInstance, aliens: Array<RxNode<any, any>>): void {
+  private static mergeAliens(host: AbstractRxNodeImpl, owner: AbstractRxNodeImpl, aliens: Array<RxNode<any, any>>): void {
     if (host !== owner) {
       const existing = host.aliens
       const merged: Array<RxNode<any, any>> = []
@@ -508,6 +484,29 @@ export class RxDom {
       native && action(native)
       self.children.forEach(x => RxDom.forEachChildRecursively(x, action))
     }
+  }
+}
+
+function wrap(func: (...args: any[]) => any): (...args: any[]) => any {
+  const owner = gContext
+  const host = gHost
+  const wrappedRendering = (...args: any[]): any => {
+    return runUnder(owner, host, func, ...args)
+  }
+  return wrappedRendering
+}
+
+function runUnder(owner: RxNode, host: RxNode, func: (...args: any[]) => any, ...args: any[]): any {
+  const outerOwner = gContext
+  const outerHost = gHost
+  try {
+    gContext = owner
+    gHost = host
+    return func(...args)
+  }
+  finally {
+    gHost = outerHost
+    gContext = outerOwner
   }
 }
 
@@ -566,8 +565,8 @@ const ORIGINAL_PROMISE_THEN = Promise.prototype.then
 function reactronicFrontHookedThen(this: any,
   resolve?: ((value: any) => any | PromiseLike<any>) | undefined | null,
   reject?: ((reason: any) => never | PromiseLike<never>) | undefined | null): Promise<any | never> {
-  resolve = resolve ? RxDom.wrap(resolve) : resolveReturn
-  reject = reject ? RxDom.wrap(reject) : rejectRethrow
+  resolve = resolve ? wrap(resolve) : resolveReturn
+  reject = reject ? wrap(reject) : rejectRethrow
   return ORIGINAL_PROMISE_THEN.call(this, resolve, reject)
 }
 
@@ -582,3 +581,8 @@ export function rejectRethrow(error: any): never {
 }
 
 Promise.prototype.then = reactronicFrontHookedThen
+
+// Globals
+
+let gContext: RxNode<any, any> = RxDom.ROOT
+let gHost: RxNode<any, any> = RxDom.ROOT
