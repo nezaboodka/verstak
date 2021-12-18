@@ -10,7 +10,7 @@ export * from './core/RxDom'
 export * from './core/Restyler'
 
 export * from './html/sensors/Sensor'
-export * from './html/HtmlRtti'
+export * from './html/HtmlNodeType'
 export * from './html/HtmlElements'
 export * from './html/sensors/BasePointerSensor'
 export * from './html/sensors/FocusSensor'

@@ -6,5 +6,5 @@
 // automatically licensed under the license referred above.
 
 export * from './RxDom.Types'
-export { RxDom } from './RxDom'
+export { RxDom, BasicNodeType } from './RxDom'
 export * from './Restyler'

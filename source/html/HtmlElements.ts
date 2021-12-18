@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { RxDom, Render, RxNode, SuperRender } from '../core/api'
-import { HtmlNodeType, SvgNodeType } from './HtmlRtti'
+import { HtmlNodeType, SvgNodeType } from './HtmlNodeType'
 
 export function HtmlBody(id: string, args: any, render: Render<HTMLElement>): RxNode<HTMLElement> {
   return RxDom.Node(id, args, render, undefined, undefined, {
@@ -369,7 +369,7 @@ const HtmlTags = {
   var: new HtmlNodeType<HTMLElement>('var'),
   video: new HtmlNodeType<HTMLVideoElement>('video'),
   wbr: new HtmlNodeType<HTMLElement>('wbr'),
-  // webview: new HtmlRtti<HTMLWebViewElement>('webview'),
+  // webview: new HtmlNodeType<HTMLWebViewElement>('webview'),
 }
 
 export function RxSvg<O = void>(id: string, args: any, render: Render<SVGSVGElement, O>, superRender?: SuperRender<O, SVGSVGElement>, priority?: number): RxNode<SVGSVGElement, O> { return RxDom.Node(id, args, render, superRender, priority, SvgTags.svg) }

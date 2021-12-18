@@ -6,9 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { Rx } from 'reactronic'
-import { RxDom, RxNode, RxNodeType } from '../core/api'
+import { RxDom, RxNode, BasicNodeType } from '../core/api'
 
-export abstract class AbstractHtmlNodeType<E extends Element> implements RxNodeType<E, any> {
+export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeType<E, any> {
   static isDebugAttributeEnabled: boolean = false
   static gNativeParent: RxNode = RxDom.createRootNode('html > body', true, global.document.body)
   static gSubTreeFinalization?: Element = undefined
@@ -17,13 +17,14 @@ export abstract class AbstractHtmlNodeType<E extends Element> implements RxNodeT
   constructor(
     readonly name: string,
     readonly sequential: boolean = true) {
+    super(name, sequential)
   }
 
   initialize(node: RxNode<E, any>): void {
+    super.initialize(node)
     const native = this.createElement(node)
     native.id = node.id
     node.instance!.native = native
-    // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.appendChild(${e.id} r${self.revision})`)
   }
 
   mount(node: RxNode<E, any>): void {
@@ -59,7 +60,7 @@ export abstract class AbstractHtmlNodeType<E extends Element> implements RxNodeT
     const outer = AbstractHtmlNodeType.gNativeParent
     try { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       AbstractHtmlNodeType.gNativeParent = node // console.log(`${'  '.repeat(Math.abs(self.level))}render(${e.id} r${self.revision})`)
-      RxDom.basic.render(node)
+      super.render(node)
       // TODO: native.sensorData.drag handling?
       AbstractHtmlNodeType.blinkingEffect && blink(native, self.revision)
       if (AbstractHtmlNodeType.isDebugAttributeEnabled)
@@ -78,7 +79,7 @@ export abstract class AbstractHtmlNodeType<E extends Element> implements RxNodeT
       try { // console.log(`${'  '.repeat(Math.abs(self.level))}${e.parentElement.id}.removeChild(${e.id} r${self.revision})`)
         self.resizing?.unobserve(native)
         native.remove()
-        RxDom.basic.finalize(node, cause) // proceed
+        super.finalize(node, cause) // proceed
       }
       finally {
         AbstractHtmlNodeType.gSubTreeFinalization = undefined
@@ -87,7 +88,7 @@ export abstract class AbstractHtmlNodeType<E extends Element> implements RxNodeT
     else { // console.log(`${'  '.repeat(Math.abs(self.level))}???.finalize(${ref.id} r${self.revision})`)
       if (native)
         self.resizing?.unobserve(native)
-      RxDom.basic.finalize(node, cause) // proceed
+      super.finalize(node, cause) // proceed
     }
   }
 

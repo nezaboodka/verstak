@@ -8,9 +8,9 @@
 import { reaction, Transaction, Rx, options, Reentrance, nonreactive } from 'reactronic'
 import { RxNodeType, Render, RxNode, SuperRender } from './RxDomik.Types'
 
-// BaseNodeType
+// BasicNodeType
 
-export class BaseNodeType<E, O> implements RxNodeType<E, O> {
+export class BasicNodeType<E, O> implements RxNodeType<E, O> {
   constructor(
     readonly name: string,
     readonly sequential: boolean) {
@@ -145,7 +145,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
 // RxDomik
 
 export class RxDom {
-  public static readonly basic = new BaseNodeType<any, any>('basic', false)
+  public static readonly basic = new BasicNodeType<any, any>('basic', false)
 
   static Root<T>(render: () => T): T {
     let result: any = render()

@@ -11,9 +11,9 @@ import { Render, SuperRender, RxNodeType, RxNodeInstance, RxNode } from './RxDom
 const EMPTY: Array<RxNode> = Object.freeze([]) as any
 const NOP = (): void => { /* nop */ }
 
-// BaseNodeType
+// BasicNodeType
 
-export class BaseNodeType<E, O> implements RxNodeType<E, O> {
+export class BasicNodeType<E, O> implements RxNodeType<E, O> {
   constructor(
     readonly name: string,
     readonly sequential: boolean) {
@@ -94,7 +94,7 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
 // RxDom
 
 export class RxDom {
-  public static readonly basic = new BaseNodeType<any, any>('basic', false)
+  public static readonly basic = new BasicNodeType<any, any>('basic', false)
   static readonly system = RxDom.createRootNode<unknown>('system', false, 'system')
 
   static Root<T>(render: () => T): T {
