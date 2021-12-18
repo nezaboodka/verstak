@@ -12,13 +12,13 @@ export type Customize<E = unknown, O = void> = (element: E, options: O) => void
 export type AsyncCustomize<E = unknown, O = void> = (element: E, options: O) => Promise<void>
 export const RefreshParent = Symbol('RefreshParent') as unknown as void
 
-export interface Rtti<E = unknown, O = void> {
+export interface RxNodeType<E = unknown, O = void> {
   readonly name: string
   readonly sequential: boolean
-  initialize?(node: NodeInfo<E, O>): void
-  mount?(node: NodeInfo<E, O>): void
-  render?(node: NodeInfo<E, O>): void
-  finalize?(node: NodeInfo<E, O>, cause: NodeInfo): void
+  initialize?(node: RxNode<E, O>): void
+  mount?(node: RxNode<E, O>): void
+  render?(node: RxNode<E, O>): void
+  finalize?(node: RxNode<E, O>, cause: RxNode): void
 }
 
 export interface AbstractNodeInstance<E = unknown, O = void> {
@@ -27,17 +27,17 @@ export interface AbstractNodeInstance<E = unknown, O = void> {
   revision: number
   native?: E
   model?: unknown
-  children: ReadonlyArray<NodeInfo<any, any>>
-  buffer: Array<NodeInfo<any, any>> | undefined
-  aliens: ReadonlyArray<NodeInfo<any, any>>
+  children: ReadonlyArray<RxNode<any, any>>
+  buffer: Array<RxNode<any, any>> | undefined
+  aliens: ReadonlyArray<RxNode<any, any>>
   resizing?: ResizeObserver
-  render(node: NodeInfo<E, O>): void
+  render(node: RxNode<E, O>): void
   // ['#this']: string
 }
 
-export class NodeInfo<E = unknown, O = void> {
-  old?: NodeInfo<E, O> = undefined // internal
-  sibling?: NodeInfo = undefined // internal
+export class RxNode<E = unknown, O = void> {
+  old?: RxNode<E, O> = undefined // internal
+  sibling?: RxNode = undefined // internal
   get native(): E | undefined { return this.instance?.native }
 
   constructor(
@@ -46,9 +46,9 @@ export class NodeInfo<E = unknown, O = void> {
     readonly render: Render<E, O>,
     readonly superRender: SuperRender<O, E> | undefined,
     readonly priority: number,
-    readonly rtti: Rtti<E, O>,
-    readonly owner: NodeInfo,
-    readonly host: NodeInfo,
+    readonly type: RxNodeType<E, O>,
+    readonly owner: RxNode,
+    readonly host: RxNode,
     public instance?: AbstractNodeInstance<E, O>) {
   }
 }

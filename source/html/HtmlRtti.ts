@@ -6,11 +6,11 @@
 // automatically licensed under the license referred above.
 
 import { Rx } from 'reactronic'
-import { RxDom, NodeInfo, Rtti } from '../core/api'
+import { RxDom, RxNode, RxNodeType } from '../core/api'
 
-export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any> {
+export abstract class AbstractHtmlNodeType<E extends Element> implements RxNodeType<E, any> {
   static isDebugAttributeEnabled: boolean = false
-  static gNativeParent: NodeInfo<any, any> = RxDom.createRootNode('html > body', true, global.document.body)
+  static gNativeParent: RxNode<any, any> = RxDom.createRootNode('html > body', true, global.document.body)
   static gSubTreeFinalization?: Element = undefined
   private static _blinkingEffect: string | undefined = undefined
 
@@ -19,14 +19,14 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     readonly sequential: boolean = true) {
   }
 
-  initialize(node: NodeInfo<E, any>): void {
+  initialize(node: RxNode<E, any>): void {
     const native = this.createElement(node)
     native.id = node.id
     node.instance!.native = native
     // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.appendChild(${e.id} r${self.revision})`)
   }
 
-  mount(node: NodeInfo<E, any>): void {
+  mount(node: RxNode<E, any>): void {
     const self = node.instance
     const native = self?.native
     if (native) {
@@ -53,35 +53,35 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
     }
   }
 
-  render(node: NodeInfo<E, any>): void {
+  render(node: RxNode<E, any>): void {
     const self = node.instance! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const native = self.native!
-    const outer = AbstractHtmlRtti.gNativeParent
+    const outer = AbstractHtmlNodeType.gNativeParent
     try { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      AbstractHtmlRtti.gNativeParent = node // console.log(`${'  '.repeat(Math.abs(self.level))}render(${e.id} r${self.revision})`)
+      AbstractHtmlNodeType.gNativeParent = node // console.log(`${'  '.repeat(Math.abs(self.level))}render(${e.id} r${self.revision})`)
       RxDom.render(node)
       // TODO: native.sensorData.drag handling?
-      AbstractHtmlRtti.blinkingEffect && blink(native, self.revision)
-      if (AbstractHtmlRtti.isDebugAttributeEnabled)
+      AbstractHtmlNodeType.blinkingEffect && blink(native, self.revision)
+      if (AbstractHtmlNodeType.isDebugAttributeEnabled)
         native.setAttribute('rdbg', `${self.revision}:    ${Rx.why()}`)
     }
     finally {
-      AbstractHtmlRtti.gNativeParent = outer
+      AbstractHtmlNodeType.gNativeParent = outer
     }
   }
 
-  finalize(node: NodeInfo<E, any>, cause: NodeInfo): void {
+  finalize(node: RxNode<E, any>, cause: RxNode): void {
     const self = node.instance
     const native = self?.native
-    if (!AbstractHtmlRtti.gSubTreeFinalization && native && native.parentElement) {
-      AbstractHtmlRtti.gSubTreeFinalization = native // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    if (!AbstractHtmlNodeType.gSubTreeFinalization && native && native.parentElement) {
+      AbstractHtmlNodeType.gSubTreeFinalization = native // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       try { // console.log(`${'  '.repeat(Math.abs(self.level))}${e.parentElement.id}.removeChild(${e.id} r${self.revision})`)
         self.resizing?.unobserve(native)
         native.remove()
         RxDom.finalize(node, cause) // proceed
       }
       finally {
-        AbstractHtmlRtti.gSubTreeFinalization = undefined
+        AbstractHtmlNodeType.gSubTreeFinalization = undefined
       }
     }
     else { // console.log(`${'  '.repeat(Math.abs(self.level))}???.finalize(${ref.id} r${self.revision})`)
@@ -92,37 +92,37 @@ export abstract class AbstractHtmlRtti<E extends Element> implements Rtti<E, any
   }
 
   static get blinkingEffect(): string | undefined {
-    return AbstractHtmlRtti._blinkingEffect
+    return AbstractHtmlNodeType._blinkingEffect
   }
 
   static set blinkingEffect(value: string | undefined) {
     if (value === undefined) {
       RxDom.forAll((e: any) => {
         if (e instanceof HTMLElement)
-          e.classList.remove(`${AbstractHtmlRtti.blinkingEffect}-0`, `${AbstractHtmlRtti.blinkingEffect}-1`)
+          e.classList.remove(`${AbstractHtmlNodeType.blinkingEffect}-0`, `${AbstractHtmlNodeType.blinkingEffect}-1`)
       })
     }
-    AbstractHtmlRtti._blinkingEffect = value
+    AbstractHtmlNodeType._blinkingEffect = value
   }
 
-  protected abstract createElement(m: NodeInfo<E, any>): E
+  protected abstract createElement(m: RxNode<E, any>): E
 }
 
 function blink(e: Element, cycle: number): void {
   const n1 = cycle % 2
   const n2 = 1 >> n1
-  e.classList.toggle(`${AbstractHtmlRtti.blinkingEffect}-${n1}`, true)
-  e.classList.toggle(`${AbstractHtmlRtti.blinkingEffect}-${n2}`, false)
+  e.classList.toggle(`${AbstractHtmlNodeType.blinkingEffect}-${n1}`, true)
+  e.classList.toggle(`${AbstractHtmlNodeType.blinkingEffect}-${n2}`, false)
 }
 
-export class HtmlRtti<E extends HTMLElement> extends AbstractHtmlRtti<E> {
-  protected createElement(node: NodeInfo<E, any>): E {
-    return document.createElement(node.rtti.name) as E
+export class HtmlNodeType<E extends HTMLElement> extends AbstractHtmlNodeType<E> {
+  protected createElement(node: RxNode<E, any>): E {
+    return document.createElement(node.type.name) as E
   }
 }
 
-export class SvgRtti<E extends SVGElement> extends AbstractHtmlRtti<E> {
-  protected createElement(node: NodeInfo<E, any>): E {
-    return document.createElementNS('http://www.w3.org/2000/svg', node.rtti.name) as E
+export class SvgNodeType<E extends SVGElement> extends AbstractHtmlNodeType<E> {
+  protected createElement(node: RxNode<E, any>): E {
+    return document.createElementNS('http://www.w3.org/2000/svg', node.type.name) as E
   }
 }

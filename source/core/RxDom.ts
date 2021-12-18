@@ -6,11 +6,11 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, Rx, options, Reentrance } from 'reactronic'
-import { Render, SuperRender, RefreshParent, Rtti, AbstractNodeInstance, NodeInfo } from './RxDom.Types'
+import { Render, SuperRender, RefreshParent, RxNodeType, AbstractNodeInstance, RxNode } from './RxDom.Types'
 
-const EMPTY: Array<NodeInfo<any, any>> = Object.freeze([]) as any
-const DEFAULT_RTTI: Rtti<any, any> = { name: 'RxDom.Node', sequential: false }
+const EMPTY: Array<RxNode<any, any>> = Object.freeze([]) as any
 const NOP = (): void => { /* nop */ }
+const SYS: RxNodeType<any, any> = { name: 'RxDom.Node', sequential: false }
 
 // NodeInstance
 
@@ -21,9 +21,9 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
   revision: number = 0
   native?: E = undefined
   model?: unknown = undefined
-  children: ReadonlyArray<NodeInfo<any, any>> = EMPTY
-  buffer: Array<NodeInfo<any, any>> | undefined = undefined
-  aliens: ReadonlyArray<NodeInfo<any, any>> = EMPTY
+  children: ReadonlyArray<RxNode<any, any>> = EMPTY
+  buffer: Array<RxNode<any, any>> | undefined = undefined
+  aliens: ReadonlyArray<RxNode<any, any>> = EMPTY
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
@@ -35,7 +35,7 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
     reentrance: Reentrance.CancelPrevious,
     sensitiveArgs: true,
     noSideEffects: true })
-  render(node: NodeInfo<E, O>): void {
+  render(node: RxNode<E, O>): void {
     RxDom.renderUsingRttiOrDirectly(this, node)
     Rx.configureCurrentOperation({ order: this.level })
   }
@@ -49,8 +49,8 @@ export class NodeInstance<E = unknown, O = void> implements AbstractNodeInstance
 
 export class RxDom {
   static readonly ROOT = RxDom.createRootNode<unknown>('ROOT', false, 'ROOT')
-  static gOwner: NodeInfo<any, any> = RxDom.ROOT
-  static gHost: NodeInfo<any, any> = RxDom.ROOT
+  static gOwner: RxNode<any, any> = RxDom.ROOT
+  static gHost: RxNode<any, any> = RxDom.ROOT
   static gTrace: string | undefined = undefined
   static gTraceMask: string = 'r'
 
@@ -71,14 +71,14 @@ export class RxDom {
 
   static Node<E = unknown, O = void>(id: string, args: any,
     render: Render<E, O>, superRender?: SuperRender<O, E>,
-    priority?: number, rtti?: Rtti<E, O>,
-    owner?: NodeInfo, host?: NodeInfo): NodeInfo<E, O> {
+    priority?: number, type?: RxNodeType<E, O>,
+    owner?: RxNode, host?: RxNode): RxNode<E, O> {
     const o = owner ?? RxDom.gOwner
     const h = host ?? RxDom.gHost
     const self = o.instance
     if (!self)
       throw new Error('element must be initialized before children')
-    const node = new NodeInfo<E, O>(id, args, render, superRender, priority ?? 0, rtti ?? DEFAULT_RTTI, o, h)
+    const node = new RxNode<E, O>(id, args, render, superRender, priority ?? 0, type ?? SYS, o, h)
     if (self.buffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const rev = h?.instance?.revision ?? -1
@@ -96,7 +96,7 @@ export class RxDom {
     return wrappedRendering
   }
 
-  static runUnder(owner: NodeInfo, host: NodeInfo, func: (...args: any[]) => any, ...args: any[]): any {
+  static runUnder(owner: RxNode, host: RxNode, func: (...args: any[]) => any, ...args: any[]): any {
     const outerOwner = RxDom.gOwner
     const outerHost = RxDom.gHost
     try {
@@ -110,7 +110,7 @@ export class RxDom {
     }
   }
 
-  static render(node: NodeInfo<any, any>): void {
+  static render(node: RxNode<any, any>): void {
     const self = node.instance
     if (!self)
       throw new Error('element must be initialized before rendering')
@@ -150,17 +150,17 @@ export class RxDom {
 
   static renderChildrenThenDo(action: () => void): void {
     const node = RxDom.gOwner
-    if (node.rtti.sequential)
+    if (node.type.sequential)
       RxDom.mergeAndRenderSequentialChildren(node, action)
     else
       RxDom.mergeAndRenderChildren(node, action)
   }
 
-  static initialize(node: NodeInfo): void {
+  static initialize(node: RxNode): void {
     RxDom.doInitialize(node)
   }
 
-  static finalize(node: NodeInfo<any, any>, cause: NodeInfo): void {
+  static finalize(node: RxNode<any, any>, cause: RxNode): void {
     const self = node.instance
     if (self && self.revision >= 0) {
       self.revision = -self.revision
@@ -172,7 +172,7 @@ export class RxDom {
     }
   }
 
-  static usingAnotherHost<E>(host: NodeInfo<E>, run: (e: E) => void): void {
+  static usingAnotherHost<E>(host: RxNode<E>, run: (e: E) => void): void {
     const native = host.instance?.native
     if (native !== undefined) {
       const outer = RxDom.gHost
@@ -186,17 +186,17 @@ export class RxDom {
     }
   }
 
-  static createRootNode<E>(id: string, sequential: boolean, native: E): NodeInfo<E> {
+  static createRootNode<E>(id: string, sequential: boolean, native: E): RxNode<E> {
     const self = new NodeInstance<E>(0)
-    const node = new NodeInfo<E>(
+    const node = new RxNode<E>(
       id,                           // id
       null,                         // args
       () => { /* nop */ },          // render
       undefined,                    // superRender
       0,                            // priority
       { name: id, sequential },     // rtti
-      {} as NodeInfo,               // owner (lifecycle manager)
-      {} as NodeInfo,               // host (rendering parent)
+      {} as RxNode,               // owner (lifecycle manager)
+      {} as RxNode,               // host (rendering parent)
       self)                         // instance
     // Initialize
     const a: any = node
@@ -235,16 +235,16 @@ export class RxDom {
     RxDom.forEachChildRecursively(RxDom.ROOT, action)
   }
 
-  static renderUsingRttiOrDirectly<E, O>(instance: NodeInstance<E, O>, node: NodeInfo<E, O>): void {
+  static renderUsingRttiOrDirectly<E, O>(instance: NodeInstance<E, O>, node: RxNode<E, O>): void {
     // if (instance === undefined || instance === null)
     //   debugger // temporary, TODO: debug
     instance.revision++
-    node.rtti.render ? node.rtti.render(node) : RxDom.render(node)
+    node.type.render ? node.type.render(node) : RxDom.render(node)
   }
 
   // Internal
 
-  private static doRender(node: NodeInfo): void {
+  private static doRender(node: RxNode): void {
     const self = node.instance!
     if (node.args === RefreshParent) // inline elements are always rendered
       RxDom.renderUsingRttiOrDirectly(self, node)
@@ -252,9 +252,9 @@ export class RxDom {
       nonreactive(self.render, node)
   }
 
-  private static doInitialize(node: NodeInfo): NodeInstance {
+  private static doInitialize(node: RxNode): NodeInstance {
     // TODO: Make the code below exception-safe
-    const rtti = node.rtti
+    const rtti = node.type
     const self = node.instance = new NodeInstance(node.owner.instance!.level + 1)
     rtti.initialize?.(node)
     rtti.mount?.(node)
@@ -265,19 +265,19 @@ export class RxDom {
     return self
   }
 
-  private static doFinalize(node: NodeInfo, cause: NodeInfo): void {
+  private static doFinalize(node: RxNode, cause: RxNode): void {
     if (RxDom.gTrace && RxDom.gTraceMask.indexOf('u') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.finalizing`)
     if (node.args !== RefreshParent && node.instance) // TODO: Consider creating one transaction for all finalizations at once
       Transaction.runAs({ standalone: true }, () => Rx.dispose(node.instance))
-    const rtti = node.rtti
+    const rtti = node.type
     if (rtti.finalize)
       rtti.finalize(node, cause)
     else
       RxDom.finalize(node, cause) // default finalize
   }
 
-  private static mergeAndRenderSequentialChildren(node: NodeInfo, finish: () => void): void {
+  private static mergeAndRenderSequentialChildren(node: RxNode, finish: () => void): void {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
       let promised: Promise<void> | undefined = undefined
@@ -288,8 +288,8 @@ export class RxDom {
         self.buffer = undefined
         // Merge loop (always synchronous) - link to existing or finalize
         let host = self
-        let aliens: Array<NodeInfo<any, any>> = EMPTY
-        let sibling: NodeInfo | undefined = undefined
+        let aliens: Array<RxNode<any, any>> = EMPTY
+        let sibling: RxNode | undefined = undefined
         let i = 0, j = 0
         while (i < existing.length) {
           const old = existing[i]
@@ -335,7 +335,7 @@ export class RxDom {
           const instance = x.instance
           if (old && instance) {
             if (sibling?.instance !== old.sibling?.instance) // if sequence is changed
-              x.rtti.mount?.(x)
+              x.type.mount?.(x)
             if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
               RxDom.doRender(x) // re-rendering
           }
@@ -363,19 +363,19 @@ export class RxDom {
   }
 
 
-  private static mergeAndRenderChildren(node: NodeInfo, finish: () => void): void {
+  private static mergeAndRenderChildren(node: RxNode, finish: () => void): void {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
       let promised: Promise<void> | undefined = undefined
       try {
         const existing = self.children
         const buffer = self.buffer.sort(compareNodes)
-        const postponed = new Array<NodeInfo<any, any>>()
+        const postponed = new Array<RxNode<any, any>>()
         self.buffer = undefined
         // Merge loop (always synchronous): link, render/initialize (priority 0), finalize
         let host = self
-        let aliens: Array<NodeInfo<any, any>> = EMPTY
-        let sibling: NodeInfo | undefined = undefined
+        let aliens: Array<RxNode<any, any>> = EMPTY
+        let sibling: RxNode | undefined = undefined
         let i = 0, j = 0
         while (i < existing.length || j < buffer.length) {
           const old = existing[i]
@@ -451,7 +451,7 @@ export class RxDom {
     }
   }
 
-  private static async renderIncrementally(parent: NodeInfo, children: Array<NodeInfo>, startIndex: number,
+  private static async renderIncrementally(parent: RxNode, children: Array<RxNode>, startIndex: number,
     checkEveryN: number = 30, timeLimit: number = 12): Promise<void> {
     if (Transaction.isFrameOver(checkEveryN, timeLimit))
       await Transaction.requestNextFrame()
@@ -474,10 +474,10 @@ export class RxDom {
     }
   }
 
-  private static mergeAliens(host: AbstractNodeInstance, owner: AbstractNodeInstance, aliens: Array<NodeInfo<any, any>>): void {
+  private static mergeAliens(host: AbstractNodeInstance, owner: AbstractNodeInstance, aliens: Array<RxNode<any, any>>): void {
     if (host !== owner) {
       const existing = host.aliens
-      const merged: Array<NodeInfo<any, any>> = []
+      const merged: Array<RxNode<any, any>> = []
       let i = 0, j = 0 // TODO: Consider using binary search to find initial index
       while (i < existing.length || j < aliens.length) {
         const old = existing[i]
@@ -500,7 +500,7 @@ export class RxDom {
     }
   }
 
-  private static forEachChildRecursively(node: NodeInfo, action: (e: any) => void): void {
+  private static forEachChildRecursively(node: RxNode, action: (e: any) => void): void {
     const self = node.instance
     if (self) {
       const native = self.native
@@ -510,7 +510,7 @@ export class RxDom {
   }
 }
 
-function compareNodes(node1: NodeInfo, node2: NodeInfo): number {
+function compareNodes(node1: RxNode, node2: RxNode): number {
   let result: number = 0
   const hp1 = node1.host.instance
   const hp2 = node2.host.instance
@@ -524,7 +524,7 @@ function compareNodes(node1: NodeInfo, node2: NodeInfo): number {
   return result
 }
 
-function compareNodesByPriority(node1: NodeInfo, node2: NodeInfo): number {
+function compareNodesByPriority(node1: RxNode, node2: RxNode): number {
   return node1.priority - node2.priority
 }
 
@@ -556,8 +556,8 @@ function argsAreEqual(a1: any, a2: any): boolean {
   return result
 }
 
-function getTraceHint(node: NodeInfo): string {
-  return `${node.rtti.name}:${node.id}`
+function getTraceHint(node: RxNode): string {
+  return `${node.type.name}:${node.id}`
 }
 
 const ORIGINAL_PROMISE_THEN = Promise.prototype.then
