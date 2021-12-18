@@ -28,7 +28,7 @@ export interface RxNodeInstance<E = unknown, O = void> {
   model?: unknown
   children: ReadonlyArray<RxNode>
   buffer: Array<RxNode> | undefined
-  aliens: ReadonlyArray<RxNode>
+  guests: ReadonlyArray<RxNode>
   resizing?: ResizeObserver
   rerender(node: RxNode<E, O>): void
 }

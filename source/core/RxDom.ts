@@ -55,7 +55,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
         Transaction.runAs({ standalone: true }, () => Rx.dispose(node.instance))
       for (const x of inst.children)
         tryToFinalize(x, cause)
-      for (const x of inst.aliens)
+      for (const x of inst.guests)
         tryToFinalize(x, cause)
     }
   }
@@ -72,7 +72,7 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
   model?: unknown = undefined
   children: ReadonlyArray<RxNode> = EMPTY
   buffer: Array<RxNode> | undefined = undefined
-  aliens: ReadonlyArray<RxNode> = EMPTY
+  guests: ReadonlyArray<RxNode> = EMPTY
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
@@ -211,7 +211,7 @@ export class RxDom {
         inst.buffer = undefined
         // Merge loop (always synchronous) - link to existing or finalize
         let host = inst
-        let aliens: Array<RxNode> = EMPTY
+        let guests: Array<RxNode> = EMPTY
         let sibling: RxNode | undefined = undefined
         let i = 0, j = 0
         while (i < existing.length) {
@@ -222,11 +222,11 @@ export class RxDom {
             const h = x.host.instance
             if (h !== inst) {
               if (h !== host) {
-                RxDom.mergeAliens(host, inst, aliens)
-                aliens = []
+                RxDom.mergeGuests(host, inst, guests)
+                guests = []
                 host = h!
               }
-              aliens.push(x)
+              guests.push(x)
             }
             if (sibling !== undefined && x.id === sibling.id)
               throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
@@ -246,7 +246,7 @@ export class RxDom {
           }
         }
         if (host !== inst)
-          RxDom.mergeAliens(host, inst, aliens)
+          RxDom.mergeGuests(host, inst, guests)
         // Merge loop - initialize, render, re-render
         sibling = undefined
         i = 0, j = -1
@@ -297,7 +297,7 @@ export class RxDom {
         inst.buffer = undefined
         // Merge loop (always synchronous): link, render/initialize (priority 0), finalize
         let host = inst
-        let aliens: Array<RxNode> = EMPTY
+        let guests: Array<RxNode> = EMPTY
         let sibling: RxNode | undefined = undefined
         let i = 0, j = 0
         while (i < existing.length || j < buffer.length) {
@@ -308,11 +308,11 @@ export class RxDom {
             const h = x.host.instance
             if (h !== inst) {
               if (h !== host) {
-                RxDom.mergeAliens(host, inst, aliens)
-                aliens = []
+                RxDom.mergeGuests(host, inst, guests)
+                guests = []
                 host = h!
               }
-              aliens.push(x)
+              guests.push(x)
             }
             if (sibling !== undefined && x.id === sibling.id)
               throw new Error(`duplicate id '${sibling.id}' inside '${node.id}'`)
@@ -360,7 +360,7 @@ export class RxDom {
           }
         }
         if (host !== inst)
-          RxDom.mergeAliens(host, inst, aliens)
+          RxDom.mergeGuests(host, inst, guests)
         if (!Transaction.isCanceled) {
           inst.children = buffer // switch to the new list
           if (postponed.length > 0) // Incremental rendering (if any)
@@ -397,14 +397,14 @@ export class RxDom {
     }
   }
 
-  private static mergeAliens(host: RxNodeInstance, owner: RxNodeInstance, aliens: Array<RxNode>): void {
+  private static mergeGuests(host: RxNodeInstance, owner: RxNodeInstance, guests: Array<RxNode>): void {
     if (host !== owner) {
-      const existing = host.aliens
+      const existing = host.guests
       const merged: Array<RxNode> = []
       let i = 0, j = 0 // TODO: Consider using binary search to find initial index
-      while (i < existing.length || j < aliens.length) {
+      while (i < existing.length || j < guests.length) {
         const old = existing[i]
-        const x = aliens[j]
+        const x = guests[j]
         const diff = compareNullable(x, old, compareNodes)
         if (diff <= 0) {
           merged.push(x)
@@ -419,7 +419,7 @@ export class RxDom {
           i++
         }
       }
-      host.aliens = merged
+      host.guests = merged
     }
   }
 
