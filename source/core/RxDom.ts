@@ -39,10 +39,6 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
     RxDom.invokeRender(this, node)
     Rx.configureCurrentOperation({ order: this.level })
   }
-
-  // get ['#this'](): string {
-  //   return `${this.info.rtti.name}.${this.info.id}`
-  // }
 }
 
 // RxDom
@@ -123,8 +119,7 @@ export class RxDom {
 
   static finalize(node: RxNode, cause: RxNode): void {
     const self = node.instance
-    if (self && self.revision >= 0) {
-      self.revision = -self.revision
+    if (self) {
       self.native = undefined
       for (const x of self.children)
         RxDom.tryToFinalize(x, cause)
@@ -216,23 +211,27 @@ export class RxDom {
 
   private static tryToInitialize(node: RxNode): RxNodeInstanceImpl {
     // TODO: Make the code below exception-safe
-    const rtti = node.type
+    const type = node.type
     const self = node.instance = new RxNodeInstanceImpl(node.owner.instance!.level + 1)
-    rtti.initialize?.(node)
-    rtti.mount?.(node)
+    type.initialize?.(node)
+    type.mount?.(node)
     if (!node.inline)
       Rx.setTraceHint(self, Rx.isTraceEnabled ? getTraceHint(node) : node.id)
     return self
   }
 
   private static tryToFinalize(node: RxNode, cause: RxNode): void {
-    if (!node.inline && node.instance) // TODO: Consider creating one transaction for all finalizations at once
-      Transaction.runAs({ standalone: true }, () => Rx.dispose(node.instance))
-    const rtti = node.type
-    if (rtti.finalize)
-      rtti.finalize(node, cause)
-    else
-      RxDom.finalize(node, cause) // default finalize
+    const self = node.instance
+    if (self && self.revision >= 0) {
+      self.revision = -self.revision
+      if (!node.inline && node.instance) // TODO: Consider creating one transaction for all finalizations at once
+        Transaction.runAs({ standalone: true }, () => Rx.dispose(node.instance))
+      const type = node.type
+      if (type.finalize)
+        type.finalize(node, cause)
+      else
+        RxDom.finalize(node, cause) // default finalize
+    }
   }
 
   private static mergeAndRenderSequentialChildren(node: RxNode, finish: () => void): void {
