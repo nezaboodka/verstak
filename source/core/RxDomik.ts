@@ -354,15 +354,15 @@ export class RxDom {
 // Internal
 
 function tryToRefresh(node: RxNode): void {
-  const t = node.type
+  const type = node.type
   if (node.revision === ~0) {
     node.revision = 0
-    t.initialize?.(node)
-    t.mount?.(node)
+    type.initialize?.(node)
+    type.mount?.(node)
     node.lastHost = node.host
   }
   else if (node.host !== node.lastHost) {
-    t.mount?.(node)
+    type.mount?.(node)
     node.lastHost = node.host
   }
   if (node.inline)
