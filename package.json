@@ -1,5 +1,5 @@
 {
-  "name": "reactronic-front",
+  "name": "reactronic-dom",
   "version": "0.21.529",
   "description": "Reactronic Front - Transactional Reactive Frontend Development Framework",
   "main": "build/dist/source/api.js",
