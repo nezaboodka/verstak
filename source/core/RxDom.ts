@@ -10,7 +10,6 @@ import { Render, SuperRender, RxNodeType, RxNodeInstance, RxNode } from './RxDom
 
 const EMPTY: Array<RxNode> = Object.freeze([]) as any
 const NOP = (): void => { /* nop */ }
-const SYS: RxNodeType<any, any> = { name: 'RxDom.Node', sequential: false }
 
 // BaseNodeType
 
@@ -118,14 +117,19 @@ export class RxDom {
     priority?: number, type?: RxNodeType<E, O>, inline?: boolean,
     owner?: RxNode, host?: RxNode): RxNode<E, O> {
     const o = owner ?? gContext
-    const h = host ?? gHost
     const self = o.instance
     if (!self)
       throw new Error('element must be initialized before children')
-    const node = new RxNode<E, O>(id, args, render, superRender, priority ?? 0, type ?? SYS, inline ?? false, o, h)
+    if (priority === undefined)
+      priority = 0
+    if (type === undefined)
+      type = RxDom.basic
+    if (!host)
+      host = gHost
+    const node = new RxNode<E, O>(id, args, render, superRender, priority, type, inline ?? false, o, host)
     if (self.buffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const rev = h?.instance?.revision ?? -1
+    const rev = host.instance?.revision ?? -1
     if (rev >= 0) // emit only if host is alive
       self.buffer.push(node)
     return node
