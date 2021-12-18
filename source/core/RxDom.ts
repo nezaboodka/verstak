@@ -67,7 +67,7 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
   private static gUuid: number = 0
   readonly uuid: number
   readonly level: number
-  revision: number = 0
+  revision: number = ~0
   native?: E = undefined
   model?: unknown = undefined
   children: ReadonlyArray<RxNode> = EMPTY
@@ -84,8 +84,8 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
     reentrance: Reentrance.CancelPrevious,
     sensitiveArgs: true,
     noSideEffects: true })
-  render(node: RxNode<E, O>): void {
-    invokeRender(this, node, node.args)
+  rerender(node: RxNode<E, O>): void {
+    invokeRender(node, node.args)
     Rx.configureCurrentOperation({ order: this.level })
   }
 }
@@ -127,8 +127,8 @@ export class RxDom {
     const node = new RxNode<E, O>(id, args, render, superRender, priority, type, inline ?? false, o, host)
     if (inst.buffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const rev = host.instance?.revision ?? -1
-    if (rev >= 0) // emit only if host is alive
+    const rev = host.instance?.revision ?? ~1
+    if (rev >= ~0) // emit only if host is alive
       inst.buffer.push(node)
     return node
   }
@@ -191,7 +191,7 @@ export class RxDom {
   }
 
   static currentNodeRevision(): number {
-    return gContext.instance?.revision ?? 0
+    return gContext.instance?.revision ?? ~0
   }
 
   static forAll<E>(action: (e: E) => void): void {
@@ -438,9 +438,9 @@ export class RxDom {
 function tryToRender(node: RxNode): void {
   const inst = node.instance!
   if (node.inline) // inline elements are always rendered
-    invokeRender(inst, node, node.args)
+    invokeRender(node, node.args)
   else // rendering of reactive elements is cached to avoid redundant calls
-    nonreactive(inst.render, node)
+    nonreactive(inst.rerender, node)
 }
 
 function tryToInitialize(node: RxNode): RxNodeInstanceImpl {
@@ -455,16 +455,16 @@ function tryToInitialize(node: RxNode): RxNodeInstanceImpl {
 
 function tryToFinalize(node: RxNode, cause: RxNode): void {
   const inst = node.instance
-  if (inst && inst.revision >= 0) {
-    inst.revision = -inst.revision
+  if (inst && inst.revision >= ~0) {
+    inst.revision = ~inst.revision
     invokeFinalize(node, cause)
   }
 }
 
-function invokeRender<E, O>(instance: RxNodeInstanceImpl<E, O>, node: RxNode<E, O>, args: unknown): void {
+function invokeRender<E, O>(node: RxNode<E, O>, args: unknown): void {
   const host = node.native !== undefined ? node : node.host
   runUnder(node, host, () => {
-    instance.revision++
+    node.instance!.revision++
     const type = node.type
     if (type.render)
       type.render(node, args)

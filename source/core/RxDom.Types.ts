@@ -30,8 +30,7 @@ export interface RxNodeInstance<E = unknown, O = void> {
   buffer: Array<RxNode> | undefined
   aliens: ReadonlyArray<RxNode>
   resizing?: ResizeObserver
-  render(node: RxNode<E, O>): void
-  // ['#this']: string
+  rerender(node: RxNode<E, O>): void
 }
 
 export class RxNode<E = any, O = any> {
