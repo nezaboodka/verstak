@@ -8,7 +8,7 @@
 import { reaction, nonreactive, Transaction, Rx, options, Reentrance } from 'reactronic'
 import { Render, SuperRender, RxNodeType, RxNodeInstance, RxNode } from './RxDom.Types'
 
-const EMPTY: Array<RxNode<any, any>> = Object.freeze([]) as any
+const EMPTY: Array<RxNode> = Object.freeze([]) as any
 const NOP = (): void => { /* nop */ }
 const SYS: RxNodeType<any, any> = { name: 'RxDom.Node', sequential: false }
 
@@ -21,9 +21,9 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
   revision: number = 0
   native?: E = undefined
   model?: unknown = undefined
-  children: ReadonlyArray<RxNode<any, any>> = EMPTY
-  buffer: Array<RxNode<any, any>> | undefined = undefined
-  aliens: ReadonlyArray<RxNode<any, any>> = EMPTY
+  children: ReadonlyArray<RxNode> = EMPTY
+  buffer: Array<RxNode> | undefined = undefined
+  aliens: ReadonlyArray<RxNode> = EMPTY
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
@@ -85,7 +85,7 @@ export class RxDom {
     return node
   }
 
-  static render(node: RxNode<any, any>): void {
+  static render(node: RxNode): void {
     const self = node.instance
     if (!self)
       throw new Error('element must be initialized before rendering')
@@ -135,7 +135,7 @@ export class RxDom {
     RxDom.doInitialize(node)
   }
 
-  static finalize(node: RxNode<any, any>, cause: RxNode): void {
+  static finalize(node: RxNode, cause: RxNode): void {
     const self = node.instance
     if (self && self.revision >= 0) {
       self.revision = -self.revision
@@ -265,7 +265,7 @@ export class RxDom {
         self.buffer = undefined
         // Merge loop (always synchronous) - link to existing or finalize
         let host = self
-        let aliens: Array<RxNode<any, any>> = EMPTY
+        let aliens: Array<RxNode> = EMPTY
         let sibling: RxNode | undefined = undefined
         let i = 0, j = 0
         while (i < existing.length) {
@@ -347,11 +347,11 @@ export class RxDom {
       try {
         const existing = self.children
         const buffer = self.buffer.sort(compareNodes)
-        const postponed = new Array<RxNode<any, any>>()
+        const postponed = new Array<RxNode>()
         self.buffer = undefined
         // Merge loop (always synchronous): link, render/initialize (priority 0), finalize
         let host = self
-        let aliens: Array<RxNode<any, any>> = EMPTY
+        let aliens: Array<RxNode> = EMPTY
         let sibling: RxNode | undefined = undefined
         let i = 0, j = 0
         while (i < existing.length || j < buffer.length) {
@@ -451,10 +451,10 @@ export class RxDom {
     }
   }
 
-  private static mergeAliens(host: RxNodeInstance, owner: RxNodeInstance, aliens: Array<RxNode<any, any>>): void {
+  private static mergeAliens(host: RxNodeInstance, owner: RxNodeInstance, aliens: Array<RxNode>): void {
     if (host !== owner) {
       const existing = host.aliens
-      const merged: Array<RxNode<any, any>> = []
+      const merged: Array<RxNode> = []
       let i = 0, j = 0 // TODO: Consider using binary search to find initial index
       while (i < existing.length || j < aliens.length) {
         const old = existing[i]
@@ -584,5 +584,5 @@ Promise.prototype.then = reactronicFrontHookedThen
 
 // Globals
 
-let gContext: RxNode<any, any> = RxDom.ROOT
-let gHost: RxNode<any, any> = RxDom.ROOT
+let gContext: RxNode = RxDom.ROOT
+let gHost: RxNode = RxDom.ROOT

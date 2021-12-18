@@ -26,15 +26,15 @@ export interface RxNodeInstance<E = unknown, O = void> {
   revision: number
   native?: E
   model?: unknown
-  children: ReadonlyArray<RxNode<any, any>>
-  buffer: Array<RxNode<any, any>> | undefined
-  aliens: ReadonlyArray<RxNode<any, any>>
+  children: ReadonlyArray<RxNode>
+  buffer: Array<RxNode> | undefined
+  aliens: ReadonlyArray<RxNode>
   resizing?: ResizeObserver
   render(node: RxNode<E, O>): void
   // ['#this']: string
 }
 
-export class RxNode<E = unknown, O = void> {
+export class RxNode<E = any, O = any> {
   old?: RxNode<E, O> = undefined // internal
   sibling?: RxNode = undefined // internal
   get native(): E | undefined { return this.instance?.native }

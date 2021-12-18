@@ -10,7 +10,7 @@ import { RxDom, RxNode, RxNodeType } from '../core/api'
 
 export abstract class AbstractHtmlNodeType<E extends Element> implements RxNodeType<E, any> {
   static isDebugAttributeEnabled: boolean = false
-  static gNativeParent: RxNode<any, any> = RxDom.createRootNode('html > body', true, global.document.body)
+  static gNativeParent: RxNode = RxDom.createRootNode('html > body', true, global.document.body)
   static gSubTreeFinalization?: Element = undefined
   private static _blinkingEffect: string | undefined = undefined
 
