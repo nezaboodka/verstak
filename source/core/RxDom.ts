@@ -91,36 +91,26 @@ export class RxDom {
       throw new Error('element must be initialized before rendering')
     if (self.buffer)
       throw new Error('rendering re-entrance is not supported yet')
-    const outerOwner = gContext
-    const outerHost = gHost
-    try {
-      gContext = node
-      gHost = self.native ? node : node.host
-      self.buffer = []
-      if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
-        console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${!node.inline ? `  <<  ${Rx.why(true)}` : ''}`)
-      let result: any
-      if (node.superRender)
-        result = node.superRender(options => {
-          const res = node.render(self.native, options)
-          if (res instanceof Promise)
-            return res.then() // causes wrapping of then/catch to execute within current owner and host
-          else
-            return options
-        }, self.native)
-      else
-        result = node.render(self.native, undefined)
-      if (result instanceof Promise)
-        result = result.then( // causes wrapping of then/catch to execute within current owner and host
-          value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
-          error => { console.log(error); RxDom.renderChildrenThenDo(NOP) }) // do not render children in case of owner error
-      else
-        RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
-    }
-    finally {
-      gHost = outerHost
-      gContext = outerOwner
-    }
+    self.buffer = []
+    if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
+      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${!node.inline ? `  <<  ${Rx.why(true)}` : ''}`)
+    let result: any
+    if (node.superRender)
+      result = node.superRender(options => {
+        const res = node.render(self.native, options)
+        if (res instanceof Promise)
+          return res.then() // causes wrapping of then/catch to execute within current owner and host
+        else
+          return options
+      }, self.native)
+    else
+      result = node.render(self.native, undefined)
+    if (result instanceof Promise)
+      result = result.then( // causes wrapping of then/catch to execute within current owner and host
+        value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
+        error => { console.log(error); RxDom.renderChildrenThenDo(NOP) }) // do not render children in case of owner error
+    else
+      RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
   }
 
   static renderChildrenThenDo(action: () => void): void {
@@ -132,7 +122,7 @@ export class RxDom {
   }
 
   static initialize(node: RxNode): void {
-    RxDom.doInitialize(node)
+    RxDom.tryToInitialize(node)
   }
 
   static finalize(node: RxNode, cause: RxNode): void {
@@ -141,9 +131,9 @@ export class RxDom {
       self.revision = -self.revision
       self.native = undefined
       for (const x of self.children)
-        RxDom.doFinalize(x, cause)
+        RxDom.tryToFinalize(x, cause)
       for (const x of self.aliens)
-        RxDom.doFinalize(x, cause)
+        RxDom.tryToFinalize(x, cause)
     }
   }
 
@@ -212,16 +202,20 @@ export class RxDom {
   }
 
   static invokeRender<E, O>(instance: RxNodeInstanceImpl<E, O>, node: RxNode<E, O>): void {
-    instance.revision++
-    if (node.type.render)
-      node.type.render(node)
-    else
-      RxDom.render(node)
+    const host = node.native !== undefined ? node : node.host
+    runUnder(node, host, () => {
+      instance.revision++
+      const type = node.type
+      if (type.render)
+        type.render(node)
+      else
+        RxDom.render(node)
+    })
   }
 
   // Internal
 
-  private static doRender(node: RxNode): void {
+  private static tryToRender(node: RxNode): void {
     const self = node.instance!
     if (node.inline) // inline elements are always rendered
       RxDom.invokeRender(self, node)
@@ -229,7 +223,7 @@ export class RxDom {
       nonreactive(self.render, node)
   }
 
-  private static doInitialize(node: RxNode): RxNodeInstanceImpl {
+  private static tryToInitialize(node: RxNode): RxNodeInstanceImpl {
     // TODO: Make the code below exception-safe
     const rtti = node.type
     const self = node.instance = new RxNodeInstanceImpl(node.owner.instance!.level + 1)
@@ -242,7 +236,7 @@ export class RxDom {
     return self
   }
 
-  private static doFinalize(node: RxNode, cause: RxNode): void {
+  private static tryToFinalize(node: RxNode, cause: RxNode): void {
     if (RxDom.gTrace && RxDom.gTraceMask.indexOf('u') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.finalizing`)
     if (!node.inline && node.instance) // TODO: Consider creating one transaction for all finalizations at once
@@ -295,7 +289,7 @@ export class RxDom {
           }
           else { // diff > 0
             if (!Transaction.isCanceled)
-              RxDom.doFinalize(old, old)
+              RxDom.tryToFinalize(old, old)
             i++
           }
         }
@@ -314,11 +308,11 @@ export class RxDom {
             if (sibling?.instance !== old.sibling?.instance) // if sequence is changed
               x.type.mount?.(x)
             if (x.inline || !argsAreEqual(x.args, old.args))
-              RxDom.doRender(x) // re-rendering
+              RxDom.tryToRender(x) // re-rendering
           }
           else {
-            RxDom.doInitialize(x)
-            RxDom.doRender(x) // initial rendering
+            RxDom.tryToInitialize(x)
+            RxDom.tryToRender(x) // initial rendering
           }
           if (x.native)
             sibling = x
@@ -376,7 +370,7 @@ export class RxDom {
                 if (x.inline || !argsAreEqual(x.args, old.args)) {
                   if (!Transaction.isCanceled) {
                     if (x.priority === 0)
-                      RxDom.doRender(x) // re-rendering
+                      RxDom.tryToRender(x) // re-rendering
                     else
                       postponed.push(x)
                   }
@@ -385,8 +379,8 @@ export class RxDom {
               else {
                 if (!Transaction.isCanceled) {
                   if (x.priority === 0) {
-                    RxDom.doInitialize(x)
-                    RxDom.doRender(x) // initial rendering
+                    RxDom.tryToInitialize(x)
+                    RxDom.tryToRender(x) // initial rendering
                   }
                   else
                     postponed.push(x)
@@ -397,8 +391,8 @@ export class RxDom {
             else { // diff < 0
               if (!Transaction.isCanceled) {
                 if (x.priority === 0) {
-                  RxDom.doInitialize(x)
-                  RxDom.doRender(x) // initial rendering
+                  RxDom.tryToInitialize(x)
+                  RxDom.tryToRender(x) // initial rendering
                 }
                 else
                   postponed.push(x)
@@ -409,7 +403,7 @@ export class RxDom {
           }
           else { // diff > 0
             if (!Transaction.isCanceled)
-              RxDom.doFinalize(old, old)
+              RxDom.tryToFinalize(old, old)
             i++
           }
         }
@@ -438,8 +432,8 @@ export class RxDom {
       while (i < children.length) {
         const x = children[i]
         if (!x.instance)
-          RxDom.doInitialize(x)
-        RxDom.doRender(x)
+          RxDom.tryToInitialize(x)
+        RxDom.tryToRender(x)
         if (Transaction.isCanceled)
           break
         if (Transaction.isFrameOver(checkEveryN, timeLimit))
