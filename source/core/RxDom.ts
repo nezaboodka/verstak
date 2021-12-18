@@ -1,7 +1,7 @@
 // The below copyright notice and the license permission notice
 // shall be included in all copies or substantial portions.
 // Copyright (C) 2019-2021 Yury Chetyrko <ychetyrko@gmail.com>
-// MIT License: https://raw.githubusercontent.com/nezaboodka/reactronic-front/master/LICENSE
+// MIT License: https://raw.githubusercontent.com/nezaboodka/reactronic-dom/master/LICENSE
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
@@ -558,7 +558,7 @@ function getTraceHint(node: RxNode): string {
 
 const ORIGINAL_PROMISE_THEN = Promise.prototype.then
 
-function reactronicFrontHookedThen(this: any,
+function reactronicDomHookedThen(this: any,
   resolve?: ((value: any) => any | PromiseLike<any>) | undefined | null,
   reject?: ((reason: any) => never | PromiseLike<never>) | undefined | null): Promise<any | never> {
   resolve = resolve ? wrap(resolve) : resolveReturn
@@ -576,7 +576,7 @@ export function rejectRethrow(error: any): never {
   throw error
 }
 
-Promise.prototype.then = reactronicFrontHookedThen
+Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 

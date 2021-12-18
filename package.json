@@ -1,7 +1,7 @@
 {
   "name": "reactronic-dom",
   "version": "0.21.529",
-  "description": "Reactronic Front - Transactional Reactive Frontend Development Framework",
+  "description": "Reactronic DOM - Transactional Reactive Front-End Development Framework",
   "main": "build/dist/source/api.js",
   "types": "build/dist/source/api.d.ts",
   "files": [
@@ -9,7 +9,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/nezaboodka/reactronic-front.git"
+    "url": "https://github.com/nezaboodka/reactronic-dom.git"
   },
   "keywords": [
     "nezaboodka",
@@ -21,15 +21,14 @@
     "reactivity",
     "transactional",
     "asynchronous",
-    "frontend",
     "ui"
   ],
   "author": "Yury Chetyrko <ychetyrko@gmail.com> (https://github.com/ychetyrko)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nezaboodka/reactronic-front/issues"
+    "url": "https://github.com/nezaboodka/reactronic-dom/issues"
   },
-  "homepage": "https://github.com/nezaboodka/reactronic-front/blob/master/README.md#readme",
+  "homepage": "https://github.com/nezaboodka/reactronic-dom/blob/master/README.md#readme",
   "dependencies": {
     "reactronic": "^0.21.529"
   },
