@@ -97,10 +97,9 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
 
 export class RxDom {
   public static readonly basic = new BasicNodeType<any, any>('basic', false)
-  static readonly system = RxDom.createRootNode<unknown>('system', false, 'system')
 
   static Root<T>(render: () => T): T {
-    const self = RxDom.system.instance!
+    const self = SYSTEM.instance!
     if (self.buffer)
       throw new Error('rendering re-entrance is not supported yet')
     self.buffer = []
@@ -145,10 +144,6 @@ export class RxDom {
       RxDom.mergeAndRenderChildren(node, action)
   }
 
-  static initialize(node: RxNode): void {
-    tryToInitialize(node)
-  }
-
   static usingAnotherHost<E>(host: RxNode<E>, run: (e: E) => void): void {
     const native = host.instance?.native
     if (native !== undefined) {
@@ -184,8 +179,6 @@ export class RxDom {
     return node
   }
 
-  // currentNodeInstance, currentNodeRevision, trace, forAll
-
   static currentNodeInstance<T>(): { model?: T } {
     const self = gContext.instance
     if (!self)
@@ -205,8 +198,10 @@ export class RxDom {
   }
 
   static forAll<E>(action: (e: E) => void): void {
-    RxDom.forEachChildRecursively(RxDom.system, action)
+    RxDom.forEachChildRecursively(SYSTEM, action)
   }
+
+  // Internal
 
   private static mergeAndRenderSequentialChildren(node: RxNode, finish: () => void): void {
     const self = node.instance
@@ -441,6 +436,8 @@ export class RxDom {
   }
 }
 
+// Internal
+
 function invokeRender<E, O>(instance: RxNodeInstanceImpl<E, O>, node: RxNode<E, O>): void {
   const host = node.native !== undefined ? node : node.host
   runUnder(node, host, () => {
@@ -452,8 +449,6 @@ function invokeRender<E, O>(instance: RxNodeInstanceImpl<E, O>, node: RxNode<E, 
       RxDom.basic.render(node)
   })
 }
-
-// Internal
 
 function tryToRender(node: RxNode): void {
   const self = node.instance!
@@ -559,6 +554,8 @@ function getTraceHint(node: RxNode): string {
   return `${node.type.name}:${node.id}`
 }
 
+// Support asynchronous programing automatically
+
 const ORIGINAL_PROMISE_THEN = Promise.prototype.then
 
 function reactronicFrontHookedThen(this: any,
@@ -583,5 +580,6 @@ Promise.prototype.then = reactronicFrontHookedThen
 
 // Globals
 
-let gContext: RxNode = RxDom.system
-let gHost: RxNode = RxDom.system
+const SYSTEM = RxDom.createRootNode<unknown>('SYSTEM', false, 'SYSTEM')
+let gContext: RxNode = SYSTEM
+let gHost: RxNode = SYSTEM

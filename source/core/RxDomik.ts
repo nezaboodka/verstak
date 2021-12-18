@@ -259,7 +259,7 @@ export class RxDom {
   }
 
   static forAll<E>(action: (e: E) => void): void {
-    RxDom.forEachChildRecursively(SYS, action)
+    RxDom.forEachChildRecursively(SYSTEM, action)
   }
 
   // Internal
@@ -485,6 +485,6 @@ Promise.prototype.then = reactronicFrontHookedThen
 
 const NOP = (): void => { /* nop */ }
 const NUL = RxDom.createRootNode<any, any>('NUL', false, 'NUL', undefined)
-const SYS = RxDom.createRootNode<unknown, void>('SYS', false, 'SYS', undefined)
-let gContext: RxNode = SYS
-let gHost: RxNode = SYS
+const SYSTEM = RxDom.createRootNode<unknown, void>('SYSTEM', false, 'SYSTEM', undefined)
+let gContext: RxNode = SYSTEM
+let gHost: RxNode = SYSTEM
