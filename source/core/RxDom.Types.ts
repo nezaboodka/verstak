@@ -46,7 +46,7 @@ export class RxNode<E = any, O = any> {
     readonly priority: number,
     readonly type: RxNodeType<E, O>,
     readonly inline: boolean,
-    readonly owner: RxNode,
+    readonly creator: RxNode,
     readonly host: RxNode,
     public instance?: RxNodeInstance<E, O>) {
   }

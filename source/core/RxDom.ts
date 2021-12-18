@@ -33,16 +33,16 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
       result = node.superRender(options => {
         const res = node.render(inst.native!, options)
         if (res instanceof Promise)
-          return res.then() // causes wrapping of then/catch to execute within current owner and host
+          return res.then() // causes wrapping of then/catch to execute within current creator and host
         else
           return options
       }, inst.native!)
     else
       result = node.render(inst.native!, args as O)
     if (result instanceof Promise)
-      result = result.then( // causes wrapping of then/catch to execute within current owner and host
+      result = result.then( // causes wrapping of then/catch to execute within current creator and host
         value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
-        error => { console.log(error); RxDom.renderChildrenThenDo(NOP) }) // do not render children in case of owner error
+        error => { console.log(error); RxDom.renderChildrenThenDo(NOP) }) // do not render children in case of creator error
     else
       RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
   }
@@ -102,9 +102,9 @@ export class RxDom {
     inst.buffer = []
     let result: any = render()
     if (result instanceof Promise)
-      result = result.then( // causes wrapping of then/catch to execute within current owner and host
+      result = result.then( // causes wrapping of then/catch to execute within current creator and host
         value => { Transaction.run(RxDom.renderChildrenThenDo, NOP); return value }, // ignored if rendered already
-        error => { console.log(error); Transaction.run(RxDom.renderChildrenThenDo, NOP) }) // try to render children regardless the owner
+        error => { console.log(error); Transaction.run(RxDom.renderChildrenThenDo, NOP) }) // try to render children regardless the creator
     else
       Transaction.run(RxDom.renderChildrenThenDo, NOP) // ignored if rendered already
     return result
@@ -113,8 +113,8 @@ export class RxDom {
   static Node<E = unknown, O = void>(id: string, args: any,
     render: Render<E, O>, superRender?: SuperRender<O, E>,
     priority?: number, type?: RxNodeType<E, O>, inline?: boolean,
-    owner?: RxNode, host?: RxNode): RxNode<E, O> {
-    const o = owner ?? gContext
+    creator?: RxNode, host?: RxNode): RxNode<E, O> {
+    const o = creator ?? gCreator
     const inst = o.instance
     if (!inst)
       throw new Error('element must be initialized before children')
@@ -134,7 +134,7 @@ export class RxDom {
   }
 
   static renderChildrenThenDo(action: () => void): void {
-    const node = gContext
+    const node = gCreator
     if (node.type.sequential)
       RxDom.mergeAndRenderSequentialChildren(node, action)
     else
@@ -165,33 +165,33 @@ export class RxDom {
       0,                        // priority
       { name: id, sequential }, // type
       false,                    // inline
-      {} as RxNode,             // owner (lifecycle manager)
+      {} as RxNode,             // creator (lifecycle manager)
       {} as RxNode,             // host (rendering parent)
       inst)                     // instance
     // Initialize
     const a: any = node
-    a['owner'] = node
+    a['creator'] = node
     a['host'] = node
     inst.native = native
     return node
   }
 
   static currentNodeInstance<T>(): { model?: T } {
-    const inst = gContext.instance
+    const inst = gCreator.instance
     if (!inst)
       throw new Error('currentNodeInstance function can be called only inside rendering function')
     return inst as { model?: T }
   }
 
   static currentNodeInstanceInternal<E>(): RxNodeInstanceImpl<E> {
-    const inst = gContext.instance
+    const inst = gCreator.instance
     if (!inst)
       throw new Error('currentNodeInstanceInternal function can be called only inside rendering function')
     return inst
   }
 
   static currentNodeRevision(): number {
-    return gContext.instance?.revision ?? ~0
+    return gCreator.instance?.revision ?? ~0
   }
 
   static forAll<E>(action: (e: E) => void): void {
@@ -397,8 +397,8 @@ export class RxDom {
     }
   }
 
-  private static mergeGuests(host: RxNodeInstance, owner: RxNodeInstance, guests: Array<RxNode>): void {
-    if (host !== owner) {
+  private static mergeGuests(host: RxNodeInstance, creator: RxNodeInstance, guests: Array<RxNode>): void {
+    if (host !== creator) {
       const existing = host.guests
       const merged: Array<RxNode> = []
       let i = 0, j = 0 // TODO: Consider using binary search to find initial index
@@ -414,8 +414,8 @@ export class RxDom {
             j++
         }
         else { // diff > 0
-          if (old.owner.instance !== owner)
-            merged.push(old) // leave children of other owners untouched
+          if (old.creator.instance !== creator)
+            merged.push(old) // leave children of other creators untouched
           i++
         }
       }
@@ -445,7 +445,7 @@ function tryToRender(node: RxNode): void {
 
 function tryToInitialize(node: RxNode): RxNodeInstanceImpl {
   const type = node.type
-  const inst = node.instance = new RxNodeInstanceImpl(node.owner.instance!.level + 1)
+  const inst = node.instance = new RxNodeInstanceImpl(node.creator.instance!.level + 1)
   type.initialize?.(node)
   type.mount?.(node)
   if (!node.inline)
@@ -482,25 +482,25 @@ function invokeFinalize(node: RxNode, cause: RxNode): void {
 }
 
 function wrap(func: (...args: any[]) => any): (...args: any[]) => any {
-  const owner = gContext
+  const creator = gCreator
   const host = gHost
   const wrappedRendering = (...args: any[]): any => {
-    return runUnder(owner, host, func, ...args)
+    return runUnder(creator, host, func, ...args)
   }
   return wrappedRendering
 }
 
-function runUnder(owner: RxNode, host: RxNode, func: (...args: any[]) => any, ...args: any[]): any {
-  const outerOwner = gContext
+function runUnder(creator: RxNode, host: RxNode, func: (...args: any[]) => any, ...args: any[]): any {
+  const outerCreator = gCreator
   const outerHost = gHost
   try {
-    gContext = owner
+    gCreator = creator
     gHost = host
     return func(...args)
   }
   finally {
     gHost = outerHost
-    gContext = outerOwner
+    gCreator = outerCreator
   }
 }
 
@@ -579,5 +579,5 @@ Promise.prototype.then = reactronicDomHookedThen
 const NOP = (): void => { /* nop */ }
 const EMPTY: Array<RxNode> = Object.freeze([]) as any
 const SYSTEM = RxDom.createRootNode<unknown>('SYSTEM', false, 'SYSTEM')
-let gContext: RxNode = SYSTEM
+let gCreator: RxNode = SYSTEM
 let gHost: RxNode = SYSTEM

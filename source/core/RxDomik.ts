@@ -22,22 +22,22 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
   }
 
   mount(node: RxNode<E, O>): void {
-    const owner = node.owner
+    const creator = node.creator
     const lastHost = node.lastHost
     const host = node.host
-    if (lastHost !== owner) {
-      const a = lastHost.guests.get(owner)
+    if (lastHost !== creator) {
+      const a = lastHost.guests.get(creator)
       if (a) {
         a.delete(node)
         if (a.size === 0)
-          lastHost.guests.delete(owner)
+          lastHost.guests.delete(creator)
       }
     }
-    if (host !== owner) {
-      let a = host.guests.get(owner)
+    if (host !== creator) {
+      let a = host.guests.get(creator)
       if (!a) {
         a = new Set<RxNode>()
-        host.guests.set(owner, a)
+        host.guests.set(creator, a)
       }
       a.add(node)
     }
@@ -49,23 +49,23 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
       result = node.superRender(options => {
         const res = node.render(node.native as E, options)
         if (res instanceof Promise)
-          return res.then() // causes wrapping of then/catch to execute within current owner and host
+          return res.then() // causes wrapping of then/catch to execute within current creator and host
         else
           return options
       }, node.native!)
     else
       result = node.render(node.native as E, args as O)
     if (result instanceof Promise)
-      result = result.then( // causes wrapping of then/catch to execute within current owner and host
+      result = result.then( // causes wrapping of then/catch to execute within current creator and host
         value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
-        error => { console.log(error); RxDom.renderChildrenThenDo(NOP) }) // do not render children in case of owner error
+        error => { console.log(error); RxDom.renderChildrenThenDo(NOP) }) // do not render children in case of creator error
     else
       RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
   }
 
   finalize(node: RxNode<E, O>, cause: RxNode): void {
     node.native = undefined
-    node.owner.children.delete(node.id)
+    node.creator.children.delete(node.id)
     if (!node.inline)
       Rx.dispose(node)
     for (const x of node.children.values())
@@ -84,7 +84,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
   readonly id: string
   readonly type: RxNodeType<E, O>
   readonly inline: boolean
-  readonly owner: RxNode
+  readonly creator: RxNode
   readonly level: number
   args: unknown
   render: Render<E, O>
@@ -107,7 +107,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
   constructor(level: number, id: string, type: RxNodeType<E, O>,
     inline: boolean, args: unknown, render: Render<E, O>,
     superRender: SuperRender<O, E> | undefined, priority: number,
-    owner: RxNode, host: RxNode) {
+    creator: RxNode, host: RxNode) {
     this.uuid = ++RxNodeImpl.gUuid
     this.level = level
     this.id = id
@@ -117,12 +117,12 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
     this.render = render
     this.superRender = superRender
     this.priority = priority
-    this.owner = owner
-    this.validation = owner.revision
+    this.creator = creator
+    this.validation = creator.revision
     this.revision = ~0 // not initialized
     this.native = undefined
     this.host = host
-    this.lastHost = owner
+    this.lastHost = creator
     this.model = undefined
     this.children = new Map<string, RxNode>()
     this.first = undefined
@@ -150,9 +150,9 @@ export class RxDom {
   static Root<T>(render: () => T): T {
     let result: any = render()
     if (result instanceof Promise)
-      result = result.then( // causes wrapping of then/catch to execute within current owner and host
+      result = result.then( // causes wrapping of then/catch to execute within current creator and host
         value => { Transaction.run(RxDom.renderChildrenThenDo, NOP); return value }, // ignored if rendered already
-        error => { console.log(error); Transaction.run(RxDom.renderChildrenThenDo, NOP) }) // try to render children regardless the owner
+        error => { console.log(error); Transaction.run(RxDom.renderChildrenThenDo, NOP) }) // try to render children regardless the creator
     else
       Transaction.run(RxDom.renderChildrenThenDo, NOP) // ignored if rendered already
     return result
@@ -161,7 +161,7 @@ export class RxDom {
   static Node<E = unknown, O = void>(id: string, args: any,
     render: Render<E, O>, superRender?: SuperRender<O, E>,
     priority?: number, type?: RxNodeType<E, O>, inline?: boolean, host?: RxNode): RxNode<E, O> {
-    const owner = gContext
+    const creator = gCreator
     if (host === undefined)
       host = gHost
     let node: RxNode = NUL
@@ -169,13 +169,13 @@ export class RxDom {
       if (priority === undefined)
         priority = 0
       // Linking
-      const existing = owner.children.get(id)
+      const existing = creator.children.get(id)
       if (!existing) { // new node
         if (type === undefined)
           type = RxDom.basic
-        node = new RxNodeImpl<E, O>(owner.level + 1, id, type, inline ?? false,
-          args, render, superRender, priority, owner, host)
-        owner.children.set(id, node)
+        node = new RxNodeImpl<E, O>(creator.level + 1, id, type, inline ?? false,
+          args, render, superRender, priority, creator, host)
+        creator.children.set(id, node)
       }
       else { // existing node
         node = existing
@@ -188,20 +188,20 @@ export class RxDom {
         node.next = undefined
         node.sibling = undefined
       }
-      node.validation = owner.revision
+      node.validation = creator.revision
       // Sequencing
-      if (owner.first === undefined)
-        owner.first = node
-      if (owner.emitted)
-        owner.emitted.next = node
-      owner.emitted = node
-      owner.volume++
+      if (creator.first === undefined)
+        creator.first = node
+      if (creator.emitted)
+        creator.emitted.next = node
+      creator.emitted = node
+      creator.volume++
     }
     return node
   }
 
   static renderChildrenThenDo(action: () => void): void {
-    const node = gContext
+    const node = gCreator
     if (node.type.sequential)
       RxDom.doRenderSequentialChildren(node, action)
     else
@@ -232,11 +232,11 @@ export class RxDom {
       () => { /* nop */ },      // render
       undefined,                // superRender
       0,                        // priority
-      {} as RxNode,             // owner (lifecycle manager)
+      {} as RxNode,             // creator (lifecycle manager)
       {} as RxNode)             // host (rendering parent)
     // Initialize
     const a: any = node
-    a['owner'] = node
+    a['creator'] = node
     a['host'] = node
     node.native = native
     node.revision = 0 // initialized
@@ -246,15 +246,15 @@ export class RxDom {
   // currentNodeInstance, currentNodeRevision, trace, forAll
 
   static currentNodeInstance<T>(): { model?: T } {
-    return gContext as { model?: T }
+    return gCreator as { model?: T }
   }
 
   static currentNodeInstanceInternal<E>(): RxNodeImpl<E> {
-    return gContext
+    return gCreator
   }
 
   static currentNodeRevision(): number {
-    return gContext.revision
+    return gCreator.revision
   }
 
   static forAll<E>(action: (e: E) => void): void {
@@ -263,19 +263,19 @@ export class RxDom {
 
   // Internal
 
-  private static doRenderSequentialChildren(owner: RxNode, finish: () => void): void {
+  private static doRenderSequentialChildren(creator: RxNode, finish: () => void): void {
     let promised: Promise<void> | undefined = undefined
     try {
       const postponed = new Array<RxNode>()
       // Finalization loop
-      for (const x of owner.children.values()) {
+      for (const x of creator.children.values()) {
         if (Transaction.isCanceled)
           break
-        if (x.validation !== owner.revision)
+        if (x.validation !== creator.revision)
           tryToFinalize(x, x)
       }
       // Sequential rendering loop
-      let x = owner.first
+      let x = creator.first
       let sibling: RxNode | undefined = undefined
       while (x !== undefined && !Transaction.isCanceled) {
         x.sibling = sibling
@@ -289,7 +289,7 @@ export class RxDom {
       }
       // Asynchronous incremental rendering (if any)
       if (!Transaction.isCanceled && postponed.length > 0)
-        promised = RxDom.renderIncrementally(owner, postponed,  0).then(finish, finish)
+        promised = RxDom.renderIncrementally(creator, postponed,  0).then(finish, finish)
     }
     finally {
       if (!promised)
@@ -297,15 +297,15 @@ export class RxDom {
     }
   }
 
-  private static doRenderNonSequentialChildren(owner: RxNode, finish: () => void): void {
+  private static doRenderNonSequentialChildren(creator: RxNode, finish: () => void): void {
     let promised: Promise<void> | undefined = undefined
     try {
       // Non-sequential rendering and finalization loop
       const postponed = new Array<RxNode>()
-      for (const x of owner.children.values()) {
+      for (const x of creator.children.values()) {
         if (Transaction.isCanceled)
           break
-        if (x.validation === owner.revision) {
+        if (x.validation === creator.revision) {
           if (x.priority === 0)
             tryToRefresh(x)
           else
@@ -316,7 +316,7 @@ export class RxDom {
       }
       // Asynchronous incremental rendering (if any)
       if (!Transaction.isCanceled && postponed.length > 0) // Incremental rendering (if any)
-        promised = RxDom.renderIncrementally(owner, postponed,  0).then(finish, finish)
+        promised = RxDom.renderIncrementally(creator, postponed,  0).then(finish, finish)
     }
     finally {
       if (!promised)
@@ -324,7 +324,7 @@ export class RxDom {
     }
   }
 
-  private static async renderIncrementally(owner: RxNode, children: Array<RxNode>,
+  private static async renderIncrementally(creator: RxNode, children: Array<RxNode>,
     startIndex: number, checkEveryN: number = 30, timeLimit: number = 12): Promise<void> {
     if (Transaction.isFrameOver(checkEveryN, timeLimit))
       await Transaction.requestNextFrame()
@@ -407,25 +407,25 @@ function invokeFinalize(node: RxNode, cause: RxNode): void {
 }
 
 function wrap(func: (...args: any[]) => any): (...args: any[]) => any {
-  const owner = gContext
+  const creator = gCreator
   const host = gHost
   const wrappedRendering = (...args: any[]): any => {
-    return runUnder(owner, host, func, ...args)
+    return runUnder(creator, host, func, ...args)
   }
   return wrappedRendering
 }
 
-function runUnder(owner: RxNode, host: RxNode, func: (...args: any[]) => any, ...args: any[]): any {
-  const outerOwner = gContext
+function runUnder(creator: RxNode, host: RxNode, func: (...args: any[]) => any, ...args: any[]): any {
+  const outerCreator = gCreator
   const outerHost = gHost
   try {
-    gContext = owner
+    gCreator = creator
     gHost = host
     return func(...args)
   }
   finally {
     gHost = outerHost
-    gContext = outerOwner
+    gCreator = outerCreator
   }
 }
 
@@ -481,5 +481,5 @@ Promise.prototype.then = reactronicDomHookedThen
 const NOP = (): void => { /* nop */ }
 const NUL = RxDom.createRootNode<any, any>('NUL', false, 'NUL', undefined)
 const SYSTEM = RxDom.createRootNode<unknown, void>('SYSTEM', false, 'SYSTEM', undefined)
-let gContext: RxNode = SYSTEM
+let gCreator: RxNode = SYSTEM
 let gHost: RxNode = SYSTEM

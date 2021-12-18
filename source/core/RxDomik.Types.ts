@@ -25,7 +25,7 @@ export interface RxNode<E = any, O = any> {
   readonly id: string
   readonly type: RxNodeType<E, O>
   readonly inline: boolean
-  readonly owner: RxNode
+  readonly creator: RxNode
   readonly level: number
   args: unknown
   render: Render<E, O>
