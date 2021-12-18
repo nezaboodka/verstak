@@ -20,7 +20,7 @@ export interface RxNodeType<E = unknown, O = void> {
   finalize?(node: RxNode<E, O>, cause: RxNode): void
 }
 
-export interface AbstractRxNodeImpl<E = unknown, O = void> {
+export interface RxNodeInstance<E = unknown, O = void> {
   readonly uuid: number
   readonly level: number
   revision: number
@@ -49,6 +49,6 @@ export class RxNode<E = unknown, O = void> {
     readonly inline: boolean,
     readonly owner: RxNode,
     readonly host: RxNode,
-    public instance?: AbstractRxNodeImpl<E, O>) {
+    public instance?: RxNodeInstance<E, O>) {
   }
 }

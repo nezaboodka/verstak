@@ -6,15 +6,15 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, Rx, options, Reentrance } from 'reactronic'
-import { Render, SuperRender, RxNodeType, AbstractRxNodeImpl, RxNode } from './RxDom.Types'
+import { Render, SuperRender, RxNodeType, RxNodeInstance, RxNode } from './RxDom.Types'
 
 const EMPTY: Array<RxNode<any, any>> = Object.freeze([]) as any
 const NOP = (): void => { /* nop */ }
 const SYS: RxNodeType<any, any> = { name: 'RxDom.Node', sequential: false }
 
-// RxNodeImpl
+// RxNodeInstanceImpl
 
-export class RxNodeImpl<E = unknown, O = void> implements AbstractRxNodeImpl<E, O> {
+export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance<E, O> {
   private static gUuid: number = 0
   readonly uuid: number
   readonly level: number
@@ -27,7 +27,7 @@ export class RxNodeImpl<E = unknown, O = void> implements AbstractRxNodeImpl<E, 
   resizing?: ResizeObserver = undefined
 
   constructor(level: number) {
-    this.uuid = ++RxNodeImpl.gUuid
+    this.uuid = ++RxNodeInstanceImpl.gUuid
     this.level = level
   }
 
@@ -162,7 +162,7 @@ export class RxDom {
   }
 
   static createRootNode<E>(id: string, sequential: boolean, native: E): RxNode<E> {
-    const self = new RxNodeImpl<E>(0)
+    const self = new RxNodeInstanceImpl<E>(0)
     const node = new RxNode<E>(
       id,                       // id
       null,                     // args
@@ -191,7 +191,7 @@ export class RxDom {
     return self as { model?: T }
   }
 
-  static currentNodeInstanceInternal<E>(): RxNodeImpl<E> {
+  static currentNodeInstanceInternal<E>(): RxNodeInstanceImpl<E> {
     const self = gContext.instance
     if (!self)
       throw new Error('currentNodeInstanceInternal function can be called only inside rendering function')
@@ -211,7 +211,7 @@ export class RxDom {
     RxDom.forEachChildRecursively(RxDom.ROOT, action)
   }
 
-  static invokeRender<E, O>(instance: RxNodeImpl<E, O>, node: RxNode<E, O>): void {
+  static invokeRender<E, O>(instance: RxNodeInstanceImpl<E, O>, node: RxNode<E, O>): void {
     instance.revision++
     if (node.type.render)
       node.type.render(node)
@@ -229,10 +229,10 @@ export class RxDom {
       nonreactive(self.render, node)
   }
 
-  private static doInitialize(node: RxNode): RxNodeImpl {
+  private static doInitialize(node: RxNode): RxNodeInstanceImpl {
     // TODO: Make the code below exception-safe
     const rtti = node.type
-    const self = node.instance = new RxNodeImpl(node.owner.instance!.level + 1)
+    const self = node.instance = new RxNodeInstanceImpl(node.owner.instance!.level + 1)
     rtti.initialize?.(node)
     rtti.mount?.(node)
     if (!node.inline)
@@ -451,7 +451,7 @@ export class RxDom {
     }
   }
 
-  private static mergeAliens(host: AbstractRxNodeImpl, owner: AbstractRxNodeImpl, aliens: Array<RxNode<any, any>>): void {
+  private static mergeAliens(host: RxNodeInstance, owner: RxNodeInstance, aliens: Array<RxNode<any, any>>): void {
     if (host !== owner) {
       const existing = host.aliens
       const merged: Array<RxNode<any, any>> = []
