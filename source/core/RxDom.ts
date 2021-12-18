@@ -54,6 +54,8 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
     const self = node.instance
     if (self) {
       self.native = undefined
+      if (!node.inline && node.instance) // TODO: Consider creating one transaction for all finalizations at once
+        Transaction.runAs({ standalone: true }, () => Rx.dispose(node.instance))
       for (const x of self.children)
         tryToFinalize(x, cause)
       for (const x of self.aliens)
@@ -476,8 +478,6 @@ function tryToFinalize(node: RxNode, cause: RxNode): void {
   const self = node.instance
   if (self && self.revision >= 0) {
     self.revision = -self.revision
-    if (!node.inline && node.instance) // TODO: Consider creating one transaction for all finalizations at once
-      Transaction.runAs({ standalone: true }, () => Rx.dispose(node.instance))
     const type = node.type
     if (type.finalize)
       type.finalize(node, cause)
