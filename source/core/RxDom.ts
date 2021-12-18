@@ -22,23 +22,23 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
   }
 
   render(node: RxNode<E, O>, args: unknown): void {
-    const self = node.instance
-    if (!self)
+    const inst = node.instance
+    if (!inst)
       throw new Error('element must be initialized before rendering')
-    if (self.buffer)
+    if (inst.buffer)
       throw new Error('rendering re-entrance is not supported yet')
-    self.buffer = []
+    inst.buffer = []
     let result: any
     if (node.superRender)
       result = node.superRender(options => {
-        const res = node.render(self.native!, options)
+        const res = node.render(inst.native!, options)
         if (res instanceof Promise)
           return res.then() // causes wrapping of then/catch to execute within current owner and host
         else
           return options
-      }, self.native!)
+      }, inst.native!)
     else
-      result = node.render(self.native!, args as O)
+      result = node.render(inst.native!, args as O)
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current owner and host
         value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
@@ -48,14 +48,14 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
   }
 
   finalize(node: RxNode<E, O>, cause: RxNode): void {
-    const self = node.instance
-    if (self) {
-      self.native = undefined
+    const inst = node.instance
+    if (inst) {
+      inst.native = undefined
       if (!node.inline && node.instance) // TODO: Consider creating one transaction for all finalizations at once
         Transaction.runAs({ standalone: true }, () => Rx.dispose(node.instance))
-      for (const x of self.children)
+      for (const x of inst.children)
         tryToFinalize(x, cause)
-      for (const x of self.aliens)
+      for (const x of inst.aliens)
         tryToFinalize(x, cause)
     }
   }
@@ -96,10 +96,10 @@ export class RxDom {
   public static readonly basic = new BasicNodeType<any, any>('basic', false)
 
   static Root<T>(render: () => T): T {
-    const self = SYSTEM.instance!
-    if (self.buffer)
+    const inst = SYSTEM.instance!
+    if (inst.buffer)
       throw new Error('rendering re-entrance is not supported yet')
-    self.buffer = []
+    inst.buffer = []
     let result: any = render()
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current owner and host
@@ -115,8 +115,8 @@ export class RxDom {
     priority?: number, type?: RxNodeType<E, O>, inline?: boolean,
     owner?: RxNode, host?: RxNode): RxNode<E, O> {
     const o = owner ?? gContext
-    const self = o.instance
-    if (!self)
+    const inst = o.instance
+    if (!inst)
       throw new Error('element must be initialized before children')
     if (priority === undefined)
       priority = 0
@@ -125,11 +125,11 @@ export class RxDom {
     if (!host)
       host = gHost
     const node = new RxNode<E, O>(id, args, render, superRender, priority, type, inline ?? false, o, host)
-    if (self.buffer === undefined)
+    if (inst.buffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const rev = host.instance?.revision ?? -1
     if (rev >= 0) // emit only if host is alive
-      self.buffer.push(node)
+      inst.buffer.push(node)
     return node
   }
 
@@ -156,7 +156,7 @@ export class RxDom {
   }
 
   static createRootNode<E>(id: string, sequential: boolean, native: E): RxNode<E> {
-    const self = new RxNodeInstanceImpl<E>(0)
+    const inst = new RxNodeInstanceImpl<E>(0)
     const node = new RxNode<E>(
       id,                       // id
       null,                     // args
@@ -167,27 +167,27 @@ export class RxDom {
       false,                    // inline
       {} as RxNode,             // owner (lifecycle manager)
       {} as RxNode,             // host (rendering parent)
-      self)                     // instance
+      inst)                     // instance
     // Initialize
     const a: any = node
     a['owner'] = node
     a['host'] = node
-    self.native = native
+    inst.native = native
     return node
   }
 
   static currentNodeInstance<T>(): { model?: T } {
-    const self = gContext.instance
-    if (!self)
+    const inst = gContext.instance
+    if (!inst)
       throw new Error('currentNodeInstance function can be called only inside rendering function')
-    return self as { model?: T }
+    return inst as { model?: T }
   }
 
   static currentNodeInstanceInternal<E>(): RxNodeInstanceImpl<E> {
-    const self = gContext.instance
-    if (!self)
+    const inst = gContext.instance
+    if (!inst)
       throw new Error('currentNodeInstanceInternal function can be called only inside rendering function')
-    return self
+    return inst
   }
 
   static currentNodeRevision(): number {
@@ -201,16 +201,16 @@ export class RxDom {
   // Internal
 
   private static mergeAndRenderSequentialChildren(node: RxNode, finish: () => void): void {
-    const self = node.instance
-    if (self !== undefined && self.buffer !== undefined) {
+    const inst = node.instance
+    if (inst !== undefined && inst.buffer !== undefined) {
       let promised: Promise<void> | undefined = undefined
       try {
-        const existing = self.children
-        const sequenced = self.buffer
+        const existing = inst.children
+        const sequenced = inst.buffer
         const sorted = sequenced.slice().sort(compareNodes)
-        self.buffer = undefined
+        inst.buffer = undefined
         // Merge loop (always synchronous) - link to existing or finalize
-        let host = self
+        let host = inst
         let aliens: Array<RxNode> = EMPTY
         let sibling: RxNode | undefined = undefined
         let i = 0, j = 0
@@ -220,9 +220,9 @@ export class RxDom {
           const diff = x !== undefined ? compareNodes(x, old) : 1
           if (diff <= 0) {
             const h = x.host.instance
-            if (h !== self) {
+            if (h !== inst) {
               if (h !== host) {
-                RxDom.mergeAliens(host, self, aliens)
+                RxDom.mergeAliens(host, inst, aliens)
                 aliens = []
                 host = h!
               }
@@ -245,8 +245,8 @@ export class RxDom {
             i++
           }
         }
-        if (host !== self)
-          RxDom.mergeAliens(host, self, aliens)
+        if (host !== inst)
+          RxDom.mergeAliens(host, inst, aliens)
         // Merge loop - initialize, render, re-render
         sibling = undefined
         i = 0, j = -1
@@ -273,7 +273,7 @@ export class RxDom {
           i++
         }
         if (!Transaction.isCanceled) {
-          self.children = sorted // switch to the new list
+          inst.children = sorted // switch to the new list
           if (j >= 0) // Incremental rendering (if any)
             promised = RxDom.renderIncrementally(node, sequenced, j).then(finish, finish)
         }
@@ -287,16 +287,16 @@ export class RxDom {
 
 
   private static mergeAndRenderChildren(node: RxNode, finish: () => void): void {
-    const self = node.instance
-    if (self !== undefined && self.buffer !== undefined) {
+    const inst = node.instance
+    if (inst !== undefined && inst.buffer !== undefined) {
       let promised: Promise<void> | undefined = undefined
       try {
-        const existing = self.children
-        const buffer = self.buffer.sort(compareNodes)
+        const existing = inst.children
+        const buffer = inst.buffer.sort(compareNodes)
         const postponed = new Array<RxNode>()
-        self.buffer = undefined
+        inst.buffer = undefined
         // Merge loop (always synchronous): link, render/initialize (priority 0), finalize
-        let host = self
+        let host = inst
         let aliens: Array<RxNode> = EMPTY
         let sibling: RxNode | undefined = undefined
         let i = 0, j = 0
@@ -306,9 +306,9 @@ export class RxDom {
           const diff = compareNullable(x, old, compareNodes)
           if (diff <= 0) {
             const h = x.host.instance
-            if (h !== self) {
+            if (h !== inst) {
               if (h !== host) {
-                RxDom.mergeAliens(host, self, aliens)
+                RxDom.mergeAliens(host, inst, aliens)
                 aliens = []
                 host = h!
               }
@@ -359,10 +359,10 @@ export class RxDom {
             i++
           }
         }
-        if (host !== self)
-          RxDom.mergeAliens(host, self, aliens)
+        if (host !== inst)
+          RxDom.mergeAliens(host, inst, aliens)
         if (!Transaction.isCanceled) {
-          self.children = buffer // switch to the new list
+          inst.children = buffer // switch to the new list
           if (postponed.length > 0) // Incremental rendering (if any)
             promised = RxDom.renderIncrementally(node, postponed,  0).then(finish, finish)
         }
@@ -424,11 +424,11 @@ export class RxDom {
   }
 
   private static forEachChildRecursively(node: RxNode, action: (e: any) => void): void {
-    const self = node.instance
-    if (self) {
-      const native = self.native
+    const inst = node.instance
+    if (inst) {
+      const native = inst.native
       native && action(native)
-      self.children.forEach(x => RxDom.forEachChildRecursively(x, action))
+      inst.children.forEach(x => RxDom.forEachChildRecursively(x, action))
     }
   }
 }
@@ -436,28 +436,27 @@ export class RxDom {
 // Internal
 
 function tryToRender(node: RxNode): void {
-  const self = node.instance!
+  const inst = node.instance!
   if (node.inline) // inline elements are always rendered
-    invokeRender(self, node, node.args)
+    invokeRender(inst, node, node.args)
   else // rendering of reactive elements is cached to avoid redundant calls
-    nonreactive(self.render, node)
+    nonreactive(inst.render, node)
 }
 
 function tryToInitialize(node: RxNode): RxNodeInstanceImpl {
-  // TODO: Make the code below exception-safe
   const type = node.type
-  const self = node.instance = new RxNodeInstanceImpl(node.owner.instance!.level + 1)
+  const inst = node.instance = new RxNodeInstanceImpl(node.owner.instance!.level + 1)
   type.initialize?.(node)
   type.mount?.(node)
   if (!node.inline)
-    Rx.setTraceHint(self, node.id)
-  return self
+    Rx.setTraceHint(inst, node.id)
+  return inst
 }
 
 function tryToFinalize(node: RxNode, cause: RxNode): void {
-  const self = node.instance
-  if (self && self.revision >= 0) {
-    self.revision = -self.revision
+  const inst = node.instance
+  if (inst && inst.revision >= 0) {
+    inst.revision = -inst.revision
     invokeFinalize(node, cause)
   }
 }

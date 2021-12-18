@@ -185,8 +185,8 @@ export class RxDom {
         node.superRender = superRender
         node.priority = priority
         node.host = host
-        node.next = undefined // to be re-linked
-        node.sibling = undefined // to be re-linked
+        node.next = undefined
+        node.sibling = undefined
       }
       node.validation = owner.revision
       // Sequencing
@@ -223,7 +223,6 @@ export class RxDom {
   }
 
   static createRootNode<E, O>(id: string, sequential: boolean, native: E, options: O): RxNode<E, O> {
-    // const self = new NodeInstance<E>(0)
     const node = new RxNodeImpl<E, O>(
       0,                        // level
       id,                       // id
@@ -302,7 +301,6 @@ export class RxDom {
     let promised: Promise<void> | undefined = undefined
     try {
       // Non-sequential rendering and finalization loop
-      // const started = performance.now()
       const postponed = new Array<RxNode>()
       for (const x of owner.children.values()) {
         if (Transaction.isCanceled)
@@ -316,9 +314,6 @@ export class RxDom {
         else
           tryToFinalize(x, x)
       }
-      // const ms = performance.now() - started
-      // if (owner.id.indexOf('EmitElementOfLoadedRecordCards') >= 0)
-      //   console.log(`(!) ${owner.children.size} in ${ms} ms ${Rx.why()}`)
       // Asynchronous incremental rendering (if any)
       if (!Transaction.isCanceled && postponed.length > 0) // Incremental rendering (if any)
         promised = RxDom.renderIncrementally(owner, postponed,  0).then(finish, finish)

@@ -49,22 +49,20 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
         }
         else // non-sequential
           nativeHost.appendChild(native)
-        // console.log(`${'  '.repeat(Math.abs(self.level))}${parent.id}.insertBefore(${sibling?.id ?? '<null>'})`)
       }
     }
   }
 
   render(node: RxNode<E, any>, args: unknown): void {
-    const self = node.instance! // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const native = self.native!
+    const inst = node.instance!
+    const native = inst.native!
     const outer = AbstractHtmlNodeType.gNativeParent
-    try { // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      AbstractHtmlNodeType.gNativeParent = node // console.log(`${'  '.repeat(Math.abs(self.level))}render(${e.id} r${self.revision})`)
+    try {
+      AbstractHtmlNodeType.gNativeParent = node
       super.render(node, args)
-      // TODO: native.sensorData.drag handling?
-      AbstractHtmlNodeType.blinkingEffect && blink(native, self.revision)
+      AbstractHtmlNodeType.blinkingEffect && blink(native, inst.revision)
       if (AbstractHtmlNodeType.isDebugAttributeEnabled)
-        native.setAttribute('rdbg', `${self.revision}:    ${Rx.why()}`)
+        native.setAttribute('rdbg', `${inst.revision}:    ${Rx.why()}`)
     }
     finally {
       AbstractHtmlNodeType.gNativeParent = outer
@@ -75,20 +73,20 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
     const self = node.instance
     const native = self?.native
     if (!AbstractHtmlNodeType.gSubTreeFinalization && native && native.parentElement) {
-      AbstractHtmlNodeType.gSubTreeFinalization = native // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      try { // console.log(`${'  '.repeat(Math.abs(self.level))}${e.parentElement.id}.removeChild(${e.id} r${self.revision})`)
+      AbstractHtmlNodeType.gSubTreeFinalization = native
+      try {
         self.resizing?.unobserve(native)
         native.remove()
-        super.finalize(node, cause) // proceed
+        super.finalize(node, cause)
       }
       finally {
         AbstractHtmlNodeType.gSubTreeFinalization = undefined
       }
     }
-    else { // console.log(`${'  '.repeat(Math.abs(self.level))}???.finalize(${ref.id} r${self.revision})`)
+    else {
       if (native)
         self.resizing?.unobserve(native)
-      super.finalize(node, cause) // proceed
+      super.finalize(node, cause)
     }
   }
 
