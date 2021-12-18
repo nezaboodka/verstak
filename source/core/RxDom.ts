@@ -49,8 +49,6 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
 
 export class RxDom {
   static readonly ROOT = RxDom.createRootNode<unknown>('ROOT', false, 'ROOT')
-  static gTrace: string | undefined = undefined
-  static gTraceMask: string = 'r'
 
   static Root<T>(render: () => T): T {
     const self = RxDom.ROOT.instance!
@@ -92,8 +90,6 @@ export class RxDom {
     if (self.buffer)
       throw new Error('rendering re-entrance is not supported yet')
     self.buffer = []
-    if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
-      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${!node.inline ? `  <<  ${Rx.why(true)}` : ''}`)
     let result: any
     if (node.superRender)
       result = node.superRender(options => {
@@ -192,11 +188,6 @@ export class RxDom {
     return gContext.instance?.revision ?? 0
   }
 
-  static setTraceMode(enabled: boolean, mask: string, regexp: string): void {
-    RxDom.gTrace = enabled ? regexp : undefined
-    RxDom.gTraceMask = mask
-  }
-
   static forAll<E>(action: (e: E) => void): void {
     RxDom.forEachChildRecursively(RxDom.ROOT, action)
   }
@@ -231,14 +222,10 @@ export class RxDom {
     rtti.mount?.(node)
     if (!node.inline)
       Rx.setTraceHint(self, Rx.isTraceEnabled ? getTraceHint(node) : node.id)
-    if (RxDom.gTrace && RxDom.gTraceMask.indexOf('m') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
-      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.initialized`)
     return self
   }
 
   private static tryToFinalize(node: RxNode, cause: RxNode): void {
-    if (RxDom.gTrace && RxDom.gTraceMask.indexOf('u') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
-      console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.finalizing`)
     if (!node.inline && node.instance) // TODO: Consider creating one transaction for all finalizations at once
       Transaction.runAs({ standalone: true }, () => Rx.dispose(node.instance))
     const rtti = node.type
