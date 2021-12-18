@@ -36,7 +36,7 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
     sensitiveArgs: true,
     noSideEffects: true })
   render(node: RxNode<E, O>): void {
-    RxDom.invokeRender(this, node)
+    invokeRender(this, node)
     Rx.configureCurrentOperation({ order: this.level })
   }
 }
@@ -114,7 +114,7 @@ export class RxDom {
   }
 
   static initialize(node: RxNode): void {
-    RxDom.tryToInitialize(node)
+    tryToInitialize(node)
   }
 
   static finalize(node: RxNode, cause: RxNode): void {
@@ -122,9 +122,9 @@ export class RxDom {
     if (self) {
       self.native = undefined
       for (const x of self.children)
-        RxDom.tryToFinalize(x, cause)
+        tryToFinalize(x, cause)
       for (const x of self.aliens)
-        RxDom.tryToFinalize(x, cause)
+        tryToFinalize(x, cause)
     }
   }
 
@@ -187,53 +187,6 @@ export class RxDom {
     RxDom.forEachChildRecursively(RxDom.ROOT, action)
   }
 
-  static invokeRender<E, O>(instance: RxNodeInstanceImpl<E, O>, node: RxNode<E, O>): void {
-    const host = node.native !== undefined ? node : node.host
-    runUnder(node, host, () => {
-      instance.revision++
-      const type = node.type
-      if (type.render)
-        type.render(node)
-      else
-        RxDom.render(node)
-    })
-  }
-
-  // Internal
-
-  private static tryToRender(node: RxNode): void {
-    const self = node.instance!
-    if (node.inline) // inline elements are always rendered
-      RxDom.invokeRender(self, node)
-    else // rendering of reactive elements is cached to avoid redundant calls
-      nonreactive(self.render, node)
-  }
-
-  private static tryToInitialize(node: RxNode): RxNodeInstanceImpl {
-    // TODO: Make the code below exception-safe
-    const type = node.type
-    const self = node.instance = new RxNodeInstanceImpl(node.owner.instance!.level + 1)
-    type.initialize?.(node)
-    type.mount?.(node)
-    if (!node.inline)
-      Rx.setTraceHint(self, Rx.isTraceEnabled ? getTraceHint(node) : node.id)
-    return self
-  }
-
-  private static tryToFinalize(node: RxNode, cause: RxNode): void {
-    const self = node.instance
-    if (self && self.revision >= 0) {
-      self.revision = -self.revision
-      if (!node.inline && node.instance) // TODO: Consider creating one transaction for all finalizations at once
-        Transaction.runAs({ standalone: true }, () => Rx.dispose(node.instance))
-      const type = node.type
-      if (type.finalize)
-        type.finalize(node, cause)
-      else
-        RxDom.finalize(node, cause) // default finalize
-    }
-  }
-
   private static mergeAndRenderSequentialChildren(node: RxNode, finish: () => void): void {
     const self = node.instance
     if (self !== undefined && self.buffer !== undefined) {
@@ -275,7 +228,7 @@ export class RxDom {
           }
           else { // diff > 0
             if (!Transaction.isCanceled)
-              RxDom.tryToFinalize(old, old)
+              tryToFinalize(old, old)
             i++
           }
         }
@@ -294,11 +247,11 @@ export class RxDom {
             if (sibling?.instance !== old.sibling?.instance) // if sequence is changed
               x.type.mount?.(x)
             if (x.inline || !argsAreEqual(x.args, old.args))
-              RxDom.tryToRender(x) // re-rendering
+              tryToRender(x) // re-rendering
           }
           else {
-            RxDom.tryToInitialize(x)
-            RxDom.tryToRender(x) // initial rendering
+            tryToInitialize(x)
+            tryToRender(x) // initial rendering
           }
           if (x.native)
             sibling = x
@@ -356,7 +309,7 @@ export class RxDom {
                 if (x.inline || !argsAreEqual(x.args, old.args)) {
                   if (!Transaction.isCanceled) {
                     if (x.priority === 0)
-                      RxDom.tryToRender(x) // re-rendering
+                      tryToRender(x) // re-rendering
                     else
                       postponed.push(x)
                   }
@@ -365,8 +318,8 @@ export class RxDom {
               else {
                 if (!Transaction.isCanceled) {
                   if (x.priority === 0) {
-                    RxDom.tryToInitialize(x)
-                    RxDom.tryToRender(x) // initial rendering
+                    tryToInitialize(x)
+                    tryToRender(x) // initial rendering
                   }
                   else
                     postponed.push(x)
@@ -377,8 +330,8 @@ export class RxDom {
             else { // diff < 0
               if (!Transaction.isCanceled) {
                 if (x.priority === 0) {
-                  RxDom.tryToInitialize(x)
-                  RxDom.tryToRender(x) // initial rendering
+                  tryToInitialize(x)
+                  tryToRender(x) // initial rendering
                 }
                 else
                   postponed.push(x)
@@ -389,7 +342,7 @@ export class RxDom {
           }
           else { // diff > 0
             if (!Transaction.isCanceled)
-              RxDom.tryToFinalize(old, old)
+              tryToFinalize(old, old)
             i++
           }
         }
@@ -418,8 +371,8 @@ export class RxDom {
       while (i < children.length) {
         const x = children[i]
         if (!x.instance)
-          RxDom.tryToInitialize(x)
-        RxDom.tryToRender(x)
+          tryToInitialize(x)
+        tryToRender(x)
         if (Transaction.isCanceled)
           break
         if (Transaction.isFrameOver(checkEveryN, timeLimit))
@@ -464,6 +417,53 @@ export class RxDom {
       native && action(native)
       self.children.forEach(x => RxDom.forEachChildRecursively(x, action))
     }
+  }
+}
+
+function invokeRender<E, O>(instance: RxNodeInstanceImpl<E, O>, node: RxNode<E, O>): void {
+  const host = node.native !== undefined ? node : node.host
+  runUnder(node, host, () => {
+    instance.revision++
+    const type = node.type
+    if (type.render)
+      type.render(node)
+    else
+      RxDom.render(node)
+  })
+}
+
+// Internal
+
+function tryToRender(node: RxNode): void {
+  const self = node.instance!
+  if (node.inline) // inline elements are always rendered
+    invokeRender(self, node)
+  else // rendering of reactive elements is cached to avoid redundant calls
+    nonreactive(self.render, node)
+}
+
+function tryToInitialize(node: RxNode): RxNodeInstanceImpl {
+  // TODO: Make the code below exception-safe
+  const type = node.type
+  const self = node.instance = new RxNodeInstanceImpl(node.owner.instance!.level + 1)
+  type.initialize?.(node)
+  type.mount?.(node)
+  if (!node.inline)
+    Rx.setTraceHint(self, Rx.isTraceEnabled ? getTraceHint(node) : node.id)
+  return self
+}
+
+function tryToFinalize(node: RxNode, cause: RxNode): void {
+  const self = node.instance
+  if (self && self.revision >= 0) {
+    self.revision = -self.revision
+    if (!node.inline && node.instance) // TODO: Consider creating one transaction for all finalizations at once
+      Transaction.runAs({ standalone: true }, () => Rx.dispose(node.instance))
+    const type = node.type
+    if (type.finalize)
+      type.finalize(node, cause)
+    else
+      RxDom.finalize(node, cause) // default finalize
   }
 }
 
