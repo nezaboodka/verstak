@@ -450,7 +450,7 @@ function tryToInitialize(node: RxNode): RxNodeInstanceImpl {
   type.initialize?.(node)
   type.mount?.(node)
   if (!node.inline)
-    Rx.setTraceHint(self, Rx.isTraceEnabled ? getTraceHint(node) : node.id)
+    Rx.setTraceHint(self, node.id)
   return self
 }
 
@@ -549,10 +549,6 @@ function argsAreEqual(a1: any, a2: any): boolean {
     }
   }
   return result
-}
-
-function getTraceHint(node: RxNode): string {
-  return `${node.type.name}:${node.id}`
 }
 
 // Support asynchronous programing automatically
