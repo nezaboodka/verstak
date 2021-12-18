@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, Rx, options, Reentrance } from 'reactronic'
-import { Render, SuperRender, RefreshParent, RxNodeType, AbstractNodeInstance, RxNode } from './RxDom.Types'
+import { Render, SuperRender, RxNodeType, AbstractNodeInstance, RxNode } from './RxDom.Types'
 
 const EMPTY: Array<RxNode<any, any>> = Object.freeze([]) as any
 const NOP = (): void => { /* nop */ }
@@ -71,14 +71,14 @@ export class RxDom {
 
   static Node<E = unknown, O = void>(id: string, args: any,
     render: Render<E, O>, superRender?: SuperRender<O, E>,
-    priority?: number, type?: RxNodeType<E, O>,
+    priority?: number, type?: RxNodeType<E, O>, inline?: boolean,
     owner?: RxNode, host?: RxNode): RxNode<E, O> {
     const o = owner ?? RxDom.gOwner
     const h = host ?? RxDom.gHost
     const self = o.instance
     if (!self)
       throw new Error('element must be initialized before children')
-    const node = new RxNode<E, O>(id, args, render, superRender, priority ?? 0, type ?? SYS, o, h)
+    const node = new RxNode<E, O>(id, args, render, superRender, priority ?? 0, type ?? SYS, inline ?? false, o, h)
     if (self.buffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const rev = h?.instance?.revision ?? -1
@@ -123,7 +123,7 @@ export class RxDom {
       RxDom.gHost = self.native ? node : node.host
       self.buffer = []
       if (RxDom.gTrace && RxDom.gTraceMask.indexOf('r') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
-        console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${node.args !== RefreshParent ? `  <<  ${Rx.why(true)}` : ''}`)
+        console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.render/${node.instance?.revision}${!node.inline ? `  <<  ${Rx.why(true)}` : ''}`)
       let result: any
       if (node.superRender)
         result = node.superRender(options => {
@@ -189,15 +189,16 @@ export class RxDom {
   static createRootNode<E>(id: string, sequential: boolean, native: E): RxNode<E> {
     const self = new NodeInstance<E>(0)
     const node = new RxNode<E>(
-      id,                           // id
-      null,                         // args
-      () => { /* nop */ },          // render
-      undefined,                    // superRender
-      0,                            // priority
-      { name: id, sequential },     // rtti
-      {} as RxNode,               // owner (lifecycle manager)
-      {} as RxNode,               // host (rendering parent)
-      self)                         // instance
+      id,                       // id
+      null,                     // args
+      () => { /* nop */ },      // render
+      undefined,                // superRender
+      0,                        // priority
+      { name: id, sequential }, // type
+      false,                    // inline
+      {} as RxNode,             // owner (lifecycle manager)
+      {} as RxNode,             // host (rendering parent)
+      self)                     // instance
     // Initialize
     const a: any = node
     a['owner'] = node
@@ -246,7 +247,7 @@ export class RxDom {
 
   private static doRender(node: RxNode): void {
     const self = node.instance!
-    if (node.args === RefreshParent) // inline elements are always rendered
+    if (node.inline) // inline elements are always rendered
       RxDom.renderUsingRttiOrDirectly(self, node)
     else // rendering of reactive elements is cached to avoid redundant calls
       nonreactive(self.render, node)
@@ -258,7 +259,7 @@ export class RxDom {
     const self = node.instance = new NodeInstance(node.owner.instance!.level + 1)
     rtti.initialize?.(node)
     rtti.mount?.(node)
-    if (node.args !== RefreshParent)
+    if (!node.inline)
       Rx.setTraceHint(self, Rx.isTraceEnabled ? getTraceHint(node) : node.id)
     if (RxDom.gTrace && RxDom.gTraceMask.indexOf('m') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.initialized`)
@@ -268,7 +269,7 @@ export class RxDom {
   private static doFinalize(node: RxNode, cause: RxNode): void {
     if (RxDom.gTrace && RxDom.gTraceMask.indexOf('u') >= 0 && new RegExp(RxDom.gTrace, 'gi').test(getTraceHint(node)))
       console.log(`t${Transaction.current.id}v${Transaction.current.timestamp}${'  '.repeat(Math.abs(node.instance!.level))}${getTraceHint(node)}.finalizing`)
-    if (node.args !== RefreshParent && node.instance) // TODO: Consider creating one transaction for all finalizations at once
+    if (!node.inline && node.instance) // TODO: Consider creating one transaction for all finalizations at once
       Transaction.runAs({ standalone: true }, () => Rx.dispose(node.instance))
     const rtti = node.type
     if (rtti.finalize)
@@ -336,7 +337,7 @@ export class RxDom {
           if (old && instance) {
             if (sibling?.instance !== old.sibling?.instance) // if sequence is changed
               x.type.mount?.(x)
-            if (x.args === RefreshParent || !argsAreEqual(x.args, old.args))
+            if (x.inline || !argsAreEqual(x.args, old.args))
               RxDom.doRender(x) // re-rendering
           }
           else {
@@ -396,7 +397,7 @@ export class RxDom {
             if (diff === 0) {
               if (old.instance) {
                 x.instance = old.instance // link to the existing instance
-                if (x.args === RefreshParent || !argsAreEqual(x.args, old.args)) {
+                if (x.inline || !argsAreEqual(x.args, old.args)) {
                   if (!Transaction.isCanceled) {
                     if (x.priority === 0)
                       RxDom.doRender(x) // re-rendering

@@ -43,7 +43,7 @@ export class BaseNodeType<E, O> implements RxNodeType<E, O> {
     }
   }
 
-  render(node: RxNode<E, O>, args?: unknown): void {
+  render(node: RxNode<E, O>, args: unknown): void {
     let result: any
     if (node.superRender)
       result = node.superRender(options => {
@@ -136,7 +136,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
     reentrance: Reentrance.CancelPrevious,
     sensitiveArgs: true,
     noSideEffects: true })
-  rerender(args?: unknown): void {
+  rerender(args: unknown): void {
     invokeRender(this, args)
     Rx.configureCurrentOperation({ order: this.level })
   }
@@ -386,7 +386,7 @@ function tryToFinalize(node: RxNode, cause: RxNode): void {
   }
 }
 
-function invokeRender(node: RxNode, args?: unknown): void {
+function invokeRender(node: RxNode, args: unknown): void {
   const host = node.native !== undefined ? node : node.host
   runUnder(node, host, () => {
     // Prepare node for rendering

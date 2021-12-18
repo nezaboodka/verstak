@@ -11,12 +11,13 @@ export type AsyncSuperRender<O = unknown, E = void> = ((render: (options: O) => 
 export type Customize<E = unknown, O = void> = (element: E, options: O) => void
 export type AsyncCustomize<E = unknown, O = void> = (element: E, options: O) => Promise<void>
 
+
 export interface RxNodeType<E = unknown, O = void> {
   readonly name: string
   readonly sequential: boolean
   initialize?(node: RxNode<E, O>): void
   mount?(node: RxNode<E, O>): void
-  render?(node: RxNode<E, O>, args?: unknown): void
+  render?(node: RxNode<E, O>, args: unknown): void
   finalize?(node: RxNode<E, O>, cause: RxNode): void
 }
 
