@@ -24,45 +24,43 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
     super.initialize(node)
     const native = this.createElement(node)
     native.id = node.id
-    node.instance!.native = native
+    node.native = native
   }
 
   mount(node: RxNode<E, any>): void {
-    const self = node.instance
-    const native = self?.native
+    const native = node.native
     if (native) {
-      const nativeHost = node.host.native
-      if (nativeHost instanceof Element) {
+      const nativeParent = node.parent.native
+      if (nativeParent instanceof Element) {
         const sibling = node.sibling
         if (sibling === undefined) {
-          if (nativeHost !== native.parentNode || native.previousSibling !== null)
-            nativeHost.prepend(native)
+          if (nativeParent !== native.parentNode || native.previousSibling !== null)
+            nativeParent.prepend(native)
         }
         else if (sibling !== node) {
-          if (sibling.host.native === nativeHost) {
+          if (sibling.parent.native === nativeParent) {
             const nativeSibling = sibling.native
             if (nativeSibling instanceof Element) {
               if (nativeSibling.nextSibling !== native)
-                nativeHost.insertBefore(native, nativeSibling.nextSibling)
+                nativeParent.insertBefore(native, nativeSibling.nextSibling)
             }
           }
         }
         else // non-sequential
-          nativeHost.appendChild(native)
+          nativeParent.appendChild(native)
       }
     }
   }
 
   render(node: RxNode<E, any>, args: unknown): void {
-    const inst = node.instance!
-    const native = inst.native!
+    const native = node.native!
     const outer = AbstractHtmlNodeType.gNativeParent
     try {
       AbstractHtmlNodeType.gNativeParent = node
       super.render(node, args)
-      AbstractHtmlNodeType.blinkingEffect && blink(native, inst.revision)
+      AbstractHtmlNodeType.blinkingEffect && blink(native, node.revision)
       if (AbstractHtmlNodeType.isDebugAttributeEnabled)
-        native.setAttribute('rdbg', `${inst.revision}:    ${Rx.why()}`)
+        native.setAttribute('rdbg', `${node.revision}:    ${Rx.why()}`)
     }
     finally {
       AbstractHtmlNodeType.gNativeParent = outer
@@ -70,12 +68,11 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
   }
 
   finalize(node: RxNode<E, any>, cause: RxNode): void {
-    const self = node.instance
-    const native = self?.native
+    const native = node.native
     if (!AbstractHtmlNodeType.gSubTreeFinalization && native && native.parentElement) {
       AbstractHtmlNodeType.gSubTreeFinalization = native
       try {
-        self.resizing?.unobserve(native)
+        node.resizeObserver?.unobserve(native)
         native.remove()
         super.finalize(node, cause)
       }
@@ -85,7 +82,7 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
     }
     else {
       if (native)
-        self.resizing?.unobserve(native)
+        node.resizeObserver?.unobserve(native)
       super.finalize(node, cause)
     }
   }

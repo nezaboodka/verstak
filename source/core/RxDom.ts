@@ -73,7 +73,7 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
   children: ReadonlyArray<RxNode> = EMPTY
   buffer: Array<RxNode> | undefined = undefined
   guests: ReadonlyArray<RxNode> = EMPTY
-  resizing?: ResizeObserver = undefined
+  resizeObserver?: ResizeObserver = undefined
 
   constructor(level: number) {
     this.uuid = ++RxNodeInstanceImpl.gUuid
@@ -141,19 +141,19 @@ export class RxDom {
       RxDom.mergeAndRenderChildren(node, action)
   }
 
-  // static usingAnotherHost<E>(host: RxNode<E>, run: (e: E) => void): void {
-  //   const native = host.instance?.native
-  //   if (native !== undefined) {
-  //     const outer = gHost
-  //     try {
-  //       gHost = host
-  //       run(native)
-  //     }
-  //     finally {
-  //       gHost = outer
-  //     }
-  //   }
-  // }
+  static usingAnotherHost<E>(host: RxNode<E>, run: (e: E) => void): void {
+    const native = host.instance?.native
+    if (native !== undefined) {
+      const outer = gHost
+      try {
+        gHost = host
+        run(native)
+      }
+      finally {
+        gHost = outer
+      }
+    }
+  }
 
   static createRootNode<E>(id: string, sequential: boolean, native: E): RxNode<E> {
     const inst = new RxNodeInstanceImpl<E>(0)

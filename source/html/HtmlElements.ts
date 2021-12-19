@@ -15,7 +15,7 @@ export function HtmlBody(id: string, args: any, render: Render<HTMLElement>): Rx
     initialize(node: RxNode<HTMLElement, any>, sibling?: RxNode): void {
       const native = global.document.body
       native.id = node.id
-      node.instance!.native = native
+      node.native = native
     },
   })
 }

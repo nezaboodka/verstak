@@ -29,14 +29,18 @@ export interface RxNodeInstance<E = unknown, O = void> {
   children: ReadonlyArray<RxNode>
   buffer: Array<RxNode> | undefined
   guests: ReadonlyArray<RxNode>
-  resizing?: ResizeObserver
+  resizeObserver?: ResizeObserver
   rerender(node: RxNode<E, O>): void
 }
 
 export class RxNode<E = any, O = any> {
   old?: RxNode<E, O> = undefined // internal
   sibling?: RxNode = undefined // internal
+  get parent(): RxNode { return this.host }
+  get revision(): number { return this.instance?.revision ?? ~0 }
   get native(): E | undefined { return this.instance?.native }
+  set native(e: E | undefined) { this.instance!.native = e }
+  get resizeObserver(): ResizeObserver | undefined { return this.instance?.resizeObserver }
 
   constructor(
     readonly id: string,

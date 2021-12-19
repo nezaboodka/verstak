@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { options, TraceLevel, transaction } from 'reactronic'
+import { RxDom } from '../../api'
 import { Sensor } from './Sensor'
-import { RxDom } from '../../core/RxDom'
 
 export interface ResizedElement {
   readonly borderBoxSize: ReadonlyArray<ResizeObserverSize>
@@ -33,15 +33,15 @@ export class ResizeSensor extends Sensor {
   observeResizeOfRenderingElement(value: boolean): void {
     const self = RxDom.currentNodeInstanceInternal<Element>()
     if (value) {
-      if (self.resizing !== undefined && self.resizing !== this.observer)
-        self.resizing.unobserve(self.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      self.resizing = this.observer
+      if (self.resizeObserver !== undefined && self.resizeObserver !== this.observer)
+        self.resizeObserver.unobserve(self.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      self.resizeObserver = this.observer
       this.observer.observe(self.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
     }
     else {
-      if (self.resizing === this.observer) {
+      if (self.resizeObserver === this.observer) {
         this.observer.unobserve(self.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
-        self.resizing = undefined
+        self.resizeObserver = undefined
       }
     }
   }

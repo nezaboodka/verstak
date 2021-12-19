@@ -203,7 +203,7 @@ export class RxDom {
     }
   }
 
-  static createRootNode<E, O>(id: string, sequential: boolean, native: E, options: O): RxNode<E, O> {
+  static createRootNode<E, O>(id: string, sequential: boolean, native: E): RxNode<E, O> {
     const node = new RxNodeImpl<E, O>(
       0,                        // level
       id,                       // id
@@ -436,6 +436,6 @@ Promise.prototype.then = reactronicDomHookedThen
 // Globals
 
 const NOP = (): void => { /* nop */ }
-const NUL = RxDom.createRootNode<any, any>('NUL', false, 'NUL', undefined)
-const SYSTEM = RxDom.createRootNode<unknown, void>('SYSTEM', false, 'SYSTEM', undefined)
+const NUL = RxDom.createRootNode<any, any>('NUL', false, 'NUL')
+const SYSTEM = RxDom.createRootNode<unknown, void>('SYSTEM', false, 'SYSTEM')
 let gParent: RxNode = SYSTEM

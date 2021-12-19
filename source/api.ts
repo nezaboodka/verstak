@@ -5,9 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from './core/RxDom.Types'
-export * from './core/RxDom'
-export * from './core/Restyler'
+export * from './core/api'
 
 export * from './html/sensors/Sensor'
 export * from './html/HtmlNodeType'
