@@ -188,9 +188,10 @@ export class RxDom {
           sibling = x
         x = x.next
       }
-      children.switch()
+      // Prepare for next round and incremental rendering
       if (children.first === undefined)
         parent.namespace.clear()
+      children.reset()
       // Asynchronous incremental rendering (if any)
       if (!Transaction.isCanceled && postponed.length > 0)
         promised = RxDom.renderIncrementally(parent, postponed,  0).then(action, action)
@@ -390,7 +391,7 @@ class SequenceImpl<T extends { next?: T, prev?: T }> implements Sequence<T> {
     this.volume++
   }
 
-  switch(): void {
+  reset(): void {
     this.oldFirst = this.first
     this.oldVolume = this.volume
     this.first = this.last = undefined

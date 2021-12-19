@@ -54,5 +54,5 @@ export interface Sequence<T extends { next?: T, prev?: T }> {
   readonly oldFirst?: T
   readonly oldVolume: number
   append(item:T): void
-  switch(): void
+  reset(): void
 }
