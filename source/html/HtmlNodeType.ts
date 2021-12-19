@@ -30,7 +30,12 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
   mount(node: RxNode<E, any>): void {
     const native = node.native
     if (native) {
-      const nativeParent = node.parent.native
+      // TODO: Find better solution
+      let p = node.parent
+      while (p !== undefined && p.native === undefined)
+        p = p.parent
+      const nativeParent = p.native
+      // --------------------------
       if (nativeParent instanceof Element) {
         const sibling = node.sibling
         if (sibling === undefined) {
