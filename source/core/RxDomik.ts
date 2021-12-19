@@ -174,6 +174,10 @@ export class RxDom {
       let x = children.oldFirst
       while (x !== undefined && !Transaction.isCanceled)
         tryToFinalize(x, x)
+      if (children.first === undefined)
+        parent.namespace = new Map<string, RxNode>() // parent.namespace.clear() ?
+      else if (children.volume !== parent.namespace.size)
+        setTimeout(RxDom.collectNodeNamespaceGarbage, 0, parent)
       // Rendering loop
       let sibling: RxNode | undefined = undefined
       x = children.first
@@ -188,10 +192,7 @@ export class RxDom {
           sibling = x
         x = x.next
       }
-      // Prepare for next round and incremental rendering
-      if (children.first === undefined)
-        parent.namespace.clear()
-      children.reset()
+      children.reset() // reset for the next rendering round
       // Asynchronous incremental rendering (if any)
       if (!Transaction.isCanceled && postponed.length > 0)
         promised = RxDom.renderIncrementally(parent, postponed,  0).then(action, action)
@@ -267,6 +268,15 @@ export class RxDom {
     let x = node.children.first
     while (x !== undefined)
       RxDom.forEachChildRecursively(x, action), x = x.next
+  }
+
+  private static collectNodeNamespaceGarbage(node: RxNode): void {
+    node.namespace.forEach(RxDom.deleteIfNodeIsFinalized)
+  }
+
+  private static deleteIfNodeIsFinalized(node: RxNode, key: string, namespace: Map<string, RxNode>): void {
+    if (node.revision < ~0)
+      namespace.delete(key)
   }
 }
 
