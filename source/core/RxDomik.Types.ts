@@ -33,16 +33,17 @@ export interface RxNode<E = any, O = any> {
   // System-managed properties
   readonly level: number
   readonly parent: RxNode
-  revision: number
   native?: E
   resizeObserver?: ResizeObserver
+  revision: number
+  validation: number
+  sibling?: RxNode
+  mounted: boolean
   // Linking (internal)
   namespace: Map<string, RxNode>
   children: Sequence<RxNode>
   next?: RxNode
   prev?: RxNode
-  validation: number
-  mounted: boolean
   rerender(args?: unknown): void
 }
 

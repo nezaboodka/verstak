@@ -66,16 +66,17 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
   // System-managed properties
   readonly level: number
   readonly parent: RxNode
-  revision: number
   native?: E
   resizeObserver?: ResizeObserver
+  revision: number
+  validation: number
+  sibling?: RxNode
+  mounted: boolean
   // Linking (internal)
   namespace: Map<string, RxNode>
   children: Sequence<RxNode>
   next?: RxNode
   prev?: RxNode
-  validation: number
-  mounted: boolean
 
   constructor(level: number, id: string, type: RxNodeType<E, O>, inline: boolean,
     args: unknown, render: Render<E, O>, superRender: SuperRender<O, E> | undefined,
@@ -92,16 +93,17 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
     // System-managed properties
     this.level = level
     this.parent = parent
-    this.revision = ~0 // not initialized
     this.native = undefined
     this.resizeObserver = undefined
+    this.revision = ~0 // not initialized
+    this.validation = 0
+    this.sibling = undefined
+    this.mounted = false
     // Linking (internal)
     this.namespace = new Map<string, RxNode>()
     this.children = new SequenceImpl<RxNode>()
     this.next = undefined
     this.prev = undefined
-    this.validation = 0
-    this.mounted = false
   }
 
   @reaction @options({
@@ -172,14 +174,17 @@ export class RxDom {
       while (x !== undefined && !Transaction.isCanceled)
         tryToFinalize(x, x)
       // Rendering loop
+      let sibling: RxNode | undefined = undefined
       x = children.first
       while (x !== undefined && !Transaction.isCanceled) {
-        if (x.parent === parent) {
-          if (x.priority === 0)
-            tryToRefresh(x)
-          else
-            postponed.push(x)
-        }
+        if (x.sibling !== sibling)
+          x.mounted = false
+        if (x.priority === 0)
+          tryToRefresh(x)
+        else
+          postponed.push(x)
+        if (x.native)
+          sibling = x
         x = x.next
       }
       children.switch()
@@ -271,8 +276,10 @@ function tryToRefresh(node: RxNode): void {
     node.revision = 0
     type.initialize?.(node)
   }
-  if (!node.mounted)
+  if (!node.mounted) {
+    node.mounted = true
     type.mount?.(node)
+  }
   if (node.inline)
     invokeRender(node, node.args)
   else
