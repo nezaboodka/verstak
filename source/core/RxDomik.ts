@@ -179,11 +179,12 @@ export class RxDom {
       else if (children.volume !== parent.namespace.size)
         setTimeout(RxDom.collectNodeNamespaceGarbage, 0, parent)
       // Rendering loop
+      const seq = parent.type.sequential
       let sibling: RxNode | undefined = undefined
       x = children.first
       while (x !== undefined && !Transaction.isCanceled) {
-        if (x.sibling !== sibling)
-          x.mounted = false
+        if (seq && x.sibling !== sibling)
+          x.mounted = false, x.sibling = sibling
         if (x.priority === 0)
           tryToRefresh(x)
         else
