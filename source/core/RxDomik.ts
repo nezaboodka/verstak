@@ -190,8 +190,8 @@ export class RxDom {
       x = children.first
       while (x !== undefined && !Transaction.isCanceled) {
         if (seq && x.sibling !== sibling) {
-          x.mounted = false
           x.sibling = sibling
+          x.mounted = false
         }
         if (x.priority === 0)
           tryToRefresh(x)
