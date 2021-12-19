@@ -48,12 +48,11 @@ export interface RxNode<E = any, O = any> {
 }
 
 export interface Sequence<T extends { next?: T, prev?: T }> {
-  readonly token: any
   readonly first?: T
   readonly last?: T
   readonly volume: number
   readonly oldFirst?: T
   readonly oldVolume: number
-  add(item:T, token: any): void
+  append(item:T): void
   switch(): void
 }

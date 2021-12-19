@@ -135,6 +135,7 @@ export class RxDom {
   static Node<E = unknown, O = void>(id: string, args: any,
     render: Render<E, O>, superRender?: SuperRender<O, E>,
     priority?: number, type?: RxNodeType<E, O>, inline?: boolean): RxNode<E, O> {
+    // Prepare
     const parent = gParent
     let child: RxNode = NUL
     if (priority === undefined)
@@ -159,7 +160,7 @@ export class RxDom {
     else
       throw new Error(`fatal: duplicate node id '${id}'`)
     child.validation = parent.revision
-    parent.children.add(child, parent)
+    parent.children.append(child)
     return child
   }
 
@@ -360,38 +361,33 @@ function compareNodesByPriority(node1: RxNode, node2: RxNode): number {
 // NodeList
 
 class SequenceImpl<T extends { next?: T, prev?: T }> implements Sequence<T> {
-  token: any = undefined
   first?: T = undefined
   last?: T = undefined
   volume: number = -1
   oldFirst?: T = undefined
   oldVolume: number = 0
 
-  add(item:T, token: any): void {
+  append(item:T): void {
+    // Exclude from stale sequence
+    if (item.prev !== undefined)
+      item.prev.next = item.next
+    if (item.next !== undefined)
+      item.next.prev = item.prev
+    if (item === this.oldFirst)
+      this.oldFirst = item.next
+    this.oldVolume--
+    // Include into fresh sequence
     const last = this.last
-    if (token !== this.token && last !== undefined)
-      throw new Error('Sequence.add conflict is detected')
-    if (item !== this.last) {
-      // Exclude from stale sequence
-      if (item.prev !== undefined)
-        item.prev.next = item.next
-      if (item.next !== undefined)
-        item.next.prev = item.prev
-      if (item === this.oldFirst)
-        this.oldFirst = item.next
-      this.oldVolume--
-      // Include into fresh sequence
-      if (last) {
-        this.last = last.next = item
-        item.prev = last
-        item.next = undefined
-      }
-      else {
-        this.first = this.last = item
-        item.prev = item.next = undefined
-      }
-      this.volume++
+    if (last) {
+      this.last = last.next = item
+      item.prev = last
+      item.next = undefined
     }
+    else {
+      this.first = this.last = item
+      item.prev = item.next = undefined
+    }
+    this.volume++
   }
 
   switch(): void {
