@@ -207,19 +207,19 @@ export class RxDom {
     }
   }
 
-  static usingAnotherHost<E>(host: RxNode<E>, run: (e: E) => void): void {
-    const native = host.native
-    if (native !== undefined) {
-      const outer = gHost
-      try {
-        gHost = host
-        run(native)
-      }
-      finally {
-        gHost = outer
-      }
-    }
-  }
+  // static usingAnotherHost<E>(host: RxNode<E>, run: (e: E) => void): void {
+  //   const native = host.native
+  //   if (native !== undefined) {
+  //     const outer = gHost
+  //     try {
+  //       gHost = host
+  //       run(native)
+  //     }
+  //     finally {
+  //       gHost = outer
+  //     }
+  //   }
+  // }
 
   static createRootNode<E, O>(id: string, sequential: boolean, native: E, options: O): RxNode<E, O> {
     const node = new RxNodeImpl<E, O>(
