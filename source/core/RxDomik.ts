@@ -46,8 +46,10 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
     if (!node.inline)
       Rx.dispose(node)
     let x = node.children.first
-    while (x !== undefined)
-      tryToFinalize(x, cause), x = x.next
+    while (x !== undefined) {
+      tryToFinalize(x, cause)
+      x = x.next
+    }
   }
 }
 
@@ -172,12 +174,16 @@ export class RxDom {
       const children = parent.children
       // Finalization loop
       let x = children.oldFirst
-      while (x !== undefined && !Transaction.isCanceled)
+      while (x !== undefined && !Transaction.isCanceled) {
         tryToFinalize(x, x)
-      if (children.first === undefined)
-        parent.namespace = new Map<string, RxNode>() // parent.namespace.clear() ?
-      else if (children.volume !== parent.namespace.size)
-        setTimeout(RxDom.collectNodeNamespaceGarbage, 0, parent)
+        x = x.next
+      }
+      if (children.volume !== parent.namespace.size) {
+        if (children.first === undefined)
+          parent.namespace = new Map<string, RxNode>() // parent.namespace.clear() ?
+        else
+          setTimeout(RxDom.collectNodeNamespaceGarbage, 0, parent)
+      }
       // Rendering loop
       const seq = parent.type.sequential
       let sibling: RxNode | undefined = undefined
@@ -267,8 +273,10 @@ export class RxDom {
     const native = node.native
     native && action(native)
     let x = node.children.first
-    while (x !== undefined)
-      RxDom.forEachChildRecursively(x, action), x = x.next
+    while (x !== undefined) {
+      RxDom.forEachChildRecursively(x, action)
+      x = x.next
+    }
   }
 
   private static collectNodeNamespaceGarbage(node: RxNode): void {
@@ -375,7 +383,7 @@ function compareNodesByPriority(node1: RxNode, node2: RxNode): number {
 class SequenceImpl<T extends { next?: T, prev?: T }> implements Sequence<T> {
   first?: T = undefined
   last?: T = undefined
-  volume: number = -1
+  volume: number = 0
   oldFirst?: T = undefined
   oldVolume: number = 0
 
