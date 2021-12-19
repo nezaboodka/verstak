@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, Transaction, Rx, options, Reentrance, nonreactive } from 'reactronic'
-import { RxNodeType, Render, RxNode, SuperRender } from './RxDomik.Types'
+import { RxNodeType, Render, RxNode, SuperRender, Sequence } from './RxDomik.Types'
 
 // BasicNodeType
 
@@ -19,28 +19,6 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
   initialize(node: RxNode<E, O>): void {
     if (!node.inline)
       Rx.setTraceHint(node, node.id)
-  }
-
-  mount(node: RxNode<E, O>): void {
-    const creator = node.creator
-    const lastHost = node.lastHost
-    const host = node.host
-    if (lastHost !== creator) {
-      const a = lastHost.guests.get(creator)
-      if (a) {
-        a.delete(node)
-        if (a.size === 0)
-          lastHost.guests.delete(creator)
-      }
-    }
-    if (host !== creator) {
-      let a = host.guests.get(creator)
-      if (!a) {
-        a = new Set<RxNode>()
-        host.guests.set(creator, a)
-      }
-      a.add(node)
-    }
   }
 
   render(node: RxNode<E, O>, args: unknown): void {
@@ -65,51 +43,46 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
 
   finalize(node: RxNode<E, O>, cause: RxNode): void {
     node.native = undefined
-    node.creator.children.delete(node.id)
     if (!node.inline)
       Rx.dispose(node)
-    for (const x of node.children.values())
-      tryToFinalize(x, cause)
-    for (const group of node.guests.values())
-      for (const x of group)
-        tryToFinalize(x, cause)
+    let x = node.children.first
+    while (x !== undefined)
+      tryToFinalize(x, cause), x = x.next
   }
 }
 
 // RxNodeImpl
 
 export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
-  private static gUuid: number = 0
-  readonly uuid: number
+  // User-defined properties
   readonly id: string
   readonly type: RxNodeType<E, O>
   readonly inline: boolean
-  readonly creator: RxNode
-  readonly level: number
   args: unknown
   render: Render<E, O>
   superRender: SuperRender<O, E> | undefined
   priority: number
-  validation: number
+  model?: unknown
+  // System-managed properties
+  readonly level: number
+  readonly creator: RxNode
+  readonly host: RxNode
   revision: number
   native?: E
-  host: RxNode
-  lastHost: RxNode
-  model?: unknown
-  children: Map<string, RxNode>
-  first?: RxNode
+  resizeObserver?: ResizeObserver
+  // Linking (internal)
+  namespace: Map<string, RxNode>
+  children: Sequence<RxNode>
   next?: RxNode
-  emitted?: RxNode
-  volume: number
-  guests: Map<RxNode, Set<RxNode>>
-  resizing?: ResizeObserver
+  prev?: RxNode
+  validation: number
+  mounted: boolean
 
   constructor(level: number, id: string, type: RxNodeType<E, O>,
     inline: boolean, args: unknown, render: Render<E, O>,
     superRender: SuperRender<O, E> | undefined, priority: number,
     creator: RxNode, host: RxNode) {
-    this.uuid = ++RxNodeImpl.gUuid
-    this.level = level
+    // User-defined properties
     this.id = id
     this.type = type
     this.inline = inline
@@ -117,19 +90,21 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
     this.render = render
     this.superRender = superRender
     this.priority = priority
+    this.model = undefined
+    // System-managed properties
+    this.level = level
     this.creator = creator
-    this.validation = creator.revision
+    this.host = host
     this.revision = ~0 // not initialized
     this.native = undefined
-    this.host = host
-    this.lastHost = creator
-    this.model = undefined
-    this.children = new Map<string, RxNode>()
-    this.first = undefined
+    this.resizeObserver = undefined
+    // Linking (internal)
+    this.namespace = new Map<string, RxNode>()
+    this.children = new SequenceImpl<RxNode>()
     this.next = undefined
-    this.volume = 0
-    this.guests = new Map<RxNode, Set<RxNode>>()
-    this.resizing = undefined
+    this.prev = undefined
+    this.validation = 0
+    this.mounted = false
   }
 
   @reaction @options({
@@ -160,52 +135,76 @@ export class RxDom {
 
   static Node<E = unknown, O = void>(id: string, args: any,
     render: Render<E, O>, superRender?: SuperRender<O, E>,
-    priority?: number, type?: RxNodeType<E, O>, inline?: boolean, host?: RxNode): RxNode<E, O> {
+    priority?: number, type?: RxNodeType<E, O>, inline?: boolean,
+    host?: RxNode): RxNode<E, O> {
     const creator = gCreator
     if (host === undefined)
       host = gHost
     let node: RxNode = NUL
-    if (host.revision >= 0) { // emit only if host is still alive
+    if (host.revision >= 0) { // refresh only if host is still alive
       if (priority === undefined)
         priority = 0
       // Linking
-      const existing = creator.children.get(id)
-      if (!existing) { // new node
+      const existing = creator.namespace.get(id)
+      if (!existing || existing.revision < ~0) { // new node
         if (type === undefined)
           type = RxDom.basic
         node = new RxNodeImpl<E, O>(creator.level + 1, id, type, inline ?? false,
           args, render, superRender, priority, creator, host)
-        creator.children.set(id, node)
+        creator.namespace.set(id, node)
       }
-      else { // existing node
+      else if (existing.validation !== creator.revision) { // existing node
         node = existing
         if (!argsAreEqual(node.args, args))
           node.args = args
         node.render = render
         node.superRender = superRender
         node.priority = priority
-        node.host = host
-        node.next = undefined
-        node.sibling = undefined
       }
+      else
+        throw new Error(`fatal: duplicate node id '${id}'`)
       node.validation = creator.revision
-      // Sequencing
-      if (creator.first === undefined)
-        creator.first = node
-      if (creator.emitted)
-        creator.emitted.next = node
-      creator.emitted = node
-      creator.volume++
+      creator.children.add(node, creator)
     }
     return node
   }
 
   static renderChildrenThenDo(action: () => void): void {
-    const node = gCreator
-    if (node.type.sequential)
-      RxDom.doRenderSequentialChildren(node, action)
-    else
-      RxDom.doRenderNonSequentialChildren(node, action)
+    const creator = gCreator
+    let promised: Promise<void> | undefined = undefined
+    try {
+      const postponed = new Array<RxNode>()
+      const children = creator.children
+      // Finalization loop
+      let x = children.oldFirst
+      while (x !== undefined && !Transaction.isCanceled) {
+        if (x.creator === creator)
+          tryToFinalize(x, x)
+        else
+          children.add(x, creator) // preserve nodes of other creators
+      }
+      // Rendering loop
+      x = children.first
+      while (x !== undefined && !Transaction.isCanceled) {
+        if (x.creator === creator) {
+          if (x.priority === 0)
+            tryToRefresh(x)
+          else
+            postponed.push(x)
+        }
+        x = x.next
+      }
+      children.switch()
+      if (children.first === undefined)
+        creator.namespace.clear()
+      // Asynchronous incremental rendering (if any)
+      if (!Transaction.isCanceled && postponed.length > 0)
+        promised = RxDom.renderIncrementally(creator, postponed,  0).then(action, action)
+    }
+    finally {
+      if (!promised)
+        action()
+    }
   }
 
   static usingAnotherHost<E>(host: RxNode<E>, run: (e: E) => void): void {
@@ -263,67 +262,6 @@ export class RxDom {
 
   // Internal
 
-  private static doRenderSequentialChildren(creator: RxNode, finish: () => void): void {
-    let promised: Promise<void> | undefined = undefined
-    try {
-      const postponed = new Array<RxNode>()
-      // Finalization loop
-      for (const x of creator.children.values()) {
-        if (Transaction.isCanceled)
-          break
-        if (x.validation !== creator.revision)
-          tryToFinalize(x, x)
-      }
-      // Sequential rendering loop
-      let x = creator.first
-      let sibling: RxNode | undefined = undefined
-      while (x !== undefined && !Transaction.isCanceled) {
-        x.sibling = sibling
-        if (x.priority === 0)
-          tryToRefresh(x)
-        else
-          postponed.push(x)
-        if (x.native)
-          sibling = x
-        x = x.next
-      }
-      // Asynchronous incremental rendering (if any)
-      if (!Transaction.isCanceled && postponed.length > 0)
-        promised = RxDom.renderIncrementally(creator, postponed,  0).then(finish, finish)
-    }
-    finally {
-      if (!promised)
-        finish()
-    }
-  }
-
-  private static doRenderNonSequentialChildren(creator: RxNode, finish: () => void): void {
-    let promised: Promise<void> | undefined = undefined
-    try {
-      // Non-sequential rendering and finalization loop
-      const postponed = new Array<RxNode>()
-      for (const x of creator.children.values()) {
-        if (Transaction.isCanceled)
-          break
-        if (x.validation === creator.revision) {
-          if (x.priority === 0)
-            tryToRefresh(x)
-          else
-            postponed.push(x)
-        }
-        else
-          tryToFinalize(x, x)
-      }
-      // Asynchronous incremental rendering (if any)
-      if (!Transaction.isCanceled && postponed.length > 0) // Incremental rendering (if any)
-        promised = RxDom.renderIncrementally(creator, postponed,  0).then(finish, finish)
-    }
-    finally {
-      if (!promised)
-        finish()
-    }
-  }
-
   private static async renderIncrementally(creator: RxNode, children: Array<RxNode>,
     startIndex: number, checkEveryN: number = 30, timeLimit: number = 12): Promise<void> {
     if (Transaction.isFrameOver(checkEveryN, timeLimit))
@@ -347,7 +285,9 @@ export class RxDom {
   private static forEachChildRecursively(node: RxNode, action: (e: any) => void): void {
     const native = node.native
     native && action(native)
-    node.children.forEach(x => RxDom.forEachChildRecursively(x, action))
+    let x = node.children.first
+    while (x !== undefined)
+      RxDom.forEachChildRecursively(x, action), x = x.next
   }
 }
 
@@ -358,13 +298,9 @@ function tryToRefresh(node: RxNode): void {
   if (node.revision === ~0) {
     node.revision = 0
     type.initialize?.(node)
-    type.mount?.(node)
-    node.lastHost = node.host
   }
-  else if (node.host !== node.lastHost) {
+  if (!node.mounted)
     type.mount?.(node)
-    node.lastHost = node.host
-  }
   if (node.inline)
     invokeRender(node, node.args)
   else
@@ -384,12 +320,7 @@ function tryToFinalize(node: RxNode, cause: RxNode): void {
 function invokeRender(node: RxNode, args: unknown): void {
   const host = node.native !== undefined ? node : node.host
   runUnder(node, host, () => {
-    // Prepare node for rendering
     node.revision++
-    node.first = undefined
-    node.emitted = undefined
-    node.volume = 0
-    // Render
     const type = node.type
     if (type.render)
       type.render(node, args) // type-defined rendering
@@ -450,6 +381,51 @@ function argsAreEqual(a1: any, a2: any): boolean {
 
 function compareNodesByPriority(node1: RxNode, node2: RxNode): number {
   return node1.priority - node2.priority
+}
+
+// NodeList
+
+class SequenceImpl<T extends { next?: T, prev?: T }> implements Sequence<T> {
+  token: any = undefined
+  first?: T = undefined
+  last?: T = undefined
+  volume: number = -1
+  oldFirst?: T = undefined
+  oldVolume: number = 0
+
+  add(item:T, token: any): void {
+    const last = this.last
+    if (token !== this.token && last !== undefined)
+      throw new Error('Sequence.add conflict is detected')
+    if (item !== this.last) {
+      // Exclude from stale sequence
+      if (item.prev !== undefined)
+        item.prev.next = item.next
+      if (item.next !== undefined)
+        item.next.prev = item.prev
+      if (item === this.oldFirst)
+        this.oldFirst = item.next
+      this.oldVolume--
+      // Include into fresh sequence
+      if (last) {
+        this.last = last.next = item
+        item.prev = last
+        item.next = undefined
+      }
+      else {
+        this.first = this.last = item
+        item.prev = item.next = undefined
+      }
+      this.volume++
+    }
+  }
+
+  switch(): void {
+    this.oldFirst = this.first
+    this.oldVolume = this.volume
+    this.first = this.last = undefined
+    this.volume = 0
+  }
 }
 
 // Support asynchronous programing automatically

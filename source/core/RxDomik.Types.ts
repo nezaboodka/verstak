@@ -21,29 +21,47 @@ export interface RxNodeType<E = unknown, O = void> {
 }
 
 export interface RxNode<E = any, O = any> {
-  readonly uuid: number
+  // User-defined properties
   readonly id: string
   readonly type: RxNodeType<E, O>
   readonly inline: boolean
-  readonly creator: RxNode
-  readonly level: number
   args: unknown
   render: Render<E, O>
   superRender: SuperRender<O, E> | undefined
   priority: number
-  validation: number
+  model?: unknown
+  // System-managed properties
+  readonly level: number
+  readonly creator: RxNode
+  readonly host: RxNode
   revision: number
   native?: E
-  host: RxNode
-  lastHost: RxNode
-  model?: unknown
-  children: Map<string, RxNode>
-  first?: RxNode
+  resizeObserver?: ResizeObserver
+  // Linking (internal)
+  namespace: Map<string, RxNode>
+  children: Sequence<RxNode>
   next?: RxNode
-  sibling?: RxNode
-  emitted?: RxNode
-  volume: number
-  guests: Map<RxNode, Set<RxNode>>
-  resizing?: ResizeObserver
+  prev?: RxNode
+  validation: number
+  mounted: boolean
   rerender(args?: unknown): void
+}
+
+export interface RxNodePair {
+  creator: RxNode
+  nextCreatorPair?: RxNodePair
+  host: RxNode
+  next?: RxNodePair
+  prev?: RxNodePair
+}
+
+export interface Sequence<T extends { next?: T, prev?: T }> {
+  readonly token: any
+  readonly first?: T
+  readonly last?: T
+  readonly volume: number
+  readonly oldFirst?: T
+  readonly oldVolume: number
+  add(item:T, token: any): void
+  switch(): void
 }
