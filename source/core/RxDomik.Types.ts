@@ -32,8 +32,7 @@ export interface RxNode<E = any, O = any> {
   model?: unknown
   // System-managed properties
   readonly level: number
-  readonly creator: RxNode
-  readonly host: RxNode
+  readonly parent: RxNode
   revision: number
   native?: E
   resizeObserver?: ResizeObserver
@@ -45,14 +44,6 @@ export interface RxNode<E = any, O = any> {
   validation: number
   mounted: boolean
   rerender(args?: unknown): void
-}
-
-export interface RxNodePair {
-  creator: RxNode
-  nextCreatorPair?: RxNodePair
-  host: RxNode
-  next?: RxNodePair
-  prev?: RxNodePair
 }
 
 export interface Sequence<T extends { next?: T, prev?: T }> {
