@@ -189,8 +189,10 @@ export class RxDom {
       let sibling: RxNode | undefined = undefined
       x = children.first
       while (x !== undefined && !Transaction.isCanceled) {
-        if (seq && x.sibling !== sibling)
-          x.mounted = false, x.sibling = sibling
+        if (seq && x.sibling !== sibling) {
+          x.mounted = false
+          x.sibling = sibling
+        }
         if (x.priority === 0)
           tryToRefresh(x)
         else
