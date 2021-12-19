@@ -380,13 +380,13 @@ class SequenceImpl<T extends { next?: T, prev?: T }> implements Sequence<T> {
     // Include into fresh sequence
     const last = this.last
     if (last) {
-      this.last = last.next = item
       item.prev = last
       item.next = undefined
+      this.last = last.next = item
     }
     else {
-      this.first = this.last = item
       item.prev = item.next = undefined
+      this.first = this.last = item
     }
     this.volume++
   }
