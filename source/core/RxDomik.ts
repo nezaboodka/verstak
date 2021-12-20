@@ -466,7 +466,7 @@ export class RxNodeSequenceImpl {
         throw new Error(`duplicate item id: ${id}`)
       result.reconcilingRevision = this.revision
       this.likelyNextToRetain = result.next
-      // Exclude from current sequence
+      // Exclude from main sequence
       if (result.prev !== undefined)
         result.prev.next = result.next
       if (result.next !== undefined)
@@ -474,7 +474,7 @@ export class RxNodeSequenceImpl {
       if (result === this.first)
         this.first = result.next
       this.count--
-      // Include into uphold sequence
+      // Include into retained sequence
       const last = this.retainedLast
       if (last) {
         result.prev = last
