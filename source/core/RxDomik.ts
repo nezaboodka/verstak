@@ -127,6 +127,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
 
 export class RxDom {
   public static readonly basic = new BasicNodeType<any, any>('basic', false)
+  public static incrementalRenderingFrameDurationMs = 10
 
   static Root<T>(render: () => T): T {
     let result: any = render()
@@ -259,9 +260,9 @@ export class RxDom {
   // Internal
 
   private static async renderIncrementally(parent: RxNode,
-    p1: Array<RxNode> | undefined, p2: Array<RxNode> | undefined,
-    checkEveryN: number = 30, timeLimit: number = 12): Promise<void> {
-    if (Transaction.isFrameOver(checkEveryN, timeLimit))
+    p1: Array<RxNode> | undefined, p2: Array<RxNode> | undefined): Promise<void> {
+    const checkEveryN = 30
+    if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
       await Transaction.requestNextFrame()
     if (!Transaction.isCanceled) {
       if (p1 !== undefined) {
@@ -271,7 +272,7 @@ export class RxDom {
           tryToRefresh(x)
           if (Transaction.isCanceled)
             break
-          if (Transaction.isFrameOver(checkEveryN, timeLimit))
+          if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
             await Transaction.requestNextFrame()
           if (Transaction.isCanceled)
             break
@@ -284,7 +285,7 @@ export class RxDom {
           tryToRefresh(x)
           if (Transaction.isCanceled)
             break
-          if (Transaction.isFrameOver(checkEveryN, timeLimit))
+          if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
             await Transaction.requestNextFrame()
           if (Transaction.isCanceled)
             break
