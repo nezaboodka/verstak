@@ -37,7 +37,7 @@ export interface RxNode<E = any, O = any> {
   native?: E
   resizeObserver?: ResizeObserver
   revision: number
-  parentRevision: number
+  reconciliationRevision: number
   prevSibling?: RxNode
   isMountRequired: boolean
   // Linking (internal)
@@ -49,12 +49,12 @@ export interface RxNode<E = any, O = any> {
 }
 
 export interface RefreshableSequence<T extends { next?: T, prev?: T }> {
-  readonly refreshingFirst?: T
-  readonly refreshingLast?: T
-  readonly refreshingCount: number
+  readonly retainedFirst?: T
+  readonly retainedLast?: T
+  readonly retainedCount: number
   readonly first?: T
   readonly count: number
-  isRefreshing: boolean
+  isReconciling: boolean
   addAsNewlyCreated(item:T): void
   addAsAlreadyExisting(item:T): void
 }

@@ -23,7 +23,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
 
   render(node: RxNode<E, O>, args: unknown): void {
     let result: any
-    node.children.isRefreshing = true
+    node.children.isReconciling = true
     if (node.superRender)
       result = node.superRender(options => {
         const res = node.render(node.native as E, options)
@@ -75,7 +75,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
   native?: E
   resizeObserver?: ResizeObserver
   revision: number
-  parentRevision: number
+  reconciliationRevision: number
   prevSibling?: RxNode
   isMountRequired: boolean
   // Linking (internal)
@@ -103,7 +103,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
     this.native = undefined
     this.resizeObserver = undefined
     this.revision = ~0 // not initialized
-    this.parentRevision = 0
+    this.reconciliationRevision = 0
     this.prevSibling = undefined
     this.isMountRequired = false
     // Linking (internal)
@@ -156,7 +156,7 @@ export class RxDom {
       parent.namespace.set(id, child)
       parent.children.addAsNewlyCreated(child)
     }
-    else if (existing.parentRevision !== parent.revision) { // existing node
+    else if (existing.reconciliationRevision !== parent.revision) { // existing node
       child = existing
       if (!argsAreEqual(child.args, args))
         child.args = args
@@ -166,7 +166,7 @@ export class RxDom {
     }
     else
       throw new Error(`fatal: duplicate node id '${id}'`)
-    child.parentRevision = parent.revision
+    child.reconciliationRevision = parent.revision
     return child
   }
 
@@ -175,7 +175,7 @@ export class RxDom {
     let promised: Promise<void> | undefined = undefined
     try {
       const children = parent.children
-      if (children.isRefreshing) {
+      if (children.isReconciling) {
         let p1: Array<RxNode> | undefined = undefined
         let p2: Array<RxNode> | undefined = undefined
         // Finalization loop
@@ -187,7 +187,7 @@ export class RxDom {
         // Rendering loop
         const seq = parent.type.sequential
         let sibling: RxNode | undefined = undefined
-        x = children.refreshingFirst
+        x = children.retainedFirst
         while (x !== undefined && !Transaction.isCanceled) {
           if (seq) {
             if (x.prevSibling !== sibling) {
@@ -207,7 +207,7 @@ export class RxDom {
             sibling = x
           x = x.next
         }
-        children.isRefreshing = false // close until next rendering round
+        children.isReconciling = false // close until next rendering round
         // Asynchronous incremental rendering (if any)
         if (!Transaction.isCanceled && p1 !== undefined || p2 !== undefined)
           promised = RxDom.renderIncrementally(parent, p1, p2).then(action, action)
@@ -421,39 +421,39 @@ function shuffle<T>(array: Array<T>): Array<T> {
 // NodeList
 
 class RefreshableSequenceImpl<T extends { next?: T, prev?: T }> implements RefreshableSequence<T> {
-  refreshingFirst?: T = undefined
-  refreshingLast?: T = undefined
-  refreshingCount: number = -1 // pending = false
+  retainedFirst?: T = undefined
+  retainedLast?: T = undefined
+  retainedCount: number = -1 // pending = false
   first?: T = undefined
   count: number = 0
 
-  get isRefreshing(): boolean { return this.refreshingCount >= 0 }
-  set isRefreshing(value: boolean) {
+  get isReconciling(): boolean { return this.retainedCount >= 0 }
+  set isReconciling(value: boolean) {
     if (value) {
-      if (this.refreshingCount < 0)
-        this.refreshingCount = 0
+      if (this.retainedCount < 0)
+        this.retainedCount = 0
       else
         throw new Error('rendering reentrance detected')
     }
     else {
-      if (this.refreshingCount >= 0) {
-        this.first = this.refreshingFirst
-        this.count = this.refreshingCount
-        this.refreshingFirst = this.refreshingLast = undefined
-        this.refreshingCount = -1
+      if (this.retainedCount >= 0) {
+        this.first = this.retainedFirst
+        this.count = this.retainedCount
+        this.retainedFirst = this.retainedLast = undefined
+        this.retainedCount = -1
       }
     }
   }
 
   addAsNewlyCreated(item:T): void {
-    const last = this.refreshingLast
+    const last = this.retainedLast
     if (last) {
       item.prev = last
-      this.refreshingLast = last.next = item
+      this.retainedLast = last.next = item
     }
     else
-      this.refreshingFirst = this.refreshingLast = item
-    this.refreshingCount++
+      this.retainedFirst = this.retainedLast = item
+    this.retainedCount++
   }
 
   addAsAlreadyExisting(item:T): void {
@@ -466,17 +466,17 @@ class RefreshableSequenceImpl<T extends { next?: T, prev?: T }> implements Refre
       this.first = item.next
     this.count--
     // Include into refreshing sequence
-    const last = this.refreshingLast
+    const last = this.retainedLast
     if (last) {
       item.prev = last
       item.next = undefined
-      this.refreshingLast = last.next = item
+      this.retainedLast = last.next = item
     }
     else {
       item.prev = item.next = undefined
-      this.refreshingFirst = this.refreshingLast = item
+      this.retainedFirst = this.retainedLast = item
     }
-    this.refreshingCount++
+    this.retainedCount++
   }
 }
 
