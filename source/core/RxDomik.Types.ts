@@ -50,10 +50,10 @@ export interface RxNode<E = any, O = any> {
 export interface Sequence<T extends { next?: T, prev?: T }> {
   readonly first?: T
   readonly last?: T
-  readonly volume: number
+  readonly count: number
   readonly oldFirst?: T
-  readonly oldVolume: number
-  pending: boolean
-  created(item:T): void
-  reused(item:T): void
+  readonly oldCount: number
+  isClosed: boolean
+  addNew(item:T): void
+  addExisting(item:T): void
 }

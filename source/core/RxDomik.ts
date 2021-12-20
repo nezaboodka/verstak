@@ -23,7 +23,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
 
   render(node: RxNode<E, O>, args: unknown): void {
     let result: any
-    node.children.pending = true
+    node.children.isClosed = false // open for building children sequence
     if (node.superRender)
       result = node.superRender(options => {
         const res = node.render(node.native as E, options)
@@ -153,7 +153,7 @@ export class RxDom {
       child = new RxNodeImpl<E, O>(parent.level + 1, id, type, inline ?? false,
         args, render, superRender, priority, parent)
       parent.namespace.set(id, child)
-      parent.children.created(child)
+      parent.children.addNew(child)
     }
     else if (existing.validation !== parent.revision) { // existing node
       child = existing
@@ -162,7 +162,7 @@ export class RxDom {
       child.render = render
       child.superRender = superRender
       child.priority = priority
-      parent.children.reused(child)
+      parent.children.addExisting(child)
     }
     else
       throw new Error(`fatal: duplicate node id '${id}'`)
@@ -175,7 +175,7 @@ export class RxDom {
     let promised: Promise<void> | undefined = undefined
     try {
       const children = parent.children
-      if (children.pending) { // if not yet closed
+      if (!children.isClosed) {
         const postponed = new Array<RxNode>()
         // Finalization loop
         let x = children.oldFirst
@@ -204,7 +204,7 @@ export class RxDom {
             sibling = x
           x = x.next
         }
-        children.pending = false // close until next rendering round
+        children.isClosed = true // close until next rendering round
         // Asynchronous incremental rendering (if any)
         if (!Transaction.isCanceled && postponed.length > 0)
           promised = RxDom.renderIncrementally(parent, postponed,  0).then(action, action)
@@ -389,29 +389,29 @@ function compareNodesByPriority(node1: RxNode, node2: RxNode): number {
 class SequenceImpl<T extends { next?: T, prev?: T }> implements Sequence<T> {
   first?: T = undefined
   last?: T = undefined
-  volume: number = -1 // pending = false
+  count: number = -1 // pending = false
   oldFirst?: T = undefined
-  oldVolume: number = 0
+  oldCount: number = 0
 
-  get pending(): boolean { return this.volume >= 0 }
-  set pending(value: boolean) {
+  get isClosed(): boolean { return this.count < 0 }
+  set isClosed(value: boolean) {
     if (value) {
-      if (this.volume < 0)
-        this.volume = 0
+      if (this.count >= 0) {
+        this.oldFirst = this.first
+        this.oldCount = this.count
+        this.first = this.last = undefined
+        this.count = -1
+      }
+    }
+    else {
+      if (this.count < 0)
+        this.count = 0
       else
         throw new Error('rendering reentrance detected')
     }
-    else {
-      if (this.volume >= 0) {
-        this.oldFirst = this.first
-        this.oldVolume = this.volume
-        this.first = this.last = undefined
-        this.volume = -1
-      }
-    }
   }
 
-  created(item:T): void {
+  addNew(item:T): void {
     const last = this.last
     if (last) {
       item.prev = last
@@ -419,10 +419,10 @@ class SequenceImpl<T extends { next?: T, prev?: T }> implements Sequence<T> {
     }
     else
       this.first = this.last = item
-    this.volume++
+    this.count++
   }
 
-  reused(item:T): void {
+  addExisting(item:T): void {
     // Exclude from stale sequence
     if (item.prev !== undefined)
       item.prev.next = item.next
@@ -430,7 +430,7 @@ class SequenceImpl<T extends { next?: T, prev?: T }> implements Sequence<T> {
       item.next.prev = item.prev
     if (item === this.oldFirst)
       this.oldFirst = item.next
-    this.oldVolume--
+    this.oldCount--
     // Include into fresh sequence
     const last = this.last
     if (last) {
@@ -442,7 +442,7 @@ class SequenceImpl<T extends { next?: T, prev?: T }> implements Sequence<T> {
       item.prev = item.next = undefined
       this.first = this.last = item
     }
-    this.volume++
+    this.count++
   }
 }
 
