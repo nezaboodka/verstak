@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, Transaction, Rx, options, Reentrance, nonreactive } from 'reactronic'
-import { RxNodeType, Render, RxNode, SuperRender, RefreshableSequence } from './RxDomik.Types'
+import { RxNodeType, Render, RxNode, SuperRender } from './RxDomik.Types'
 
 // BasicNodeType
 
@@ -23,7 +23,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
 
   render(node: RxNode<E, O>, args: unknown): void {
     let result: any
-    node.children.isReconciling = true
+    node.children.beginReconciling(node.revision)
     if (node.superRender)
       result = node.superRender(options => {
         const res = node.render(node.native as E, options)
@@ -44,8 +44,6 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
 
   finalize(node: RxNode<E, O>, initiator: RxNode): void {
     node.native = undefined
-    if (node === initiator)
-      node.parent.namespace.delete(node.id)
     if (!node.inline)
       Rx.dispose(node)
     let x = node.children.first
@@ -75,12 +73,11 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
   native?: E
   resizeObserver?: ResizeObserver
   revision: number
-  reconciliationRevision: number
+  reconcilingRevision: number
   prevSibling?: RxNode
   isMountRequired: boolean
   // Linking (internal)
-  namespace: Map<string, RxNode>
-  children: RefreshableSequence<RxNode>
+  children: RxNodeSequenceImpl
   next?: RxNode
   prev?: RxNode
 
@@ -102,13 +99,12 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
     this.parent = parent
     this.native = undefined
     this.resizeObserver = undefined
-    this.revision = ~0 // not initialized
-    this.reconciliationRevision = 0
+    this.revision = ~0
+    this.reconcilingRevision = ~0
     this.prevSibling = undefined
     this.isMountRequired = false
     // Linking (internal)
-    this.namespace = new Map<string, RxNode>()
-    this.children = new RefreshableSequenceImpl<RxNode>()
+    this.children = new RxNodeSequenceImpl()
     this.next = undefined
     this.prev = undefined
   }
@@ -130,6 +126,7 @@ export class RxDom {
   public static incrementalRenderingFrameDurationMs = 10
 
   static Root<T>(render: () => T): T {
+    gParent.children.beginReconciling(gParent.revision)
     let result: any = render()
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current parent
@@ -147,26 +144,19 @@ export class RxDom {
     const parent = gParent
     let child: RxNode = NUL
     // Linking
-    const existing = parent.namespace.get(id)
-    if (!existing || existing.revision < ~0) { // new node
-      if (type === undefined)
-        type = RxDom.basic
-      child = new RxNodeImpl<E, O>(parent.level + 1, id, type,
+    const existing = parent.children.tryToRetainExisting(id)
+    if (!existing) { // new node
+      child = new RxNodeImpl<E, O>(parent.level + 1, id, type ?? RxDom.basic,
         inline ?? false, args, render, superRender, parent)
-      parent.namespace.set(id, child)
-      parent.children.addAsNewlyCreated(child)
+      parent.children.retainNewlyCreated(child)
     }
-    else if (existing.reconciliationRevision !== parent.revision) { // existing node
+    else {
       child = existing
       if (!argsAreEqual(child.args, args))
         child.args = args
       child.render = render
       child.superRender = superRender
-      parent.children.addAsAlreadyExisting(child)
     }
-    else
-      throw new Error(`fatal: duplicate node id '${id}'`)
-    child.reconciliationRevision = parent.revision
     return child
   }
 
@@ -207,7 +197,8 @@ export class RxDom {
             sibling = x
           x = x.next
         }
-        children.isReconciling = false // close until next rendering round
+        children.endReconciling()
+
         // Asynchronous incremental rendering (if any)
         if (!Transaction.isCanceled && p1 !== undefined || p2 !== undefined)
           promised = RxDom.renderIncrementally(parent, p1, p2).then(action, action)
@@ -246,7 +237,7 @@ export class RxDom {
   }
 
   static currentNodeInstanceInternal<E>(): RxNodeImpl<E> {
-    return gParent
+    return gParent as RxNodeImpl<E>
   }
 
   static currentNodeRevision(): number {
@@ -418,64 +409,97 @@ function shuffle<T>(array: Array<T>): Array<T> {
   return array
 }
 
-// NodeList
+// RxNodeSequenceImpl
 
-class RefreshableSequenceImpl<T extends { next?: T, prev?: T }> implements RefreshableSequence<T> {
-  retainedFirst?: T = undefined
-  retainedLast?: T = undefined
-  retainedCount: number = -1 // pending = false
-  first?: T = undefined
+export class RxNodeSequenceImpl {
+  revision: number = ~0
+  namespace: Map<string, RxNode> = new Map<string, RxNode>()
+  likelyNextToRetain?: RxNode = undefined
+  retainedFirst?: RxNode = undefined
+  retainedLast?: RxNode = undefined
+  retainedCount: number = 0
+  first?: RxNode = undefined
   count: number = 0
 
-  get isReconciling(): boolean { return this.retainedCount >= 0 }
-  set isReconciling(value: boolean) {
-    if (value) {
-      if (this.retainedCount < 0)
-        this.retainedCount = 0
-      else
-        throw new Error('rendering reentrance detected')
-    }
-    else {
-      if (this.retainedCount >= 0) {
-        this.first = this.retainedFirst
-        this.count = this.retainedCount
-        this.retainedFirst = this.retainedLast = undefined
-        this.retainedCount = -1
+  get isReconciling(): boolean { return this.revision > ~0 }
+
+  beginReconciling(revision: number): void {
+    if (this.isReconciling)
+      throw new Error('sequence reconciler is opened already')
+    this.revision = revision
+    this.retainedFirst = this.retainedLast = undefined
+    this.retainedCount = 0
+    this.likelyNextToRetain = this.first
+  }
+
+  endReconciling(): void {
+    if (!this.isReconciling)
+      throw new Error('sequence reconciler is closed already')
+    const namespace = this.namespace
+    const count = this.count
+    const retained = this.retainedCount
+    if (retained > 0) {
+      if (retained > count) {
+        let x = this.first
+        while (x !== undefined)
+          namespace.delete(x.id), x = x.next
+      }
+      else {
+        let x = this.retainedFirst
+        while (x !== undefined)
+          namespace.set(x.id, x), x = x.next
       }
     }
+    else
+      this.namespace = new Map<string, RxNode>()
+    this.first = this.retainedFirst
+    this.count = retained
+    this.revision = ~0
   }
 
-  addAsNewlyCreated(item:T): void {
+  tryToRetainExisting(id: string): RxNode | undefined {
+    let result = this.likelyNextToRetain
+    if (result?.id !== id)
+      result = this.namespace.get(id)
+    if (result && result.revision >= ~0) {
+      if (result.reconcilingRevision === this.revision)
+        throw new Error(`duplicate item id: ${id}`)
+      result.reconcilingRevision = this.revision
+      this.likelyNextToRetain = result.next
+      // Exclude from current sequence
+      if (result.prev !== undefined)
+        result.prev.next = result.next
+      if (result.next !== undefined)
+        result.next.prev = result.prev
+      if (result === this.first)
+        this.first = result.next
+      this.count--
+      // Include into uphold sequence
+      const last = this.retainedLast
+      if (last) {
+        result.prev = last
+        result.next = undefined
+        this.retainedLast = last.next = result
+      }
+      else {
+        result.prev = result.next = undefined
+        this.retainedFirst = this.retainedLast = result
+      }
+      this.retainedCount++
+    }
+    return result
+  }
+
+  retainNewlyCreated(node: RxNode): void {
+    node.reconcilingRevision = this.revision
+    this.namespace.set(node.id, node)
     const last = this.retainedLast
     if (last) {
-      item.prev = last
-      this.retainedLast = last.next = item
+      node.prev = last
+      this.retainedLast = last.next = node
     }
     else
-      this.retainedFirst = this.retainedLast = item
-    this.retainedCount++
-  }
-
-  addAsAlreadyExisting(item:T): void {
-    // Exclude from current sequence
-    if (item.prev !== undefined)
-      item.prev.next = item.next
-    if (item.next !== undefined)
-      item.next.prev = item.prev
-    if (item === this.first)
-      this.first = item.next
-    this.count--
-    // Include into refreshing sequence
-    const last = this.retainedLast
-    if (last) {
-      item.prev = last
-      item.next = undefined
-      this.retainedLast = last.next = item
-    }
-    else {
-      item.prev = item.next = undefined
-      this.retainedFirst = this.retainedLast = item
-    }
+      this.retainedFirst = this.retainedLast = node
     this.retainedCount++
   }
 }

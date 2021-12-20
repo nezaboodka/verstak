@@ -37,24 +37,25 @@ export interface RxNode<E = any, O = any> {
   native?: E
   resizeObserver?: ResizeObserver
   revision: number
-  reconciliationRevision: number
+  reconcilingRevision: number
   prevSibling?: RxNode
   isMountRequired: boolean
   // Linking (internal)
-  namespace: Map<string, RxNode>
-  children: RefreshableSequence<RxNode>
+  children: RxNodeSequence
   next?: RxNode
   prev?: RxNode
   rerender(args?: unknown): void
 }
 
-export interface RefreshableSequence<T extends { next?: T, prev?: T }> {
-  readonly retainedFirst?: T
-  readonly retainedLast?: T
+export interface RxNodeSequence {
+  readonly retainedFirst?: RxNode
+  readonly retainedLast?: RxNode
   readonly retainedCount: number
-  readonly first?: T
+  readonly first?: RxNode
   readonly count: number
-  isReconciling: boolean
-  addAsNewlyCreated(item:T): void
-  addAsAlreadyExisting(item:T): void
+  readonly isReconciling: boolean
+  beginReconciling(revision: number): void
+  endReconciling(): void
+  tryToRetainExisting(id: string): RxNode | undefined
+  retainNewlyCreated(node: RxNode): void
 }
