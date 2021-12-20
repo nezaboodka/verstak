@@ -10,7 +10,7 @@
 export interface SequenceReconcilerItem<K, T> {
   readonly id: K
   readonly isFinalized: boolean
-  readonly reconciliationRevision: number
+  reconciliationRevision: number
   next?: T
   prev?: T
 }
@@ -48,6 +48,9 @@ export class SequenceReconciler<K, T extends SequenceReconcilerItem<K, T>> {
     if (result?.id !== id)
       result = this.namespace.get(id)
     if (result && !result.isFinalized) {
+      if (result.reconciliationRevision === this.revision)
+        throw new Error(`duplicate item id: ${id}`)
+      result.reconciliationRevision = this.revision
       this.likelyNextToRetain = result.next
       // Exclude from current sequence
       if (result.prev !== undefined)
@@ -73,7 +76,8 @@ export class SequenceReconciler<K, T extends SequenceReconcilerItem<K, T>> {
     return result
   }
 
-  retainNewlyCreated(item:T): void {
+  retainNewlyCreated(item: T): void {
+    item.reconciliationRevision = this.revision
     const last = this.retainedLast
     if (last) {
       item.prev = last
