@@ -336,7 +336,7 @@ function tryToFinalize(node: RxNode, initiator: RxNode): void {
   if (node.revision >= ~0) {
     node.revision = ~node.revision
     if (node === initiator)
-      Transaction.runAs({ standalone: true }, invokeFinalize, node, initiator)
+      Transaction.runAs({ standalone: true, hint: `RxDom.finalize(${node.id})`}, invokeFinalize, node, initiator)
     else
       invokeFinalize(node, initiator)
   }
