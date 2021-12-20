@@ -67,6 +67,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
   render: Render<E, O>
   superRender: SuperRender<O, E> | undefined
   priority: number
+  childrenShuffling: boolean
   model?: unknown
   // System-managed properties
   readonly level: number
@@ -85,7 +86,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
 
   constructor(level: number, id: string, type: RxNodeType<E, O>, inline: boolean,
     args: unknown, render: Render<E, O>, superRender: SuperRender<O, E> | undefined,
-    priority: number, parent: RxNode) {
+    parent: RxNode) {
     // User-defined properties
     this.id = id
     this.type = type
@@ -93,7 +94,8 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
     this.args = args
     this.render = render
     this.superRender = superRender
-    this.priority = priority
+    this.priority = 0
+    this.childrenShuffling = false
     this.model = undefined
     // System-managed properties
     this.level = level
@@ -139,19 +141,17 @@ export class RxDom {
 
   static Node<E = unknown, O = void>(id: string, args: any,
     render: Render<E, O>, superRender?: SuperRender<O, E>,
-    priority?: number, type?: RxNodeType<E, O>, inline?: boolean): RxNode<E, O> {
+    type?: RxNodeType<E, O>, inline?: boolean): RxNode<E, O> {
     // Prepare
     const parent = gParent
     let child: RxNode = NUL
-    if (priority === undefined)
-      priority = 0
     // Linking
     const existing = parent.namespace.get(id)
     if (!existing || existing.revision < ~0) { // new node
       if (type === undefined)
         type = RxDom.basic
-      child = new RxNodeImpl<E, O>(parent.level + 1, id, type, inline ?? false,
-        args, render, superRender, priority, parent)
+      child = new RxNodeImpl<E, O>(parent.level + 1, id, type,
+        inline ?? false, args, render, superRender, parent)
       parent.namespace.set(id, child)
       parent.children.addAsNewlyCreated(child)
     }
@@ -161,7 +161,6 @@ export class RxDom {
         child.args = args
       child.render = render
       child.superRender = superRender
-      child.priority = priority
       parent.children.addAsAlreadyExisting(child)
     }
     else
@@ -176,7 +175,8 @@ export class RxDom {
     try {
       const children = parent.children
       if (children.isRefreshing) {
-        const postponed = new Array<RxNode>()
+        let p1: Array<RxNode> | undefined = undefined
+        let p2: Array<RxNode> | undefined = undefined
         // Finalization loop
         let x = children.first
         while (x !== undefined) {
@@ -198,16 +198,18 @@ export class RxDom {
             x.prevSibling = x
           if (x.priority === 0)
             tryToRefresh(x)
+          else if (x.priority === 1)
+            p1 = push(p1, x)
           else
-            postponed.push(x)
+            p2 = push(p2, x)
           if (x.native)
             sibling = x
           x = x.next
         }
         children.isRefreshing = false // close until next rendering round
         // Asynchronous incremental rendering (if any)
-        if (!Transaction.isCanceled && postponed.length > 0)
-          promised = RxDom.renderIncrementally(parent, postponed,  0).then(action, action)
+        if (!Transaction.isCanceled && p1 !== undefined || p2 !== undefined)
+          promised = RxDom.renderIncrementally(parent, p1, p2).then(action, action)
       }
     }
     finally {
@@ -225,8 +227,7 @@ export class RxDom {
       null,                     // args
       () => { /* nop */ },      // render
       undefined,                // superRender
-      0,                        // priority
-      {} as RxNode)             // parent
+      {} as RxNode)             // fake parent (overwritten below)
     // Initialize
     const a: any = node
     a['parent'] = node
@@ -235,7 +236,9 @@ export class RxDom {
     return node
   }
 
-  // currentNodeInstance, currentNodeRevision, trace, forAll
+  static get self(): RxNode {
+    return gParent
+  }
 
   static currentNodeInstance<T>(): { model?: T } {
     return gParent as { model?: T }
@@ -255,22 +258,37 @@ export class RxDom {
 
   // Internal
 
-  private static async renderIncrementally(parent: RxNode, children: Array<RxNode>,
-    startIndex: number, checkEveryN: number = 30, timeLimit: number = 12): Promise<void> {
+  private static async renderIncrementally(parent: RxNode,
+    p1: Array<RxNode> | undefined, p2: Array<RxNode> | undefined,
+    checkEveryN: number = 30, timeLimit: number = 12): Promise<void> {
     if (Transaction.isFrameOver(checkEveryN, timeLimit))
       await Transaction.requestNextFrame()
     if (!Transaction.isCanceled) {
-      children.sort(compareNodesByPriority)
-      let i = startIndex
-      while (i < children.length) {
-        tryToRefresh(children[i])
-        if (Transaction.isCanceled)
-          break
-        if (Transaction.isFrameOver(checkEveryN, timeLimit))
-          await Transaction.requestNextFrame()
-        if (Transaction.isCanceled)
-          break
-        i++
+      if (p1 !== undefined) {
+        if (parent.childrenShuffling)
+          shuffle(p1)
+        for (const x of p1) {
+          tryToRefresh(x)
+          if (Transaction.isCanceled)
+            break
+          if (Transaction.isFrameOver(checkEveryN, timeLimit))
+            await Transaction.requestNextFrame()
+          if (Transaction.isCanceled)
+            break
+        }
+      }
+      if (p2 !== undefined) {
+        if (parent.childrenShuffling)
+          shuffle(p2)
+        for (const x of p2) {
+          tryToRefresh(x)
+          if (Transaction.isCanceled)
+            break
+          if (Transaction.isFrameOver(checkEveryN, timeLimit))
+            await Transaction.requestNextFrame()
+          if (Transaction.isCanceled)
+            break
+        }
       }
     }
   }
@@ -380,8 +398,23 @@ function argsAreEqual(a1: any, a2: any): boolean {
   return result
 }
 
-function compareNodesByPriority(node1: RxNode, node2: RxNode): number {
-  return node1.priority - node2.priority
+function push<T>(array: Array<T> | undefined, item: T): Array<T> {
+  if (array == undefined)
+    array = new Array<T>()
+  array.push(item)
+  return array
+}
+
+function shuffle<T>(array: Array<T>): Array<T> {
+  let i = array.length - 1
+  while (i >= 0) {
+    const j = Math.floor(Math.random() * i)
+    const t = array[i]
+    array[i] = array[j]
+    array[j] = t
+    i--
+  }
+  return array
 }
 
 // NodeList

@@ -29,6 +29,7 @@ export interface RxNode<E = any, O = any> {
   render: Render<E, O>
   superRender: SuperRender<O, E> | undefined
   priority: number
+  childrenShuffling: boolean
   model?: unknown
   // System-managed properties
   readonly level: number

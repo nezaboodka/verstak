@@ -112,19 +112,17 @@ export class RxDom {
 
   static Node<E = unknown, O = void>(id: string, args: any,
     render: Render<E, O>, superRender?: SuperRender<O, E>,
-    priority?: number, type?: RxNodeType<E, O>, inline?: boolean,
+    type?: RxNodeType<E, O>, inline?: boolean,
     creator?: RxNode, host?: RxNode): RxNode<E, O> {
     const o = creator ?? gCreator
     const inst = o.instance
     if (!inst)
       throw new Error('element must be initialized before children')
-    if (priority === undefined)
-      priority = 0
     if (type === undefined)
       type = RxDom.basic
     if (!host)
       host = gHost
-    const node = new RxNode<E, O>(id, args, render, superRender, priority, type, inline ?? false, o, host)
+    const node = new RxNode<E, O>(id, args, render, superRender, 0, false, type, inline ?? false, o, host)
     if (inst.buffer === undefined)
       throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const rev = host.instance?.revision ?? ~1
@@ -163,6 +161,7 @@ export class RxDom {
       () => { /* nop */ },      // render
       undefined,                // superRender
       0,                        // priority
+      false,                    // children shuffling
       { name: id, sequential }, // type
       false,                    // inline
       {} as RxNode,             // creator (lifecycle manager)
@@ -174,6 +173,10 @@ export class RxDom {
     a['host'] = node
     inst.native = native
     return node
+  }
+
+  static get self(): RxNode {
+    return gCreator
   }
 
   static currentNodeInstance<T>(): { model?: T } {
@@ -203,7 +206,6 @@ export class RxDom {
   private static mergeAndRenderSequentialChildren(node: RxNode, finish: () => void): void {
     const inst = node.instance
     if (inst !== undefined && inst.buffer !== undefined) {
-      let promised: Promise<void> | undefined = undefined
       try {
         const existing = inst.children
         const sequenced = inst.buffer
@@ -249,7 +251,7 @@ export class RxDom {
           RxDom.mergeGuests(host, inst, guests)
         // Merge loop - initialize, render, re-render
         sibling = undefined
-        i = 0, j = -1
+        i = 0
         while (i < sequenced.length && !Transaction.isCanceled) {
           const x = sequenced[i]
           const old = x.old
@@ -268,19 +270,13 @@ export class RxDom {
           }
           if (x.native)
             sibling = x
-          if (x.priority > 0 && j < 0)
-            j = i
           i++
         }
-        if (!Transaction.isCanceled) {
+        if (!Transaction.isCanceled)
           inst.children = sorted // switch to the new list
-          if (j >= 0) // Incremental rendering (if any)
-            promised = RxDom.renderIncrementally(node, sequenced, j).then(finish, finish)
-        }
       }
       finally {
-        if (promised)
-          finish()
+        finish()
       }
     }
   }
@@ -293,9 +289,10 @@ export class RxDom {
       try {
         const existing = inst.children
         const buffer = inst.buffer.sort(compareNodes)
-        const postponed = new Array<RxNode>()
         inst.buffer = undefined
         // Merge loop (always synchronous): link, render/initialize (priority 0), finalize
+        let p1: Array<RxNode> | undefined = undefined
+        let p2: Array<RxNode> | undefined = undefined
         let host = inst
         let guests: Array<RxNode> = EMPTY
         let sibling: RxNode | undefined = undefined
@@ -323,8 +320,10 @@ export class RxDom {
                   if (!Transaction.isCanceled) {
                     if (x.priority === 0)
                       tryToRender(x) // re-rendering
+                    else if (x.priority === 1)
+                      p1 = push(p1, x)
                     else
-                      postponed.push(x)
+                      p2 = push(p2, x)
                   }
                 }
               }
@@ -334,8 +333,10 @@ export class RxDom {
                     tryToInitialize(x)
                     tryToRender(x) // initial rendering
                   }
+                  else if (x.priority === 1)
+                    p1 = push(p1, x)
                   else
-                    postponed.push(x)
+                    p2 = push(p2, x)
                 }
               }
               i++, j++
@@ -346,8 +347,10 @@ export class RxDom {
                   tryToInitialize(x)
                   tryToRender(x) // initial rendering
                 }
+                else if (x.priority === 1)
+                  p1 = push(p1, x)
                 else
-                  postponed.push(x)
+                  p2 = push(p2, x)
               }
               j++
             }
@@ -363,8 +366,8 @@ export class RxDom {
           RxDom.mergeGuests(host, inst, guests)
         if (!Transaction.isCanceled) {
           inst.children = buffer // switch to the new list
-          if (postponed.length > 0) // Incremental rendering (if any)
-            promised = RxDom.renderIncrementally(node, postponed,  0).then(finish, finish)
+          if (p1 !== undefined || p2 !== undefined) // Incremental rendering (if any)
+            promised = RxDom.renderIncrementally(node, p1, p2).then(finish, finish)
         }
       }
       finally {
@@ -374,25 +377,41 @@ export class RxDom {
     }
   }
 
-  private static async renderIncrementally(parent: RxNode, children: Array<RxNode>, startIndex: number,
+  private static async renderIncrementally(parent: RxNode,
+    p1: Array<RxNode> | undefined, p2: Array<RxNode> | undefined,
     checkEveryN: number = 30, timeLimit: number = 12): Promise<void> {
     if (Transaction.isFrameOver(checkEveryN, timeLimit))
       await Transaction.requestNextFrame()
     if (!Transaction.isCanceled) {
-      children.sort(compareNodesByPriority)
-      let i = startIndex
-      while (i < children.length) {
-        const x = children[i]
-        if (!x.instance)
-          tryToInitialize(x)
-        tryToRender(x)
-        if (Transaction.isCanceled)
-          break
-        if (Transaction.isFrameOver(checkEveryN, timeLimit))
-          await Transaction.requestNextFrame()
-        if (Transaction.isCanceled)
-          break
-        i++
+      if (p1 !== undefined) {
+        if (parent.childrenShuffling)
+          shuffle(p1)
+        for (const x of p1) {
+          if (!x.instance)
+            tryToInitialize(x)
+          tryToRender(x)
+          if (Transaction.isCanceled)
+            break
+          if (Transaction.isFrameOver(checkEveryN, timeLimit))
+            await Transaction.requestNextFrame()
+          if (Transaction.isCanceled)
+            break
+        }
+      }
+      if (p2 !== undefined) {
+        if (parent.childrenShuffling)
+          shuffle(p2)
+        for (const x of p2) {
+          if (!x.instance)
+            tryToInitialize(x)
+          tryToRender(x)
+          if (Transaction.isCanceled)
+            break
+          if (Transaction.isFrameOver(checkEveryN, timeLimit))
+            await Transaction.requestNextFrame()
+          if (Transaction.isCanceled)
+            break
+        }
       }
     }
   }
@@ -518,10 +537,6 @@ function compareNodes(node1: RxNode, node2: RxNode): number {
   return result
 }
 
-function compareNodesByPriority(node1: RxNode, node2: RxNode): number {
-  return node1.priority - node2.priority
-}
-
 function compareNullable<T>(a: T | undefined, b: T | undefined, comparer: (a: T, b: T) => number): number {
   let diff: number
   if (b !== undefined)
@@ -548,6 +563,25 @@ function argsAreEqual(a1: any, a2: any): boolean {
     }
   }
   return result
+}
+
+function push<T>(array: Array<T> | undefined, item: T): Array<T> {
+  if (array == undefined)
+    array = new Array<T>()
+  array.push(item)
+  return array
+}
+
+function shuffle<T>(array: Array<T>): Array<T> {
+  let i = array.length - 1
+  while (i >= 0) {
+    const j = Math.floor(Math.random() * i)
+    const t = array[i]
+    array[i] = array[j]
+    array[j] = t
+    i--
+  }
+  return array
 }
 
 // Support asynchronous programing automatically
