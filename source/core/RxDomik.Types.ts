@@ -36,9 +36,9 @@ export interface RxNode<E = any, O = any> {
   native?: E
   resizeObserver?: ResizeObserver
   revision: number
-  validation: number
-  sibling?: RxNode
-  mounted: boolean
+  parentRevision: number
+  prevSibling?: RxNode
+  isMountRequired: boolean
   // Linking (internal)
   namespace: Map<string, RxNode>
   children: Sequence<RxNode>

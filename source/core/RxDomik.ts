@@ -74,9 +74,9 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
   native?: E
   resizeObserver?: ResizeObserver
   revision: number
-  validation: number
-  sibling?: RxNode
-  mounted: boolean
+  parentRevision: number
+  prevSibling?: RxNode
+  isMountRequired: boolean
   // Linking (internal)
   namespace: Map<string, RxNode>
   children: Sequence<RxNode>
@@ -101,9 +101,9 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
     this.native = undefined
     this.resizeObserver = undefined
     this.revision = ~0 // not initialized
-    this.validation = 0
-    this.sibling = undefined
-    this.mounted = false
+    this.parentRevision = 0
+    this.prevSibling = undefined
+    this.isMountRequired = false
     // Linking (internal)
     this.namespace = new Map<string, RxNode>()
     this.children = new SequenceImpl<RxNode>()
@@ -155,7 +155,7 @@ export class RxDom {
       parent.namespace.set(id, child)
       parent.children.addNew(child)
     }
-    else if (existing.validation !== parent.revision) { // existing node
+    else if (existing.parentRevision !== parent.revision) { // existing node
       child = existing
       if (!argsAreEqual(child.args, args))
         child.args = args
@@ -166,7 +166,7 @@ export class RxDom {
     }
     else
       throw new Error(`fatal: duplicate node id '${id}'`)
-    child.validation = parent.revision
+    child.parentRevision = parent.revision
     return child
   }
 
@@ -189,13 +189,13 @@ export class RxDom {
         x = children.first
         while (x !== undefined && !Transaction.isCanceled) {
           if (seq) {
-            if (x.sibling !== sibling) {
-              x.sibling = sibling
-              x.mounted = false
+            if (x.prevSibling !== sibling) {
+              x.prevSibling = sibling
+              x.isMountRequired = false
             }
           }
           else
-            x.sibling = x
+            x.prevSibling = x
           if (x.priority === 0)
             tryToRefresh(x)
           else
@@ -303,8 +303,8 @@ function tryToRefresh(node: RxNode): void {
     node.revision = 0
     type.initialize?.(node)
   }
-  if (!node.mounted) {
-    node.mounted = true
+  if (!node.isMountRequired) {
+    node.isMountRequired = true
     type.mount?.(node)
   }
   if (node.inline)
