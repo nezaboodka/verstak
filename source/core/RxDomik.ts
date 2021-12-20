@@ -459,7 +459,7 @@ export class RxNodeSequenceImpl {
 
   tryToRetainExisting(id: string): RxNode | undefined {
     let result = this.likelyNextToRetain
-    if (result?.id !== id)
+    if (result?.id !== id && this.first !== undefined)
       result = this.namespace.get(id)
     if (result && result.revision >= ~0) {
       if (result.reconcilingRevision === this.revision)
