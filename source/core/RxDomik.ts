@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, Transaction, Rx, options, Reentrance, nonreactive } from 'reactronic'
-import { RxNodeType, Render, RxNode, SuperRender, Sequence } from './RxDomik.Types'
+import { RxNodeType, Render, RxNode, SuperRender, RefreshableSequence } from './RxDomik.Types'
 
 // BasicNodeType
 
@@ -23,7 +23,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
 
   render(node: RxNode<E, O>, args: unknown): void {
     let result: any
-    node.children.isClosed = false // open for building children sequence
+    node.children.isRefreshing = true
     if (node.superRender)
       result = node.superRender(options => {
         const res = node.render(node.native as E, options)
@@ -42,15 +42,15 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
       RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
   }
 
-  finalize(node: RxNode<E, O>, cause: RxNode): void {
+  finalize(node: RxNode<E, O>, initiator: RxNode): void {
     node.native = undefined
-    if (node === cause)
+    if (node === initiator)
       node.parent.namespace.delete(node.id)
     if (!node.inline)
       Rx.dispose(node)
     let x = node.children.first
     while (x !== undefined) {
-      tryToFinalize(x, cause)
+      tryToFinalize(x, initiator)
       x = x.next
     }
   }
@@ -79,7 +79,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
   isMountRequired: boolean
   // Linking (internal)
   namespace: Map<string, RxNode>
-  children: Sequence<RxNode>
+  children: RefreshableSequence<RxNode>
   next?: RxNode
   prev?: RxNode
 
@@ -106,7 +106,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
     this.isMountRequired = false
     // Linking (internal)
     this.namespace = new Map<string, RxNode>()
-    this.children = new SequenceImpl<RxNode>()
+    this.children = new RefreshableSequenceImpl<RxNode>()
     this.next = undefined
     this.prev = undefined
   }
@@ -153,7 +153,7 @@ export class RxDom {
       child = new RxNodeImpl<E, O>(parent.level + 1, id, type, inline ?? false,
         args, render, superRender, priority, parent)
       parent.namespace.set(id, child)
-      parent.children.addNew(child)
+      parent.children.addAsNewlyCreated(child)
     }
     else if (existing.parentRevision !== parent.revision) { // existing node
       child = existing
@@ -162,7 +162,7 @@ export class RxDom {
       child.render = render
       child.superRender = superRender
       child.priority = priority
-      parent.children.addExisting(child)
+      parent.children.addAsAlreadyExisting(child)
     }
     else
       throw new Error(`fatal: duplicate node id '${id}'`)
@@ -175,10 +175,10 @@ export class RxDom {
     let promised: Promise<void> | undefined = undefined
     try {
       const children = parent.children
-      if (!children.isClosed) {
+      if (children.isRefreshing) {
         const postponed = new Array<RxNode>()
         // Finalization loop
-        let x = children.oldFirst
+        let x = children.first
         while (x !== undefined) {
           tryToFinalize(x, x)
           x = x.next
@@ -186,7 +186,7 @@ export class RxDom {
         // Rendering loop
         const seq = parent.type.sequential
         let sibling: RxNode | undefined = undefined
-        x = children.first
+        x = children.refreshingFirst
         while (x !== undefined && !Transaction.isCanceled) {
           if (seq) {
             if (x.prevSibling !== sibling) {
@@ -204,7 +204,7 @@ export class RxDom {
             sibling = x
           x = x.next
         }
-        children.isClosed = true // close until next rendering round
+        children.isRefreshing = false // close until next rendering round
         // Asynchronous incremental rendering (if any)
         if (!Transaction.isCanceled && postponed.length > 0)
           promised = RxDom.renderIncrementally(parent, postponed,  0).then(action, action)
@@ -313,13 +313,13 @@ function tryToRefresh(node: RxNode): void {
     nonreactive(node.rerender, node.args) // reactive auto-rendering
 }
 
-function tryToFinalize(node: RxNode, cause: RxNode): void {
+function tryToFinalize(node: RxNode, initiator: RxNode): void {
   if (node.revision >= ~0) {
     node.revision = ~node.revision
-    if (node === cause)
-      Transaction.runAs({ standalone: true }, invokeFinalize, node, cause)
+    if (node === initiator)
+      Transaction.runAs({ standalone: true }, invokeFinalize, node, initiator)
     else
-      invokeFinalize(node, cause)
+      invokeFinalize(node, initiator)
   }
 }
 
@@ -334,12 +334,12 @@ function invokeRender(parent: RxNode, args: unknown): void {
   })
 }
 
-function invokeFinalize(node: RxNode, cause: RxNode): void {
+function invokeFinalize(node: RxNode, initiator: RxNode): void {
   const type = node.type
   if (type.finalize)
-    type.finalize(node, cause)
+    type.finalize(node, initiator)
   else
-    RxDom.basic.finalize(node, cause) // default finalize
+    RxDom.basic.finalize(node, initiator) // default finalize
 }
 
 function wrap(func: (...args: any[]) => any): (...args: any[]) => any {
@@ -386,63 +386,63 @@ function compareNodesByPriority(node1: RxNode, node2: RxNode): number {
 
 // NodeList
 
-class SequenceImpl<T extends { next?: T, prev?: T }> implements Sequence<T> {
+class RefreshableSequenceImpl<T extends { next?: T, prev?: T }> implements RefreshableSequence<T> {
+  refreshingFirst?: T = undefined
+  refreshingLast?: T = undefined
+  refreshingCount: number = -1 // pending = false
   first?: T = undefined
-  last?: T = undefined
-  count: number = -1 // pending = false
-  oldFirst?: T = undefined
-  oldCount: number = 0
+  count: number = 0
 
-  get isClosed(): boolean { return this.count < 0 }
-  set isClosed(value: boolean) {
+  get isRefreshing(): boolean { return this.refreshingCount >= 0 }
+  set isRefreshing(value: boolean) {
     if (value) {
-      if (this.count >= 0) {
-        this.oldFirst = this.first
-        this.oldCount = this.count
-        this.first = this.last = undefined
-        this.count = -1
-      }
-    }
-    else {
-      if (this.count < 0)
-        this.count = 0
+      if (this.refreshingCount < 0)
+        this.refreshingCount = 0
       else
         throw new Error('rendering reentrance detected')
     }
+    else {
+      if (this.refreshingCount >= 0) {
+        this.first = this.refreshingFirst
+        this.count = this.refreshingCount
+        this.refreshingFirst = this.refreshingLast = undefined
+        this.refreshingCount = -1
+      }
+    }
   }
 
-  addNew(item:T): void {
-    const last = this.last
+  addAsNewlyCreated(item:T): void {
+    const last = this.refreshingLast
     if (last) {
       item.prev = last
-      this.last = last.next = item
+      this.refreshingLast = last.next = item
     }
     else
-      this.first = this.last = item
-    this.count++
+      this.refreshingFirst = this.refreshingLast = item
+    this.refreshingCount++
   }
 
-  addExisting(item:T): void {
-    // Exclude from stale sequence
+  addAsAlreadyExisting(item:T): void {
+    // Exclude from current sequence
     if (item.prev !== undefined)
       item.prev.next = item.next
     if (item.next !== undefined)
       item.next.prev = item.prev
-    if (item === this.oldFirst)
-      this.oldFirst = item.next
-    this.oldCount--
-    // Include into fresh sequence
-    const last = this.last
+    if (item === this.first)
+      this.first = item.next
+    this.count--
+    // Include into refreshing sequence
+    const last = this.refreshingLast
     if (last) {
       item.prev = last
       item.next = undefined
-      this.last = last.next = item
+      this.refreshingLast = last.next = item
     }
     else {
       item.prev = item.next = undefined
-      this.first = this.last = item
+      this.refreshingFirst = this.refreshingLast = item
     }
-    this.count++
+    this.refreshingCount++
   }
 }
 

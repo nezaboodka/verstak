@@ -47,16 +47,16 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
       RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
   }
 
-  finalize(node: RxNode<E, O>, cause: RxNode): void {
+  finalize(node: RxNode<E, O>, initiator: RxNode): void {
     const inst = node.instance
     if (inst) {
       inst.native = undefined
       if (!node.inline && node.instance) // TODO: Consider creating one transaction for all finalizations at once
         Transaction.runAs({ standalone: true }, () => Rx.dispose(node.instance))
       for (const x of inst.children)
-        tryToFinalize(x, cause)
+        tryToFinalize(x, initiator)
       for (const x of inst.guests)
-        tryToFinalize(x, cause)
+        tryToFinalize(x, initiator)
     }
   }
 }
@@ -254,10 +254,10 @@ export class RxDom {
           const x = sequenced[i]
           const old = x.old
           x.old = undefined // unlink to make it available for garbage collection
-          x.sibling = sibling // link with sibling
+          x.prevSibling = sibling // link with sibling
           const instance = x.instance
           if (old && instance) {
-            if (sibling?.instance !== old.sibling?.instance) // if sequence is changed
+            if (sibling?.instance !== old.prevSibling?.instance) // if sequence is changed
               x.type.mount?.(x)
             if (x.inline || !argsAreEqual(x.args, old.args))
               tryToRender(x) // re-rendering
@@ -453,11 +453,11 @@ function tryToInitialize(node: RxNode): RxNodeInstanceImpl {
   return inst
 }
 
-function tryToFinalize(node: RxNode, cause: RxNode): void {
+function tryToFinalize(node: RxNode, initiator: RxNode): void {
   const inst = node.instance
   if (inst && inst.revision >= ~0) {
     inst.revision = ~inst.revision
-    invokeFinalize(node, cause)
+    invokeFinalize(node, initiator)
   }
 }
 
@@ -473,12 +473,12 @@ function invokeRender<E, O>(node: RxNode<E, O>, args: unknown): void {
   })
 }
 
-function invokeFinalize(node: RxNode, cause: RxNode): void {
+function invokeFinalize(node: RxNode, initiator: RxNode): void {
   const type = node.type
   if (type.finalize)
-    type.finalize(node, cause)
+    type.finalize(node, initiator)
   else
-    RxDom.basic.finalize(node, cause) // default finalize
+    RxDom.basic.finalize(node, initiator) // default finalize
 }
 
 function wrap(func: (...args: any[]) => any): (...args: any[]) => any {

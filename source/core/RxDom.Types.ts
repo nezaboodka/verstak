@@ -17,7 +17,7 @@ export interface RxNodeType<E = unknown, O = void> {
   initialize?(node: RxNode<E, O>): void
   mount?(node: RxNode<E, O>): void
   render?(node: RxNode<E, O>, args: unknown): void
-  finalize?(node: RxNode<E, O>, cause: RxNode): void
+  finalize?(node: RxNode<E, O>, initiator: RxNode): void
 }
 
 export interface RxNodeInstance<E = unknown, O = void> {
@@ -35,7 +35,7 @@ export interface RxNodeInstance<E = unknown, O = void> {
 
 export class RxNode<E = any, O = any> {
   old?: RxNode<E, O> = undefined // internal
-  sibling?: RxNode = undefined // internal
+  prevSibling?: RxNode = undefined // internal
   get parent(): RxNode { return this.host }
   get revision(): number { return this.instance?.revision ?? ~0 }
   get native(): E | undefined { return this.instance?.native }

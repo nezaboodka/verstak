@@ -17,7 +17,7 @@ export interface RxNodeType<E = unknown, O = void> {
   initialize?(node: RxNode<E, O>): void
   mount?(node: RxNode<E, O>): void
   render?(node: RxNode<E, O>, args: unknown): void
-  finalize?(node: RxNode<E, O>, cause: RxNode): void
+  finalize?(node: RxNode<E, O>, initiator: RxNode): void
 }
 
 export interface RxNode<E = any, O = any> {
@@ -41,19 +41,19 @@ export interface RxNode<E = any, O = any> {
   isMountRequired: boolean
   // Linking (internal)
   namespace: Map<string, RxNode>
-  children: Sequence<RxNode>
+  children: RefreshableSequence<RxNode>
   next?: RxNode
   prev?: RxNode
   rerender(args?: unknown): void
 }
 
-export interface Sequence<T extends { next?: T, prev?: T }> {
+export interface RefreshableSequence<T extends { next?: T, prev?: T }> {
+  readonly refreshingFirst?: T
+  readonly refreshingLast?: T
+  readonly refreshingCount: number
   readonly first?: T
-  readonly last?: T
   readonly count: number
-  readonly oldFirst?: T
-  readonly oldCount: number
-  isClosed: boolean
-  addNew(item:T): void
-  addExisting(item:T): void
+  isRefreshing: boolean
+  addAsNewlyCreated(item:T): void
+  addAsAlreadyExisting(item:T): void
 }

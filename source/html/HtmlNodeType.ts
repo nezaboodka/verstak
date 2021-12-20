@@ -37,14 +37,14 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
       const nativeParent = p.native
       // --------------------------
       if (nativeParent instanceof Element) {
-        const sibling = node.sibling
-        if (sibling === undefined) {
+        const prevSibling = node.prevSibling
+        if (prevSibling === undefined) {
           if (nativeParent !== native.parentNode || native.previousSibling !== null)
             nativeParent.prepend(native)
         }
-        else if (sibling !== node) {
-          if (sibling.parent.native === nativeParent) {
-            const nativeSibling = sibling.native
+        else if (prevSibling !== node) {
+          if (prevSibling.parent.native === nativeParent) {
+            const nativeSibling = prevSibling.native
             if (nativeSibling instanceof Element) {
               if (nativeSibling.nextSibling !== native)
                 nativeParent.insertBefore(native, nativeSibling.nextSibling)
@@ -72,14 +72,14 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
     }
   }
 
-  finalize(node: RxNode<E, any>, cause: RxNode): void {
+  finalize(node: RxNode<E, any>, initiator: RxNode): void {
     const native = node.native
     if (!AbstractHtmlNodeType.gSubTreeFinalization && native && native.parentElement) {
       AbstractHtmlNodeType.gSubTreeFinalization = native
       try {
         node.resizeObserver?.unobserve(native)
         native.remove()
-        super.finalize(node, cause)
+        super.finalize(node, initiator)
       }
       finally {
         AbstractHtmlNodeType.gSubTreeFinalization = undefined
@@ -88,7 +88,7 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
     else {
       if (native)
         node.resizeObserver?.unobserve(native)
-      super.finalize(node, cause)
+      super.finalize(node, initiator)
     }
   }
 
