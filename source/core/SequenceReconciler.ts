@@ -25,10 +25,10 @@ export class SequenceReconciler<K, T extends SequenceReconcilerItem<K, T>> {
   first?: T = undefined
   count: number = 0
 
-  get isOpen(): boolean { return this.revision > ~0 }
+  get isReconciling(): boolean { return this.revision > ~0 }
 
-  open(revision: number): void {
-    if (this.isOpen)
+  begin(revision: number): void {
+    if (this.isReconciling)
       throw new Error('sequence reconciler is opened already')
     this.revision = revision
     this.retainedFirst = this.retainedLast = undefined
@@ -36,11 +36,28 @@ export class SequenceReconciler<K, T extends SequenceReconcilerItem<K, T>> {
     this.likelyNextToRetain = this.first
   }
 
-  close(): void {
-    if (!this.isOpen)
+  end(): void {
+    if (!this.isReconciling)
       throw new Error('sequence reconciler is closed already')
+    const namespace = this.namespace
+    const count = this.count
+    const retained = this.retainedCount
+    if (retained > 0) {
+      if (retained > count) {
+        let x = this.first
+        while (x !== undefined)
+          namespace.delete(x.id), x = x.next
+      }
+      else {
+        let x = this.retainedFirst
+        while (x !== undefined)
+          namespace.set(x.id, x), x = x.next
+      }
+    }
+    else
+      this.namespace = new Map<K, T>()
     this.first = this.retainedFirst
-    this.count = this.retainedCount
+    this.count = retained
   }
 
   tryToRetainExisting(id: K): T | undefined {
