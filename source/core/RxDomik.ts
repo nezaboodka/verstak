@@ -44,6 +44,8 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
 
   finalize(node: RxNode<E, O>, cause: RxNode): void {
     node.native = undefined
+    if (node === cause)
+      node.parent.namespace.delete(node.id)
     if (!node.inline)
       Rx.dispose(node)
     let x = node.children.first
@@ -177,15 +179,9 @@ export class RxDom {
         const postponed = new Array<RxNode>()
         // Finalization loop
         let x = children.oldFirst
-        while (x !== undefined && !Transaction.isCanceled) {
+        while (x !== undefined) {
           tryToFinalize(x, x)
           x = x.next
-        }
-        if (children.volume !== parent.namespace.size) {
-          if (children.first === undefined)
-            parent.namespace = new Map<string, RxNode>() // parent.namespace.clear() ?
-          else
-            setTimeout(RxDom.collectNodeNamespaceGarbage, 0, parent)
         }
         // Rendering loop
         const seq = parent.type.sequential
@@ -289,14 +285,14 @@ export class RxDom {
     }
   }
 
-  private static collectNodeNamespaceGarbage(node: RxNode): void {
-    node.namespace.forEach(RxDom.deleteIfNodeIsFinalized)
-  }
+  // private static collectNodeNamespaceGarbage(node: RxNode): void {
+  //   node.namespace.forEach(RxDom.deleteIfNodeIsFinalized)
+  // }
 
-  private static deleteIfNodeIsFinalized(node: RxNode, key: string, namespace: Map<string, RxNode>): void {
-    if (node.revision < ~0)
-      namespace.delete(key)
-  }
+  // private static deleteIfNodeIsFinalized(node: RxNode, key: string, namespace: Map<string, RxNode>): void {
+  //   if (node.revision < ~0)
+  //     namespace.delete(key)
+  // }
 }
 
 // Internal
