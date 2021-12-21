@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, Transaction, Rx, options, Reentrance, nonreactive } from 'reactronic'
-import { RxNodeType, Render, RxNode, SuperRender, RxNodeSequence, RxPriority } from './RxDomik.Types'
+import { RxNodeType, Render, RxNode, SuperRender, RxNodeSequence, RxPriority } from './RxDom.Types'
 
 // BasicNodeType
 
