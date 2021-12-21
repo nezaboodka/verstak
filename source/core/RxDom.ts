@@ -165,13 +165,13 @@ export class RxDom {
       if (children.isReconciling) {
         let p1: Array<RxNode> | undefined = undefined
         let p2: Array<RxNode> | undefined = undefined
-        // Finalization loop
+        // Finalize non-retained children
         let x = children.first
         while (x !== undefined) {
           tryToFinalize(x, x)
           x = x.next
         }
-        // Rendering loop
+        // Render retained children
         const sequential = parent.type.sequential
         let mountSibling: RxNode | undefined = undefined
         x = children.retainedFirst
