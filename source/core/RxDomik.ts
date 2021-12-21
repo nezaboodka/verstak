@@ -238,16 +238,16 @@ export class RxDom {
 
   // Internal
 
-  private static async renderIncrementally(parent: RxNode,
-    p1: Array<RxNode> | undefined, p2: Array<RxNode> | undefined): Promise<void> {
+  private static async renderIncrementally(node: RxNode,
+    p1children: Array<RxNode> | undefined, p2children: Array<RxNode> | undefined): Promise<void> {
     const checkEveryN = 30
     if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
       await Transaction.requestNextFrame()
     if (!Transaction.isCanceled) {
-      if (p1 !== undefined) {
-        if (parent.childrenShuffling)
-          shuffle(p1)
-        for (const x of p1) {
+      if (p1children !== undefined) {
+        if (node.childrenShuffling)
+          shuffle(p1children)
+        for (const x of p1children) {
           tryToRefresh(x)
           if (Transaction.isCanceled)
             break
@@ -257,10 +257,10 @@ export class RxDom {
             break
         }
       }
-      if (p2 !== undefined) {
-        if (parent.childrenShuffling)
-          shuffle(p2)
-        for (const x of p2) {
+      if (p2children !== undefined) {
+        if (node.childrenShuffling)
+          shuffle(p2children)
+        for (const x of p2children) {
           tryToRefresh(x)
           if (Transaction.isCanceled)
             break
@@ -344,16 +344,16 @@ function invokeFinalize(node: RxNode, initiator: RxNode): void {
 
 function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
   const parent = gParent
-  const wrappedRendering = (...args: any[]): T => {
+  const wrappedRunUnder = (...args: any[]): T => {
     return runUnder(parent, func, ...args)
   }
-  return wrappedRendering
+  return wrappedRunUnder
 }
 
-function runUnder<T>(parent: RxNode, func: (...args: any[]) => T, ...args: any[]): T {
+function runUnder<T>(node: RxNode, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gParent
   try {
-    gParent = parent
+    gParent = node
     return func(...args)
   }
   finally {
