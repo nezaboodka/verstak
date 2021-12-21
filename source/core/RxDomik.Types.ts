@@ -20,6 +20,8 @@ export interface RxNodeType<E = unknown, O = void> {
   finalize?(node: RxNode<E, O>, initiator: RxNode): void
 }
 
+export const enum RxPriority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
+
 export interface RxNode<E = any, O = any> {
   // User-defined properties
   readonly id: string
@@ -28,7 +30,7 @@ export interface RxNode<E = any, O = any> {
   args: unknown
   render: Render<E, O>
   superRender: SuperRender<O, E> | undefined
-  priority: number
+  priority: RxPriority
   childrenShuffling: boolean
   model?: unknown
   // System-managed properties

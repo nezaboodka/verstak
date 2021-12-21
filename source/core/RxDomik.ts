@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, Transaction, Rx, options, Reentrance, nonreactive } from 'reactronic'
-import { RxNodeType, Render, RxNode, SuperRender, RxNodeSequence } from './RxDomik.Types'
+import { RxNodeType, Render, RxNode, SuperRender, RxNodeSequence, RxPriority } from './RxDomik.Types'
 
 // BasicNodeType
 
@@ -64,7 +64,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
   args: unknown
   render: Render<E, O>
   superRender: SuperRender<O, E> | undefined
-  priority: number
+  priority: RxPriority
   childrenShuffling: boolean
   model?: unknown
   // System-managed properties
@@ -90,7 +90,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
     this.args = args
     this.render = render
     this.superRender = superRender
-    this.priority = 0
+    this.priority = RxPriority.SyncP0
     this.childrenShuffling = false
     this.model = undefined
     // System-managed properties
@@ -184,9 +184,9 @@ export class RxDom {
           }
           else
             x.prevSibling = x
-          if (x.priority === 0)
+          if (x.priority === RxPriority.SyncP0)
             tryToRefresh(x)
-          else if (x.priority === 1)
+          else if (x.priority === RxPriority.AsyncP1)
             p1 = push(p1, x)
           else
             p2 = push(p2, x)
