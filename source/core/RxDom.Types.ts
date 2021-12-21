@@ -54,8 +54,8 @@ export interface RxNodeSequence {
   readonly retainedFirst?: RxNode
   readonly retainedLast?: RxNode
   readonly retainedCount: number
-  beginReconciling(revision: number): void
-  endReconciling(): void
+  beginReconciliation(revision: number): void
+  endReconciliation(): void
   tryToRetainExisting(id: string): RxNode | undefined
   retainNewlyCreated(node: RxNode): void
 }
