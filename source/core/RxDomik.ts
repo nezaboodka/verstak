@@ -321,15 +321,17 @@ function tryToFinalize(node: RxNode, initiator: RxNode): void {
   }
 }
 
-function invokeRender(parent: RxNode, args: unknown): void {
-  runUnder(parent, () => {
-    parent.revision++
-    const type = parent.type
-    if (type.render)
-      type.render(parent, args) // type-defined rendering
-    else
-      RxDom.basic.render(parent, args) // default rendering
-  })
+function invokeRender(node: RxNode, args: unknown): void {
+  if (node.revision >= ~0) { // needed for deferred Rx.dispose
+    runUnder(node, () => {
+      node.revision++
+      const type = node.type
+      if (type.render)
+        type.render(node, args) // type-defined rendering
+      else
+        RxDom.basic.render(node, args) // default rendering
+    })
+  }
 }
 
 function invokeFinalize(node: RxNode, initiator: RxNode): void {

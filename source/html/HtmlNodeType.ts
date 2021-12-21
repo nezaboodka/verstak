@@ -11,7 +11,6 @@ import { RxDom, RxNode, BasicNodeType } from '../core/api'
 export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeType<E, any> {
   static isDebugAttributeEnabled: boolean = false
   static gNativeParent: RxNode = RxDom.createRootNode('html > body', true, global.document.body)
-  static gSubTreeFinalization?: Element = undefined
   private static _blinkingEffect: string | undefined = undefined
 
   constructor(
@@ -74,16 +73,10 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
 
   finalize(node: RxNode<E, any>, initiator: RxNode): void {
     const native = node.native
-    if (!AbstractHtmlNodeType.gSubTreeFinalization && native && native.parentElement) {
-      AbstractHtmlNodeType.gSubTreeFinalization = native
-      try {
-        node.resizeObserver?.unobserve(native)
-        native.remove()
-        super.finalize(node, initiator)
-      }
-      finally {
-        AbstractHtmlNodeType.gSubTreeFinalization = undefined
-      }
+    if (native && node === initiator) {
+      node.resizeObserver?.unobserve(native)
+      native.remove()
+      super.finalize(node, initiator)
     }
     else {
       if (native)
