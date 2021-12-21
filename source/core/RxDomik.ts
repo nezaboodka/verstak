@@ -521,6 +521,5 @@ Promise.prototype.then = reactronicDomHookedThen
 // Globals
 
 const NOP = (): void => { /* nop */ }
-const NUL = RxDom.createRootNode<any, any>('NUL', false, 'NUL')
 const SYSTEM = RxDom.createRootNode<unknown, void>('SYSTEM', false, 'SYSTEM')
 let gParent: RxNode = SYSTEM
