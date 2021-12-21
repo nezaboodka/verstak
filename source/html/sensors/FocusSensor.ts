@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, standalone, ToggleRef, TraceLevel, transaction } from 'reactronic'
+import { options, ToggleRef, TraceLevel, transaction } from 'reactronic'
 import { grabElementData, SymDataForSensor } from './DataForSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 
@@ -46,12 +46,13 @@ export class FocusSensor extends HtmlElementSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const path = e.composedPath()
-    const { data, window } = grabElementData(path, SymDataForSensor, 'focus', this.elementDataList)
+    // const { data, window } = grabWindowElementData(path, SymDataForSensor, 'focus', this.elementDataList)
+    const data = grabElementData(path, SymDataForSensor, 'focus', this.elementDataList)
     this.elementDataList = toggleFocusRefs(this.elementDataList, data)
     this.revision++
-    standalone(() => {
-      this.windowSensor?.setActiveWindow(window, 'focus')
-    })
+    // standalone(() => {
+    //   this.windowSensor?.setActiveWindow(window, 'focus')
+    // })
   }
 
   @transaction
