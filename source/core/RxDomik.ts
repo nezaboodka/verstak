@@ -413,24 +413,24 @@ function shuffle<T>(array: Array<T>): Array<T> {
 // RxNodeSequenceImpl
 
 export class RxNodeSequenceImpl {
-  revision: number = ~0
   namespace: Map<string, RxNode> = new Map<string, RxNode>()
   first?: RxNode = undefined
   count: number = 0
-  likelyNextToRetain?: RxNode = undefined
   retainedFirst?: RxNode = undefined
   retainedLast?: RxNode = undefined
   retainedCount: number = 0
+  likelyNextToRetain?: RxNode = undefined
+  revision: number = ~0
 
   get isReconciling(): boolean { return this.revision > ~0 }
 
   beginReconciling(revision: number): void {
     if (this.isReconciling)
       throw new Error('sequence reconciler is opened already')
-    this.revision = revision
     this.retainedFirst = this.retainedLast = undefined
     this.retainedCount = 0
     this.likelyNextToRetain = this.first
+    this.revision = revision
   }
 
   endReconciling(): void {
