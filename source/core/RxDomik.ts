@@ -71,7 +71,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
   readonly level: number
   readonly parent: RxNode
   revision: number
-  reconcilingRevision: number
+  reconciliationRevision: number
   prevSibling?: RxNode
   isMountRequired: boolean
   children: RxNodeSequenceImpl
@@ -97,7 +97,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
     this.level = level
     this.parent = parent
     this.revision = ~0
-    this.reconcilingRevision = ~0
+    this.reconciliationRevision = ~0
     this.prevSibling = undefined
     this.isMountRequired = false
     this.children = new RxNodeSequenceImpl()
@@ -452,9 +452,9 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
     if (result?.id !== id && this.first !== undefined)
       result = this.namespace.get(id)
     if (result && result.revision >= ~0) {
-      if (result.reconcilingRevision === this.revision)
+      if (result.reconciliationRevision === this.revision)
         throw new Error(`duplicate item id: ${id}`)
-      result.reconcilingRevision = this.revision
+      result.reconciliationRevision = this.revision
       this.likelyNextToRetain = result.next
       // Exclude from main sequence
       if (result.prev !== undefined)
@@ -481,7 +481,7 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
   }
 
   retainNewlyCreated(node: RxNode): void {
-    node.reconcilingRevision = this.revision
+    node.reconciliationRevision = this.revision
     this.namespace.set(node.id, node)
     const last = this.retainedLast
     if (last) {

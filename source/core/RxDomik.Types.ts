@@ -37,7 +37,7 @@ export interface RxNode<E = any, O = any> {
   readonly level: number
   readonly parent: RxNode
   revision: number
-  reconcilingRevision: number
+  reconciliationRevision: number
   prevSibling?: RxNode
   isMountRequired: boolean
   children: RxNodeSequence
