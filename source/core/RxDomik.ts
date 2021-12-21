@@ -342,15 +342,15 @@ function invokeFinalize(node: RxNode, initiator: RxNode): void {
     RxDom.basic.finalize(node, initiator) // default finalize
 }
 
-function wrap(func: (...args: any[]) => any): (...args: any[]) => any {
+function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
   const parent = gParent
-  const wrappedRendering = (...args: any[]): any => {
+  const wrappedRendering = (...args: any[]): T => {
     return runUnder(parent, func, ...args)
   }
   return wrappedRendering
 }
 
-function runUnder(parent: RxNode, func: (...args: any[]) => any, ...args: any[]): any {
+function runUnder<T>(parent: RxNode, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gParent
   try {
     gParent = parent
