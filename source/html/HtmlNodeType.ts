@@ -31,26 +31,26 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
     if (native) {
       // TODO: Find better solution
       let p = node.parent
-      while (p !== undefined && p.native === undefined)
+      while (!p.native)
         p = p.parent
       const nativeParent = p.native
       // --------------------------
       if (nativeParent instanceof Element) {
-        const prevSibling = node.prevSibling
-        if (prevSibling === undefined) {
-          if (nativeParent !== native.parentNode || native.previousSibling !== null)
+        const prevMountSibling = node.prevMountSibling
+        if (prevMountSibling === undefined) {
+          if (nativeParent !== native.parentNode || !native.previousSibling)
             nativeParent.prepend(native)
         }
-        else if (prevSibling !== node) {
-          if (prevSibling.parent.native === nativeParent) {
-            const nativeSibling = prevSibling.native
+        else if (prevMountSibling !== node) {
+          if (prevMountSibling.parent.native === nativeParent) {
+            const nativeSibling = prevMountSibling.native
             if (nativeSibling instanceof Element) {
               if (nativeSibling.nextSibling !== native)
                 nativeParent.insertBefore(native, nativeSibling.nextSibling)
             }
           }
         }
-        else // non-sequential
+        else
           nativeParent.appendChild(native)
       }
     }

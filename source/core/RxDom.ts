@@ -72,7 +72,7 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
   readonly parent: RxNode
   revision: number
   reconciliationRevision: number
-  prevSibling?: RxNode
+  prevMountSibling?: RxNode
   isMountRequired: boolean
   children: RxNodeSequenceImpl
   next?: RxNode
@@ -98,8 +98,8 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
     this.parent = parent
     this.revision = ~0
     this.reconciliationRevision = ~0
-    this.prevSibling = undefined
-    this.isMountRequired = false
+    this.prevMountSibling = this
+    this.isMountRequired = true
     this.children = new RxNodeSequenceImpl()
     this.next = undefined
     this.prev = undefined
@@ -172,18 +172,14 @@ export class RxDom {
           x = x.next
         }
         // Rendering loop
-        const seq = parent.type.sequential
-        let sibling: RxNode | undefined = undefined
+        const sequential = parent.type.sequential
+        let mountSibling: RxNode | undefined = undefined
         x = children.retainedFirst
         while (x !== undefined && !Transaction.isCanceled) {
-          if (seq) {
-            if (x.prevSibling !== sibling) {
-              x.prevSibling = sibling
-              x.isMountRequired = false
-            }
+          if (sequential && x.prevMountSibling !== mountSibling) {
+            x.prevMountSibling = mountSibling
+            x.isMountRequired = true
           }
-          else
-            x.prevSibling = x
           if (x.priority === RxPriority.SyncP0)
             tryToRefresh(x)
           else if (x.priority === RxPriority.AsyncP1)
@@ -191,7 +187,7 @@ export class RxDom {
           else
             p2 = push(p2, x)
           if (x.native)
-            sibling = x
+            mountSibling = x
           x = x.next
         }
         children.endReconciliation()
@@ -301,8 +297,8 @@ function tryToRefresh(node: RxNode): void {
     node.revision = 0
     type.initialize?.(node)
   }
-  if (!node.isMountRequired) {
-    node.isMountRequired = true
+  if (node.isMountRequired) {
+    node.isMountRequired = false
     type.mount?.(node)
   }
   if (node.inline)
