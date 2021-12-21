@@ -70,12 +70,12 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
   // System-managed properties
   readonly level: number
   readonly parent: RxNode
-  native?: E
-  resizeObserver?: ResizeObserver
   revision: number
   reconcilingRevision: number
   prevSibling?: RxNode
   isMountRequired: boolean
+  native?: E
+  resizeObserver?: ResizeObserver
   // Linking (internal)
   children: RxNodeSequenceImpl
   next?: RxNode
@@ -97,13 +97,12 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
     // System-managed properties
     this.level = level
     this.parent = parent
-    this.native = undefined
-    this.resizeObserver = undefined
     this.revision = ~0
     this.reconcilingRevision = ~0
     this.prevSibling = undefined
     this.isMountRequired = false
-    // Linking (internal)
+    this.native = undefined
+    this.resizeObserver = undefined
     this.children = new RxNodeSequenceImpl()
     this.next = undefined
     this.prev = undefined

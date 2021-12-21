@@ -34,13 +34,12 @@ export interface RxNode<E = any, O = any> {
   // System-managed properties
   readonly level: number
   readonly parent: RxNode
-  native?: E
-  resizeObserver?: ResizeObserver
   revision: number
   reconcilingRevision: number
   prevSibling?: RxNode
   isMountRequired: boolean
-  // Linking (internal)
+  native?: E
+  resizeObserver?: ResizeObserver
   children: RxNodeSequence
   next?: RxNode
   prev?: RxNode
