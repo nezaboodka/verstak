@@ -74,12 +74,11 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
   reconcilingRevision: number
   prevSibling?: RxNode
   isMountRequired: boolean
-  native?: E
-  resizeObserver?: ResizeObserver
-  // Linking (internal)
   children: RxNodeSequenceImpl
   next?: RxNode
   prev?: RxNode
+  native?: E
+  resizeObserver?: ResizeObserver
 
   constructor(level: number, id: string, type: RxNodeType<E, O>, inline: boolean,
     args: unknown, render: Render<E, O>, superRender: SuperRender<O, E> | undefined,
@@ -101,11 +100,11 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
     this.reconcilingRevision = ~0
     this.prevSibling = undefined
     this.isMountRequired = false
-    this.native = undefined
-    this.resizeObserver = undefined
     this.children = new RxNodeSequenceImpl()
     this.next = undefined
     this.prev = undefined
+    this.native = undefined
+    this.resizeObserver = undefined
   }
 
   @reaction @options({

@@ -38,11 +38,11 @@ export interface RxNode<E = any, O = any> {
   reconcilingRevision: number
   prevSibling?: RxNode
   isMountRequired: boolean
-  native?: E
-  resizeObserver?: ResizeObserver
   children: RxNodeSequence
   next?: RxNode
   prev?: RxNode
+  native?: E
+  resizeObserver?: ResizeObserver
   rerender(args?: unknown): void
 }
 
