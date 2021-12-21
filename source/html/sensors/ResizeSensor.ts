@@ -31,7 +31,7 @@ export class ResizeSensor extends Sensor {
   }
 
   observeResizeOfRenderingElement(value: boolean): void {
-    const self = RxDom.currentNodeInstanceInternal<Element>()
+    const self = RxDom.currentNode
     if (value) {
       if (self.resizeObserver !== undefined && self.resizeObserver !== this.observer)
         self.resizeObserver.unobserve(self.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion

@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, Transaction, Rx, options, Reentrance, nonreactive } from 'reactronic'
-import { RxNodeType, Render, RxNode, SuperRender } from './RxDomik.Types'
+import { RxNodeType, Render, RxNode, SuperRender, RxNodeSequence } from './RxDomik.Types'
 
 // BasicNodeType
 
@@ -126,7 +126,8 @@ export class RxDom {
   public static incrementalRenderingFrameDurationMs = 10
 
   static Root<T>(render: () => T): T {
-    gParent.children.beginReconciling(gParent.revision)
+    const p = gParent
+    p.children.beginReconciling(p.revision)
     let result: any = render()
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current parent
@@ -140,25 +141,22 @@ export class RxDom {
   static Node<E = unknown, O = void>(id: string, args: any,
     render: Render<E, O>, superRender?: SuperRender<O, E>,
     type?: RxNodeType<E, O>, inline?: boolean): RxNode<E, O> {
-    // Prepare
     const parent = gParent
     const children = parent.children
-    let child: RxNode = NUL
-    // Linking
-    const existing = children.tryToRetainExisting(id)
-    if (existing) {
-      if (!argsAreEqual(existing.args, args))
-        existing.args = args
-      existing.render = render
-      existing.superRender = superRender
-      child = existing
+    let result = children.tryToRetainExisting(id)
+    if (result) {
+      if (!argsAreEqual(result.args, args))
+        result.args = args
+      result.render = render
+      result.superRender = superRender
     }
     else {
-      child = new RxNodeImpl<E, O>(parent.level + 1, id, type ?? RxDom.basic,
-        inline ?? false, args, render, superRender, parent)
-      children.retainNewlyCreated(child)
+      result = new RxNodeImpl<E, O>(parent.level + 1, id,
+        type ?? RxDom.basic, inline ?? false, args,
+        render, superRender, parent)
+      children.retainNewlyCreated(result)
     }
-    return child
+    return result
   }
 
   static renderChildrenThenDo(action: () => void): void {
@@ -199,7 +197,6 @@ export class RxDom {
           x = x.next
         }
         children.endReconciling()
-
         // Asynchronous incremental rendering (if any)
         if (!Transaction.isCanceled && p1 !== undefined || p2 !== undefined)
           promised = RxDom.renderIncrementally(parent, p1, p2).then(action, action)
@@ -229,20 +226,12 @@ export class RxDom {
     return node
   }
 
-  static get self(): RxNode {
+  static get currentNode(): RxNode {
     return gParent
   }
 
-  static currentNodeInstance<T>(): { model?: T } {
-    return gParent as { model?: T }
-  }
-
-  static currentNodeInstanceInternal<E>(): RxNodeImpl<E> {
-    return gParent as RxNodeImpl<E>
-  }
-
-  static currentNodeRevision(): number {
-    return gParent.revision
+  static currentNodeModel<M>(): { model?: M } {
+    return gParent as { model?: M }
   }
 
   static forAll<E>(action: (e: E) => void): void {
@@ -412,7 +401,7 @@ function shuffle<T>(array: Array<T>): Array<T> {
 
 // RxNodeSequenceImpl
 
-export class RxNodeSequenceImpl {
+export class RxNodeSequenceImpl implements RxNodeSequence {
   namespace: Map<string, RxNode> = new Map<string, RxNode>()
   first?: RxNode = undefined
   count: number = 0
