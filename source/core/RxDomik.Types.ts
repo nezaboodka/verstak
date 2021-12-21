@@ -48,12 +48,12 @@ export interface RxNode<E = any, O = any> {
 }
 
 export interface RxNodeSequence {
-  readonly retainedFirst?: RxNode
-  readonly retainedLast?: RxNode
-  readonly retainedCount: number
   readonly first?: RxNode
   readonly count: number
   readonly isReconciling: boolean
+  readonly retainedFirst?: RxNode
+  readonly retainedLast?: RxNode
+  readonly retainedCount: number
   beginReconciling(revision: number): void
   endReconciling(): void
   tryToRetainExisting(id: string): RxNode | undefined

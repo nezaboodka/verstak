@@ -142,20 +142,21 @@ export class RxDom {
     type?: RxNodeType<E, O>, inline?: boolean): RxNode<E, O> {
     // Prepare
     const parent = gParent
+    const children = parent.children
     let child: RxNode = NUL
     // Linking
-    const existing = parent.children.tryToRetainExisting(id)
-    if (!existing) { // new node
-      child = new RxNodeImpl<E, O>(parent.level + 1, id, type ?? RxDom.basic,
-        inline ?? false, args, render, superRender, parent)
-      parent.children.retainNewlyCreated(child)
+    const existing = children.tryToRetainExisting(id)
+    if (existing) {
+      if (!argsAreEqual(existing.args, args))
+        existing.args = args
+      existing.render = render
+      existing.superRender = superRender
+      child = existing
     }
     else {
-      child = existing
-      if (!argsAreEqual(child.args, args))
-        child.args = args
-      child.render = render
-      child.superRender = superRender
+      child = new RxNodeImpl<E, O>(parent.level + 1, id, type ?? RxDom.basic,
+        inline ?? false, args, render, superRender, parent)
+      children.retainNewlyCreated(child)
     }
     return child
   }
@@ -414,12 +415,12 @@ function shuffle<T>(array: Array<T>): Array<T> {
 export class RxNodeSequenceImpl {
   revision: number = ~0
   namespace: Map<string, RxNode> = new Map<string, RxNode>()
+  first?: RxNode = undefined
+  count: number = 0
   likelyNextToRetain?: RxNode = undefined
   retainedFirst?: RxNode = undefined
   retainedLast?: RxNode = undefined
   retainedCount: number = 0
-  first?: RxNode = undefined
-  count: number = 0
 
   get isReconciling(): boolean { return this.revision > ~0 }
 
