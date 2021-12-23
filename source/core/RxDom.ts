@@ -443,7 +443,7 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
 
   tryToRetainExisting(id: string): RxNodeImpl | undefined {
     let result = this.likelyNextRetained
-    if (result?.id !== id && this.first !== undefined)
+    if (result?.id !== id)
       result = this.namespace.get(id)
     if (result && result.revision >= ~0) {
       if (result.reconciliationRevision === this.revision)
