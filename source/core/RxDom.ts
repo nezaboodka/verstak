@@ -420,18 +420,19 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
     const count = this.count
     const retained = this.retainedCount
     if (retained > 0) {
-      if (retained > count) {
+      if (retained > count) { // it should be faster to delete non-retained nodes from namespace
         let x = this.first
         while (x !== undefined)
           namespace.delete(x.id), x = x.next
       }
-      else {
+      else { // it should be faster to recreate namespace with retained nodes only
+        const newNamespace = this.namespace = new Map<string, RxNodeImpl>()
         let x = this.retainedFirst
         while (x !== undefined)
-          namespace.set(x.id, x), x = x.next
+          newNamespace.set(x.id, x), x = x.next
       }
     }
-    else
+    else // just create new empty namespace
       this.namespace = new Map<string, RxNodeImpl>()
     this.first = this.retainedFirst
     this.count = retained
