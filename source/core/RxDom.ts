@@ -411,6 +411,11 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
   close(): void {
     if (!this.isOpened)
       throw new Error('sequence reconciler is closed already')
+    this.cleanup()
+    this.revision = ~0
+  }
+
+  cleanup(): void {
     const namespace = this.namespace
     const count = this.count
     const retained = this.retainedCount
@@ -433,7 +438,6 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
     this.retainedFirst = this.retainedLast = undefined
     this.retainedCount = 0
     this.likelyNextRetained = this.first
-    this.revision = ~0
   }
 
   tryToRetainExisting(id: string): RxNodeImpl | undefined {
