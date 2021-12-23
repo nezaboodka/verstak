@@ -56,7 +56,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
 
 // RxNodeImpl
 
-export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
+class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
   // User-defined properties
   readonly id: string
   readonly type: RxNodeType<E, O>
@@ -69,20 +69,20 @@ export class RxNodeImpl<E = unknown, O = void> implements RxNode<E, O> {
   model?: unknown
   // System-managed properties
   readonly level: number
-  readonly parent: RxNode
+  readonly parent: RxNodeImpl
   revision: number
   reconciliationRevision: number
-  prevMountSibling?: RxNode
+  prevMountSibling?: RxNodeImpl
   isMountRequired: boolean
   children: RxNodeSequenceImpl
-  next?: RxNode
-  prev?: RxNode
+  next?: RxNodeImpl
+  prev?: RxNodeImpl
   native?: E
   resizeObserver?: ResizeObserver
 
   constructor(level: number, id: string, type: RxNodeType<E, O>, inline: boolean,
     args: unknown, render: Render<E, O>, superRender: SuperRender<O, E> | undefined,
-    parent: RxNode) {
+    parent: RxNodeImpl) {
     // User-defined properties
     this.id = id
     this.type = type
@@ -163,8 +163,8 @@ export class RxDom {
     try {
       const children = parent.children
       if (children.isOpened) {
-        let p1: Array<RxNode> | undefined = undefined
-        let p2: Array<RxNode> | undefined = undefined
+        let p1: Array<RxNodeImpl> | undefined = undefined
+        let p2: Array<RxNodeImpl> | undefined = undefined
         // Finalize non-retained children
         let x = children.first
         while (x !== undefined) {
@@ -173,7 +173,7 @@ export class RxDom {
         }
         // Render retained children
         const sequential = parent.type.sequential
-        let mountSibling: RxNode | undefined = undefined
+        let mountSibling: RxNodeImpl | undefined = undefined
         x = children.retainedFirst
         while (x !== undefined && !Transaction.isCanceled) {
           if (sequential && x.prevMountSibling !== mountSibling) {
@@ -202,7 +202,7 @@ export class RxDom {
     }
   }
 
-  static createRootNode<E, O>(id: string, sequential: boolean, native: E): RxNode<E, O> {
+  static createRootNode<E = any, O = any>(id: string, sequential: boolean, native: E): RxNode<E, O> {
     const node = new RxNodeImpl<E, O>(
       0,                        // level
       id,                       // id
@@ -211,7 +211,7 @@ export class RxDom {
       null,                     // args
       () => { /* nop */ },      // render
       undefined,                // superRender
-      {} as RxNode)             // fake parent (overwritten below)
+      {} as RxNodeImpl)         // fake parent (overwritten below)
     // Initialize
     const a: any = node
     a['parent'] = node
@@ -234,8 +234,9 @@ export class RxDom {
 
   // Internal
 
-  private static async renderIncrementally(node: RxNode,
-    p1children: Array<RxNode> | undefined, p2children: Array<RxNode> | undefined): Promise<void> {
+  private static async renderIncrementally(node: RxNodeImpl,
+    p1children: Array<RxNodeImpl> | undefined,
+    p2children: Array<RxNodeImpl> | undefined): Promise<void> {
     const checkEveryN = 30
     if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
       await Transaction.requestNextFrame()
@@ -269,7 +270,7 @@ export class RxDom {
     }
   }
 
-  private static forEachChildRecursively(node: RxNode, action: (e: any) => void): void {
+  private static forEachChildRecursively(node: RxNodeImpl, action: (e: any) => void): void {
     const native = node.native
     native && action(native)
     let x = node.children.first
@@ -278,20 +279,11 @@ export class RxDom {
       x = x.next
     }
   }
-
-  // private static collectNodeNamespaceGarbage(node: RxNode): void {
-  //   node.namespace.forEach(RxDom.deleteIfNodeIsFinalized)
-  // }
-
-  // private static deleteIfNodeIsFinalized(node: RxNode, key: string, namespace: Map<string, RxNode>): void {
-  //   if (node.revision < ~0)
-  //     namespace.delete(key)
-  // }
 }
 
 // Internal
 
-function tryToRefresh(node: RxNode): void {
+function tryToRefresh(node: RxNodeImpl): void {
   const type = node.type
   if (node.revision === ~0) {
     node.revision = 0
@@ -317,7 +309,7 @@ function tryToFinalize(node: RxNode, initiator: RxNode): void {
   }
 }
 
-function invokeRender(node: RxNode, args: unknown): void {
+function invokeRender(node: RxNodeImpl, args: unknown): void {
   if (node.revision >= ~0) { // needed for deferred Rx.dispose
     runUnder(node, () => {
       node.revision++
@@ -346,7 +338,7 @@ function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
   return wrappedRunUnder
 }
 
-function runUnder<T>(node: RxNode, func: (...args: any[]) => T, ...args: any[]): T {
+function runUnder<T>(node: RxNodeImpl, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gParent
   try {
     gParent = node
@@ -398,13 +390,13 @@ function shuffle<T>(array: Array<T>): Array<T> {
 // RxNodeSequenceImpl
 
 export class RxNodeSequenceImpl implements RxNodeSequence {
-  namespace: Map<string, RxNode> = new Map<string, RxNode>()
-  first?: RxNode = undefined
+  namespace: Map<string, RxNodeImpl> = new Map<string, RxNodeImpl>()
+  first?: RxNodeImpl = undefined
   count: number = 0
-  retainedFirst?: RxNode = undefined
-  retainedLast?: RxNode = undefined
+  retainedFirst?: RxNodeImpl = undefined
+  retainedLast?: RxNodeImpl = undefined
   retainedCount: number = 0
-  likelyNextRetained?: RxNode = undefined
+  likelyNextRetained?: RxNodeImpl = undefined
   revision: number = ~0
 
   get isOpened(): boolean { return this.revision > ~0 }
@@ -434,7 +426,7 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
       }
     }
     else
-      this.namespace = new Map<string, RxNode>()
+      this.namespace = new Map<string, RxNodeImpl>()
     this.first = this.retainedFirst
     this.count = retained
     this.retainedFirst = this.retainedLast = undefined
@@ -443,7 +435,7 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
     this.revision = ~0
   }
 
-  tryToRetainExisting(id: string): RxNode | undefined {
+  tryToRetainExisting(id: string): RxNodeImpl | undefined {
     let result = this.likelyNextRetained
     if (result?.id !== id && this.first !== undefined)
       result = this.namespace.get(id)
@@ -476,7 +468,7 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
     return result
   }
 
-  retainNewlyCreated(node: RxNode): void {
+  retainNewlyCreated(node: RxNodeImpl): void {
     node.reconciliationRevision = this.revision
     this.namespace.set(node.id, node)
     const last = this.retainedLast
@@ -517,5 +509,5 @@ Promise.prototype.then = reactronicDomHookedThen
 // Globals
 
 const NOP = (): void => { /* nop */ }
-const SYSTEM = RxDom.createRootNode<unknown, void>('SYSTEM', false, 'SYSTEM')
-let gParent: RxNode = SYSTEM
+const SYSTEM = RxDom.createRootNode<any, any>('SYSTEM', false, 'SYSTEM') as RxNodeImpl
+let gParent: RxNodeImpl = SYSTEM
