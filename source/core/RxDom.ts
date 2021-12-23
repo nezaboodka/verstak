@@ -172,7 +172,7 @@ export class RxDom {
           tryToFinalize(x, x)
           x = x.next
         }
-        children.cleanup()
+        children.switch()
         // Render retained children
         const sequential = parent.type.sequential
         let mountSibling: RxNodeImpl | undefined = undefined
@@ -415,7 +415,7 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
     this.revision = ~0
   }
 
-  cleanup(): void {
+  switch(): void {
     const namespace = this.namespace
     const count = this.count
     const retained = this.retainedCount
