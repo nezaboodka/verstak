@@ -404,7 +404,7 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
   retainedFirst?: RxNode = undefined
   retainedLast?: RxNode = undefined
   retainedCount: number = 0
-  likelyNextToRetain?: RxNode = undefined
+  likelyNextRetained?: RxNode = undefined
   revision: number = ~0
 
   get isReconciling(): boolean { return this.revision > ~0 }
@@ -414,7 +414,7 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
       throw new Error('sequence reconciler is opened already')
     this.retainedFirst = this.retainedLast = undefined
     this.retainedCount = 0
-    this.likelyNextToRetain = this.first
+    this.likelyNextRetained = this.first
     this.revision = revision
   }
 
@@ -444,14 +444,14 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
   }
 
   tryToRetainExisting(id: string): RxNode | undefined {
-    let result = this.likelyNextToRetain
+    let result = this.likelyNextRetained
     if (result?.id !== id && this.first !== undefined)
       result = this.namespace.get(id)
     if (result && result.revision >= ~0) {
       if (result.reconciliationRevision === this.revision)
         throw new Error(`duplicate item id: ${id}`)
       result.reconciliationRevision = this.revision
-      this.likelyNextToRetain = result.next
+      this.likelyNextRetained = result.next
       // Exclude from main sequence
       if (result.prev !== undefined)
         result.prev.next = result.next
