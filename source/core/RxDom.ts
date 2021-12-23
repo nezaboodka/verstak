@@ -48,7 +48,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
       Rx.dispose(node)
     let x = node.children.first
     while (x !== undefined) {
-      tryToFinalize(x, initiator)
+      tryToFinalize(x as RxNodeImpl, initiator as RxNodeImpl)
       x = x.next
     }
   }
@@ -299,7 +299,7 @@ function tryToRefresh(node: RxNodeImpl): void {
     nonreactive(node.rerender, node.args) // reactive auto-rendering
 }
 
-function tryToFinalize(node: RxNode, initiator: RxNode): void {
+function tryToFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
   if (node.revision >= ~0) {
     node.revision = ~node.revision
     if (node === initiator)

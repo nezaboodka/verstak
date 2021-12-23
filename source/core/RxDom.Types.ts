@@ -26,25 +26,23 @@ export interface RxNode<E = any, O = any> {
   readonly id: string
   readonly type: RxNodeType<E, O>
   readonly inline: boolean
-  args: unknown
-  render: Render<E, O>
-  superRender: SuperRender<O, E> | undefined
+  readonly args: unknown
+  readonly render: Render<E, O>
+  readonly superRender: SuperRender<O, E> | undefined
   priority: RxPriority
   childrenShuffling: boolean
   model?: unknown
   // System-managed properties
   readonly level: number
   readonly parent: RxNode
-  revision: number
-  reconciliationRevision: number
-  prevMountSibling?: RxNode
-  isMountRequired: boolean
-  children: RxNodeSequence
-  next?: RxNode
-  prev?: RxNode
+  readonly revision: number
+  readonly reconciliationRevision: number
+  readonly prevMountSibling?: RxNode
+  readonly children: RxNodeSequence
+  readonly next?: RxNode
+  readonly prev?: RxNode
   native?: E
   resizeObserver?: ResizeObserver
-  rerender(args?: unknown): void
 }
 
 export interface RxNodeSequence {
