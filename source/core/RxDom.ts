@@ -172,10 +172,11 @@ export class RxDom {
           tryToFinalize(x, x)
           x = x.next
         }
+        children.cleanup()
         // Render retained children
         const sequential = parent.type.sequential
         let mountSibling: RxNodeImpl | undefined = undefined
-        x = children.retainedFirst
+        x = children.first
         while (x !== undefined && !Transaction.isCanceled) {
           if (sequential && x.prevMountSibling !== mountSibling) {
             x.prevMountSibling = mountSibling
@@ -411,7 +412,6 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
   close(): void {
     if (!this.isOpened)
       throw new Error('sequence reconciler is closed already')
-    this.cleanup()
     this.revision = ~0
   }
 
