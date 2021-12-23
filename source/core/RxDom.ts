@@ -23,7 +23,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
 
   render(node: RxNode<E, O>, args: unknown): void {
     let result: any
-    node.children.beginReconciliation(node.revision)
+    node.children.open(node.revision)
     if (node.superRender)
       result = node.superRender(options => {
         const res = node.render(node.native as E, options)
@@ -125,7 +125,7 @@ export class RxDom {
 
   static Root<T>(render: () => T): T {
     const p = gParent
-    p.children.beginReconciliation(p.revision)
+    p.children.open(p.revision)
     let result: any = render()
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current parent
@@ -162,7 +162,7 @@ export class RxDom {
     let promised: Promise<void> | undefined = undefined
     try {
       const children = parent.children
-      if (children.isReconciling) {
+      if (children.isOpened) {
         let p1: Array<RxNode> | undefined = undefined
         let p2: Array<RxNode> | undefined = undefined
         // Finalize non-retained children
@@ -190,7 +190,7 @@ export class RxDom {
             mountSibling = x
           x = x.next
         }
-        children.endReconciliation()
+        children.close()
         // Asynchronous incremental rendering (if any)
         if (!Transaction.isCanceled && p1 !== undefined || p2 !== undefined)
           promised = RxDom.renderIncrementally(parent, p1, p2).then(action, action)
@@ -407,10 +407,10 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
   likelyNextRetained?: RxNode = undefined
   revision: number = ~0
 
-  get isReconciling(): boolean { return this.revision > ~0 }
+  get isOpened(): boolean { return this.revision > ~0 }
 
-  beginReconciliation(revision: number): void {
-    if (this.isReconciling)
+  open(revision: number): void {
+    if (this.isOpened)
       throw new Error('sequence reconciler is opened already')
     this.retainedFirst = this.retainedLast = undefined
     this.retainedCount = 0
@@ -418,8 +418,8 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
     this.revision = revision
   }
 
-  endReconciliation(): void {
-    if (!this.isReconciling)
+  close(): void {
+    if (!this.isOpened)
       throw new Error('sequence reconciler is closed already')
     const namespace = this.namespace
     const count = this.count

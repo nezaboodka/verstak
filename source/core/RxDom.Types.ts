@@ -50,12 +50,12 @@ export interface RxNode<E = any, O = any> {
 export interface RxNodeSequence {
   readonly first?: RxNode
   readonly count: number
-  readonly isReconciling: boolean
+  readonly isOpened: boolean
   readonly retainedFirst?: RxNode
   readonly retainedLast?: RxNode
   readonly retainedCount: number
-  beginReconciliation(revision: number): void
-  endReconciliation(): void
+  open(revision: number): void
+  close(): void
   tryToRetainExisting(id: string): RxNode | undefined
   retainNewlyCreated(node: RxNode): void
 }
