@@ -412,9 +412,6 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
   open(revision: number): void {
     if (this.isOpened)
       throw new Error('sequence reconciler is opened already')
-    this.retainedFirst = this.retainedLast = undefined
-    this.retainedCount = 0
-    this.likelyNextRetained = this.first
     this.revision = revision
   }
 
@@ -440,6 +437,9 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
       this.namespace = new Map<string, RxNode>()
     this.first = this.retainedFirst
     this.count = retained
+    this.retainedFirst = this.retainedLast = undefined
+    this.retainedCount = 0
+    this.likelyNextRetained = this.first
     this.revision = ~0
   }
 
