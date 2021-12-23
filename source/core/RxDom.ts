@@ -172,8 +172,8 @@ export class RxDom {
           tryToFinalize(x, x)
           x = x.next
         }
+        // Switch to retained children and render them
         children.switch()
-        // Render retained children
         const sequential = parent.type.sequential
         let mountSibling: RxNodeImpl | undefined = undefined
         x = children.first
