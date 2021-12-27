@@ -24,6 +24,9 @@ export class HtmlDragSensor extends HtmlElementSensor {
   startX: number // position relative to browser's viewport
   startY: number // position relative to browser's viewport
   @unobservable private dataByFormat: Map<string, unknown>
+  @unobservable private draggingImage: HTMLElement | undefined
+  @unobservable private draggingImageX: number
+  @unobservable private draggingImageY: number
   @unobservable dropEffect: DropEffect
   @unobservable dataTypesAllowed: string[]
   @unobservable effectAllowed: DragEffectAllowed
@@ -51,6 +54,9 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.startX = Infinity
     this.startY = Infinity
     this.dataByFormat = new Map<string, unknown>()
+    this.draggingImage = undefined
+    this.draggingImageX = Infinity
+    this.draggingImageY = Infinity
     this.dropEffect = 'none'
     this.dataTypesAllowed = []
     this.effectAllowed = 'uninitialized'
@@ -81,6 +87,12 @@ export class HtmlDragSensor extends HtmlElementSensor {
       this.dataByFormat.delete(format)
     else
       this.dataByFormat.clear()
+  }
+
+  setDragImage(value: HTMLElement, x: number, y: number): void {
+    this.draggingImage = value
+    this.draggingImageX = x
+    this.draggingImageY = y
   }
 
   @transaction
@@ -232,6 +244,9 @@ export class HtmlDragSensor extends HtmlElementSensor {
         if (typeof data === 'string')
           dt.setData(format, data)
       })
+      if (this.draggingImage) {
+        dt.setDragImage(this.draggingImage, this.draggingImageX, this.draggingImageY)
+      }
     }
   }
 
@@ -252,6 +267,9 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.startX = Infinity
     this.startY = Infinity
     this.dataByFormat.clear()
+    this.draggingImage = undefined
+    this.draggingImageX = Infinity
+    this.draggingImageY = Infinity
     this.dropEffect = 'none'
     this.dataTypesAllowed = []
     this.effectAllowed = 'uninitialized'
