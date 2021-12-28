@@ -181,7 +181,7 @@ export class PointerSensor extends BasePointerSensor {
       this.clicking = clickable
       this.draggableData = draggable
       this.tryingDragging = draggable !== undefined
-      this.dragSource = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['drag']).data?.drag
+      this.dragSource = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['drag'], true).data?.drag
       this.pointerButton = extractPointerButton(e)
       this.startX = e.clientX
       this.startY = e.clientY
@@ -308,7 +308,7 @@ export class PointerSensor extends BasePointerSensor {
   protected updateDragTarget(e: PointerEvent): unknown {
     const targetPath = e.composedPath()
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['drag'])
+    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['drag'], true)
     const dragTarget = data?.drag
     if (dragTarget !== this.dragTarget) {
       this.previousDragTarget = this.dragTarget

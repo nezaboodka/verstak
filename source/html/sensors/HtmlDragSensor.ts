@@ -160,7 +160,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     const targetPath = e.composedPath()
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
     this.draggable = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDraggable']).data?.htmlDraggable
-    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDrag'])
+    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDrag'], true)
     this.dragSource = data?.htmlDrag
     this.dragStarted = true
     this.dragFinished = false
@@ -291,7 +291,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
   protected updateDragTarget(e: DragEvent): unknown {
     const targetPath = e.composedPath()
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDrag'])
+    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDrag'], true)
     const dragTarget = data?.htmlDrag
     if (dragTarget !== this.dragTarget) {
       this.previousDragTarget = this.dragTarget

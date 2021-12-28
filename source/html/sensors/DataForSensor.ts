@@ -56,42 +56,9 @@ export function grabElementData(targetPath: any[], sym: symbol, payloadKey: keyo
   return result
 }
 
-export function grabWindowElementData(targetPath: any[], sym: symbol, payloadKey: keyof DataForSensor,
-  existing: Array<unknown>): { data: Array<unknown>, window: unknown } {
-  let result = existing
-  let i = 0
-  let j = 0
-  let window: unknown = undefined
-  while (window === undefined && i < targetPath.length) {
-    const data = targetPath[i][sym] as DataForSensor | undefined
-    if (data !== undefined) {
-      window = data['window']
-      const payload = data[payloadKey]
-      if (payload !== undefined) {
-        if (result !== existing)
-          payload !== undefined && result.push(payload)
-        else if (payload !== undefined) {
-          if (payload !== existing[j]) {
-            result = existing.slice(0, j)
-            result.push(payload)
-          }
-          else
-            j++
-        }
-        else {
-          result = existing.slice(0, j)
-        }
-      }
-    }
-    i++
-  }
-  if (j === 0 && result === existing && existing.length > 0)
-    result = EmptyDataArray
-  return { data: result, window }
-}
-
 export function findTargetElementData(targetPath: any[], underPointer: any[], sym: symbol,
-  anyOfPayloadKeys: Array<keyof DataForSensor>): { data?: DataForSensor, window: unknown } {
+  anyOfPayloadKeys: Array<keyof DataForSensor>,
+  ignoreWindow: boolean = false): { data?: DataForSensor, window: unknown } {
   let result: DataForSensor | undefined = undefined
   let i = 0
   let window: unknown = undefined
@@ -99,7 +66,8 @@ export function findTargetElementData(targetPath: any[], underPointer: any[], sy
     const candidate = targetPath[i]
     const candidateData = candidate[sym] as DataForSensor | undefined
     if (candidateData !== undefined) {
-      window = candidateData['window']
+      if (!ignoreWindow)
+        window = candidateData['window']
       if (result === undefined) {
         for (const payloadKey of anyOfPayloadKeys) {
           const payload = candidateData[payloadKey]
