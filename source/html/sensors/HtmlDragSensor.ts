@@ -18,6 +18,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
   draggable: unknown
   dragSource: unknown
   dragTarget: unknown
+  dragTargetWindow: unknown
   previousDragTarget: unknown
   dragStarted: boolean
   dragFinished: boolean
@@ -48,6 +49,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.draggable = undefined
     this.dragSource = undefined
     this.dragTarget = undefined
+    this.dragTargetWindow = undefined
     this.previousDragTarget = undefined
     this.dragStarted = false
     this.dragFinished = false
@@ -171,6 +173,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.positionY = e.clientY
     this.dropped = false
     this.dragTarget = undefined
+    this.dragTargetWindow = undefined
     this.previousDragTarget = undefined
     this.revision++
     standalone(() => {
@@ -193,10 +196,9 @@ export class HtmlDragSensor extends HtmlElementSensor {
 
   @transaction @options({ trace: TraceLevel.Silent })
   protected enterTarget(e: DragEvent): void {
-    const window = this.updateDragTarget(e)
+    this.updateDragTarget(e)
     this.dropped = false
     this.revision++
-    this.windowSensor?.setActiveWindow(window, 'htmlDrag')
   }
 
   @transaction @options({ trace: TraceLevel.Silent })
@@ -261,6 +263,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.draggable = undefined
     this.dragSource = undefined
     this.dragTarget = undefined
+    this.dragTargetWindow = undefined
     this.previousDragTarget = undefined
     this.dragStarted = false
     this.dragFinished = false
@@ -288,14 +291,15 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.revision++
   }
 
-  protected updateDragTarget(e: DragEvent): unknown {
+  protected updateDragTarget(e: DragEvent): void {
     const targetPath = e.composedPath()
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDrag'], true)
+    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDrag'])
     const dragTarget = data?.htmlDrag
     if (dragTarget !== this.dragTarget) {
       this.previousDragTarget = this.dragTarget
       this.dragTarget = dragTarget
+      this.dragTargetWindow = window
     }
     const types = e.dataTransfer?.types
     if (types) {
@@ -310,7 +314,6 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.immediatePositionX = e.clientX
     this.immediatePositionY = e.clientY
     this.draggingOver = true
-    return window
   }
 
   @reaction @options({ throttling: 0 })

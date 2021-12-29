@@ -22,6 +22,7 @@ export class PointerSensor extends BasePointerSensor {
   draggableData: unknown
   dragSource: unknown
   dragTarget: unknown
+  dragTargetWindow: unknown
   previousDragTarget: unknown
   dragStarted: boolean
   dragFinished: boolean
@@ -54,6 +55,7 @@ export class PointerSensor extends BasePointerSensor {
     this.draggableData = undefined
     this.dragSource = undefined
     this.dragTarget = undefined
+    this.dragTargetWindow = undefined
     this.previousDragTarget = undefined
     this.dragStarted = false
     this.dragFinished = false
@@ -190,6 +192,7 @@ export class PointerSensor extends BasePointerSensor {
       this.positionY = e.clientY
       this.dropped = false
       this.dragTarget = undefined
+      this.dragTargetWindow = undefined
       this.previousDragTarget = undefined
       standalone(() => {
         this.windowSensor?.setActiveWindow(window, 'pointer')
@@ -272,6 +275,7 @@ export class PointerSensor extends BasePointerSensor {
     this.draggableData = undefined
     this.dragSource = undefined
     this.dragTarget = undefined
+    this.dragTargetWindow = undefined
     this.previousDragTarget = undefined
     this.dragStarted = false
     this.dragFinished = false
@@ -305,19 +309,19 @@ export class PointerSensor extends BasePointerSensor {
     return isSameClickable
   }
 
-  protected updateDragTarget(e: PointerEvent): unknown {
+  protected updateDragTarget(e: PointerEvent): void {
     const targetPath = e.composedPath()
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['drag'], true)
+    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['drag'])
     const dragTarget = data?.drag
     if (dragTarget !== this.dragTarget) {
       this.previousDragTarget = this.dragTarget
       this.dragTarget = dragTarget
+      this.dragTargetWindow = window
     }
     this.immediateModifiers = extractModifierKeys(e)
     this.immediatePositionX = e.clientX
     this.immediatePositionY = e.clientY
-    return window
   }
 
   @reaction @options({ throttling: 0 })
