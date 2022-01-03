@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, standalone, TraceLevel, transaction, unobservable } from 'reactronic'
+import { options, reaction, TraceLevel, transaction, unobservable, Transaction } from 'reactronic'
 import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
@@ -176,7 +176,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.dragTargetWindow = undefined
     this.previousDragTarget = undefined
     this.revision++
-    standalone(() => {
+    Transaction.runAs({ standalone: true }, () => {
       this.windowSensor?.setActiveWindow(window, 'htmlDrag')
     })
   }

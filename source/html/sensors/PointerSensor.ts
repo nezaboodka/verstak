@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, Reentrance, standalone, TraceLevel, transaction, unobservable } from 'reactronic'
+import { options, reaction, Reentrance, TraceLevel, transaction, unobservable, Transaction } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from './BasePointerSensor'
 import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
@@ -194,7 +194,7 @@ export class PointerSensor extends BasePointerSensor {
       this.dragTarget = undefined
       this.dragTargetWindow = undefined
       this.previousDragTarget = undefined
-      standalone(() => {
+      Transaction.runAs({ standalone: true }, () => {
         this.windowSensor?.setActiveWindow(window, 'pointer')
       })
     }

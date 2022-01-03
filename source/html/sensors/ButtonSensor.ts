@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, standalone, TraceLevel, transaction } from 'reactronic'
+import { options, Reentrance, TraceLevel, transaction, Transaction } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from './BasePointerSensor'
 import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
@@ -129,7 +129,7 @@ export class ButtonSensor extends BasePointerSensor {
       this.positionY = e.clientY
       this.revision++
     }
-    standalone(() => {
+    Transaction.runAs({ standalone: true }, () => {
       this.windowSensor?.setActiveWindow(window, 'button')
     })
   }
