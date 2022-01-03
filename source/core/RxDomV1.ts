@@ -52,7 +52,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
     if (inst) {
       inst.native = undefined
       if (!node.inline && node.instance) // TODO: Consider creating one transaction for all finalizations at once
-        Transaction.runAs({ standalone: true }, () => Rx.dispose(node.instance))
+        Transaction.standalone(() => Rx.dispose(node.instance))
       for (const x of inst.children)
         tryToFinalize(x, initiator)
       for (const x of inst.guests)
@@ -103,10 +103,10 @@ export class RxDom {
     let result: any = render()
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current creator and host
-        value => { Transaction.run(RxDom.renderChildrenThenDo, NOP); return value }, // ignored if rendered already
-        error => { console.log(error); Transaction.run(RxDom.renderChildrenThenDo, NOP) }) // try to render children regardless the creator
+        value => { Transaction.run(null, RxDom.renderChildrenThenDo, NOP); return value }, // ignored if rendered already
+        error => { console.log(error); Transaction.run(null, RxDom.renderChildrenThenDo, NOP) }) // try to render children regardless the creator
     else
-      Transaction.run(RxDom.renderChildrenThenDo, NOP) // ignored if rendered already
+      Transaction.run(null, RxDom.renderChildrenThenDo, NOP) // ignored if rendered already
     return result
   }
 

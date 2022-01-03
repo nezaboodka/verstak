@@ -176,7 +176,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.dragTargetWindow = undefined
     this.previousDragTarget = undefined
     this.revision++
-    Transaction.runAs({ standalone: true }, () => {
+    Transaction.standalone(() => {
       this.windowSensor?.setActiveWindow(window, 'htmlDrag')
     })
   }

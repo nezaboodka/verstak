@@ -194,7 +194,7 @@ export class PointerSensor extends BasePointerSensor {
       this.dragTarget = undefined
       this.dragTargetWindow = undefined
       this.previousDragTarget = undefined
-      Transaction.runAs({ standalone: true }, () => {
+      Transaction.standalone(() => {
         this.windowSensor?.setActiveWindow(window, 'pointer')
       })
     }

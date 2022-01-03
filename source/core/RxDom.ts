@@ -118,7 +118,7 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
   }
 }
 
-// RxDomik
+// RxDom
 
 export class RxDom {
   public static readonly basic = new BasicNodeType<any, any>('basic', false)
@@ -130,10 +130,10 @@ export class RxDom {
     let result: any = render()
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current parent
-        value => { Transaction.run(RxDom.renderChildrenThenDo, NOP); return value }, // ignored if rendered already
-        error => { console.log(error); Transaction.run(RxDom.renderChildrenThenDo, NOP) }) // try to render children regardless the parent
+        value => { Transaction.run(null, RxDom.renderChildrenThenDo, NOP); return value }, // ignored if rendered already
+        error => { console.log(error); Transaction.run(null, RxDom.renderChildrenThenDo, NOP) }) // try to render children regardless the parent
     else
-      Transaction.run(RxDom.renderChildrenThenDo, NOP) // ignored if rendered already
+      Transaction.run(null, RxDom.renderChildrenThenDo, NOP) // ignored if rendered already
     return result
   }
 
@@ -305,7 +305,7 @@ function tryToFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
   if (node.revision >= ~0) {
     node.revision = ~node.revision
     if (node === initiator)
-      Transaction.runAs({ standalone: true, hint: `RxDom.finalize(${node.id})`}, invokeFinalize, node, initiator)
+      Transaction.run({ standalone: true, hint: `RxDom.finalize(${node.id})`}, invokeFinalize, node, initiator)
     else
       invokeFinalize(node, initiator)
   }

@@ -129,7 +129,7 @@ export class ButtonSensor extends BasePointerSensor {
       this.positionY = e.clientY
       this.revision++
     }
-    Transaction.runAs({ standalone: true }, () => {
+    Transaction.standalone(() => {
       this.windowSensor?.setActiveWindow(window, 'button')
     })
   }
