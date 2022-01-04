@@ -113,8 +113,9 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
     sensitiveArgs: true,
     noSideEffects: true })
   rerender(args: unknown): void {
+    if (this.revision === 0) // configure only once
+      Rx.configureCurrentOperation({ order: this.level })
     invokeRender(this, args)
-    Rx.configureCurrentOperation({ order: this.level })
   }
 }
 
