@@ -108,7 +108,8 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
     this.resizeObserver = undefined
   }
 
-  @reaction @options({
+  @reaction
+  @options({
     reentrance: Reentrance.CancelPrevious,
     sensitiveArgs: true,
     noSideEffects: true })
