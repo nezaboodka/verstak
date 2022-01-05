@@ -73,16 +73,12 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
 
   finalize(node: RxNode<E, any>, initiator: RxNode): void {
     const native = node.native
-    if (native && node === initiator) {
+    if (native) {
       node.resizeObserver?.unobserve(native)
-      native.remove()
-      super.finalize(node, initiator)
+      if (node === initiator)
+        native.remove()
     }
-    else {
-      if (native)
-        node.resizeObserver?.unobserve(native)
-      super.finalize(node, initiator)
-    }
+    super.finalize(node, initiator)
   }
 
   static get blinkingEffect(): string | undefined {
