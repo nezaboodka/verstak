@@ -300,6 +300,7 @@ function tryToFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
   if (node.revision >= ~0) {
     node.revision = ~node.revision
     invokeFinalize(node, initiator)
+    // Enqueue node for Rx.dispose
     const isDisposeLoopLaunchRequired = gDisposeQueue.length === 0
     gDisposeQueue.push(node)
     if (isDisposeLoopLaunchRequired) {
@@ -307,6 +308,7 @@ function tryToFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
         void runDisposeLoop().then(NOP, error => console.log(error))
       })
     }
+    // Finalize children
     let x = node.children.first
     while (x !== undefined) {
       tryToFinalize(x as RxNodeImpl, initiator as RxNodeImpl)
