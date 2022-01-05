@@ -47,11 +47,6 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
     node.native = undefined
     if (!node.inline)
       Rx.dispose(node)
-    let x = node.children.first
-    while (x !== undefined) {
-      tryToFinalize(x as RxNodeImpl, initiator as RxNodeImpl)
-      x = x.next
-    }
   }
 }
 
@@ -116,7 +111,10 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
   rerender(args: unknown): void {
     if (this.revision === 0) // configure only once
       Rx.configureCurrentOperation({ order: this.level })
-    invokeRender(this, args)
+    if (this.revision >= 0)
+      invokeRender(this, args)
+    else
+      Rx.dispose(this)
   }
 }
 
@@ -310,6 +308,13 @@ function tryToFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
       Transaction.run({ standalone: true, hint: `RxDom.finalize(${node.id})`}, invokeFinalize, node, initiator)
     else
       invokeFinalize(node, initiator)
+    // // Launch dispose loop if needed
+    // const isDisposeLoopLaunchRequired = gDisposeQueue.length === 0
+    // gDisposeQueue.push(node)
+    // if (isDisposeLoopLaunchRequired)
+    //   Transaction.run({ standalone: true, hint: `runDisposeLoop(initiator=${node.id})`}, () => {
+    //     runDisposeLoop().then(NOP, error => console.log(error))
+    //   })
   }
 }
 
@@ -332,7 +337,26 @@ function invokeFinalize(node: RxNode, initiator: RxNode): void {
     type.finalize(node, initiator)
   else
     RxDom.basic.finalize(node, initiator) // default finalize
+  // Finalize sub-tree
+  let x = node.children.first
+  while (x !== undefined) {
+    tryToFinalize(x as RxNodeImpl, initiator as RxNodeImpl)
+    x = x.next
+  }
 }
+
+// async function runDisposeLoop(): Promise<void> {
+//   const queue = gDisposeQueue
+//   let i = 0
+//   while (i < queue.length) {
+//     if (Transaction.isFrameOver(500))
+//       await Transaction.requestNextFrame()
+//     const node = queue[i]
+//     Rx.dispose(node)
+//     i++
+//   }
+//   gDisposeQueue = [] // reset loop
+// }
 
 function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
   const parent = gParent
@@ -519,3 +543,4 @@ Promise.prototype.then = reactronicDomHookedThen
 const NOP = (): void => { /* nop */ }
 const SYSTEM = RxDom.createRootNode<any, any>('SYSTEM', false, 'SYSTEM') as RxNodeImpl
 let gParent: RxNodeImpl = SYSTEM
+// let gDisposeQueue: Array<RxNode> = []
