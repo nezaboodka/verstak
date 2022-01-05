@@ -301,9 +301,8 @@ function tryToFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
     node.revision = ~node.revision
     invokeFinalize(node, initiator)
     // Enqueue node for Rx.dispose
-    const isDisposeLoopLaunchRequired = gDisposeQueue.length === 0
     gDisposeQueue.push(node)
-    if (isDisposeLoopLaunchRequired) {
+    if (gDisposeQueue.length === 1) {
       Transaction.run({ standalone: 'disposal', hint: `runDisposeLoop(initiator=${node.id})` }, () => {
         void runDisposeLoop().then(NOP, error => console.log(error))
       })
