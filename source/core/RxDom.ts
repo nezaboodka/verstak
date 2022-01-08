@@ -298,16 +298,23 @@ function tryToRefresh(node: RxDomNode): void {
 
 function tryToFinalize(node: RxDomNode, initiator: RxDomNode): void {
   if (node.revision >= ~0) {
+    // Finalize node itself
     node.revision = ~node.revision
-    invokeFinalize(node, initiator)
-    // Enqueue node for Rx.dispose
-    gDisposeQueue.push(node)
-    if (gDisposeQueue.length === 1) {
-      Transaction.run({ standalone: 'disposal', hint: `runDisposeLoop(initiator=${node.id})` }, () => {
-        void runDisposeLoop().then(NOP, error => console.log(error))
-      })
+    const type = node.type
+    if (type.remove)
+      type.remove(node, initiator)
+    else
+      RxDom.basic.remove(node, initiator) // default finalize
+    // Enqueue node for Rx.dispose if needed
+    if (!node.inline) {
+      gDisposeQueue.push(node)
+      if (gDisposeQueue.length === 1) {
+        Transaction.run({ standalone: 'disposal', hint: `runDisposeLoop(initiator=${node.id})` }, () => {
+          void runDisposeLoop().then(NOP, error => console.log(error))
+        })
+      }
     }
-    // Finalize children
+    // Finalize children if any
     let x = node.children.first
     while (x !== undefined) {
       tryToFinalize(x, initiator as RxDomNode)
@@ -327,14 +334,6 @@ function invokeRender(node: RxDomNode, args: unknown): void {
         RxDom.basic.render(node, args) // default rendering
     })
   }
-}
-
-function invokeFinalize(node: RxNode, initiator: RxNode): void {
-  const type = node.type
-  if (type.remove)
-    type.remove(node, initiator)
-  else
-    RxDom.basic.remove(node, initiator) // default finalize
 }
 
 async function runDisposeLoop(): Promise<void> {
