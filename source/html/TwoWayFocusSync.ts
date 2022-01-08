@@ -9,7 +9,7 @@ import { Ref, ToggleRef } from 'reactronic'
 import { RxDom } from '../core/api'
 
 export function TwoWayFocusSync(
-  id: string,
+  name: string,
   target: HTMLElement,
   focusToggle: ToggleRef<any>,
   setNativeFocus?: (() => void)
@@ -17,7 +17,7 @@ export function TwoWayFocusSync(
   target.dataForSensor.focus = focusToggle
   if (setNativeFocus === undefined)
     setNativeFocus = () => target.focus()
-  RxDom.Node(id, { focusToggle }, () => {
+  RxDom.Node(name, { focusToggle }, () => {
     const f = focusToggle.value
     const f1 = focusToggle.valueOn
     const active = f === focusToggle.valueOn || (
@@ -28,8 +28,8 @@ export function TwoWayFocusSync(
   })
 }
 
-export function RxFocus(id: string, target: HTMLElement, focusToggle: ToggleRef<any>): void {
-  RxDom.Node(id, { target, focusToggle }, () => {
+export function RxFocus(name: string, target: HTMLElement, focusToggle: ToggleRef<any>): void {
+  RxDom.Node(name, { target, focusToggle }, () => {
     target.dataForSensor.focus = focusToggle
     const value = focusToggle.value
     const valueOn = focusToggle.valueOn
