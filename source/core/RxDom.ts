@@ -235,32 +235,30 @@ export class RxDom {
     const checkEveryN = 30
     if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
       await Transaction.requestNextFrame()
-    if (!Transaction.isCanceled) {
-      if (p1children !== undefined) {
-        if (node.childrenShuffling)
-          shuffle(p1children)
-        for (const x of p1children) {
-          tryToRender(x)
-          if (Transaction.isCanceled)
-            break
-          if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
-            await Transaction.requestNextFrame()
-          if (Transaction.isCanceled)
-            break
-        }
+    if (!Transaction.isCanceled && p1children !== undefined) {
+      if (node.childrenShuffling)
+        shuffle(p1children)
+      for (const x of p1children) {
+        tryToRender(x)
+        if (Transaction.isCanceled)
+          break
+        if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
+          await Transaction.requestNextFrame()
+        if (Transaction.isCanceled)
+          break
       }
-      if (p2children !== undefined) {
-        if (node.childrenShuffling)
-          shuffle(p2children)
-        for (const x of p2children) {
-          tryToRender(x)
-          if (Transaction.isCanceled)
-            break
-          if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
-            await Transaction.requestNextFrame()
-          if (Transaction.isCanceled)
-            break
-        }
+    }
+    if (!Transaction.isCanceled && p2children !== undefined) {
+      if (node.childrenShuffling)
+        shuffle(p2children)
+      for (const x of p2children) {
+        tryToRender(x)
+        if (Transaction.isCanceled)
+          break
+        if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
+          await Transaction.requestNextFrame()
+        if (Transaction.isCanceled)
+          break
       }
     }
   }
