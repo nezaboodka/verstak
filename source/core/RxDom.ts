@@ -21,7 +21,7 @@ export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
       Rx.setTraceHint(node, node.name)
   }
 
-  render(node: RxNode<E, O>, args: unknown): void {
+  render(node: RxNode<E, O>, args: O): void {
     let result: any
     const children = node.children as RxDomNodeChildren
     children.beginReconciliation(node.revision)
@@ -34,7 +34,7 @@ export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
           return options
       }, node.native!)
     else
-      result = node.render(node.native as E, args as O)
+      result = node.render(node.native as E, args)
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current parent
         value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
@@ -55,7 +55,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   readonly name: string
   readonly factory: RxNodeFactory<E, O>
   readonly inline: boolean
-  args: unknown
+  args: O
   render: Render<E, O>
   superRender: SuperRender<O, E> | undefined
   priority: RxPriority
@@ -75,7 +75,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   resizeObserver?: ResizeObserver
 
   constructor(level: number, name: string, factory: RxNodeFactory<E, O>, inline: boolean,
-    args: unknown, render: Render<E, O>, superRender: SuperRender<O, E> | undefined,
+    args: O, render: Render<E, O>, superRender: SuperRender<O, E> | undefined,
     parent: RxDomNode) {
     // User-defined properties
     this.name = name
@@ -203,10 +203,10 @@ export class RxDom {
       id,                       // id
       { name: id, sequential }, // type
       false,                    // inline
-      null,                     // args
+      undefined as any,         // args
       () => { /* nop */ },      // render
       undefined,                // superRender
-      {} as RxDomNode)         // fake parent (overwritten below)
+      {} as RxDomNode)          // fake parent (overwritten below)
     // Initialize
     const a: any = node
     a['parent'] = node

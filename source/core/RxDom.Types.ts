@@ -17,7 +17,7 @@ export interface RxNodeFactory<E = unknown, O = void> {
   readonly sequential: boolean
   initialize?(node: RxNode<E, O>): void
   mount?(node: RxNode<E, O>): void
-  render?(node: RxNode<E, O>, args: unknown): void
+  render?(node: RxNode<E, O>, args: O): void
   remove?(node: RxNode<E, O>, initiator: RxNode): void
 }
 
@@ -26,7 +26,7 @@ export interface RxNode<E = any, O = any> {
   readonly name: string
   readonly factory: RxNodeFactory<E, O>
   readonly inline: boolean
-  readonly args: unknown
+  readonly args: O
   readonly render: Render<E, O>
   readonly superRender: SuperRender<O, E> | undefined
   priority: RxPriority
