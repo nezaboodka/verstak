@@ -15,10 +15,10 @@ export const enum RxPriority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 export interface RxNodeType<E = unknown, O = void> {
   readonly name: string
   readonly sequential: boolean
-  initialize?(node: RxNode<E, O>): void
+  create?(node: RxNode<E, O>): void
   mount?(node: RxNode<E, O>): void
   render?(node: RxNode<E, O>, args: unknown): void
-  finalize?(node: RxNode<E, O>, initiator: RxNode): void
+  remove?(node: RxNode<E, O>, initiator: RxNode): void
 }
 
 export interface RxNode<E = any, O = any> {

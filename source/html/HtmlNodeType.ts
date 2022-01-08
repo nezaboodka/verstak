@@ -16,8 +16,8 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
     super(name, sequential)
   }
 
-  initialize(node: RxNode<E, any>): void {
-    super.initialize(node)
+  create(node: RxNode<E, any>): void {
+    super.create(node)
     const native = node.native = this.createElement(node)
     native.id = node.id
   }
@@ -58,14 +58,14 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
       blink(node.native, node.revision)
   }
 
-  finalize(node: RxNode<E, any>, initiator: RxNode): void {
+  remove(node: RxNode<E, any>, initiator: RxNode): void {
     const native = node.native
     if (native) {
       node.resizeObserver?.unobserve(native)
       if (node === initiator)
         native.remove()
     }
-    super.finalize(node, initiator)
+    super.remove(node, initiator)
   }
 
   static get blinkingEffect(): string | undefined {

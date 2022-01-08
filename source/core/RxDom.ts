@@ -16,7 +16,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
     readonly sequential: boolean) {
   }
 
-  initialize(node: RxNode<E, O>): void {
+  create(node: RxNode<E, O>): void {
     if (!node.inline)
       Rx.setTraceHint(node, node.id)
   }
@@ -43,7 +43,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
       RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
   }
 
-  finalize(node: RxNode<E, O>, initiator: RxNode): void {
+  remove(node: RxNode<E, O>, initiator: RxNode): void {
     node.native = undefined
   }
 }
@@ -284,7 +284,7 @@ function tryToRefresh(node: RxDomNode): void {
   const type = node.type
   if (node.revision === ~0) {
     node.revision = 0
-    type.initialize?.(node)
+    type.create?.(node)
   }
   if (node.isMountRequired) {
     node.isMountRequired = false
@@ -331,10 +331,10 @@ function invokeRender(node: RxDomNode, args: unknown): void {
 
 function invokeFinalize(node: RxNode, initiator: RxNode): void {
   const type = node.type
-  if (type.finalize)
-    type.finalize(node, initiator)
+  if (type.remove)
+    type.remove(node, initiator)
   else
-    RxDom.basic.finalize(node, initiator) // default finalize
+    RxDom.basic.remove(node, initiator) // default finalize
 }
 
 async function runDisposeLoop(): Promise<void> {
