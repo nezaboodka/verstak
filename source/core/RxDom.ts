@@ -48,9 +48,9 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
   }
 }
 
-// RxNodeImpl
+// RxDomNode
 
-class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
+class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   // User-defined properties
   readonly id: string
   readonly type: RxNodeType<E, O>
@@ -63,20 +63,20 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
   model?: unknown
   // System-managed properties
   readonly level: number
-  readonly parent: RxNodeImpl
+  readonly parent: RxDomNode
   revision: number
   reconciliationRevision: number
-  prevMountSibling?: RxNodeImpl
+  prevMountSibling?: RxDomNode
   isMountRequired: boolean
   children: RxNodeSequenceImpl
-  next?: RxNodeImpl
-  prev?: RxNodeImpl
+  next?: RxDomNode
+  prev?: RxDomNode
   native?: E
   resizeObserver?: ResizeObserver
 
   constructor(level: number, id: string, type: RxNodeType<E, O>, inline: boolean,
     args: unknown, render: Render<E, O>, superRender: SuperRender<O, E> | undefined,
-    parent: RxNodeImpl) {
+    parent: RxDomNode) {
     // User-defined properties
     this.id = id
     this.type = type
@@ -145,7 +145,7 @@ export class RxDom {
       result.superRender = superRender
     }
     else {
-      result = new RxNodeImpl<E, O>(parent.level + 1, id,
+      result = new RxDomNode<E, O>(parent.level + 1, id,
         type ?? RxDom.basic, inline ?? false, args,
         render, superRender, parent)
       children.retainNewlyCreated(result)
@@ -159,8 +159,8 @@ export class RxDom {
     try {
       const children = parent.children
       if (children.isOpened) {
-        let p1: Array<RxNodeImpl> | undefined = undefined
-        let p2: Array<RxNodeImpl> | undefined = undefined
+        let p1: Array<RxDomNode> | undefined = undefined
+        let p2: Array<RxDomNode> | undefined = undefined
         // Finalize non-retained children
         let x = children.first
         while (x !== undefined) {
@@ -170,7 +170,7 @@ export class RxDom {
         // Switch to retained children and render them
         children.switch()
         const sequential = parent.type.sequential
-        let mountSibling: RxNodeImpl | undefined = undefined
+        let mountSibling: RxDomNode | undefined = undefined
         x = children.first
         while (x !== undefined && !Transaction.isCanceled) {
           if (sequential && x.prevMountSibling !== mountSibling) {
@@ -200,7 +200,7 @@ export class RxDom {
   }
 
   static createRootNode<E = any, O = any>(id: string, sequential: boolean, native: E): RxNode<E, O> {
-    const node = new RxNodeImpl<E, O>(
+    const node = new RxDomNode<E, O>(
       0,                        // level
       id,                       // id
       { name: id, sequential }, // type
@@ -208,7 +208,7 @@ export class RxDom {
       null,                     // args
       () => { /* nop */ },      // render
       undefined,                // superRender
-      {} as RxNodeImpl)         // fake parent (overwritten below)
+      {} as RxDomNode)         // fake parent (overwritten below)
     // Initialize
     const a: any = node
     a['parent'] = node
@@ -231,9 +231,9 @@ export class RxDom {
 
   // Internal
 
-  private static async renderIncrementally(node: RxNodeImpl,
-    p1children: Array<RxNodeImpl> | undefined,
-    p2children: Array<RxNodeImpl> | undefined): Promise<void> {
+  private static async renderIncrementally(node: RxDomNode,
+    p1children: Array<RxDomNode> | undefined,
+    p2children: Array<RxDomNode> | undefined): Promise<void> {
     const checkEveryN = 30
     if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
       await Transaction.requestNextFrame()
@@ -267,7 +267,7 @@ export class RxDom {
     }
   }
 
-  private static forEachChildRecursively(node: RxNodeImpl, action: (e: any) => void): void {
+  private static forEachChildRecursively(node: RxDomNode, action: (e: any) => void): void {
     const native = node.native
     native && action(native)
     let x = node.children.first
@@ -280,7 +280,7 @@ export class RxDom {
 
 // Internal
 
-function tryToRefresh(node: RxNodeImpl): void {
+function tryToRefresh(node: RxDomNode): void {
   const type = node.type
   if (node.revision === ~0) {
     node.revision = 0
@@ -296,7 +296,7 @@ function tryToRefresh(node: RxNodeImpl): void {
     nonreactive(node.rerender, node.args) // reactive auto-rendering
 }
 
-function tryToFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
+function tryToFinalize(node: RxDomNode, initiator: RxDomNode): void {
   if (node.revision >= ~0) {
     node.revision = ~node.revision
     invokeFinalize(node, initiator)
@@ -310,13 +310,13 @@ function tryToFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
     // Finalize children
     let x = node.children.first
     while (x !== undefined) {
-      tryToFinalize(x as RxNodeImpl, initiator as RxNodeImpl)
+      tryToFinalize(x, initiator as RxDomNode)
       x = x.next
     }
   }
 }
 
-function invokeRender(node: RxNodeImpl, args: unknown): void {
+function invokeRender(node: RxDomNode, args: unknown): void {
   if (node.revision >= ~0) { // needed for deferred Rx.dispose
     runUnder(node, () => {
       node.revision++
@@ -358,7 +358,7 @@ function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
   return wrappedRunUnder
 }
 
-function runUnder<T>(node: RxNodeImpl, func: (...args: any[]) => T, ...args: any[]): T {
+function runUnder<T>(node: RxDomNode, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gParent
   try {
     gParent = node
@@ -410,13 +410,13 @@ function shuffle<T>(array: Array<T>): Array<T> {
 // RxNodeSequenceImpl
 
 export class RxNodeSequenceImpl implements RxNodeSequence {
-  namespace: Map<string, RxNodeImpl> = new Map<string, RxNodeImpl>()
-  first?: RxNodeImpl = undefined
+  namespace: Map<string, RxDomNode> = new Map<string, RxDomNode>()
+  first?: RxDomNode = undefined
   count: number = 0
-  retainedFirst?: RxNodeImpl = undefined
-  retainedLast?: RxNodeImpl = undefined
+  retainedFirst?: RxDomNode = undefined
+  retainedLast?: RxDomNode = undefined
   retainedCount: number = 0
-  likelyNextRetained?: RxNodeImpl = undefined
+  likelyNextRetained?: RxDomNode = undefined
   revision: number = ~0
 
   get isOpened(): boolean { return this.revision > ~0 }
@@ -444,14 +444,14 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
           namespace.delete(x.id), x = x.next
       }
       else { // it should be faster to recreate namespace with retained nodes only
-        const newNamespace = this.namespace = new Map<string, RxNodeImpl>()
+        const newNamespace = this.namespace = new Map<string, RxDomNode>()
         let x = this.retainedFirst
         while (x !== undefined)
           newNamespace.set(x.id, x), x = x.next
       }
     }
     else // just create new empty namespace
-      this.namespace = new Map<string, RxNodeImpl>()
+      this.namespace = new Map<string, RxDomNode>()
     this.first = this.retainedFirst
     this.count = retained
     this.retainedFirst = this.retainedLast = undefined
@@ -459,7 +459,7 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
     this.likelyNextRetained = this.first
   }
 
-  tryToRetainExisting(id: string): RxNodeImpl | undefined {
+  tryToRetainExisting(id: string): RxDomNode | undefined {
     let result = this.likelyNextRetained
     if (result?.id !== id)
       result = this.namespace.get(id)
@@ -492,7 +492,7 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
     return result
   }
 
-  retainNewlyCreated(node: RxNodeImpl): void {
+  retainNewlyCreated(node: RxDomNode): void {
     node.reconciliationRevision = this.revision
     this.namespace.set(node.id, node)
     const last = this.retainedLast
@@ -533,6 +533,6 @@ Promise.prototype.then = reactronicDomHookedThen
 // Globals
 
 const NOP = (): void => { /* nop */ }
-const SYSTEM = RxDom.createRootNode<any, any>('SYSTEM', false, 'SYSTEM') as RxNodeImpl
-let gParent: RxNodeImpl = SYSTEM
+const SYSTEM = RxDom.createRootNode<any, any>('SYSTEM', false, 'SYSTEM') as RxDomNode
+let gParent: RxDomNode = SYSTEM
 let gDisposeQueue: Array<RxNode> = []
