@@ -120,8 +120,8 @@ export class RxDom {
   public static incrementalRenderingFrameDurationMs = 10
 
   static Root<T>(render: () => T): T {
-    const p = gParent
-    p.children.beginReconciliation(p.revision)
+    const root = gContext
+    root.children.beginReconciliation(root.revision)
     let result: any = render()
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current parent
@@ -135,7 +135,7 @@ export class RxDom {
   static Node<E = unknown, O = void>(id: string, args: any,
     render: Render<E, O>, superRender?: SuperRender<O, E>,
     type?: RxNodeType<E, O>, inline?: boolean): RxNode<E, O> {
-    const parent = gParent
+    const parent = gContext
     const children = parent.children
     let result = children.tryToRetainExisting(id)
     if (result) {
@@ -154,7 +154,7 @@ export class RxDom {
   }
 
   static renderChildrenThenDo(action: () => void): void {
-    const parent = gParent
+    const parent = gContext
     let promised: Promise<void> | undefined = undefined
     try {
       const children = parent.children
@@ -216,11 +216,11 @@ export class RxDom {
   }
 
   static get currentNode(): RxNode {
-    return gParent
+    return gContext
   }
 
   static currentNodeModel<M>(): { model?: M } {
-    return gParent as { model?: M }
+    return gContext as { model?: M }
   }
 
   static forAll<E>(action: (e: E) => void): void {
@@ -346,7 +346,7 @@ async function runDisposalLoop(): Promise<void> {
 }
 
 function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
-  const parent = gParent
+  const parent = gContext
   const wrappedRunUnder = (...args: any[]): T => {
     return runUnder(parent, func, ...args)
   }
@@ -354,13 +354,13 @@ function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
 }
 
 function runUnder<T>(node: RxDomNode, func: (...args: any[]) => T, ...args: any[]): T {
-  const outer = gParent
+  const outer = gContext
   try {
-    gParent = node
+    gContext = node
     return func(...args)
   }
   finally {
-    gParent = outer
+    gContext = outer
   }
 }
 
@@ -528,5 +528,5 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const NOP = (): void => { /* nop */ }
 const SYSTEM = RxDom.createRootNode<any, any>('SYSTEM', false, 'SYSTEM') as RxDomNode
-let gParent: RxDomNode = SYSTEM
+let gContext: RxDomNode = SYSTEM
 let gDisposalQueue: Array<RxNode> = []
