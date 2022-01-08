@@ -223,7 +223,7 @@ export class RxDom {
     return gContext as { model?: M }
   }
 
-  static forAll<E>(action: (e: E) => void): void {
+  static forAllNodesDo<E>(action: (e: E) => void): void {
     RxDom.forEachChildRecursively(SYSTEM, action)
   }
 

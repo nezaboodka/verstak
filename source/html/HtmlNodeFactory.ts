@@ -8,8 +8,6 @@
 import { RxDom, RxNode, BasicNodeFactory } from '../core/api'
 
 export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNodeFactory<E, any> {
-  private static _blinkingEffect: string | undefined = undefined
-
   constructor(
     readonly name: string,
     readonly sequential: boolean = true) {
@@ -69,25 +67,26 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
   }
 
   static get blinkingEffect(): string | undefined {
-    return AbstractHtmlNodeFactory._blinkingEffect
+    return gBlinkingEffect
   }
 
   static set blinkingEffect(value: string | undefined) {
     if (value === undefined) {
-      RxDom.forAll((e: any) => {
+      const effect = gBlinkingEffect
+      RxDom.forAllNodesDo((e: any) => {
         if (e instanceof HTMLElement)
-          e.classList.remove(`${AbstractHtmlNodeFactory.blinkingEffect}-0`, `${AbstractHtmlNodeFactory.blinkingEffect}-1`)
+          e.classList.remove(`${effect}-0`, `${effect}-1`)
       })
     }
-    AbstractHtmlNodeFactory._blinkingEffect = value
+    gBlinkingEffect = value
   }
 
-  protected abstract createElement(m: RxNode<E, any>): E
+  protected abstract createElement(node: RxNode<E, any>): E
 }
 
-function blink(e: Element | undefined, cycle: number): void {
+function blink(e: Element | undefined, revision: number): void {
   if (e !== undefined) {
-    const n1 = cycle % 2
+    const n1 = revision % 2
     const n2 = 1 >> n1
     e.classList.toggle(`${AbstractHtmlNodeFactory.blinkingEffect}-${n1}`, true)
     e.classList.toggle(`${AbstractHtmlNodeFactory.blinkingEffect}-${n2}`, false)
@@ -105,3 +104,5 @@ export class SvgNodeFactory<E extends SVGElement> extends AbstractHtmlNodeFactor
     return document.createElementNS('http://www.w3.org/2000/svg', node.factory.name) as E
   }
 }
+
+let gBlinkingEffect: string | undefined = undefined
