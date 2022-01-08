@@ -28,7 +28,7 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
     super.finalize(node, initiator)
   }
 
-  mount(node: RxNode<E, any>): void {
+  arrange(node: RxNode<E, any>): void {
     const native = node.native
     if (native) {
       let p = node.parent
@@ -36,21 +36,21 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
         p = p.parent
       const nativeParent = p.native
       if (nativeParent instanceof Element) {
-        const mountedAfter = node.mountedAfter
-        if (mountedAfter === undefined) {
+        const after = node.after
+        if (after === undefined) {
           if (nativeParent !== native.parentNode || !native.previousSibling)
             nativeParent.prepend(native)
         }
-        else if (mountedAfter !== node) {
-          if (mountedAfter.parent.native === nativeParent) {
-            const mountedAfterNative = mountedAfter.native
-            if (mountedAfterNative instanceof Element) {
-              if (mountedAfterNative.nextSibling !== native)
-                nativeParent.insertBefore(native, mountedAfterNative.nextSibling)
+        else if (after !== node) {
+          if (after.parent.native === nativeParent) {
+            const nativeAfter = after.native
+            if (nativeAfter instanceof Element) {
+              if (nativeAfter.nextSibling !== native)
+                nativeParent.insertBefore(native, nativeAfter.nextSibling)
             }
           }
         }
-        else // mountedAfter === node
+        else // after === node
           nativeParent.appendChild(native)
       }
     }

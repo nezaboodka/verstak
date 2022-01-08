@@ -14,10 +14,10 @@ export const enum RxPriority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export interface RxNodeFactory<E = unknown, O = void> {
   readonly name: string
-  readonly sequential: boolean
+  readonly arranging: boolean
   initialize?(node: RxNode<E, O>): void
   finalize?(node: RxNode<E, O>, initiator: RxNode): void
-  mount?(node: RxNode<E, O>): void
+  arrange?(node: RxNode<E, O>): void
   render?(node: RxNode<E, O>): void
 }
 
@@ -36,10 +36,10 @@ export interface RxNode<E = any, O = any> {
   readonly level: number
   readonly parent: RxNode
   readonly revision: number
-  readonly mountedAfter?: RxNode
   readonly children: RxNodeChildren
   readonly next?: RxNode
   readonly prev?: RxNode
+  readonly after?: RxNode
   native?: E
   resizeObserver?: ResizeObserver
 }

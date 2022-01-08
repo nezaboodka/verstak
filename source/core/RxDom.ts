@@ -12,11 +12,11 @@ import { RxNodeFactory, Render, RxNode, SuperRender, RxNodeChildren, RxPriority 
 
 export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
   readonly name: string
-  readonly sequential: boolean
+  readonly arranging: boolean
 
-  constructor(name: string, sequential: boolean) {
+  constructor(name: string, arranging: boolean) {
     this.name = name
-    this.sequential = sequential
+    this.arranging = arranging
   }
 
   initialize(node: RxNode<E, O>): void {
@@ -28,7 +28,7 @@ export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
     node.native = undefined
   }
 
-  // mount(node: RxNode<E, O>): void {
+  // arrange(node: RxNode<E, O>): void {
   //   // nothing to do
   // }
 
@@ -73,11 +73,11 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   readonly parent: RxDomNode
   revision: number
   reconciliationRevision: number
-  mountedAfter?: RxDomNode
-  isRemounting: boolean
   children: RxDomNodeChildren
   next?: RxDomNode
   prev?: RxDomNode
+  after?: RxDomNode
+  arranging: boolean
   native?: E
   resizeObserver?: ResizeObserver
 
@@ -99,11 +99,11 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     this.parent = parent
     this.revision = ~0
     this.reconciliationRevision = ~0
-    this.mountedAfter = this
-    this.isRemounting = true
     this.children = new RxDomNodeChildren()
     this.next = undefined
     this.prev = undefined
+    this.after = this
+    this.arranging = true
     this.native = undefined
     this.resizeObserver = undefined
   }
@@ -173,15 +173,15 @@ export class RxDom {
           vanished = vanished.next
         }
         // Render retained children
-        const sequential = parent.factory.sequential
+        const arranging = parent.factory.arranging
         let p1: Array<RxDomNode> | undefined = undefined
         let p2: Array<RxDomNode> | undefined = undefined
-        let mountAfter: RxDomNode | undefined = undefined
+        let after: RxDomNode | undefined = undefined
         let x = children.first
         while (x !== undefined && !Transaction.isCanceled) {
-          if (sequential && x.mountedAfter !== mountAfter) {
-            x.mountedAfter = mountAfter
-            x.isRemounting = true
+          if (arranging && x.after !== after) {
+            x.arranging = true
+            x.after = after
           }
           if (x.priority === RxPriority.SyncP0)
             tryToRender(x)
@@ -190,7 +190,7 @@ export class RxDom {
           else
             p2 = push(p2, x)
           if (x.native)
-            mountAfter = x
+            after = x
           x = x.next
         }
         // Render incremental children (if any)
@@ -204,11 +204,11 @@ export class RxDom {
     }
   }
 
-  static createRootNode<E = any, O = any>(id: string, sequential: boolean, native: E): RxNode<E, O> {
+  static createRootNode<E = any, O = any>(name: string, arranging: boolean, native: E): RxNode<E, O> {
     const node = new RxDomNode<E, O>(
       0,                        // level
-      id,                       // id
-      { name: id, sequential }, // type
+      name,                     // name
+      { name, arranging },      // factory
       false,                    // inline
       undefined,                // triggers
       () => { /* nop */ },      // render
@@ -289,9 +289,9 @@ function tryToRender(node: RxDomNode): void {
     node.revision = 0
     factory.initialize?.(node)
   }
-  if (node.isRemounting) {
-    node.isRemounting = false
-    factory.mount?.(node)
+  if (node.arranging) {
+    node.arranging = false
+    factory.arrange?.(node)
   }
   if (node.inline)
     invokeRenderIfNodeIsAlive(node)
