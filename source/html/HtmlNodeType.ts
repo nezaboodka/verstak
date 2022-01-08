@@ -18,9 +18,8 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
 
   initialize(node: RxNode<E, any>): void {
     super.initialize(node)
-    const native = this.createElement(node)
+    const native = node.native = this.createElement(node)
     native.id = node.id
-    node.native = native
   }
 
   mount(node: RxNode<E, any>): void {
