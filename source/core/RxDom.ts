@@ -109,7 +109,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   rerender(args: unknown): void {
     if (this.revision === 0) // configure only once
       Rx.configureCurrentOperation({ order: this.level })
-    invokeRender(this, args)
+    invokeRenderIfNodeIsAlive(this, args)
   }
 }
 
@@ -177,7 +177,7 @@ export class RxDom {
             x.isMountRequired = true
           }
           if (x.priority === RxPriority.SyncP0)
-            tryToRefresh(x)
+            tryToRender(x)
           else if (x.priority === RxPriority.AsyncP1)
             p1 = push(p1, x)
           else
@@ -240,7 +240,7 @@ export class RxDom {
         if (node.childrenShuffling)
           shuffle(p1children)
         for (const x of p1children) {
-          tryToRefresh(x)
+          tryToRender(x)
           if (Transaction.isCanceled)
             break
           if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
@@ -253,7 +253,7 @@ export class RxDom {
         if (node.childrenShuffling)
           shuffle(p2children)
         for (const x of p2children) {
-          tryToRefresh(x)
+          tryToRender(x)
           if (Transaction.isCanceled)
             break
           if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
@@ -278,7 +278,7 @@ export class RxDom {
 
 // Internal
 
-function tryToRefresh(node: RxDomNode): void {
+function tryToRender(node: RxDomNode): void {
   const type = node.type
   if (node.revision === ~0) {
     node.revision = 0
@@ -289,15 +289,15 @@ function tryToRefresh(node: RxDomNode): void {
     type.mount?.(node)
   }
   if (node.inline)
-    invokeRender(node, node.args)
+    invokeRenderIfNodeIsAlive(node, node.args)
   else
     nonreactive(node.rerender, node.args) // reactive auto-rendering
 }
 
 function tryToRemove(node: RxDomNode, initiator: RxDomNode): void {
   if (node.revision >= ~0) {
-    // Remove node itself
     node.revision = ~node.revision
+    // Remove node itself
     const type = node.type
     if (type.remove)
       type.remove(node, initiator)
@@ -321,7 +321,7 @@ function tryToRemove(node: RxDomNode, initiator: RxDomNode): void {
   }
 }
 
-function invokeRender(node: RxDomNode, args: unknown): void {
+function invokeRenderIfNodeIsAlive(node: RxDomNode, args: unknown): void {
   if (node.revision >= ~0) { // needed for deferred Rx.dispose
     runUnder(node, () => {
       node.revision++
