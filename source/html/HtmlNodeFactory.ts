@@ -5,6 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
+import { Rx } from 'reactronic'
 import { RxDom, RxNode, BasicNodeFactory } from '../core/api'
 
 export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNodeFactory<E, any> {
@@ -15,7 +16,8 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
   initialize(node: RxNode<E, any>): void {
     super.initialize(node)
     const native = node.native = this.createElement(node)
-    native.id = node.name
+    if (Rx.isTraceEnabled)
+      native.id = node.name
   }
 
   finalize(node: RxNode<E, any>, initiator: RxNode): void {

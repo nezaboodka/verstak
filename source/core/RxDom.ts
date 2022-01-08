@@ -20,7 +20,7 @@ export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
   }
 
   initialize(node: RxNode<E, O>): void {
-    if (!node.inline)
+    if (!node.inline && Rx.isTraceEnabled)
       Rx.setTraceHint(node, node.name)
   }
 
