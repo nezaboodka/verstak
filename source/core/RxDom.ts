@@ -6,11 +6,11 @@
 // automatically licensed under the license referred above.
 
 import { reaction, Transaction, Rx, options, Reentrance, nonreactive } from 'reactronic'
-import { RxNodeType, Render, RxNode, SuperRender, RxNodeChildren, RxPriority } from './RxDom.Types'
+import { RxNodeFactory, Render, RxNode, SuperRender, RxNodeChildren, RxPriority } from './RxDom.Types'
 
-// BasicNodeType
+// BasicNodeFactory
 
-export class BasicNodeType<E, O> implements RxNodeType<E, O> {
+export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
   constructor(
     readonly name: string,
     readonly sequential: boolean) {
@@ -18,7 +18,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
 
   initialize(node: RxNode<E, O>): void {
     if (!node.inline)
-      Rx.setTraceHint(node, node.id)
+      Rx.setTraceHint(node, node.name)
   }
 
   render(node: RxNode<E, O>, args: unknown): void {
@@ -52,8 +52,8 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
 
 class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   // User-defined properties
-  readonly id: string
-  readonly type: RxNodeType<E, O>
+  readonly name: string
+  readonly factory: RxNodeFactory<E, O>
   readonly inline: boolean
   args: unknown
   render: Render<E, O>
@@ -74,12 +74,12 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   native?: E
   resizeObserver?: ResizeObserver
 
-  constructor(level: number, id: string, type: RxNodeType<E, O>, inline: boolean,
+  constructor(level: number, name: string, factory: RxNodeFactory<E, O>, inline: boolean,
     args: unknown, render: Render<E, O>, superRender: SuperRender<O, E> | undefined,
     parent: RxDomNode) {
     // User-defined properties
-    this.id = id
-    this.type = type
+    this.name = name
+    this.factory = factory
     this.inline = inline
     this.args = args
     this.render = render
@@ -116,7 +116,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
 // RxDom
 
 export class RxDom {
-  public static readonly basic = new BasicNodeType<any, any>('basic', false)
+  public static readonly basic = new BasicNodeFactory<any, any>('basic', false)
   public static incrementalRenderingFrameDurationMs = 10
 
   static Root<T>(render: () => T): T {
@@ -132,12 +132,12 @@ export class RxDom {
     return result
   }
 
-  static Node<E = unknown, O = void>(id: string, args: any,
+  static Node<E = unknown, O = void>(name: string, args: any,
     render: Render<E, O>, superRender?: SuperRender<O, E>,
-    type?: RxNodeType<E, O>, inline?: boolean): RxNode<E, O> {
+    factory?: RxNodeFactory<E, O>, inline?: boolean): RxNode<E, O> {
     const parent = gContext
     const children = parent.children
-    let result = children.tryToRetainExisting(id)
+    let result = children.tryToRetainExisting(name)
     if (result) {
       if (!argsAreEqual(result.args, args))
         result.args = args
@@ -145,8 +145,8 @@ export class RxDom {
       result.superRender = superRender
     }
     else {
-      result = new RxDomNode<E, O>(parent.level + 1, id,
-        type ?? RxDom.basic, inline ?? false, args,
+      result = new RxDomNode<E, O>(parent.level + 1, name,
+        factory ?? RxDom.basic, inline ?? false, args,
         render, superRender, parent)
       children.retainNewlyCreated(result)
     }
@@ -166,7 +166,7 @@ export class RxDom {
           x = x.next
         }
         // Render retained children
-        const sequential = parent.type.sequential
+        const sequential = parent.factory.sequential
         let p1: Array<RxDomNode> | undefined = undefined
         let p2: Array<RxDomNode> | undefined = undefined
         let mountSibling: RxDomNode | undefined = undefined
@@ -277,14 +277,14 @@ export class RxDom {
 // Internal
 
 function tryToRender(node: RxDomNode): void {
-  const type = node.type
+  const factory = node.factory
   if (node.revision === ~0) {
     node.revision = 0
-    type.initialize?.(node)
+    factory.initialize?.(node)
   }
   if (node.isMountRequired) {
     node.isMountRequired = false
-    type.mount?.(node)
+    factory.mount?.(node)
   }
   if (node.inline)
     invokeRenderIfNodeIsAlive(node, node.args)
@@ -296,16 +296,16 @@ function tryToRemove(node: RxDomNode, initiator: RxDomNode): void {
   if (node.revision >= ~0) {
     node.revision = ~node.revision
     // Remove node itself
-    const type = node.type
-    if (type.remove)
-      type.remove(node, initiator)
+    const factory = node.factory
+    if (factory.remove)
+      factory.remove(node, initiator)
     else
       RxDom.basic.remove(node, initiator) // default remove
     // Enqueue node for Rx.dispose if needed
     if (!node.inline) {
       gDisposalQueue.push(node)
       if (gDisposalQueue.length === 1) {
-        Transaction.run({ standalone: 'disposal', hint: `runDisposalLoop(initiator=${node.id})` }, () => {
+        Transaction.run({ standalone: 'disposal', hint: `runDisposalLoop(initiator=${node.name})` }, () => {
           void runDisposalLoop().then(NOP, error => console.log(error))
         })
       }
@@ -323,9 +323,9 @@ function invokeRenderIfNodeIsAlive(node: RxDomNode, args: unknown): void {
   if (node.revision >= ~0) { // needed for deferred Rx.dispose
     runUnder(node, () => {
       node.revision++
-      const type = node.type
-      if (type.render)
-        type.render(node, args) // type-defined rendering
+      const factory = node.factory
+      if (factory.render)
+        factory.render(node, args) // type-defined rendering
       else
         RxDom.basic.render(node, args) // default rendering
     })
@@ -433,13 +433,13 @@ export class RxDomNodeChildren implements RxNodeChildren {
       if (retained > count) { // it should be faster to delete non-retained nodes from namespace
         let x = this.first
         while (x !== undefined)
-          namespace.delete(x.id), x = x.next
+          namespace.delete(x.name), x = x.next
       }
       else { // it should be faster to recreate namespace with retained nodes only
         const newNamespace = this.namespace = new Map<string, RxDomNode>()
         let x = this.retainedFirst
         while (x !== undefined)
-          newNamespace.set(x.id, x), x = x.next
+          newNamespace.set(x.name, x), x = x.next
       }
     }
     else // just create new empty namespace
@@ -453,13 +453,13 @@ export class RxDomNodeChildren implements RxNodeChildren {
     return missingFirst
   }
 
-  tryToRetainExisting(id: string): RxDomNode | undefined {
+  tryToRetainExisting(name: string): RxDomNode | undefined {
     let result = this.likelyNextRetained
-    if (result?.id !== id)
-      result = this.namespace.get(id)
+    if (result?.name !== name)
+      result = this.namespace.get(name)
     if (result && result.revision >= ~0) {
       if (result.reconciliationRevision === this.revision)
-        throw new Error(`duplicate item id: ${id}`)
+        throw new Error(`duplicate item id: ${name}`)
       result.reconciliationRevision = this.revision
       this.likelyNextRetained = result.next
       // Exclude from main sequence
@@ -488,7 +488,7 @@ export class RxDomNodeChildren implements RxNodeChildren {
 
   retainNewlyCreated(node: RxDomNode): void {
     node.reconciliationRevision = this.revision
-    this.namespace.set(node.id, node)
+    this.namespace.set(node.name, node)
     const last = this.retainedLast
     if (last) {
       node.prev = last

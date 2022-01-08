@@ -8,7 +8,7 @@
 export * from './core/api'
 
 export * from './html/sensors/Sensor'
-export * from './html/HtmlNodeType'
+export * from './html/HtmlNodeFactory'
 export * from './html/HtmlElements'
 export * from './html/sensors/BasePointerSensor'
 export * from './html/sensors/FocusSensor'

@@ -5,9 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxDom, RxNode, BasicNodeType } from '../core/api'
+import { RxDom, RxNode, BasicNodeFactory } from '../core/api'
 
-export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeType<E, any> {
+export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNodeFactory<E, any> {
   private static _blinkingEffect: string | undefined = undefined
 
   constructor(
@@ -19,7 +19,7 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
   initialize(node: RxNode<E, any>): void {
     super.initialize(node)
     const native = node.native = this.createElement(node)
-    native.id = node.id
+    native.id = node.name
   }
 
   mount(node: RxNode<E, any>): void {
@@ -54,7 +54,7 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
 
   render(node: RxNode<E, any>, args: unknown): void {
     super.render(node, args)
-    if (AbstractHtmlNodeType.blinkingEffect)
+    if (AbstractHtmlNodeFactory.blinkingEffect)
       blink(node.native, node.revision)
   }
 
@@ -69,17 +69,17 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
   }
 
   static get blinkingEffect(): string | undefined {
-    return AbstractHtmlNodeType._blinkingEffect
+    return AbstractHtmlNodeFactory._blinkingEffect
   }
 
   static set blinkingEffect(value: string | undefined) {
     if (value === undefined) {
       RxDom.forAll((e: any) => {
         if (e instanceof HTMLElement)
-          e.classList.remove(`${AbstractHtmlNodeType.blinkingEffect}-0`, `${AbstractHtmlNodeType.blinkingEffect}-1`)
+          e.classList.remove(`${AbstractHtmlNodeFactory.blinkingEffect}-0`, `${AbstractHtmlNodeFactory.blinkingEffect}-1`)
       })
     }
-    AbstractHtmlNodeType._blinkingEffect = value
+    AbstractHtmlNodeFactory._blinkingEffect = value
   }
 
   protected abstract createElement(m: RxNode<E, any>): E
@@ -89,19 +89,19 @@ function blink(e: Element | undefined, cycle: number): void {
   if (e !== undefined) {
     const n1 = cycle % 2
     const n2 = 1 >> n1
-    e.classList.toggle(`${AbstractHtmlNodeType.blinkingEffect}-${n1}`, true)
-    e.classList.toggle(`${AbstractHtmlNodeType.blinkingEffect}-${n2}`, false)
+    e.classList.toggle(`${AbstractHtmlNodeFactory.blinkingEffect}-${n1}`, true)
+    e.classList.toggle(`${AbstractHtmlNodeFactory.blinkingEffect}-${n2}`, false)
   }
 }
 
-export class HtmlNodeType<E extends HTMLElement> extends AbstractHtmlNodeType<E> {
+export class HtmlNodeFactory<E extends HTMLElement> extends AbstractHtmlNodeFactory<E> {
   protected createElement(node: RxNode<E, any>): E {
-    return document.createElement(node.type.name) as E
+    return document.createElement(node.factory.name) as E
   }
 }
 
-export class SvgNodeType<E extends SVGElement> extends AbstractHtmlNodeType<E> {
+export class SvgNodeFactory<E extends SVGElement> extends AbstractHtmlNodeFactory<E> {
   protected createElement(node: RxNode<E, any>): E {
-    return document.createElementNS('http://www.w3.org/2000/svg', node.type.name) as E
+    return document.createElementNS('http://www.w3.org/2000/svg', node.factory.name) as E
   }
 }

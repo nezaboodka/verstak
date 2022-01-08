@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from './HtmlNodeType'
+export * from './HtmlNodeFactory'
 export * from './HtmlElements'
 export * from './sensors/Sensor'
 export * from './sensors/HoverSensor'
