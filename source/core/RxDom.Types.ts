@@ -16,9 +16,9 @@ export interface RxNodeFactory<E = unknown, O = void> {
   readonly name: string
   readonly sequential: boolean
   initialize?(node: RxNode<E, O>): void
+  finalize?(node: RxNode<E, O>, initiator: RxNode): void
   mount?(node: RxNode<E, O>): void
   render?(node: RxNode<E, O>): void
-  finalize?(node: RxNode<E, O>, initiator: RxNode): void
 }
 
 export interface RxNode<E = any, O = any> {

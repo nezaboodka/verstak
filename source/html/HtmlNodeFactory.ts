@@ -18,6 +18,16 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
     native.id = node.name
   }
 
+  finalize(node: RxNode<E, any>, initiator: RxNode): void {
+    const native = node.native
+    if (native) {
+      node.resizeObserver?.unobserve(native)
+      if (node === initiator)
+        native.remove()
+    }
+    super.finalize(node, initiator)
+  }
+
   mount(node: RxNode<E, any>): void {
     const native = node.native
     if (native) {
@@ -52,16 +62,6 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
       blink(node.native, node.revision)
   }
 
-  finalize(node: RxNode<E, any>, initiator: RxNode): void {
-    const native = node.native
-    if (native) {
-      node.resizeObserver?.unobserve(native)
-      if (node === initiator)
-        native.remove()
-    }
-    super.finalize(node, initiator)
-  }
-
   static get blinkingEffect(): string | undefined {
     return gBlinkingEffect
   }
@@ -80,16 +80,6 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
   protected abstract createElement(node: RxNode<E, any>): E
 }
 
-function blink(e: Element | undefined, revision: number): void {
-  if (e !== undefined) {
-    const n1 = revision % 2
-    const n2 = 1 >> n1
-    const effect = gBlinkingEffect
-    e.classList.toggle(`${effect}-${n1}`, true)
-    e.classList.toggle(`${effect}-${n2}`, false)
-  }
-}
-
 export class HtmlNodeFactory<E extends HTMLElement> extends AbstractHtmlNodeFactory<E> {
   protected createElement(node: RxNode<E, any>): E {
     return document.createElement(node.factory.name) as E
@@ -99,6 +89,16 @@ export class HtmlNodeFactory<E extends HTMLElement> extends AbstractHtmlNodeFact
 export class SvgNodeFactory<E extends SVGElement> extends AbstractHtmlNodeFactory<E> {
   protected createElement(node: RxNode<E, any>): E {
     return document.createElementNS('http://www.w3.org/2000/svg', node.factory.name) as E
+  }
+}
+
+function blink(e: Element | undefined, revision: number): void {
+  if (e !== undefined) {
+    const n1 = revision % 2
+    const n2 = 1 >> n1
+    const effect = gBlinkingEffect
+    e.classList.toggle(`${effect}-${n1}`, true)
+    e.classList.toggle(`${effect}-${n2}`, false)
   }
 }
 

@@ -24,6 +24,14 @@ export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
       Rx.setTraceHint(node, node.name)
   }
 
+  finalize(node: RxNode<E, O>, initiator: RxNode): void {
+    node.native = undefined
+  }
+
+  // mount(node: RxNode<E, O>): void {
+  //   // nothing to do
+  // }
+
   render(node: RxNode<E, O>): void {
     let result: any
     const children = node.children as RxDomNodeChildren
@@ -44,10 +52,6 @@ export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
         error => { console.log(error); RxDom.renderChildrenThenDo(NOP) }) // do not render children in case of parent error
     else
       RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
-  }
-
-  finalize(node: RxNode<E, O>, initiator: RxNode): void {
-    node.native = undefined
   }
 }
 
