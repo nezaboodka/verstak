@@ -12,7 +12,7 @@ export function HtmlBody(id: string, args: any, render: Render<HTMLElement>): Rx
   return RxDom.Node(id, args, render, undefined, {
     name: id,
     sequential: true,
-    create(node: RxNode<HTMLElement, any>, sibling?: RxNode): void {
+    initialize(node: RxNode<HTMLElement, any>, sibling?: RxNode): void {
       const native = global.document.body
       native.id = node.id
       node.native = native

@@ -16,7 +16,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
     readonly sequential: boolean) {
   }
 
-  create(node: RxNode<E, O>): void {
+  initialize(node: RxNode<E, O>): void {
     if (!node.inline)
       Rx.setTraceHint(node, node.id)
   }
@@ -284,7 +284,7 @@ function tryToRefresh(node: RxDomNode): void {
   const type = node.type
   if (node.revision === ~0) {
     node.revision = 0
-    type.create?.(node)
+    type.initialize?.(node)
   }
   if (node.isMountRequired) {
     node.isMountRequired = false
