@@ -5,12 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Rx } from 'reactronic'
 import { RxDom, RxNode, BasicNodeType } from '../core/api'
 
 export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeType<E, any> {
-  static isDebugAttributeEnabled: boolean = false
-  static gNativeParent: RxNode = RxDom.createRootNode('html > body', true, global.document.body)
   private static _blinkingEffect: string | undefined = undefined
 
   constructor(
@@ -57,18 +54,9 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
   }
 
   render(node: RxNode<E, any>, args: unknown): void {
-    const native = node.native!
-    const outer = AbstractHtmlNodeType.gNativeParent
-    try {
-      AbstractHtmlNodeType.gNativeParent = node
-      super.render(node, args)
-      AbstractHtmlNodeType.blinkingEffect && blink(native, node.revision)
-      if (AbstractHtmlNodeType.isDebugAttributeEnabled)
-        native.setAttribute('rdbg', `${node.revision}:    ${Rx.why()}`)
-    }
-    finally {
-      AbstractHtmlNodeType.gNativeParent = outer
-    }
+    super.render(node, args)
+    if (AbstractHtmlNodeType.blinkingEffect)
+      blink(node.native, node.revision)
   }
 
   finalize(node: RxNode<E, any>, initiator: RxNode): void {
@@ -98,11 +86,13 @@ export abstract class AbstractHtmlNodeType<E extends Element> extends BasicNodeT
   protected abstract createElement(m: RxNode<E, any>): E
 }
 
-function blink(e: Element, cycle: number): void {
-  const n1 = cycle % 2
-  const n2 = 1 >> n1
-  e.classList.toggle(`${AbstractHtmlNodeType.blinkingEffect}-${n1}`, true)
-  e.classList.toggle(`${AbstractHtmlNodeType.blinkingEffect}-${n2}`, false)
+function blink(e: Element | undefined, cycle: number): void {
+  if (e !== undefined) {
+    const n1 = cycle % 2
+    const n2 = 1 >> n1
+    e.classList.toggle(`${AbstractHtmlNodeType.blinkingEffect}-${n1}`, true)
+    e.classList.toggle(`${AbstractHtmlNodeType.blinkingEffect}-${n2}`, false)
+  }
 }
 
 export class HtmlNodeType<E extends HTMLElement> extends AbstractHtmlNodeType<E> {
