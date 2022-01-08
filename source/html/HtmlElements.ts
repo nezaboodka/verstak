@@ -10,8 +10,7 @@ import { HtmlNodeFactory, SvgNodeFactory } from './HtmlNodeFactory'
 
 export function HtmlBody(name: string, args: any, render: Render<HTMLElement>): RxNode<HTMLElement> {
   return RxDom.Node(name, args, render, undefined, {
-    name,
-    sequential: true,
+    name, sequential: true,
     initialize(node: RxNode<HTMLElement, any>, sibling?: RxNode): void {
       const native = global.document.body
       native.id = node.name
