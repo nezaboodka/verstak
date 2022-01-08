@@ -21,20 +21,20 @@ export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
       Rx.setTraceHint(node, node.name)
   }
 
-  render(node: RxNode<E, O>, args: O): void {
+  render(node: RxNode<E, O>): void {
     let result: any
     const children = node.children as RxDomNodeChildren
     children.beginReconciliation(node.revision)
     if (node.superRender)
       result = node.superRender(options => {
-        const res = node.render(node.native as E, options)
+        const res = node.render(node.native!, options)
         if (res instanceof Promise)
-          return res.then() // causes wrapping of then/catch to execute within current parent
+          return res.then(NOP, error => console.log(error)) // causes wrapping of then/catch to execute within current parent
         else
           return options
       }, node.native!)
     else
-      result = node.render(node.native as E, args)
+      result = node.render(node.native!, undefined as any as O)
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current parent
         value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
@@ -55,7 +55,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   readonly name: string
   readonly factory: RxNodeFactory<E, O>
   readonly inline: boolean
-  args: O
+  triggers: unknown
   render: Render<E, O>
   superRender: SuperRender<O, E> | undefined
   priority: RxPriority
@@ -75,13 +75,13 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   resizeObserver?: ResizeObserver
 
   constructor(level: number, name: string, factory: RxNodeFactory<E, O>, inline: boolean,
-    args: O, render: Render<E, O>, superRender: SuperRender<O, E> | undefined,
+    triggers: unknown, render: Render<E, O>, superRender: SuperRender<O, E> | undefined,
     parent: RxDomNode) {
     // User-defined properties
     this.name = name
     this.factory = factory
     this.inline = inline
-    this.args = args
+    this.triggers = triggers
     this.render = render
     this.superRender = superRender
     this.priority = RxPriority.SyncP0
@@ -106,10 +106,10 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     reentrance: Reentrance.CancelPrevious,
     sensitiveArgs: true,
     noSideEffects: true })
-  rerender(args: unknown): void {
+  rerender(_triggers: unknown): void { // triggers are used to enforce rendering of reactive node by parent
     if (this.revision === 0) // configure only once
       Rx.configureCurrentOperation({ order: this.level })
-    invokeRenderIfNodeIsAlive(this, args)
+    invokeRenderIfNodeIsAlive(this)
   }
 }
 
@@ -132,21 +132,21 @@ export class RxDom {
     return result
   }
 
-  static Node<E = unknown, O = void>(name: string, args: any,
+  static Node<E = unknown, O = void>(name: string, triggers: any,
     render: Render<E, O>, superRender?: SuperRender<O, E>,
     factory?: RxNodeFactory<E, O>, inline?: boolean): RxNode<E, O> {
     const parent = gContext
     const children = parent.children
     let result = children.tryToRetainExisting(name)
     if (result) {
-      if (!argsAreEqual(result.args, args))
-        result.args = args
+      if (result.inline || !triggersAreEqual(result.triggers, triggers))
+        result.triggers = triggers
       result.render = render
       result.superRender = superRender
     }
     else {
       result = new RxDomNode<E, O>(parent.level + 1, name,
-        factory ?? RxDom.basic, inline ?? false, args,
+        factory ?? RxDom.basic, inline ?? false, triggers,
         render, superRender, parent)
       children.retainNewlyCreated(result)
     }
@@ -203,7 +203,7 @@ export class RxDom {
       id,                       // id
       { name: id, sequential }, // type
       false,                    // inline
-      undefined as any,         // args
+      undefined,                // triggers
       () => { /* nop */ },      // render
       undefined,                // superRender
       {} as RxDomNode)          // fake parent (overwritten below)
@@ -287,9 +287,9 @@ function tryToRender(node: RxDomNode): void {
     factory.mount?.(node)
   }
   if (node.inline)
-    invokeRenderIfNodeIsAlive(node, node.args)
+    invokeRenderIfNodeIsAlive(node)
   else
-    nonreactive(node.rerender, node.args) // reactive auto-rendering
+    nonreactive(node.rerender, node.triggers) // reactive auto-rendering
 }
 
 function tryToRemove(node: RxDomNode, initiator: RxDomNode): void {
@@ -319,15 +319,15 @@ function tryToRemove(node: RxDomNode, initiator: RxDomNode): void {
   }
 }
 
-function invokeRenderIfNodeIsAlive(node: RxDomNode, args: unknown): void {
+function invokeRenderIfNodeIsAlive(node: RxDomNode): void {
   if (node.revision >= ~0) { // needed for deferred Rx.dispose
     runUnder(node, () => {
       node.revision++
       const factory = node.factory
       if (factory.render)
-        factory.render(node, args) // factory-defined rendering
+        factory.render(node) // factory-defined rendering
       else
-        RxDom.basic.render(node, args) // default rendering
+        RxDom.basic.render(node) // default rendering
     })
   }
 }
@@ -364,7 +364,7 @@ function runUnder<T>(node: RxDomNode, func: (...args: any[]) => T, ...args: any[
   }
 }
 
-function argsAreEqual(a1: any, a2: any): boolean {
+function triggersAreEqual(a1: any, a2: any): boolean {
   let result = a1 === a2
   if (!result) {
     if (Array.isArray(a1)) {

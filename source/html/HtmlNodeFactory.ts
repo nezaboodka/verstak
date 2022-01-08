@@ -52,8 +52,8 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
     }
   }
 
-  render(node: RxNode<E, any>, args: unknown): void {
-    super.render(node, args)
+  render(node: RxNode<E, any>): void {
+    super.render(node)
     if (AbstractHtmlNodeFactory.blinkingEffect)
       blink(node.native, node.revision)
   }
