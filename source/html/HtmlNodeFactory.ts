@@ -21,12 +21,10 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
   mount(node: RxNode<E, any>): void {
     const native = node.native
     if (native) {
-      // TODO: Find better solution
       let p = node.parent
-      while (!p.native)
+      while (!p.native) // are there better ideas how to determine native parent?
         p = p.parent
       const nativeParent = p.native
-      // --------------------------
       if (nativeParent instanceof Element) {
         const mountedAfter = node.mountedAfter
         if (mountedAfter === undefined) {
