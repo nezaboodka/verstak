@@ -48,7 +48,7 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
 
   render(node: RxNode<E, any>): void {
     super.render(node)
-    if (AbstractHtmlNodeFactory.blinkingEffect)
+    if (gBlinkingEffect)
       blink(node.native, node.revision)
   }
 
@@ -84,8 +84,9 @@ function blink(e: Element | undefined, revision: number): void {
   if (e !== undefined) {
     const n1 = revision % 2
     const n2 = 1 >> n1
-    e.classList.toggle(`${AbstractHtmlNodeFactory.blinkingEffect}-${n1}`, true)
-    e.classList.toggle(`${AbstractHtmlNodeFactory.blinkingEffect}-${n2}`, false)
+    const effect = gBlinkingEffect
+    e.classList.toggle(`${effect}-${n1}`, true)
+    e.classList.toggle(`${effect}-${n2}`, false)
   }
 }
 
