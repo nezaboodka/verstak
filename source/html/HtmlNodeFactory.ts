@@ -8,9 +8,7 @@
 import { RxDom, RxNode, BasicNodeFactory } from '../core/api'
 
 export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNodeFactory<E, any> {
-  constructor(
-    readonly name: string,
-    readonly sequential: boolean = true) {
+  constructor(name: string, sequential: boolean = true) {
     super(name, sequential)
   }
 

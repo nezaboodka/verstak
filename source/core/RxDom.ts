@@ -11,9 +11,12 @@ import { RxNodeFactory, Render, RxNode, SuperRender, RxNodeChildren, RxPriority 
 // BasicNodeFactory
 
 export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
-  constructor(
-    readonly name: string,
-    readonly sequential: boolean) {
+  readonly name: string
+  readonly sequential: boolean
+
+  constructor(name: string, sequential: boolean) {
+    this.name = name
+    this.sequential = sequential
   }
 
   initialize(node: RxNode<E, O>): void {
