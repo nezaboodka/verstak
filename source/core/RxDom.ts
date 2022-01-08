@@ -307,10 +307,10 @@ function tryToFinalize(node: RxDomNode, initiator: RxDomNode): void {
       RxDom.basic.remove(node, initiator) // default finalize
     // Enqueue node for Rx.dispose if needed
     if (!node.inline) {
-      gDisposeQueue.push(node)
-      if (gDisposeQueue.length === 1) {
-        Transaction.run({ standalone: 'disposal', hint: `runDisposeLoop(initiator=${node.id})` }, () => {
-          void runDisposeLoop().then(NOP, error => console.log(error))
+      gDisposalQueue.push(node)
+      if (gDisposalQueue.length === 1) {
+        Transaction.run({ standalone: 'disposal', hint: `runDisposalLoop(initiator=${node.id})` }, () => {
+          void runDisposalLoop().then(NOP, error => console.log(error))
         })
       }
     }
@@ -336,9 +336,9 @@ function invokeRender(node: RxDomNode, args: unknown): void {
   }
 }
 
-async function runDisposeLoop(): Promise<void> {
+async function runDisposalLoop(): Promise<void> {
   await Transaction.requestNextFrame()
-  const queue = gDisposeQueue
+  const queue = gDisposalQueue
   let i = 0
   while (i < queue.length) {
     if (Transaction.isFrameOver(500, 5))
@@ -346,7 +346,7 @@ async function runDisposeLoop(): Promise<void> {
     Rx.dispose(queue[i])
     i++
   }
-  gDisposeQueue = [] // reset loop
+  gDisposalQueue = [] // reset loop
 }
 
 function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
@@ -534,4 +534,4 @@ Promise.prototype.then = reactronicDomHookedThen
 const NOP = (): void => { /* nop */ }
 const SYSTEM = RxDom.createRootNode<any, any>('SYSTEM', false, 'SYSTEM') as RxDomNode
 let gParent: RxDomNode = SYSTEM
-let gDisposeQueue: Array<RxNode> = []
+let gDisposalQueue: Array<RxNode> = []
