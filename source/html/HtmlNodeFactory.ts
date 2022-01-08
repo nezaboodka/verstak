@@ -46,7 +46,7 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
             }
           }
         }
-        else
+        else // prevMountSibling === node
           nativeParent.appendChild(native)
       }
     }
