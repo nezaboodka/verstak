@@ -46,7 +46,7 @@ export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
       RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
   }
 
-  remove(node: RxNode<E, O>, initiator: RxNode): void {
+  finalize(node: RxNode<E, O>, initiator: RxNode): void {
     node.native = undefined
   }
 }
@@ -162,18 +162,18 @@ export class RxDom {
     try {
       const children = parent.children
       if (children.isReconciling) {
-        // Remove missing children
-        let x = children.endReconciliation()
-        while (x !== undefined) {
-          tryToRemove(x, x)
-          x = x.next
+        // Unmount vanished children
+        let vanished = children.endReconciliation()
+        while (vanished !== undefined) {
+          tryToFinalize(vanished, vanished)
+          vanished = vanished.next
         }
         // Render retained children
         const sequential = parent.factory.sequential
         let p1: Array<RxDomNode> | undefined = undefined
         let p2: Array<RxDomNode> | undefined = undefined
         let mountAfter: RxDomNode | undefined = undefined
-        x = children.first
+        let x = children.first
         while (x !== undefined && !Transaction.isCanceled) {
           if (sequential && x.mountedAfter !== mountAfter) {
             x.mountedAfter = mountAfter
@@ -295,15 +295,15 @@ function tryToRender(node: RxDomNode): void {
     nonreactive(node.rerender, node.triggers) // reactive auto-rendering
 }
 
-function tryToRemove(node: RxDomNode, initiator: RxDomNode): void {
+function tryToFinalize(node: RxDomNode, initiator: RxDomNode): void {
   if (node.revision >= ~0) {
     node.revision = ~node.revision
     // Remove node itself
     const factory = node.factory
-    if (factory.remove)
-      factory.remove(node, initiator)
+    if (factory.finalize)
+      factory.finalize(node, initiator)
     else
-      RxDom.basic.remove(node, initiator) // default remove
+      RxDom.basic.finalize(node, initiator) // default remove
     // Enqueue node for Rx.dispose if needed
     if (!node.inline) {
       gDisposalQueue.push(node)
@@ -316,7 +316,7 @@ function tryToRemove(node: RxDomNode, initiator: RxDomNode): void {
     // Remove/enqueue children if any
     let x = node.children.first
     while (x !== undefined) {
-      tryToRemove(x, initiator)
+      tryToFinalize(x, initiator)
       x = x.next
     }
   }
@@ -447,13 +447,13 @@ export class RxDomNodeChildren implements RxNodeChildren {
     }
     else // just create new empty namespace
       this.namespace = new Map<string, RxDomNode>()
-    const missingFirst = this.first
+    const vanishedFirst = this.first
     this.first = this.retainedFirst
     this.count = retained
     this.retainedFirst = this.retainedLast = undefined
     this.retainedCount = 0
     this.likelyNextRetained = this.first
-    return missingFirst
+    return vanishedFirst
   }
 
   tryToRetainExisting(name: string): RxDomNode | undefined {

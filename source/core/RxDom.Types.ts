@@ -18,7 +18,7 @@ export interface RxNodeFactory<E = unknown, O = void> {
   initialize?(node: RxNode<E, O>): void
   mount?(node: RxNode<E, O>): void
   render?(node: RxNode<E, O>): void
-  remove?(node: RxNode<E, O>, initiator: RxNode): void
+  finalize?(node: RxNode<E, O>, initiator: RxNode): void
 }
 
 export interface RxNode<E = any, O = any> {

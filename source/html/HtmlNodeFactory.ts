@@ -52,14 +52,14 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
       blink(node.native, node.revision)
   }
 
-  remove(node: RxNode<E, any>, initiator: RxNode): void {
+  finalize(node: RxNode<E, any>, initiator: RxNode): void {
     const native = node.native
     if (native) {
       node.resizeObserver?.unobserve(native)
       if (node === initiator)
         native.remove()
     }
-    super.remove(node, initiator)
+    super.finalize(node, initiator)
   }
 
   static get blinkingEffect(): string | undefined {
