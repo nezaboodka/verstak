@@ -37,14 +37,14 @@ export interface RxNode<E = any, O = any> {
   readonly parent: RxNode
   readonly revision: number
   readonly prevMountSibling?: RxNode
-  readonly children: RxNodeSequence
+  readonly children: RxNodeChildren
   readonly next?: RxNode
   readonly prev?: RxNode
   native?: E
   resizeObserver?: ResizeObserver
 }
 
-export interface RxNodeSequence {
+export interface RxNodeChildren {
   readonly first?: RxNode
   readonly count: number
 }

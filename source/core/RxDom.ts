@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, Transaction, Rx, options, Reentrance, nonreactive } from 'reactronic'
-import { RxNodeType, Render, RxNode, SuperRender, RxNodeSequence, RxPriority } from './RxDom.Types'
+import { RxNodeType, Render, RxNode, SuperRender, RxNodeChildren, RxPriority } from './RxDom.Types'
 
 // BasicNodeType
 
@@ -23,8 +23,8 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
 
   render(node: RxNode<E, O>, args: unknown): void {
     let result: any
-    const children = node.children as RxNodeSequenceImpl
-    children.open(node.revision)
+    const children = node.children as RxDomNodeChildren
+    children.enterReconciliation(node.revision)
     if (node.superRender)
       result = node.superRender(options => {
         const res = node.render(node.native as E, options)
@@ -68,7 +68,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   reconciliationRevision: number
   prevMountSibling?: RxDomNode
   isMountRequired: boolean
-  children: RxNodeSequenceImpl
+  children: RxDomNodeChildren
   next?: RxDomNode
   prev?: RxDomNode
   native?: E
@@ -94,7 +94,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     this.reconciliationRevision = ~0
     this.prevMountSibling = this
     this.isMountRequired = true
-    this.children = new RxNodeSequenceImpl()
+    this.children = new RxDomNodeChildren()
     this.next = undefined
     this.prev = undefined
     this.native = undefined
@@ -121,7 +121,7 @@ export class RxDom {
 
   static Root<T>(render: () => T): T {
     const p = gParent
-    p.children.open(p.revision)
+    p.children.enterReconciliation(p.revision)
     let result: any = render()
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current parent
@@ -158,13 +158,13 @@ export class RxDom {
     let promised: Promise<void> | undefined = undefined
     try {
       const children = parent.children
-      if (children.isOpened) {
+      if (children.isReconciling) {
         let p1: Array<RxDomNode> | undefined = undefined
         let p2: Array<RxDomNode> | undefined = undefined
-        // Finalize non-retained children
+        // Remove disappeared children
         let x = children.first
         while (x !== undefined) {
-          tryToFinalize(x, x)
+          tryToRemove(x, x)
           x = x.next
         }
         // Switch to retained children and render them
@@ -187,7 +187,7 @@ export class RxDom {
             mountSibling = x
           x = x.next
         }
-        children.close()
+        children.leaveReconciliation()
         // Asynchronous incremental rendering (if any)
         if (!Transaction.isCanceled && p1 !== undefined || p2 !== undefined)
           promised = RxDom.renderIncrementally(parent, p1, p2).then(action, action)
@@ -296,15 +296,15 @@ function tryToRefresh(node: RxDomNode): void {
     nonreactive(node.rerender, node.args) // reactive auto-rendering
 }
 
-function tryToFinalize(node: RxDomNode, initiator: RxDomNode): void {
+function tryToRemove(node: RxDomNode, initiator: RxDomNode): void {
   if (node.revision >= ~0) {
-    // Finalize node itself
+    // Remove node itself
     node.revision = ~node.revision
     const type = node.type
     if (type.remove)
       type.remove(node, initiator)
     else
-      RxDom.basic.remove(node, initiator) // default finalize
+      RxDom.basic.remove(node, initiator) // default remove
     // Enqueue node for Rx.dispose if needed
     if (!node.inline) {
       gDisposalQueue.push(node)
@@ -314,10 +314,10 @@ function tryToFinalize(node: RxDomNode, initiator: RxDomNode): void {
         })
       }
     }
-    // Finalize children if any
+    // Remove/enqueue children if any
     let x = node.children.first
     while (x !== undefined) {
-      tryToFinalize(x, initiator as RxDomNode)
+      tryToRemove(x, initiator)
       x = x.next
     }
   }
@@ -406,9 +406,9 @@ function shuffle<T>(array: Array<T>): Array<T> {
   return array
 }
 
-// RxNodeSequenceImpl
+// RxDomNodeChildren
 
-export class RxNodeSequenceImpl implements RxNodeSequence {
+export class RxDomNodeChildren implements RxNodeChildren {
   namespace: Map<string, RxDomNode> = new Map<string, RxDomNode>()
   first?: RxDomNode = undefined
   count: number = 0
@@ -418,21 +418,21 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
   likelyNextRetained?: RxDomNode = undefined
   revision: number = ~0
 
-  get isOpened(): boolean { return this.revision > ~0 }
+  get isReconciling(): boolean { return this.revision > ~0 }
 
-  open(revision: number): void {
-    if (this.isOpened)
+  enterReconciliation(revision: number): void {
+    if (this.isReconciling)
       throw new Error('sequence reconciler is opened already')
     this.revision = revision
   }
 
-  close(): void {
-    if (!this.isOpened)
+  leaveReconciliation(): void {
+    if (!this.isReconciling)
       throw new Error('sequence reconciler is closed already')
     this.revision = ~0
   }
 
-  switch(): void {
+  switch(): RxDomNode | undefined {
     const namespace = this.namespace
     const count = this.count
     const retained = this.retainedCount
@@ -451,11 +451,13 @@ export class RxNodeSequenceImpl implements RxNodeSequence {
     }
     else // just create new empty namespace
       this.namespace = new Map<string, RxDomNode>()
+    const removed = this.first
     this.first = this.retainedFirst
     this.count = retained
     this.retainedFirst = this.retainedLast = undefined
     this.retainedCount = 0
     this.likelyNextRetained = this.first
+    return removed
   }
 
   tryToRetainExisting(id: string): RxDomNode | undefined {
