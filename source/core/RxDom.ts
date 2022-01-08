@@ -325,7 +325,7 @@ function invokeRenderIfNodeIsAlive(node: RxDomNode, args: unknown): void {
       node.revision++
       const factory = node.factory
       if (factory.render)
-        factory.render(node, args) // type-defined rendering
+        factory.render(node, args) // factory-defined rendering
       else
         RxDom.basic.render(node, args) // default rendering
     })
