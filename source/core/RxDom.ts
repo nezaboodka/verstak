@@ -62,15 +62,15 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   render: Render<E, O>
   superRender: SuperRender<O, E> | undefined
   priority: RxPriority
-  childrenShuffling: boolean
+  shuffledRendering: boolean
   model?: unknown
   // System-managed properties
   readonly level: number
   readonly parent: RxDomNode
   revision: number
   reconciliationRevision: number
-  prevMountSibling?: RxDomNode
-  isMountRequired: boolean
+  mountedAfter?: RxDomNode
+  isRemounting: boolean
   children: RxDomNodeChildren
   next?: RxDomNode
   prev?: RxDomNode
@@ -88,15 +88,15 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     this.render = render
     this.superRender = superRender
     this.priority = RxPriority.SyncP0
-    this.childrenShuffling = false
+    this.shuffledRendering = false
     this.model = undefined
     // System-managed properties
     this.level = level
     this.parent = parent
     this.revision = ~0
     this.reconciliationRevision = ~0
-    this.prevMountSibling = this
-    this.isMountRequired = true
+    this.mountedAfter = this
+    this.isRemounting = true
     this.children = new RxDomNodeChildren()
     this.next = undefined
     this.prev = undefined
@@ -172,12 +172,12 @@ export class RxDom {
         const sequential = parent.factory.sequential
         let p1: Array<RxDomNode> | undefined = undefined
         let p2: Array<RxDomNode> | undefined = undefined
-        let mountSibling: RxDomNode | undefined = undefined
+        let mountAfter: RxDomNode | undefined = undefined
         x = children.first
         while (x !== undefined && !Transaction.isCanceled) {
-          if (sequential && x.prevMountSibling !== mountSibling) {
-            x.prevMountSibling = mountSibling
-            x.isMountRequired = true
+          if (sequential && x.mountedAfter !== mountAfter) {
+            x.mountedAfter = mountAfter
+            x.isRemounting = true
           }
           if (x.priority === RxPriority.SyncP0)
             tryToRender(x)
@@ -186,7 +186,7 @@ export class RxDom {
           else
             p2 = push(p2, x)
           if (x.native)
-            mountSibling = x
+            mountAfter = x
           x = x.next
         }
         // Render incremental children (if any)
@@ -239,7 +239,7 @@ export class RxDom {
     if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
       await Transaction.requestNextFrame()
     if (!Transaction.isCanceled && p1children !== undefined) {
-      if (node.childrenShuffling)
+      if (node.shuffledRendering)
         shuffle(p1children)
       for (const x of p1children) {
         tryToRender(x)
@@ -252,7 +252,7 @@ export class RxDom {
       }
     }
     if (!Transaction.isCanceled && p2children !== undefined) {
-      if (node.childrenShuffling)
+      if (node.shuffledRendering)
         shuffle(p2children)
       for (const x of p2children) {
         tryToRender(x)
@@ -285,8 +285,8 @@ function tryToRender(node: RxDomNode): void {
     node.revision = 0
     factory.initialize?.(node)
   }
-  if (node.isMountRequired) {
-    node.isMountRequired = false
+  if (node.isRemounting) {
+    node.isRemounting = false
     factory.mount?.(node)
   }
   if (node.inline)

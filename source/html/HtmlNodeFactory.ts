@@ -28,21 +28,21 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
       const nativeParent = p.native
       // --------------------------
       if (nativeParent instanceof Element) {
-        const prevMountSibling = node.prevMountSibling
-        if (prevMountSibling === undefined) {
+        const mountedAfter = node.mountedAfter
+        if (mountedAfter === undefined) {
           if (nativeParent !== native.parentNode || !native.previousSibling)
             nativeParent.prepend(native)
         }
-        else if (prevMountSibling !== node) {
-          if (prevMountSibling.parent.native === nativeParent) {
-            const nativeSibling = prevMountSibling.native
-            if (nativeSibling instanceof Element) {
-              if (nativeSibling.nextSibling !== native)
-                nativeParent.insertBefore(native, nativeSibling.nextSibling)
+        else if (mountedAfter !== node) {
+          if (mountedAfter.parent.native === nativeParent) {
+            const mountedAfterNative = mountedAfter.native
+            if (mountedAfterNative instanceof Element) {
+              if (mountedAfterNative.nextSibling !== native)
+                nativeParent.insertBefore(native, mountedAfterNative.nextSibling)
             }
           }
         }
-        else // prevMountSibling === node
+        else // mountedAfter === node
           nativeParent.appendChild(native)
       }
     }
