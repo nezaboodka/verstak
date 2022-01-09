@@ -15,24 +15,24 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
 
   initialize(node: RxNode<E, any>): void {
     super.initialize(node)
-    const native = node.native = this.createElement(node)
+    const e = node.native = this.createElement(node)
     if (Rx.isTraceEnabled)
-      native.id = node.name
+      e.id = node.name
   }
 
   finalize(node: RxNode<E, any>, initiator: RxNode): void {
-    const native = node.native
-    if (native) {
-      native.resizeObserver?.unobserve(native) // is it really needed or browser does this automatically?
+    const e = node.native
+    if (e) {
+      e.resizeObserver?.unobserve(e) // is it really needed or browser does this automatically?
       if (node === initiator)
-        native.remove()
+        e.remove()
     }
     super.finalize(node, initiator)
   }
 
   arrange(node: RxNode<E, any>): void {
-    const native = node.native
-    if (native) {
+    const e = node.native
+    if (e) {
       let p = node.parent
       while (!p.native) // are there better ideas how to determine native parent?
         p = p.parent
@@ -40,20 +40,20 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
       if (nativeParent instanceof Element) {
         const after = node.after
         if (after === undefined) {
-          if (nativeParent !== native.parentNode || !native.previousSibling)
-            nativeParent.prepend(native)
+          if (nativeParent !== e.parentNode || !e.previousSibling)
+            nativeParent.prepend(e)
         }
         else if (after !== node) {
           if (after.parent.native === nativeParent) {
             const nativeAfter = after.native
             if (nativeAfter instanceof Element) {
-              if (nativeAfter.nextSibling !== native)
-                nativeParent.insertBefore(native, nativeAfter.nextSibling)
+              if (nativeAfter.nextSibling !== e)
+                nativeParent.insertBefore(e, nativeAfter.nextSibling)
             }
           }
         }
         else // after === node
-          nativeParent.appendChild(native)
+          nativeParent.appendChild(e)
       }
     }
   }
