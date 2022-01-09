@@ -27,7 +27,7 @@ export interface RxNode<E = any, O = any> {
   readonly factory: RxNodeFactory<E>
   readonly inline: boolean
   readonly triggers: unknown
-  readonly render: Render<E, O>
+  readonly render: Render<E, O> | undefined
   readonly superRender: SuperRender<O, E> | undefined
   priority: RxPriority
   shuffledRendering: boolean

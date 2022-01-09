@@ -40,14 +40,14 @@ export class BasicNodeFactory<E> implements RxNodeFactory<E> {
     children.beginReconciliation(node.stamp)
     if (node.superRender)
       result = node.superRender(options => {
-        const res = node.render(node.native!, options)
-        if (res instanceof Promise)
-          return res.then(NOP, error => console.log(error)) // causes wrapping of then/catch to execute within current parent
+        const r = node.render?.(node.native!, options)
+        if (r instanceof Promise)
+          return r.then(NOP, error => console.log(error)) // causes wrapping of then/catch to execute within current parent
         else
           return options
       }, node.native!)
     else
-      result = node.render(node.native!, undefined)
+      result = node.render?.(node.native!, undefined)
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current parent
         value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
@@ -65,7 +65,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   readonly factory: RxNodeFactory<E>
   readonly inline: boolean
   triggers: unknown
-  render: Render<E, O>
+  render: Render<E, O> | undefined
   superRender: SuperRender<O, E> | undefined
   priority: RxPriority
   shuffledRendering: boolean
@@ -83,7 +83,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   native?: E
 
   constructor(level: number, name: string, factory: RxNodeFactory<E>, inline: boolean,
-    triggers: unknown, render: Render<E, O>, superRender: SuperRender<O, E> | undefined,
+    triggers: unknown, render: Render<E, O> | undefined, superRender: SuperRender<O, E> | undefined,
     parent: RxDomNode) {
     // User-defined properties
     this.name = name
@@ -127,7 +127,7 @@ export class RxDom {
   public static incrementalRenderingFrameDurationMs = 10
 
   static Node<E = undefined, O = void>(name: string, triggers: any,
-    render: Render<E, O>, superRender?: SuperRender<O, E>,
+    render?: Render<E, O>, superRender?: SuperRender<O, E>,
     factory?: RxNodeFactory<E>, inline?: boolean): RxNode<E, O> {
     const parent = gContext
     const children = parent.children
