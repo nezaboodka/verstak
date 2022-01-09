@@ -9,9 +9,6 @@ import { Rx } from 'reactronic'
 import { RxDom, RxNode, BasicNodeFactory } from '../core/api'
 
 export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNodeFactory<E, any> {
-  constructor(name: string, arranging: boolean = true) {
-    super(name, arranging)
-  }
 
   initialize(node: RxNode<E, any>): void {
     super.initialize(node)
