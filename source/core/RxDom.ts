@@ -236,8 +236,7 @@ export class RxDom {
 // Internal
 
 async function startIncrementalRendering(parent: RxDomNode,
-  p1children: Array<RxDomNode> | undefined,
-  p2children: Array<RxDomNode> | undefined): Promise<void> {
+  p1children?: Array<RxDomNode>, p2children?: Array<RxDomNode>): Promise<void> {
   if (p1children)
     await renderIncrementally(parent, p1children)
   if (p2children)
