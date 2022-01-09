@@ -153,10 +153,10 @@ export class RxDom {
   }
 
   static renderChildrenThenDo(action: () => void): void {
-    const parent = gContext
+    const node = gContext
     let promised: Promise<void> | undefined = undefined
     try {
-      const children = parent.children
+      const children = node.children
       if (children.isReconciling) {
         let vanished = children.endReconciliation()
         // Unmount vanished children
@@ -165,7 +165,7 @@ export class RxDom {
           vanished = vanished.next
         }
         // Render retained children
-        const arranging = parent.factory.arranging
+        const arranging = node.factory.arranging
         let p1: Array<RxDomNode> | undefined = undefined
         let p2: Array<RxDomNode> | undefined = undefined
         let after: RxDomNode | undefined = undefined
@@ -187,7 +187,7 @@ export class RxDom {
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
-          promised = startIncrementalRendering(parent, p1, p2).then(action, action)
+          promised = startIncrementalRendering(node, p1, p2).then(action, action)
       }
     }
     finally {
@@ -212,11 +212,11 @@ export class RxDom {
 // Internal
 
 async function startIncrementalRendering(parent: RxDomNode,
-  p1children?: Array<RxDomNode>, p2children?: Array<RxDomNode>): Promise<void> {
-  if (p1children)
-    await renderIncrementally(parent, p1children)
-  if (p2children)
-    await renderIncrementally(parent, p2children)
+  children1?: Array<RxDomNode>, children2?: Array<RxDomNode>): Promise<void> {
+  if (children1)
+    await renderIncrementally(parent, children1)
+  if (children2)
+    await renderIncrementally(parent, children2)
 }
 
 async function renderIncrementally(parent: RxDomNode, children: Array<RxDomNode>): Promise<void> {
