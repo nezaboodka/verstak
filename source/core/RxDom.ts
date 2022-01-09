@@ -193,7 +193,7 @@ export class RxDom {
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
-          promised = RxDom.renderIncrementally(parent, p1, p2).then(action, action)
+          promised = RxDom.startIncrementalRendering(parent, p1, p2).then(action, action)
       }
     }
     finally {
@@ -234,16 +234,16 @@ export class RxDom {
 
   // Internal
 
-  private static async renderIncrementally(parent: RxDomNode,
+  private static async startIncrementalRendering(parent: RxDomNode,
     p1children: Array<RxDomNode> | undefined,
     p2children: Array<RxDomNode> | undefined): Promise<void> {
     if (p1children)
-      await RxDom.doRenderIncrementally(parent, p1children)
+      await RxDom.renderIncrementally(parent, p1children)
     if (p2children)
-      await RxDom.doRenderIncrementally(parent, p2children)
+      await RxDom.renderIncrementally(parent, p2children)
   }
 
-  private static async doRenderIncrementally(parent: RxDomNode, children: Array<RxDomNode>): Promise<void> {
+  private static async renderIncrementally(parent: RxDomNode, children: Array<RxDomNode>): Promise<void> {
     const checkEveryN = 30
     if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
       await Transaction.requestNextFrame()
