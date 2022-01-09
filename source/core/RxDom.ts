@@ -164,8 +164,8 @@ export class RxDom {
     try {
       const children = parent.children
       if (children.isReconciling) {
-        // Unmount vanished children
         let vanished = children.endReconciliation()
+        // Unmount vanished children
         while (vanished !== undefined) {
           tryToFinalize(vanished, vanished)
           vanished = vanished.next
