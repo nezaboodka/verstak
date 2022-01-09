@@ -16,7 +16,7 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
   initialize(node: RxNode<E, any>): void {
     super.initialize(node)
     const e = node.native = this.createElement(node)
-    if (Rx.isTraceEnabled)
+    if (Rx.isLogging)
       e.id = node.name
   }
 

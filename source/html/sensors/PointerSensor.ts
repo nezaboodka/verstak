@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, Reentrance, TraceLevel, transaction, unobservable, Transaction } from 'reactronic'
+import { options, reaction, Reentrance, transaction, unobservable, Transaction, LoggingLevel } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from './BasePointerSensor'
 import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
@@ -169,7 +169,7 @@ export class PointerSensor extends BasePointerSensor {
     }
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected tryClickingOrDragging(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -201,13 +201,13 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Silent })
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, logging: LoggingLevel.Silent })
   protected clickingOver(e: PointerEvent): void {
     this.updateClicking(e)
     this.revision++
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected click(e: PointerEvent): void {
     if (this.updateClicking(e)) {
       this.modifiers = this.immediateModifiers
@@ -219,7 +219,7 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected startDragging(e: PointerEvent): void {
     this.updateDragTarget(e)
     this.clickable = undefined
@@ -230,7 +230,7 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected dragOver(e: PointerEvent): void {
     this.updateDragTarget(e)
     this.draggingOver = true
@@ -238,7 +238,7 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected drop(e: PointerEvent): void {
     this.updateDragTarget(e)
     this.modifiers = this.immediateModifiers
@@ -248,14 +248,14 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected finishDragging(): void {
     this.dragFinished = true
     this.tryingDragging = false
     this.revision++
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected cancelDragging(): void {
     this.dragFinished = true
     this.tryingDragging = false
@@ -263,7 +263,7 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected reset(): void {
     this.pointerButton = PointerButton.None
     this.clickable = undefined

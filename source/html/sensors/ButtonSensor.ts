@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, TraceLevel, transaction, Transaction } from 'reactronic'
+import { options, Reentrance, transaction, Transaction, LoggingLevel } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from './BasePointerSensor'
 import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
@@ -112,7 +112,7 @@ export class ButtonSensor extends BasePointerSensor {
     }
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected press(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -134,14 +134,14 @@ export class ButtonSensor extends BasePointerSensor {
     })
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Silent })
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, logging: LoggingLevel.Silent })
   protected selecting(e: PointerEvent): void {
     this.updateSensorData(e)
     this.state = ButtonState.Selecting
     this.selected = false
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected select(e: PointerEvent): void {
     this.updateSensorData(e)
     this.state = ButtonState.Selected
@@ -150,7 +150,7 @@ export class ButtonSensor extends BasePointerSensor {
     this.selected = true
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected release(): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -158,14 +158,14 @@ export class ButtonSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected cancel(): void {
     this.state = ButtonState.Released
     this.selected = false
     this.revision++
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected reset(): void {
     this.preventDefault = false
     this.stopPropagation = false

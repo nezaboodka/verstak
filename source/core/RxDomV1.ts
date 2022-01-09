@@ -18,7 +18,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
 
   initialize(node: RxNode<E, O>): void {
     if (!node.inline)
-      Rx.setTraceHint(node, node.id)
+      Rx.setLoggingHint(node, node.id)
   }
 
   render(node: RxNode<E, O>, args: unknown): void {
@@ -468,7 +468,7 @@ function tryToInitialize(node: RxNode): RxNodeInstanceImpl {
   type.initialize?.(node)
   type.mount?.(node)
   if (!node.inline)
-    Rx.setTraceHint(inst, node.id)
+    Rx.setLoggingHint(inst, node.id)
   return inst
 }
 

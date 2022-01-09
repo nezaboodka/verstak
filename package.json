@@ -1,6 +1,6 @@
 {
   "name": "reactronic-dom",
-  "version": "0.22.109",
+  "version": "0.22.110",
   "description": "Reactronic DOM - Transactional Reactive Front-End Development Framework",
   "main": "build/dist/source/api.js",
   "types": "build/dist/source/api.d.ts",
@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/nezaboodka/reactronic-dom/blob/master/README.md#readme",
   "dependencies": {
-    "reactronic": "^0.22.109"
+    "reactronic": "^0.22.110"
   },
   "devDependencies": {
     "@types/node": "17.0.7",

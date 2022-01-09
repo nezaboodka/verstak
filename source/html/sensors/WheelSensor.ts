@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, TraceLevel, transaction } from 'reactronic'
+import { options, Reentrance, transaction, LoggingLevel } from 'reactronic'
 import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { BasePointerSensor } from './BasePointerSensor'
@@ -46,7 +46,7 @@ export class WheelSensor extends BasePointerSensor {
     // this.reset()
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, trace: TraceLevel.Silent })
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, logging: LoggingLevel.Silent })
   protected doWheel(e: WheelEvent): void {
     this.updateSensorData(e)
   }

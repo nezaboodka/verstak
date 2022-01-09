@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, ToggleRef, TraceLevel, transaction } from 'reactronic'
+import { options, ToggleRef, transaction, LoggingLevel } from 'reactronic'
 import { grabElementData, SymDataForSensor } from './DataForSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 
@@ -41,7 +41,7 @@ export class FocusSensor extends HtmlElementSensor {
     this.setPreventDefaultAndStopPropagation(e)
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected doFocusIn(e: FocusEvent): void {
     this.preventDefault = false
     this.stopPropagation = false

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, TraceLevel, transaction } from 'reactronic'
+import { options, transaction, LoggingLevel } from 'reactronic'
 import { RxDom } from '../../api'
 import { Sensor } from './Sensor'
 
@@ -56,7 +56,7 @@ export class ResizeSensor extends Sensor {
     this.reset()
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected resize(entries: Array<ResizeObserverEntry>): void {
     this.revision++
     this.resizedElements = entries.map(entry => {

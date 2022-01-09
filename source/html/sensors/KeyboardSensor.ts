@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, sensitive, TraceLevel, transaction } from 'reactronic'
+import { options, sensitive, transaction, LoggingLevel } from 'reactronic'
 import { grabElementData, SymDataForSensor } from './DataForSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 
@@ -74,14 +74,14 @@ export class KeyboardSensor extends HtmlElementSensor {
     this.setPreventDefaultAndStopPropagation(e)
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected keyDown(e: KeyboardEvent): void {
     this.updateSensorData(e)
     this.up = ''
     sensitive(true, () => this.down = e.key)
   }
 
-  @transaction @options({ trace: TraceLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Silent })
   protected keyUp(e: KeyboardEvent): void {
     this.updateSensorData(e)
     this.down = ''
