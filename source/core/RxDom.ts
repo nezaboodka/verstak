@@ -130,10 +130,10 @@ export class RxDom {
     let result: any = render()
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current parent
-        value => { Transaction.run(null, RxDom.renderChildrenThenDo, NOP); return value }, // ignored if rendered already
-        error => { console.log(error); Transaction.run(null, RxDom.renderChildrenThenDo, NOP) }) // try to render children regardless the parent
+        value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
+        error => { console.log(error); RxDom.renderChildrenThenDo(NOP) }) // try to render children regardless the parent
     else
-      Transaction.run(null, RxDom.renderChildrenThenDo, NOP) // ignored if rendered already
+      RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
     return result
   }
 
