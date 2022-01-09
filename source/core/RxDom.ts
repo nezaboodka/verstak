@@ -194,7 +194,7 @@ export class RxDom {
           x = x.next
         }
         // Render incremental children (if any)
-        if (!Transaction.isCanceled && p1 !== undefined || p2 !== undefined)
+        if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
           promised = RxDom.renderIncrementally(parent, p1, p2).then(action, action)
       }
     }
