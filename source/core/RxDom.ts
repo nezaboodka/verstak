@@ -8,6 +8,8 @@
 import { reaction, Transaction, Rx, options, Reentrance, nonreactive } from 'reactronic'
 import { RxNodeFactory, Render, Customize, RxNode, SuperRender, RxNodeChildren, RxPriority } from './RxDom.Types'
 
+const NOP = (): void => { /* nop */ }
+
 // BasicNodeFactory
 
 export class BasicNodeFactory<E> implements RxNodeFactory<E> {
@@ -146,8 +148,8 @@ export class RxDom {
   }
 
   static launch(render: Customize<void>): void {
-    SYSTEM.render = render
-    tryToRender(SYSTEM)
+    gSystem.render = render
+    tryToRender(gSystem)
   }
 
   static renderChildrenThenDo(action: () => void): void {
@@ -203,7 +205,7 @@ export class RxDom {
   }
 
   static forAllNodesDo<E>(action: (e: E) => void): void {
-    forEachChildRecursively(SYSTEM, action)
+    forEachChildRecursively(gSystem, action)
   }
 }
 
@@ -494,25 +496,27 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-function createSystemNode<E = any, O = any>(name: string, arranging: boolean, native: E): RxNode<E, O> {
-  const node = new RxDomNode<E, O>(
-    0,                        // level
-    name,                     // name
-    { name, arranging },      // factory
-    false,                    // inline
-    undefined,                // triggers
-    () => { /* nop */ },      // render
-    undefined,                // superRender
-    {} as RxDomNode)          // fake parent (overwritten below)
-  // Initialize
-  const a: any = node
-  a['parent'] = node
-  node.native = native
-  node.stamp = 0 // initialized
-  return node
+const gSystemNodeFactory: RxNodeFactory<undefined> = {
+  name: 'SYSTEM',
+  arranging: false,
 }
 
-const NOP = (): void => { /* nop */ }
-const SYSTEM = createSystemNode<any, any>('SYSTEM', false, 'SYSTEM') as RxDomNode
-let gContext: RxDomNode = SYSTEM
+const gSystem = new RxDomNode<undefined, void>(
+  0,                  // level
+  'SYSTEM',           // name
+  gSystemNodeFactory, // factory
+  false,              // inline
+  undefined,          // triggers
+  NOP,                // render
+  undefined,          // superRender
+  {} as RxDomNode)    // fake parent (overwritten below)
+
+Object.defineProperty(gSystem, 'parent', {
+  value: gSystem,
+  writable: false,
+  configurable: false,
+  enumerable: true,
+})
+
+let gContext: RxDomNode = gSystem
 let gDisposalQueue: Array<RxNode> = []
