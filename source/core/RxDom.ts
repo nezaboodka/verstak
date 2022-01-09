@@ -72,7 +72,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   readonly level: number
   readonly parent: RxDomNode
   stamp: number
-  parentNodeStamp: number
+  parentStamp: number
   children: RxDomNodeChildren
   next?: RxDomNode
   prev?: RxDomNode
@@ -97,7 +97,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     this.level = level
     this.parent = parent
     this.stamp = ~0
-    this.parentNodeStamp = ~0
+    this.parentStamp = ~0
     this.children = new RxDomNodeChildren()
     this.next = undefined
     this.prev = undefined
@@ -407,20 +407,20 @@ export class RxDomNodeChildren implements RxNodeChildren {
   retainedLast?: RxDomNode = undefined
   retainedCount: number = 0
   likelyNextRetained?: RxDomNode = undefined
-  parentNodeStamp: number = ~0
+  parentStamp: number = ~0
 
-  get isReconciling(): boolean { return this.parentNodeStamp > ~0 }
+  get isReconciling(): boolean { return this.parentStamp > ~0 }
 
-  beginReconciliation(parentNodeStamp: number): void {
+  beginReconciliation(parentStamp: number): void {
     if (this.isReconciling)
       throw new Error('reconciliation is not reentrant')
-    this.parentNodeStamp = parentNodeStamp
+    this.parentStamp = parentStamp
   }
 
   endReconciliation(): RxDomNode | undefined {
     if (!this.isReconciling)
       throw new Error('reconciliation is ended already')
-    this.parentNodeStamp = ~0
+    this.parentStamp = ~0
     const namespace = this.namespace
     const count = this.count
     const retained = this.retainedCount
@@ -453,9 +453,9 @@ export class RxDomNodeChildren implements RxNodeChildren {
     if (result?.name !== name)
       result = this.namespace.get(name)
     if (result && result.stamp >= ~0) {
-      if (result.parentNodeStamp === this.parentNodeStamp)
+      if (result.parentStamp === this.parentStamp)
         throw new Error(`duplicate item id: ${name}`)
-      result.parentNodeStamp = this.parentNodeStamp
+      result.parentStamp = this.parentStamp
       this.likelyNextRetained = result.next
       // Exclude from main sequence
       if (result.prev !== undefined)
@@ -482,7 +482,7 @@ export class RxDomNodeChildren implements RxNodeChildren {
   }
 
   retainNewlyCreated(node: RxDomNode): void {
-    node.parentNodeStamp = this.parentNodeStamp
+    node.parentStamp = this.parentStamp
     this.namespace.set(node.name, node)
     const last = this.retainedLast
     if (last) {
