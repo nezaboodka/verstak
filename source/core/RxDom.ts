@@ -77,7 +77,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   next?: RxDomNode
   prev?: RxDomNode
   after?: RxDomNode
-  arranging: boolean
+  rearranging: boolean
   native?: E
   resizeObserver?: ResizeObserver
 
@@ -103,7 +103,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     this.next = undefined
     this.prev = undefined
     this.after = this
-    this.arranging = true
+    this.rearranging = true
     this.native = undefined
     this.resizeObserver = undefined
   }
@@ -180,7 +180,7 @@ export class RxDom {
         let x = children.first
         while (x !== undefined && !Transaction.isCanceled) {
           if (arranging && x.after !== after) {
-            x.arranging = true
+            x.rearranging = true
             x.after = after
           }
           if (x.priority === RxPriority.SyncP0)
@@ -289,8 +289,8 @@ function tryToRender(node: RxDomNode): void {
     node.revision = 0
     factory.initialize?.(node)
   }
-  if (node.arranging) {
-    node.arranging = false
+  if (node.rearranging) {
+    node.rearranging = false
     factory.arrange?.(node)
   }
   if (node.inline)
