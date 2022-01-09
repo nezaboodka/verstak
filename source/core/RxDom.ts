@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, Transaction, Rx, options, Reentrance, nonreactive } from 'reactronic'
-import { RxNodeFactory, Render, Callback, RxNode, SuperRender, RxNodeChildren, RxPriority } from './RxDom.Types'
+import { RxNodeFactory, Render, Callback, RxNode, OuterRender, RxNodeChildren, RxPriority } from './RxDom.Types'
 
 const NOP = (): void => { /* nop */ }
 
@@ -38,8 +38,8 @@ export class BasicNodeFactory<E> implements RxNodeFactory<E> {
     let result: any
     const children = node.children as RxDomNodeChildren
     children.beginReconciliation(node.stamp)
-    if (node.superRender)
-      result = node.superRender(options => {
+    if (node.outerRender)
+      result = node.outerRender(options => {
         const r = node.render?.(node.native!, options)
         if (r instanceof Promise)
           return r.then(NOP, error => console.log(error)) // causes wrapping of then/catch to execute within current parent
@@ -66,7 +66,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   readonly inline: boolean
   triggers: unknown
   render: Render<E, O> | undefined
-  superRender: SuperRender<E, O> | undefined
+  outerRender: OuterRender<E, O> | undefined
   priority: RxPriority
   shuffledRendering: boolean
   model?: unknown
@@ -83,7 +83,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   native?: E
 
   constructor(level: number, name: string, factory: RxNodeFactory<E>, inline: boolean,
-    triggers: unknown, render: Render<E, O> | undefined, superRender: SuperRender<E, O> | undefined,
+    triggers: unknown, render: Render<E, O> | undefined, outerRender: OuterRender<E, O> | undefined,
     parent: RxDomNode) {
     // User-defined properties
     this.name = name
@@ -91,7 +91,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     this.inline = inline
     this.triggers = triggers
     this.render = render
-    this.superRender = superRender
+    this.outerRender = outerRender
     this.priority = RxPriority.SyncP0
     this.shuffledRendering = false
     this.model = undefined
@@ -127,7 +127,7 @@ export class RxDom {
   public static incrementalRenderingFrameDurationMs = 10
 
   static Node<E = undefined, O = void>(name: string, triggers: any,
-    render?: Render<E, O>, superRender?: SuperRender<E, O>,
+    render?: Render<E, O>, outerRender?: OuterRender<E, O>,
     factory?: RxNodeFactory<E>, inline?: boolean): RxNode<E, O> {
     const parent = gContext
     const children = parent.children
@@ -136,12 +136,12 @@ export class RxDom {
       if (result.inline || !triggersAreEqual(result.triggers, triggers))
         result.triggers = triggers
       result.render = render
-      result.superRender = superRender
+      result.outerRender = outerRender
     }
     else {
       result = new RxDomNode<E, O>(parent.level + 1, name,
         factory ?? RxDom.basic, inline ?? false, triggers,
-        render, superRender, parent)
+        render, outerRender, parent)
       children.retainNewlyCreated(result)
     }
     return result
@@ -508,7 +508,7 @@ const gSystem = new RxDomNode<undefined, void>(
   false,              // inline
   undefined,          // triggers
   NOP,                // render
-  undefined,          // superRender
+  undefined,          // outerRender
   {} as RxDomNode)    // fake parent (overwritten below)
 
 Object.defineProperty(gSystem, 'parent', {
