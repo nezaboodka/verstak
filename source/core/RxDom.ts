@@ -193,7 +193,7 @@ export class RxDom {
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
-          promised = RxDom.startIncrementalRendering(parent, p1, p2).then(action, action)
+          promised = startIncrementalRendering(parent, p1, p2).then(action, action)
       }
     }
     finally {
@@ -229,49 +229,37 @@ export class RxDom {
   }
 
   static forAllNodesDo<E>(action: (e: E) => void): void {
-    RxDom.forEachChildRecursively(SYSTEM, action)
-  }
-
-  // Internal
-
-  private static async startIncrementalRendering(parent: RxDomNode,
-    p1children: Array<RxDomNode> | undefined,
-    p2children: Array<RxDomNode> | undefined): Promise<void> {
-    if (p1children)
-      await RxDom.renderIncrementally(parent, p1children)
-    if (p2children)
-      await RxDom.renderIncrementally(parent, p2children)
-  }
-
-  private static async renderIncrementally(parent: RxDomNode, children: Array<RxDomNode>): Promise<void> {
-    const checkEveryN = 30
-    if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
-      await Transaction.requestNextFrame()
-    if (!Transaction.isCanceled) {
-      if (parent.shuffledRendering)
-        shuffle(children)
-      for (const x of children) {
-        if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
-          await Transaction.requestNextFrame()
-        if (Transaction.isCanceled)
-          break
-        tryToRender(x)
-      }
-    }
-  }
-
-  private static forEachChildRecursively(node: RxDomNode, action: (e: any) => void): void {
-    const native = node.native
-    native && action(native)
-    let x = node.children.first
-    while (x !== undefined) {
-      RxDom.forEachChildRecursively(x, action)
-      x = x.next
-    }
+    forEachChildRecursively(SYSTEM, action)
   }
 }
 
 // Internal
+
+async function startIncrementalRendering(parent: RxDomNode,
+  p1children: Array<RxDomNode> | undefined,
+  p2children: Array<RxDomNode> | undefined): Promise<void> {
+  if (p1children)
+    await renderIncrementally(parent, p1children)
+  if (p2children)
+    await renderIncrementally(parent, p2children)
+}
+
+async function renderIncrementally(parent: RxDomNode, children: Array<RxDomNode>): Promise<void> {
+  const checkEveryN = 30
+  if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
+    await Transaction.requestNextFrame()
+  if (!Transaction.isCanceled) {
+    if (parent.shuffledRendering)
+      shuffle(children)
+    for (const x of children) {
+      if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
+        await Transaction.requestNextFrame()
+      if (Transaction.isCanceled)
+        break
+      tryToRender(x)
+    }
+  }
+}
 
 function tryToRender(node: RxDomNode): void {
   const factory = node.factory
@@ -287,6 +275,19 @@ function tryToRender(node: RxDomNode): void {
     invokeRenderIfNodeIsAlive(node)
   else
     nonreactive(node.autorender, node.triggers) // reactive auto-rendering
+}
+
+function invokeRenderIfNodeIsAlive(node: RxDomNode): void {
+  if (node.revision >= ~0) { // needed for deferred Rx.dispose
+    runUnder(node, () => {
+      node.revision++
+      const factory = node.factory
+      if (factory.render)
+        factory.render(node) // factory-defined rendering
+      else
+        RxDom.basic.render(node) // default rendering
+    })
+  }
 }
 
 function tryToFinalize(node: RxDomNode, initiator: RxDomNode): void {
@@ -316,19 +317,6 @@ function tryToFinalize(node: RxDomNode, initiator: RxDomNode): void {
   }
 }
 
-function invokeRenderIfNodeIsAlive(node: RxDomNode): void {
-  if (node.revision >= ~0) { // needed for deferred Rx.dispose
-    runUnder(node, () => {
-      node.revision++
-      const factory = node.factory
-      if (factory.render)
-        factory.render(node) // factory-defined rendering
-      else
-        RxDom.basic.render(node) // default rendering
-    })
-  }
-}
-
 async function runDisposalLoop(): Promise<void> {
   await Transaction.requestNextFrame()
   const queue = gDisposalQueue
@@ -340,6 +328,16 @@ async function runDisposalLoop(): Promise<void> {
     i++
   }
   gDisposalQueue = [] // reset loop
+}
+
+function forEachChildRecursively(node: RxDomNode, action: (e: any) => void): void {
+  const native = node.native
+  native && action(native)
+  let x = node.children.first
+  while (x !== undefined) {
+    forEachChildRecursively(x, action)
+    x = x.next
+  }
 }
 
 function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
