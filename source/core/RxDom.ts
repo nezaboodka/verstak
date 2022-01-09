@@ -429,7 +429,7 @@ export class RxDomNodeChildren implements RxNodeChildren {
       result = this.namespace.get(name)
     if (result && result.stamp >= ~0) {
       if (result.parentStamp === this.parentStamp)
-        throw new Error(`duplicate item id: ${name}`)
+        throw new Error(`duplicate node id: ${name}`)
       result.parentStamp = this.parentStamp
       this.likelyNextRetained = result.next
       // Exclude from main sequence
