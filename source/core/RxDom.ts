@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, Transaction, Rx, options, Reentrance, nonreactive } from 'reactronic'
-import { RxNodeFactory, Render, RxNode, SuperRender, RxNodeChildren, RxPriority } from './RxDom.Types'
+import { RxNodeFactory, Render, Customize, RxNode, SuperRender, RxNodeChildren, RxPriority } from './RxDom.Types'
 
 // BasicNodeFactory
 
@@ -124,20 +124,7 @@ export class RxDom {
   public static readonly basic = new BasicNodeFactory<any>('basic', false)
   public static incrementalRenderingFrameDurationMs = 10
 
-  static Root<T>(render: () => T): T {
-    const root = gContext
-    root.children.beginReconciliation(root.stamp)
-    let result: any = render()
-    if (result instanceof Promise)
-      result = result.then( // causes wrapping of then/catch to execute within current parent
-        value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
-        error => { console.log(error); RxDom.renderChildrenThenDo(NOP) }) // try to render children regardless the parent
-    else
-      RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
-    return result
-  }
-
-  static Node<E = unknown, O = void>(name: string, triggers: any,
+  static Node<E = undefined, O = void>(name: string, triggers: any,
     render: Render<E, O>, superRender?: SuperRender<O, E>,
     factory?: RxNodeFactory<E>, inline?: boolean): RxNode<E, O> {
     const parent = gContext
@@ -156,6 +143,11 @@ export class RxDom {
       children.retainNewlyCreated(result)
     }
     return result
+  }
+
+  static launch(render: Customize<void>): void {
+    SYSTEM.render = render
+    tryToRender(SYSTEM)
   }
 
   static renderChildrenThenDo(action: () => void): void {
