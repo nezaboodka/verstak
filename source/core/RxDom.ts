@@ -10,7 +10,7 @@ import { RxNodeFactory, Render, RxNode, SuperRender, RxNodeChildren, RxPriority 
 
 // BasicNodeFactory
 
-export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
+export class BasicNodeFactory<E> implements RxNodeFactory<E> {
   readonly name: string
   readonly arranging: boolean
 
@@ -19,12 +19,12 @@ export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
     this.arranging = arranging
   }
 
-  initialize(node: RxNode<E, O>): void {
+  initialize(node: RxNode<E>): void {
     if (!node.inline && Rx.isLogging)
       Rx.setLoggingHint(node, node.name)
   }
 
-  finalize(node: RxNode<E, O>, initiator: RxNode): void {
+  finalize(node: RxNode<E>, initiator: RxNode): void {
     node.native = undefined
   }
 
@@ -32,7 +32,7 @@ export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
   //   // nothing to do
   // }
 
-  render(node: RxNode<E, O>): void {
+  render(node: RxNode<E>): void {
     let result: any
     const children = node.children as RxDomNodeChildren
     children.beginReconciliation(node.stamp)
@@ -45,7 +45,7 @@ export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
           return options
       }, node.native!)
     else
-      result = node.render(node.native!, undefined as any as O)
+      result = node.render(node.native!, undefined)
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current parent
         value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
@@ -60,7 +60,7 @@ export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
 class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   // User-defined properties
   readonly name: string
-  readonly factory: RxNodeFactory<E, O>
+  readonly factory: RxNodeFactory<E>
   readonly inline: boolean
   triggers: unknown
   render: Render<E, O>
@@ -80,7 +80,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   rearranging: boolean
   native?: E
 
-  constructor(level: number, name: string, factory: RxNodeFactory<E, O>, inline: boolean,
+  constructor(level: number, name: string, factory: RxNodeFactory<E>, inline: boolean,
     triggers: unknown, render: Render<E, O>, superRender: SuperRender<O, E> | undefined,
     parent: RxDomNode) {
     // User-defined properties
@@ -121,7 +121,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
 // RxDom
 
 export class RxDom {
-  public static readonly basic = new BasicNodeFactory<any, any>('basic', false)
+  public static readonly basic = new BasicNodeFactory<any>('basic', false)
   public static incrementalRenderingFrameDurationMs = 10
 
   static Root<T>(render: () => T): T {
@@ -139,7 +139,7 @@ export class RxDom {
 
   static Node<E = unknown, O = void>(name: string, triggers: any,
     render: Render<E, O>, superRender?: SuperRender<O, E>,
-    factory?: RxNodeFactory<E, O>, inline?: boolean): RxNode<E, O> {
+    factory?: RxNodeFactory<E>, inline?: boolean): RxNode<E, O> {
     const parent = gContext
     const children = parent.children
     let result = children.tryToRetainExisting(name)

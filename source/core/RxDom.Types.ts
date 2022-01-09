@@ -12,19 +12,19 @@ export type Customize<E = unknown, O = void> = (element: E, options: O) => void
 export type AsyncCustomize<E = unknown, O = void> = (element: E, options: O) => Promise<void>
 export const enum RxPriority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
-export interface RxNodeFactory<E = unknown, O = void> {
+export interface RxNodeFactory<E = unknown> {
   readonly name: string
   readonly arranging: boolean
-  initialize?(node: RxNode<E, O>): void
-  finalize?(node: RxNode<E, O>, initiator: RxNode): void
-  arrange?(node: RxNode<E, O>): void
-  render?(node: RxNode<E, O>): void
+  initialize?(node: RxNode<E>): void
+  finalize?(node: RxNode<E>, initiator: RxNode): void
+  arrange?(node: RxNode<E>): void
+  render?(node: RxNode<E>): void
 }
 
 export interface RxNode<E = any, O = any> {
   // User-defined properties
   readonly name: string
-  readonly factory: RxNodeFactory<E, O>
+  readonly factory: RxNodeFactory<E>
   readonly inline: boolean
   readonly triggers: unknown
   readonly render: Render<E, O>
