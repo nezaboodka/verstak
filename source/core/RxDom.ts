@@ -111,7 +111,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     reentrance: Reentrance.CancelPrevious,
     sensitiveArgs: true,
     noSideEffects: true })
-  rerender(_triggers: unknown): void { // triggers are used to enforce rendering of reactive node by parent
+  autorender(_triggers: unknown): void { // triggers are used to enforce rendering of reactive node by parent
     if (this.revision === 0) // configure only once
       Rx.configureCurrentOperation({ order: this.level })
     invokeRenderIfNodeIsAlive(this)
@@ -294,7 +294,7 @@ function tryToRender(node: RxDomNode): void {
   if (node.inline)
     invokeRenderIfNodeIsAlive(node)
   else
-    nonreactive(node.rerender, node.triggers) // reactive auto-rendering
+    nonreactive(node.autorender, node.triggers) // reactive auto-rendering
 }
 
 function tryToFinalize(node: RxDomNode, initiator: RxDomNode): void {
