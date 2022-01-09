@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, transaction, LoggingLevel } from 'reactronic'
-import { RxDom } from '../../api'
+import { RxDom } from '../../core/api'
 import { Sensor } from './Sensor'
 
 export interface ResizedElement {
