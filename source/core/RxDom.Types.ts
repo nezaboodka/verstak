@@ -7,9 +7,9 @@
 
 export type Render<E = unknown, O = void> = (element: E, options: O) => void | Promise<void>
 export type SuperRender<O = unknown, E = void> = ((render: (options: O) => void, element: E) => void)
-export type AsyncSuperRender<O = unknown, E = void> = ((render: (options: O) => Promise<void>, element: E) => Promise<void>)
+// export type AsyncSuperRender<O = unknown, E = void> = ((render: (options: O) => Promise<void>, element: E) => Promise<void>)
 export type Customize<E = unknown, O = void> = (element: E, options: O) => void
-export type AsyncCustomize<E = unknown, O = void> = (element: E, options: O) => Promise<void>
+// export type AsyncCustomize<E = unknown, O = void> = (element: E, options: O) => Promise<void>
 export const enum RxPriority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export interface RxNodeFactory<E = unknown> {
