@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 export type Render<E = unknown, O = void> = (element: E, options: O) => void | Promise<void>
-export type SuperRender<O = unknown, E = void> = ((render: (options: O) => void, element: E) => void)
+export type SuperRender<E = unknown, O = void> = ((render: (options: O) => void, element: E) => void)
 // export type AsyncSuperRender<O = unknown, E = void> = ((render: (options: O) => Promise<void>, element: E) => Promise<void>)
 export type Customize<E = unknown, O = void> = (element: E, options: O) => void
 // export type AsyncCustomize<E = unknown, O = void> = (element: E, options: O) => Promise<void>
@@ -28,7 +28,7 @@ export interface RxNode<E = any, O = any> {
   readonly inline: boolean
   readonly triggers: unknown
   readonly render: Render<E, O> | undefined
-  readonly superRender: SuperRender<O, E> | undefined
+  readonly superRender: SuperRender<E, O> | undefined
   priority: RxPriority
   shuffledRendering: boolean
   model?: unknown

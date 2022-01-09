@@ -66,7 +66,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   readonly inline: boolean
   triggers: unknown
   render: Render<E, O> | undefined
-  superRender: SuperRender<O, E> | undefined
+  superRender: SuperRender<E, O> | undefined
   priority: RxPriority
   shuffledRendering: boolean
   model?: unknown
@@ -83,7 +83,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   native?: E
 
   constructor(level: number, name: string, factory: RxNodeFactory<E>, inline: boolean,
-    triggers: unknown, render: Render<E, O> | undefined, superRender: SuperRender<O, E> | undefined,
+    triggers: unknown, render: Render<E, O> | undefined, superRender: SuperRender<E, O> | undefined,
     parent: RxDomNode) {
     // User-defined properties
     this.name = name
@@ -127,7 +127,7 @@ export class RxDom {
   public static incrementalRenderingFrameDurationMs = 10
 
   static Node<E = undefined, O = void>(name: string, triggers: any,
-    render?: Render<E, O>, superRender?: SuperRender<O, E>,
+    render?: Render<E, O>, superRender?: SuperRender<E, O>,
     factory?: RxNodeFactory<E>, inline?: boolean): RxNode<E, O> {
     const parent = gContext
     const children = parent.children

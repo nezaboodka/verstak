@@ -111,7 +111,7 @@ export class RxDom {
   }
 
   static Node<E = unknown, O = void>(id: string, args: any,
-    render: Render<E, O>, superRender?: SuperRender<O, E>,
+    render: Render<E, O>, superRender?: SuperRender<E, O>,
     type?: RxNodeType<E, O>, inline?: boolean,
     creator?: RxNode, host?: RxNode): RxNode<E, O> {
     const o = creator ?? gCreator
