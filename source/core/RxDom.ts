@@ -234,36 +234,28 @@ export class RxDom {
 
   // Internal
 
-  private static async renderIncrementally(node: RxDomNode,
+  private static async renderIncrementally(parent: RxDomNode,
     p1children: Array<RxDomNode> | undefined,
     p2children: Array<RxDomNode> | undefined): Promise<void> {
+    if (p1children)
+      await RxDom.doRenderIncrementally(parent, p1children)
+    if (p2children)
+      await RxDom.doRenderIncrementally(parent, p2children)
+  }
+
+  private static async doRenderIncrementally(parent: RxDomNode, children: Array<RxDomNode>): Promise<void> {
     const checkEveryN = 30
     if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
       await Transaction.requestNextFrame()
-    if (!Transaction.isCanceled && p1children !== undefined) {
-      if (node.shuffledRendering)
-        shuffle(p1children)
-      for (const x of p1children) {
-        tryToRender(x)
-        if (Transaction.isCanceled)
-          break
+    if (!Transaction.isCanceled) {
+      if (parent.shuffledRendering)
+        shuffle(children)
+      for (const x of children) {
         if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
           await Transaction.requestNextFrame()
         if (Transaction.isCanceled)
           break
-      }
-    }
-    if (!Transaction.isCanceled && p2children !== undefined) {
-      if (node.shuffledRendering)
-        shuffle(p2children)
-      for (const x of p2children) {
         tryToRender(x)
-        if (Transaction.isCanceled)
-          break
-        if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
-          await Transaction.requestNextFrame()
-        if (Transaction.isCanceled)
-          break
       }
     }
   }
