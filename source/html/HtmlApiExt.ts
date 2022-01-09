@@ -10,7 +10,7 @@ import { DataForSensor, SymDataForSensor, SymResizeObserver } from './sensors/Da
 declare global {
   interface Element {
     dataForSensor: DataForSensor
-    rxResizeObserver?: ResizeObserver
+    resizeObserver?: ResizeObserver
   }
 }
 
@@ -29,7 +29,7 @@ if (ElementType !== undefined) {
       this[SymDataForSensor] = value
     },
   })
-  Object.defineProperty(ElementType.prototype, 'rxResizeObserver', {
+  Object.defineProperty(ElementType.prototype, 'resizeObserver', {
     configurable: false, enumerable: false,
     get(): ResizeObserver | undefined {
       return this[SymResizeObserver]

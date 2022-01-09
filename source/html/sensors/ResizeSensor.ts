@@ -35,15 +35,15 @@ export class ResizeSensor extends Sensor {
     const native = self.native
     if (native instanceof Element) {
       if (value) {
-        if (native.rxResizeObserver !== undefined && native.rxResizeObserver !== this.observer)
-          native.rxResizeObserver.unobserve(native)
-        native.rxResizeObserver = this.observer
+        if (native.resizeObserver !== undefined && native.resizeObserver !== this.observer)
+          native.resizeObserver.unobserve(native)
+        native.resizeObserver = this.observer
         this.observer.observe(native)
       }
       else {
-        if (native.rxResizeObserver === this.observer) {
+        if (native.resizeObserver === this.observer) {
           this.observer.unobserve(native)
-          native.rxResizeObserver = undefined
+          native.resizeObserver = undefined
         }
       }
     }
