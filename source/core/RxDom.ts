@@ -35,7 +35,7 @@ export class BasicNodeFactory<E, O> implements RxNodeFactory<E, O> {
   render(node: RxNode<E, O>): void {
     let result: any
     const children = node.children as RxDomNodeChildren
-    children.beginReconciliation(node.revision)
+    children.beginReconciliation(node.stamp)
     if (node.superRender)
       result = node.superRender(options => {
         const res = node.render(node.native!, options)
@@ -71,8 +71,8 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   // System-managed properties
   readonly level: number
   readonly parent: RxDomNode
-  revision: number
-  reconciliationRevision: number
+  stamp: number
+  parentNodeStamp: number
   children: RxDomNodeChildren
   next?: RxDomNode
   prev?: RxDomNode
@@ -96,8 +96,8 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     // System-managed properties
     this.level = level
     this.parent = parent
-    this.revision = ~0
-    this.reconciliationRevision = ~0
+    this.stamp = ~0
+    this.parentNodeStamp = ~0
     this.children = new RxDomNodeChildren()
     this.next = undefined
     this.prev = undefined
@@ -112,7 +112,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     sensitiveArgs: true,
     noSideEffects: true })
   autorender(_triggers: unknown): void { // triggers are used to enforce rendering of reactive node by parent
-    if (this.revision === 0) // configure only once
+    if (this.stamp === 0) // configure only once
       Rx.configureCurrentOperation({ order: this.level })
     invokeRenderIfNodeIsAlive(this)
   }
@@ -126,7 +126,7 @@ export class RxDom {
 
   static Root<T>(render: () => T): T {
     const root = gContext
-    root.children.beginReconciliation(root.revision)
+    root.children.beginReconciliation(root.stamp)
     let result: any = render()
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current parent
@@ -216,7 +216,7 @@ export class RxDom {
     const a: any = node
     a['parent'] = node
     node.native = native
-    node.revision = 0 // initialized
+    node.stamp = 0 // initialized
     return node
   }
 
@@ -263,8 +263,8 @@ async function renderIncrementally(parent: RxDomNode, children: Array<RxDomNode>
 
 function tryToRender(node: RxDomNode): void {
   const factory = node.factory
-  if (node.revision === ~0) {
-    node.revision = 0
+  if (node.stamp === ~0) {
+    node.stamp = 0
     factory.initialize?.(node)
   }
   if (node.rearranging) {
@@ -278,9 +278,9 @@ function tryToRender(node: RxDomNode): void {
 }
 
 function invokeRenderIfNodeIsAlive(node: RxDomNode): void {
-  if (node.revision >= ~0) { // needed for deferred Rx.dispose
+  if (node.stamp >= ~0) { // needed for deferred Rx.dispose
     runUnder(node, () => {
-      node.revision++
+      node.stamp++
       const factory = node.factory
       if (factory.render)
         factory.render(node) // factory-defined rendering
@@ -291,8 +291,8 @@ function invokeRenderIfNodeIsAlive(node: RxDomNode): void {
 }
 
 function tryToFinalize(node: RxDomNode, initiator: RxDomNode): void {
-  if (node.revision >= ~0) {
-    node.revision = ~node.revision
+  if (node.stamp >= ~0) {
+    node.stamp = ~node.stamp
     // Remove node itself
     const factory = node.factory
     if (factory.finalize)
@@ -407,20 +407,20 @@ export class RxDomNodeChildren implements RxNodeChildren {
   retainedLast?: RxDomNode = undefined
   retainedCount: number = 0
   likelyNextRetained?: RxDomNode = undefined
-  revision: number = ~0
+  parentNodeStamp: number = ~0
 
-  get isReconciling(): boolean { return this.revision > ~0 }
+  get isReconciling(): boolean { return this.parentNodeStamp > ~0 }
 
-  beginReconciliation(revision: number): void {
+  beginReconciliation(parentNodeStamp: number): void {
     if (this.isReconciling)
       throw new Error('reconciliation is not reentrant')
-    this.revision = revision
+    this.parentNodeStamp = parentNodeStamp
   }
 
   endReconciliation(): RxDomNode | undefined {
     if (!this.isReconciling)
       throw new Error('reconciliation is ended already')
-    this.revision = ~0
+    this.parentNodeStamp = ~0
     const namespace = this.namespace
     const count = this.count
     const retained = this.retainedCount
@@ -452,10 +452,10 @@ export class RxDomNodeChildren implements RxNodeChildren {
     let result = this.likelyNextRetained
     if (result?.name !== name)
       result = this.namespace.get(name)
-    if (result && result.revision >= ~0) {
-      if (result.reconciliationRevision === this.revision)
+    if (result && result.stamp >= ~0) {
+      if (result.parentNodeStamp === this.parentNodeStamp)
         throw new Error(`duplicate item id: ${name}`)
-      result.reconciliationRevision = this.revision
+      result.parentNodeStamp = this.parentNodeStamp
       this.likelyNextRetained = result.next
       // Exclude from main sequence
       if (result.prev !== undefined)
@@ -482,7 +482,7 @@ export class RxDomNodeChildren implements RxNodeChildren {
   }
 
   retainNewlyCreated(node: RxDomNode): void {
-    node.reconciliationRevision = this.revision
+    node.parentNodeStamp = this.parentNodeStamp
     this.namespace.set(node.name, node)
     const last = this.retainedLast
     if (last) {

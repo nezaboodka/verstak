@@ -58,7 +58,7 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
   render(node: RxNode<E, any>): void {
     super.render(node)
     if (gBlinkingEffect)
-      blink(node.native, node.revision)
+      blink(node.native, node.stamp)
   }
 
   static get blinkingEffect(): string | undefined {
