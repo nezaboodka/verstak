@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, Transaction, Rx, options, Reentrance, nonreactive } from 'reactronic'
-import { RxNodeFactory, Render, Customize, RxNode, SuperRender, RxNodeChildren, RxPriority } from './RxDom.Types'
+import { RxNodeFactory, Render, Callback, RxNode, SuperRender, RxNodeChildren, RxPriority } from './RxDom.Types'
 
 const NOP = (): void => { /* nop */ }
 
@@ -147,7 +147,7 @@ export class RxDom {
     return result
   }
 
-  static launch(render: Customize<void>): void {
+  static launch(render: Callback<void>): void {
     gSystem.render = render
     tryToRender(gSystem)
   }
