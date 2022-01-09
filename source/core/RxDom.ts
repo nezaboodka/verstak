@@ -268,12 +268,12 @@ function invokeRenderIfNodeIsAlive(node: RxDomNode): void {
 function tryToFinalize(node: RxDomNode, initiator: RxDomNode): void {
   if (node.stamp >= ~0) {
     node.stamp = ~node.stamp
-    // Remove node itself
+    // Finalize node itself
     const factory = node.factory
     if (factory.finalize)
       factory.finalize(node, initiator)
     else
-      RxDom.basic.finalize(node, initiator) // default remove
+      RxDom.basic.finalize(node, initiator) // default finalize
     // Enqueue node for Rx.dispose if needed
     if (!node.inline) {
       gDisposalQueue.push(node)
@@ -283,7 +283,7 @@ function tryToFinalize(node: RxDomNode, initiator: RxDomNode): void {
         })
       }
     }
-    // Remove/enqueue children if any
+    // Finalize children if any
     let x = node.children.first
     while (x !== undefined) {
       tryToFinalize(x, initiator)
