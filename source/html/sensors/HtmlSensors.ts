@@ -45,7 +45,7 @@ export class HtmlSensors {
     this.hover.listen(element, enabled)
     this.keyboard.listen(element, enabled)
     this.wheel.listen(element, enabled)
-    // this.resize doesn't have listen, this.resize.observeResizeOfRenderingElement is used instead
+    // this.resize doesn't have listen, this.resize.observeResizingOfCurrentElement is used instead
     this.htmlDrag.listen(element, enabled)
     this.button.listen(element, enabled)
     this.pointer.listen(element, enabled)

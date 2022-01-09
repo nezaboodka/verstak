@@ -30,20 +30,25 @@ export class ResizeSensor extends Sensor {
     this.doReset()
   }
 
-  observeResizeOfRenderingElement(value: boolean): void {
+  observeResizingOfCurrentElement(value: boolean): void {
     const self = RxDom.currentNode
-    if (value) {
-      if (self.resizeObserver !== undefined && self.resizeObserver !== this.observer)
-        self.resizeObserver.unobserve(self.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      self.resizeObserver = this.observer
-      this.observer.observe(self.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
-    }
-    else {
-      if (self.resizeObserver === this.observer) {
-        this.observer.unobserve(self.native!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
-        self.resizeObserver = undefined
+    const native = self.native
+    if (native instanceof Element) {
+      if (value) {
+        if (native.rxResizeObserver !== undefined && native.rxResizeObserver !== this.observer)
+          native.rxResizeObserver.unobserve(native)
+        native.rxResizeObserver = this.observer
+        this.observer.observe(native)
+      }
+      else {
+        if (native.rxResizeObserver === this.observer) {
+          this.observer.unobserve(native)
+          native.rxResizeObserver = undefined
+        }
       }
     }
+    else
+      throw new Error('cannot observe resizing of non-HTML node')
   }
 
   protected onResize(entries: Array<ResizeObserverEntry>): void {

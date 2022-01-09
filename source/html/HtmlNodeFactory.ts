@@ -23,7 +23,7 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
   finalize(node: RxNode<E, any>, initiator: RxNode): void {
     const native = node.native
     if (native) {
-      node.resizeObserver?.unobserve(native)
+      native.rxResizeObserver?.unobserve(native) // is it really needed or browser does this automatically?
       if (node === initiator)
         native.remove()
     }

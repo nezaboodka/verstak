@@ -79,7 +79,6 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   after?: RxDomNode
   rearranging: boolean
   native?: E
-  resizeObserver?: ResizeObserver
 
   constructor(level: number, name: string, factory: RxNodeFactory<E, O>, inline: boolean,
     triggers: unknown, render: Render<E, O>, superRender: SuperRender<O, E> | undefined,
@@ -105,7 +104,6 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     this.after = this
     this.rearranging = true
     this.native = undefined
-    this.resizeObserver = undefined
   }
 
   @reaction

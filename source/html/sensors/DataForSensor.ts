@@ -21,6 +21,7 @@ export interface DataForSensor {
 }
 
 export const SymDataForSensor: unique symbol = Symbol('DataForSensor')
+export const SymResizeObserver: unique symbol = Symbol('ResizeObserver')
 
 export const EmptyDataArray: any[] = []
 

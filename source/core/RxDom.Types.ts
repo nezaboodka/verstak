@@ -41,7 +41,6 @@ export interface RxNode<E = any, O = any> {
   readonly prev?: RxNode
   readonly after?: RxNode
   native?: E
-  resizeObserver?: ResizeObserver
 }
 
 export interface RxNodeChildren {
