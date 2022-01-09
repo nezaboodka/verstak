@@ -6,20 +6,4 @@
 // automatically licensed under the license referred above.
 
 export * from './core/api'
-
-export * from './html/sensors/Sensor'
-export * from './html/HtmlNodeFactory'
-export * from './html/HtmlElements'
-export * from './html/sensors/BasePointerSensor'
-export * from './html/sensors/FocusSensor'
-export * from './html/sensors/ButtonSensor'
-export * from './html/sensors/HoverSensor'
-export * from './html/sensors/WheelSensor'
-export * from './html/sensors/KeyboardSensor'
-export * from './html/sensors/ResizeSensor'
-export * from './html/sensors/HtmlDragSensor'
-export * from './html/TwoWayFocusSync'
-export * from './html/HtmlApiExt'
-export * from './html/sensors/HtmlSensors'
-
-import './html/HtmlApiExt'
+export * from './html/api'
