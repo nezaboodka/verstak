@@ -194,24 +194,6 @@ export class RxDom {
     }
   }
 
-  static createRootNode<E = any, O = any>(name: string, arranging: boolean, native: E): RxNode<E, O> {
-    const node = new RxDomNode<E, O>(
-      0,                        // level
-      name,                     // name
-      { name, arranging },      // factory
-      false,                    // inline
-      undefined,                // triggers
-      () => { /* nop */ },      // render
-      undefined,                // superRender
-      {} as RxDomNode)          // fake parent (overwritten below)
-    // Initialize
-    const a: any = node
-    a['parent'] = node
-    node.native = native
-    node.stamp = 0 // initialized
-    return node
-  }
-
   static get currentNode(): RxNode {
     return gContext
   }
@@ -512,7 +494,25 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
+function createSystemNode<E = any, O = any>(name: string, arranging: boolean, native: E): RxNode<E, O> {
+  const node = new RxDomNode<E, O>(
+    0,                        // level
+    name,                     // name
+    { name, arranging },      // factory
+    false,                    // inline
+    undefined,                // triggers
+    () => { /* nop */ },      // render
+    undefined,                // superRender
+    {} as RxDomNode)          // fake parent (overwritten below)
+  // Initialize
+  const a: any = node
+  a['parent'] = node
+  node.native = native
+  node.stamp = 0 // initialized
+  return node
+}
+
 const NOP = (): void => { /* nop */ }
-const SYSTEM = RxDom.createRootNode<any, any>('SYSTEM', false, 'SYSTEM') as RxDomNode
+const SYSTEM = createSystemNode<any, any>('SYSTEM', false, 'SYSTEM') as RxDomNode
 let gContext: RxDomNode = SYSTEM
 let gDisposalQueue: Array<RxNode> = []
