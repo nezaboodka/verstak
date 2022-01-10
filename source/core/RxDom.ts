@@ -135,9 +135,8 @@ export class RxDom {
       result.customize = customize
     }
     else {
-      result = new RxDomNode<E, O>(parent.level + 1, name,
-        factory ?? RxDom.basic, inline ?? false, triggers,
-        render, customize, parent)
+      result = new RxDomNode<E, O>(parent.level + 1, name, factory ?? RxDom.basic,
+        inline ?? false, triggers, render, customize, parent)
       children.retainNewlyCreated(result)
     }
     return result
