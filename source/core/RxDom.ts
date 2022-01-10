@@ -30,9 +30,9 @@ export class BasicNodeFactory<E> implements RxNodeFactory<E> {
     node.native = undefined
   }
 
-  // arrange(node: RxNode<E, O>): void {
-  //   // nothing to do
-  // }
+  arrange(node: RxNode<E>): void {
+    // nothing to do by default
+  }
 
   render(node: RxNode<E>): void {
     let result: any
