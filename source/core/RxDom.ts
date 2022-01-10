@@ -108,7 +108,8 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     reentrance: Reentrance.CancelPrevious,
     sensitiveArgs: true,
     noSideEffects: true })
-  autorender(_triggers: unknown): void { // triggers are used to enforce rendering of reactive node by parent
+  autorender(_triggers: unknown): void {
+    // triggers parameter is used to enforce rendering by parent
     if (this.stamp === 0) // configure only once
       Rx.configureCurrentOperation({ order: this.level })
     invokeRenderIfNodeIsAlive(this)
