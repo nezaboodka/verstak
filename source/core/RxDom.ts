@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, Transaction, Rx, options, Reentrance, nonreactive } from 'reactronic'
-import { RxNodeFactory, Render, Callback, RxNode, Customize, RxNodeChildren, RxPriority } from './RxDom.Types'
+import { RxNodeFactory, Render, RxNode, Customize, RxNodeChildren, RxPriority } from './RxDom.Types'
 
 const NOP = (): void => { /* nop */ }
 
