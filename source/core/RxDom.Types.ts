@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 export type Render<E = unknown, O = void> = (element: E, options: O) => void | Promise<void>
-export type OuterRender<E = unknown, O = void> = ((render: (options: O) => void, element: E) => void)
+export type OuterRender<E = unknown, O = void> = (render: (options: O) => void, element: E) => void
 // export type AsyncOuterRender<O = unknown, E = void> = ((render: (options: O) => Promise<void>, element: E) => Promise<void>)
 // export type AsyncCustomize<E = unknown, O = void> = (element: E, options: O) => Promise<void>
 export const enum RxPriority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
