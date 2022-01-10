@@ -126,7 +126,7 @@ export class RxDom {
   public static readonly basic = new BasicNodeFactory<any>('basic', false)
   public static incrementalRenderingFrameDurationMs = 10
 
-  static Node<E = undefined, O = void>(name: string, triggers: any,
+  static Node<E = undefined, O = void>(name: string, triggers: unknown,
     render?: Render<E, O>, outerRender?: OuterRender<E, O>,
     factory?: RxNodeFactory<E>, inline?: boolean): RxNode<E, O> {
     const parent = gContext
