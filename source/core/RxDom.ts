@@ -147,7 +147,7 @@ export class RxDom {
     return result
   }
 
-  static launch(render: Callback<void>): void {
+  static launch(render: () => void): void {
     gSystem.render = render
     tryToRender(gSystem)
   }
