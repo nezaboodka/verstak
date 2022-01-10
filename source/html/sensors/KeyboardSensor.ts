@@ -74,14 +74,14 @@ export class KeyboardSensor extends HtmlElementSensor {
     this.setPreventDefaultAndStopPropagation(e)
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected keyDown(e: KeyboardEvent): void {
     this.updateSensorData(e)
     this.up = ''
     sensitive(true, () => this.down = e.key)
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected keyUp(e: KeyboardEvent): void {
     this.updateSensorData(e)
     this.down = ''

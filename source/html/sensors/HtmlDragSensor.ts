@@ -155,7 +155,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.reset()
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected startDragging(e: DragEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -181,39 +181,39 @@ export class HtmlDragSensor extends HtmlElementSensor {
     })
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected dragging(e: DragEvent): void {
     this.dragStarted = true
     this.dragFinished = false
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected finishDragging(e: DragEvent): void {
     this.dragFinished = true
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected enterTarget(e: DragEvent): void {
     this.updateDragTarget(e)
     this.dropped = false
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected leaveTarget(e: DragEvent): void {
     // Nothing to do
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected dragOver(e: DragEvent): void {
     this.updateDragTarget(e)
     this.dropped = false
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected drop(e: DragEvent): void {
     this.updateDragTarget(e)
     this.modifiers = this.immediateModifiers
@@ -236,7 +236,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected updateEventOnDragStart(e: DragEvent): void {
     const dt = e.dataTransfer
     if (dt) {
@@ -252,13 +252,13 @@ export class HtmlDragSensor extends HtmlElementSensor {
     }
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected updateEventOnDropAllowed(e: DragEvent): void {
     if (this.dropAllowed)
       e.preventDefault()
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected reset(): void {
     this.draggable = undefined
     this.dragSource = undefined

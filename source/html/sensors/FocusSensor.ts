@@ -41,7 +41,7 @@ export class FocusSensor extends HtmlElementSensor {
     this.setPreventDefaultAndStopPropagation(e)
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected doFocusIn(e: FocusEvent): void {
     this.preventDefault = false
     this.stopPropagation = false

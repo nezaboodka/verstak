@@ -43,7 +43,7 @@ export class HoverSensor extends BasePointerSensor {
     this.doPointerOut()
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected doPointerOver(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -56,7 +56,7 @@ export class HoverSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected doPointerOut(): void {
     this.preventDefault = false
     this.stopPropagation = false

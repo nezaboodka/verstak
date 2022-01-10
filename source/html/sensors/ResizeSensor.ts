@@ -56,7 +56,7 @@ export class ResizeSensor extends Sensor {
     this.reset()
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected resize(entries: Array<ResizeObserverEntry>): void {
     this.revision++
     this.resizedElements = entries.map(entry => {

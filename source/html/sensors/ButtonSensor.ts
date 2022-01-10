@@ -112,7 +112,7 @@ export class ButtonSensor extends BasePointerSensor {
     }
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected press(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -134,14 +134,14 @@ export class ButtonSensor extends BasePointerSensor {
     })
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, logging: LoggingLevel.Silent })
+  @transaction @options({ reentrance: Reentrance.CancelPrevious, logging: LoggingLevel.Off })
   protected selecting(e: PointerEvent): void {
     this.updateSensorData(e)
     this.state = ButtonState.Selecting
     this.selected = false
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected select(e: PointerEvent): void {
     this.updateSensorData(e)
     this.state = ButtonState.Selected
@@ -150,7 +150,7 @@ export class ButtonSensor extends BasePointerSensor {
     this.selected = true
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected release(): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -158,14 +158,14 @@ export class ButtonSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected cancel(): void {
     this.state = ButtonState.Released
     this.selected = false
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Silent })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected reset(): void {
     this.preventDefault = false
     this.stopPropagation = false
