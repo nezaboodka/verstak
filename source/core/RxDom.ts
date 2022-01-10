@@ -39,12 +39,8 @@ export class BasicNodeFactory<E> implements RxNodeFactory<E> {
     const children = node.children as RxDomNodeChildren
     children.beginReconciliation(node.stamp)
     if (node.customize)
-      result = node.customize(options => {
-        const r = node.render?.(node.native!, options)
-        if (r instanceof Promise)
-          return r.then(NOP, error => console.log(error)) // causes wrapping of then/catch to execute within current parent
-        else
-          return options
+      node.customize(options => {
+        result = node.render?.(node.native!, options)
       }, node.native!)
     else
       result = node.render?.(node.native!, undefined)
