@@ -30,7 +30,7 @@ export interface RxNode<E = any, O = any> {
   readonly render: Render<E, O> | undefined
   readonly customize: Customize<E, O> | undefined
   priority: RxPriority
-  shuffledRendering: boolean
+  shuffle: boolean
   model?: unknown
   // System-managed properties
   readonly level: number
