@@ -36,9 +36,9 @@ export class BasicNodeFactory<E> implements RxNodeFactory<E> {
 
   render(node: RxNode<E>): void {
     let result: any
+    const native = node.native!
     const children = node.children as RxDomNodeChildren
     children.beginReconciliation(node.stamp)
-    const native = node.native!
     try {
       if (node.customize)
         node.customize(o => { result = node.render?.(native, o) }, native)
