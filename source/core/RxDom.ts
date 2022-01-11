@@ -248,7 +248,7 @@ function tryToRender(node: RxDomNode): void {
       nonreactive(node.autorender, node.triggers) // reactive auto-rendering
   }
   catch (e) {
-    console.log(`rendering failed: ${node.name}`)
+    console.log(`Rendering failed: ${node.name}`)
     console.log(e)
   }
 }
