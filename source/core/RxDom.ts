@@ -232,19 +232,25 @@ async function renderIncrementally(parent: RxDomNode, children: Array<RxDomNode>
 }
 
 function tryToRender(node: RxDomNode): void {
-  const factory = node.factory
-  if (node.stamp === ~0) {
-    node.stamp = 0
-    factory.initialize?.(node)
+  try {
+    const factory = node.factory
+    if (node.stamp === ~0) {
+      node.stamp = 0
+      factory.initialize?.(node)
+    }
+    if (node.rearranging) {
+      node.rearranging = false
+      factory.arrange?.(node)
+    }
+    if (node.inline)
+      invokeRenderIfNodeIsAlive(node)
+    else
+      nonreactive(node.autorender, node.triggers) // reactive auto-rendering
   }
-  if (node.rearranging) {
-    node.rearranging = false
-    factory.arrange?.(node)
+  catch (e) {
+    console.log(`rendering failed: ${node.name}`)
+    console.log(e)
   }
-  if (node.inline)
-    invokeRenderIfNodeIsAlive(node)
-  else
-    nonreactive(node.autorender, node.triggers) // reactive auto-rendering
 }
 
 function invokeRenderIfNodeIsAlive(node: RxDomNode): void {
