@@ -507,14 +507,14 @@ const gSystemFactory: RxNodeFactory<undefined> = {
 }
 
 const gSystem = new RxDomNode<undefined, void>(
-  0,                  // level
-  'SYSTEM',           // name
-  gSystemFactory, // factory
-  false,              // inline
-  undefined,          // triggers
-  NOP,                // render
-  undefined,          // customize
-  {} as RxDomNode)    // fake parent (overwritten below)
+  0,                // level
+  'SYSTEM',         // name
+  gSystemFactory,   // factory
+  false,            // inline
+  undefined,        // triggers
+  NOP,              // render
+  undefined,        // customize
+  {} as RxDomNode)  // fake parent (overwritten below)
 
 Object.defineProperty(gSystem, 'parent', {
   value: gSystem,

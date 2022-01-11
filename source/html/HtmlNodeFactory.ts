@@ -30,11 +30,8 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
   arrange(node: RxNode<E>): void {
     const e = node.native
     if (e) {
-      let p = node.parent
-      while (!p.native) // are there better ideas how to determine native parent?
-        p = p.parent
-      const nativeParent = p.native
-      if (nativeParent instanceof Element) {
+      const nativeParent = findNearestHtmlParent(node).native
+      if (nativeParent) {
         const after = node.after
         if (after === undefined) {
           if (nativeParent !== e.parentNode || !e.previousSibling)
@@ -100,5 +97,13 @@ function blink(e: Element | undefined, revision: number): void {
     e.classList.toggle(`${effect}-${n2}`, false)
   }
 }
+
+function findNearestHtmlParent(node: RxNode): RxNode<HTMLElement> {
+  let p = node.parent
+  while (p.native instanceof HTMLElement === false && p !== node)
+    p = p.parent
+  return p
+}
+
 
 let gBlinkingEffect: string | undefined = undefined
