@@ -81,7 +81,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   rearranging: boolean
   native?: E
 
-  constructor(level: number, name: string, factory: RxNodeFactory<E>, inline: boolean,
+  constructor(name: string, factory: RxNodeFactory<E>, inline: boolean,
     triggers: unknown, render: Render<E, O> | undefined, customize: Customize<E, O> | undefined,
     parent: RxDomNode) {
     // User-defined properties
@@ -95,7 +95,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     this.shuffle = false
     this.model = undefined
     // System-managed properties
-    this.level = level
+    this.level = parent.level + 1
     this.parent = parent
     this.stamp = 0
     this.emission = 0
@@ -139,7 +139,7 @@ export class RxDom {
       result.customize = customize
     }
     else {
-      result = new RxDomNode<E, O>(parent.level + 1, name, factory ?? RxDom.basic,
+      result = new RxDomNode<E, O>(name, factory ?? RxDom.basic,
         inline ?? false, triggers, render, customize, parent)
       children.emitAsNewlyCreated(result)
     }
@@ -526,14 +526,13 @@ const gSystemFactory: RxNodeFactory<undefined> = {
 }
 
 const gSystem = new RxDomNode<undefined, void>(
-  0,                // level
   'SYSTEM',         // name
   gSystemFactory,   // factory
   false,            // inline
   undefined,        // triggers
   NOP,              // render
   undefined,        // customize
-  {} as RxDomNode)  // fake parent (overwritten below)
+  { level: 0 } as RxDomNode)  // fake parent (overwritten below)
 
 Object.defineProperty(gSystem, 'parent', {
   value: gSystem,
