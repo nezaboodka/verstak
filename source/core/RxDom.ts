@@ -310,6 +310,23 @@ async function runDisposalLoop(): Promise<void> {
   gDisposalQueue = [] // reset loop
 }
 
+// async function runDisposalLoop(): Promise<void> {
+//   await Transaction.requestNextFrame()
+//   let count = 0
+//   let x = gFirstToDispose
+//   while (x !== undefined) {
+//     if (Transaction.isFrameOver(500, 5))
+//       await Transaction.requestNextFrame()
+//     Rx.dispose(x)
+//     const neighbor = x.neighbor
+//     x.neighbor = undefined
+//     x = neighbor
+//     count++
+//   }
+//   gFirstToDispose = gLastToDispose = undefined // reset loop
+//   console.log(`disposed count: ${count}`)
+// }
+
 function forEachChildRecursively(node: RxDomNode, action: (e: any) => void): void {
   const native = node.native
   native && action(native)
@@ -475,6 +492,15 @@ export class RxDomNodeChildren implements RxNodeChildren {
   }
 }
 
+// function moveToDisposeQueue(node: RxDomNode): void {
+//   const last = gLastToDispose
+//   if (last)
+//     gLastToDispose = last.neighbor = node
+//   else
+//     gFirstToDispose = gLastToDispose = node
+//   node.neighbor = undefined
+// }
+
 // Support asynchronous programing automatically
 
 const ORIGINAL_PROMISE_THEN = Promise.prototype.then
@@ -525,3 +551,5 @@ Object.defineProperty(gSystem, 'parent', {
 
 let gContext: RxDomNode = gSystem
 let gDisposalQueue: Array<RxNode> = []
+// let gFirstToDispose: RxDomNode | undefined = undefined
+// let gLastToDispose: RxDomNode | undefined = undefined
