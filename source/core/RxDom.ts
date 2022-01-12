@@ -27,7 +27,6 @@ export class BasicNodeFactory<E> implements RxNodeFactory<E> {
   }
 
   finalize(node: RxNode<E>, initiator: RxNode): void {
-    node.neighbor = undefined
     node.native = undefined
   }
 
