@@ -114,7 +114,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     noSideEffects: true })
   autorender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by parent
-    if (this.stamp === ~0) // configure only once
+    if (this.stamp === 0) // configure only once
       Rx.configureCurrentOperation({ order: this.level })
     invokeRenderIfNodeIsAlive(this)
   }
@@ -237,6 +237,15 @@ async function renderIncrementally(parent: RxDomNode, children: Array<RxDomNode>
 
 function doRender(node: RxDomNode): void {
   try {
+    const factory = node.factory
+    if (node.stamp === ~0) {
+      node.stamp = 0
+      factory.initialize?.(node)
+    }
+    if (node.rearranging) {
+      node.rearranging = false
+      factory.arrange?.(node)
+    }
     if (node.inline)
       invokeRenderIfNodeIsAlive(node)
     else
@@ -250,17 +259,9 @@ function doRender(node: RxDomNode): void {
 
 function invokeRenderIfNodeIsAlive(node: RxDomNode): void {
   if (node.stamp >= ~0) { // needed for deferred Rx.dispose
-    const factory = node.factory
-    if (node.stamp === ~0) {
-      node.stamp = 0
-      factory.initialize?.(node)
-    }
-    if (node.rearranging) {
-      node.rearranging = false
-      factory.arrange?.(node)
-    }
-    node.stamp++
     runUnder(node, () => {
+      node.stamp++
+      const factory = node.factory
       if (factory.render)
         factory.render(node) // factory-defined rendering
       else
@@ -270,7 +271,7 @@ function invokeRenderIfNodeIsAlive(node: RxDomNode): void {
 }
 
 function doFinalize(node: RxDomNode, initiator: RxDomNode): void {
-  if (node.stamp > 0) {
+  if (node.stamp >= ~0) {
     node.stamp = ~node.stamp
     // Finalize node itself
     const factory = node.factory
