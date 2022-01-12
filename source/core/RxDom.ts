@@ -520,14 +520,9 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-const gSystemFactory: RxNodeFactory<undefined> = {
-  name: 'SYSTEM',
-  arranging: false,
-}
-
 const gSystem = new RxDomNode<undefined, void>(
   'SYSTEM',         // name
-  gSystemFactory,   // factory
+  new BasicNodeFactory<undefined>('SYSTEM', false),
   false,            // inline
   undefined,        // triggers
   NOP,              // render
