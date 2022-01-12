@@ -195,6 +195,11 @@ export class RxDom {
     }
   }
 
+  static onlyOnce(func: (...args: any[]) => void, ...args: any[]): void {
+    if (gContext.stamp === 1)
+      func(...args)
+  }
+
   static get currentNode(): RxNode {
     return gContext
   }
