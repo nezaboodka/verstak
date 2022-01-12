@@ -131,7 +131,7 @@ export class RxDom {
     factory?: RxNodeFactory<E>, inline?: boolean): RxNode<E, O> {
     const parent = gContext
     const children = parent.children
-    let result = children.tryToReuseIncoming(name)
+    let result = children.tryAddIncomingAsExisting(name)
     if (result) {
       if (result.inline || !triggersAreEqual(result.triggers, triggers))
         result.triggers = triggers
@@ -428,7 +428,7 @@ export class RxDomNodeChildren implements RxNodeChildren {
     return vanishedFirst
   }
 
-  tryToReuseIncoming(name: string): RxDomNode | undefined {
+  tryAddIncomingAsExisting(name: string): RxDomNode | undefined {
     let result = this.likelyNextIncoming
     if (result?.name !== name)
       result = this.namespace.get(name)
