@@ -314,19 +314,14 @@ function doFinalize(node: RxDomNode, initiator: RxDomNode): void {
 
 async function runDisposalLoop(): Promise<void> {
   await Transaction.requestNextFrame()
-  let count = 0
   let x = gFirstToDispose
   while (x !== undefined) {
     if (Transaction.isFrameOver(500, 5))
       await Transaction.requestNextFrame()
     Rx.dispose(x)
-    const neighbor = x.neighbor
-    x.neighbor = undefined
-    x = neighbor
-    count++
+    x = x.neighbor
   }
   gFirstToDispose = gLastToDispose = undefined // reset loop
-  console.log(`disposed count: ${count}`)
 }
 
 function forEachChildRecursively(node: RxDomNode, action: (e: any) => void): void {
