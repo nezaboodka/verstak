@@ -5,14 +5,14 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reaction, Transaction, Rx, options, Reentrance, nonreactive } from 'reactronic'
-import { RxNodeFactory, Render, RxNode, Customize, RxNodeChildren, RxPriority } from './RxDom.Types'
+import { reaction, nonreactive, Transaction, options, Reentrance, Rx } from 'reactronic'
+import { RxNode, RxNodeFactory, RxNodeChildren, RxPriority, RxRender, RxCustomize } from './RxDom.Types'
 
 const NOP = (): void => { /* nop */ }
 
-// BasicNodeFactory
+// RxBasicNodeFactory
 
-export class BasicNodeFactory<E> implements RxNodeFactory<E> {
+export class RxBasicNodeFactory<E> implements RxNodeFactory<E> {
   readonly name: string
   readonly arranging: boolean
 
@@ -64,8 +64,8 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
   readonly factory: RxNodeFactory<E>
   readonly inline: boolean
   triggers: unknown
-  render: Render<E, O> | undefined
-  customize: Customize<E, O> | undefined
+  render: RxRender<E, O> | undefined
+  customize: RxCustomize<E, O> | undefined
   priority: RxPriority
   shuffle: boolean
   model?: unknown
@@ -82,7 +82,7 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
   native?: E
 
   constructor(name: string, factory: RxNodeFactory<E>, inline: boolean,
-    triggers: unknown, render: Render<E, O> | undefined, customize: Customize<E, O> | undefined,
+    triggers: unknown, render: RxRender<E, O> | undefined, customize: RxCustomize<E, O> | undefined,
     parent: RxNodeImpl) {
     // User-defined properties
     this.name = name
@@ -123,11 +123,11 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
 // RxDom
 
 export class RxDom {
-  public static readonly basic = new BasicNodeFactory<any>('basic', false)
+  public static readonly basic = new RxBasicNodeFactory<any>('basic', false)
   public static incrementalRenderingFrameDurationMs = 10
 
   static Node<E = undefined, O = void>(name: string, triggers: unknown,
-    render?: Render<E, O>, customize?: Customize<E, O>,
+    render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
     factory?: RxNodeFactory<E>, inline?: boolean): RxNode<E, O> {
     const parent = gContext
     const children = parent.children
@@ -502,7 +502,7 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const gSystem = new RxNodeImpl<undefined, void>(
   'SYSTEM',  // name
-  new BasicNodeFactory<undefined>('SYSTEM', false),
+  new RxBasicNodeFactory<undefined>('SYSTEM', false),
   false,     // inline
   undefined, // triggers
   NOP,       // render

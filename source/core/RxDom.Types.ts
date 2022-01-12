@@ -5,9 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export type Render<E = unknown, O = void> = (element: E, options: O) => void | Promise<void>
-export type Customize<E = unknown, O = void> = (render: (options: O) => void, element: E) => void
-// export type AsyncCustomize<O = unknown, E = void> = (render: (options: O) => Promise<void>, element: E) => Promise<void>
+export type RxRender<E = unknown, O = void> = (element: E, options: O) => void | Promise<void>
+export type RxCustomize<E = unknown, O = void> = (render: (options: O) => void, element: E) => void
 export const enum RxPriority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export type Callback<E = unknown> = (element: E) => void
@@ -27,8 +26,8 @@ export interface RxNode<E = any, O = any> {
   readonly factory: RxNodeFactory<E>
   readonly inline: boolean
   readonly triggers: unknown
-  readonly render: Render<E, O> | undefined
-  readonly customize: Customize<E, O> | undefined
+  readonly render: RxRender<E, O> | undefined
+  readonly customize: RxCustomize<E, O> | undefined
   priority: RxPriority
   shuffle: boolean
   model?: unknown
