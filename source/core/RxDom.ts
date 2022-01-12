@@ -116,7 +116,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     // triggers parameter is used to enforce rendering by parent
     if (this.stamp === ~0) // configure only once
       Rx.configureCurrentOperation({ order: this.level })
-    invokeRenderIfNodeIsAlive(this)
+    runRender(this)
   }
 }
 
@@ -237,12 +237,12 @@ async function renderIncrementally(parent: RxDomNode, children: Array<RxDomNode>
 
 function doRender(node: RxDomNode): void {
   if (node.inline)
-    invokeRenderIfNodeIsAlive(node)
+    runRender(node)
   else
     nonreactive(node.autorender, node.triggers) // reactive auto-rendering
 }
 
-function invokeRenderIfNodeIsAlive(node: RxDomNode): void {
+function runRender(node: RxDomNode): void {
   if (node.stamp >= ~0) { // needed for deferred Rx.dispose
     try {
       const factory = node.factory
