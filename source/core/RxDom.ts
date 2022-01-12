@@ -38,7 +38,7 @@ export class BasicNodeFactory<E> implements RxNodeFactory<E> {
     let result: any
     const native = node.native!
     const children = node.children as RxDomNodeChildren
-    children.beginReconciliation(node.stamp)
+    children.beginEmission(node.stamp)
     try {
       if (node.customize)
         node.customize(o => { result = node.render?.(native, o) }, native)
@@ -73,7 +73,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   readonly level: number
   readonly parent: RxDomNode
   stamp: number
-  reconciled: number
+  emission: number
   children: RxDomNodeChildren
   next?: RxDomNode
   prev?: RxDomNode
@@ -98,7 +98,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     this.level = level
     this.parent = parent
     this.stamp = 0
-    this.reconciled = 0
+    this.emission = 0
     this.children = new RxDomNodeChildren()
     this.next = undefined
     this.prev = undefined
@@ -131,7 +131,7 @@ export class RxDom {
     factory?: RxNodeFactory<E>, inline?: boolean): RxNode<E, O> {
     const parent = gContext
     const children = parent.children
-    let result = children.tryAddIncomingAsExisting(name)
+    let result = children.tryEmitAsExisting(name)
     if (result) {
       if (result.inline || !triggersAreEqual(result.triggers, triggers))
         result.triggers = triggers
@@ -141,7 +141,7 @@ export class RxDom {
     else {
       result = new RxDomNode<E, O>(parent.level + 1, name, factory ?? RxDom.basic,
         inline ?? false, triggers, render, customize, parent)
-      children.addIncomingAsNewlyCreated(result)
+      children.emitAsNewlyCreated(result)
     }
     return result
   }
@@ -156,8 +156,8 @@ export class RxDom {
     let promised: Promise<void> | undefined = undefined
     try {
       const children = node.children
-      if (children.isReconciling) {
-        let vanished = children.endReconciliation()
+      if (children.isEmitting) {
+        let vanished = children.endEmission()
         // Unmount vanished children
         while (vanished !== undefined) {
           doFinalize(vanished, vanished)
@@ -394,60 +394,59 @@ export class RxDomNodeChildren implements RxNodeChildren {
   namespace: Map<string, RxDomNode> = new Map<string, RxDomNode>()
   first?: RxDomNode = undefined
   count: number = 0
-  incomingFirst?: RxDomNode = undefined
-  incomingLast?: RxDomNode = undefined
-  incomingCount: number = 0
-  likelyNextIncoming?: RxDomNode = undefined
-  stamp: number = 0
+  emittedFirst?: RxDomNode = undefined
+  emittedLast?: RxDomNode = undefined
+  emittedCount: number = 0
+  likelyNextEmitted?: RxDomNode = undefined
+  emission: number = 0
 
-  get isReconciling(): boolean { return this.stamp > 0 }
+  get isEmitting(): boolean { return this.emission > 0 }
 
-  beginReconciliation(stamp: number): void {
-    if (this.isReconciling)
+  beginEmission(stamp: number): void {
+    if (this.isEmitting)
       throw new Error('reconciliation is not reentrant')
-    this.stamp = stamp
+    this.emission = stamp
   }
 
-  endReconciliation(): RxDomNode | undefined {
-    if (!this.isReconciling)
+  endEmission(): RxDomNode | undefined {
+    if (!this.isEmitting)
       throw new Error('reconciliation is ended already')
-    this.stamp = 0
-    const namespace = this.namespace
-    const count = this.count
-    const n = this.incomingCount
-    if (n > 0) {
-      if (n > count) { // it should be faster to delete non-retained nodes from namespace
+    this.emission = 0
+    const emittedCount = this.emittedCount
+    if (emittedCount > 0) {
+      if (emittedCount > this.count) { // it should be faster to delete non-retained nodes from namespace
+        const ns = this.namespace
         let x = this.first
         while (x !== undefined)
-          namespace.delete(x.name), x = x.next
+          ns.delete(x.name), x = x.next
       }
       else { // it should be faster to recreate namespace with retained nodes only
-        const newNamespace = this.namespace = new Map<string, RxDomNode>()
-        let x = this.incomingFirst
+        const ns = this.namespace = new Map<string, RxDomNode>()
+        let x = this.emittedFirst
         while (x !== undefined)
-          newNamespace.set(x.name, x), x = x.next
+          ns.set(x.name, x), x = x.next
       }
     }
     else // just create new empty namespace
       this.namespace = new Map<string, RxDomNode>()
     const vanishedFirst = this.first
-    this.first = this.incomingFirst
-    this.count = n
-    this.incomingFirst = this.incomingLast = undefined
-    this.incomingCount = 0
-    this.likelyNextIncoming = this.first
+    this.first = this.emittedFirst
+    this.count = emittedCount
+    this.emittedFirst = this.emittedLast = undefined
+    this.emittedCount = 0
+    this.likelyNextEmitted = this.first
     return vanishedFirst
   }
 
-  tryAddIncomingAsExisting(name: string): RxDomNode | undefined {
-    let result = this.likelyNextIncoming
+  tryEmitAsExisting(name: string): RxDomNode | undefined {
+    let result = this.likelyNextEmitted
     if (result?.name !== name)
       result = this.namespace.get(name)
     if (result && result.stamp >= 0) {
-      if (result.reconciled === this.stamp)
+      if (result.emission === this.emission)
         throw new Error(`duplicate node id: ${name}`)
-      result.reconciled = this.stamp
-      this.likelyNextIncoming = result.next
+      result.emission = this.emission
+      this.likelyNextEmitted = result.next
       // Exclude from main sequence
       if (result.prev !== undefined)
         result.prev.next = result.next
@@ -457,32 +456,32 @@ export class RxDomNodeChildren implements RxNodeChildren {
         this.first = result.next
       this.count--
       // Include into retained sequence
-      const last = this.incomingLast
+      const last = this.emittedLast
       if (last) {
         result.prev = last
         result.next = undefined
-        this.incomingLast = last.next = result
+        this.emittedLast = last.next = result
       }
       else {
         result.prev = result.next = undefined
-        this.incomingFirst = this.incomingLast = result
+        this.emittedFirst = this.emittedLast = result
       }
-      this.incomingCount++
+      this.emittedCount++
     }
     return result
   }
 
-  addIncomingAsNewlyCreated(node: RxDomNode): void {
-    node.reconciled = this.stamp
+  emitAsNewlyCreated(node: RxDomNode): void {
+    node.emission = this.emission
     this.namespace.set(node.name, node)
-    const last = this.incomingLast
+    const last = this.emittedLast
     if (last) {
       node.prev = last
-      this.incomingLast = last.next = node
+      this.emittedLast = last.next = node
     }
     else
-      this.incomingFirst = this.incomingLast = node
-    this.incomingCount++
+      this.emittedFirst = this.emittedLast = node
+    this.emittedCount++
   }
 }
 
