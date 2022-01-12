@@ -276,15 +276,8 @@ function doFinalize(node: RxDomNode, initiator: RxDomNode): void {
       f.finalize(node, initiator)
     else
       RxDom.basic.finalize(node, initiator) // default finalize
-    // Enqueue node for Rx.dispose if needed
-    if (!node.inline) {
-      postponeDispose(node)
-      if (gFirstToDispose === node) {
-        Transaction.run({ standalone: 'disposal', hint: `runDisposalLoop(initiator=${node.name})` }, () => {
-          void runDisposalLoop().then(NOP, error => console.log(error))
-        })
-      }
-    }
+    if (!node.inline)
+      postponeDispose(node) // enqueue node for Rx.dispose if needed
     // Finalize children if any
     let x = node.children.first
     while (x !== undefined) {
@@ -477,6 +470,10 @@ function postponeDispose(node: RxDomNode): void {
   else
     gFirstToDispose = gLastToDispose = node
   node.neighbor = undefined
+  if (gFirstToDispose === node)
+    Transaction.run({ standalone: 'disposal', hint: `runDisposalLoop(initiator=${node.name})` }, () => {
+      void runDisposalLoop().then(NOP, error => console.log(error))
+    })
 }
 
 // Seamless support for asynchronous programing
