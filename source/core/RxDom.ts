@@ -237,15 +237,6 @@ async function renderIncrementally(parent: RxDomNode, children: Array<RxDomNode>
 
 function doRender(node: RxDomNode): void {
   try {
-    const factory = node.factory
-    if (node.stamp === ~0) {
-      node.stamp = 0
-      factory.initialize?.(node)
-    }
-    if (node.rearranging) {
-      node.rearranging = false
-      factory.arrange?.(node)
-    }
     if (node.inline)
       invokeRenderIfNodeIsAlive(node)
     else
@@ -259,9 +250,17 @@ function doRender(node: RxDomNode): void {
 
 function invokeRenderIfNodeIsAlive(node: RxDomNode): void {
   if (node.stamp >= ~0) { // needed for deferred Rx.dispose
+    const factory = node.factory
+    if (node.stamp === ~0) {
+      node.stamp = 0
+      factory.initialize?.(node)
+    }
+    if (node.rearranging) {
+      node.rearranging = false
+      factory.arrange?.(node)
+    }
+    node.stamp++
     runUnder(node, () => {
-      node.stamp++
-      const factory = node.factory
       if (factory.render)
         factory.render(node) // factory-defined rendering
       else
