@@ -283,7 +283,7 @@ function doFinalize(node: RxDomNode, initiator: RxDomNode): void {
     if (!node.inline) {
       // gDisposalQueue.push(node)
       // if (gDisposalQueue.length === 1) {
-      moveToDisposeQueue(node)
+      moveToDisposeList(node)
       if (gFirstToDispose === node) {
         Transaction.run({ standalone: 'disposal', hint: `runDisposalLoop(initiator=${node.name})` }, () => {
           void runDisposalLoop().then(NOP, error => console.log(error))
@@ -494,7 +494,7 @@ export class RxDomNodeChildren implements RxNodeChildren {
   }
 }
 
-function moveToDisposeQueue(node: RxDomNode): void {
+function moveToDisposeList(node: RxDomNode): void {
   const last = gLastToDispose
   if (last)
     gLastToDispose = last.neighbor = node
