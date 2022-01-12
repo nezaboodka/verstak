@@ -114,7 +114,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     noSideEffects: true })
   autorender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by parent
-    if (this.stamp === 0) // configure only once
+    if (this.stamp === ~0) // configure only once
       Rx.configureCurrentOperation({ order: this.level })
     invokeRenderIfNodeIsAlive(this)
   }
@@ -236,37 +236,36 @@ async function renderIncrementally(parent: RxDomNode, children: Array<RxDomNode>
 }
 
 function doRender(node: RxDomNode): void {
-  try {
-    const factory = node.factory
-    if (node.stamp === ~0) {
-      node.stamp = 0
-      factory.initialize?.(node)
-    }
-    if (node.rearranging) {
-      node.rearranging = false
-      factory.arrange?.(node)
-    }
-    if (node.inline)
-      invokeRenderIfNodeIsAlive(node)
-    else
-      nonreactive(node.autorender, node.triggers) // reactive auto-rendering
-  }
-  catch (e) {
-    console.log(`${e}`)
-    console.log(`Rendering failed: ${node.name} (see error message above)`)
-  }
+  if (node.inline)
+    invokeRenderIfNodeIsAlive(node)
+  else
+    nonreactive(node.autorender, node.triggers) // reactive auto-rendering
 }
 
 function invokeRenderIfNodeIsAlive(node: RxDomNode): void {
   if (node.stamp >= ~0) { // needed for deferred Rx.dispose
-    runUnder(node, () => {
-      node.stamp++
+    try {
       const factory = node.factory
-      if (factory.render)
-        factory.render(node) // factory-defined rendering
-      else
-        RxDom.basic.render(node) // default rendering
-    })
+      if (node.stamp === ~0) {
+        node.stamp = 0
+        factory.initialize?.(node)
+      }
+      if (node.rearranging) {
+        node.rearranging = false
+        factory.arrange?.(node)
+      }
+      runUnder(node, () => {
+        node.stamp++
+        if (factory.render)
+          factory.render(node) // factory-defined rendering
+        else
+          RxDom.basic.render(node) // default rendering
+      })
+    }
+    catch (e) {
+      console.log(`${e}`)
+      console.log(`Rendering failed: ${node.name} (see error message above)`)
+    }
   }
 }
 
