@@ -243,19 +243,19 @@ function doRender(node: RxDomNode): void {
 }
 
 function runRender(node: RxDomNode): void {
-  if (node.stamp >= 0) { // needed for deferred Rx.dispose
+  if (node.stamp >= 0) {
     try {
-      const factory = node.factory
+      const f = node.factory
       if (node.stamp === 0)
-        factory.initialize?.(node)
+        f.initialize?.(node)
       if (node.rearranging) {
         node.rearranging = false
-        factory.arrange?.(node)
+        f.arrange?.(node)
       }
       runUnder(node, () => {
         node.stamp++
-        if (factory.render)
-          factory.render(node) // factory-defined rendering
+        if (f.render)
+          f.render(node) // factory-defined rendering
         else
           RxDom.basic.render(node) // default rendering
       })
@@ -271,16 +271,14 @@ function doFinalize(node: RxDomNode, initiator: RxDomNode): void {
   if (node.stamp >= 0) {
     node.stamp = ~node.stamp
     // Finalize node itself
-    const factory = node.factory
-    if (factory.finalize)
-      factory.finalize(node, initiator)
+    const f = node.factory
+    if (f.finalize)
+      f.finalize(node, initiator)
     else
       RxDom.basic.finalize(node, initiator) // default finalize
     // Enqueue node for Rx.dispose if needed
     if (!node.inline) {
-      // gDisposalQueue.push(node)
-      // if (gDisposalQueue.length === 1) {
-      moveToDisposeList(node)
+      postponeDispose(node)
       if (gFirstToDispose === node) {
         Transaction.run({ standalone: 'disposal', hint: `runDisposalLoop(initiator=${node.name})` }, () => {
           void runDisposalLoop().then(NOP, error => console.log(error))
@@ -295,19 +293,6 @@ function doFinalize(node: RxDomNode, initiator: RxDomNode): void {
     }
   }
 }
-
-// async function runDisposalLoop(): Promise<void> {
-//   await Transaction.requestNextFrame()
-//   const queue = gDisposalQueue
-//   let i = 0
-//   while (i < queue.length) {
-//     if (Transaction.isFrameOver(500, 5))
-//       await Transaction.requestNextFrame()
-//     Rx.dispose(queue[i])
-//     i++
-//   }
-//   gDisposalQueue = [] // reset loop
-// }
 
 async function runDisposalLoop(): Promise<void> {
   await Transaction.requestNextFrame()
@@ -485,7 +470,7 @@ export class RxDomNodeChildren implements RxNodeChildren {
   }
 }
 
-function moveToDisposeList(node: RxDomNode): void {
+function postponeDispose(node: RxDomNode): void {
   const last = gLastToDispose
   if (last)
     gLastToDispose = last.neighbor = node
@@ -494,25 +479,23 @@ function moveToDisposeList(node: RxDomNode): void {
   node.neighbor = undefined
 }
 
-// Support asynchronous programing automatically
+// Seamless support for asynchronous programing
 
 const ORIGINAL_PROMISE_THEN = Promise.prototype.then
 
 function reactronicDomHookedThen(this: any,
   resolve?: ((value: any) => any | PromiseLike<any>) | undefined | null,
   reject?: ((reason: any) => never | PromiseLike<never>) | undefined | null): Promise<any | never> {
-  resolve = resolve ? wrap(resolve) : resolveReturn
-  reject = reject ? wrap(reject) : rejectRethrow
+  resolve = resolve ? wrap(resolve) : defaultResolve
+  reject = reject ? wrap(reject) : defaultReject
   return ORIGINAL_PROMISE_THEN.call(this, resolve, reject)
 }
 
-/* istanbul ignore next */
-export function resolveReturn(value: any): any {
+function defaultResolve(value: any): any {
   return value
 }
 
-/* istanbul ignore next */
-export function rejectRethrow(error: any): never {
+function defaultReject(error: any): never {
   throw error
 }
 
@@ -521,12 +504,12 @@ Promise.prototype.then = reactronicDomHookedThen
 // Globals
 
 const gSystem = new RxDomNode<undefined, void>(
-  'SYSTEM',         // name
+  'SYSTEM',  // name
   new BasicNodeFactory<undefined>('SYSTEM', false),
-  false,            // inline
-  undefined,        // triggers
-  NOP,              // render
-  undefined,        // customize
+  false,     // inline
+  undefined, // triggers
+  NOP,       // render
+  undefined, // customize
   { level: 0 } as RxDomNode)  // fake parent (overwritten below)
 
 Object.defineProperty(gSystem, 'parent', {
@@ -537,6 +520,5 @@ Object.defineProperty(gSystem, 'parent', {
 })
 
 let gContext: RxDomNode = gSystem
-// let gDisposalQueue: Array<RxNode> = []
 let gFirstToDispose: RxDomNode | undefined = undefined
 let gLastToDispose: RxDomNode | undefined = undefined
