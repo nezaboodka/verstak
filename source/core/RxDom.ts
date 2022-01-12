@@ -131,7 +131,7 @@ export class RxDom {
     factory?: RxNodeFactory<E>, inline?: boolean): RxNode<E, O> {
     const parent = gContext
     const children = parent.children
-    let result = children.tryAddExistingIncoming(name)
+    let result = children.tryAddIncomingAsExisting(name)
     if (result) {
       if (result.inline || !triggersAreEqual(result.triggers, triggers))
         result.triggers = triggers
@@ -141,7 +141,7 @@ export class RxDom {
     else {
       result = new RxDomNode<E, O>(parent.level + 1, name, factory ?? RxDom.basic,
         inline ?? false, triggers, render, customize, parent)
-      children.addNewlyCreatedIncoming(result)
+      children.addIncomingAsNewlyCreated(result)
     }
     return result
   }
@@ -441,7 +441,7 @@ export class RxDomNodeChildren implements RxNodeChildren {
     return vanishedFirst
   }
 
-  tryAddExistingIncoming(name: string): RxDomNode | undefined {
+  tryAddIncomingAsExisting(name: string): RxDomNode | undefined {
     let result = this.likelyNextIncoming
     if (result?.name !== name)
       result = this.namespace.get(name)
@@ -474,7 +474,7 @@ export class RxDomNodeChildren implements RxNodeChildren {
     return result
   }
 
-  addNewlyCreatedIncoming(node: RxDomNode): void {
+  addIncomingAsNewlyCreated(node: RxDomNode): void {
     node.reconciled = this.stamp
     this.namespace.set(node.name, node)
     const last = this.incomingLast
