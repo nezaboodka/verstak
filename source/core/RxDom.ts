@@ -114,7 +114,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     noSideEffects: true })
   autorender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by parent
-    if (this.stamp === 0) // configure only once
+    if (this.stamp === ~0) // configure only once
       Rx.configureCurrentOperation({ order: this.level })
     invokeRenderIfNodeIsAlive(this)
   }
@@ -270,7 +270,7 @@ function invokeRenderIfNodeIsAlive(node: RxDomNode): void {
 }
 
 function doFinalize(node: RxDomNode, initiator: RxDomNode): void {
-  if (node.stamp >= 0) {
+  if (node.stamp > 0) {
     node.stamp = ~node.stamp
     // Finalize node itself
     const factory = node.factory
