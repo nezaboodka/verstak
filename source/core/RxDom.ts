@@ -131,7 +131,7 @@ export class RxDom {
     factory?: RxNodeFactory<E>, inline?: boolean): RxNode<E, O> {
     const parent = gContext
     const children = parent.children
-    let result = children.tryToRetainExisting(name)
+    let result = children.tryToReuseIncoming(name)
     if (result) {
       if (result.inline || !triggersAreEqual(result.triggers, triggers))
         result.triggers = triggers
@@ -141,7 +141,7 @@ export class RxDom {
     else {
       result = new RxDomNode<E, O>(parent.level + 1, name, factory ?? RxDom.basic,
         inline ?? false, triggers, render, customize, parent)
-      children.retainNewlyCreated(result)
+      children.addIncoming(result)
     }
     return result
   }
@@ -383,10 +383,10 @@ export class RxDomNodeChildren implements RxNodeChildren {
   namespace: Map<string, RxDomNode> = new Map<string, RxDomNode>()
   first?: RxDomNode = undefined
   count: number = 0
-  retainedFirst?: RxDomNode = undefined
-  retainedLast?: RxDomNode = undefined
-  retainedCount: number = 0
-  likelyNextRetained?: RxDomNode = undefined
+  incomingFirst?: RxDomNode = undefined
+  incomingLast?: RxDomNode = undefined
+  incomingCount: number = 0
+  likelyNextIncoming?: RxDomNode = undefined
   stamp: number = ~0
 
   get isReconciling(): boolean { return this.stamp > ~0 }
@@ -403,16 +403,16 @@ export class RxDomNodeChildren implements RxNodeChildren {
     this.stamp = ~0
     const namespace = this.namespace
     const count = this.count
-    const retained = this.retainedCount
-    if (retained > 0) {
-      if (retained > count) { // it should be faster to delete non-retained nodes from namespace
+    const n = this.incomingCount
+    if (n > 0) {
+      if (n > count) { // it should be faster to delete non-retained nodes from namespace
         let x = this.first
         while (x !== undefined)
           namespace.delete(x.name), x = x.next
       }
       else { // it should be faster to recreate namespace with retained nodes only
         const newNamespace = this.namespace = new Map<string, RxDomNode>()
-        let x = this.retainedFirst
+        let x = this.incomingFirst
         while (x !== undefined)
           newNamespace.set(x.name, x), x = x.next
       }
@@ -420,23 +420,23 @@ export class RxDomNodeChildren implements RxNodeChildren {
     else // just create new empty namespace
       this.namespace = new Map<string, RxDomNode>()
     const vanishedFirst = this.first
-    this.first = this.retainedFirst
-    this.count = retained
-    this.retainedFirst = this.retainedLast = undefined
-    this.retainedCount = 0
-    this.likelyNextRetained = this.first
+    this.first = this.incomingFirst
+    this.count = n
+    this.incomingFirst = this.incomingLast = undefined
+    this.incomingCount = 0
+    this.likelyNextIncoming = this.first
     return vanishedFirst
   }
 
-  tryToRetainExisting(name: string): RxDomNode | undefined {
-    let result = this.likelyNextRetained
+  tryToReuseIncoming(name: string): RxDomNode | undefined {
+    let result = this.likelyNextIncoming
     if (result?.name !== name)
       result = this.namespace.get(name)
     if (result && result.stamp >= ~0) {
       if (result.reconciliation === this.stamp)
         throw new Error(`duplicate node id: ${name}`)
       result.reconciliation = this.stamp
-      this.likelyNextRetained = result.next
+      this.likelyNextIncoming = result.next
       // Exclude from main sequence
       if (result.prev !== undefined)
         result.prev.next = result.next
@@ -446,32 +446,32 @@ export class RxDomNodeChildren implements RxNodeChildren {
         this.first = result.next
       this.count--
       // Include into retained sequence
-      const last = this.retainedLast
+      const last = this.incomingLast
       if (last) {
         result.prev = last
         result.next = undefined
-        this.retainedLast = last.next = result
+        this.incomingLast = last.next = result
       }
       else {
         result.prev = result.next = undefined
-        this.retainedFirst = this.retainedLast = result
+        this.incomingFirst = this.incomingLast = result
       }
-      this.retainedCount++
+      this.incomingCount++
     }
     return result
   }
 
-  retainNewlyCreated(node: RxDomNode): void {
+  addIncoming(node: RxDomNode): void {
     node.reconciliation = this.stamp
     this.namespace.set(node.name, node)
-    const last = this.retainedLast
+    const last = this.incomingLast
     if (last) {
       node.prev = last
-      this.retainedLast = last.next = node
+      this.incomingLast = last.next = node
     }
     else
-      this.retainedFirst = this.retainedLast = node
-    this.retainedCount++
+      this.incomingFirst = this.incomingLast = node
+    this.incomingCount++
   }
 }
 
