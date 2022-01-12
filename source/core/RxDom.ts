@@ -73,7 +73,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   readonly level: number
   readonly parent: RxDomNode
   stamp: number
-  reconciliation: number
+  reconciled: number
   children: RxDomNodeChildren
   next?: RxDomNode
   prev?: RxDomNode
@@ -98,7 +98,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     this.level = level
     this.parent = parent
     this.stamp = ~0
-    this.reconciliation = ~0
+    this.reconciled = ~0
     this.children = new RxDomNodeChildren()
     this.next = undefined
     this.prev = undefined
@@ -131,7 +131,7 @@ export class RxDom {
     factory?: RxNodeFactory<E>, inline?: boolean): RxNode<E, O> {
     const parent = gContext
     const children = parent.children
-    let result = children.tryAddIncomingAsExisting(name)
+    let result = children.tryAddExistingIncoming(name)
     if (result) {
       if (result.inline || !triggersAreEqual(result.triggers, triggers))
         result.triggers = triggers
@@ -141,7 +141,7 @@ export class RxDom {
     else {
       result = new RxDomNode<E, O>(parent.level + 1, name, factory ?? RxDom.basic,
         inline ?? false, triggers, render, customize, parent)
-      children.addIncoming(result)
+      children.addNewlyCreatedIncoming(result)
     }
     return result
   }
@@ -442,14 +442,14 @@ export class RxDomNodeChildren implements RxNodeChildren {
     return vanishedFirst
   }
 
-  tryAddIncomingAsExisting(name: string): RxDomNode | undefined {
+  tryAddExistingIncoming(name: string): RxDomNode | undefined {
     let result = this.likelyNextIncoming
     if (result?.name !== name)
       result = this.namespace.get(name)
     if (result && result.stamp >= ~0) {
-      if (result.reconciliation === this.stamp)
+      if (result.reconciled === this.stamp)
         throw new Error(`duplicate node id: ${name}`)
-      result.reconciliation = this.stamp
+      result.reconciled = this.stamp
       this.likelyNextIncoming = result.next
       // Exclude from main sequence
       if (result.prev !== undefined)
@@ -475,8 +475,8 @@ export class RxDomNodeChildren implements RxNodeChildren {
     return result
   }
 
-  addIncoming(node: RxDomNode): void {
-    node.reconciliation = this.stamp
+  addNewlyCreatedIncoming(node: RxDomNode): void {
+    node.reconciled = this.stamp
     this.namespace.set(node.name, node)
     const last = this.incomingLast
     if (last) {
