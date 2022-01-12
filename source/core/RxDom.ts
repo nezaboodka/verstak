@@ -97,8 +97,8 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     // System-managed properties
     this.level = level
     this.parent = parent
-    this.stamp = ~0
-    this.reconciled = ~0
+    this.stamp = 0
+    this.reconciled = 0
     this.children = new RxDomNodeChildren()
     this.next = undefined
     this.prev = undefined
@@ -114,7 +114,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     noSideEffects: true })
   autorender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by parent
-    if (this.stamp === ~0) // configure only once
+    if (this.stamp === 0) // configure only once
       Rx.configureCurrentOperation({ order: this.level })
     runRender(this)
   }
@@ -243,13 +243,11 @@ function doRender(node: RxDomNode): void {
 }
 
 function runRender(node: RxDomNode): void {
-  if (node.stamp >= ~0) { // needed for deferred Rx.dispose
+  if (node.stamp >= 0) { // needed for deferred Rx.dispose
     try {
       const factory = node.factory
-      if (node.stamp === ~0) {
-        node.stamp = 0
+      if (node.stamp === 0)
         factory.initialize?.(node)
-      }
       if (node.rearranging) {
         node.rearranging = false
         factory.arrange?.(node)
@@ -270,7 +268,7 @@ function runRender(node: RxDomNode): void {
 }
 
 function doFinalize(node: RxDomNode, initiator: RxDomNode): void {
-  if (node.stamp >= ~0) {
+  if (node.stamp >= 0) {
     node.stamp = ~node.stamp
     // Finalize node itself
     const factory = node.factory
@@ -400,9 +398,9 @@ export class RxDomNodeChildren implements RxNodeChildren {
   incomingLast?: RxDomNode = undefined
   incomingCount: number = 0
   likelyNextIncoming?: RxDomNode = undefined
-  stamp: number = ~0
+  stamp: number = 0
 
-  get isReconciling(): boolean { return this.stamp > ~0 }
+  get isReconciling(): boolean { return this.stamp > 0 }
 
   beginReconciliation(stamp: number): void {
     if (this.isReconciling)
@@ -413,7 +411,7 @@ export class RxDomNodeChildren implements RxNodeChildren {
   endReconciliation(): RxDomNode | undefined {
     if (!this.isReconciling)
       throw new Error('reconciliation is ended already')
-    this.stamp = ~0
+    this.stamp = 0
     const namespace = this.namespace
     const count = this.count
     const n = this.incomingCount
@@ -445,7 +443,7 @@ export class RxDomNodeChildren implements RxNodeChildren {
     let result = this.likelyNextIncoming
     if (result?.name !== name)
       result = this.namespace.get(name)
-    if (result && result.stamp >= ~0) {
+    if (result && result.stamp >= 0) {
       if (result.reconciled === this.stamp)
         throw new Error(`duplicate node id: ${name}`)
       result.reconciled = this.stamp
