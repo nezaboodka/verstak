@@ -37,7 +37,7 @@ export class BasicNodeFactory<E> implements RxNodeFactory<E> {
   render(node: RxNode<E>): void {
     let result: any
     const native = node.native!
-    const children = node.children as RxDomNodeChildren
+    const children = node.children as RxNodeChildrenImpl
     children.beginEmission(node.stamp)
     try {
       if (node.customize)
@@ -56,9 +56,9 @@ export class BasicNodeFactory<E> implements RxNodeFactory<E> {
   }
 }
 
-// RxDomNode
+// RxNodeImpl
 
-class RxDomNode<E = any, O = any> implements RxNode<E, O> {
+class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
   // User-defined properties
   readonly name: string
   readonly factory: RxNodeFactory<E>
@@ -71,19 +71,19 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   model?: unknown
   // System-managed properties
   readonly level: number
-  readonly parent: RxDomNode
+  readonly parent: RxNodeImpl
   stamp: number
   emission: number
-  children: RxDomNodeChildren
-  next?: RxDomNode
-  prev?: RxDomNode
-  neighbor?: RxDomNode
+  children: RxNodeChildrenImpl
+  next?: RxNodeImpl
+  prev?: RxNodeImpl
+  neighbor?: RxNodeImpl
   rearranging: boolean
   native?: E
 
   constructor(name: string, factory: RxNodeFactory<E>, inline: boolean,
     triggers: unknown, render: Render<E, O> | undefined, customize: Customize<E, O> | undefined,
-    parent: RxDomNode) {
+    parent: RxNodeImpl) {
     // User-defined properties
     this.name = name
     this.factory = factory
@@ -99,7 +99,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     this.parent = parent
     this.stamp = 0
     this.emission = 0
-    this.children = new RxDomNodeChildren()
+    this.children = new RxNodeChildrenImpl()
     this.next = undefined
     this.prev = undefined
     this.neighbor = this
@@ -139,7 +139,7 @@ export class RxDom {
       result.customize = customize
     }
     else {
-      result = new RxDomNode<E, O>(name, factory ?? RxDom.basic,
+      result = new RxNodeImpl<E, O>(name, factory ?? RxDom.basic,
         inline ?? false, triggers, render, customize, parent)
       children.emitAsNewlyCreated(result)
     }
@@ -156,7 +156,7 @@ export class RxDom {
     let promised: Promise<void> | undefined = undefined
     try {
       const children = node.children
-      if (children.isEmitting) {
+      if (children.isEmissionInProgress) {
         let vanished = children.endEmission()
         // Unmount vanished children
         while (vanished !== undefined) {
@@ -165,9 +165,9 @@ export class RxDom {
         }
         // Render retained children
         const arranging = node.factory.arranging
-        let p1: Array<RxDomNode> | undefined = undefined
-        let p2: Array<RxDomNode> | undefined = undefined
-        let neighbor: RxDomNode | undefined = undefined
+        let p1: Array<RxNodeImpl> | undefined = undefined
+        let p2: Array<RxNodeImpl> | undefined = undefined
+        let neighbor: RxNodeImpl | undefined = undefined
         let x = children.first
         while (x !== undefined && !Transaction.isCanceled) {
           if (arranging && x.neighbor !== neighbor) {
@@ -210,15 +210,15 @@ export class RxDom {
 
 // Internal
 
-async function startIncrementalRendering(parent: RxDomNode,
-  children1?: Array<RxDomNode>, children2?: Array<RxDomNode>): Promise<void> {
+async function startIncrementalRendering(parent: RxNodeImpl,
+  children1?: Array<RxNodeImpl>, children2?: Array<RxNodeImpl>): Promise<void> {
   if (children1)
     await renderIncrementally(parent, children1)
   if (children2)
     await renderIncrementally(parent, children2)
 }
 
-async function renderIncrementally(parent: RxDomNode, children: Array<RxDomNode>): Promise<void> {
+async function renderIncrementally(parent: RxNodeImpl, children: Array<RxNodeImpl>): Promise<void> {
   const checkEveryN = 30
   if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
     await Transaction.requestNextFrame()
@@ -235,14 +235,14 @@ async function renderIncrementally(parent: RxDomNode, children: Array<RxDomNode>
   }
 }
 
-function doRender(node: RxDomNode): void {
+function doRender(node: RxNodeImpl): void {
   if (node.inline)
     runRender(node)
   else
     nonreactive(node.autorender, node.triggers) // reactive auto-rendering
 }
 
-function runRender(node: RxDomNode): void {
+function runRender(node: RxNodeImpl): void {
   if (node.stamp >= 0) {
     try {
       const f = node.factory
@@ -267,7 +267,7 @@ function runRender(node: RxDomNode): void {
   }
 }
 
-function doFinalize(node: RxDomNode, initiator: RxDomNode): void {
+function doFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
   if (node.stamp >= 0) {
     node.stamp = ~node.stamp
     // Finalize node itself
@@ -299,7 +299,7 @@ async function runDisposalLoop(): Promise<void> {
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
-function forEachChildRecursively(node: RxDomNode, action: (e: any) => void): void {
+function forEachChildRecursively(node: RxNodeImpl, action: (e: any) => void): void {
   const native = node.native
   native && action(native)
   let x = node.children.first
@@ -317,7 +317,7 @@ function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
   return wrappedRunUnder
 }
 
-function runUnder<T>(node: RxDomNode, func: (...args: any[]) => T, ...args: any[]): T {
+function runUnder<T>(node: RxNodeImpl, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gContext
   try {
     gContext = node
@@ -366,28 +366,28 @@ function shuffle<T>(array: Array<T>): Array<T> {
   return array
 }
 
-// RxDomNodeChildren
+// RxNodeChildrenImpl
 
-export class RxDomNodeChildren implements RxNodeChildren {
-  namespace: Map<string, RxDomNode> = new Map<string, RxDomNode>()
-  first?: RxDomNode = undefined
+export class RxNodeChildrenImpl implements RxNodeChildren {
+  namespace: Map<string, RxNodeImpl> = new Map<string, RxNodeImpl>()
+  first?: RxNodeImpl = undefined
   count: number = 0
-  emittedFirst?: RxDomNode = undefined
-  emittedLast?: RxDomNode = undefined
-  emittedCount: number = 0
-  likelyNextEmitted?: RxDomNode = undefined
   emission: number = 0
+  emittedFirst?: RxNodeImpl = undefined
+  emittedLast?: RxNodeImpl = undefined
+  emittedCount: number = 0
+  likelyNextEmitted?: RxNodeImpl = undefined
 
-  get isEmitting(): boolean { return this.emission > 0 }
+  get isEmissionInProgress(): boolean { return this.emission > 0 }
 
-  beginEmission(stamp: number): void {
-    if (this.isEmitting)
+  beginEmission(emission: number): void {
+    if (this.isEmissionInProgress)
       throw new Error('reconciliation is not reentrant')
-    this.emission = stamp
+    this.emission = emission
   }
 
-  endEmission(): RxDomNode | undefined {
-    if (!this.isEmitting)
+  endEmission(): RxNodeImpl | undefined {
+    if (!this.isEmissionInProgress)
       throw new Error('reconciliation is ended already')
     this.emission = 0
     const emittedCount = this.emittedCount
@@ -399,14 +399,14 @@ export class RxDomNodeChildren implements RxNodeChildren {
           ns.delete(x.name), x = x.next
       }
       else { // it should be faster to recreate namespace with retained nodes only
-        const ns = this.namespace = new Map<string, RxDomNode>()
+        const ns = this.namespace = new Map<string, RxNodeImpl>()
         let x = this.emittedFirst
         while (x !== undefined)
           ns.set(x.name, x), x = x.next
       }
     }
     else // just create new empty namespace
-      this.namespace = new Map<string, RxDomNode>()
+      this.namespace = new Map<string, RxNodeImpl>()
     const vanishedFirst = this.first
     this.first = this.emittedFirst
     this.count = emittedCount
@@ -416,7 +416,7 @@ export class RxDomNodeChildren implements RxNodeChildren {
     return vanishedFirst
   }
 
-  tryEmitAsExisting(name: string): RxDomNode | undefined {
+  tryEmitAsExisting(name: string): RxNodeImpl | undefined {
     let result = this.likelyNextEmitted
     if (result?.name !== name)
       result = this.namespace.get(name)
@@ -449,7 +449,7 @@ export class RxDomNodeChildren implements RxNodeChildren {
     return result
   }
 
-  emitAsNewlyCreated(node: RxDomNode): void {
+  emitAsNewlyCreated(node: RxNodeImpl): void {
     node.emission = this.emission
     this.namespace.set(node.name, node)
     const last = this.emittedLast
@@ -463,7 +463,7 @@ export class RxDomNodeChildren implements RxNodeChildren {
   }
 }
 
-function postponeDispose(node: RxDomNode): void {
+function postponeDispose(node: RxNodeImpl): void {
   const last = gLastToDispose
   if (last)
     gLastToDispose = last.neighbor = node
@@ -500,14 +500,14 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-const gSystem = new RxDomNode<undefined, void>(
+const gSystem = new RxNodeImpl<undefined, void>(
   'SYSTEM',  // name
   new BasicNodeFactory<undefined>('SYSTEM', false),
   false,     // inline
   undefined, // triggers
   NOP,       // render
   undefined, // customize
-  { level: 0 } as RxDomNode)  // fake parent (overwritten below)
+  { level: 0 } as RxNodeImpl)  // fake parent (overwritten below)
 
 Object.defineProperty(gSystem, 'parent', {
   value: gSystem,
@@ -516,6 +516,6 @@ Object.defineProperty(gSystem, 'parent', {
   enumerable: true,
 })
 
-let gContext: RxDomNode = gSystem
-let gFirstToDispose: RxDomNode | undefined = undefined
-let gLastToDispose: RxDomNode | undefined = undefined
+let gContext: RxNodeImpl = gSystem
+let gFirstToDispose: RxNodeImpl | undefined = undefined
+let gLastToDispose: RxNodeImpl | undefined = undefined
