@@ -39,7 +39,7 @@ export interface RxNode<E = any, O = any> {
   readonly children: RxNodeChildren
   readonly next?: RxNode
   readonly prev?: RxNode
-  readonly after?: RxNode
+  readonly neighbor?: RxNode
   native?: E
 }
 

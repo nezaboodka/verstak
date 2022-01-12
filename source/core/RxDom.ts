@@ -77,7 +77,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
   children: RxDomNodeChildren
   next?: RxDomNode
   prev?: RxDomNode
-  after?: RxDomNode
+  neighbor?: RxDomNode
   rearranging: boolean
   native?: E
 
@@ -102,7 +102,7 @@ class RxDomNode<E = any, O = any> implements RxNode<E, O> {
     this.children = new RxDomNodeChildren()
     this.next = undefined
     this.prev = undefined
-    this.after = this
+    this.neighbor = this
     this.rearranging = true
     this.native = undefined
   }
@@ -167,12 +167,12 @@ export class RxDom {
         const arranging = node.factory.arranging
         let p1: Array<RxDomNode> | undefined = undefined
         let p2: Array<RxDomNode> | undefined = undefined
-        let after: RxDomNode | undefined = undefined
+        let neighbor: RxDomNode | undefined = undefined
         let x = children.first
         while (x !== undefined && !Transaction.isCanceled) {
-          if (arranging && x.after !== after) {
+          if (arranging && x.neighbor !== neighbor) {
             x.rearranging = true
-            x.after = after
+            x.neighbor = neighbor
           }
           if (x.priority === RxPriority.SyncP0)
             tryToRender(x)
@@ -181,7 +181,7 @@ export class RxDom {
           else
             p2 = push(p2, x)
           if (x.native)
-            after = x
+            neighbor = x
           x = x.next
         }
         // Render incremental children (if any)

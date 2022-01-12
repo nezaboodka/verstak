@@ -32,21 +32,21 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNo
     if (e) {
       const nativeParent = findNearestHtmlParent(node).native
       if (nativeParent) {
-        const after = node.after
-        if (after === undefined) {
+        const neighbor = node.neighbor
+        if (neighbor === undefined) {
           if (nativeParent !== e.parentNode || !e.previousSibling)
             nativeParent.prepend(e)
         }
-        else if (after !== node) {
-          if (after.parent.native === nativeParent) {
-            const nativeAfter = after.native
-            if (nativeAfter instanceof Element) {
-              if (nativeAfter.nextSibling !== e)
-                nativeParent.insertBefore(e, nativeAfter.nextSibling)
+        else if (neighbor !== node) {
+          if (neighbor.parent.native === nativeParent) {
+            const nativeNeighbor = neighbor.native
+            if (nativeNeighbor instanceof Element) {
+              if (nativeNeighbor.nextSibling !== e)
+                nativeParent.insertBefore(e, nativeNeighbor.nextSibling)
             }
           }
         }
-        else // after === node
+        else // neighbor === node
           nativeParent.appendChild(e)
       }
     }
