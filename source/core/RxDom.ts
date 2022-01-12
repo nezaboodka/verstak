@@ -148,7 +148,7 @@ export class RxDom {
 
   static launch(render: () => void): void {
     gSystem.render = render
-    tryToRender(gSystem)
+    doRender(gSystem)
   }
 
   static renderChildrenThenDo(action: () => void): void {
@@ -160,7 +160,7 @@ export class RxDom {
         let vanished = children.endReconciliation()
         // Unmount vanished children
         while (vanished !== undefined) {
-          tryToFinalize(vanished, vanished)
+          doFinalize(vanished, vanished)
           vanished = vanished.next
         }
         // Render retained children
@@ -175,7 +175,7 @@ export class RxDom {
             x.neighbor = neighbor
           }
           if (x.priority === RxPriority.SyncP0)
-            tryToRender(x)
+            doRender(x)
           else if (x.priority === RxPriority.AsyncP1)
             p1 = push(p1, x)
           else
@@ -230,12 +230,12 @@ async function renderIncrementally(parent: RxDomNode, children: Array<RxDomNode>
         await Transaction.requestNextFrame()
       if (Transaction.isCanceled)
         break
-      tryToRender(x)
+      doRender(x)
     }
   }
 }
 
-function tryToRender(node: RxDomNode): void {
+function doRender(node: RxDomNode): void {
   try {
     const factory = node.factory
     if (node.stamp === ~0) {
@@ -270,7 +270,7 @@ function invokeRenderIfNodeIsAlive(node: RxDomNode): void {
   }
 }
 
-function tryToFinalize(node: RxDomNode, initiator: RxDomNode): void {
+function doFinalize(node: RxDomNode, initiator: RxDomNode): void {
   if (node.stamp >= ~0) {
     node.stamp = ~node.stamp
     // Finalize node itself
@@ -291,7 +291,7 @@ function tryToFinalize(node: RxDomNode, initiator: RxDomNode): void {
     // Finalize children if any
     let x = node.children.first
     while (x !== undefined) {
-      tryToFinalize(x, initiator)
+      doFinalize(x, initiator)
       x = x.next
     }
   }
