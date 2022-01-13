@@ -137,12 +137,8 @@ export class RxDom {
       result.customize = customize
     }
     else {
-      result = Transaction.off(() => {
-        const node = new RxNodeImpl<E, O>(name, factory ?? RxDom.basic,
-          inline ?? false, triggers, render, customize, parent)
-        Rx.getController(node.autorender).configure({ order: node.level })
-        return node
-      })
+      result = new RxNodeImpl<E, O>(name, factory ?? RxDom.basic,
+        inline ?? false, triggers, render, customize, parent)
       children.emitAsNewlyCreated(result)
     }
     return result
@@ -243,6 +239,8 @@ async function renderIncrementally(parent: RxNodeImpl, children: Array<RxNodeImp
 }
 
 function doRender(node: RxNodeImpl): void {
+  if (node.stamp === 0)
+    Transaction.off(() => Rx.getController(node.autorender).configure({ order: node.level }))
   if (node.inline)
     runRender(node)
   else
