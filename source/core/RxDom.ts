@@ -246,7 +246,11 @@ function doRender(node: RxNodeImpl): void {
     const f = node.factory
     if (node.stamp === 0) {
       if (!node.inline)
-        Transaction.off(() => Rx.getController(node.autorender).configure({ order: node.level }))
+        Transaction.off(() => Rx.getController(node.autorender).configure({
+          order: node.level,
+          monitor: node.monitor,
+          // logging: node.monitor ? LoggingLevel.Operations : undefined,
+        }))
       f.initialize?.(node)
     }
     if (node.rearranging) {
