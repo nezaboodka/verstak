@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reaction, nonreactive, Transaction, options, Reentrance, Rx } from 'reactronic'
+import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor } from 'reactronic'
 import { RxNode, RxNodeFactory, RxNodeChildren, RxPriority, RxRender, RxCustomize } from './RxDom.Types'
 
 const NOP = (): void => { /* nop */ }
@@ -62,6 +62,7 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
   // User-defined properties
   readonly name: string
   readonly factory: RxNodeFactory<E>
+  readonly monitor?: Monitor
   readonly inline: boolean
   triggers: unknown
   render: RxRender<E, O> | undefined
@@ -81,12 +82,14 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
   rearranging: boolean
   native?: E
 
-  constructor(name: string, factory: RxNodeFactory<E>, inline: boolean,
-    triggers: unknown, render: RxRender<E, O> | undefined, customize: RxCustomize<E, O> | undefined,
+  constructor(name: string, factory: RxNodeFactory<E>,
+    monitor: Monitor | undefined, inline: boolean, triggers: unknown,
+    render: RxRender<E, O> | undefined, customize: RxCustomize<E, O> | undefined,
     parent: RxNodeImpl) {
     // User-defined properties
     this.name = name
     this.factory = factory
+    this.monitor = monitor
     this.inline = inline
     this.triggers = triggers
     this.render = render
@@ -126,7 +129,7 @@ export class RxDom {
 
   static Node<E = undefined, O = void>(name: string, triggers: unknown,
     render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
-    factory?: RxNodeFactory<E>, inline?: boolean): RxNode<E, O> {
+    factory?: RxNodeFactory<E>, monitor?: Monitor, inline?: boolean): RxNode<E, O> {
     const parent = gContext
     const children = parent.children
     let result = children.tryEmitAsExisting(name)
@@ -138,7 +141,7 @@ export class RxDom {
     }
     else {
       result = new RxNodeImpl<E, O>(name, factory ?? RxDom.basic,
-        inline ?? false, triggers, render, customize, parent)
+        monitor, inline ?? false, triggers, render, customize, parent)
       children.emitAsNewlyCreated(result)
     }
     return result
@@ -508,6 +511,7 @@ Promise.prototype.then = reactronicDomHookedThen
 const gSystem = new RxNodeImpl<undefined, void>(
   'SYSTEM',  // name
   new RxBasicNodeFactory<undefined>('SYSTEM', false),
+  undefined, // monitor
   false,     // inline
   undefined, // triggers
   NOP,       // render
