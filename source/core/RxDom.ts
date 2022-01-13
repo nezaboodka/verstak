@@ -242,12 +242,13 @@ async function renderIncrementally(parent: RxNodeImpl, children: Array<RxNodeImp
 }
 
 function doRender(node: RxNodeImpl): void {
-  if (node.stamp === 0)
-    Transaction.off(() => Rx.getController(node.autorender).configure({ order: node.level }))
-  if (node.inline)
-    runRender(node)
-  else
+  if (!node.inline) {
+    if (node.stamp === 0)
+      Transaction.off(() => Rx.getController(node.autorender).configure({ order: node.level }))
     nonreactive(node.autorender, node.triggers) // reactive auto-rendering
+  }
+  else
+    runRender(node)
 }
 
 function runRender(node: RxNodeImpl): void {
