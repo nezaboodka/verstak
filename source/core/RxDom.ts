@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor } from 'reactronic'
+import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions } from 'reactronic'
 import { RxNode, RxNodeFactory, RxNodeChildren, RxPriority, RxRender, RxCustomize } from './RxDom.Types'
 
 const NOP = (): void => { /* nop */ }
@@ -62,11 +62,13 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
   // User-defined properties
   readonly name: string
   readonly factory: RxNodeFactory<E>
-  readonly monitor?: Monitor
   readonly inline: boolean
   triggers: unknown
   render: RxRender<E, O> | undefined
   customize: RxCustomize<E, O> | undefined
+  readonly monitor?: Monitor
+  readonly throttling: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
+  readonly logging?: Partial<LoggingOptions>
   priority: RxPriority
   shuffle: boolean
   model?: unknown
@@ -82,19 +84,20 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
   rearranging: boolean
   native?: E
 
-  constructor(name: string, factory: RxNodeFactory<E>,
-    monitor: Monitor | undefined, inline: boolean, triggers: unknown,
-    render: RxRender<E, O> | undefined, customize: RxCustomize<E, O> | undefined,
-    parent: RxNodeImpl) {
+  constructor(name: string, factory: RxNodeFactory<E>, inline: boolean, parent: RxNodeImpl,
+    triggers?: unknown, render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
+    monitor?: Monitor, throttling?: number, logging?: LoggingOptions) {
     // User-defined properties
     this.name = name
     this.factory = factory
-    this.monitor = monitor
     this.inline = inline
     this.triggers = triggers
     this.render = render
     this.customize = customize
-    this.priority = RxPriority.SyncP0
+    this.monitor = monitor,
+    this.throttling = throttling ?? -1,
+    this.logging = logging
+    this.priority = RxPriority.SyncP0,
     this.shuffle = false
     this.model = undefined
     // System-managed properties
@@ -132,19 +135,19 @@ export class RxDom {
     factory?: RxNodeFactory<E>, monitor?: Monitor, inline?: boolean): RxNode<E, O> {
     const parent = gContext
     const children = parent.children
-    let result = children.tryEmitAsExisting(name)
-    if (result) {
-      if (result.inline || !triggersAreEqual(result.triggers, triggers))
-        result.triggers = triggers
-      result.render = render
-      result.customize = customize
+    let node = children.tryEmitAsExisting(name)
+    if (node) {
+      if (node.inline || !triggersAreEqual(node.triggers, triggers))
+        node.triggers = triggers
+      node.render = render
+      node.customize = customize
     }
     else {
-      result = new RxNodeImpl<E, O>(name, factory ?? RxDom.basic,
-        monitor, inline ?? false, triggers, render, customize, parent)
-      children.emitAsNewlyCreated(result)
+      node = new RxNodeImpl<E, O>(name, factory ?? RxDom.basic, inline ?? false,
+        parent, triggers, render, customize, monitor)
+      children.emitAsNewlyCreated(node)
     }
-    return result
+    return node
   }
 
   static launch(render: () => void): void {
@@ -245,12 +248,14 @@ function doRender(node: RxNodeImpl): void {
   if (node.stamp >= 0) {
     const f = node.factory
     if (node.stamp === 0) {
-      if (!node.inline)
-        Transaction.off(() => Rx.getController(node.autorender).configure({
+      !node.inline && Transaction.off(() => {
+        Rx.getController(node.autorender).configure({
           order: node.level,
           monitor: node.monitor,
-          // logging: node.monitor ? LoggingLevel.Operations : undefined,
-        }))
+          throttling: node.throttling,
+          logging: node.logging,
+        })
+      })
       f.initialize?.(node)
     }
     if (node.rearranging) {
@@ -516,15 +521,9 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-const gSystem = new RxNodeImpl<undefined, void>(
-  'SYSTEM',  // name
-  new RxBasicNodeFactory<undefined>('SYSTEM', false),
-  undefined, // monitor
-  false,     // inline
-  undefined, // triggers
-  NOP,       // render
-  undefined, // customize
-  { level: 0 } as RxNodeImpl)  // fake parent (overwritten below)
+const gSystem = new RxNodeImpl<undefined, void>('SYSTEM',
+  new RxBasicNodeFactory<undefined>('SYSTEM', false), false,
+  { level: 0 } as RxNodeImpl) // fake parent (overwritten below)
 
 Object.defineProperty(gSystem, 'parent', {
   value: gSystem,

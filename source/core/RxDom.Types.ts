@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { LoggingOptions, Monitor, TransactionJournal } from 'reactronic'
+import { Monitor, LoggingOptions } from 'reactronic'
 
 export type RxRender<E = unknown, O = void> = (element: E, options: O) => void | Promise<void>
 export type RxCustomize<E = unknown, O = void> = (render: (options: O) => void, element: E) => void
@@ -15,11 +15,13 @@ export interface RxNode<E = any, O = any> {
   // User-defined properties
   readonly name: string
   readonly factory: RxNodeFactory<E>
-  readonly monitor?: Monitor
   readonly inline: boolean
   readonly triggers: unknown
   readonly render: RxRender<E, O> | undefined
   readonly customize: RxCustomize<E, O> | undefined
+  readonly monitor?: Monitor
+  readonly throttling?: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
+  readonly logging?: Partial<LoggingOptions>
   priority: RxPriority
   shuffle: boolean
   model?: unknown
@@ -46,15 +48,6 @@ export interface RxNodeFactory<E = unknown> {
   finalize?(node: RxNode<E>, initiator: RxNode): void
   arrange?(node: RxNode<E>): void
   render?(node: RxNode<E>): void
-}
-
-export interface RxNodeOptions {
-  readonly priority: RxPriority
-  readonly shuffle: boolean
-  readonly monitor: Monitor | null
-  readonly throttling: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
-  readonly journal: TransactionJournal | undefined
-  readonly logging?: Partial<LoggingOptions>
 }
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
