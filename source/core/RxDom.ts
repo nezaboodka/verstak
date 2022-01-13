@@ -242,27 +242,30 @@ async function renderIncrementally(parent: RxNodeImpl, children: Array<RxNodeImp
 }
 
 function doRender(node: RxNodeImpl): void {
-  if (!node.inline) {
-    if (node.stamp === 0)
-      Transaction.off(() => Rx.getController(node.autorender).configure({ order: node.level }))
-    nonreactive(node.autorender, node.triggers) // reactive auto-rendering
+  if (node.stamp >= 0) {
+    const f = node.factory
+    if (node.stamp === 0) {
+      if (!node.inline)
+        Transaction.off(() => Rx.getController(node.autorender).configure({ order: node.level }))
+      f.initialize?.(node)
+    }
+    if (node.rearranging) {
+      node.rearranging = false
+      f.arrange?.(node)
+    }
+    if (node.inline)
+      runRender(node)
+    else
+      nonreactive(node.autorender, node.triggers) // reactive auto-rendering
   }
-  else
-    runRender(node)
 }
 
 function runRender(node: RxNodeImpl): void {
   if (node.stamp >= 0) {
     try {
-      const f = node.factory
-      if (node.stamp === 0)
-        f.initialize?.(node)
-      if (node.rearranging) {
-        node.rearranging = false
-        f.arrange?.(node)
-      }
       runUnder(node, () => {
         node.stamp++
+        const f = node.factory
         if (f.render)
           f.render(node) // factory-defined rendering
         else
