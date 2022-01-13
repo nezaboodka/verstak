@@ -289,7 +289,7 @@ function doFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
     else
       RxDom.basic.finalize(node, initiator) // default finalize
     if (!node.inline)
-      postponeDispose(node) // enqueue node for Rx.dispose if needed
+      deferDispose(node) // enqueue node for Rx.dispose if needed
     // Finalize children if any
     let x = node.children.first
     while (x !== undefined) {
@@ -475,7 +475,7 @@ export class RxNodeChildrenImpl implements RxNodeChildren {
   }
 }
 
-function postponeDispose(node: RxNodeImpl): void {
+function deferDispose(node: RxNodeImpl): void {
   const last = gLastToDispose
   if (last)
     gLastToDispose = last.neighbor = node
