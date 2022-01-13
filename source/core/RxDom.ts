@@ -114,8 +114,6 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
     noSideEffects: true })
   autorender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by parent
-    if (this.stamp === 0) // configure only once
-      Rx.configureCurrentOperation({ order: this.level })
     runRender(this)
   }
 }
@@ -139,8 +137,12 @@ export class RxDom {
       result.customize = customize
     }
     else {
-      result = new RxNodeImpl<E, O>(name, factory ?? RxDom.basic,
-        inline ?? false, triggers, render, customize, parent)
+      result = Transaction.off(() => {
+        const node = new RxNodeImpl<E, O>(name, factory ?? RxDom.basic,
+          inline ?? false, triggers, render, customize, parent)
+        Rx.getController(node.autorender).configure({ order: node.level })
+        return node
+      })
       children.emitAsNewlyCreated(result)
     }
     return result
