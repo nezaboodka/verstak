@@ -62,8 +62,8 @@ export abstract class DomNode<E = any, O = any, M = unknown> {
     doRender(gSystem)
   }
 
-  static self<M>(): DomNode<any, any, M> {
-    return gContext as DomNode<any, any, M>
+  static self<M = unknown, E = unknown, O = void>(): DomNode<E, O, M> {
+    return gContext as DomNode<E, O, M>
   }
 
   static get isInitialRendering(): boolean {
