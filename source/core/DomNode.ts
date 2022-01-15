@@ -14,6 +14,24 @@ export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 // DomNode
 
+export function Reaction<E = undefined, O = void, M = unknown>(
+  name: string, triggers: unknown,
+  render?: Render<E, O>, customize?: Customize<E, O>,
+  factory?: RxNodeFactory<E>, monitor?: Monitor,
+  throttling?: number, logging?: Partial<LoggingOptions>): DomNode<E, O, M> {
+  return emit(name, triggers, false, render, customize,
+    factory, monitor, throttling, logging)
+}
+
+export function Affiliate<E = undefined, O = void, M = unknown>(
+  name: string, triggers: unknown,
+  render?: Render<E, O>, customize?: Customize<E, O>,
+  factory?: RxNodeFactory<E>, monitor?: Monitor,
+  throttling?: number, logging?: Partial<LoggingOptions>): DomNode<E, O, M> {
+  return emit(name, triggers, true, render, customize,
+    factory, monitor, throttling, logging)
+}
+
 export abstract class DomNode<E = any, O = any, M = unknown> {
   static incrementalRenderingFrameDurationMs = 10
   // User-defined properties
@@ -42,24 +60,6 @@ export abstract class DomNode<E = any, O = any, M = unknown> {
   static launch(render: () => void): void {
     gSystem.render = render
     doRender(gSystem)
-  }
-
-  static Reaction<E = undefined, O = void, M = unknown>(
-    name: string, triggers: unknown,
-    render?: Render<E, O>, customize?: Customize<E, O>,
-    factory?: RxNodeFactory<E>, monitor?: Monitor,
-    throttling?: number, logging?: Partial<LoggingOptions>): DomNode<E, O, M> {
-    return emit(name, triggers, false, render, customize,
-      factory, monitor, throttling, logging)
-  }
-
-  static Affiliate<E = undefined, O = void, M = unknown>(
-    name: string, triggers: unknown,
-    render?: Render<E, O>, customize?: Customize<E, O>,
-    factory?: RxNodeFactory<E>, monitor?: Monitor,
-    throttling?: number, logging?: Partial<LoggingOptions>): DomNode<E, O, M> {
-    return emit(name, triggers, true, render, customize,
-      factory, monitor, throttling, logging)
   }
 
   static self<M>(): DomNode<any, any, M> {
