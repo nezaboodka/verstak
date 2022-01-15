@@ -39,6 +39,11 @@ export abstract class RxNode<E = any, O = any, M = unknown> {
   abstract neighbor?: RxNode
   abstract native?: E
 
+  static launch(render: () => void): void {
+    gSystem.render = render
+    doRender(gSystem)
+  }
+
   static Reaction<E = undefined, O = void, M = unknown>(
     name: string, triggers: unknown,
     render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
@@ -63,11 +68,6 @@ export abstract class RxNode<E = any, O = any, M = unknown> {
 
   static get isInitialRendering(): boolean {
     return gContext.stamp === 1
-  }
-
-  static launch(render: () => void): void {
-    gSystem.render = render
-    doRender(gSystem)
   }
 
   static renderChildrenThenDo(action: () => void): void {
