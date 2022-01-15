@@ -6,9 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { Rx } from 'reactronic'
-import { RxDom, RxNode, RxBasicNodeFactory } from '../core/api'
+import { RxNode, RxStandardNodeFactory } from '../core/api'
 
-export abstract class RxAbstractHtmlNodeFactory<E extends Element> extends RxBasicNodeFactory<E> {
+export abstract class RxAbstractHtmlNodeFactory<E extends Element> extends RxStandardNodeFactory<E> {
 
   initialize(node: RxNode<E>): void {
     super.initialize(node)
@@ -65,7 +65,7 @@ export abstract class RxAbstractHtmlNodeFactory<E extends Element> extends RxBas
   static set blinkingEffect(value: string | undefined) {
     if (value === undefined) {
       const effect = gBlinkingEffect
-      RxDom.forAllNodesDo((e: any) => {
+      RxNode.forAllNodesDo((e: any) => {
         if (e instanceof HTMLElement)
           e.classList.remove(`${effect}-0`, `${effect}-1`)
       })

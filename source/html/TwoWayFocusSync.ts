@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Ref, ToggleRef } from 'reactronic'
-import { RxDom } from '../core/api'
+import { RxNode } from '../core/api'
 
 export function TwoWayFocusSync(
   name: string,
@@ -17,7 +17,7 @@ export function TwoWayFocusSync(
   target.dataForSensor.focus = focusToggle
   if (setNativeFocus === undefined)
     setNativeFocus = () => target.focus()
-  RxDom.Node(name, { focusToggle }, () => {
+  RxNode.Reaction(name, { focusToggle }, () => {
     const f = focusToggle.value
     const f1 = focusToggle.valueOn
     const active = f === focusToggle.valueOn || (
@@ -29,7 +29,7 @@ export function TwoWayFocusSync(
 }
 
 export function RxFocus(name: string, target: HTMLElement, focusToggle: ToggleRef<any>): void {
-  RxDom.Node(name, { target, focusToggle }, () => {
+  RxNode.Reaction(name, { target, focusToggle }, () => {
     target.dataForSensor.focus = focusToggle
     const value = focusToggle.value
     const valueOn = focusToggle.valueOn

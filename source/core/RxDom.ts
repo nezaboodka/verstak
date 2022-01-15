@@ -6,13 +6,80 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions } from 'reactronic'
-import { RxNode, RxNodeFactory, RxNodeChildren, RxPriority, RxRender, RxCustomize } from './RxDom.Types'
+import { RxPriority, RxRender, RxCustomize } from './RxDom.Types'
+
+// RxNode
+
+export abstract class RxNode<E = any, O = any, M = unknown> {
+  // User-defined properties
+  abstract readonly name: string
+  abstract readonly factory: RxNodeFactory<E>
+  abstract readonly united: boolean
+  abstract readonly triggers: unknown
+  abstract readonly render: RxRender<E, O> | undefined
+  abstract readonly customize: RxCustomize<E, O> | undefined
+  abstract readonly monitor?: Monitor
+  abstract readonly throttling?: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
+  abstract readonly logging?: Partial<LoggingOptions>
+  abstract priority: RxPriority
+  abstract shuffle: boolean
+  abstract model?: M
+  // System-managed properties
+  readonly abstract level: number
+  readonly abstract parent: RxNode
+  readonly abstract stamp: number
+  readonly abstract children: RxNodeChildren
+  readonly abstract next?: RxNode
+  readonly abstract prev?: RxNode
+  abstract neighbor?: RxNode
+  abstract native?: E
+
+  public static incrementalRenderingFrameDurationMs = 10
+  static self<M>(): RxNode<any, any, M> { return RxNodeImpl.getCurrent<M>() }
+  static renderChildrenThenDo(action: () => void): void { RxNodeImpl.renderChildrenThenDoImpl(action) }
+  static forAllNodesDo<E>(action: (e: E) => void): void { forEachChildRecursively(gSystem, action) }
+  static launch(render: () => void): void { gSystem.render = render; doRender(gSystem) }
+
+  static Reaction<E = undefined, O = void, M = unknown>(
+    name: string, triggers: unknown,
+    render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
+    factory?: RxNodeFactory<E>, monitor?: Monitor,
+    throttling?: number, logging?: Partial<LoggingOptions>): RxNode<E, O, M> {
+    return RxNodeImpl.emit(name, triggers, false, render, customize,
+      factory, monitor, throttling, logging)
+  }
+
+  static Affiliate<E = undefined, O = void, M = unknown>(
+    name: string, triggers: unknown,
+    render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
+    factory?: RxNodeFactory<E>, monitor?: Monitor,
+    throttling?: number, logging?: Partial<LoggingOptions>): RxNode<E, O, M> {
+    return RxNodeImpl.emit(name, triggers, true, render, customize,
+      factory, monitor, throttling, logging)
+  }
+}
+
+export interface RxNodeChildren {
+  readonly first?: RxNode
+  readonly count: number
+}
+
+// RxNodeFactory
 
 const NOP = (): void => { /* nop */ }
 
-// RxBasicNodeFactory
+export interface RxNodeFactory<E = unknown> {
+  readonly name: string
+  readonly arranging: boolean
+  initialize?(node: RxNode<E>): void
+  finalize?(node: RxNode<E>, initiator: RxNode): void
+  arrange?(node: RxNode<E>): void
+  render?(node: RxNode<E>): void
+}
 
-export class RxBasicNodeFactory<E> implements RxNodeFactory<E> {
+export class RxStandardNodeFactory<E> implements RxNodeFactory<E> {
+  public static readonly default = new RxStandardNodeFactory<any>('default', false)
+
   readonly name: string
   readonly arranging: boolean
 
@@ -22,7 +89,7 @@ export class RxBasicNodeFactory<E> implements RxNodeFactory<E> {
   }
 
   initialize(node: RxNode<E>): void {
-    if (!node.inline && Rx.isLogging)
+    if (!node.united && Rx.isLogging)
       Rx.setLoggingHint(node, node.name)
   }
 
@@ -48,21 +115,21 @@ export class RxBasicNodeFactory<E> implements RxNodeFactory<E> {
     finally {
       if (result instanceof Promise)
         result = result.then( // causes wrapping of then/catch to execute within current parent
-          value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
-          error => { console.log(error); RxDom.renderChildrenThenDo(NOP) }) // do not render children in case of parent error
+          value => { RxNode.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
+          error => { console.log(error); RxNode.renderChildrenThenDo(NOP) }) // do not render children in case of parent error
       else
-        RxDom.renderChildrenThenDo(NOP) // ignored if rendered already
+        RxNode.renderChildrenThenDo(NOP) // ignored if rendered already
     }
   }
 }
 
 // RxNodeImpl
 
-class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
+class RxNodeImpl<E = any, O = any, M = unknown> extends RxNode<E, O, M> {
   // User-defined properties
   readonly name: string
   readonly factory: RxNodeFactory<E>
-  readonly inline: boolean
+  readonly united: boolean
   triggers: unknown
   render: RxRender<E, O> | undefined
   customize: RxCustomize<E, O> | undefined
@@ -71,7 +138,7 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
   readonly logging?: Partial<LoggingOptions>
   priority: RxPriority
   shuffle: boolean
-  model?: unknown
+  model?: M
   // System-managed properties
   readonly level: number
   readonly parent: RxNodeImpl
@@ -84,13 +151,14 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
   rearranging: boolean
   native?: E
 
-  constructor(name: string, factory: RxNodeFactory<E>, inline: boolean, parent: RxNodeImpl,
+  constructor(name: string, factory: RxNodeFactory<E>, united: boolean, parent: RxNodeImpl,
     triggers?: unknown, render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
     monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>) {
+    super()
     // User-defined properties
     this.name = name
     this.factory = factory
-    this.inline = inline
+    this.united = united
     this.triggers = triggers
     this.render = render
     this.customize = customize
@@ -122,41 +190,34 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
     // triggers parameter is used to enforce rendering by parent
     runRender(this)
   }
-}
 
-// RxDom
+  static getCurrent<M>(): RxNode<any, any, M> {
+    return gContext as RxNode<any, any, M>
+  }
 
-export class RxDom {
-  public static readonly basic = new RxBasicNodeFactory<any>('basic', false)
-  public static incrementalRenderingFrameDurationMs = 10
-
-  static Node<E = undefined, O = void>(name: string, triggers: unknown,
+  static emit<E = undefined, O = void, M = unknown>(
+    name: string, triggers: unknown, united: boolean,
     render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
-    factory?: RxNodeFactory<E>, monitor?: Monitor, inline?: boolean,
-    throttling?: number, logging?: Partial<LoggingOptions>): RxNode<E, O> {
+    factory?: RxNodeFactory<E>, monitor?: Monitor, throttling?: number,
+    logging?: Partial<LoggingOptions>): RxNode<E, O, M> {
     const parent = gContext
     const children = parent.children
     let node = children.tryEmitAsExisting(name)
     if (node) {
-      if (node.inline || !triggersAreEqual(node.triggers, triggers))
+      if (node.united || !triggersAreEqual(node.triggers, triggers))
         node.triggers = triggers
       node.render = render
       node.customize = customize
     }
     else {
-      node = new RxNodeImpl<E, O>(name, factory ?? RxDom.basic, inline ?? false,
+      node = new RxNodeImpl<E, O>(name, factory ?? RxStandardNodeFactory.default, united ?? false,
         parent, triggers, render, customize, monitor, throttling, logging)
       children.emitAsNewlyCreated(node)
     }
-    return node
+    return node as RxNode<E, O, M>
   }
 
-  static launch(render: () => void): void {
-    gSystem.render = render
-    doRender(gSystem)
-  }
-
-  static renderChildrenThenDo(action: () => void): void {
+  static renderChildrenThenDoImpl(action: () => void): void {
     const node = gContext
     let promised: Promise<void> | undefined = undefined
     try {
@@ -199,23 +260,6 @@ export class RxDom {
         action()
     }
   }
-
-  static onlyOnce(func: (...args: any[]) => void, ...args: any[]): void {
-    if (gContext.stamp === 1)
-      func(...args)
-  }
-
-  static get currentNode(): RxNode {
-    return gContext
-  }
-
-  static currentNodeModel<M>(): { model?: M } {
-    return gContext as { model?: M }
-  }
-
-  static forAllNodesDo<E>(action: (e: E) => void): void {
-    forEachChildRecursively(gSystem, action)
-  }
 }
 
 // Internal
@@ -230,13 +274,13 @@ async function startIncrementalRendering(parent: RxNodeImpl,
 
 async function renderIncrementally(parent: RxNodeImpl, children: Array<RxNodeImpl>): Promise<void> {
   const checkEveryN = 30
-  if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
+  if (Transaction.isFrameOver(checkEveryN, RxNode.incrementalRenderingFrameDurationMs))
     await Transaction.requestNextFrame()
   if (!Transaction.isCanceled) {
     if (parent.shuffle)
       shuffle(children)
     for (const x of children) {
-      if (Transaction.isFrameOver(checkEveryN, RxDom.incrementalRenderingFrameDurationMs))
+      if (Transaction.isFrameOver(checkEveryN, RxNode.incrementalRenderingFrameDurationMs))
         await Transaction.requestNextFrame()
       if (Transaction.isCanceled)
         break
@@ -249,7 +293,7 @@ function doRender(node: RxNodeImpl): void {
   if (node.stamp >= 0) {
     const f = node.factory
     if (node.stamp === 0) {
-      !node.inline && Transaction.off(() => {
+      !node.united && Transaction.off(() => {
         Rx.getController(node.autorender).configure({
           order: node.level,
           monitor: node.monitor,
@@ -263,7 +307,7 @@ function doRender(node: RxNodeImpl): void {
       node.rearranging = false
       f.arrange?.(node)
     }
-    if (node.inline)
+    if (node.united)
       runRender(node)
     else
       nonreactive(node.autorender, node.triggers) // reactive auto-rendering
@@ -279,7 +323,7 @@ function runRender(node: RxNodeImpl): void {
         if (f.render)
           f.render(node) // factory-defined rendering
         else
-          RxDom.basic.render(node) // default rendering
+          RxStandardNodeFactory.default.render(node) // default rendering
       })
     }
     catch (e) {
@@ -297,8 +341,8 @@ function doFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
     if (f.finalize)
       f.finalize(node, initiator)
     else
-      RxDom.basic.finalize(node, initiator) // default finalize
-    if (!node.inline)
+      RxStandardNodeFactory.default.finalize(node, initiator) // default finalize
+    if (!node.united)
       deferDispose(node) // enqueue node for Rx.dispose if needed
     // Finalize children if any
     let x = node.children.first
@@ -523,7 +567,7 @@ Promise.prototype.then = reactronicDomHookedThen
 // Globals
 
 const gSystem = new RxNodeImpl<undefined, void>('SYSTEM',
-  new RxBasicNodeFactory<undefined>('SYSTEM', false), false,
+  new RxStandardNodeFactory<undefined>('SYSTEM', false), false,
   { level: 0 } as RxNodeImpl) // fake parent (overwritten below)
 
 Object.defineProperty(gSystem, 'parent', {

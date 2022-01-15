@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, transaction, LoggingLevel } from 'reactronic'
-import { RxDom } from '../../core/api'
+import { RxNode } from '../../core/api'
 import { Sensor } from './Sensor'
 
 export interface ResizedElement {
@@ -31,7 +31,7 @@ export class ResizeSensor extends Sensor {
   }
 
   observeResizingOfCurrentElement(value: boolean): void {
-    const self = RxDom.currentNode
+    const self = RxNode.self()
     const native = self.native
     if (native instanceof Element) {
       if (value) {
