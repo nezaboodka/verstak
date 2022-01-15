@@ -118,8 +118,6 @@ export class RxStandardNodeFactory<E> implements RxNodeFactory<E> {
   render(node: DomNode<E>): void {
     let result: any
     const native = node.native!
-    const children = node.children as RxNodeChildrenImpl
-    children.beginEmission(node.stamp)
     try {
       if (node.customize)
         node.customize(o => { result = node.render?.(native, o) }, native)
@@ -329,6 +327,7 @@ function runRender(node: DomNodeImpl): void {
     try {
       runUnder(node, () => {
         node.stamp++
+        node.children.beginEmission(node.stamp)
         const f = node.factory
         if (f.render)
           f.render(node) // factory-defined rendering
