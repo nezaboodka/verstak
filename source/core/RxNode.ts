@@ -6,7 +6,11 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions } from 'reactronic'
-import { RxPriority, RxRender, RxCustomize } from './RxDom.Types'
+
+export type RxRender<E = unknown, O = void> = (element: E, options: O) => void | Promise<void>
+export type RxCustomize<E = unknown, O = void> = (render: (options: O) => void, element: E) => void
+export const enum RxPriority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
+export type Callback<E = unknown> = (element: E) => void // to be deleted
 
 // RxNode
 
