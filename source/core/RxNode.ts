@@ -87,7 +87,7 @@ export interface RxNodeFactory<E = unknown> {
 }
 
 export class RxStandardNodeFactory<E> implements RxNodeFactory<E> {
-  public static readonly default = new RxStandardNodeFactory<any>('default', false)
+  public static readonly system = new RxStandardNodeFactory<any>('system', false)
 
   readonly name: string
   readonly arranging: boolean
@@ -218,7 +218,7 @@ function emit<E = undefined, O = void, M = unknown>(
     node.customize = customize
   }
   else {
-    node = new RxNodeImpl<E, O>(name, factory ?? RxStandardNodeFactory.default, united ?? false,
+    node = new RxNodeImpl<E, O>(name, factory ?? RxStandardNodeFactory.system, united ?? false,
       parent, triggers, render, customize, monitor, throttling, logging)
     children.emitAsNewlyCreated(node)
   }
@@ -328,7 +328,7 @@ function runRender(node: RxNodeImpl): void {
         if (f.render)
           f.render(node) // factory-defined rendering
         else
-          RxStandardNodeFactory.default.render(node) // default rendering
+          RxStandardNodeFactory.system.render(node) // default rendering
       })
     }
     catch (e) {
@@ -346,7 +346,7 @@ function doFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
     if (f.finalize)
       f.finalize(node, initiator)
     else
-      RxStandardNodeFactory.default.finalize(node, initiator) // default finalize
+      RxStandardNodeFactory.system.finalize(node, initiator) // default finalize
     if (!node.affiliate)
       deferDispose(node) // enqueue node for Rx.dispose if needed
     // Finalize children if any
