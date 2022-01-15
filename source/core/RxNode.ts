@@ -30,12 +30,12 @@ export abstract class RxNode<E = any, O = any, M = unknown> {
   abstract shuffle: boolean
   abstract model?: M
   // System-managed properties
-  readonly abstract level: number
-  readonly abstract parent: RxNode
-  readonly abstract stamp: number
-  readonly abstract children: RxNodeChildren
-  readonly abstract next?: RxNode
-  readonly abstract prev?: RxNode
+  abstract readonly level: number
+  abstract readonly parent: RxNode
+  abstract readonly stamp: number
+  abstract readonly children: RxNodeChildren
+  abstract readonly next?: RxNode
+  abstract readonly prev?: RxNode
   abstract neighbor?: RxNode
   abstract native?: E
 
