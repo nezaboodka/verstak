@@ -39,8 +39,6 @@ export abstract class RxNode<E = any, O = any, M = unknown> {
   abstract neighbor?: RxNode
   abstract native?: E
 
-  static self<M>(): RxNode<any, any, M> { return gContext as RxNode<any, any, M> }
-
   static Reaction<E = undefined, O = void, M = unknown>(
     name: string, triggers: unknown,
     render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
@@ -57,6 +55,14 @@ export abstract class RxNode<E = any, O = any, M = unknown> {
     throttling?: number, logging?: Partial<LoggingOptions>): RxNode<E, O, M> {
     return emit(name, triggers, true, render, customize,
       factory, monitor, throttling, logging)
+  }
+
+  static self<M>(): RxNode<any, any, M> {
+    return gContext as RxNode<any, any, M>
+  }
+
+  static get isInitialRendering(): boolean {
+    return gContext.stamp === 1
   }
 
   static launch(render: () => void): void {
