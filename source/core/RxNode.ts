@@ -8,35 +8,35 @@
 import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions } from 'reactronic'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
-export type RxRender<E = unknown, O = void> = (element: E, options: O) => void | Promise<void>
-export type RxCustomize<E = unknown, O = void> = (render: (options: O) => void, element: E) => void
-export const enum RxPriority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
+export type Render<E = unknown, O = void> = (element: E, options: O) => void | Promise<void>
+export type Customize<E = unknown, O = void> = (render: (options: O) => void, element: E) => void
+export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
-// RxNode
+// DomNode
 
-export abstract class RxNode<E = any, O = any, M = unknown> {
+export abstract class DomNode<E = any, O = any, M = unknown> {
   static incrementalRenderingFrameDurationMs = 10
   // User-defined properties
   abstract readonly name: string
   abstract readonly factory: RxNodeFactory<E>
   abstract readonly affiliate: boolean
   abstract readonly triggers: unknown
-  abstract readonly render: RxRender<E, O> | undefined
-  abstract readonly customize: RxCustomize<E, O> | undefined
+  abstract readonly render: Render<E, O> | undefined
+  abstract readonly customize: Customize<E, O> | undefined
   abstract readonly monitor?: Monitor
   abstract readonly throttling?: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
   abstract readonly logging?: Partial<LoggingOptions>
-  abstract priority: RxPriority
+  abstract priority: Priority
   abstract shuffle: boolean
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
-  abstract readonly parent: RxNode
+  abstract readonly parent: DomNode
   abstract readonly stamp: number
   abstract readonly children: RxNodeChildren
-  abstract readonly next?: RxNode
-  abstract readonly prev?: RxNode
-  abstract neighbor?: RxNode
+  abstract readonly next?: DomNode
+  abstract readonly prev?: DomNode
+  abstract neighbor?: DomNode
   abstract native?: E
 
   static launch(render: () => void): void {
@@ -46,24 +46,24 @@ export abstract class RxNode<E = any, O = any, M = unknown> {
 
   static Reaction<E = undefined, O = void, M = unknown>(
     name: string, triggers: unknown,
-    render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
+    render?: Render<E, O>, customize?: Customize<E, O>,
     factory?: RxNodeFactory<E>, monitor?: Monitor,
-    throttling?: number, logging?: Partial<LoggingOptions>): RxNode<E, O, M> {
+    throttling?: number, logging?: Partial<LoggingOptions>): DomNode<E, O, M> {
     return emit(name, triggers, false, render, customize,
       factory, monitor, throttling, logging)
   }
 
   static Affiliate<E = undefined, O = void, M = unknown>(
     name: string, triggers: unknown,
-    render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
+    render?: Render<E, O>, customize?: Customize<E, O>,
     factory?: RxNodeFactory<E>, monitor?: Monitor,
-    throttling?: number, logging?: Partial<LoggingOptions>): RxNode<E, O, M> {
+    throttling?: number, logging?: Partial<LoggingOptions>): DomNode<E, O, M> {
     return emit(name, triggers, true, render, customize,
       factory, monitor, throttling, logging)
   }
 
-  static self<M>(): RxNode<any, any, M> {
-    return gContext as RxNode<any, any, M>
+  static self<M>(): DomNode<any, any, M> {
+    return gContext as DomNode<any, any, M>
   }
 
   static get isInitialRendering(): boolean {
@@ -86,10 +86,10 @@ const NOP = (): void => { /* nop */ }
 export interface RxNodeFactory<E = unknown> {
   readonly name: string
   readonly arranging: boolean
-  initialize?(node: RxNode<E>): void
-  finalize?(node: RxNode<E>, initiator: RxNode): void
-  arrange?(node: RxNode<E>): void
-  render?(node: RxNode<E>): void
+  initialize?(node: DomNode<E>): void
+  finalize?(node: DomNode<E>, initiator: DomNode): void
+  arrange?(node: DomNode<E>): void
+  render?(node: DomNode<E>): void
 }
 
 export class RxStandardNodeFactory<E> implements RxNodeFactory<E> {
@@ -103,20 +103,20 @@ export class RxStandardNodeFactory<E> implements RxNodeFactory<E> {
     this.arranging = arranging
   }
 
-  initialize(node: RxNode<E>): void {
+  initialize(node: DomNode<E>): void {
     if (!node.affiliate && Rx.isLogging)
       Rx.setLoggingHint(node, node.name)
   }
 
-  finalize(node: RxNode<E>, initiator: RxNode): void {
+  finalize(node: DomNode<E>, initiator: DomNode): void {
     node.native = undefined
   }
 
-  arrange(node: RxNode<E>): void {
+  arrange(node: DomNode<E>): void {
     // nothing to do by default
   }
 
-  render(node: RxNode<E>): void {
+  render(node: DomNode<E>): void {
     let result: any
     const native = node.native!
     const children = node.children as RxNodeChildrenImpl
@@ -130,44 +130,44 @@ export class RxStandardNodeFactory<E> implements RxNodeFactory<E> {
     finally {
       if (result instanceof Promise)
         result = result.then( // causes wrapping of then/catch to execute within current parent
-          value => { RxNode.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
-          error => { console.log(error); RxNode.renderChildrenThenDo(NOP) }) // do not render children in case of parent error
+          value => { DomNode.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
+          error => { console.log(error); DomNode.renderChildrenThenDo(NOP) }) // do not render children in case of parent error
       else
-        RxNode.renderChildrenThenDo(NOP) // ignored if rendered already
+        DomNode.renderChildrenThenDo(NOP) // ignored if rendered already
     }
   }
 }
 
-// RxNodeImpl
+// DomNodeImpl
 
-class RxNodeImpl<E = any, O = any, M = unknown> extends RxNode<E, O, M> {
+class DomNodeImpl<E = any, O = any, M = unknown> extends DomNode<E, O, M> {
   // User-defined properties
   readonly name: string
   readonly factory: RxNodeFactory<E>
   readonly affiliate: boolean
   triggers: unknown
-  render: RxRender<E, O> | undefined
-  customize: RxCustomize<E, O> | undefined
+  render: Render<E, O> | undefined
+  customize: Customize<E, O> | undefined
   readonly monitor?: Monitor
   readonly throttling: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
   readonly logging?: Partial<LoggingOptions>
-  priority: RxPriority
+  priority: Priority
   shuffle: boolean
   model?: M
   // System-managed properties
   readonly level: number
-  readonly parent: RxNodeImpl
+  readonly parent: DomNodeImpl
   stamp: number
   emission: number
   children: RxNodeChildrenImpl
-  next?: RxNodeImpl
-  prev?: RxNodeImpl
-  neighbor?: RxNodeImpl
+  next?: DomNodeImpl
+  prev?: DomNodeImpl
+  neighbor?: DomNodeImpl
   rearranging: boolean
   native?: E
 
-  constructor(name: string, factory: RxNodeFactory<E>, affiliate: boolean, parent: RxNodeImpl,
-    triggers?: unknown, render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
+  constructor(name: string, factory: RxNodeFactory<E>, affiliate: boolean, parent: DomNodeImpl,
+    triggers?: unknown, render?: Render<E, O>, customize?: Customize<E, O>,
     monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>) {
     super()
     // User-defined properties
@@ -180,7 +180,7 @@ class RxNodeImpl<E = any, O = any, M = unknown> extends RxNode<E, O, M> {
     this.monitor = monitor,
     this.throttling = throttling ?? -1,
     this.logging = logging
-    this.priority = RxPriority.SyncP0,
+    this.priority = Priority.SyncP0,
     this.shuffle = false
     this.model = undefined
     // System-managed properties
@@ -211,9 +211,9 @@ class RxNodeImpl<E = any, O = any, M = unknown> extends RxNode<E, O, M> {
 
 function emit<E = undefined, O = void, M = unknown>(
   name: string, triggers: unknown, united: boolean,
-  render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
+  render?: Render<E, O>, customize?: Customize<E, O>,
   factory?: RxNodeFactory<E>, monitor?: Monitor, throttling?: number,
-  logging?: Partial<LoggingOptions>): RxNode<E, O, M> {
+  logging?: Partial<LoggingOptions>): DomNode<E, O, M> {
   const parent = gContext
   const children = parent.children
   let node = children.tryEmitAsExisting(name)
@@ -224,11 +224,11 @@ function emit<E = undefined, O = void, M = unknown>(
     node.customize = customize
   }
   else {
-    node = new RxNodeImpl<E, O>(name, factory ?? RxStandardNodeFactory.system, united ?? false,
+    node = new DomNodeImpl<E, O>(name, factory ?? RxStandardNodeFactory.system, united ?? false,
       parent, triggers, render, customize, monitor, throttling, logging)
     children.emitAsNewlyCreated(node)
   }
-  return node as RxNode<E, O, M>
+  return node as DomNode<E, O, M>
 }
 
 function renderChildrenThenDoImpl(action: () => void): void {
@@ -245,18 +245,18 @@ function renderChildrenThenDoImpl(action: () => void): void {
       }
       // Render retained children
       const arranging = node.factory.arranging
-      let p1: Array<RxNodeImpl> | undefined = undefined
-      let p2: Array<RxNodeImpl> | undefined = undefined
-      let neighbor: RxNodeImpl | undefined = undefined
+      let p1: Array<DomNodeImpl> | undefined = undefined
+      let p2: Array<DomNodeImpl> | undefined = undefined
+      let neighbor: DomNodeImpl | undefined = undefined
       let x = children.first
       while (x !== undefined && !Transaction.isCanceled) {
         if (arranging && x.neighbor !== neighbor) {
           x.rearranging = true
           x.neighbor = neighbor
         }
-        if (x.priority === RxPriority.SyncP0)
+        if (x.priority === Priority.SyncP0)
           doRender(x)
-        else if (x.priority === RxPriority.AsyncP1)
+        else if (x.priority === Priority.AsyncP1)
           p1 = push(p1, x)
         else
           p2 = push(p2, x)
@@ -275,23 +275,23 @@ function renderChildrenThenDoImpl(action: () => void): void {
   }
 }
 
-async function startIncrementalRendering(parent: RxNodeImpl,
-  children1?: Array<RxNodeImpl>, children2?: Array<RxNodeImpl>): Promise<void> {
+async function startIncrementalRendering(parent: DomNodeImpl,
+  children1?: Array<DomNodeImpl>, children2?: Array<DomNodeImpl>): Promise<void> {
   if (children1)
     await renderIncrementally(parent, children1)
   if (children2)
     await renderIncrementally(parent, children2)
 }
 
-async function renderIncrementally(parent: RxNodeImpl, children: Array<RxNodeImpl>): Promise<void> {
+async function renderIncrementally(parent: DomNodeImpl, children: Array<DomNodeImpl>): Promise<void> {
   const checkEveryN = 30
-  if (Transaction.isFrameOver(checkEveryN, RxNode.incrementalRenderingFrameDurationMs))
+  if (Transaction.isFrameOver(checkEveryN, DomNode.incrementalRenderingFrameDurationMs))
     await Transaction.requestNextFrame()
   if (!Transaction.isCanceled) {
     if (parent.shuffle)
       shuffle(children)
     for (const x of children) {
-      if (Transaction.isFrameOver(checkEveryN, RxNode.incrementalRenderingFrameDurationMs))
+      if (Transaction.isFrameOver(checkEveryN, DomNode.incrementalRenderingFrameDurationMs))
         await Transaction.requestNextFrame()
       if (Transaction.isCanceled)
         break
@@ -300,7 +300,7 @@ async function renderIncrementally(parent: RxNodeImpl, children: Array<RxNodeImp
   }
 }
 
-function doRender(node: RxNodeImpl): void {
+function doRender(node: DomNodeImpl): void {
   if (node.stamp >= 0) {
     const f = node.factory
     if (node.stamp === 0) {
@@ -325,7 +325,7 @@ function doRender(node: RxNodeImpl): void {
   }
 }
 
-function runRender(node: RxNodeImpl): void {
+function runRender(node: DomNodeImpl): void {
   if (node.stamp >= 0) {
     try {
       runUnder(node, () => {
@@ -344,7 +344,7 @@ function runRender(node: RxNodeImpl): void {
   }
 }
 
-function doFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
+function doFinalize(node: DomNodeImpl, initiator: DomNodeImpl): void {
   if (node.stamp >= 0) {
     node.stamp = ~node.stamp
     // Finalize node itself
@@ -376,7 +376,7 @@ async function runDisposalLoop(): Promise<void> {
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
-function forEachChildRecursively(node: RxNodeImpl, action: (e: any) => void): void {
+function forEachChildRecursively(node: DomNodeImpl, action: (e: any) => void): void {
   const native = node.native
   native && action(native)
   let x = node.children.first
@@ -394,7 +394,7 @@ function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
   return wrappedRunUnder
 }
 
-function runUnder<T>(node: RxNodeImpl, func: (...args: any[]) => T, ...args: any[]): T {
+function runUnder<T>(node: DomNodeImpl, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gContext
   try {
     gContext = node
@@ -446,19 +446,19 @@ function shuffle<T>(array: Array<T>): Array<T> {
 // RxNodeChildrenImpl
 
 export interface RxNodeChildren {
-  readonly first?: RxNode
+  readonly first?: DomNode
   readonly count: number
 }
 
 class RxNodeChildrenImpl implements RxNodeChildren {
-  namespace: Map<string, RxNodeImpl> = new Map<string, RxNodeImpl>()
-  first?: RxNodeImpl = undefined
+  namespace: Map<string, DomNodeImpl> = new Map<string, DomNodeImpl>()
+  first?: DomNodeImpl = undefined
   count: number = 0
   emission: number = 0
-  emittedFirst?: RxNodeImpl = undefined
-  emittedLast?: RxNodeImpl = undefined
+  emittedFirst?: DomNodeImpl = undefined
+  emittedLast?: DomNodeImpl = undefined
   emittedCount: number = 0
-  likelyNextEmitted?: RxNodeImpl = undefined
+  likelyNextEmitted?: DomNodeImpl = undefined
 
   get isEmissionInProgress(): boolean { return this.emission > 0 }
 
@@ -468,7 +468,7 @@ class RxNodeChildrenImpl implements RxNodeChildren {
     this.emission = emission
   }
 
-  endEmission(): RxNodeImpl | undefined {
+  endEmission(): DomNodeImpl | undefined {
     if (!this.isEmissionInProgress)
       throw new Error('reconciliation is ended already')
     this.emission = 0
@@ -481,14 +481,14 @@ class RxNodeChildrenImpl implements RxNodeChildren {
           ns.delete(x.name), x = x.next
       }
       else { // it should be faster to recreate namespace with retained nodes only
-        const ns = this.namespace = new Map<string, RxNodeImpl>()
+        const ns = this.namespace = new Map<string, DomNodeImpl>()
         let x = this.emittedFirst
         while (x !== undefined)
           ns.set(x.name, x), x = x.next
       }
     }
     else // just create new empty namespace
-      this.namespace = new Map<string, RxNodeImpl>()
+      this.namespace = new Map<string, DomNodeImpl>()
     const vanishedFirst = this.first
     this.first = this.emittedFirst
     this.count = emittedCount
@@ -498,7 +498,7 @@ class RxNodeChildrenImpl implements RxNodeChildren {
     return vanishedFirst
   }
 
-  tryEmitAsExisting(name: string): RxNodeImpl | undefined {
+  tryEmitAsExisting(name: string): DomNodeImpl | undefined {
     let result = this.likelyNextEmitted
     if (result?.name !== name)
       result = this.namespace.get(name)
@@ -531,7 +531,7 @@ class RxNodeChildrenImpl implements RxNodeChildren {
     return result
   }
 
-  emitAsNewlyCreated(node: RxNodeImpl): void {
+  emitAsNewlyCreated(node: DomNodeImpl): void {
     node.emission = this.emission
     this.namespace.set(node.name, node)
     const last = this.emittedLast
@@ -545,7 +545,7 @@ class RxNodeChildrenImpl implements RxNodeChildren {
   }
 }
 
-function deferDispose(node: RxNodeImpl): void {
+function deferDispose(node: DomNodeImpl): void {
   const last = gLastToDispose
   if (last)
     gLastToDispose = last.neighbor = node
@@ -582,9 +582,9 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-const gSystem = new RxNodeImpl<undefined, void>('SYSTEM',
+const gSystem = new DomNodeImpl<undefined, void>('SYSTEM',
   new RxStandardNodeFactory<undefined>('SYSTEM', false), false,
-  { level: 0 } as RxNodeImpl) // fake parent (overwritten below)
+  { level: 0 } as DomNodeImpl) // fake parent (overwritten below)
 
 Object.defineProperty(gSystem, 'parent', {
   value: gSystem,
@@ -593,6 +593,6 @@ Object.defineProperty(gSystem, 'parent', {
   enumerable: true,
 })
 
-let gContext: RxNodeImpl = gSystem
-let gFirstToDispose: RxNodeImpl | undefined = undefined
-let gLastToDispose: RxNodeImpl | undefined = undefined
+let gContext: DomNodeImpl = gSystem
+let gFirstToDispose: DomNodeImpl | undefined = undefined
+let gLastToDispose: DomNodeImpl | undefined = undefined

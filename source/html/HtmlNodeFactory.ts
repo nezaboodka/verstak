@@ -6,18 +6,18 @@
 // automatically licensed under the license referred above.
 
 import { Rx } from 'reactronic'
-import { RxNode, RxStandardNodeFactory } from '../core/api'
+import { DomNode, RxStandardNodeFactory } from '../core/api'
 
 export abstract class RxAbstractHtmlNodeFactory<E extends Element> extends RxStandardNodeFactory<E> {
 
-  initialize(node: RxNode<E>): void {
+  initialize(node: DomNode<E>): void {
     super.initialize(node)
     const e = node.native = this.createElement(node)
     if (Rx.isLogging)
       e.id = node.name
   }
 
-  finalize(node: RxNode<E>, initiator: RxNode): void {
+  finalize(node: DomNode<E>, initiator: DomNode): void {
     const e = node.native
     if (e) {
       e.resizeObserver?.unobserve(e) // is it really needed or browser does this automatically?
@@ -27,7 +27,7 @@ export abstract class RxAbstractHtmlNodeFactory<E extends Element> extends RxSta
     super.finalize(node, initiator)
   }
 
-  arrange(node: RxNode<E>): void {
+  arrange(node: DomNode<E>): void {
     const e = node.native
     if (e) {
       const nativeParent = findNearestHtmlParent(node).native
@@ -52,7 +52,7 @@ export abstract class RxAbstractHtmlNodeFactory<E extends Element> extends RxSta
     }
   }
 
-  render(node: RxNode<E>): void {
+  render(node: DomNode<E>): void {
     super.render(node)
     if (gBlinkingEffect)
       blink(node.native, node.stamp)
@@ -65,7 +65,7 @@ export abstract class RxAbstractHtmlNodeFactory<E extends Element> extends RxSta
   static set blinkingEffect(value: string | undefined) {
     if (value === undefined) {
       const effect = gBlinkingEffect
-      RxNode.forAllNodesDo((e: any) => {
+      DomNode.forAllNodesDo((e: any) => {
         if (e instanceof HTMLElement)
           e.classList.remove(`${effect}-0`, `${effect}-1`)
       })
@@ -73,17 +73,17 @@ export abstract class RxAbstractHtmlNodeFactory<E extends Element> extends RxSta
     gBlinkingEffect = value
   }
 
-  protected abstract createElement(node: RxNode<E>): E
+  protected abstract createElement(node: DomNode<E>): E
 }
 
 export class RxHtmlNodeFactory<E extends HTMLElement> extends RxAbstractHtmlNodeFactory<E> {
-  protected createElement(node: RxNode<E>): E {
+  protected createElement(node: DomNode<E>): E {
     return document.createElement(node.factory.name) as E
   }
 }
 
 export class RxSvgNodeFactory<E extends SVGElement> extends RxAbstractHtmlNodeFactory<E> {
-  protected createElement(node: RxNode<E>): E {
+  protected createElement(node: DomNode<E>): E {
     return document.createElementNS('http://www.w3.org/2000/svg', node.factory.name) as E
   }
 }
@@ -98,7 +98,7 @@ function blink(e: Element | undefined, revision: number): void {
   }
 }
 
-function findNearestHtmlParent(node: RxNode): RxNode<HTMLElement> {
+function findNearestHtmlParent(node: DomNode): DomNode<HTMLElement> {
   let p = node.parent
   while (p.native instanceof HTMLElement === false && p !== node)
     p = p.parent
