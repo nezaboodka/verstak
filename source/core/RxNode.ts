@@ -19,7 +19,7 @@ export abstract class RxNode<E = any, O = any, M = unknown> {
   // User-defined properties
   abstract readonly name: string
   abstract readonly factory: RxNodeFactory<E>
-  abstract readonly united: boolean
+  abstract readonly affiliate: boolean
   abstract readonly triggers: unknown
   abstract readonly render: RxRender<E, O> | undefined
   abstract readonly customize: RxCustomize<E, O> | undefined
@@ -98,7 +98,7 @@ export class RxStandardNodeFactory<E> implements RxNodeFactory<E> {
   }
 
   initialize(node: RxNode<E>): void {
-    if (!node.united && Rx.isLogging)
+    if (!node.affiliate && Rx.isLogging)
       Rx.setLoggingHint(node, node.name)
   }
 
@@ -138,7 +138,7 @@ class RxNodeImpl<E = any, O = any, M = unknown> extends RxNode<E, O, M> {
   // User-defined properties
   readonly name: string
   readonly factory: RxNodeFactory<E>
-  readonly united: boolean
+  readonly affiliate: boolean
   triggers: unknown
   render: RxRender<E, O> | undefined
   customize: RxCustomize<E, O> | undefined
@@ -160,14 +160,14 @@ class RxNodeImpl<E = any, O = any, M = unknown> extends RxNode<E, O, M> {
   rearranging: boolean
   native?: E
 
-  constructor(name: string, factory: RxNodeFactory<E>, united: boolean, parent: RxNodeImpl,
+  constructor(name: string, factory: RxNodeFactory<E>, affiliate: boolean, parent: RxNodeImpl,
     triggers?: unknown, render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
     monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>) {
     super()
     // User-defined properties
     this.name = name
     this.factory = factory
-    this.united = united
+    this.affiliate = affiliate
     this.triggers = triggers
     this.render = render
     this.customize = customize
@@ -212,7 +212,7 @@ function emit<E = undefined, O = void, M = unknown>(
   const children = parent.children
   let node = children.tryEmitAsExisting(name)
   if (node) {
-    if (node.united || !triggersAreEqual(node.triggers, triggers))
+    if (node.affiliate || !triggersAreEqual(node.triggers, triggers))
       node.triggers = triggers
     node.render = render
     node.customize = customize
@@ -298,7 +298,7 @@ function doRender(node: RxNodeImpl): void {
   if (node.stamp >= 0) {
     const f = node.factory
     if (node.stamp === 0) {
-      !node.united && Transaction.off(() => {
+      !node.affiliate && Transaction.off(() => {
         Rx.getController(node.autorender).configure({
           order: node.level,
           monitor: node.monitor,
@@ -312,7 +312,7 @@ function doRender(node: RxNodeImpl): void {
       node.rearranging = false
       f.arrange?.(node)
     }
-    if (node.united)
+    if (node.affiliate)
       runRender(node)
     else
       nonreactive(node.autorender, node.triggers) // reactive auto-rendering
@@ -347,7 +347,7 @@ function doFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
       f.finalize(node, initiator)
     else
       RxStandardNodeFactory.default.finalize(node, initiator) // default finalize
-    if (!node.united)
+    if (!node.affiliate)
       deferDispose(node) // enqueue node for Rx.dispose if needed
     // Finalize children if any
     let x = node.children.first
