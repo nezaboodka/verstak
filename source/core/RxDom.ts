@@ -86,7 +86,7 @@ class RxNodeImpl<E = any, O = any> implements RxNode<E, O> {
 
   constructor(name: string, factory: RxNodeFactory<E>, inline: boolean, parent: RxNodeImpl,
     triggers?: unknown, render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
-    monitor?: Monitor, throttling?: number, logging?: LoggingOptions) {
+    monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>) {
     // User-defined properties
     this.name = name
     this.factory = factory
@@ -132,7 +132,8 @@ export class RxDom {
 
   static Node<E = undefined, O = void>(name: string, triggers: unknown,
     render?: RxRender<E, O>, customize?: RxCustomize<E, O>,
-    factory?: RxNodeFactory<E>, monitor?: Monitor, inline?: boolean): RxNode<E, O> {
+    factory?: RxNodeFactory<E>, monitor?: Monitor, inline?: boolean,
+    throttling?: number, logging?: Partial<LoggingOptions>): RxNode<E, O> {
     const parent = gContext
     const children = parent.children
     let node = children.tryEmitAsExisting(name)
@@ -144,7 +145,7 @@ export class RxDom {
     }
     else {
       node = new RxNodeImpl<E, O>(name, factory ?? RxDom.basic, inline ?? false,
-        parent, triggers, render, customize, monitor)
+        parent, triggers, render, customize, monitor, throttling, logging)
       children.emitAsNewlyCreated(node)
     }
     return node
