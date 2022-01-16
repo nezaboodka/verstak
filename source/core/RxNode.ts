@@ -315,13 +315,13 @@ function runRender(node: RxNodeImpl): void {
           result = factory.render(node)
         }
         finally {
-          // Render children
+          // Render children (skipped if children were already rendered explicitly)
           if (result instanceof Promise)
-            result.then( // causes wrapping of then/catch to execute within current parent
-              value => { RxNode.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
-              error => { console.log(error); RxNode.renderChildrenThenDo(NOP) }) // do not render children in case of parent error
+            result.then(
+              value => { RxNode.renderChildrenThenDo(NOP); return value },
+              error => { console.log(error); RxNode.renderChildrenThenDo(NOP) })
           else
-            RxNode.renderChildrenThenDo(NOP) // ignored if rendered already
+            RxNode.renderChildrenThenDo(NOP)
         }
       })
     }
