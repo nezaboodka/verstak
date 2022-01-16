@@ -277,14 +277,14 @@ function doRender(node: RxNodeImpl): void {
     if (!node.inline) {
       if (node.stamp === 0) {
         Transaction.off(() => {
+          if (Rx.isLogging)
+            Rx.setLoggingHint(node, node.name)
           Rx.getController(node.autorender).configure({
             order: node.level,
             monitor: node.monitor,
             throttling: node.throttling,
             logging: node.logging,
           })
-          if (Rx.isLogging)
-            Rx.setLoggingHint(node, node.name)
         })
       }
       nonreactive(node.autorender, node.triggers) // reactive auto-rendering
