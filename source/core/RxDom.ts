@@ -12,29 +12,29 @@ export type Render<E = unknown, O = void> = (element: E, options: O) => void | P
 export type Customize<E = unknown, O = void> = (render: (options: O) => void, element: E) => void
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
-// DomNode
-
 export function Reaction<E = undefined, O = void, M = unknown>(
   name: string, triggers: unknown,
   render?: Render<E, O>, customize?: Customize<E, O>,
   monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>,
-  factory?: RxNodeFactory<E>): DomNode<E, O, M> {
+  factory?: NodeFactory<E>): DomNode<E, O, M> {
   return emit(name, triggers, false, render, customize,
     monitor, throttling, logging, factory)
 }
 
 export function Inline<E = undefined, O = void, M = unknown>(
   name: string, render?: Render<E, O>, customize?: Customize<E, O>,
-  factory?: RxNodeFactory<E>): DomNode<E, O, M> {
+  factory?: NodeFactory<E>): DomNode<E, O, M> {
   return emit(name, undefined, true, render, customize,
     undefined, undefined, undefined, factory)
 }
+
+// DomNode
 
 export abstract class DomNode<E = any, O = any, M = unknown> {
   static incrementalRenderingFrameDurationMs = 10
   // User-defined properties
   abstract readonly name: string
-  abstract readonly factory: RxNodeFactory<E>
+  abstract readonly factory: NodeFactory<E>
   abstract readonly inline: boolean
   abstract readonly triggers: unknown
   abstract readonly render: Render<E, O> | undefined
@@ -49,7 +49,7 @@ export abstract class DomNode<E = any, O = any, M = unknown> {
   abstract readonly level: number
   abstract readonly parent: DomNode
   abstract readonly stamp: number
-  abstract readonly children: RxNodeChildren
+  abstract readonly children: NodeChildren
   abstract readonly next?: DomNode
   abstract readonly prev?: DomNode
   abstract neighbor?: DomNode
@@ -77,11 +77,11 @@ export abstract class DomNode<E = any, O = any, M = unknown> {
   }
 }
 
-// RxNodeFactory
+// NodeFactory
 
 const NOP = (): void => { /* nop */ }
 
-export interface RxNodeFactory<E = unknown> {
+export interface NodeFactory<E = unknown> {
   readonly name: string
   readonly arranging: boolean
   initialize?(node: DomNode<E>): void
@@ -90,8 +90,8 @@ export interface RxNodeFactory<E = unknown> {
   render?(node: DomNode<E>): void
 }
 
-export class RxStandardNodeFactory<E> implements RxNodeFactory<E> {
-  public static readonly system = new RxStandardNodeFactory<any>('system', false)
+export class StandardNodeFactory<E> implements NodeFactory<E> {
+  public static readonly system = new StandardNodeFactory<any>('system', false)
 
   readonly name: string
   readonly arranging: boolean
@@ -139,7 +139,7 @@ export class RxStandardNodeFactory<E> implements RxNodeFactory<E> {
 class DomNodeImpl<E = any, O = any, M = unknown> extends DomNode<E, O, M> {
   // User-defined properties
   readonly name: string
-  readonly factory: RxNodeFactory<E>
+  readonly factory: NodeFactory<E>
   readonly inline: boolean
   triggers: unknown
   render: Render<E, O> | undefined
@@ -155,14 +155,14 @@ class DomNodeImpl<E = any, O = any, M = unknown> extends DomNode<E, O, M> {
   readonly parent: DomNodeImpl
   stamp: number
   emission: number
-  children: RxNodeChildrenImpl
+  children: NodeChildrenImpl
   next?: DomNodeImpl
   prev?: DomNodeImpl
   neighbor?: DomNodeImpl
   rearranging: boolean
   native?: E
 
-  constructor(name: string, factory: RxNodeFactory<E>, inline: boolean, parent: DomNodeImpl,
+  constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: DomNodeImpl,
     triggers?: unknown, render?: Render<E, O>, customize?: Customize<E, O>,
     monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>) {
     super()
@@ -184,7 +184,7 @@ class DomNodeImpl<E = any, O = any, M = unknown> extends DomNode<E, O, M> {
     this.parent = parent
     this.stamp = 0
     this.emission = 0
-    this.children = new RxNodeChildrenImpl()
+    this.children = new NodeChildrenImpl()
     this.next = undefined
     this.prev = undefined
     this.neighbor = this
@@ -209,7 +209,7 @@ function emit<E = undefined, O = void, M = unknown>(
   name: string, triggers: unknown, united: boolean,
   render?: Render<E, O>, customize?: Customize<E, O>,
   monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>,
-  factory?: RxNodeFactory<E>): DomNode<E, O, M> {
+  factory?: NodeFactory<E>): DomNode<E, O, M> {
   const parent = gContext
   const children = parent.children
   let node = children.tryEmitAsExisting(name)
@@ -220,7 +220,7 @@ function emit<E = undefined, O = void, M = unknown>(
     node.customize = customize
   }
   else {
-    node = new DomNodeImpl<E, O>(name, factory ?? RxStandardNodeFactory.system, united ?? false,
+    node = new DomNodeImpl<E, O>(name, factory ?? StandardNodeFactory.system, united ?? false,
       parent, triggers, render, customize, monitor, throttling, logging)
     children.emitAsNewlyCreated(node)
   }
@@ -331,7 +331,7 @@ function runRender(node: DomNodeImpl): void {
         if (f.render)
           f.render(node) // factory-defined rendering
         else
-          RxStandardNodeFactory.system.render(node) // default rendering
+          StandardNodeFactory.system.render(node) // default rendering
       })
     }
     catch (e) {
@@ -349,7 +349,7 @@ function doFinalize(node: DomNodeImpl, initiator: DomNodeImpl): void {
     if (f.finalize)
       f.finalize(node, initiator)
     else
-      RxStandardNodeFactory.system.finalize(node, initiator) // default finalize
+      StandardNodeFactory.system.finalize(node, initiator) // default finalize
     if (!node.inline)
       deferDispose(node) // enqueue node for Rx.dispose if needed
     // Finalize children if any
@@ -440,14 +440,14 @@ function shuffle<T>(array: Array<T>): Array<T> {
   return array
 }
 
-// RxNodeChildrenImpl
+// NodeChildrenImpl
 
-export interface RxNodeChildren {
+export interface NodeChildren {
   readonly first?: DomNode
   readonly count: number
 }
 
-class RxNodeChildrenImpl implements RxNodeChildren {
+class NodeChildrenImpl implements NodeChildren {
   namespace: Map<string, DomNodeImpl> = new Map<string, DomNodeImpl>()
   first?: DomNodeImpl = undefined
   count: number = 0
@@ -580,7 +580,7 @@ Promise.prototype.then = reactronicDomHookedThen
 // Globals
 
 const gSystem = new DomNodeImpl<undefined, void>('SYSTEM',
-  new RxStandardNodeFactory<undefined>('SYSTEM', false), false,
+  new StandardNodeFactory<undefined>('SYSTEM', false), false,
   { level: 0 } as DomNodeImpl) // fake parent (overwritten below)
 
 Object.defineProperty(gSystem, 'parent', {

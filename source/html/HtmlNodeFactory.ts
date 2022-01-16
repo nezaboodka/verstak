@@ -6,9 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { Rx } from 'reactronic'
-import { DomNode, RxStandardNodeFactory } from '../core/api'
+import { DomNode, StandardNodeFactory } from '../core/api'
 
-export abstract class RxAbstractHtmlNodeFactory<E extends Element> extends RxStandardNodeFactory<E> {
+export abstract class RxAbstractHtmlNodeFactory<E extends Element> extends StandardNodeFactory<E> {
 
   initialize(node: DomNode<E>): void {
     super.initialize(node)
