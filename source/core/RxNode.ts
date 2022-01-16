@@ -226,10 +226,8 @@ function runRenderChildrenThenDo(action: () => void): void {
       let neighbor: RxNodeImpl | undefined = undefined
       let x = children.first
       while (x !== undefined && !Transaction.isCanceled) {
-        if (arranging && x.neighbor !== neighbor) {
-          x.rearranging = true
-          x.neighbor = neighbor
-        }
+        if (arranging && x.neighbor !== neighbor)
+          x.neighbor = neighbor, x.rearranging = true
         if (x.priority === Priority.SyncP0)
           doRender(x)
         else if (x.priority === Priority.AsyncP1)
