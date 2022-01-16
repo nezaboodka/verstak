@@ -281,7 +281,7 @@ async function renderIncrementally(parent: RxNodeImpl, children: Array<RxNodeImp
 function doRender(node: RxNodeImpl): void {
   if (node.stamp >= 0) {
     if (!node.inline) {
-      if (node.stamp === 0)
+      if (node.stamp === 0) {
         Transaction.off(() => {
           Rx.getController(node.autorender).configure({
             order: node.level,
@@ -290,6 +290,7 @@ function doRender(node: RxNodeImpl): void {
             logging: node.logging,
           })
         })
+      }
       nonreactive(node.autorender, node.triggers) // reactive auto-rendering
     }
     else
@@ -306,7 +307,7 @@ function runRender(node: RxNodeImpl): void {
         if (node.stamp === 0)
           factory.initialize?.(node, undefined)
         if (node.rearranging)
-          node.rearranging = false, factory.arrange?.(node)
+          factory.arrange?.(node), node.rearranging = false
         // Render node itself
         node.stamp++
         node.children.beginEmission(node.stamp)
