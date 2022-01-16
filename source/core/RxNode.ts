@@ -217,10 +217,8 @@ function runRenderChildrenThenDo(action: () => void): void {
     if (children.isEmissionInProgress) {
       let vanished = children.endEmission()
       // Unmount vanished children
-      while (vanished !== undefined) {
-        doFinalize(vanished, vanished)
-        vanished = vanished.next
-      }
+      while (vanished !== undefined)
+        doFinalize(vanished, vanished), vanished = vanished.next
       // Render retained children
       const arranging = node.factory.arranging
       let p1: Array<RxNodeImpl> | undefined = undefined
@@ -342,10 +340,8 @@ function doFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
       deferDispose(node) // enqueue node for Rx.dispose if needed
     // Finalize children if any
     let x = node.children.first
-    while (x !== undefined) {
-      doFinalize(x, initiator)
-      x = x.next
-    }
+    while (x !== undefined)
+      doFinalize(x, initiator), x = x.next
   }
 }
 
@@ -365,10 +361,8 @@ function forEachChildRecursively(node: RxNodeImpl, action: (e: any) => void): vo
   const native = node.native
   native && action(native)
   let x = node.children.first
-  while (x !== undefined) {
-    forEachChildRecursively(x, action)
-    x = x.next
-  }
+  while (x !== undefined)
+    forEachChildRecursively(x, action), x = x.next
 }
 
 function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
