@@ -161,7 +161,7 @@ class RxNodeImpl<E = any, O = any, M = unknown> extends RxNode<E, O, M> {
   next?: RxNodeImpl
   prev?: RxNodeImpl
   neighbor?: RxNodeImpl
-  moved: boolean
+  reinserting: boolean
   native?: E
 
   constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: RxNodeImpl,
@@ -190,7 +190,7 @@ class RxNodeImpl<E = any, O = any, M = unknown> extends RxNode<E, O, M> {
     this.next = undefined
     this.prev = undefined
     this.neighbor = this
-    this.moved = true
+    this.reinserting = true
     this.native = undefined
   }
 
@@ -225,7 +225,7 @@ function runRenderChildrenThenDo(action: () => void): void {
       let child = children.first
       while (child !== undefined && !Transaction.isCanceled) {
         if (sequential && child.neighbor !== neighbor)
-          child.neighbor = neighbor, child.moved = true
+          child.neighbor = neighbor, child.reinserting = true
         if (child.priority === Priority.SyncP0)
           doRender(child)
         else if (child.priority === Priority.AsyncP1)
@@ -302,8 +302,8 @@ function runRender(node: RxNodeImpl): void {
         const factory = node.factory
         if (node.stamp === 0)
           factory.initialize?.(node, undefined)
-        if (node.moved)
-          factory.insert?.(node), node.moved = false
+        if (node.reinserting)
+          factory.insert?.(node), node.reinserting = false
         // Render node itself
         node.stamp++
         node.children.beginEmission(node.stamp)
