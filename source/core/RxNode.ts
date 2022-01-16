@@ -222,19 +222,19 @@ function runRenderChildrenThenDo(action: () => void): void {
       let p1: Array<RxNodeImpl> | undefined = undefined
       let p2: Array<RxNodeImpl> | undefined = undefined
       let neighbor: RxNodeImpl | undefined = undefined
-      let x = children.first
-      while (x !== undefined && !Transaction.isCanceled) {
-        if (arranging && x.neighbor !== neighbor)
-          x.neighbor = neighbor, x.rearranging = true
-        if (x.priority === Priority.SyncP0)
-          doRender(x)
-        else if (x.priority === Priority.AsyncP1)
-          p1 = push(p1, x)
+      let child = children.first
+      while (child !== undefined && !Transaction.isCanceled) {
+        if (arranging && child.neighbor !== neighbor)
+          child.neighbor = neighbor, child.rearranging = true
+        if (child.priority === Priority.SyncP0)
+          doRender(child)
+        else if (child.priority === Priority.AsyncP1)
+          p1 = push(p1, child)
         else
-          p2 = push(p2, x)
-        if (x.native)
-          neighbor = x
-        x = x.next
+          p2 = push(p2, child)
+        if (child.native)
+          neighbor = child
+        child = child.next
       }
       // Render incremental children (if any)
       if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
@@ -337,20 +337,20 @@ function doFinalize(node: RxNodeImpl, initiator: RxNodeImpl): void {
     if (!node.inline)
       deferDispose(node) // enqueue node for Rx.dispose if needed
     // Finalize children if any
-    let x = node.children.first
-    while (x !== undefined)
-      doFinalize(x, initiator), x = x.next
+    let child = node.children.first
+    while (child !== undefined)
+      doFinalize(child, initiator), child = child.next
   }
 }
 
 async function runDisposalLoop(): Promise<void> {
   await Transaction.requestNextFrame()
-  let x = gFirstToDispose
-  while (x !== undefined) {
+  let node = gFirstToDispose
+  while (node !== undefined) {
     if (Transaction.isFrameOver(500, 5))
       await Transaction.requestNextFrame()
-    Rx.dispose(x)
-    x = x.neighbor
+    Rx.dispose(node)
+    node = node.neighbor
   }
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
@@ -358,9 +358,9 @@ async function runDisposalLoop(): Promise<void> {
 function forEachChildRecursively(node: RxNodeImpl, action: (e: any) => void): void {
   const native = node.native
   native && action(native)
-  let x = node.children.first
-  while (x !== undefined)
-    forEachChildRecursively(x, action), x = x.next
+  let child = node.children.first
+  while (child !== undefined)
+    forEachChildRecursively(child, action), child = child.next
 }
 
 function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
@@ -453,15 +453,15 @@ class NodeChildrenImpl implements NodeChildren {
     if (emittedCount > 0) {
       if (emittedCount > this.count) { // it should be faster to delete non-retained nodes from namespace
         const ns = this.namespace
-        let x = this.first
-        while (x !== undefined)
-          ns.delete(x.name), x = x.next
+        let child = this.first
+        while (child !== undefined)
+          ns.delete(child.name), child = child.next
       }
       else { // it should be faster to recreate namespace with retained nodes only
         const ns = this.namespace = new Map<string, RxNodeImpl>()
-        let x = this.emittedFirst
-        while (x !== undefined)
-          ns.set(x.name, x), x = x.next
+        let child = this.emittedFirst
+        while (child !== undefined)
+          ns.set(child.name, child), child = child.next
       }
     }
     else // just create new empty namespace
