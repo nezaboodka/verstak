@@ -109,7 +109,7 @@ export class NodeFactory<E> {
     let result: void | Promise<void>
     const native = node.native!
     if (node.customize)
-      node.customize(o => { result = node.render?.(native, o) }, native)
+      node.customize(options => { result = node.render?.(native, options) }, native)
     else
       result = node.render?.(native, undefined)
     return result
