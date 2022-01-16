@@ -6,4 +6,5 @@
 // automatically licensed under the license referred above.
 
 export * from './RxNode'
+export * from './Elements'
 export * from './Restyler'

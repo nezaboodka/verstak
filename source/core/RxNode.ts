@@ -12,22 +12,6 @@ export type Render<E = unknown, O = void> = (element: E, options: O) => void | P
 export type Customize<E = unknown, O = void> = (render: (options: O) => void, element: E) => void
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
-export function Reaction<E = undefined, O = void, M = unknown>(
-  name: string, triggers: unknown,
-  render?: Render<E, O>, customize?: Customize<E, O>,
-  monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>,
-  factory?: NodeFactory<E>): RxNode<E, O, M> {
-  return emit(name, triggers, false, render, customize,
-    monitor, throttling, logging, factory)
-}
-
-export function Inline<E = undefined, O = void, M = unknown>(
-  name: string, render?: Render<E, O>, customize?: Customize<E, O>,
-  factory?: NodeFactory<E>): RxNode<E, O, M> {
-  return emit(name, undefined, true, render, customize,
-    undefined, undefined, undefined, factory)
-}
-
 // RxNode
 
 export abstract class RxNode<E = any, O = any, M = unknown> {
@@ -52,8 +36,8 @@ export abstract class RxNode<E = any, O = any, M = unknown> {
   abstract readonly children: NodeChildren
   abstract readonly next?: RxNode
   abstract readonly prev?: RxNode
-  abstract neighbor?: RxNode
-  abstract native?: E
+  abstract readonly neighbor?: RxNode
+  abstract readonly native?: E
 
   static launch(render: () => void): void {
     gSystem.render = render
@@ -75,6 +59,28 @@ export abstract class RxNode<E = any, O = any, M = unknown> {
   static forAllNodesDo<E>(action: (e: E) => void): void {
     forEachChildRecursively(gSystem, action)
   }
+
+  static emit<E = undefined, O = void, M = unknown>(
+    name: string, triggers: unknown, united: boolean,
+    render?: Render<E, O>, customize?: Customize<E, O>,
+    monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>,
+    factory?: NodeFactory<E>): RxNode<E, O, M> {
+    const parent = gContext
+    const children = parent.children
+    let node = children.tryEmitAsExisting(name)
+    if (node) {
+      if (node.inline || !triggersAreEqual(node.triggers, triggers))
+        node.triggers = triggers
+      node.render = render
+      node.customize = customize
+    }
+    else {
+      node = new RxNodeImpl<E, O>(name, factory ?? NodeFactory.default, united ?? false,
+        parent, triggers, render, customize, monitor, throttling, logging)
+      children.emitAsNewlyCreated(node)
+    }
+    return node as RxNode<E, O, M>
+  }
 }
 
 // NodeFactory
@@ -92,13 +98,16 @@ export class NodeFactory<E> {
     this.arranging = arranging
   }
 
-  initialize(node: RxNode<E>): void {
+  initialize(node: RxNode<E>, native: E | undefined): void {
+    const impl = node as RxNodeImpl<E>
+    impl.native = native
     if (!node.inline && Rx.isLogging)
       Rx.setLoggingHint(node, node.name)
   }
 
   finalize(node: RxNode<E>, initiator: RxNode): void {
-    node.native = undefined
+    const impl = node as RxNodeImpl<E>
+    impl.native = undefined
   }
 
   arrange(node: RxNode<E>): void {
@@ -124,9 +133,8 @@ export class StaticNodeFactory<E> extends NodeFactory<E> {
     this.native = native
   }
 
-  initialize(node: RxNode<E>): void {
-    super.initialize(node)
-    node.native = this.native
+  initialize(node: RxNode<E>, native: E | undefined): void {
+    super.initialize(node, this.native)
   }
 }
 
@@ -200,28 +208,6 @@ class RxNodeImpl<E = any, O = any, M = unknown> extends RxNode<E, O, M> {
 }
 
 // Internal
-
-function emit<E = undefined, O = void, M = unknown>(
-  name: string, triggers: unknown, united: boolean,
-  render?: Render<E, O>, customize?: Customize<E, O>,
-  monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>,
-  factory?: NodeFactory<E>): RxNode<E, O, M> {
-  const parent = gContext
-  const children = parent.children
-  let node = children.tryEmitAsExisting(name)
-  if (node) {
-    if (node.inline || !triggersAreEqual(node.triggers, triggers))
-      node.triggers = triggers
-    node.render = render
-    node.customize = customize
-  }
-  else {
-    node = new RxNodeImpl<E, O>(name, factory ?? NodeFactory.default, united ?? false,
-      parent, triggers, render, customize, monitor, throttling, logging)
-    children.emitAsNewlyCreated(node)
-  }
-  return node as RxNode<E, O, M>
-}
 
 function runRenderChildrenThenDo(action: () => void): void {
   const node = gContext
@@ -318,7 +304,7 @@ function runRender(node: RxNodeImpl): void {
         // Initialize and arrange if needed
         const factory = node.factory
         if (node.stamp === 0)
-          factory.initialize?.(node)
+          factory.initialize?.(node, undefined)
         if (node.rearranging)
           node.rearranging = false, factory.arrange?.(node)
         // Render node itself

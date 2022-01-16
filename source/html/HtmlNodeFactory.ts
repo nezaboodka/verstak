@@ -10,11 +10,11 @@ import { RxNode, NodeFactory } from '../core/api'
 
 export abstract class AbstractHtmlNodeFactory<E extends Element> extends NodeFactory<E> {
 
-  initialize(node: RxNode<E>): void {
-    super.initialize(node)
-    const e = node.native = this.createElement(node)
+  initialize(node: RxNode<E>, native: E | undefined): void {
+    native = this.createElement(node)
     if (Rx.isLogging)
-      e.id = node.name
+      native.id = node.name
+    super.initialize(node, native)
   }
 
   finalize(node: RxNode<E>, initiator: RxNode): void {
