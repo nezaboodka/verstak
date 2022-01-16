@@ -99,8 +99,6 @@ export class NodeFactory<E> {
   }
 
   initialize(node: RxNode<E>, native: E | undefined): void {
-    if (!node.inline && Rx.isLogging)
-      Rx.setLoggingHint(node, node.name)
     const impl = node as RxNodeImpl<E>
     impl.native = native
   }
@@ -285,6 +283,8 @@ function doRender(node: RxNodeImpl): void {
             throttling: node.throttling,
             logging: node.logging,
           })
+          if (Rx.isLogging)
+            Rx.setLoggingHint(node, node.name)
         })
       }
       nonreactive(node.autorender, node.triggers) // reactive auto-rendering
