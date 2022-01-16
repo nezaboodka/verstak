@@ -23,11 +23,10 @@ export function Reaction<E = undefined, O = void, M = unknown>(
     monitor, throttling, logging, factory)
 }
 
-export function Affiliate<E = undefined, O = void, M = unknown>(
-  name: string, triggers: unknown,
-  render?: Render<E, O>, customize?: Customize<E, O>,
+export function Inline<E = undefined, O = void, M = unknown>(
+  name: string, render?: Render<E, O>, customize?: Customize<E, O>,
   factory?: RxNodeFactory<E>): DomNode<E, O, M> {
-  return emit(name, triggers, true, render, customize,
+  return emit(name, undefined, true, render, customize,
     undefined, undefined, undefined, factory)
 }
 
@@ -36,7 +35,7 @@ export abstract class DomNode<E = any, O = any, M = unknown> {
   // User-defined properties
   abstract readonly name: string
   abstract readonly factory: RxNodeFactory<E>
-  abstract readonly affiliate: boolean
+  abstract readonly inline: boolean
   abstract readonly triggers: unknown
   abstract readonly render: Render<E, O> | undefined
   abstract readonly customize: Customize<E, O> | undefined
@@ -103,7 +102,7 @@ export class RxStandardNodeFactory<E> implements RxNodeFactory<E> {
   }
 
   initialize(node: DomNode<E>): void {
-    if (!node.affiliate && Rx.isLogging)
+    if (!node.inline && Rx.isLogging)
       Rx.setLoggingHint(node, node.name)
   }
 
@@ -141,7 +140,7 @@ class DomNodeImpl<E = any, O = any, M = unknown> extends DomNode<E, O, M> {
   // User-defined properties
   readonly name: string
   readonly factory: RxNodeFactory<E>
-  readonly affiliate: boolean
+  readonly inline: boolean
   triggers: unknown
   render: Render<E, O> | undefined
   customize: Customize<E, O> | undefined
@@ -163,14 +162,14 @@ class DomNodeImpl<E = any, O = any, M = unknown> extends DomNode<E, O, M> {
   rearranging: boolean
   native?: E
 
-  constructor(name: string, factory: RxNodeFactory<E>, affiliate: boolean, parent: DomNodeImpl,
+  constructor(name: string, factory: RxNodeFactory<E>, inline: boolean, parent: DomNodeImpl,
     triggers?: unknown, render?: Render<E, O>, customize?: Customize<E, O>,
     monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>) {
     super()
     // User-defined properties
     this.name = name
     this.factory = factory
-    this.affiliate = affiliate
+    this.inline = inline
     this.triggers = triggers
     this.render = render
     this.customize = customize
@@ -215,7 +214,7 @@ function emit<E = undefined, O = void, M = unknown>(
   const children = parent.children
   let node = children.tryEmitAsExisting(name)
   if (node) {
-    if (node.affiliate || !triggersAreEqual(node.triggers, triggers))
+    if (node.inline || !triggersAreEqual(node.triggers, triggers))
       node.triggers = triggers
     node.render = render
     node.customize = customize
@@ -301,7 +300,7 @@ function doRender(node: DomNodeImpl): void {
   if (node.stamp >= 0) {
     const f = node.factory
     if (node.stamp === 0) {
-      !node.affiliate && Transaction.off(() => {
+      !node.inline && Transaction.off(() => {
         Rx.getController(node.autorender).configure({
           order: node.level,
           monitor: node.monitor,
@@ -315,7 +314,7 @@ function doRender(node: DomNodeImpl): void {
       node.rearranging = false
       f.arrange?.(node)
     }
-    if (node.affiliate)
+    if (node.inline)
       runRender(node)
     else
       nonreactive(node.autorender, node.triggers) // reactive auto-rendering
@@ -351,7 +350,7 @@ function doFinalize(node: DomNodeImpl, initiator: DomNodeImpl): void {
       f.finalize(node, initiator)
     else
       RxStandardNodeFactory.system.finalize(node, initiator) // default finalize
-    if (!node.affiliate)
+    if (!node.inline)
       deferDispose(node) // enqueue node for Rx.dispose if needed
     // Finalize children if any
     let x = node.children.first
