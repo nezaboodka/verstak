@@ -294,26 +294,20 @@ async function renderIncrementally(parent: DomNodeImpl, children: Array<DomNodeI
 
 function doRender(node: DomNodeImpl): void {
   if (node.stamp >= 0) {
-    const f = node.factory
-    if (node.stamp === 0) {
-      !node.inline && Transaction.off(() => {
-        Rx.getController(node.autorender).configure({
-          order: node.level,
-          monitor: node.monitor,
-          throttling: node.throttling,
-          logging: node.logging,
+    if (!node.inline) {
+      if (node.stamp === 0)
+        Transaction.off(() => {
+          Rx.getController(node.autorender).configure({
+            order: node.level,
+            monitor: node.monitor,
+            throttling: node.throttling,
+            logging: node.logging,
+          })
         })
-      })
-      f.initialize?.(node)
-    }
-    if (node.rearranging) {
-      node.rearranging = false
-      f.arrange?.(node)
-    }
-    if (node.inline)
-      runRender(node)
-    else
       nonreactive(node.autorender, node.triggers) // reactive auto-rendering
+    }
+    else
+      runRender(node)
   }
 }
 
@@ -321,13 +315,21 @@ function runRender(node: DomNodeImpl): void {
   if (node.stamp >= 0) {
     try {
       runUnder(node, () => {
+        // Initialize and arrange if needed
+        const factory = node.factory
+        if (node.stamp === 0)
+          factory.initialize?.(node)
+        if (node.rearranging)
+          node.rearranging = false, factory.arrange?.(node)
+        // Render node itself
         node.stamp++
         node.children.beginEmission(node.stamp)
         let result: void | Promise<void>
         try {
-          result = node.factory.render(node)
+          result = factory.render(node)
         }
         finally {
+          // Render children
           if (result instanceof Promise)
             result.then( // causes wrapping of then/catch to execute within current parent
               value => { DomNode.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
@@ -338,8 +340,8 @@ function runRender(node: DomNodeImpl): void {
       })
     }
     catch (e) {
+      console.log(`Rendering failed: ${node.name}`)
       console.log(`${e}`)
-      console.log(`Rendering failed: ${node.name} (see error message above)`)
     }
   }
 }
