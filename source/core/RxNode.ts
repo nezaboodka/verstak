@@ -99,10 +99,10 @@ export class NodeFactory<E> {
   }
 
   initialize(node: RxNode<E>, native: E | undefined): void {
-    const impl = node as RxNodeImpl<E>
-    impl.native = native
     if (!node.inline && Rx.isLogging)
       Rx.setLoggingHint(node, node.name)
+    const impl = node as RxNodeImpl<E>
+    impl.native = native
   }
 
   finalize(node: RxNode<E>, initiator: RxNode): void {
