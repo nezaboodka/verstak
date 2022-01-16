@@ -81,17 +81,8 @@ export abstract class DomNode<E = any, O = any, M = unknown> {
 
 const NOP = (): void => { /* nop */ }
 
-export interface NodeFactory<E = unknown> {
-  readonly name: string
-  readonly arranging: boolean
-  initialize?(node: DomNode<E>): void
-  finalize?(node: DomNode<E>, initiator: DomNode): void
-  arrange?(node: DomNode<E>): void
-  render?(node: DomNode<E>): void
-}
-
-export class BasicNodeFactory<E> implements NodeFactory<E> {
-  public static readonly default = new BasicNodeFactory<any>('default', false)
+export class NodeFactory<E> {
+  public static readonly default = new NodeFactory<any>('default', false)
 
   readonly name: string
   readonly arranging: boolean
@@ -131,6 +122,20 @@ export class BasicNodeFactory<E> implements NodeFactory<E> {
       else
         DomNode.renderChildrenThenDo(NOP) // ignored if rendered already
     }
+  }
+}
+
+export class StaticNodeFactory<E> extends NodeFactory<E> {
+  readonly native: E
+
+  constructor(name: string, arranging: boolean, native: E) {
+    super(name, arranging)
+    this.native = native
+  }
+
+  initialize(node: DomNode<E>): void {
+    super.initialize(node)
+    node.native = this.native
   }
 }
 
@@ -220,7 +225,7 @@ function emit<E = undefined, O = void, M = unknown>(
     node.customize = customize
   }
   else {
-    node = new DomNodeImpl<E, O>(name, factory ?? BasicNodeFactory.default, united ?? false,
+    node = new DomNodeImpl<E, O>(name, factory ?? NodeFactory.default, united ?? false,
       parent, triggers, render, customize, monitor, throttling, logging)
     children.emitAsNewlyCreated(node)
   }
@@ -327,11 +332,7 @@ function runRender(node: DomNodeImpl): void {
       runUnder(node, () => {
         node.stamp++
         node.children.beginEmission(node.stamp)
-        const f = node.factory
-        if (f.render)
-          f.render(node) // factory-defined rendering
-        else
-          BasicNodeFactory.default.render(node)
+        node.factory.render(node)
       })
     }
     catch (e) {
@@ -345,11 +346,7 @@ function doFinalize(node: DomNodeImpl, initiator: DomNodeImpl): void {
   if (node.stamp >= 0) {
     node.stamp = ~node.stamp
     // Finalize node itself
-    const f = node.factory
-    if (f.finalize)
-      f.finalize(node, initiator)
-    else
-      BasicNodeFactory.default.finalize(node, initiator)
+    node.factory.finalize(node, initiator)
     if (!node.inline)
       deferDispose(node) // enqueue node for Rx.dispose if needed
     // Finalize children if any
@@ -579,8 +576,8 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-const gSystem = new DomNodeImpl<undefined, void>('SYSTEM',
-  new BasicNodeFactory<undefined>('SYSTEM', false), false,
+const gSystem = new DomNodeImpl<null, void>('SYSTEM',
+  new StaticNodeFactory<null>('SYSTEM', false, null), false,
   { level: 0 } as DomNodeImpl) // fake parent (overwritten below)
 
 Object.defineProperty(gSystem, 'parent', {

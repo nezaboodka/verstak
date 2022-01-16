@@ -6,17 +6,12 @@
 // automatically licensed under the license referred above.
 
 import { Monitor } from 'reactronic'
-import { DomNode, Reaction, Inline, Render, Customize } from '../core/api'
+import { DomNode, Reaction, Inline, Render, Customize, StaticNodeFactory } from '../core/api'
 import { HtmlNodeFactory, SvgNodeFactory } from './HtmlNodeFactory'
 
 export function RxHtmlBody(name: string, triggers: unknown, render?: Render<HTMLElement>): DomNode<HTMLElement> {
-  return Reaction(name, triggers, render, undefined, undefined, undefined, undefined, {
-    name, arranging: true,
-    initialize(node: DomNode<HTMLElement, any>, sibling?: DomNode): void {
-      const native = node.native = global.document.body
-      native.id = node.name
-    },
-  })
+  const factory = new StaticNodeFactory(name, true, global.document.body)
+  return Reaction(name, triggers, render, undefined, undefined, undefined, undefined, factory)
 }
 
 export function RxA<O = void>(name: string, triggers: unknown, render?: Render<HTMLAnchorElement, O>, customize?: Customize<HTMLAnchorElement, O>, monitor?: Monitor): DomNode<HTMLAnchorElement, O> { return Reaction(name, triggers, render, customize, monitor, undefined, undefined, HtmlTags.a) }
