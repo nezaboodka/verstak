@@ -90,8 +90,8 @@ export interface NodeFactory<E = unknown> {
   render?(node: DomNode<E>): void
 }
 
-export class StandardNodeFactory<E> implements NodeFactory<E> {
-  public static readonly system = new StandardNodeFactory<any>('system', false)
+export class BasicNodeFactory<E> implements NodeFactory<E> {
+  public static readonly default = new BasicNodeFactory<any>('default', false)
 
   readonly name: string
   readonly arranging: boolean
@@ -220,7 +220,7 @@ function emit<E = undefined, O = void, M = unknown>(
     node.customize = customize
   }
   else {
-    node = new DomNodeImpl<E, O>(name, factory ?? StandardNodeFactory.system, united ?? false,
+    node = new DomNodeImpl<E, O>(name, factory ?? BasicNodeFactory.default, united ?? false,
       parent, triggers, render, customize, monitor, throttling, logging)
     children.emitAsNewlyCreated(node)
   }
@@ -331,7 +331,7 @@ function runRender(node: DomNodeImpl): void {
         if (f.render)
           f.render(node) // factory-defined rendering
         else
-          StandardNodeFactory.system.render(node) // default rendering
+          BasicNodeFactory.default.render(node)
       })
     }
     catch (e) {
@@ -349,7 +349,7 @@ function doFinalize(node: DomNodeImpl, initiator: DomNodeImpl): void {
     if (f.finalize)
       f.finalize(node, initiator)
     else
-      StandardNodeFactory.system.finalize(node, initiator) // default finalize
+      BasicNodeFactory.default.finalize(node, initiator)
     if (!node.inline)
       deferDispose(node) // enqueue node for Rx.dispose if needed
     // Finalize children if any
@@ -580,7 +580,7 @@ Promise.prototype.then = reactronicDomHookedThen
 // Globals
 
 const gSystem = new DomNodeImpl<undefined, void>('SYSTEM',
-  new StandardNodeFactory<undefined>('SYSTEM', false), false,
+  new BasicNodeFactory<undefined>('SYSTEM', false), false,
   { level: 0 } as DomNodeImpl) // fake parent (overwritten below)
 
 Object.defineProperty(gSystem, 'parent', {

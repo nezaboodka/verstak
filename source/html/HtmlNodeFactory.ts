@@ -6,9 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { Rx } from 'reactronic'
-import { DomNode, StandardNodeFactory } from '../core/api'
+import { DomNode, BasicNodeFactory } from '../core/api'
 
-export abstract class RxAbstractHtmlNodeFactory<E extends Element> extends StandardNodeFactory<E> {
+export abstract class AbstractHtmlNodeFactory<E extends Element> extends BasicNodeFactory<E> {
 
   initialize(node: DomNode<E>): void {
     super.initialize(node)
@@ -76,13 +76,13 @@ export abstract class RxAbstractHtmlNodeFactory<E extends Element> extends Stand
   protected abstract createElement(node: DomNode<E>): E
 }
 
-export class RxHtmlNodeFactory<E extends HTMLElement> extends RxAbstractHtmlNodeFactory<E> {
+export class HtmlNodeFactory<E extends HTMLElement> extends AbstractHtmlNodeFactory<E> {
   protected createElement(node: DomNode<E>): E {
     return document.createElement(node.factory.name) as E
   }
 }
 
-export class RxSvgNodeFactory<E extends SVGElement> extends RxAbstractHtmlNodeFactory<E> {
+export class SvgNodeFactory<E extends SVGElement> extends AbstractHtmlNodeFactory<E> {
   protected createElement(node: DomNode<E>): E {
     return document.createElementNS('http://www.w3.org/2000/svg', node.factory.name) as E
   }
