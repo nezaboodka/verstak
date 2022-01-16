@@ -52,10 +52,11 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends NodeFac
     }
   }
 
-  render(node: DomNode<E>): void {
-    super.render(node)
+  render(node: DomNode<E>): void | Promise<void> {
+    const result = super.render(node)
     if (gBlinkingEffect)
       blink(node.native, node.stamp)
+    return result
   }
 
   static get blinkingEffect(): string | undefined {

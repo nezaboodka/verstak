@@ -105,23 +105,14 @@ export class NodeFactory<E> {
     // nothing to do by default
   }
 
-  render(node: DomNode<E>): void {
-    let result: any
+  render(node: DomNode<E>): void | Promise<void> {
+    let result: void | Promise<void>
     const native = node.native!
-    try {
-      if (node.customize)
-        node.customize(o => { result = node.render?.(native, o) }, native)
-      else
-        result = node.render?.(native, undefined)
-    }
-    finally {
-      if (result instanceof Promise)
-        result = result.then( // causes wrapping of then/catch to execute within current parent
-          value => { DomNode.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
-          error => { console.log(error); DomNode.renderChildrenThenDo(NOP) }) // do not render children in case of parent error
-      else
-        DomNode.renderChildrenThenDo(NOP) // ignored if rendered already
-    }
+    if (node.customize)
+      node.customize(o => { result = node.render?.(native, o) }, native)
+    else
+      result = node.render?.(native, undefined)
+    return result
   }
 }
 
@@ -332,7 +323,18 @@ function runRender(node: DomNodeImpl): void {
       runUnder(node, () => {
         node.stamp++
         node.children.beginEmission(node.stamp)
-        node.factory.render(node)
+        let result: void | Promise<void>
+        try {
+          result = node.factory.render(node)
+        }
+        finally {
+          if (result instanceof Promise)
+            result.then( // causes wrapping of then/catch to execute within current parent
+              value => { DomNode.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
+              error => { console.log(error); DomNode.renderChildrenThenDo(NOP) }) // do not render children in case of parent error
+          else
+            DomNode.renderChildrenThenDo(NOP) // ignored if rendered already
+        }
       })
     }
     catch (e) {
