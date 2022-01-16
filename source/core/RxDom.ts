@@ -69,7 +69,7 @@ export abstract class DomNode<E = any, O = any, M = unknown> {
   }
 
   static renderChildrenThenDo(action: () => void): void {
-    renderChildrenThenDoImpl(action)
+    runRenderChildrenThenDo(action)
   }
 
   static forAllNodesDo<E>(action: (e: E) => void): void {
@@ -232,7 +232,7 @@ function emit<E = undefined, O = void, M = unknown>(
   return node as DomNode<E, O, M>
 }
 
-function renderChildrenThenDoImpl(action: () => void): void {
+function runRenderChildrenThenDo(action: () => void): void {
   const node = gContext
   let promised: Promise<void> | undefined = undefined
   try {
