@@ -91,11 +91,11 @@ export class NodeFactory<E> {
   public static readonly default = new NodeFactory<any>('default', false)
 
   readonly name: string
-  readonly arranging: boolean
+  readonly sequential: boolean
 
-  constructor(name: string, arranging: boolean) {
+  constructor(name: string, sequential: boolean) {
     this.name = name
-    this.arranging = arranging
+    this.sequential = sequential
   }
 
   initialize(node: RxNode<E>, native: E | undefined): void {
@@ -108,7 +108,7 @@ export class NodeFactory<E> {
     impl.native = undefined
   }
 
-  arrange(node: RxNode<E>): void {
+  insert(node: RxNode<E>): void {
     // nothing to do by default
   }
 
@@ -126,8 +126,8 @@ export class NodeFactory<E> {
 export class StaticNodeFactory<E> extends NodeFactory<E> {
   readonly native: E
 
-  constructor(name: string, arranging: boolean, native: E) {
-    super(name, arranging)
+  constructor(name: string, sequential: boolean, native: E) {
+    super(name, sequential)
     this.native = native
   }
 
@@ -161,7 +161,7 @@ class RxNodeImpl<E = any, O = any, M = unknown> extends RxNode<E, O, M> {
   next?: RxNodeImpl
   prev?: RxNodeImpl
   neighbor?: RxNodeImpl
-  rearranging: boolean
+  moved: boolean
   native?: E
 
   constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: RxNodeImpl,
@@ -190,7 +190,7 @@ class RxNodeImpl<E = any, O = any, M = unknown> extends RxNode<E, O, M> {
     this.next = undefined
     this.prev = undefined
     this.neighbor = this
-    this.rearranging = true
+    this.moved = true
     this.native = undefined
   }
 
@@ -218,14 +218,14 @@ function runRenderChildrenThenDo(action: () => void): void {
       while (vanished !== undefined)
         doFinalize(vanished, vanished), vanished = vanished.next
       // Render retained children
-      const arranging = node.factory.arranging
+      const sequential = node.factory.sequential
       let p1: Array<RxNodeImpl> | undefined = undefined
       let p2: Array<RxNodeImpl> | undefined = undefined
       let neighbor: RxNodeImpl | undefined = undefined
       let child = children.first
       while (child !== undefined && !Transaction.isCanceled) {
-        if (arranging && child.neighbor !== neighbor)
-          child.neighbor = neighbor, child.rearranging = true
+        if (sequential && child.neighbor !== neighbor)
+          child.neighbor = neighbor, child.moved = true
         if (child.priority === Priority.SyncP0)
           doRender(child)
         else if (child.priority === Priority.AsyncP1)
@@ -298,12 +298,12 @@ function runRender(node: RxNodeImpl): void {
   if (node.stamp >= 0) {
     try {
       runUnder(node, () => {
-        // Initialize and arrange if needed
+        // Initialize and insert if needed
         const factory = node.factory
         if (node.stamp === 0)
           factory.initialize?.(node, undefined)
-        if (node.rearranging)
-          factory.arrange?.(node), node.rearranging = false
+        if (node.moved)
+          factory.insert?.(node), node.moved = false
         // Render node itself
         node.stamp++
         node.children.beginEmission(node.stamp)

@@ -27,7 +27,7 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends NodeFac
     super.finalize(node, initiator)
   }
 
-  arrange(node: RxNode<E>): void {
+  insert(node: RxNode<E>): void {
     const e = node.native
     if (e) {
       const nativeParent = findNearestHtmlParent(node).native
