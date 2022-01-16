@@ -318,7 +318,7 @@ function runRender(node: RxNodeImpl): void {
               value => { RxNode.renderChildrenThenDo(NOP); return value },
               error => { console.log(error); RxNode.renderChildrenThenDo(NOP) })
           else
-            RxNode.renderChildrenThenDo(NOP)
+            RxNode.renderChildrenThenDo(NOP) // calls node.children.endEmission()
         }
       })
     }
