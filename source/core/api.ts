@@ -5,5 +5,5 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from './RxDom'
+export * from './RxNode'
 export * from './Restyler'
