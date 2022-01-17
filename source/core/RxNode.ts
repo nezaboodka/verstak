@@ -27,7 +27,7 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
   abstract readonly monitor?: Monitor
   abstract readonly throttling?: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
   abstract readonly logging?: Partial<LoggingOptions>
-  abstract priority: Priority
+  abstract readonly priority: Priority
   abstract shuffle: boolean
   abstract model?: M
   // System-managed properties
@@ -64,8 +64,8 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
   static emit<E = undefined, O = void, M = unknown, R = void>(
     name: string, triggers: unknown, inline: boolean,
     render?: Render<E, O, R>, customize?: Customize<E, O, R>,
-    monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>,
-    factory?: NodeFactory<E>): RxNode<E, O, M, R> {
+    priority?: Priority, monitor?: Monitor, throttling?: number,
+    logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): RxNode<E, O, M, R> {
     // Emit node either by reusing existing one or by creating a new one
     const parent = gContext
     const children = parent.children
@@ -75,11 +75,12 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
         node.triggers = triggers
       node.render = render
       node.customize = customize
+      node.priority = priority ?? Priority.SyncP0
     }
     else { // create new
       node = new RxNodeImpl<E, O>(name, factory ?? NodeFactory.default,
         inline ?? false, parent, triggers, render, customize,
-        monitor, throttling, logging)
+        priority, monitor, throttling, logging)
       children.emitAsNewlyCreated(node)
     }
     return node as RxNode<E, O, M, R>
@@ -169,7 +170,7 @@ class RxNodeImpl<E = any, O = any, M = unknown, R = any> extends RxNode<E, O, M,
 
   constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: RxNodeImpl,
     triggers?: unknown, render?: Render<E, O, R>, customize?: Customize<E, O, R>,
-    monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>) {
+    priority?: Priority, monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>) {
     super()
     // User-defined properties
     this.name = name
@@ -181,7 +182,7 @@ class RxNodeImpl<E = any, O = any, M = unknown, R = any> extends RxNode<E, O, M,
     this.monitor = monitor,
     this.throttling = throttling ?? -1,
     this.logging = logging
-    this.priority = Priority.SyncP0,
+    this.priority = priority ?? Priority.SyncP0,
     this.shuffle = false
     this.model = undefined
     // System-managed properties
