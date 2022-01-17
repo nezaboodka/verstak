@@ -28,7 +28,7 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
   abstract readonly throttling?: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
   abstract readonly logging?: Partial<LoggingOptions>
   abstract readonly priority: Priority
-  abstract shuffle: boolean
+  abstract readonly shuffle: boolean
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
@@ -51,6 +51,10 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
 
   static get isInitialRendering(): boolean {
     return gContext.stamp === 1
+  }
+
+  static shuffleChildrenRendering(shuffle: boolean): void {
+    gContext.shuffle = shuffle
   }
 
   static renderChildrenThenDo(action: () => void): void {
