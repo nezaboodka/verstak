@@ -199,7 +199,7 @@ class RxNodeImpl<E = any, O = any, M = unknown, R = any> extends RxNode<E, O, M,
 
   @reaction
   @options({
-    reentrance: Reentrance.CancelPrevious,
+    reentrance: Reentrance.CancelAndWaitPrevious,
     sensitiveArgs: true,
     noSideEffects: true })
   autorender(_triggers: unknown): void {
