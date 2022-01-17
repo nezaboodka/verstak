@@ -74,9 +74,9 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends NodeFac
     gBlinkingEffect = value
   }
 
-  static findNearestParentHtmlNode(node: RxNode): RxNode {
+  static findNearestParentHtmlNode(node: RxNode): RxNode<HTMLElement> {
     let p = node.parent
-    while (p.native instanceof Element === false && p !== node)
+    while (p.native instanceof HTMLElement === false && p !== node)
       p = p.parent
     return p
   }
