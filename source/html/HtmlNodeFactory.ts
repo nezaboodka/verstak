@@ -30,7 +30,7 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends NodeFac
   insert(node: RxNode<E>): void {
     const e = node.native
     if (e) {
-      const nativeParent = findNearestHtmlParent(node).native
+      const nativeParent = AbstractHtmlNodeFactory.findNearestParentHtmlNode(node).native
       if (nativeParent) {
         const neighbor = node.neighbor
         if (neighbor === undefined) {
@@ -74,6 +74,13 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends NodeFac
     gBlinkingEffect = value
   }
 
+  static findNearestParentHtmlNode(node: RxNode): RxNode {
+    let p = node.parent
+    while (p.native instanceof Element === false && p !== node)
+      p = p.parent
+    return p
+  }
+
   protected abstract createElement(node: RxNode<E>): E
 }
 
@@ -98,13 +105,5 @@ function blink(e: Element | undefined, revision: number): void {
     e.classList.toggle(`${effect}-${n2}`, false)
   }
 }
-
-function findNearestHtmlParent(node: RxNode): RxNode<HTMLElement> {
-  let p = node.parent
-  while (p.native instanceof HTMLElement === false && p !== node)
-    p = p.parent
-  return p
-}
-
 
 let gBlinkingEffect: string | undefined = undefined
