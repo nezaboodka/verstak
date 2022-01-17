@@ -62,7 +62,7 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
   }
 
   static emit<E = undefined, O = void, M = unknown, R = void>(
-    name: string, triggers: unknown, united: boolean,
+    name: string, triggers: unknown, inline: boolean,
     render?: Render<E, O, R>, customize?: Customize<E, O, R>,
     monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>,
     factory?: NodeFactory<E>): RxNode<E, O, M, R> {
@@ -76,8 +76,9 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
       node.customize = customize
     }
     else {
-      node = new RxNodeImpl<E, O>(name, factory ?? NodeFactory.default, united ?? false,
-        parent, triggers, render, customize, monitor, throttling, logging)
+      node = new RxNodeImpl<E, O>(name, factory ?? NodeFactory.default,
+        inline ?? false, parent, triggers, render, customize,
+        monitor, throttling, logging)
       children.emitAsNewlyCreated(node)
     }
     return node as RxNode<E, O, M, R>
@@ -218,7 +219,7 @@ function runRenderChildrenThenDo(action: () => void): void {
       // Unmount vanished children
       while (vanished !== undefined)
         doFinalize(vanished, vanished), vanished = vanished.next
-      // Render retained children
+      // Render current children
       const sequential = node.factory.sequential
       let p1: Array<RxNodeImpl> | undefined = undefined
       let p2: Array<RxNodeImpl> | undefined = undefined
@@ -263,12 +264,12 @@ async function renderIncrementally(parent: RxNodeImpl, children: Array<RxNodeImp
   if (!Transaction.isCanceled) {
     if (parent.shuffle)
       shuffle(children)
-    for (const x of children) {
+    for (const child of children) {
       if (Transaction.isFrameOver(checkEveryN, RxNode.incrementalRenderingFrameDurationMs))
         await Transaction.requestNextFrame()
       if (Transaction.isCanceled)
         break
-      doRender(x)
+      doRender(child)
     }
   }
 }
@@ -453,16 +454,16 @@ class NodeChildrenImpl implements NodeChildren {
     const emittedCount = this.emittedCount
     if (emittedCount > 0) {
       if (emittedCount > this.count) { // it should be faster to delete non-retained nodes from namespace
-        const ns = this.namespace
+        const namespace = this.namespace
         let child = this.first
         while (child !== undefined)
-          ns.delete(child.name), child = child.next
+          namespace.delete(child.name), child = child.next
       }
       else { // it should be faster to recreate namespace with retained nodes only
-        const ns = this.namespace = new Map<string, RxNodeImpl>()
+        const namespace = this.namespace = new Map<string, RxNodeImpl>()
         let child = this.emittedFirst
         while (child !== undefined)
-          ns.set(child.name, child), child = child.next
+          namespace.set(child.name, child), child = child.next
       }
     }
     else // just create new empty namespace
