@@ -66,16 +66,17 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
     render?: Render<E, O, R>, customize?: Customize<E, O, R>,
     monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>,
     factory?: NodeFactory<E>): RxNode<E, O, M, R> {
+    // Emit node either by reusing existing one or by creating a new one
     const parent = gContext
     const children = parent.children
     let node = children.tryEmitAsExisting(name)
-    if (node) {
+    if (node) { // reuse existing
       if (node.inline || !triggersAreEqual(node.triggers, triggers))
         node.triggers = triggers
       node.render = render
       node.customize = customize
     }
-    else {
+    else { // create new
       node = new RxNodeImpl<E, O>(name, factory ?? NodeFactory.default,
         inline ?? false, parent, triggers, render, customize,
         monitor, throttling, logging)
