@@ -8,7 +8,7 @@
 import { Rx } from 'reactronic'
 import { RxNode, NodeFactory } from '../core/api'
 
-export abstract class AbstractHtmlNodeFactory<E extends Element> extends NodeFactory<E> {
+export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<E> {
 
   initialize(node: RxNode<E>, native: E | undefined): void {
     native = this.createElement(node)
@@ -30,7 +30,7 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends NodeFac
   insert(node: RxNode<E>): void {
     const e = node.native
     if (e) {
-      const nativeParent = AbstractHtmlNodeFactory.findNearestParentHtmlNode(node).native
+      const nativeParent = ElementNodeFactory.findEnvelopingElementNode(node).native
       if (nativeParent) {
         const neighbor = node.neighbor
         if (neighbor === undefined) {
@@ -74,9 +74,9 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends NodeFac
     gBlinkingEffect = value
   }
 
-  static findNearestParentHtmlNode(node: RxNode): RxNode<HTMLElement> {
+  static findEnvelopingElementNode(node: RxNode): RxNode<Element> {
     let p = node.parent
-    while (p.native instanceof HTMLElement === false && p !== node)
+    while (p.native instanceof Element === false && p !== node)
       p = p.parent
     return p
   }
@@ -84,13 +84,13 @@ export abstract class AbstractHtmlNodeFactory<E extends Element> extends NodeFac
   protected abstract createElement(node: RxNode<E>): E
 }
 
-export class HtmlNodeFactory<E extends HTMLElement> extends AbstractHtmlNodeFactory<E> {
+export class HtmlElementNodeFactory<E extends HTMLElement> extends ElementNodeFactory<E> {
   protected createElement(node: RxNode<E>): E {
     return document.createElement(node.factory.name) as E
   }
 }
 
-export class SvgNodeFactory<E extends SVGElement> extends AbstractHtmlNodeFactory<E> {
+export class SvgElementNodeFactory<E extends SVGElement> extends ElementNodeFactory<E> {
   protected createElement(node: RxNode<E>): E {
     return document.createElementNS('http://www.w3.org/2000/svg', node.factory.name) as E
   }
