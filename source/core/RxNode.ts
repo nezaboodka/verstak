@@ -57,6 +57,11 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
     gContext.shuffle = shuffle
   }
 
+  static redefineCustomize<E, O, M, R>(node: RxNode<E, O, M, R>, customize: Customize<E, O, R>): void {
+    const n = node as RxNodeImpl<E, O, M, R>
+    n.customize = customize
+  }
+
   static renderChildrenThenDo(action: () => void): void {
     runRenderChildrenThenDo(action)
   }
