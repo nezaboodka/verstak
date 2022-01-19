@@ -40,7 +40,7 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
   abstract readonly neighbor?: RxNode
   abstract readonly native?: E
 
-  abstract wrapRender(customize: Customize<E, O, R> | undefined): this
+  abstract overrideRender(customize: Customize<E, O, R> | undefined): this
 
   static launch(render: () => void): void {
     gSystem.render = render
@@ -213,7 +213,7 @@ class RxNodeImpl<E = any, O = any, M = unknown, R = any> extends RxNode<E, O, M,
     runRender(this)
   }
 
-  wrapRender(customize: Customize<E, O, R> | undefined): this {
+  overrideRender(customize: Customize<E, O, R> | undefined): this {
     this.customize = customize
     return this
   }
