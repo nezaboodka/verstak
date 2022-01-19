@@ -40,6 +40,8 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
   abstract readonly neighbor?: RxNode
   abstract readonly native?: E
 
+  abstract wrapRender(customize: Customize<E, O, R>): void
+
   static launch(render: () => void): void {
     gSystem.render = render
     doRender(gSystem)
@@ -55,11 +57,6 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
 
   static shuffleChildrenRendering(shuffle: boolean): void {
     gContext.shuffle = shuffle
-  }
-
-  static redefineCustomize<E, O, M, R>(node: RxNode<E, O, M, R>, customize: Customize<E, O, R>): void {
-    const n = node as RxNodeImpl<E, O, M, R>
-    n.customize = customize
   }
 
   static renderChildrenThenDo(action: () => void): void {
@@ -215,6 +212,10 @@ class RxNodeImpl<E = any, O = any, M = unknown, R = any> extends RxNode<E, O, M,
   autorender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by parent
     runRender(this)
+  }
+
+  wrapRender(customize: Customize<E, O, R>): void {
+    this.customize = customize
   }
 }
 
