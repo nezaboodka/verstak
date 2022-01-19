@@ -69,8 +69,8 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
 
   static emit<E = undefined, O = void, M = unknown, R = void>(
     name: string, triggers: unknown, inline: boolean,
-    render?: Render<E, O, R>, customize?: Customize<E, O, R>,
-    priority?: Priority, monitor?: Monitor, throttling?: number,
+    render?: Render<E, O, R>, priority?: Priority,
+    monitor?: Monitor, throttling?: number,
     logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): RxNode<E, O, M, R> {
     // Emit node either by reusing existing one or by creating a new one
     const parent = gContext
@@ -80,12 +80,11 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
       if (node.inline || !triggersAreEqual(node.triggers, triggers))
         node.triggers = triggers
       node.render = render
-      node.customize = customize
       node.priority = priority ?? Priority.SyncP0
     }
     else { // create new
       node = new RxNodeImpl<E, O>(name, factory ?? NodeFactory.default,
-        inline ?? false, parent, triggers, render, customize,
+        inline ?? false, parent, triggers, render, undefined,
         priority, monitor, throttling, logging)
       children.emitAsNewlyCreated(node)
     }
