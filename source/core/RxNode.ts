@@ -312,17 +312,17 @@ function runRender(node: RxNodeImpl): void {
   if (node.stamp >= 0) {
     try {
       runUnder(node, () => {
-        // Initialize and insert if needed
-        const factory = node.factory
-        if (node.stamp === 0)
-          factory.initialize?.(node, undefined)
-        if (node.reinserting)
-          factory.insert?.(node), node.reinserting = false
-        // Render node itself
-        node.stamp++
-        node.children.beginEmission(node.stamp)
         let result: void | Promise<void>
         try {
+          const factory = node.factory
+          // Initialize if needed
+          if (node.stamp === 0)
+            factory.initialize?.(node, undefined)
+          // Render node itself
+          node.stamp++
+          if (node.reinserting)
+            factory.insert?.(node), node.reinserting = false
+          node.children.beginEmission(node.stamp)
           result = factory.render(node)
         }
         finally {
