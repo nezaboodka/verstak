@@ -112,9 +112,10 @@ export class NodeFactory<E> {
     impl.native = native
   }
 
-  finalize(node: RxNode<E>, nested: boolean): void {
+  finalize(node: RxNode<E>, isLeader: boolean): boolean {
     const impl = node as RxNodeImpl<E>
     impl.native = undefined
+    return isLeader // treat children as finalization leaders as well
   }
 
   insert(node: RxNode<E>): void {
@@ -230,7 +231,7 @@ function runRenderChildrenThenDo(action: () => void): void {
       let vanished = children.endEmission()
       // Unmount vanished children
       while (vanished !== undefined)
-        doFinalize(vanished, false), vanished = vanished.next
+        doFinalize(vanished, true), vanished = vanished.next
       // Render current children
       const sequential = node.factory.sequential
       let p1: Array<RxNodeImpl> | undefined = undefined
@@ -343,18 +344,17 @@ function runRender(node: RxNodeImpl): void {
   }
 }
 
-function doFinalize(node: RxNodeImpl, nested: boolean): void {
+function doFinalize(node: RxNodeImpl, isLeader: boolean): void {
   if (node.stamp >= 0) {
     node.stamp = ~node.stamp
     // Finalize node itself
-    node.factory.finalize(node, nested)
+    const childrenAreLeaders = node.factory.finalize(node, isLeader)
     if (!node.inline)
       deferDispose(node) // enqueue node for Rx.dispose if needed
     // Finalize children if any
-    nested = nested || node.factory !== NodeFactory.default
     let child = node.children.first
     while (child !== undefined)
-      doFinalize(child, nested), child = child.next
+      doFinalize(child, childrenAreLeaders), child = child.next
   }
 }
 

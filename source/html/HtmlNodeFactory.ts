@@ -17,14 +17,15 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
     super.initialize(node, native)
   }
 
-  finalize(node: RxNode<E>, nested: boolean): void {
+  finalize(node: RxNode<E>, isLeader: boolean): boolean {
     const e = node.native
     if (e) {
       e.resizeObserver?.unobserve(e) // is it really needed or browser does this automatically?
-      if (!nested)
+      if (isLeader)
         e.remove()
     }
-    super.finalize(node, nested)
+    super.finalize(node, isLeader)
+    return false // children of HTML nodes are not treated as leaders
   }
 
   insert(node: RxNode<E>): void {
