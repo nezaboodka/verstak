@@ -82,7 +82,7 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
 
   @reaction @options({
     reentrance: Reentrance.CancelPrevious,
-    sensitiveArgs: true,
+    triggeringArgs: true,
     noSideEffects: true })
   rerender(node: RxNode<E, O>): void {
     invokeRender(node, node.args)

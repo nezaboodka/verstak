@@ -206,7 +206,7 @@ class RxNodeImpl<E = any, O = any, M = unknown, R = any> extends RxNode<E, O, M,
   @reaction
   @options({
     reentrance: Reentrance.CancelAndWaitPrevious,
-    sensitiveArgs: true,
+    triggeringArgs: true,
     noSideEffects: true })
   autorender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by parent
