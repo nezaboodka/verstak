@@ -15,8 +15,9 @@ export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 // RxNode
 
-export interface RxNodeContext<E, M ,R> {
+export interface RxNodeContext<E, M, R> {
   readonly name: string
+  readonly stamp: number
   readonly element?: E
   model?: M
   render(): R
