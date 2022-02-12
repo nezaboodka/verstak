@@ -8,22 +8,29 @@
 import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions } from 'reactronic'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
-export type Render<E = unknown, M = void, R = void> = (element: E, node: RxNode<E, M, R>) => R
-export type Customize<E = unknown, M = void, R = void> = (render: () => R, element: E, node: RxNode<E, M, R>) => R
-export type AsyncCustomize<E = unknown, M = void> = (render: () => Promise<void>, element: E, node: RxNode<E, M, Promise<void>>) => Promise<void>
+export type Render<E = unknown, M = unknown, R = void> = (element: E, own: RxNodeContext<E, M ,R>) => R
+export type Customize<E = unknown, M = unknown, R = void> = (own: RxNodeContext<E, M ,R>, element: E) => R
+export type AsyncCustomize<E = unknown, M = void> = (own: RxNodeContext<E, M, Promise<void>>, element: E) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 // RxNode
 
-export abstract class RxNode<E = any, M = unknown, R = void> {
+export interface RxNodeContext<E, M ,R> {
+  readonly name: string
+  native?: E
+  model?: M
+  render(): R
+}
+
+export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeContext<E, M, R> {
   static incrementalRenderingFrameDurationMs = 10
   // User-defined properties
   abstract readonly name: string
   abstract readonly factory: NodeFactory<E>
   abstract readonly inline: boolean
   abstract readonly triggers: unknown
-  abstract readonly render: Render<E, M, R> | undefined
-  abstract readonly customize: Customize<E, M, R> | undefined
+  abstract readonly renderer: Render<E, M, R> | undefined
+  abstract readonly customizer: Customize<E, M, R> | undefined
   abstract readonly monitor?: Monitor
   abstract readonly throttling?: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
   abstract readonly logging?: Partial<LoggingOptions>
@@ -40,15 +47,19 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
   abstract readonly neighbor?: RxNode
   abstract readonly native?: E
 
+  render(): R {
+    return this.renderer!(this.native!, this)
+  }
+
   static customizable<E, M, R>(customize: Customize<E, M, R> | undefined, node: RxNode<E, M, R>): RxNode<E, M, R>
   {
     const n = node as RxNodeImpl<E, M, R>
-    n.customize = customize
+    n.customizer = customize
     return node
   }
 
   static launch(render: () => void): void {
-    gSystem.render = render
+    gSystem.renderer = render
     doRender(gSystem)
   }
 
@@ -84,7 +95,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
     if (node) { // reuse existing
       if (node.inline || !triggersAreEqual(node.triggers, triggers))
         node.triggers = triggers
-      node.render = render
+      node.renderer = render
       node.priority = priority ?? Priority.SyncP0
     }
     else { // create new
@@ -129,11 +140,10 @@ export class NodeFactory<E> {
 
   render(node: RxNode<E>): void | Promise<void> {
     let result: void | Promise<void>
-    const native = node.native!
-    if (node.customize)
-      result = node.customize(() => node.render?.(native, node), native, node)
+    if (node.customizer)
+      result = node.customizer(node, node.native!)
     else
-      result = node.render?.(native, node)
+      result = node.render()
     return result
   }
 }
@@ -159,8 +169,8 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   readonly factory: NodeFactory<E>
   readonly inline: boolean
   triggers: unknown
-  render: Render<E, M, R> | undefined
-  customize: Customize<E, M, R> | undefined
+  renderer: Render<E, M, R> | undefined
+  customizer: Customize<E, M, R> | undefined
   readonly monitor?: Monitor
   readonly throttling: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
   readonly logging?: Partial<LoggingOptions>
@@ -188,8 +198,8 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     this.factory = factory
     this.inline = inline
     this.triggers = triggers
-    this.render = render
-    this.customize = customize
+    this.renderer = render
+    this.customizer = customize
     this.monitor = monitor,
     this.throttling = throttling ?? -1,
     this.logging = logging
