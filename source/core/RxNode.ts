@@ -17,7 +17,7 @@ export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export interface RxNodeContext<E, M ,R> {
   readonly name: string
-  native?: E
+  readonly element?: E
   model?: M
   render(): R
 }
@@ -45,10 +45,10 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
   abstract readonly next?: RxNode
   abstract readonly prev?: RxNode
   abstract readonly neighbor?: RxNode
-  abstract readonly native?: E
+  abstract readonly element?: E
 
   render(): R {
-    return this.renderer!(this.native!, this)
+    return this.renderer!(this.element!, this)
   }
 
   static customizable<E, M, R>(customize: Customize<E, M, R> | undefined, node: RxNode<E, M, R>): RxNode<E, M, R>
@@ -123,14 +123,14 @@ export class NodeFactory<E> {
     this.sequential = sequential
   }
 
-  initialize(node: RxNode<E>, native: E | undefined): void {
+  initialize(node: RxNode<E>, element: E | undefined): void {
     const impl = node as RxNodeImpl<E>
-    impl.native = native
+    impl.element = element
   }
 
   finalize(node: RxNode<E>, isLeader: boolean): boolean {
     const impl = node as RxNodeImpl<E>
-    impl.native = undefined
+    impl.element = undefined
     return isLeader // treat children as finalization leaders as well
   }
 
@@ -141,7 +141,7 @@ export class NodeFactory<E> {
   render(node: RxNode<E>): void | Promise<void> {
     let result: void | Promise<void>
     if (node.customizer)
-      result = node.customizer(node, node.native!)
+      result = node.customizer(node, node.element!)
     else
       result = node.render()
     return result
@@ -149,15 +149,15 @@ export class NodeFactory<E> {
 }
 
 export class StaticNodeFactory<E> extends NodeFactory<E> {
-  readonly native: E
+  readonly element: E
 
-  constructor(name: string, sequential: boolean, native: E) {
+  constructor(name: string, sequential: boolean, element: E) {
     super(name, sequential)
-    this.native = native
+    this.element = element
   }
 
-  initialize(node: RxNode<E>, native: E | undefined): void {
-    super.initialize(node, this.native)
+  initialize(node: RxNode<E>, element: E | undefined): void {
+    super.initialize(node, this.element)
   }
 }
 
@@ -187,7 +187,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   prev?: RxNodeImpl
   neighbor?: RxNodeImpl
   reinserting: boolean
-  native?: E
+  element?: E
 
   constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: RxNodeImpl,
     triggers?: unknown, render?: Render<E, M, R>, customize?: Customize<E, M, R>,
@@ -216,7 +216,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     this.prev = undefined
     this.neighbor = this
     this.reinserting = true
-    this.native = undefined
+    this.element = undefined
   }
 
   @reaction
@@ -257,7 +257,7 @@ function runRenderChildrenThenDo(action: () => void): void {
           p1 = push(p1, child)
         else
           p2 = push(p2, child)
-        if (child.native)
+        if (child.element)
           neighbor = child
         child = child.next
       }
@@ -381,8 +381,8 @@ async function runDisposalLoop(): Promise<void> {
 }
 
 function forEachChildRecursively(node: RxNodeImpl, action: (e: any) => void): void {
-  const native = node.native
-  native && action(native)
+  const e = node.element
+  e && action(e)
   let child = node.children.first
   while (child !== undefined)
     forEachChildRecursively(child, action), child = child.next

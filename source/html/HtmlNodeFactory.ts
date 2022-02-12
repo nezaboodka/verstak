@@ -10,15 +10,15 @@ import { RxNode, NodeFactory } from '../core/api'
 
 export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<E> {
 
-  initialize(node: RxNode<E>, native: E | undefined): void {
-    native = this.createElement(node)
+  initialize(node: RxNode<E>, element: E | undefined): void {
+    element = this.createElement(node)
     if (Rx.isLogging)
-      native.id = node.name
-    super.initialize(node, native)
+      element.id = node.name
+    super.initialize(node, element)
   }
 
   finalize(node: RxNode<E>, isLeader: boolean): boolean {
-    const e = node.native
+    const e = node.element
     if (e) {
       e.resizeObserver?.unobserve(e) // is it really needed or browser does this automatically?
       if (isLeader)
@@ -29,9 +29,9 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
   }
 
   insert(node: RxNode<E>): void {
-    const e = node.native
+    const e = node.element
     if (e) {
-      const nativeParent = ElementNodeFactory.findEnvelopingElementNode(node).native
+      const nativeParent = ElementNodeFactory.findEnvelopingElementNode(node).element
       if (nativeParent) {
         const neighbor = node.neighbor
         if (neighbor === undefined) {
@@ -39,8 +39,8 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
             nativeParent.prepend(e)
         }
         else if (neighbor !== node) {
-          if (neighbor.parent.native === nativeParent) {
-            const nativeNeighbor = neighbor.native
+          if (neighbor.parent.element === nativeParent) {
+            const nativeNeighbor = neighbor.element
             if (nativeNeighbor instanceof Element) {
               if (nativeNeighbor.nextSibling !== e)
                 nativeParent.insertBefore(e, nativeNeighbor.nextSibling)
@@ -56,7 +56,7 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
   render(node: RxNode<E>): void | Promise<void> {
     const result = super.render(node)
     if (gBlinkingEffect)
-      blink(node.native, node.stamp)
+      blink(node.element, node.stamp)
     return result
   }
 
@@ -77,7 +77,7 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
 
   static findEnvelopingElementNode(node: RxNode): RxNode<Element> {
     let p = node.parent
-    while (p.native instanceof Element === false && p !== node)
+    while (p.element instanceof Element === false && p !== node)
       p = p.parent
     return p
   }
