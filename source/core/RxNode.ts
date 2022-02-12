@@ -40,7 +40,12 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
   abstract readonly neighbor?: RxNode
   abstract readonly native?: E
 
-  abstract customizedBy(customize: Customize<E, O, R> | undefined): this
+  static customizable<E, O, M, R>(customize: Customize<E, O, R> | undefined, node: RxNode<E, O, M, R>): RxNode<E, O, M, R>
+  {
+    const n = node as RxNodeImpl<E, O, M, R>
+    n.customize = customize
+    return node
+  }
 
   static launch(render: () => void): void {
     gSystem.render = render
@@ -212,11 +217,6 @@ class RxNodeImpl<E = any, O = any, M = unknown, R = any> extends RxNode<E, O, M,
   autorender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by parent
     runRender(this)
-  }
-
-  customizedBy(customize: Customize<E, O, R> | undefined): this {
-    this.customize = customize
-    return this
   }
 }
 
