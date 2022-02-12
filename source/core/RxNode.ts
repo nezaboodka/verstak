@@ -30,7 +30,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
   abstract readonly factory: NodeFactory<E>
   abstract readonly inline: boolean
   abstract readonly triggers: unknown
-  abstract readonly renderer: Render<E, M, R> | undefined
+  abstract readonly renderer: Render<E, M, R>
   abstract readonly customizer: Customize<E, M, R> | undefined
   abstract readonly monitor?: Monitor
   abstract readonly throttling?: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
@@ -49,7 +49,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
   abstract readonly element?: E
 
   render(): R {
-    return this.renderer!(this.element!, this)
+    return this.renderer(this.element!, this)
   }
 
   static customizable<E, M, R>(customize: Customize<E, M, R> | undefined, node: RxNode<E, M, R>): RxNode<E, M, R>
@@ -86,7 +86,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
 
   static emit<E = undefined, M = unknown, R = void>(
     name: string, triggers: unknown, inline: boolean,
-    render?: Render<E, M, R>, priority?: Priority,
+    render: Render<E, M, R>, priority?: Priority,
     monitor?: Monitor, throttling?: number,
     logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): RxNode<E, M, R> {
     // Emit node either by reusing existing one or by creating a new one
@@ -170,7 +170,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   readonly factory: NodeFactory<E>
   readonly inline: boolean
   triggers: unknown
-  renderer: Render<E, M, R> | undefined
+  renderer: Render<E, M, R>
   customizer: Customize<E, M, R> | undefined
   readonly monitor?: Monitor
   readonly throttling: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
@@ -191,7 +191,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   element?: E
 
   constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: RxNodeImpl,
-    triggers?: unknown, render?: Render<E, M, R>, customize?: Customize<E, M, R>,
+    triggers: unknown, render: Render<E, M, R>, customize?: Customize<E, M, R>,
     priority?: Priority, monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>) {
     super()
     // User-defined properties
@@ -587,7 +587,7 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const gSystem = new RxNodeImpl<null, void>('SYSTEM',
   new StaticNodeFactory<null>('SYSTEM', false, null), false,
-  { level: 0 } as RxNodeImpl) // fake parent (overwritten below)
+  { level: 0 } as RxNodeImpl, undefined, NOP) // fake parent (overwritten below)
 
 Object.defineProperty(gSystem, 'parent', {
   value: gSystem,
