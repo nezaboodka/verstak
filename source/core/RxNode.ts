@@ -8,22 +8,22 @@
 import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions } from 'reactronic'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
-export type Render<E = unknown, O = void, R = void> = (element: E, options: O) => R
-export type Customize<E = unknown, O = void, R = void> = (render: (options: O) => R, element: E) => R
-export type AsyncCustomize<E = unknown, O = void> = (render: (options: O) => Promise<void>, element: E) => Promise<void>
+export type Render<E = unknown, M = void, R = void> = (element: E, node: RxNode<E, M, R>) => R
+export type Customize<E = unknown, M = void, R = void> = (render: () => R, element: E, node: RxNode<E, M, R>) => R
+export type AsyncCustomize<E = unknown, M = void> = (render: () => Promise<void>, element: E, node: RxNode<E, M, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 // RxNode
 
-export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
+export abstract class RxNode<E = any, M = unknown, R = void> {
   static incrementalRenderingFrameDurationMs = 10
   // User-defined properties
   abstract readonly name: string
   abstract readonly factory: NodeFactory<E>
   abstract readonly inline: boolean
   abstract readonly triggers: unknown
-  abstract readonly render: Render<E, O, R> | undefined
-  abstract readonly customize: Customize<E, O, R> | undefined
+  abstract readonly render: Render<E, M, R> | undefined
+  abstract readonly customize: Customize<E, M, R> | undefined
   abstract readonly monitor?: Monitor
   abstract readonly throttling?: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
   abstract readonly logging?: Partial<LoggingOptions>
@@ -40,9 +40,9 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
   abstract readonly neighbor?: RxNode
   abstract readonly native?: E
 
-  static customizable<E, O, M, R>(customize: Customize<E, O, R> | undefined, node: RxNode<E, O, M, R>): RxNode<E, O, M, R>
+  static customizable<E, M, R>(customize: Customize<E, M, R> | undefined, node: RxNode<E, M, R>): RxNode<E, M, R>
   {
-    const n = node as RxNodeImpl<E, O, M, R>
+    const n = node as RxNodeImpl<E, M, R>
     n.customize = customize
     return node
   }
@@ -52,8 +52,8 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
     doRender(gSystem)
   }
 
-  static self<M = unknown, E = unknown, O = unknown, R = unknown>(): RxNode<E, O, M, R> {
-    return gContext as RxNode<E, O, M, R>
+  static self<M = unknown, E = unknown, O = unknown, R = unknown>(): RxNode<E, M, R> {
+    return gContext as RxNode<E, M, R>
   }
 
   static get isInitialRendering(): boolean {
@@ -72,11 +72,11 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
     forEachChildRecursively(gSystem, action)
   }
 
-  static emit<E = undefined, O = void, M = unknown, R = void>(
+  static emit<E = undefined, M = unknown, R = void>(
     name: string, triggers: unknown, inline: boolean,
-    render?: Render<E, O, R>, priority?: Priority,
+    render?: Render<E, M, R>, priority?: Priority,
     monitor?: Monitor, throttling?: number,
-    logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): RxNode<E, O, M, R> {
+    logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): RxNode<E, M, R> {
     // Emit node either by reusing existing one or by creating a new one
     const parent = gContext
     const children = parent.children
@@ -88,12 +88,12 @@ export abstract class RxNode<E = any, O = any, M = unknown, R = void> {
       node.priority = priority ?? Priority.SyncP0
     }
     else { // create new
-      node = new RxNodeImpl<E, O>(name, factory ?? NodeFactory.default,
+      node = new RxNodeImpl<E, M>(name, factory ?? NodeFactory.default,
         inline ?? false, parent, triggers, render, undefined,
         priority, monitor, throttling, logging)
       children.emitAsNewlyCreated(node)
     }
-    return node as RxNode<E, O, M, R>
+    return node as RxNode<E, M, R>
   }
 }
 
@@ -131,9 +131,9 @@ export class NodeFactory<E> {
     let result: void | Promise<void>
     const native = node.native!
     if (node.customize)
-      result = node.customize(options => node.render?.(native, options), native)
+      result = node.customize(() => node.render?.(native, node), native, node)
     else
-      result = node.render?.(native, undefined)
+      result = node.render?.(native, node)
     return result
   }
 }
@@ -153,14 +153,14 @@ export class StaticNodeFactory<E> extends NodeFactory<E> {
 
 // RxNodeImpl
 
-class RxNodeImpl<E = any, O = any, M = unknown, R = any> extends RxNode<E, O, M, R> {
+class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   // User-defined properties
   readonly name: string
   readonly factory: NodeFactory<E>
   readonly inline: boolean
   triggers: unknown
-  render: Render<E, O, R> | undefined
-  customize: Customize<E, O, R> | undefined
+  render: Render<E, M, R> | undefined
+  customize: Customize<E, M, R> | undefined
   readonly monitor?: Monitor
   readonly throttling: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
   readonly logging?: Partial<LoggingOptions>
@@ -180,7 +180,7 @@ class RxNodeImpl<E = any, O = any, M = unknown, R = any> extends RxNode<E, O, M,
   native?: E
 
   constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: RxNodeImpl,
-    triggers?: unknown, render?: Render<E, O, R>, customize?: Customize<E, O, R>,
+    triggers?: unknown, render?: Render<E, M, R>, customize?: Customize<E, M, R>,
     priority?: Priority, monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>) {
     super()
     // User-defined properties
