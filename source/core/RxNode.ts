@@ -19,6 +19,7 @@ export interface RxNodeContext<E, M, R> {
   readonly name: string
   readonly stamp: number
   readonly element?: E
+  readonly isInitialRendering: boolean
   model?: M
   render(): R
 }
@@ -52,6 +53,10 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
     return this.renderer(this.element!, this)
   }
 
+  get isInitialRendering(): boolean {
+    return this.stamp === 1
+  }
+
   static customizable<E, M, R>(customize: Customize<E, M, R> | undefined, node: RxNode<E, M, R>): RxNode<E, M, R>
   {
     const n = node as RxNodeImpl<E, M, R>
@@ -66,10 +71,6 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
 
   static get current(): RxNode {
     return gContext
-  }
-
-  static get isInitialRendering(): boolean {
-    return gContext.stamp === 1
   }
 
   static shuffleChildrenRendering(shuffle: boolean): void {
