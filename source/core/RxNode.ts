@@ -64,8 +64,8 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
     doRender(gSystem)
   }
 
-  static self<M = unknown, E = unknown, O = unknown, R = unknown>(): RxNode<E, M, R> {
-    return gContext as RxNode<E, M, R>
+  static get current(): RxNode {
+    return gContext
   }
 
   static get isInitialRendering(): boolean {

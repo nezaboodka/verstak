@@ -31,8 +31,8 @@ export class ResizeSensor extends Sensor {
   }
 
   observeResizingOfCurrentElement(value: boolean): void {
-    const self = RxNode.self()
-    const native = self.element
+    const node = RxNode.current
+    const native = node.element
     if (native instanceof Element) {
       if (value) {
         if (native.resizeObserver !== undefined && native.resizeObserver !== this.observer)
