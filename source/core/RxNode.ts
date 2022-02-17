@@ -25,7 +25,7 @@ export interface RxNodeContext<E, M, R> {
 }
 
 export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeContext<E, M, R> {
-  static incrementalRenderingFrameDurationMs = 10
+  static frameDuration = 10 // ms
   // User-defined properties
   abstract readonly name: string
   abstract readonly factory: NodeFactory<E>
@@ -284,13 +284,13 @@ async function startIncrementalRendering(parent: RxNodeImpl,
 
 async function renderIncrementally(parent: RxNodeImpl, children: Array<RxNodeImpl>): Promise<void> {
   const checkEveryN = 30
-  if (Transaction.isFrameOver(checkEveryN, RxNode.incrementalRenderingFrameDurationMs))
+  if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
     await Transaction.requestNextFrame()
   if (!Transaction.isCanceled) {
     if (parent.shuffle)
       shuffle(children)
     for (const child of children) {
-      if (Transaction.isFrameOver(checkEveryN, RxNode.incrementalRenderingFrameDurationMs))
+      if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
         await Transaction.requestNextFrame()
       if (Transaction.isCanceled)
         break
