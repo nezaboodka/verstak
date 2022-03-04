@@ -87,34 +87,31 @@ export function findTargetElementData(targetPath: any[], underPointer: any[], sy
 }
 
 export function grabElementDataList(targetPath: any[], sym: symbol,
-  anyOfPayloadKeys: Array<keyof DataForSensor>, existing: Array<unknown>,
-  ignoreWindow: boolean = false): { dataList: Array<DataForSensor>, window: unknown } {
+  payloadKey: keyof DataForSensor, existing: Array<unknown>,
+  ignoreWindow: boolean = false): { dataList: Array<unknown>, window: unknown } {
   let result = existing
   let i = 0
   let j = 0
   let window: unknown = undefined
-  while (window === undefined && i < targetPath.length) {
+  while (i < targetPath.length) {
     const candidate = targetPath[i]
     const candidateData = candidate[sym] as DataForSensor | undefined
     if (candidateData !== undefined) {
-      if (!ignoreWindow)
-        window = candidateData['window']
-      let candidateDataWithAnyOfPayloadKeys = undefined
-      for (const payloadKey of anyOfPayloadKeys) {
-        const payload = candidateData[payloadKey]
-        if (payload !== undefined) {
-          candidateDataWithAnyOfPayloadKeys = candidateData
+      if (!ignoreWindow) {
+        if (window === undefined)
+          window = candidateData['window']
+        else if (window !== candidateData['window'])
           break
-        }
       }
-      if (candidateDataWithAnyOfPayloadKeys !== undefined) {
+      const payload = candidateData[payloadKey]
+      if (payload !== undefined) {
         if (result !== existing) {
-          result.push(candidateDataWithAnyOfPayloadKeys)
+          result.push(payload)
         }
         else {
-          if (candidateDataWithAnyOfPayloadKeys !== existing[j]) {
+          if (payload !== existing[j]) {
             result = existing.slice(0, j)
-            result.push(candidateDataWithAnyOfPayloadKeys)
+            result.push(payload)
           }
           else
             j++
@@ -125,5 +122,5 @@ export function grabElementDataList(targetPath: any[], sym: symbol,
   }
   if (j === 0 && result === existing && existing.length > 0)
     result = EmptyDataArray
-  return { dataList: result as Array<DataForSensor>, window }
+  return { dataList: result, window }
 }

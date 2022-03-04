@@ -178,7 +178,7 @@ export class PointerSensor extends BasePointerSensor {
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
     const focusSensor = this.focusSensor
     if (focusSensor !== undefined)
-      focusSensor.setElementDataList(grabElementDataList(targetPath, SymDataForSensor, ['focus'], focusSensor.previousElementDataList).dataList)
+      focusSensor.setElementDataList(grabElementDataList(targetPath, SymDataForSensor, 'focus', focusSensor.previousElementDataList).dataList)
     const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['click', 'draggable'])
     const clickable = data?.click
     const draggable = data?.draggable

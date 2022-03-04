@@ -78,7 +78,7 @@ export class FocusSensor extends HtmlElementSensor {
 
     // if (this.needUpdate) {
     // const path = e.composedPath()
-    this.setElementDataList(grabElementDataList(path, SymDataForSensor, ['focus'], this.previousElementDataList).dataList)
+    this.setElementDataList(grabElementDataList(path, SymDataForSensor, 'focus', this.previousElementDataList).dataList)
     // }
     this.reset()
   }
