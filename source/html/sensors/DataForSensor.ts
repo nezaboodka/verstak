@@ -61,12 +61,16 @@ export function findTargetElementData(targetPath: any[], underPointer: any[], sy
   let result: DataForSensor | undefined = undefined
   let i = 0
   let window: unknown = undefined
-  while (window === undefined && i < targetPath.length) {
+  while (i < targetPath.length) {
     const candidate = targetPath[i]
     const candidateData = candidate[sym] as DataForSensor | undefined
     if (candidateData !== undefined) {
-      if (!ignoreWindow)
-        window = candidateData['window']
+      if (!ignoreWindow) {
+        if (window === undefined)
+          window = candidateData['window']
+        else if (window !== candidateData['window'])
+          break
+      }
       if (result === undefined) {
         for (const payloadKey of anyOfPayloadKeys) {
           const payload = candidateData[payloadKey]
