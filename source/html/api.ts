@@ -8,7 +8,7 @@
 export * from './HtmlNodeFactory'
 export * from './HtmlElements'
 export * from './HtmlApiExt'
-export * from './TwoWayFocusSync'
+// export * from './TwoWayFocusSync'
 export * from './sensors/Sensor'
 export * from './sensors/PointerSensor'
 export * from './sensors/BasePointerSensor'

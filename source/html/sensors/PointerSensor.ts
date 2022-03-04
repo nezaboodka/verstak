@@ -7,7 +7,8 @@
 
 import { options, reaction, Reentrance, transaction, unobservable, Transaction, LoggingLevel } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from './BasePointerSensor'
-import { findTargetElementData, SymDataForSensor } from './DataForSensor'
+import { findTargetElementData, grabElementDataList, SymDataForSensor } from './DataForSensor'
+import { FocusSensor } from './FocusSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
 
@@ -43,8 +44,8 @@ export class PointerSensor extends BasePointerSensor {
 
   static readonly DraggingThreshold = 4
 
-  constructor(windowSensor: WindowSensor) {
-    super(windowSensor)
+  constructor(focusSensor: FocusSensor, windowSensor: WindowSensor) {
+    super(focusSensor, windowSensor)
     this.pointerButton = PointerButton.None
     this.tryingDragging = false
     this.clickable = undefined
@@ -175,6 +176,9 @@ export class PointerSensor extends BasePointerSensor {
     this.stopPropagation = false
     const targetPath = e.composedPath()
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
+    const focusSensor = this.focusSensor
+    if (focusSensor !== undefined)
+      focusSensor.setElementDataList(grabElementDataList(targetPath, SymDataForSensor, ['focus'], focusSensor.previousElementDataList).dataList)
     const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['click', 'draggable'])
     const clickable = data?.click
     const draggable = data?.draggable

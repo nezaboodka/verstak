@@ -5,11 +5,28 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, ToggleRef, transaction, LoggingLevel } from 'reactronic'
-import { grabElementData, SymDataForSensor } from './DataForSensor'
+import { options, transaction, LoggingLevel, unobservable } from 'reactronic'
+import { grabElementDataList, SymDataForSensor } from './DataForSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
+import { WindowSensor } from './WindowSensor'
 
 export class FocusSensor extends HtmlElementSensor {
+  @unobservable needUpdate: boolean
+  previousElementDataList: unknown[]
+
+  constructor(windowSensor: WindowSensor) {
+    super(undefined, windowSensor)
+    this.needUpdate = false
+    this.previousElementDataList = []
+  }
+
+  @transaction
+  setElementDataList(dataList: unknown[], debugHint: string = ''): void {
+    if (dataList !== this.elementDataList) {
+      this.previousElementDataList = this.elementDataList
+      this.elementDataList = dataList
+    }
+  }
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
@@ -28,7 +45,10 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   reset(): void {
-    this.doFocusOut()
+    this.needUpdate = false
+    this.preventDefault = false
+    this.stopPropagation = false
+    this.revision++
   }
 
   protected onFocusIn(e: FocusEvent): void {
@@ -37,7 +57,7 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   protected onFocusOut(e: FocusEvent): void {
-    this.doFocusOut()
+    this.doFocusOut(e)
     this.setPreventDefaultAndStopPropagation(e)
   }
 
@@ -46,21 +66,21 @@ export class FocusSensor extends HtmlElementSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const path = e.composedPath()
-    // const { data, window } = grabWindowElementData(path, SymDataForSensor, 'focus', this.elementDataList)
-    const data = grabElementData(path, SymDataForSensor, 'focus', this.elementDataList)
-    this.elementDataList = toggleFocusRefs(this.elementDataList, data)
+    console.log('focusin', path)
+    // this.setElementDataList(grabElementDataList(path, SymDataForSensor, ['focus'], this.previousElementDataList).dataList)
     this.revision++
-    // standalone(() => {
-    //   this.windowSensor?.setActiveWindow(window, 'focus')
-    // })
   }
 
   @transaction
-  protected doFocusOut(): void {
-    this.preventDefault = false
-    this.stopPropagation = false
-    // this.elementDataList = toggleFocusRefs(this.elementDataList, EmptyDataArray)
-    this.revision++
+  protected doFocusOut(e: FocusEvent): void {
+    const path = e.composedPath()
+    console.log('focusout', path)
+
+    // if (this.needUpdate) {
+    // const path = e.composedPath()
+    this.setElementDataList(grabElementDataList(path, SymDataForSensor, ['focus'], this.previousElementDataList).dataList)
+    // }
+    this.reset()
   }
 
   // @reaction
@@ -70,16 +90,16 @@ export class FocusSensor extends HtmlElementSensor {
   // }
 }
 
-function toggleFocusRefs(existing: unknown[], updated: unknown[]): unknown[] {
-  if (updated !== existing) {
-    existing.forEach(f => {
-      if (f instanceof ToggleRef && f.valueOn !== f.valueOff)
-        f.value = f.valueOff
-    })
-    updated.forEach(x => {
-      if (x instanceof ToggleRef)
-        x.value = x.valueOn
-    })
-  }
-  return updated
-}
+// function toggleFocusRefs(existing: unknown[], updated: unknown[]): unknown[] {
+//   if (updated !== existing) {
+//     existing.forEach(f => {
+//       if (f instanceof ToggleRef && f.valueOn !== f.valueOff)
+//         f.value = f.valueOff
+//     })
+//     updated.forEach(x => {
+//       if (x instanceof ToggleRef)
+//         x.value = x.valueOn
+//     })
+//   }
+//   return updated
+// }

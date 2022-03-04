@@ -35,18 +35,16 @@ export function grabElementData(targetPath: any[], sym: symbol, payloadKey: keyo
     if (data !== undefined) {
       const payload = data[payloadKey]
       if (payload !== undefined) {
-        if (result !== existing)
-          payload !== undefined && result.push(payload)
-        else if (payload !== undefined) {
+        if (result !== existing) {
+          result.push(payload)
+        }
+        else {
           if (payload !== existing[j]) {
             result = existing.slice(0, j)
             result.push(payload)
           }
           else
             j++
-        }
-        else {
-          result = existing.slice(0, j)
         }
       }
     }
@@ -82,4 +80,46 @@ export function findTargetElementData(targetPath: any[], underPointer: any[], sy
     i++
   }
   return { data: result, window }
+}
+
+export function grabElementDataList(targetPath: any[], sym: symbol,
+  anyOfPayloadKeys: Array<keyof DataForSensor>, existing: Array<unknown>,
+  ignoreWindow: boolean = false): { dataList: Array<DataForSensor>, window: unknown } {
+  let result = existing
+  let i = 0
+  let j = 0
+  let window: unknown = undefined
+  while (window === undefined && i < targetPath.length) {
+    const candidate = targetPath[i]
+    const candidateData = candidate[sym] as DataForSensor | undefined
+    if (candidateData !== undefined) {
+      if (!ignoreWindow)
+        window = candidateData['window']
+      let candidateDataWithAnyOfPayloadKeys = undefined
+      for (const payloadKey of anyOfPayloadKeys) {
+        const payload = candidateData[payloadKey]
+        if (payload !== undefined) {
+          candidateDataWithAnyOfPayloadKeys = candidateData
+          break
+        }
+      }
+      if (candidateDataWithAnyOfPayloadKeys !== undefined) {
+        if (result !== existing) {
+          result.push(candidateDataWithAnyOfPayloadKeys)
+        }
+        else {
+          if (candidateDataWithAnyOfPayloadKeys !== existing[j]) {
+            result = existing.slice(0, j)
+            result.push(candidateDataWithAnyOfPayloadKeys)
+          }
+          else
+            j++
+        }
+      }
+    }
+    i++
+  }
+  if (j === 0 && result === existing && existing.length > 0)
+    result = EmptyDataArray
+  return { dataList: result as Array<DataForSensor>, window }
 }
