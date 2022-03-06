@@ -10,7 +10,7 @@ import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, L
 export type Callback<E = unknown> = (element: E) => void // to be deleted
 export type Render<E = unknown, M = unknown, R = void> = (element: E, own: RxNodeContext<E, M ,R>) => R
 export type Customize<E = unknown, M = unknown, R = void> = (own: RxNodeContext<E, M ,R>, element: E) => R
-export type AsyncCustomize<E = unknown, M = void> = (own: RxNodeContext<E, M, Promise<void>>, element: E) => Promise<void>
+export type AsyncCustomize<E = unknown, M = unknown> = (own: RxNodeContext<E, M, Promise<void>>, element: E) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 // RxNode
@@ -57,12 +57,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
     return this.stamp === 1
   }
 
-  static customizable<E, M, R>(customize: Customize<E, M, R> | undefined, node: RxNode<E, M, R>): RxNode<E, M, R>
-  {
-    const n = node as RxNodeImpl<E, M, R>
-    n.customizer = customize
-    return node
-  }
+  abstract wrapWith(customize: Customize<E, M, R> | undefined): this
 
   static launch(render: () => void): void {
     gSystem.renderer = render
@@ -229,6 +224,12 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   autorender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by parent
     runRender(this)
+  }
+
+  wrapWith(customize: Customize<E, M, R> | undefined): this
+  {
+    this.customizer = customize
+    return this
   }
 }
 
