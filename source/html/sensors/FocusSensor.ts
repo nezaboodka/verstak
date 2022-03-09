@@ -5,26 +5,30 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, transaction, LoggingLevel, unobservable } from 'reactronic'
+import { options, transaction, LoggingLevel } from 'reactronic'
 import { grabElementDataList, SymDataForSensor } from './DataForSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 import { WindowSensor } from './WindowSensor'
 
 export class FocusSensor extends HtmlElementSensor {
-  @unobservable needUpdate: boolean
-  previousElementDataList: unknown[]
+  activeData: unknown
+  previousActiveData: unknown
+
+  debug: string
 
   constructor(windowSensor: WindowSensor) {
     super(undefined, windowSensor)
-    this.needUpdate = false
-    this.previousElementDataList = []
+    this.activeData = undefined
+    this.previousActiveData = undefined
+
+    this.debug = ''
   }
 
   @transaction
-  setElementDataList(dataList: unknown[], debugHint: string = ''): void {
-    if (dataList !== this.elementDataList) {
-      this.previousElementDataList = this.elementDataList
-      this.elementDataList = dataList
+  setActiveData(data: unknown, debugHint: string = ''): void {
+    if (data !== this.activeData) {
+      this.previousActiveData = this.activeData
+      this.activeData = data
     }
   }
 
@@ -45,7 +49,6 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   reset(): void {
-    this.needUpdate = false
     this.preventDefault = false
     this.stopPropagation = false
     this.revision++
@@ -63,43 +66,28 @@ export class FocusSensor extends HtmlElementSensor {
 
   @transaction @options({ logging: LoggingLevel.Off })
   protected doFocusIn(e: FocusEvent): void {
+    this.debug = 'focusin'
     this.preventDefault = false
     this.stopPropagation = false
     const path = e.composedPath()
-    console.log('focusin', path)
-    // this.setElementDataList(grabElementDataList(path, SymDataForSensor, ['focus'], this.previousElementDataList).dataList)
+    this.updateState(path)
     this.revision++
   }
 
   @transaction
   protected doFocusOut(e: FocusEvent): void {
-    const path = e.composedPath()
-    console.log('focusout', path)
-
-    // if (this.needUpdate) {
-    // const path = e.composedPath()
-    this.setElementDataList(grabElementDataList(path, SymDataForSensor, 'focus', this.previousElementDataList).dataList)
-    // }
+    this.debug = 'focusout'
+    const isFocusLost = e.relatedTarget === null
+    if (isFocusLost) {
+      const path = e.composedPath().slice(1)
+      this.updateState(path)
+    }
     this.reset()
   }
 
-  // @reaction
-  // protected debug(): void {
-  //   console.log('Focus')
-  //   console.log(this.topElementData)
-  // }
+  private updateState(path: EventTarget[]): void {
+    const { dataList, activeData } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, false, e => document.activeElement === e)
+    this.elementDataList = dataList
+    this.setActiveData(activeData)
+  }
 }
-
-// function toggleFocusRefs(existing: unknown[], updated: unknown[]): unknown[] {
-//   if (updated !== existing) {
-//     existing.forEach(f => {
-//       if (f instanceof ToggleRef && f.valueOn !== f.valueOff)
-//         f.value = f.valueOff
-//     })
-//     updated.forEach(x => {
-//       if (x instanceof ToggleRef)
-//         x.value = x.valueOn
-//     })
-//   }
-//   return updated
-// }
