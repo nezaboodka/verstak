@@ -86,7 +86,7 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   private updateState(path: EventTarget[]): void {
-    const { dataList, activeData } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, false, e => document.activeElement === e)
+    const { dataList, activeData } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true, e => document.activeElement === e)
     this.elementDataList = dataList
     this.setActiveData(activeData)
   }
