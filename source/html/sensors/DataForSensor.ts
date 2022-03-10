@@ -6,6 +6,7 @@
 // automatically licensed under the license referred above.
 
 export interface DataForSensor {
+  context?: unknown
   window?: unknown
   focus?: unknown
   hover?: unknown

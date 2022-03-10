@@ -6,6 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { transaction } from 'reactronic'
+import { ContextSensor } from './ContextSensor'
 import { FocusSensor } from './FocusSensor'
 import { HoverSensor } from './HoverSensor'
 import { HtmlDragSensor } from './HtmlDragSensor'
@@ -17,6 +18,7 @@ import { WindowSensor } from './WindowSensor'
 import { PointerSensor } from './PointerSensor'
 
 export class HtmlSensors {
+  readonly context: ContextSensor
   readonly window: WindowSensor
   readonly focus: FocusSensor
   readonly hover: HoverSensor
@@ -28,6 +30,7 @@ export class HtmlSensors {
   readonly pointer: PointerSensor
 
   constructor() {
+    this.context = new ContextSensor()
     this.window = new WindowSensor()
     this.focus = new FocusSensor(this.window)
     this.hover = new HoverSensor()
@@ -41,6 +44,7 @@ export class HtmlSensors {
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
+    this.context.listen(element, enabled)
     this.focus.listen(element, enabled)
     this.hover.listen(element, enabled)
     this.keyboard.listen(element, enabled)
