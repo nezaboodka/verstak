@@ -6,17 +6,20 @@
 // automatically licensed under the license referred above.
 
 import { unobservable } from 'reactronic'
+// import { FocusSensor } from './FocusSensor'
 import { Sensor } from './Sensor'
 import { WindowSensor } from './WindowSensor'
 
 export class HtmlElementSensor extends Sensor {
+  @unobservable readonly focusSensor?: any
   @unobservable readonly windowSensor?: WindowSensor
   sourceElement: HTMLElement | undefined = undefined
   @unobservable preventDefault: boolean
   @unobservable stopPropagation: boolean
 
-  constructor(windowSensor?: WindowSensor) {
+  constructor(focusSensor?: any, windowSensor?: WindowSensor) {
     super()
+    this.focusSensor = focusSensor
     this.windowSensor = windowSensor
     this.preventDefault = false
     this.stopPropagation = false

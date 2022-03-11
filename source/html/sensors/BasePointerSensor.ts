@@ -5,6 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
+import { FocusSensor } from './FocusSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 import { KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
@@ -21,8 +22,8 @@ export class BasePointerSensor extends HtmlElementSensor {
   positionY: number // position relative to browser's viewport
   modifiers: KeyboardModifiers
 
-  constructor(window?: WindowSensor) {
-    super(window)
+  constructor(focusSensor?: FocusSensor, windowSensor?: WindowSensor) {
+    super(focusSensor, windowSensor)
     this.positionX = Infinity
     this.positionY = Infinity
     this.modifiers = KeyboardModifiers.None

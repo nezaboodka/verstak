@@ -9,13 +9,12 @@ import { options, transaction, LoggingLevel } from 'reactronic'
 import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { BasePointerSensor } from './BasePointerSensor'
-import { WindowSensor } from './WindowSensor'
 
 export class HoverSensor extends BasePointerSensor {
   target: unknown = undefined
 
-  constructor(window?: WindowSensor) {
-    super(window)
+  constructor() {
+    super()
     this.target = undefined
   }
 

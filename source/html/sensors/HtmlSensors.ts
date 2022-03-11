@@ -34,9 +34,9 @@ export class HtmlSensors {
     this.keyboard = new KeyboardSensor()
     this.wheel = new WheelSensor()
     this.resize = new ResizeSensor()
-    this.htmlDrag = new HtmlDragSensor(this.window)
-    this.button = new ButtonSensor(this.window)
-    this.pointer = new PointerSensor(this.window)
+    this.htmlDrag = new HtmlDragSensor(this.focus, this.window)
+    this.button = new ButtonSensor(this.focus, this.window)
+    this.pointer = new PointerSensor(this.focus, this.window)
   }
 
   @transaction

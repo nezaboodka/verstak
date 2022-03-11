@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, sensitive, transaction, LoggingLevel } from 'reactronic'
-import { grabElementData, SymDataForSensor } from './DataForSensor'
+import { grabElementDataList, SymDataForSensor } from './DataForSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 
 export enum KeyboardModifiers {
@@ -96,7 +96,7 @@ export class KeyboardSensor extends HtmlElementSensor {
     // console.log('KeyboardSensor.updateSensorData:')
     // console.log(path)
 
-    this.elementDataList = grabElementData(path, SymDataForSensor, 'keyboard', this.elementDataList)
+    this.elementDataList = grabElementDataList(path, SymDataForSensor, 'keyboard', this.elementDataList).dataList
     this.modifiers = extractModifierKeys(e)
     this.revision++
   }

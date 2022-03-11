@@ -8,6 +8,7 @@
 import { options, reaction, Reentrance, transaction, unobservable, Transaction, LoggingLevel } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from './BasePointerSensor'
 import { findTargetElementData, SymDataForSensor } from './DataForSensor'
+import { FocusSensor } from './FocusSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { WindowSensor } from './WindowSensor'
 
@@ -43,8 +44,8 @@ export class PointerSensor extends BasePointerSensor {
 
   static readonly DraggingThreshold = 4
 
-  constructor(windowSensor: WindowSensor) {
-    super(windowSensor)
+  constructor(focusSensor: FocusSensor, windowSensor: WindowSensor) {
+    super(focusSensor, windowSensor)
     this.pointerButton = PointerButton.None
     this.tryingDragging = false
     this.clickable = undefined
@@ -106,6 +107,7 @@ export class PointerSensor extends BasePointerSensor {
   }
 
   protected onPointerDown(e: PointerEvent): void {
+    // console.log(`pointer down -> ${(e.target as HTMLElement).id}`)
     // this.sourceElement?.setPointerCapture(e.pointerId)
     const button = extractPointerButton(e)
     if (!this.dragStarted && this.clickable === undefined &&

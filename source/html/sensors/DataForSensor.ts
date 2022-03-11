@@ -6,6 +6,7 @@
 // automatically licensed under the license referred above.
 
 export interface DataForSensor {
+  context?: unknown
   window?: unknown
   focus?: unknown
   hover?: unknown
@@ -24,38 +25,6 @@ export const SymDataForSensor: unique symbol = Symbol('DataForSensor')
 export const SymResizeObserver: unique symbol = Symbol('ResizeObserver')
 
 export const EmptyDataArray: any[] = []
-
-export function grabElementData(targetPath: any[], sym: symbol, payloadKey: keyof DataForSensor,
-  existing: Array<unknown>): Array<unknown> {
-  let result = existing
-  let i = 0
-  let j = 0
-  while (i < targetPath.length) {
-    const data = targetPath[i][sym] as DataForSensor | undefined
-    if (data !== undefined) {
-      const payload = data[payloadKey]
-      if (payload !== undefined) {
-        if (result !== existing)
-          payload !== undefined && result.push(payload)
-        else if (payload !== undefined) {
-          if (payload !== existing[j]) {
-            result = existing.slice(0, j)
-            result.push(payload)
-          }
-          else
-            j++
-        }
-        else {
-          result = existing.slice(0, j)
-        }
-      }
-    }
-    i++
-  }
-  if (j === 0 && result === existing && existing.length > 0)
-    result = EmptyDataArray
-  return result
-}
 
 export function findTargetElementData(targetPath: any[], underPointer: any[], sym: symbol,
   anyOfPayloadKeys: Array<keyof DataForSensor>,
@@ -86,4 +55,49 @@ export function findTargetElementData(targetPath: any[], underPointer: any[], sy
     i++
   }
   return { data: result, window }
+}
+
+export function grabElementDataList(targetPath: any[], sym: symbol,
+  payloadKey: keyof DataForSensor, existing: Array<unknown>,
+  ignoreWindow: boolean = false, isActiveElement: (element: any) => boolean = () => false): { dataList: Array<unknown>, window: unknown, activeData: unknown } {
+  let result = existing
+  let i = 0
+  let j = 0
+  let window: unknown = undefined
+  let activeData: unknown = undefined
+  while (i < targetPath.length) {
+    let payload = undefined
+    const candidate = targetPath[i]
+    const candidateData = candidate[sym] as DataForSensor | undefined
+    if (candidateData !== undefined) {
+      if (!ignoreWindow) {
+        if (window === undefined)
+          window = candidateData['window']
+        else if (window !== candidateData['window'])
+          break
+      }
+      payload = candidateData[payloadKey]
+      if (payload !== undefined) {
+        if (result !== existing) {
+          result.push(payload)
+        }
+        else {
+          if (payload !== existing[j]) {
+            result = existing.slice(0, j)
+            result.push(payload)
+          }
+          else
+            j++
+        }
+      }
+    }
+    if (isActiveElement(candidate)) {
+      activeData = payload
+      break
+    }
+    i++
+  }
+  if (j === 0 && result === existing && existing.length > 0)
+    result = EmptyDataArray
+  return { dataList: result, window, activeData }
 }

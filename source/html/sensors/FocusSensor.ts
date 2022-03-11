@@ -5,11 +5,41 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, ToggleRef, transaction, LoggingLevel } from 'reactronic'
-import { grabElementData, SymDataForSensor } from './DataForSensor'
+import { options, transaction, LoggingLevel, ToggleRef } from 'reactronic'
+import { DataForSensor, grabElementDataList, SymDataForSensor } from './DataForSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
+import { WindowSensor } from './WindowSensor'
 
 export class FocusSensor extends HtmlElementSensor {
+  activeData: unknown
+  previousActiveData: unknown
+  contextElementDataList: unknown[]
+
+  debug: string
+
+  constructor(windowSensor: WindowSensor) {
+    super(undefined, windowSensor)
+    this.activeData = undefined
+    this.previousActiveData = undefined
+    this.contextElementDataList = []
+    this.debug = ''
+  }
+
+  getDefaultFocusData(): unknown {
+    const sourceElement = this.sourceElement
+    const data = sourceElement
+      ? (sourceElement as any)[SymDataForSensor] as DataForSensor | undefined
+      : undefined
+    return data?.focus
+  }
+
+  @transaction
+  setActiveData(data: unknown, debugHint: string = ''): void {
+    if (data !== this.activeData) {
+      this.previousActiveData = this.activeData
+      this.activeData = data
+    }
+  }
 
   @transaction
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
@@ -28,7 +58,9 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   reset(): void {
-    this.doFocusOut()
+    this.preventDefault = false
+    this.stopPropagation = false
+    this.revision++
   }
 
   protected onFocusIn(e: FocusEvent): void {
@@ -37,37 +69,42 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   protected onFocusOut(e: FocusEvent): void {
-    this.doFocusOut()
+    this.doFocusOut(e)
     this.setPreventDefaultAndStopPropagation(e)
   }
 
   @transaction @options({ logging: LoggingLevel.Off })
   protected doFocusIn(e: FocusEvent): void {
-    this.preventDefault = false
-    this.stopPropagation = false
+    this.debug = 'focusin'
     const path = e.composedPath()
-    // const { data, window } = grabWindowElementData(path, SymDataForSensor, 'focus', this.elementDataList)
-    const data = grabElementData(path, SymDataForSensor, 'focus', this.elementDataList)
-    this.elementDataList = toggleFocusRefs(this.elementDataList, data)
-    this.revision++
-    // standalone(() => {
-    //   this.windowSensor?.setActiveWindow(window, 'focus')
-    // })
+    // Focus
+    const { dataList: focusDataList, activeData: focusActiveData } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true, e => document.activeElement === e)
+    this.elementDataList = focusDataList
+    this.setActiveData(focusActiveData)
+    // Context
+    const { dataList: contextDataList } = grabElementDataList(path, SymDataForSensor, 'context', this.contextElementDataList, true)
+    this.contextElementDataList = toggleFocusRefs(this.contextElementDataList, contextDataList)
+    this.reset()
   }
 
   @transaction
-  protected doFocusOut(): void {
-    this.preventDefault = false
-    this.stopPropagation = false
-    // this.elementDataList = toggleFocusRefs(this.elementDataList, EmptyDataArray)
-    this.revision++
+  protected doFocusOut(e: FocusEvent): void {
+    this.debug = 'focusout'
+    const isLosingFocus = e.relatedTarget === null
+    if (isLosingFocus) {
+      const path = e.composedPath()
+      // Focus
+      const { dataList, activeData } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true, e => document.activeElement === e)
+      const filteredElementDataList = dataList.filter(x => x !== this.activeData)
+      this.elementDataList = filteredElementDataList.length > 0 ? filteredElementDataList : [this.getDefaultFocusData()]
+      this.setActiveData(activeData)
+      if (filteredElementDataList.length === 0)
+        this.debug = 'focusout (no focus data found)'
+      // Context
+      this.contextElementDataList = toggleFocusRefs(this.contextElementDataList, [])
+    }
+    this.reset()
   }
-
-  // @reaction
-  // protected debug(): void {
-  //   console.log('Focus')
-  //   console.log(this.topElementData)
-  // }
 }
 
 function toggleFocusRefs(existing: unknown[], updated: unknown[]): unknown[] {
