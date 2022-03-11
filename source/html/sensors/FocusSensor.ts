@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, transaction, LoggingLevel } from 'reactronic'
-import { grabElementDataList, SymDataForSensor } from './DataForSensor'
+import { DataForSensor, grabElementDataList, SymDataForSensor } from './DataForSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 import { WindowSensor } from './WindowSensor'
 
@@ -22,6 +22,14 @@ export class FocusSensor extends HtmlElementSensor {
     this.previousActiveData = undefined
 
     this.debug = ''
+  }
+
+  getDefaultFocusData(): unknown {
+    const sourceElement = this.sourceElement
+    const data = sourceElement
+      ? (sourceElement as any)[SymDataForSensor] as DataForSensor | undefined
+      : undefined
+    return data?.focus
   }
 
   @transaction
@@ -70,24 +78,25 @@ export class FocusSensor extends HtmlElementSensor {
     this.preventDefault = false
     this.stopPropagation = false
     const path = e.composedPath()
-    this.updateState(path)
+    const { dataList, activeData } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true, e => document.activeElement === e)
+    this.elementDataList = dataList
+    this.setActiveData(activeData)
     this.revision++
   }
 
   @transaction
   protected doFocusOut(e: FocusEvent): void {
     this.debug = 'focusout'
-    const isFocusLost = e.relatedTarget === null
-    if (isFocusLost) {
-      const path = e.composedPath().slice(1)
-      this.updateState(path)
+    const isLosingFocus = e.relatedTarget === null
+    if (isLosingFocus) {
+      const path = e.composedPath()
+      const { dataList, activeData } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true, e => document.activeElement === e)
+      this.elementDataList = dataList.filter(x => x !== this.activeData)
+      const newActiveData = this.elementDataList.length > 0 ? activeData : this.getDefaultFocusData()
+      this.setActiveData(newActiveData)
+      if (this.elementDataList.length === 0)
+        this.debug = 'focusout (no focus data found)'
     }
     this.reset()
-  }
-
-  private updateState(path: EventTarget[]): void {
-    const { dataList, activeData } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true, e => document.activeElement === e)
-    this.elementDataList = dataList
-    this.setActiveData(activeData)
   }
 }
