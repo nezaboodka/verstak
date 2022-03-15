@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, transaction, LoggingLevel, ToggleRef } from 'reactronic'
-import { DataForSensor, grabElementDataList, SymDataForSensor } from './DataForSensor'
+import { grabElementDataList, SymDataForSensor } from './DataForSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 import { WindowSensor } from './WindowSensor'
 
@@ -23,14 +23,6 @@ export class FocusSensor extends HtmlElementSensor {
     this.previousActiveData = undefined
     this.contextElementDataList = []
     this.debug = ''
-  }
-
-  getDefaultFocusData(): unknown {
-    const sourceElement = this.sourceElement
-    const data = sourceElement
-      ? (sourceElement as any)[SymDataForSensor] as DataForSensor | undefined
-      : undefined
-    return data?.focus
   }
 
   @transaction
@@ -84,9 +76,10 @@ export class FocusSensor extends HtmlElementSensor {
     this.debug = `focusin -> ${(e.target as HTMLElement).id}`
     const path = e.composedPath()
     // Focus
-    const { dataList: focusDataList, activeData: focusActiveData } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true, e => document.activeElement === e)
+    const { dataList: focusDataList, activeData: focusActiveData, window } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true, e => document.activeElement === e)
     this.elementDataList = focusDataList
     this.setActiveData(focusActiveData)
+    this.windowSensor?.setActiveWindow(window)
     // Context
     const { dataList: contextDataList } = grabElementDataList(path, SymDataForSensor, 'context', this.contextElementDataList, true)
     this.contextElementDataList = toggleFocusRefs(this.contextElementDataList, contextDataList)
@@ -102,10 +95,16 @@ export class FocusSensor extends HtmlElementSensor {
       // Focus
       const { dataList, activeData } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true, e => document.activeElement === e)
       const filteredElementDataList = dataList.filter(x => x !== this.activeData)
-      this.elementDataList = filteredElementDataList.length > 0 ? filteredElementDataList : [this.getDefaultFocusData()]
       this.setActiveData(activeData)
-      if (filteredElementDataList.length === 0)
+      if (filteredElementDataList.length > 0) {
+        this.elementDataList = filteredElementDataList
+      }
+      else {
+        const data = this.getDefaultSensorData()
+        this.elementDataList = data?.focus !== undefined ? [data.focus] : []
+        this.windowSensor?.setActiveWindow(data?.window)
         this.debug = 'focusout (no focus data found)'
+      }
       // Context
       this.contextElementDataList = toggleFocusRefs(this.contextElementDataList, [])
       this.reset()
@@ -122,8 +121,10 @@ export class FocusSensor extends HtmlElementSensor {
       const { dataList: focusDataList, activeData: focusActiveData } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true, e => document.activeElement === e)
       this.elementDataList = focusDataList
       this.setActiveData(focusActiveData)
-      if (focusDataList.length > 0)
+      if (focusDataList.length > 0) {
+        console.log(`[prevent default] pointerdown -> ${(e.target as HTMLElement).id}`)
         e.preventDefault()
+      }
       // Context
       const { dataList: contextDataList } = grabElementDataList(path, SymDataForSensor, 'context', this.contextElementDataList, true)
       this.contextElementDataList = toggleFocusRefs(this.contextElementDataList, contextDataList)

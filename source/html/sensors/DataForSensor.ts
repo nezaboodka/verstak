@@ -59,7 +59,7 @@ export function findTargetElementData(targetPath: any[], underPointer: any[], sy
 
 export function grabElementDataList(targetPath: any[], sym: symbol,
   payloadKey: keyof DataForSensor, existing: Array<unknown>,
-  ignoreWindow: boolean = false, isActiveElement: (element: any) => boolean = () => false): { dataList: Array<unknown>, window: unknown, activeData: unknown } {
+  ignoreWindow: boolean = false, predicate: (element: any) => boolean = () => false): { dataList: Array<unknown>, window: unknown, activeData: unknown } {
   let result = existing
   let i = 0
   let j = 0
@@ -91,9 +91,8 @@ export function grabElementDataList(targetPath: any[], sym: symbol,
         }
       }
     }
-    if (isActiveElement(candidate)) {
+    if (activeData === undefined && predicate(candidate)) {
       activeData = payload
-      break
     }
     i++
   }

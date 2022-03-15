@@ -6,6 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { unobservable } from 'reactronic'
+import { DataForSensor, SymDataForSensor } from './DataForSensor'
 // import { FocusSensor } from './FocusSensor'
 import { Sensor } from './Sensor'
 import { WindowSensor } from './WindowSensor'
@@ -23,6 +24,11 @@ export class HtmlElementSensor extends Sensor {
     this.windowSensor = windowSensor
     this.preventDefault = false
     this.stopPropagation = false
+  }
+
+  protected getDefaultSensorData(): DataForSensor | undefined {
+    const sourceElement = this.sourceElement
+    return sourceElement ? (sourceElement as any)[SymDataForSensor] : undefined
   }
 
   protected setPreventDefaultAndStopPropagation(e: Event): void {
