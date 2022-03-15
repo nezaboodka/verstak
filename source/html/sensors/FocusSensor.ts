@@ -48,11 +48,13 @@ export class FocusSensor extends HtmlElementSensor {
       if (existing) {
         existing.removeEventListener('focusin', this.onFocusIn.bind(this), { capture: true })
         existing.removeEventListener('focusout', this.onFocusOut.bind(this), { capture: true })
+        existing.removeEventListener('pointerdown', this.onPointerDown.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
         element.addEventListener('focusin', this.onFocusIn.bind(this), { capture: true })
         element.addEventListener('focusout', this.onFocusOut.bind(this), { capture: true })
+        element.addEventListener('pointerdown', this.onPointerDown.bind(this), { capture: true })
       }
     }
   }
@@ -73,9 +75,13 @@ export class FocusSensor extends HtmlElementSensor {
     this.setPreventDefaultAndStopPropagation(e)
   }
 
+  protected onPointerDown(e: PointerEvent): void {
+    this.doPointerDown(e)
+  }
+
   @transaction @options({ logging: LoggingLevel.Off })
   protected doFocusIn(e: FocusEvent): void {
-    this.debug = 'focusin'
+    this.debug = `focusin -> ${(e.target as HTMLElement).id}`
     const path = e.composedPath()
     // Focus
     const { dataList: focusDataList, activeData: focusActiveData } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true, e => document.activeElement === e)
@@ -89,7 +95,7 @@ export class FocusSensor extends HtmlElementSensor {
 
   @transaction
   protected doFocusOut(e: FocusEvent): void {
-    this.debug = 'focusout'
+    this.debug = `focusout -> ${(e.target as HTMLElement).id}`
     const isLosingFocus = e.relatedTarget === null
     if (isLosingFocus) {
       const path = e.composedPath()
@@ -102,8 +108,27 @@ export class FocusSensor extends HtmlElementSensor {
         this.debug = 'focusout (no focus data found)'
       // Context
       this.contextElementDataList = toggleFocusRefs(this.contextElementDataList, [])
+      this.reset()
     }
-    this.reset()
+  }
+
+  @transaction @options({ logging: LoggingLevel.Off })
+  protected doPointerDown(e: PointerEvent): void {
+    this.debug = `pointerdown -> ${(e.target as HTMLElement).id}`
+    const path = e.composedPath()
+    const isFirstElementFocusable = ((path[0] as HTMLElement)?.tabIndex ?? -1) >= 0
+    if (path.length > 0 && !isFirstElementFocusable) {
+      // Focus
+      const { dataList: focusDataList, activeData: focusActiveData } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true, e => document.activeElement === e)
+      this.elementDataList = focusDataList
+      this.setActiveData(focusActiveData)
+      if (focusDataList.length > 0)
+        e.preventDefault()
+      // Context
+      const { dataList: contextDataList } = grabElementDataList(path, SymDataForSensor, 'context', this.contextElementDataList, true)
+      this.contextElementDataList = toggleFocusRefs(this.contextElementDataList, contextDataList)
+      this.reset()
+    }
   }
 }
 
