@@ -31,12 +31,12 @@ export class WindowSensor extends Sensor {
           popupToggle.value = popupToggle.valueOff
         }
       }
-      if (window && objectHasMember<WindowModel>(window, 'popupToggle')) {
-        const popupToggle = window.popupToggle
-        if (popupToggle instanceof ToggleRef) {
-          popupToggle.value = popupToggle.valueOn
-        }
-      }
+      // if (window && objectHasMember<WindowModel>(window, 'popupToggle')) {
+      //   const popupToggle = window.popupToggle
+      //   if (popupToggle instanceof ToggleRef) {
+      //     popupToggle.value = popupToggle.valueOn
+      //   }
+      // }
       this.previousActiveData = activeData
       this.activeData = window
     }
