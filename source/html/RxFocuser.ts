@@ -6,9 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { Reaction } from '../core/Elements'
-import { Focusable } from './sensors/FocusSensor'
+import { FocusModel } from './sensors/FocusSensor'
 
-export function RxFocuser(name: string, target: HTMLElement, model: Focusable,
+export function RxFocuser(name: string, target: HTMLElement, model: FocusModel,
   focusOnInitialRendering: boolean = false, setNativeFocus: (() => void) | undefined = undefined): void {
   Reaction(name, { target, model }, (_, node) => {
     const isFocused = model.isFocused

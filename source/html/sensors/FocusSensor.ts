@@ -11,10 +11,16 @@ import { grabElementDataList, SymDataForSensor } from './DataForSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 import { WindowSensor } from './WindowSensor'
 
-export interface Focusable {
+export interface FocusModel {
   isFocused: boolean
   onFocusIn?: (focus: FocusSensor) => void
   onFocusOut?: (focus: FocusSensor) => void
+}
+
+export interface ContextModel {
+  contextToggle?: ToggleRef
+  onContextIn?: (focus: FocusSensor) => void
+  onContextOut?: (focus: FocusSensor) => void
 }
 
 export class FocusSensor extends HtmlElementSensor {
@@ -39,13 +45,13 @@ export class FocusSensor extends HtmlElementSensor {
       // const debugColor = debug.includes('focusin') ? '#00BB00' : (debug.includes('pointerdown') ? 'yellow' : '#BB0000')
       // debug && nonreactive(() => console.group(`%chandleFocus [${debug}]`, `color: ${debugColor}`))
       const activeData = this.activeData
-      if (activeData !== undefined && objectHasMember<Focusable>(activeData, 'isFocused')) {
+      if (activeData !== undefined && objectHasMember<FocusModel>(activeData, 'isFocused')) {
         // debug && nonreactive(() => console.log(`%c[activeData] ${activeData.constructor.name}.isFocused: ${activeData.isFocused} -> false`, `color: ${debugColor}`))
         activeData.isFocused = false
         activeData.onFocusOut?.(this)
       }
       if (data !== undefined) {
-        if (objectHasMember<Focusable>(data, 'isFocused')) {
+        if (objectHasMember<FocusModel>(data, 'isFocused')) {
           // debug && nonreactive(() => console.log(`%c[data] ${data.constructor.name}.isFocused: ${data.isFocused} -> true`, `color: ${debugColor}`))
           data.isFocused = true
           data.onFocusIn?.(this)
@@ -109,7 +115,7 @@ export class FocusSensor extends HtmlElementSensor {
     this.windowSensor?.setActiveWindow(window)
     // Context
     const { dataList: contextDataList } = grabElementDataList(path, SymDataForSensor, 'context', this.contextElementDataList, true)
-    this.contextElementDataList = toggleFocusRefs(this.contextElementDataList, contextDataList)
+    this.contextElementDataList = toggleContextRefs(this, this.contextElementDataList, contextDataList)
     this.reset()
   }
 
@@ -138,7 +144,7 @@ export class FocusSensor extends HtmlElementSensor {
         this.debug = 'focusout (no focus data found)'
       }
       // Context
-      this.contextElementDataList = toggleFocusRefs(this.contextElementDataList, [])
+      this.contextElementDataList = toggleContextRefs(this, this.contextElementDataList, [])
       this.reset()
     }
   }
@@ -158,7 +164,7 @@ export class FocusSensor extends HtmlElementSensor {
       }
       // Context
       const { dataList: contextDataList } = grabElementDataList(path, SymDataForSensor, 'context', this.contextElementDataList, true)
-      this.contextElementDataList = toggleFocusRefs(this.contextElementDataList, contextDataList)
+      this.contextElementDataList = toggleContextRefs(this, this.contextElementDataList, contextDataList)
       this.reset()
     }
   }
@@ -166,7 +172,7 @@ export class FocusSensor extends HtmlElementSensor {
   private trySetFocus(candidateData: unknown): void {
     // const debugColor = debug.includes('focusin') ? '#00BB00' : (debug.includes('pointerdown') ? 'yellow' : '#BB0000')
     // debug && nonreactive(() => console.group(`%chandleFocusNext [${debug}]`, `color: ${debugColor}`))
-    if (candidateData !== undefined && objectHasMember<Focusable>(candidateData, 'isFocused')) {
+    if (candidateData !== undefined && objectHasMember<FocusModel>(candidateData, 'isFocused')) {
       // debug && nonreactive(() => console.log(`%c[next active] ${data.constructor.name}.isFocused: ${data.isFocused} -> true`, `color: ${debugColor}`))
       candidateData.isFocused = true
     }
@@ -174,15 +180,19 @@ export class FocusSensor extends HtmlElementSensor {
   }
 }
 
-function toggleFocusRefs(existing: unknown[], updated: unknown[]): unknown[] {
+function toggleContextRefs(focusSensor: FocusSensor, existing: unknown[], updated: unknown[]): unknown[] {
   if (updated !== existing) {
-    existing.forEach(f => {
-      if (f instanceof ToggleRef && f.valueOn !== f.valueOff)
-        f.value = f.valueOff
+    existing.forEach(x => {
+      if (objectHasMember<ContextModel>(x, 'contextToggle') && x.contextToggle && x.contextToggle.valueOn !== x.contextToggle.valueOff)
+        x.contextToggle.value = x.contextToggle.valueOff
+      if (objectHasMember<ContextModel>(x, 'onContextOut'))
+        x.onContextOut?.(focusSensor)
     })
     updated.forEach(x => {
-      if (x instanceof ToggleRef)
-        x.value = x.valueOn
+      if (objectHasMember<ContextModel>(x, 'contextToggle') && x.contextToggle)
+        x.contextToggle.value = x.contextToggle.valueOn
+      if (objectHasMember<ContextModel>(x, 'onContextIn'))
+        x.onContextIn?.(focusSensor)
     })
   }
   return updated
