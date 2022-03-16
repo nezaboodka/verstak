@@ -6,13 +6,20 @@
 // automatically licensed under the license referred above.
 
 import { options, transaction, LoggingLevel, ToggleRef } from 'reactronic'
+import { objectHasMember } from '../../core/Utils'
 import { grabElementDataList, SymDataForSensor } from './DataForSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 import { WindowSensor } from './WindowSensor'
 
+export interface Focusable {
+  isFocused: boolean
+  onFocusIn?: (focus: FocusSensor) => void
+  onFocusOut?: (focus: FocusSensor) => void
+}
+
 export class FocusSensor extends HtmlElementSensor {
   activeData: unknown
-  previousActiveData: unknown
+  oldActiveData: unknown
   contextElementDataList: unknown[]
 
   debug: string
@@ -20,7 +27,7 @@ export class FocusSensor extends HtmlElementSensor {
   constructor(windowSensor: WindowSensor) {
     super(undefined, windowSensor)
     this.activeData = undefined
-    this.previousActiveData = undefined
+    this.oldActiveData = undefined
     this.contextElementDataList = []
     this.debug = ''
   }
@@ -28,7 +35,24 @@ export class FocusSensor extends HtmlElementSensor {
   @transaction
   setActiveData(data: unknown, debugHint: string = ''): void {
     if (data !== this.activeData) {
-      this.previousActiveData = this.activeData
+      // const debug = nonreactive(() => this.debug)
+      // const debugColor = debug.includes('focusin') ? '#00BB00' : (debug.includes('pointerdown') ? 'yellow' : '#BB0000')
+      // debug && nonreactive(() => console.group(`%chandleFocus [${debug}]`, `color: ${debugColor}`))
+      const activeData = this.activeData
+      if (activeData !== undefined && objectHasMember<Focusable>(activeData, 'isFocused')) {
+        // debug && nonreactive(() => console.log(`%c[activeData] ${activeData.constructor.name}.isFocused: ${activeData.isFocused} -> false`, `color: ${debugColor}`))
+        activeData.isFocused = false
+        activeData.onFocusOut?.(this)
+      }
+      if (data !== undefined) {
+        if (objectHasMember<Focusable>(data, 'isFocused')) {
+          // debug && nonreactive(() => console.log(`%c[data] ${data.constructor.name}.isFocused: ${data.isFocused} -> true`, `color: ${debugColor}`))
+          data.isFocused = true
+          data.onFocusIn?.(this)
+        }
+      }
+      // debug && console.groupEnd()
+      this.oldActiveData = activeData
       this.activeData = data
     }
   }
@@ -58,16 +82,19 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   protected onFocusIn(e: FocusEvent): void {
+    // console.log(`focusin -> ${(e.target as HTMLElement).id}`)
     this.doFocusIn(e)
     this.setPreventDefaultAndStopPropagation(e)
   }
 
   protected onFocusOut(e: FocusEvent): void {
+    // console.log(`focusout -> ${(e.target as HTMLElement).id}`)
     this.doFocusOut(e)
     this.setPreventDefaultAndStopPropagation(e)
   }
 
   protected onPointerDown(e: PointerEvent): void {
+    // console.log(`pointerdown -> ${(e.target as HTMLElement).id}`)
     this.doPointerDown(e)
   }
 
@@ -76,7 +103,7 @@ export class FocusSensor extends HtmlElementSensor {
     this.debug = `focusin -> ${(e.target as HTMLElement).id}`
     const path = e.composedPath()
     // Focus
-    const { dataList: focusDataList, activeData: focusActiveData, window } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true, e => document.activeElement === e)
+    const { dataList: focusDataList, activeData: focusActiveData, window } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, false, e => document.activeElement === e)
     this.elementDataList = focusDataList
     this.setActiveData(focusActiveData)
     this.windowSensor?.setActiveWindow(window)
@@ -93,16 +120,21 @@ export class FocusSensor extends HtmlElementSensor {
     if (isLosingFocus) {
       const path = e.composedPath()
       // Focus
-      const { dataList, activeData } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true, e => document.activeElement === e)
+      const { dataList } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true)
+      this.elementDataList = dataList
       const filteredElementDataList = dataList.filter(x => x !== this.activeData)
-      this.setActiveData(activeData)
       if (filteredElementDataList.length > 0) {
-        this.elementDataList = filteredElementDataList
+        this.trySetFocus(filteredElementDataList[0])
       }
       else {
-        const data = this.getDefaultSensorData()
-        this.elementDataList = data?.focus !== undefined ? [data.focus] : []
-        this.windowSensor?.setActiveWindow(data?.window)
+        const defaultData = this.getDefaultSensorData()
+        if (defaultData?.focus !== undefined) {
+          this.trySetFocus(defaultData.focus)
+        }
+        else {
+          this.setActiveData(undefined)
+        }
+        this.windowSensor?.setActiveWindow(defaultData?.window)
         this.debug = 'focusout (no focus data found)'
       }
       // Context
@@ -118,11 +150,10 @@ export class FocusSensor extends HtmlElementSensor {
     const isFirstElementFocusable = ((path[0] as HTMLElement)?.tabIndex ?? -1) >= 0
     if (path.length > 0 && !isFirstElementFocusable) {
       // Focus
-      const { dataList: focusDataList, activeData: focusActiveData } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true, e => document.activeElement === e)
-      this.elementDataList = focusDataList
-      this.setActiveData(focusActiveData)
-      if (focusDataList.length > 0) {
-        console.log(`[prevent default] pointerdown -> ${(e.target as HTMLElement).id}`)
+      const { dataList } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true)
+      this.elementDataList = dataList
+      if (dataList.length > 0) {
+        this.trySetFocus(dataList[0])
         e.preventDefault()
       }
       // Context
@@ -130,6 +161,16 @@ export class FocusSensor extends HtmlElementSensor {
       this.contextElementDataList = toggleFocusRefs(this.contextElementDataList, contextDataList)
       this.reset()
     }
+  }
+
+  private trySetFocus(candidateData: unknown): void {
+    // const debugColor = debug.includes('focusin') ? '#00BB00' : (debug.includes('pointerdown') ? 'yellow' : '#BB0000')
+    // debug && nonreactive(() => console.group(`%chandleFocusNext [${debug}]`, `color: ${debugColor}`))
+    if (candidateData !== undefined && objectHasMember<Focusable>(candidateData, 'isFocused')) {
+      // debug && nonreactive(() => console.log(`%c[next active] ${data.constructor.name}.isFocused: ${data.isFocused} -> true`, `color: ${debugColor}`))
+      candidateData.isFocused = true
+    }
+    // debug && console.groupEnd()
   }
 }
 
