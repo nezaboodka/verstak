@@ -5,8 +5,13 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { transaction } from 'reactronic'
+import { ToggleRef, transaction } from 'reactronic'
+import { objectHasMember } from '../../core/Utils'
 import { Sensor } from './Sensor'
+
+export interface WindowModel {
+  popupToggle?: ToggleRef
+}
 
 export class WindowSensor extends Sensor {
   activeData: unknown = undefined
@@ -19,7 +24,20 @@ export class WindowSensor extends Sensor {
     // console.log(window)
 
     if (window !== this.activeData) {
-      this.previousActiveData = this.activeData
+      const activeData = this.activeData
+      if (activeData && objectHasMember<WindowModel>(activeData, 'popupToggle')) {
+        const popupToggle = activeData.popupToggle
+        if (popupToggle instanceof ToggleRef) {
+          popupToggle.value = popupToggle.valueOff
+        }
+      }
+      if (window && objectHasMember<WindowModel>(window, 'popupToggle')) {
+        const popupToggle = window.popupToggle
+        if (popupToggle instanceof ToggleRef) {
+          popupToggle.value = popupToggle.valueOn
+        }
+      }
+      this.previousActiveData = activeData
       this.activeData = window
     }
   }

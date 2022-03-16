@@ -20,5 +20,6 @@ export * from './sensors/KeyboardSensor'
 export * from './sensors/ResizeSensor'
 export * from './sensors/HtmlDragSensor'
 export * from './sensors/HtmlSensors'
+export * from './sensors/WindowSensor'
 
 import './HtmlApiExt'
