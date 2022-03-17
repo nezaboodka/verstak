@@ -40,13 +40,13 @@ export class FocusSensor extends HtmlElementSensor {
     if (data !== this.activeData) {
       const activeData = this.activeData
       if (activeData !== undefined && objectHasMember<FocusModel>(activeData, 'isFocused')) {
-        console.log(`${activeData.constructor.name}.isFocused = %cfalse`, 'color: #BB0000')
+        // console.log(`${activeData.constructor.name}.isFocused = %cfalse`, 'color: #BB0000')
         activeData.isFocused = false
         activeData.onFocusOut?.(this)
       }
       if (data !== undefined) {
         if (objectHasMember<FocusModel>(data, 'isFocused')) {
-          console.log(`${data.constructor.name}.isFocused = %ctrue`, 'color: #00BB00')
+          // console.log(`${data.constructor.name}.isFocused = %ctrue`, 'color: #00BB00')
           data.isFocused = true
           data.onFocusIn?.(this)
         }
@@ -175,7 +175,7 @@ export class FocusSensor extends HtmlElementSensor {
 
   private trySetFocus(candidateData: unknown, indent: string = ''): void {
     if (candidateData !== undefined && objectHasMember<FocusModel>(candidateData, 'isFocused')) {
-      console.log(`${indent}try focus: ${candidateData.constructor.name}.isFocused = %ctrue`, 'color: #00BB00')
+      // console.log(`${indent}try focus: ${candidateData.constructor.name}.isFocused = %ctrue`, 'color: #00BB00')
       candidateData.isFocused = true
     }
   }
