@@ -63,13 +63,13 @@ export class FocusSensor extends HtmlElementSensor {
       if (existing) {
         existing.removeEventListener('focusin', this.onFocusIn.bind(this), { capture: true })
         existing.removeEventListener('focusout', this.onFocusOut.bind(this), { capture: true })
-        existing.removeEventListener('pointerdown', this.onPointerDown.bind(this), { capture: true })
+        existing.removeEventListener('mousedown', this.onMouseDown.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
         element.addEventListener('focusin', this.onFocusIn.bind(this), { capture: true })
         element.addEventListener('focusout', this.onFocusOut.bind(this), { capture: true })
-        element.addEventListener('pointerdown', this.onPointerDown.bind(this), { capture: true })
+        element.addEventListener('mousedown', this.onMouseDown.bind(this), { capture: true })
       }
     }
   }
@@ -81,23 +81,23 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   protected onFocusIn(e: FocusEvent): void {
-    console.group(`focusin [%c${(e.target as HTMLElement).id}%c]`, 'color: #44AAAA', 'color:')
+    // console.group(`focusin [%c${(e.target as HTMLElement).id}%c]`, 'color: #44AAAA', 'color:')
     this.doFocusIn(e)
     this.setPreventDefaultAndStopPropagation(e)
-    console.groupEnd()
+    // console.groupEnd()
   }
 
   protected onFocusOut(e: FocusEvent): void {
-    console.group(`focusout [%c${(e.target as HTMLElement).id}%c]`, 'color: #44AAAA', 'color:')
+    // console.group(`focusout [%c${(e.target as HTMLElement).id}%c]`, 'color: #44AAAA', 'color:')
     this.doFocusOut(e)
     this.setPreventDefaultAndStopPropagation(e)
-    console.groupEnd()
+    // console.groupEnd()
   }
 
-  protected onPointerDown(e: PointerEvent): void {
-    console.group(`pointerdown [%c${(e.target as HTMLElement).id}%c]`, 'color: #44AAAA', 'color:')
-    this.doPointerDown(e)
-    console.groupEnd()
+  protected onMouseDown(e: MouseEvent): void {
+    // console.group(`mousedown [%c${(e.target as HTMLElement).id}%c]`, 'color: #44AAAA', 'color:')
+    this.doMouseDown(e)
+    // console.groupEnd()
   }
 
   @transaction @options({ logging: LoggingLevel.Off })
@@ -118,25 +118,25 @@ export class FocusSensor extends HtmlElementSensor {
   protected doFocusOut(e: FocusEvent): void {
     const isLosingFocus = e.relatedTarget === null
     if (isLosingFocus) {
-      console.log('[info]: browser is losing focus')
+      // console.log('[info]: browser is losing focus')
       const path = e.composedPath()
       // Focus
       const { dataList } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true)
       this.elementDataList = dataList
       const filteredElementDataList = dataList.filter(x => x !== this.activeData)
       if (filteredElementDataList.length > 0) {
-        console.log('└─ [info]: focus data found')
+        // console.log('└─ [info]: focus data found')
         this.trySetFocus(filteredElementDataList[0], '  └─')
       }
       else {
-        console.log('├─ [info]: no focus data found')
+        // console.log('├─ [info]: no focus data found')
         const defaultData = this.getDefaultSensorData()
         if (defaultData?.focus !== undefined) {
-          console.log('└─ [info]: default data is used')
+          // console.log('└─ [info]: default data is used')
           this.trySetFocus(defaultData.focus, '    └─')
         }
         else {
-          console.log('└─ [skip]: no default data found')
+          // console.log('└─ [skip]: no default data found')
           this.setActiveData(undefined)
         }
         this.windowSensor?.setActiveWindow(defaultData?.window)
@@ -146,16 +146,16 @@ export class FocusSensor extends HtmlElementSensor {
       this.reset()
     }
     else {
-      console.log('[skip]: focus is not lost')
+      // console.log('[skip]: focus is not lost')
     }
   }
 
   @transaction @options({ logging: LoggingLevel.Off })
-  protected doPointerDown(e: PointerEvent): void {
+  protected doMouseDown(e: MouseEvent): void {
     const path = e.composedPath()
     const isFirstElementFocusable = ((path[0] as HTMLElement)?.tabIndex ?? -1) >= 0
     if (path.length > 0 && !isFirstElementFocusable) {
-      console.log('[info]: non-focusable element')
+      // console.log('[info]: non-focusable element')
       // Focus
       const { dataList } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true)
       this.elementDataList = dataList
@@ -169,7 +169,7 @@ export class FocusSensor extends HtmlElementSensor {
       this.reset()
     }
     else {
-      console.log('[skip]: focusable element')
+      // console.log('[skip]: focusable element')
     }
   }
 
