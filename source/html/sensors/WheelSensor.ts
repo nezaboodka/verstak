@@ -31,7 +31,7 @@ export class WheelSensor extends BasePointerSensor {
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('wheel', this.onWheel.bind(this), { capture: true })
+        element.addEventListener('wheel', this.onWheel.bind(this), { capture: true, passive: true })
       }
     }
   }
