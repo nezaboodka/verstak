@@ -31,5 +31,5 @@ export function RxFocuser(name: string, target: HTMLElement, model: FocusModel,
       else
         target.blur()
     }
-  })
+  }, undefined, undefined, 0)
 }
