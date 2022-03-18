@@ -9,27 +9,17 @@ import { Reaction } from '../core/Elements'
 import { FocusModel } from './sensors/FocusSensor'
 
 export function RxFocuser(name: string, target: HTMLElement, model: FocusModel,
-  focusOnInitialRendering: boolean = false, setNativeFocus: (() => void) | undefined = undefined): void {
+  setNativeFocus: (() => void) | undefined = undefined): void {
   Reaction(name, { target, model }, (_, node) => {
     const isFocused = model.isFocused
+    // console.log(`${isFocused ? '🟢' : '🔴'} RxFocuser [${name}]: ${isFocused ? 'focus()' : 'blur()'}`)
     if (setNativeFocus === undefined)
       setNativeFocus = () => target.focus()
-    if (node.isInitialRendering) {
+    if (node.isInitialRendering)
       target.dataForSensor.focus = model
-      if (focusOnInitialRendering) {
-        // console.log(`${isFocused ? '🟢' : '🔴'} (initial) RxFocuser [${name}]: ${isFocused ? 'focus()' : 'blur()'}`)
-        if (isFocused)
-          setNativeFocus()/* nonreactive(() => setNativeFocus!()) */
-        else
-          target.blur()
-      }
-    }
-    else {
-      // console.log(`${isFocused ? '🟢' : '🔴'} RxFocuser [${name}]: ${isFocused ? 'focus()' : 'blur()'}`)
-      if (isFocused)
-        setNativeFocus()/* nonreactive(() => setNativeFocus!()) */
-      else
-        target.blur()
-    }
+    if (isFocused)
+      setNativeFocus()/* nonreactive(() => setNativeFocus!()) */
+    else
+      target.blur()
   }, undefined, undefined, 0)
 }
