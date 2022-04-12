@@ -220,7 +220,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   @options({
     reentrance: Reentrance.CancelAndWaitPrevious,
     triggeringArgs: true,
-    noSideEffects: true })
+    noSideEffects: false })
   autorender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by parent
     runRender(this)
