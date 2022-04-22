@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, Reentrance, transaction, unobservable, Transaction, LoggingLevel } from 'reactronic'
+import { options, reaction, Reentrance, transaction, subscribeless, Transaction, LoggingLevel } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from './BasePointerSensor'
 import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { FocusSensor } from './FocusSensor'
@@ -14,12 +14,12 @@ import { WindowSensor } from './WindowSensor'
 
 export class PointerSensor extends BasePointerSensor {
   pointerButton: PointerButton
-  @unobservable private clickable: unknown
+  @subscribeless private clickable: unknown
   clicking: unknown
   clicked: unknown
   clickX: number // position relative to browser's viewport
   clickY: number // position relative to browser's viewport
-  @unobservable private tryingDragging: boolean
+  @subscribeless private tryingDragging: boolean
   draggableData: unknown
   dragSource: unknown
   dragTarget: unknown
@@ -29,8 +29,8 @@ export class PointerSensor extends BasePointerSensor {
   dragFinished: boolean
   startX: number // position relative to browser's viewport
   startY: number // position relative to browser's viewport
-  @unobservable private draggingData: unknown
-  @unobservable dropAllowed: boolean
+  @subscribeless private draggingData: unknown
+  @subscribeless dropAllowed: boolean
   draggingOver: boolean
   positionX: number // position relative to browser's viewport
   positionY: number // position relative to browser's viewport

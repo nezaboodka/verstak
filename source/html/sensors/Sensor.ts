@@ -5,9 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ObservableObject } from 'reactronic'
+import { SubscribingObject } from 'reactronic'
 
-export class Sensor extends ObservableObject {
+export class Sensor extends SubscribingObject {
   revision: number = 0
   elementDataList: unknown[] = []
 
