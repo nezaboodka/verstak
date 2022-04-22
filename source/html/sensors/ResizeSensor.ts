@@ -30,7 +30,7 @@ export class ResizeSensor extends Sensor {
     this.doReset()
   }
 
-  observeResizingOfCurrentElement(value: boolean): void {
+  observeResizingOfCurrentElement(value: boolean, boxSizing: ResizeObserverBoxOptions = 'content-box'): void {
     const node = RxNode.current
     const native = node.element
     if (native instanceof Element) {
@@ -38,7 +38,7 @@ export class ResizeSensor extends Sensor {
         if (native.resizeObserver !== undefined && native.resizeObserver !== this.observer)
           native.resizeObserver.unobserve(native)
         native.resizeObserver = this.observer
-        this.observer.observe(native, { box: 'border-box' })
+        this.observer.observe(native, { box: boxSizing })
       }
       else {
         if (native.resizeObserver === this.observer) {
