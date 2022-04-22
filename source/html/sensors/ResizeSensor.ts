@@ -38,7 +38,7 @@ export class ResizeSensor extends Sensor {
         if (native.resizeObserver !== undefined && native.resizeObserver !== this.observer)
           native.resizeObserver.unobserve(native)
         native.resizeObserver = this.observer
-        this.observer.observe(native)
+        this.observer.observe(native, { box: 'border-box' })
       }
       else {
         if (native.resizeObserver === this.observer) {
