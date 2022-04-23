@@ -5,18 +5,18 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { subscribeless } from 'reactronic'
+import { plain } from 'reactronic'
 import { DataForSensor, SymDataForSensor } from './DataForSensor'
 // import { FocusSensor } from './FocusSensor'
 import { Sensor } from './Sensor'
 import { WindowSensor } from './WindowSensor'
 
 export class HtmlElementSensor extends Sensor {
-  @subscribeless readonly focusSensor?: any
-  @subscribeless readonly windowSensor?: WindowSensor
+  @plain readonly focusSensor?: any
+  @plain readonly windowSensor?: WindowSensor
   sourceElement: HTMLElement | undefined = undefined
-  @subscribeless preventDefault: boolean
-  @subscribeless stopPropagation: boolean
+  @plain preventDefault: boolean
+  @plain stopPropagation: boolean
 
   constructor(focusSensor?: any, windowSensor?: WindowSensor) {
     super()

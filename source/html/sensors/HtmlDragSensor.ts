@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, transaction, subscribeless, Transaction, LoggingLevel } from 'reactronic'
+import { options, reaction, transaction, plain, Transaction, LoggingLevel } from 'reactronic'
 import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { FocusSensor } from './FocusSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
@@ -25,14 +25,14 @@ export class HtmlDragSensor extends HtmlElementSensor {
   dragFinished: boolean
   startX: number // position relative to browser's viewport
   startY: number // position relative to browser's viewport
-  @subscribeless private dataByFormat: Map<string, unknown>
-  @subscribeless private draggingImage: HTMLElement | undefined
-  @subscribeless private draggingImageX: number
-  @subscribeless private draggingImageY: number
-  @subscribeless dropEffect: DropEffect
-  @subscribeless dataTypesAllowed: string[]
-  @subscribeless effectAllowed: DragEffectAllowed
-  @subscribeless dropAllowed: boolean
+  @plain private dataByFormat: Map<string, unknown>
+  @plain private draggingImage: HTMLElement | undefined
+  @plain private draggingImageX: number
+  @plain private draggingImageY: number
+  @plain dropEffect: DropEffect
+  @plain dataTypesAllowed: string[]
+  @plain effectAllowed: DragEffectAllowed
+  @plain dropAllowed: boolean
   draggingOver: boolean
   draggingDataTypes: string[]
   positionX: number // position relative to browser's viewport

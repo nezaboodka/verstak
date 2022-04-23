@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reaction, nonsubscribing, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions } from 'reactronic'
+import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions } from 'reactronic'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
 export type Render<E = unknown, M = unknown, R = void> = (element: E, own: RxNodeContext<E, M ,R>) => R
@@ -315,7 +315,7 @@ function doRender(node: RxNodeImpl): void {
           })
         })
       }
-      nonsubscribing(node.autorender, node.triggers) // reactive auto-rendering
+      nonreactive(node.autorender, node.triggers) // reactive auto-rendering
     }
     else
       runRender(node)
