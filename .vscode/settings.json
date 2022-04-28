@@ -33,6 +33,7 @@
     "deref",
     "enqueues",
     "gmail",
+    "isnonreactive",
     "keyof",
     "lcovonly",
     "mpath",

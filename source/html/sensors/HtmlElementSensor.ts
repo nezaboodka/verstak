@@ -5,18 +5,18 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { plain } from 'reactronic'
+import { isnonreactive } from 'reactronic'
 import { DataForSensor, SymDataForSensor } from './DataForSensor'
 // import { FocusSensor } from './FocusSensor'
 import { Sensor } from './Sensor'
 import { WindowSensor } from './WindowSensor'
 
 export class HtmlElementSensor extends Sensor {
-  @plain readonly focusSensor?: any
-  @plain readonly windowSensor?: WindowSensor
+  @isnonreactive readonly focusSensor?: any
+  @isnonreactive readonly windowSensor?: WindowSensor
   sourceElement: HTMLElement | undefined = undefined
-  @plain preventDefault: boolean
-  @plain stopPropagation: boolean
+  @isnonreactive preventDefault: boolean
+  @isnonreactive stopPropagation: boolean
 
   constructor(focusSensor?: any, windowSensor?: WindowSensor) {
     super()
