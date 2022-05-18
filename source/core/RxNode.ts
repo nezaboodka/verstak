@@ -104,6 +104,10 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
     return node as RxNode<E, M, R>
   }
 
+  static getDefaultLoggingOptions(): LoggingOptions | undefined {
+    return RxNodeImpl.logging
+  }
+
   static setDefaultLoggingOptions(logging?: LoggingOptions): void {
     RxNodeImpl.logging = logging
   }
