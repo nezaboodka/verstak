@@ -103,6 +103,10 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
     }
     return node as RxNode<E, M, R>
   }
+
+  static setDefaultLoggingOptions(logging?: LoggingOptions): void {
+    RxNodeImpl.logging = logging
+  }
 }
 
 // NodeFactory
@@ -161,6 +165,8 @@ export class StaticNodeFactory<E> extends NodeFactory<E> {
 // RxNodeImpl
 
 class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
+  static logging?: LoggingOptions = undefined
+
   // User-defined properties
   readonly name: string
   readonly factory: NodeFactory<E>
@@ -199,7 +205,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     this.customizer = customize
     this.monitor = monitor,
     this.throttling = throttling ?? -1,
-    this.logging = logging
+    this.logging = logging ?? RxNodeImpl.logging
     this.priority = priority ?? Priority.SyncP0,
     this.shuffle = false
     this.model = undefined
