@@ -57,7 +57,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
     return this.stamp === 1
   }
 
-  abstract intercept(interceptor: Intercept<E, M, R> | undefined): this
+  abstract interceptedBy(interceptor: Intercept<E, M, R> | undefined): this
 
   static launch(render: () => void): void {
     gSystem.renderer = render
@@ -236,7 +236,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     runRender(this)
   }
 
-  intercept(interceptor: Intercept<E, M, R> | undefined): this
+  interceptedBy(interceptor: Intercept<E, M, R> | undefined): this
   {
     this.interceptor = interceptor
     return this
