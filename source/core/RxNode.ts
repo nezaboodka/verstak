@@ -10,7 +10,7 @@ import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, L
 export type Callback<E = unknown> = (element: E) => void // to be deleted
 export type Render<E = unknown, M = unknown, R = void> = (element: E, node: RxNodeContext<E, M ,R>) => R
 export type Intercept<E = unknown, M = unknown, R = void> = (node: RxNodeContext<E, M ,R>, element: E) => R
-export type AsyncCustomize<E = unknown, M = unknown> = (node: RxNodeContext<E, M, Promise<void>>, element: E) => Promise<void>
+export type AsyncIntercept<E = unknown, M = unknown> = (node: RxNodeContext<E, M, Promise<void>>, element: E) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 // RxNode
