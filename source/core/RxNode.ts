@@ -31,7 +31,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
   abstract readonly inline: boolean
   abstract readonly triggers: unknown
   abstract readonly renderer: Render<E, M, R>
-  abstract readonly overriddenRenderer: Render<E, M, R> | undefined
+  abstract readonly wrapper: Render<E, M, R> | undefined
   abstract readonly monitor?: Monitor
   abstract readonly throttling?: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
   abstract readonly logging?: Partial<LoggingOptions>
@@ -56,7 +56,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
     return this.stamp === 1
   }
 
-  abstract overrideBy(renderer: Render<E, M, R> | undefined): this
+  abstract wrapBy(renderer: Render<E, M, R> | undefined): this
 
   static launch(render: () => void): void {
     gSystem.renderer = render
@@ -144,8 +144,8 @@ export class NodeFactory<E> {
 
   render(node: RxNode<E>): void | Promise<void> {
     let result: void | Promise<void>
-    if (node.overriddenRenderer)
-      result = node.overriddenRenderer(node.element!, node)
+    if (node.wrapper)
+      result = node.wrapper(node.element!, node)
     else
       result = node.render()
     return result
@@ -176,7 +176,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   readonly inline: boolean
   triggers: unknown
   renderer: Render<E, M, R>
-  overriddenRenderer: Render<E, M, R> | undefined
+  wrapper: Render<E, M, R> | undefined
   readonly monitor?: Monitor
   readonly throttling: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
   readonly logging?: Partial<LoggingOptions>
@@ -196,7 +196,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   element?: E
 
   constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: RxNodeImpl,
-    triggers: unknown, renderer: Render<E, M, R>, override?: Render<E, M, R>,
+    triggers: unknown, renderer: Render<E, M, R>, wrapper?: Render<E, M, R>,
     priority?: Priority, monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>) {
     super()
     // User-defined properties
@@ -205,7 +205,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     this.inline = inline
     this.triggers = triggers
     this.renderer = renderer
-    this.overriddenRenderer = override
+    this.wrapper = wrapper
     this.monitor = monitor,
     this.throttling = throttling ?? -1,
     this.logging = logging ?? RxNodeImpl.logging
@@ -235,9 +235,9 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     runRender(this)
   }
 
-  overrideBy(renderer: Render<E, M, R> | undefined): this
+  wrapBy(renderer: Render<E, M, R> | undefined): this
   {
-    this.overriddenRenderer = renderer
+    this.wrapper = renderer
     return this
   }
 }
