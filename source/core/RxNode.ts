@@ -9,8 +9,7 @@ import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, L
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
 export type Render<E = unknown, M = unknown, R = void> = (element: E, node: RxNodeContext<E, M ,R>) => R
-export type Intercept<E = unknown, M = unknown, R = void> = (node: RxNodeContext<E, M ,R>, element: E) => R
-export type AsyncIntercept<E = unknown, M = unknown> = (node: RxNodeContext<E, M, Promise<void>>, element: E) => Promise<void>
+export type AsyncRender<E = unknown, M = unknown> = (element: E, node: RxNodeContext<E, M, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 // RxNode
@@ -32,7 +31,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
   abstract readonly inline: boolean
   abstract readonly triggers: unknown
   abstract readonly renderer: Render<E, M, R>
-  abstract readonly interceptor: Intercept<E, M, R> | undefined
+  abstract readonly interceptor: Render<E, M, R> | undefined
   abstract readonly monitor?: Monitor
   abstract readonly throttling?: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
   abstract readonly logging?: Partial<LoggingOptions>
@@ -57,7 +56,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
     return this.stamp === 1
   }
 
-  abstract setInterceptor(interceptor: Intercept<E, M, R> | undefined): this
+  abstract setInterceptor(interceptor: Render<E, M, R> | undefined): this
 
   static launch(render: () => void): void {
     gSystem.renderer = render
@@ -146,7 +145,7 @@ export class NodeFactory<E> {
   render(node: RxNode<E>): void | Promise<void> {
     let result: void | Promise<void>
     if (node.interceptor)
-      result = node.interceptor(node, node.element!)
+      result = node.interceptor(node.element!, node)
     else
       result = node.render()
     return result
@@ -177,7 +176,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   readonly inline: boolean
   triggers: unknown
   renderer: Render<E, M, R>
-  interceptor: Intercept<E, M, R> | undefined
+  interceptor: Render<E, M, R> | undefined
   readonly monitor?: Monitor
   readonly throttling: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
   readonly logging?: Partial<LoggingOptions>
@@ -197,7 +196,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   element?: E
 
   constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: RxNodeImpl,
-    triggers: unknown, renderer: Render<E, M, R>, interceptor?: Intercept<E, M, R>,
+    triggers: unknown, renderer: Render<E, M, R>, interceptor?: Render<E, M, R>,
     priority?: Priority, monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>) {
     super()
     // User-defined properties
@@ -236,7 +235,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     runRender(this)
   }
 
-  setInterceptor(interceptor: Intercept<E, M, R> | undefined): this
+  setInterceptor(interceptor: Render<E, M, R> | undefined): this
   {
     this.interceptor = interceptor
     return this
