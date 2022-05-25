@@ -56,7 +56,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
     return this.stamp === 1
   }
 
-  abstract overrideBy(render: Render<E, M, R> | undefined): this
+  abstract overrideBy(renderer: Render<E, M, R> | undefined): this
 
   static launch(render: () => void): void {
     gSystem.renderer = render
@@ -81,7 +81,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
 
   static emit<E = undefined, M = unknown, R = void>(
     name: string, triggers: unknown, inline: boolean,
-    render: Render<E, M, R>, priority?: Priority,
+    renderer: Render<E, M, R>, priority?: Priority,
     monitor?: Monitor, throttling?: number,
     logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): RxNode<E, M, R> {
     // Emit node either by reusing existing one or by creating a new one
@@ -91,12 +91,12 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
     if (node) { // reuse existing
       if (node.inline || !triggersAreEqual(node.triggers, triggers))
         node.triggers = triggers
-      node.renderer = render
+      node.renderer = renderer
       node.priority = priority ?? Priority.SyncP0
     }
     else { // create new
       node = new RxNodeImpl<E, M>(name, factory ?? NodeFactory.default,
-        inline ?? false, parent, triggers, render, undefined,
+        inline ?? false, parent, triggers, renderer, undefined,
         priority, monitor, throttling, logging)
       children.emitAsNewlyCreated(node)
     }
@@ -235,9 +235,9 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     runRender(this)
   }
 
-  overrideBy(render: Render<E, M, R> | undefined): this
+  overrideBy(renderer: Render<E, M, R> | undefined): this
   {
-    this.overriddenRenderer = render
+    this.overriddenRenderer = renderer
     return this
   }
 }
