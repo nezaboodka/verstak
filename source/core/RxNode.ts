@@ -8,7 +8,7 @@
 import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions } from 'reactronic'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
-export type Render<E = unknown, M = unknown, R = void> = (element: E, node: RxNodeContext<E, M ,R>) => R
+export type Render<E = unknown, M = unknown, R = void> = (element: E, node: RxNodeContext<E, M, R>) => R
 export type AsyncRender<E = unknown, M = unknown> = (element: E, node: RxNodeContext<E, M, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
@@ -206,10 +206,10 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     this.triggers = triggers
     this.renderer = renderer
     this.wrapper = wrapper
-    this.monitor = monitor,
-    this.throttling = throttling ?? -1,
+    this.monitor = monitor
+    this.throttling = throttling ?? -1
     this.logging = logging ?? RxNodeImpl.logging
-    this.priority = priority ?? Priority.SyncP0,
+    this.priority = priority ?? Priority.SyncP0
     this.shuffle = false
     this.model = undefined
     // System-managed properties
@@ -229,14 +229,14 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   @options({
     reentrance: Reentrance.CancelAndWaitPrevious,
     triggeringArgs: true,
-    noSideEffects: false })
+    noSideEffects: false,
+  })
   autorender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by parent
     runRender(this)
   }
 
-  wrapBy(renderer: Render<E, M, R> | undefined): this
-  {
+  wrapBy(renderer: Render<E, M, R> | undefined): this {
     this.wrapper = renderer
     return this
   }
@@ -294,17 +294,17 @@ async function startIncrementalRendering(parent: RxNodeImpl,
 
 async function renderIncrementally(parent: RxNodeImpl, children: Array<RxNodeImpl>): Promise<void> {
   const checkEveryN = 30
-  if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
-    await Transaction.requestNextFrame()
+  // if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
+  await Transaction.requestNextFrame()
   if (!Transaction.isCanceled) {
     if (parent.shuffle)
       shuffle(children)
     for (const child of children) {
+      doRender(child)
       if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
-        await Transaction.requestNextFrame()
+        await Transaction.requestNextFrame(5)
       if (Transaction.isCanceled)
         break
-      doRender(child)
     }
   }
 }
