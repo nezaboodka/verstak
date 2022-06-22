@@ -2,7 +2,6 @@
 [![GitHub License](https://img.shields.io/badge/license-MIT-4cc61e.svg?style=flat)](https://github.com/nezaboodka/reactronic-dom/blob/master/LICENSE)
 [![NPM Version](https://img.shields.io/npm/v/reactronic-dom.svg?style=flat&colorB=success)](https://www.npmjs.com/package/reactronic-dom)
 [![Package Size](https://img.shields.io/bundlephobia/minzip/reactronic-dom.svg?colorB=success)](https://bundlephobia.com/result?p=reactronic-dom)
-[![CircleCI Status](https://circleci.com/gh/nezaboodka/reactronic-dom.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/nezaboodka/reactronic-dom)
 
 # **Reactronic DOM** - Transactional Reactive Front-End Development Framework
 
