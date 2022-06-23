@@ -21,3 +21,8 @@ Based on Reactronic: https://github.com/nezaboodka/reactronic/blob/master/README
 Example of the application built with Reactronic-DOM: https://nevod.io
 
 Source code of the example: https://gitlab.com/nezaboodka/nevod.web.public/-/blob/master/README.md
+
+# Contribution
+
+By contributing, you agree that your contributions will be
+automatically licensed under the Apache 2.0 license (see LICENSE file).
