@@ -2,6 +2,7 @@
   "name": "reactronic-dom",
   "version": "0.22.310",
   "description": "Reactronic DOM - Transactional Reactive Front-End Development Framework",
+  "type": "module",
   "main": "build/dist/source/api.js",
   "types": "build/dist/source/api.d.ts",
   "files": [
@@ -30,24 +31,24 @@
   },
   "homepage": "https://github.com/nezaboodka/reactronic-dom/blob/master/README.md#readme",
   "dependencies": {
-    "reactronic": "^0.22.310"
+    "reactronic": "^0.22.311"
   },
   "devDependencies": {
-    "@types/node": "17.0.7",
-    "@typescript-eslint/eslint-plugin": "5.9.0",
-    "@typescript-eslint/parser": "5.9.0",
-    "ava": "3.15.0",
-    "eslint": "8.6.0",
-    "nyc": "15.1.0",
-    "ts-node": "10.4.0",
-    "tsconfig-paths": "3.12.0",
-    "typescript": "4.5.4"
+    "@types/node": "18.0.0",
+    "@typescript-eslint/eslint-plugin": "5.29.0",
+    "@typescript-eslint/parser": "5.29.0",
+    "ava": "4.3.0",
+    "c8": "7.11.3",
+    "eslint": "8.18.0",
+    "ts-node": "10.8.1",
+    "tsconfig-paths": "4.0.0",
+    "typescript": "4.7.3"
   },
   "scripts": {
     "build": "eslint source/**/*.ts test/**/*.ts && tsc",
     "fix": "eslint --fix source/**/*.ts test/**/*.ts",
     "pack": "eslint source/**/*.ts test/**/*.ts && tsc --sourceMap false --removeComments true",
     "test": "ava",
-    "cover": "nyc ava && open build/coverage/index.html"
+    "cover": "c8 ava && open build/coverage/index.html"
   }
 }

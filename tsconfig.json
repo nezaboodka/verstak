@@ -7,10 +7,10 @@
     "inlineSources": false,
     "removeComments": false, // keep comments to make tests coverage working
     // Targets & outputs
-    "target": "es6",
-    "module": "commonjs",
-    // "moduleResolution": "node",
-    "lib": ["es2016", "dom"],
+    "target": "ES2016",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "lib": ["ES2016", "dom"],
     "noEmit": false,
     "noLib": false,
     "baseUrl": "source",

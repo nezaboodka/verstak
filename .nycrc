@@ -4,7 +4,7 @@
   "functions": 50,
   "branches": 50,
   "exclude": [
-    "**/*.d.ts",
+    "**/*.d.ts"
   ],
   "include": [
     "source/**/*.ts",
@@ -15,7 +15,7 @@
     "source-map-support/register"
   ],
   "extension": [
-    ".ts",
+    ".ts"
   ],
   "reporter": [
     "lcovonly",
