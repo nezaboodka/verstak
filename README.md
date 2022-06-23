@@ -1,5 +1,5 @@
 ﻿[![Readiness](https://img.shields.io/badge/release-beta-red.svg)](https://en.wikipedia.org/wiki/Software_release_life_cycle#Release_candidate)
-[![GitHub License](https://img.shields.io/badge/license-MIT-4cc61e.svg?style=flat)](https://github.com/nezaboodka/reactronic-dom/blob/master/LICENSE)
+[![GitHub License](https://img.shields.io/badge/license-Apache2-4cc61e.svg?style=flat)](https://github.com/nezaboodka/reactronic-dom/blob/master/LICENSE)
 [![NPM Version](https://img.shields.io/npm/v/reactronic-dom.svg?style=flat&colorB=success)](https://www.npmjs.com/package/reactronic-dom)
 [![Package Size](https://img.shields.io/bundlephobia/minzip/reactronic-dom.svg?colorB=success)](https://bundlephobia.com/result?p=reactronic-dom)
 
