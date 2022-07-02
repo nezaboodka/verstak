@@ -67,13 +67,13 @@ export class Chain<T> implements ReadonlyChain<T> {
     }
     else // just create new empty namespace
       this.namespace = new Map<string | undefined, Chained<T>>()
-    const vanishedFirst = this.first
+    const vanished = this.first
     this.first = this.mergingFirst
     this.count = mergingCount
     this.mergingFirst = this.mergingLast = undefined
     this.mergingCount = 0
     this.likelyNextToMerge = this.first
-    return vanishedFirst
+    return vanished
   }
 
   tryMergeAsExisting(name: string): Chained<T> | undefined {
