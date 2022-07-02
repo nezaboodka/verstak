@@ -7,7 +7,7 @@
 
 // Chain
 
-export type GetName<T = unknown> = (item: T) => string | undefined
+export type GetKey<T = unknown> = (item: T) => string | undefined
 
 export class Chained<T> {
   readonly item: T
@@ -23,8 +23,8 @@ export interface ReadonlyChain<T> {
 }
 
 export class Chain<T> implements ReadonlyChain<T> {
-  private readonly getName: GetName<T>
-  private namespace = new Map<string | undefined, Chained<T>>()
+  private readonly getKey: GetKey<T>
+  private map = new Map<string | undefined, Chained<T>>()
   private merging: number = 0
   private mergingFirst?: Chained<T> = undefined
   private mergingLast?: Chained<T> = undefined
@@ -34,8 +34,8 @@ export class Chain<T> implements ReadonlyChain<T> {
   count: number = 0
   get isMergeInProgress(): boolean { return this.merging > 0 }
 
-  constructor(getName: GetName<T>) {
-    this.getName = getName
+  constructor(getKey: GetKey<T>) {
+    this.getKey = getKey
   }
 
   beginMerge(id: number): void {
@@ -50,22 +50,22 @@ export class Chain<T> implements ReadonlyChain<T> {
     this.merging = 0
     const mergingCount = this.mergingCount
     if (mergingCount > 0) {
-      const getName = this.getName
-      if (mergingCount > this.count) { // it should be faster to delete vanished items from namespace
-        const namespace = this.namespace
+      const getKey = this.getKey
+      if (mergingCount > this.count) { // it should be faster to delete vanished items
+        const map = this.map
         let child = this.first
         while (child !== undefined)
-          namespace.delete(getName(child.item)), child = child.next
+          map.delete(getKey(child.item)), child = child.next
       }
-      else { // it should be faster to recreate namespace with merging items only
-        const namespace = this.namespace = new Map<string | undefined, Chained<T>>()
+      else { // it should be faster to recreate map using merging items
+        const map = this.map = new Map<string | undefined, Chained<T>>()
         let child = this.mergingFirst
         while (child !== undefined)
-          namespace.set(getName(child.item), child), child = child.next
+          map.set(getKey(child.item), child), child = child.next
       }
     }
-    else // just create new empty namespace
-      this.namespace = new Map<string | undefined, Chained<T>>()
+    else // just create new empty map
+      this.map = new Map<string | undefined, Chained<T>>()
     const vanished = this.first
     this.first = this.mergingFirst
     this.count = mergingCount
@@ -75,16 +75,16 @@ export class Chain<T> implements ReadonlyChain<T> {
     return vanished
   }
 
-  tryMergeAsExisting(name: string): Chained<T> | undefined {
+  tryMergeAsExisting(key: string): Chained<T> | undefined {
     let result = this.likelyNextToMerge
-    let n = result ? this.getName(result.item) : undefined
-    if (n !== name) {
-      result = this.namespace.get(name)
-      n = result ? this.getName(result.item) : undefined
+    let n = result ? this.getKey(result.item) : undefined
+    if (n !== key) {
+      result = this.map.get(key)
+      n = result ? this.getKey(result.item) : undefined
     }
     if (result && n !== undefined) {
       if (result.merging === this.merging)
-        throw new Error(`duplicate node id: ${name}`)
+        throw new Error(`duplicate item id: ${key}`)
       result.merging = this.merging
       this.likelyNextToMerge = result.next
       // Exclude from main sequence
@@ -114,7 +114,7 @@ export class Chain<T> implements ReadonlyChain<T> {
   mergeAsNewlyCreated(item: T): Chained<T> {
     const chained = new Chained<T>(item)
     chained.merging = this.merging
-    this.namespace.set(this.getName(item), chained)
+    this.map.set(this.getKey(item), chained)
     const last = this.mergingLast
     if (last) {
       chained.prev = last
