@@ -251,7 +251,7 @@ function runRenderChildrenThenDo(action: () => void): void {
       let vanished = children.endMerge()
       // Unmount vanished children
       while (vanished !== undefined)
-        doFinalize(vanished, true), vanished = vanished.next
+        vanished = doFinalize(vanished, true)
       // Render current children
       const sequential = node.factory.sequential
       let p1: Array<RxNodeImpl> | undefined = undefined
@@ -365,19 +365,34 @@ function runRender(node: RxNodeImpl): void {
   }
 }
 
-function doFinalize(chained: Chained<RxNodeImpl>, isLeader: boolean): void {
+function doFinalize(chained: Chained<RxNodeImpl>, isLeader: boolean): Chained<RxNodeImpl> | undefined {
+  const next = chained.next
   const node = chained.item
   if (node.stamp >= 0) {
     node.stamp = ~node.stamp
-    // Finalize node itself
+    // Finalize node itself and unlink it from chain
     const childrenAreLeaders = node.factory.finalize(node, isLeader)
-    if (!node.inline)
-      deferDispose(chained) // enqueue node for Rx.dispose if needed
+    if (next)
+      next.prev = undefined
+    chained.next = undefined
+    // Defer disposal if node is reactive
+    if (!node.inline) {
+      const last = gLastToDispose
+      if (last)
+        gLastToDispose = last.next = chained
+      else
+        gFirstToDispose = gLastToDispose = chained
+      if (gFirstToDispose === chained)
+        Transaction.run({ standalone: 'disposal', hint: `runDisposalLoop(initiator=${chained.item.name})` }, () => {
+          void runDisposalLoop().then(NOP, error => console.log(error))
+        })
+    }
     // Finalize children if any
     let child = node.children.first
     while (child !== undefined)
-      doFinalize(child, childrenAreLeaders), child = child.next
+      child = doFinalize(child, childrenAreLeaders)
   }
+  return next
 }
 
 async function runDisposalLoop(): Promise<void> {
@@ -387,7 +402,7 @@ async function runDisposalLoop(): Promise<void> {
     if (Transaction.isFrameOver(500, 5))
       await Transaction.requestNextFrame()
     Rx.dispose(chained.item)
-    chained = chained.temp
+    chained = chained.next
   }
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
@@ -455,18 +470,6 @@ function shuffle<T>(array: Array<T>): Array<T> {
     i--
   }
   return array
-}
-
-function deferDispose(chained: Chained<RxNodeImpl>): void {
-  const last = gLastToDispose
-  if (last)
-    gLastToDispose = last.temp = chained
-  else
-    gFirstToDispose = gLastToDispose = chained
-  if (gFirstToDispose === chained)
-    Transaction.run({ standalone: 'disposal', hint: `runDisposalLoop(initiator=${chained.item.name})` }, () => {
-      void runDisposalLoop().then(NOP, error => console.log(error))
-    })
 }
 
 // Seamless support for asynchronous programing

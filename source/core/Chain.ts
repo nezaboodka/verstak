@@ -14,7 +14,6 @@ export class Chained<T> {
   merging: number = 0
   next?: Chained<T> = undefined
   prev?: Chained<T> = undefined
-  temp?: Chained<T> = undefined
   constructor(item: T) { this.item = item }
 }
 
