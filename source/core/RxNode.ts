@@ -87,7 +87,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
     // Emit node either by reusing existing one or by creating a new one
     const parent = gContext
     const children = parent.children
-    let node = children.tryEmitAsExisting(name)
+    let node = children.tryMergeAsExisting(name)
     if (node) { // reuse existing
       if (node.inline || !triggersAreEqual(node.triggers, triggers))
         node.triggers = triggers
@@ -98,7 +98,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
       node = new RxNodeImpl<E, M>(name, factory ?? NodeFactory.default,
         inline ?? false, parent, triggers, renderer, undefined,
         priority, monitor, throttling, logging)
-      children.emitAsNewlyCreated(node)
+      children.mergeAsNewlyCreated(node)
     }
     return node as RxNode<E, M, R>
   }
@@ -187,7 +187,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   readonly level: number
   readonly parent: RxNodeImpl
   stamp: number
-  emission: number
+  merge: number
   children: NodeChildrenImpl
   next?: RxNodeImpl
   prev?: RxNodeImpl
@@ -216,7 +216,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     this.level = parent.level + 1
     this.parent = parent
     this.stamp = 0
-    this.emission = 0
+    this.merge = 0
     this.children = new NodeChildrenImpl()
     this.next = undefined
     this.prev = undefined
@@ -249,8 +249,8 @@ function runRenderChildrenThenDo(action: () => void): void {
   let promised: Promise<void> | undefined = undefined
   try {
     const children = node.children
-    if (children.isEmissionInProgress) {
-      let vanished = children.endEmission()
+    if (children.isMergeInProgress) {
+      let vanished = children.endMerge()
       // Unmount vanished children
       while (vanished !== undefined)
         doFinalize(vanished, true), vanished = vanished.next
@@ -345,7 +345,7 @@ function runRender(node: RxNodeImpl): void {
           node.stamp++
           if (node.reinserting)
             factory.insert?.(node), node.reinserting = false
-          node.children.beginEmission(node.stamp)
+          node.children.beginMerge(node.stamp)
           result = factory.render(node)
         }
         finally {
@@ -355,7 +355,7 @@ function runRender(node: RxNodeImpl): void {
               value => { RxNode.renderChildrenThenDo(NOP); return value },
               error => { console.log(error); RxNode.renderChildrenThenDo(NOP) })
           else
-            RxNode.renderChildrenThenDo(NOP) // calls node.children.endEmission()
+            RxNode.renderChildrenThenDo(NOP) // calls node.children.endMerge()
         }
       })
     }
@@ -468,27 +468,27 @@ class NodeChildrenImpl implements NodeChildren {
   namespace: Map<string, RxNodeImpl> = new Map<string, RxNodeImpl>()
   first?: RxNodeImpl = undefined
   count: number = 0
-  emission: number = 0
-  emittedFirst?: RxNodeImpl = undefined
-  emittedLast?: RxNodeImpl = undefined
-  emittedCount: number = 0
-  likelyNextEmitted?: RxNodeImpl = undefined
+  merge: number = 0
+  mergingFirst?: RxNodeImpl = undefined
+  mergingLast?: RxNodeImpl = undefined
+  mergingCount: number = 0
+  likelyNextToMerge?: RxNodeImpl = undefined
 
-  get isEmissionInProgress(): boolean { return this.emission > 0 }
+  get isMergeInProgress(): boolean { return this.merge > 0 }
 
-  beginEmission(emission: number): void {
-    if (this.isEmissionInProgress)
+  beginMerge(id: number): void {
+    if (this.isMergeInProgress)
       throw new Error('reconciliation is not reentrant')
-    this.emission = emission
+    this.merge = id
   }
 
-  endEmission(): RxNodeImpl | undefined {
-    if (!this.isEmissionInProgress)
+  endMerge(): RxNodeImpl | undefined {
+    if (!this.isMergeInProgress)
       throw new Error('reconciliation is ended already')
-    this.emission = 0
-    const emittedCount = this.emittedCount
-    if (emittedCount > 0) {
-      if (emittedCount > this.count) { // it should be faster to delete non-retained nodes from namespace
+    this.merge = 0
+    const mergingCount = this.mergingCount
+    if (mergingCount > 0) {
+      if (mergingCount > this.count) { // it should be faster to delete non-retained nodes from namespace
         const namespace = this.namespace
         let child = this.first
         while (child !== undefined)
@@ -496,7 +496,7 @@ class NodeChildrenImpl implements NodeChildren {
       }
       else { // it should be faster to recreate namespace with retained nodes only
         const namespace = this.namespace = new Map<string, RxNodeImpl>()
-        let child = this.emittedFirst
+        let child = this.mergingFirst
         while (child !== undefined)
           namespace.set(child.name, child), child = child.next
       }
@@ -504,23 +504,23 @@ class NodeChildrenImpl implements NodeChildren {
     else // just create new empty namespace
       this.namespace = new Map<string, RxNodeImpl>()
     const vanishedFirst = this.first
-    this.first = this.emittedFirst
-    this.count = emittedCount
-    this.emittedFirst = this.emittedLast = undefined
-    this.emittedCount = 0
-    this.likelyNextEmitted = this.first
+    this.first = this.mergingFirst
+    this.count = mergingCount
+    this.mergingFirst = this.mergingLast = undefined
+    this.mergingCount = 0
+    this.likelyNextToMerge = this.first
     return vanishedFirst
   }
 
-  tryEmitAsExisting(name: string): RxNodeImpl | undefined {
-    let result = this.likelyNextEmitted
+  tryMergeAsExisting(name: string): RxNodeImpl | undefined {
+    let result = this.likelyNextToMerge
     if (result?.name !== name)
       result = this.namespace.get(name)
     if (result && result.stamp >= 0) {
-      if (result.emission === this.emission)
+      if (result.merge === this.merge)
         throw new Error(`duplicate node id: ${name}`)
-      result.emission = this.emission
-      this.likelyNextEmitted = result.next
+      result.merge = this.merge
+      this.likelyNextToMerge = result.next
       // Exclude from main sequence
       if (result.prev !== undefined)
         result.prev.next = result.next
@@ -530,32 +530,32 @@ class NodeChildrenImpl implements NodeChildren {
         this.first = result.next
       this.count--
       // Include into retained sequence
-      const last = this.emittedLast
+      const last = this.mergingLast
       if (last) {
         result.prev = last
         result.next = undefined
-        this.emittedLast = last.next = result
+        this.mergingLast = last.next = result
       }
       else {
         result.prev = result.next = undefined
-        this.emittedFirst = this.emittedLast = result
+        this.mergingFirst = this.mergingLast = result
       }
-      this.emittedCount++
+      this.mergingCount++
     }
     return result
   }
 
-  emitAsNewlyCreated(node: RxNodeImpl): void {
-    node.emission = this.emission
+  mergeAsNewlyCreated(node: RxNodeImpl): void {
+    node.merge = this.merge
     this.namespace.set(node.name, node)
-    const last = this.emittedLast
+    const last = this.mergingLast
     if (last) {
       node.prev = last
-      this.emittedLast = last.next = node
+      this.mergingLast = last.next = node
     }
     else
-      this.emittedFirst = this.emittedLast = node
-    this.emittedCount++
+      this.mergingFirst = this.mergingLast = node
+    this.mergingCount++
   }
 }
 
