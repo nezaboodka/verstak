@@ -139,7 +139,7 @@ export class NodeFactory<E> {
     return isLeader // treat children as finalization leaders as well
   }
 
-  insert(node: RxNode<E>): void {
+  order(node: RxNode<E>): void {
     // nothing to do by default
   }
 
@@ -193,7 +193,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   next?: RxNodeImpl
   prev?: RxNodeImpl
   neighbor?: RxNodeImpl
-  reinserting: boolean
+  reordering: boolean
   element?: E
 
   constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: RxNodeImpl,
@@ -222,7 +222,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     this.next = undefined
     this.prev = undefined
     this.neighbor = this
-    this.reinserting = true
+    this.reordering = true
     this.element = undefined
   }
 
@@ -263,7 +263,7 @@ function runRenderChildrenThenDo(action: () => void): void {
       let child = children.first
       while (child !== undefined && !Transaction.isCanceled) {
         if (sequential && child.neighbor !== neighbor)
-          child.neighbor = neighbor, child.reinserting = true
+          child.neighbor = neighbor, child.reordering = true
         if (child.priority === Priority.SyncP0)
           doRender(child)
         else if (child.priority === Priority.AsyncP1)
@@ -344,8 +344,8 @@ function runRender(node: RxNodeImpl): void {
             factory.initialize?.(node, undefined)
           // Render node itself
           node.stamp++
-          if (node.reinserting)
-            factory.insert?.(node), node.reinserting = false
+          if (node.reordering)
+            factory.order?.(node), node.reordering = false
           node.children.beginMerge(node.stamp)
           result = factory.render(node)
         }
