@@ -256,7 +256,6 @@ function runRenderChildrenThenDo(action: () => void): void {
       while (child !== undefined && !Transaction.isCanceled) {
         const node = child.node
         if (sequential && node.after !== neighbor) {
-          child.neighbor = neighbor
           node.after = neighbor?.node
           node.reordering = true
         }
@@ -385,7 +384,7 @@ async function runDisposalLoop(): Promise<void> {
     if (Transaction.isFrameOver(500, 5))
       await Transaction.requestNextFrame()
     Rx.dispose(chained.node)
-    chained = chained.neighbor
+    chained = chained.temp
   }
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
@@ -467,7 +466,7 @@ export class Chained<T> {
   merge: number = 0
   next?: Chained<T> = undefined
   prev?: Chained<T> = undefined
-  neighbor?: Chained<T> = this
+  temp?: Chained<T> = undefined
 }
 
 class ChainImpl implements Chain<RxNodeImpl> {
@@ -570,10 +569,9 @@ class ChainImpl implements Chain<RxNodeImpl> {
 function deferDispose(chained: Chained<RxNodeImpl>): void {
   const last = gLastToDispose
   if (last)
-    gLastToDispose = last.neighbor = chained
+    gLastToDispose = last.temp = chained
   else
     gFirstToDispose = gLastToDispose = chained
-  chained.neighbor = undefined
   if (gFirstToDispose === chained)
     Transaction.run({ standalone: 'disposal', hint: `runDisposalLoop(initiator=${chained.node.name})` }, () => {
       void runDisposalLoop().then(NOP, error => console.log(error))
