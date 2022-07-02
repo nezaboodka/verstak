@@ -41,24 +41,24 @@ export class Chain<T> implements ReadonlyChain<T> {
 
   beginMerge(id: number): void {
     if (this.isMergeInProgress)
-      throw new Error('reconciliation is not reentrant')
+      throw new Error('merge is not reentrant')
     this.merging = id
   }
 
   endMerge(): Chained<T> | undefined {
     if (!this.isMergeInProgress)
-      throw new Error('reconciliation is ended already')
+      throw new Error('merge is ended already')
     this.merging = 0
     const mergingCount = this.mergingCount
     if (mergingCount > 0) {
       const getName = this.getName
-      if (mergingCount > this.count) { // it should be faster to delete non-retained nodes from namespace
+      if (mergingCount > this.count) { // it should be faster to delete vanished items from namespace
         const namespace = this.namespace
         let child = this.first
         while (child !== undefined)
           namespace.delete(getName(child.item)), child = child.next
       }
-      else { // it should be faster to recreate namespace with retained nodes only
+      else { // it should be faster to recreate namespace with merging items only
         const namespace = this.namespace = new Map<string | undefined, Chained<T>>()
         let child = this.mergingFirst
         while (child !== undefined)
