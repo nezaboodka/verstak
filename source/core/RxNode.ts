@@ -456,7 +456,7 @@ function shuffle<T>(array: Array<T>): Array<T> {
 
 export class Chained<T> {
   readonly item: T
-  merge: number = 0
+  merging: number = 0
   next?: Chained<T> = undefined
   prev?: Chained<T> = undefined
   temp?: Chained<T> = undefined
@@ -470,7 +470,7 @@ export interface ReadonlyChain<T> {
 
 class Chain implements ReadonlyChain<RxNodeImpl> {
   private namespace = new Map<string, Chained<RxNodeImpl>>()
-  private merge: number = 0
+  private merging: number = 0
   private mergingFirst?: Chained<RxNodeImpl> = undefined
   private mergingLast?: Chained<RxNodeImpl> = undefined
   private mergingCount: number = 0
@@ -478,18 +478,18 @@ class Chain implements ReadonlyChain<RxNodeImpl> {
   first?: Chained<RxNodeImpl> = undefined
   count: number = 0
 
-  get isMergeInProgress(): boolean { return this.merge > 0 }
+  get isMergeInProgress(): boolean { return this.merging > 0 }
 
   beginMerge(id: number): void {
     if (this.isMergeInProgress)
       throw new Error('reconciliation is not reentrant')
-    this.merge = id
+    this.merging = id
   }
 
   endMerge(): Chained<RxNodeImpl> | undefined {
     if (!this.isMergeInProgress)
       throw new Error('reconciliation is ended already')
-    this.merge = 0
+    this.merging = 0
     const mergingCount = this.mergingCount
     if (mergingCount > 0) {
       if (mergingCount > this.count) { // it should be faster to delete non-retained nodes from namespace
@@ -521,9 +521,9 @@ class Chain implements ReadonlyChain<RxNodeImpl> {
     if (result?.item.name !== name)
       result = this.namespace.get(name)
     if (result && result.item.stamp >= 0) {
-      if (result.merge === this.merge)
+      if (result.merging === this.merging)
         throw new Error(`duplicate node id: ${name}`)
-      result.merge = this.merge
+      result.merging = this.merging
       this.likelyNextToMerge = result.next
       // Exclude from main sequence
       if (result.prev !== undefined)
@@ -551,7 +551,7 @@ class Chain implements ReadonlyChain<RxNodeImpl> {
 
   mergeAsNewlyCreated(node: RxNodeImpl): Chained<RxNodeImpl> {
     const chained = new Chained<RxNodeImpl>(node)
-    chained.merge = this.merge
+    chained.merging = this.merging
     this.namespace.set(node.name, chained)
     const last = this.mergingLast
     if (last) {
