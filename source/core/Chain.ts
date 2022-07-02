@@ -41,13 +41,13 @@ export class Chain<T> implements ReadonlyChain<T> {
 
   beginMerge(id: number): void {
     if (this.isMergeInProgress)
-      throw new Error('merge is not reentrant')
+      throw new Error('chain merge is not reentrant')
     this.merging = id
   }
 
   endMerge(): Chained<T> | undefined {
     if (!this.isMergeInProgress)
-      throw new Error('merge is ended already')
+      throw new Error('chain merge is ended already')
     this.merging = 0
     const mergingCount = this.mergingCount
     if (mergingCount > 0) {
