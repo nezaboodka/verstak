@@ -97,7 +97,7 @@ export class Chain<T> implements ReadonlyChain<T> {
       if (result === this.first)
         this.first = result.next
       this.count--
-      // Include into retained sequence
+      // Include into merging sequence
       const last = this.mergingLast
       if (last) {
         result.prev = last
