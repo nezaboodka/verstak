@@ -33,12 +33,11 @@ export class Chain<T> implements ReadonlyChain<T> {
   private likelyNextToMerge?: Chained<T> = undefined
   first?: Chained<T> = undefined
   count: number = 0
+  get isMergeInProgress(): boolean { return this.merging > 0 }
 
   constructor(getName: GetName<T>) {
     this.getName = getName
   }
-
-  get isMergeInProgress(): boolean { return this.merging > 0 }
 
   beginMerge(id: number): void {
     if (this.isMergeInProgress)
