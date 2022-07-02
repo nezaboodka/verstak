@@ -41,12 +41,9 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
   // System-managed properties
   abstract readonly level: number
   abstract readonly parent: RxNode
-  abstract readonly children: NodeChildren
+  abstract readonly children: Chain<RxNode>
   abstract readonly stamp: number
-  abstract readonly merge: number
-  abstract readonly next?: RxNode
-  abstract readonly prev?: RxNode
-  abstract readonly neighbor?: RxNode
+  abstract readonly after?: RxNode
   abstract readonly element?: E
 
   render(): R {
@@ -88,20 +85,21 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
     // Emit node either by reusing existing one or by creating a new one
     const parent = gContext
     const children = parent.children
-    let node = children.tryMergeAsExisting(name)
-    if (node) { // reuse existing
+    let chained = children.tryMergeAsExisting(name)
+    if (chained) { // reuse existing
+      const node = chained.node
       if (node.inline || !triggersAreEqual(node.triggers, triggers))
         node.triggers = triggers
       node.renderer = renderer
       node.priority = priority ?? Priority.SyncP0
     }
     else { // create new
-      node = new RxNodeImpl<E, M>(name, factory ?? NodeFactory.default,
+      const node = new RxNodeImpl<E, M>(name, factory ?? NodeFactory.default,
         inline ?? false, parent, triggers, renderer, undefined,
         priority, monitor, throttling, logging)
-      children.mergeAsNewlyCreated(node)
+      chained = children.mergeAsNewlyCreated(node)
     }
-    return node as RxNode<E, M, R>
+    return chained.node as RxNode<E, M, R>
   }
 
   static getDefaultLoggingOptions(): LoggingOptions | undefined {
@@ -187,12 +185,9 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   // System-managed properties
   readonly level: number
   readonly parent: RxNodeImpl
-  children: NodeChildrenImpl
+  children: ChainImpl
   stamp: number
-  merge: number
-  next?: RxNodeImpl
-  prev?: RxNodeImpl
-  neighbor?: RxNodeImpl
+  after?: RxNodeImpl
   reordering: boolean
   element?: E
 
@@ -216,12 +211,9 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
-    this.children = new NodeChildrenImpl()
+    this.children = new ChainImpl()
     this.stamp = 0
-    this.merge = 0
-    this.next = undefined
-    this.prev = undefined
-    this.neighbor = this
+    this.after = this
     this.reordering = true
     this.element = undefined
   }
@@ -259,18 +251,22 @@ function runRenderChildrenThenDo(action: () => void): void {
       const sequential = node.factory.sequential
       let p1: Array<RxNodeImpl> | undefined = undefined
       let p2: Array<RxNodeImpl> | undefined = undefined
-      let neighbor: RxNodeImpl | undefined = undefined
+      let neighbor: Chained<RxNodeImpl> | undefined = undefined
       let child = children.first
       while (child !== undefined && !Transaction.isCanceled) {
-        if (sequential && child.neighbor !== neighbor)
-          child.neighbor = neighbor, child.reordering = true
-        if (child.priority === Priority.SyncP0)
-          doRender(child)
-        else if (child.priority === Priority.AsyncP1)
-          p1 = push(p1, child)
+        const node = child.node
+        if (sequential && node.after !== neighbor) {
+          child.neighbor = neighbor
+          node.after = neighbor?.node
+          node.reordering = true
+        }
+        if (node.priority === Priority.SyncP0)
+          doRender(node)
+        else if (node.priority === Priority.AsyncP1)
+          p1 = push(p1, node)
         else
-          p2 = push(p2, child)
-        if (child.element)
+          p2 = push(p2, node)
+        if (node.element)
           neighbor = child
         child = child.next
       }
@@ -367,13 +363,14 @@ function runRender(node: RxNodeImpl): void {
   }
 }
 
-function doFinalize(node: RxNodeImpl, isLeader: boolean): void {
+function doFinalize(chained: Chained<RxNodeImpl>, isLeader: boolean): void {
+  const node = chained.node
   if (node.stamp >= 0) {
     node.stamp = ~node.stamp
     // Finalize node itself
     const childrenAreLeaders = node.factory.finalize(node, isLeader)
     if (!node.inline)
-      deferDispose(node) // enqueue node for Rx.dispose if needed
+      deferDispose(chained) // enqueue node for Rx.dispose if needed
     // Finalize children if any
     let child = node.children.first
     while (child !== undefined)
@@ -383,12 +380,12 @@ function doFinalize(node: RxNodeImpl, isLeader: boolean): void {
 
 async function runDisposalLoop(): Promise<void> {
   await Transaction.requestNextFrame()
-  let node = gFirstToDispose
-  while (node !== undefined) {
+  let chained = gFirstToDispose
+  while (chained !== undefined) {
     if (Transaction.isFrameOver(500, 5))
       await Transaction.requestNextFrame()
-    Rx.dispose(node)
-    node = node.neighbor
+    Rx.dispose(chained.node)
+    chained = chained.neighbor
   }
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
@@ -398,7 +395,7 @@ function forEachChildRecursively(node: RxNodeImpl, action: (e: any) => void): vo
   e && action(e)
   let child = node.children.first
   while (child !== undefined)
-    forEachChildRecursively(child, action), child = child.next
+    forEachChildRecursively(child.node, action), child = child.next
 }
 
 function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
@@ -458,22 +455,30 @@ function shuffle<T>(array: Array<T>): Array<T> {
   return array
 }
 
-// NodeChildrenImpl
+// Chain
 
-export interface NodeChildren {
-  readonly first?: RxNode
+export interface Chain<T> {
+  readonly first?: Chained<T>
   readonly count: number
 }
 
-class NodeChildrenImpl implements NodeChildren {
-  namespace: Map<string, RxNodeImpl> = new Map<string, RxNodeImpl>()
-  first?: RxNodeImpl = undefined
-  count: number = 0
+export class Chained<T> {
+  constructor(readonly node: T) { }
   merge: number = 0
-  mergingFirst?: RxNodeImpl = undefined
-  mergingLast?: RxNodeImpl = undefined
-  mergingCount: number = 0
-  likelyNextToMerge?: RxNodeImpl = undefined
+  next?: Chained<T> = undefined
+  prev?: Chained<T> = undefined
+  neighbor?: Chained<T> = this
+}
+
+class ChainImpl implements Chain<RxNodeImpl> {
+  private namespace = new Map<string, Chained<RxNodeImpl>>()
+  private merge: number = 0
+  private mergingFirst?: Chained<RxNodeImpl> = undefined
+  private mergingLast?: Chained<RxNodeImpl> = undefined
+  private mergingCount: number = 0
+  private likelyNextToMerge?: Chained<RxNodeImpl> = undefined
+  first?: Chained<RxNodeImpl> = undefined
+  count: number = 0
 
   get isMergeInProgress(): boolean { return this.merge > 0 }
 
@@ -483,7 +488,7 @@ class NodeChildrenImpl implements NodeChildren {
     this.merge = id
   }
 
-  endMerge(): RxNodeImpl | undefined {
+  endMerge(): Chained<RxNodeImpl> | undefined {
     if (!this.isMergeInProgress)
       throw new Error('reconciliation is ended already')
     this.merge = 0
@@ -493,17 +498,17 @@ class NodeChildrenImpl implements NodeChildren {
         const namespace = this.namespace
         let child = this.first
         while (child !== undefined)
-          namespace.delete(child.name), child = child.next
+          namespace.delete(child.node.name), child = child.next
       }
       else { // it should be faster to recreate namespace with retained nodes only
-        const namespace = this.namespace = new Map<string, RxNodeImpl>()
+        const namespace = this.namespace = new Map<string, Chained<RxNodeImpl>>()
         let child = this.mergingFirst
         while (child !== undefined)
-          namespace.set(child.name, child), child = child.next
+          namespace.set(child.node.name, child), child = child.next
       }
     }
     else // just create new empty namespace
-      this.namespace = new Map<string, RxNodeImpl>()
+      this.namespace = new Map<string, Chained<RxNodeImpl>>()
     const vanishedFirst = this.first
     this.first = this.mergingFirst
     this.count = mergingCount
@@ -513,11 +518,11 @@ class NodeChildrenImpl implements NodeChildren {
     return vanishedFirst
   }
 
-  tryMergeAsExisting(name: string): RxNodeImpl | undefined {
+  tryMergeAsExisting(name: string): Chained<RxNodeImpl> | undefined {
     let result = this.likelyNextToMerge
-    if (result?.name !== name)
+    if (result?.node.name !== name)
       result = this.namespace.get(name)
-    if (result && result.stamp >= 0) {
+    if (result && result.node.stamp >= 0) {
       if (result.merge === this.merge)
         throw new Error(`duplicate node id: ${name}`)
       result.merge = this.merge
@@ -546,29 +551,31 @@ class NodeChildrenImpl implements NodeChildren {
     return result
   }
 
-  mergeAsNewlyCreated(node: RxNodeImpl): void {
-    node.merge = this.merge
-    this.namespace.set(node.name, node)
+  mergeAsNewlyCreated(node: RxNodeImpl): Chained<RxNodeImpl> {
+    const chained = new Chained<RxNodeImpl>(node)
+    chained.merge = this.merge
+    this.namespace.set(node.name, chained)
     const last = this.mergingLast
     if (last) {
-      node.prev = last
-      this.mergingLast = last.next = node
+      chained.prev = last
+      this.mergingLast = last.next = chained
     }
     else
-      this.mergingFirst = this.mergingLast = node
+      this.mergingFirst = this.mergingLast = chained
     this.mergingCount++
+    return chained
   }
 }
 
-function deferDispose(node: RxNodeImpl): void {
+function deferDispose(chained: Chained<RxNodeImpl>): void {
   const last = gLastToDispose
   if (last)
-    gLastToDispose = last.neighbor = node
+    gLastToDispose = last.neighbor = chained
   else
-    gFirstToDispose = gLastToDispose = node
-  node.neighbor = undefined
-  if (gFirstToDispose === node)
-    Transaction.run({ standalone: 'disposal', hint: `runDisposalLoop(initiator=${node.name})` }, () => {
+    gFirstToDispose = gLastToDispose = chained
+  chained.neighbor = undefined
+  if (gFirstToDispose === chained)
+    Transaction.run({ standalone: 'disposal', hint: `runDisposalLoop(initiator=${chained.node.name})` }, () => {
       void runDisposalLoop().then(NOP, error => console.log(error))
     })
 }
@@ -609,5 +616,5 @@ Object.defineProperty(gSystem, 'parent', {
 })
 
 let gContext: RxNodeImpl = gSystem
-let gFirstToDispose: RxNodeImpl | undefined = undefined
-let gLastToDispose: RxNodeImpl | undefined = undefined
+let gFirstToDispose: Chained<RxNodeImpl> | undefined = undefined
+let gLastToDispose: Chained<RxNodeImpl> | undefined = undefined

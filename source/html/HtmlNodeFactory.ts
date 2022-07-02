@@ -33,21 +33,21 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
     if (e) {
       const nativeParent = ElementNodeFactory.findEnvelopingElementNode(node).element
       if (nativeParent) {
-        const neighbor = node.neighbor
-        if (neighbor === undefined) {
+        const after = node.after
+        if (after === undefined) {
           if (nativeParent !== e.parentNode || !e.previousSibling)
             nativeParent.prepend(e)
         }
-        else if (neighbor !== node) {
-          if (neighbor.parent.element === nativeParent) {
-            const nativeNeighbor = neighbor.element
-            if (nativeNeighbor instanceof Element) {
-              if (nativeNeighbor.nextSibling !== e)
-                nativeParent.insertBefore(e, nativeNeighbor.nextSibling)
+        else if (after !== node) {
+          if (after.parent.element === nativeParent) {
+            const nativeAfter = after.element
+            if (nativeAfter instanceof Element) {
+              if (nativeAfter.nextSibling !== e)
+                nativeParent.insertBefore(e, nativeAfter.nextSibling)
             }
           }
         }
-        else // neighbor === node
+        else // after === node
           nativeParent.appendChild(e)
       }
     }
