@@ -41,8 +41,9 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
   // System-managed properties
   abstract readonly level: number
   abstract readonly parent: RxNode
-  abstract readonly stamp: number
   abstract readonly children: NodeChildren
+  abstract readonly stamp: number
+  abstract readonly merge: number
   abstract readonly next?: RxNode
   abstract readonly prev?: RxNode
   abstract readonly neighbor?: RxNode
@@ -186,9 +187,9 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   // System-managed properties
   readonly level: number
   readonly parent: RxNodeImpl
+  children: NodeChildrenImpl
   stamp: number
   merge: number
-  children: NodeChildrenImpl
   next?: RxNodeImpl
   prev?: RxNodeImpl
   neighbor?: RxNodeImpl
@@ -215,9 +216,9 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
+    this.children = new NodeChildrenImpl()
     this.stamp = 0
     this.merge = 0
-    this.children = new NodeChildrenImpl()
     this.next = undefined
     this.prev = undefined
     this.neighbor = this
