@@ -166,6 +166,10 @@ export class StaticNodeFactory<E> extends NodeFactory<E> {
 
 // RxNodeImpl
 
+function getNodeName(node: RxNodeImpl): string | undefined {
+  return node.stamp >= 0 ? node.name : undefined
+}
+
 class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   static logging?: LoggingOptions = undefined
 
@@ -185,7 +189,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   // System-managed properties
   readonly level: number
   readonly parent: RxNodeImpl
-  children: Chain
+  children: Chain<RxNodeImpl>
   stamp: number
   after?: RxNodeImpl
   reordering: boolean
@@ -211,7 +215,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
-    this.children = new Chain()
+    this.children = new Chain<RxNodeImpl>(getNodeName)
     this.stamp = 0
     this.after = this
     this.reordering = true
@@ -454,6 +458,8 @@ function shuffle<T>(array: Array<T>): Array<T> {
 
 // Chain
 
+export type GetName<T = unknown> = (item: T) => string | undefined
+
 export class Chained<T> {
   readonly item: T
   merging: number = 0
@@ -468,15 +474,20 @@ export interface ReadonlyChain<T> {
   readonly count: number
 }
 
-class Chain implements ReadonlyChain<RxNodeImpl> {
-  private namespace = new Map<string, Chained<RxNodeImpl>>()
+class Chain<T> implements ReadonlyChain<T> {
+  private readonly getName: GetName<T>
+  private namespace = new Map<string | undefined, Chained<T>>()
   private merging: number = 0
-  private mergingFirst?: Chained<RxNodeImpl> = undefined
-  private mergingLast?: Chained<RxNodeImpl> = undefined
+  private mergingFirst?: Chained<T> = undefined
+  private mergingLast?: Chained<T> = undefined
   private mergingCount: number = 0
-  private likelyNextToMerge?: Chained<RxNodeImpl> = undefined
-  first?: Chained<RxNodeImpl> = undefined
+  private likelyNextToMerge?: Chained<T> = undefined
+  first?: Chained<T> = undefined
   count: number = 0
+
+  constructor(getName: GetName<T>) {
+    this.getName = getName
+  }
 
   get isMergeInProgress(): boolean { return this.merging > 0 }
 
@@ -486,27 +497,28 @@ class Chain implements ReadonlyChain<RxNodeImpl> {
     this.merging = id
   }
 
-  endMerge(): Chained<RxNodeImpl> | undefined {
+  endMerge(): Chained<T> | undefined {
     if (!this.isMergeInProgress)
       throw new Error('reconciliation is ended already')
     this.merging = 0
     const mergingCount = this.mergingCount
     if (mergingCount > 0) {
+      const getName = this.getName
       if (mergingCount > this.count) { // it should be faster to delete non-retained nodes from namespace
         const namespace = this.namespace
         let child = this.first
         while (child !== undefined)
-          namespace.delete(child.item.name), child = child.next
+          namespace.delete(getName(child.item)), child = child.next
       }
       else { // it should be faster to recreate namespace with retained nodes only
-        const namespace = this.namespace = new Map<string, Chained<RxNodeImpl>>()
+        const namespace = this.namespace = new Map<string | undefined, Chained<T>>()
         let child = this.mergingFirst
         while (child !== undefined)
-          namespace.set(child.item.name, child), child = child.next
+          namespace.set(getName(child.item), child), child = child.next
       }
     }
     else // just create new empty namespace
-      this.namespace = new Map<string, Chained<RxNodeImpl>>()
+      this.namespace = new Map<string | undefined, Chained<T>>()
     const vanishedFirst = this.first
     this.first = this.mergingFirst
     this.count = mergingCount
@@ -516,11 +528,14 @@ class Chain implements ReadonlyChain<RxNodeImpl> {
     return vanishedFirst
   }
 
-  tryMergeAsExisting(name: string): Chained<RxNodeImpl> | undefined {
+  tryMergeAsExisting(name: string): Chained<T> | undefined {
     let result = this.likelyNextToMerge
-    if (result?.item.name !== name)
+    let n = result ? this.getName(result.item) : undefined
+    if (n !== name) {
       result = this.namespace.get(name)
-    if (result && result.item.stamp >= 0) {
+      n = result ? this.getName(result.item) : undefined
+    }
+    if (result && n !== undefined) {
       if (result.merging === this.merging)
         throw new Error(`duplicate node id: ${name}`)
       result.merging = this.merging
@@ -549,10 +564,10 @@ class Chain implements ReadonlyChain<RxNodeImpl> {
     return result
   }
 
-  mergeAsNewlyCreated(node: RxNodeImpl): Chained<RxNodeImpl> {
-    const chained = new Chained<RxNodeImpl>(node)
+  mergeAsNewlyCreated(item: T): Chained<T> {
+    const chained = new Chained<T>(item)
     chained.merging = this.merging
-    this.namespace.set(node.name, chained)
+    this.namespace.set(this.getName(item), chained)
     const last = this.mergingLast
     if (last) {
       chained.prev = last
