@@ -255,10 +255,8 @@ function runRenderChildrenThenDo(action: () => void): void {
       let child = children.first
       while (child !== undefined && !Transaction.isCanceled) {
         const node = child.node
-        if (sequential && node.after !== neighbor) {
-          node.after = neighbor?.node
-          node.reordering = true
-        }
+        if (sequential && node.after !== neighbor)
+          node.after = neighbor?.node, node.reordering = true
         if (node.priority === Priority.SyncP0)
           doRender(node)
         else if (node.priority === Priority.AsyncP1)
