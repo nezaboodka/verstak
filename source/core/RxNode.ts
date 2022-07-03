@@ -89,6 +89,8 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
     let chained = children.tryMergeAsExisting(name)
     if (chained) { // reuse existing
       const node = chained.item
+      if (node.factory !== factory && factory !== undefined)
+        throw new Error(`changing node type is not yet supported: "${node.factory.name}" -> "${factory?.name}"`)
       if (node.inline || !triggersAreEqual(node.triggers, triggers))
         node.triggers = triggers
       node.renderer = renderer
