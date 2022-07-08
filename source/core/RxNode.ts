@@ -9,22 +9,13 @@ import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, L
 import { Chain, Chained, ReadonlyChain } from './Chain'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
-export type Render<E = unknown, M = unknown, R = void> = (element: E, node: RxNodeContext<E, M, R>) => R
-export type AsyncRender<E = unknown, M = unknown> = (element: E, node: RxNodeContext<E, M, Promise<void>>) => Promise<void>
+export type Render<E = unknown, M = unknown, R = void> = (element: E, node: RxNode<E, M, R>) => R
+export type AsyncRender<E = unknown, M = unknown> = (element: E, node: RxNode<E, M, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 // RxNode
 
-export interface RxNodeContext<E, M, R> {
-  readonly name: string
-  readonly stamp: number
-  readonly element?: E
-  readonly isInitialRendering: boolean
-  model?: M
-  render(): R
-}
-
-export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeContext<E, M, R> {
+export abstract class RxNode<E = any, M = unknown, R = void> {
   static frameDuration = 10 // ms
   // User-defined properties
   abstract readonly name: string

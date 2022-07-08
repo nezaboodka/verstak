@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, transaction, LoggingLevel } from 'reactronic'
-import { RxNodeContext } from '../../core/api'
+import { RxNode } from '../../core/api'
 import { Sensor } from './Sensor'
 
 export interface ResizedElement {
@@ -30,7 +30,7 @@ export class ResizeSensor extends Sensor {
     this.doReset()
   }
 
-  observeResizing(node: RxNodeContext<any, any ,any>, value: boolean, boxSizing: ResizeObserverBoxOptions = 'content-box'): void {
+  observeResizing(node: RxNode<any, any ,any>, value: boolean, boxSizing: ResizeObserverBoxOptions = 'content-box'): void {
     const native = node.element
     if (native instanceof Element) {
       if (value) {
