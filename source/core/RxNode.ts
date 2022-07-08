@@ -41,7 +41,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
-  abstract readonly dom: Chained<RxNode> | undefined
+  abstract readonly chained: Chained<RxNode> | undefined
   abstract readonly parent: RxNode
   abstract readonly children: ReadonlyChain<RxNode>
   abstract readonly stamp: number
@@ -86,10 +86,10 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
     // Emit node either by reusing existing one or by creating a new one
     const parent = gDom.self
     const children = parent.children
-    let dom = children.tryMergeAsExisting(name)
+    let chained = children.tryMergeAsExisting(name)
     let node: RxNodeImpl<E, M, R>
-    if (dom) { // reuse existing
-      node = dom.self
+    if (chained) { // reuse existing
+      node = chained.self
       if (node.factory !== factory && factory !== undefined)
         throw new Error(`changing node type is not yet supported: "${node.factory.name}" -> "${factory?.name}"`)
       if (node.inline || !triggersAreEqual(node.triggers, triggers))
@@ -101,8 +101,8 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
       node = new RxNodeImpl<E, M, R>(name, factory ?? NodeFactory.default,
         inline ?? false, parent, triggers, renderer, undefined,
         priority, monitor, throttling, logging)
-      dom = children.mergeAsNewlyCreated(node)
-      node.dom = dom
+      chained = children.mergeAsNewlyCreated(node)
+      node.chained = chained
     }
     return node
   }
@@ -192,7 +192,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   shuffle: boolean
   model?: M
   // System-managed properties
-  dom: Chained<RxNodeImpl> | undefined
+  chained: Chained<RxNodeImpl> | undefined
   readonly level: number
   readonly parent: RxNodeImpl
   children: Chain<RxNodeImpl>
@@ -217,7 +217,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     this.shuffle = false
     this.model = undefined
     // System-managed properties
-    this.dom = undefined
+    this.chained = undefined
     this.level = parent.level + 1
     this.parent = parent
     this.children = new Chain<RxNodeImpl>(getNodeName)
@@ -233,7 +233,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   })
   autorender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by parent
-    runRender(this.dom!)
+    runRender(this.chained!)
   }
 
   wrapBy(renderer: Render<E, M, R> | undefined): this {
@@ -507,7 +507,7 @@ Promise.prototype.then = reactronicDomHookedThen
 const gSysRoot = new Chained<RxNodeImpl>(new RxNodeImpl<null, void>('SYSTEM',
   new StaticNodeFactory<null>('SYSTEM', false, null), false,
   { level: 0 } as RxNodeImpl, undefined, NOP)) // fake parent (overwritten below)
-gSysRoot.self.dom = gSysRoot
+gSysRoot.self.chained = gSysRoot
 
 Object.defineProperty(gSysRoot, 'parent', {
   value: gSysRoot,

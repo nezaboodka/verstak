@@ -33,12 +33,12 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
     if (e) {
       const nativeParent = ElementNodeFactory.findEnvelopingElementNode(node).element
       if (nativeParent) {
-        const after = node.dom!.after
+        const after = node.chained!.after
         if (after === undefined) {
           if (nativeParent !== e.parentNode || !e.previousSibling)
             nativeParent.prepend(e)
         }
-        else if (after !== node.dom) {
+        else if (after !== node.chained) {
           if (after.self.parent.element === nativeParent) {
             const nativeAfter = after.self.element
             if (nativeAfter instanceof Element) {
