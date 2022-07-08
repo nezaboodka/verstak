@@ -258,12 +258,12 @@ function runRenderChildrenThenDo(action: () => void): void {
       const sequential = node.factory.sequential
       let p1: Array<RxNodeImpl> | undefined = undefined
       let p2: Array<RxNodeImpl> | undefined = undefined
-      let neighbor: Chained<RxNodeImpl> | undefined = undefined
+      let after: Chained<RxNodeImpl> | undefined = undefined
       let child = children.first
       while (child !== undefined && !Transaction.isCanceled) {
         const node = child.item
-        if (sequential && node.after !== neighbor)
-          node.after = neighbor?.item, node.reordering = true
+        if (sequential && node.after !== after)
+          node.after = after?.item, node.reordering = true
         if (node.priority === Priority.SyncP0)
           doRender(node)
         else if (node.priority === Priority.AsyncP1)
@@ -271,7 +271,7 @@ function runRenderChildrenThenDo(action: () => void): void {
         else
           p2 = push(p2, node)
         if (node.element)
-          neighbor = child
+          after = child
         child = child.next
       }
       // Render incremental children (if any)
