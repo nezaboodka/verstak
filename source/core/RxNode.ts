@@ -41,9 +41,9 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
-  abstract readonly chained: Chained<RxNode> | undefined
   abstract readonly parent: RxNode
   abstract readonly children: ReadonlyChain<RxNode>
+  abstract readonly chained: Chained<RxNode> | undefined
   abstract readonly stamp: number
   abstract readonly element?: E
 
@@ -192,10 +192,10 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   shuffle: boolean
   model?: M
   // System-managed properties
-  chained: Chained<RxNodeImpl> | undefined
   readonly level: number
   readonly parent: RxNodeImpl
   children: Chain<RxNodeImpl>
+  chained: Chained<RxNodeImpl> | undefined
   stamp: number
   element?: E
 
@@ -217,10 +217,10 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     this.shuffle = false
     this.model = undefined
     // System-managed properties
-    this.chained = undefined
     this.level = parent.level + 1
     this.parent = parent
     this.children = new Chain<RxNodeImpl>(getNodeName)
+    this.chained = undefined
     this.stamp = 0
     this.element = undefined
   }
