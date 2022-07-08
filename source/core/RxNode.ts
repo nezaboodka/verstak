@@ -306,8 +306,8 @@ async function renderIncrementally(parent: Chained<RxNodeImpl>,
   }
 }
 
-function prepareThenRunRender(dom: Chained<RxNodeImpl>): void {
-  const node = dom.self
+function prepareThenRunRender(chained: Chained<RxNodeImpl>): void {
+  const node = chained.self
   if (node.stamp >= 0) {
     if (!node.inline) {
       if (node.stamp === 0) {
@@ -322,12 +322,12 @@ function prepareThenRunRender(dom: Chained<RxNodeImpl>): void {
           })
         })
       }
-      prepareRender(dom)
+      prepareRender(chained)
       nonreactive(node.autorender, node.triggers) // reactive auto-rendering
     }
     else {
-      prepareRender(dom)
-      runRender(dom)
+      prepareRender(chained)
+      runRender(chained)
     }
   }
 }
