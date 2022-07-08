@@ -10,11 +10,11 @@
 export type GetKey<T = unknown> = (item: T) => string | undefined
 
 export class Chained<T> {
-  readonly item: T
+  readonly self: T
   merging: number = 0
   next?: Chained<T> = undefined
   prev?: Chained<T> = undefined
-  constructor(item: T) { this.item = item }
+  constructor(self: T) { this.self = self }
 }
 
 export interface ReadonlyChain<T> {
@@ -55,13 +55,13 @@ export class Chain<T> implements ReadonlyChain<T> {
         const map = this.map
         let child = this.first
         while (child !== undefined)
-          map.delete(getKey(child.item)), child = child.next
+          map.delete(getKey(child.self)), child = child.next
       }
       else { // it should be faster to recreate map using merging items
         const map = this.map = new Map<string | undefined, Chained<T>>()
         let child = this.mergingFirst
         while (child !== undefined)
-          map.set(getKey(child.item), child), child = child.next
+          map.set(getKey(child.self), child), child = child.next
       }
     }
     else // just create new empty map
@@ -77,10 +77,10 @@ export class Chain<T> implements ReadonlyChain<T> {
 
   tryMergeAsExisting(key: string): Chained<T> | undefined {
     let result = this.likelyNextToMerge
-    let n = result ? this.getKey(result.item) : undefined
+    let n = result ? this.getKey(result.self) : undefined
     if (n !== key) {
       result = this.map.get(key)
-      n = result ? this.getKey(result.item) : undefined
+      n = result ? this.getKey(result.self) : undefined
     }
     if (result && n !== undefined) {
       if (result.merging === this.merging)

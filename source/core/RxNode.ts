@@ -58,16 +58,16 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
   abstract wrapBy(renderer: Render<E, M, R> | undefined): this
 
   static launch(render: () => void): void {
-    gSystem.renderer = render
-    doRender(gSystem)
+    gSysRoot.self.renderer = render
+    doRender(gSysRoot)
   }
 
   static get current(): RxNode {
-    return gContext
+    return gDom.self
   }
 
   static shuffleChildrenRendering(shuffle: boolean): void {
-    gContext.shuffle = shuffle
+    gDom.self.shuffle = shuffle
   }
 
   static renderChildrenThenDo(action: () => void): void {
@@ -75,7 +75,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
   }
 
   static forAllNodesDo<E>(action: (e: E) => void): void {
-    forEachChildRecursively(gSystem, action)
+    forEachChildRecursively(gSysRoot, action)
   }
 
   static emit<E = undefined, M = unknown, R = void>(
@@ -84,11 +84,12 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
     monitor?: Monitor, throttling?: number,
     logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): RxNode<E, M, R> {
     // Emit node either by reusing existing one or by creating a new one
-    const parent = gContext
+    const parent = gDom.self
     const children = parent.children
-    let chained = children.tryMergeAsExisting(name)
-    if (chained) { // reuse existing
-      const node = chained.item
+    let dom = children.tryMergeAsExisting(name)
+    let node: RxNodeImpl<E, M, R>
+    if (dom) { // reuse existing
+      node = dom.self
       if (node.factory !== factory && factory !== undefined)
         throw new Error(`changing node type is not yet supported: "${node.factory.name}" -> "${factory?.name}"`)
       if (node.inline || !triggersAreEqual(node.triggers, triggers))
@@ -97,12 +98,13 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
       node.priority = priority ?? Priority.SyncP0
     }
     else { // create new
-      const node = new RxNodeImpl<E, M>(name, factory ?? NodeFactory.default,
+      node = new RxNodeImpl<E, M, R>(name, factory ?? NodeFactory.default,
         inline ?? false, parent, triggers, renderer, undefined,
         priority, monitor, throttling, logging)
-      chained = children.mergeAsNewlyCreated(node)
+      dom = children.mergeAsNewlyCreated(node)
+      node.dom = dom
     }
-    return chained.item as RxNode<E, M, R>
+    return node
   }
 
   static getDefaultLoggingOptions(): LoggingOptions | undefined {
@@ -192,6 +194,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   // System-managed properties
   readonly level: number
   readonly parent: RxNodeImpl
+  dom: Chained<RxNodeImpl<E, M, R>> | undefined
   children: Chain<RxNodeImpl>
   stamp: number
   after?: RxNodeImpl
@@ -218,6 +221,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
+    this.dom = undefined
     this.children = new Chain<RxNodeImpl>(getNodeName)
     this.stamp = 0
     this.after = this
@@ -233,7 +237,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   })
   autorender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by parent
-    runRender(this)
+    runRender(this.dom!)
   }
 
   wrapBy(renderer: Render<E, M, R> | undefined): this {
@@ -245,7 +249,8 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
 // Internal
 
 function runRenderChildrenThenDo(action: () => void): void {
-  const node = gContext
+  const dom = gDom
+  const node = dom.self
   let promised: Promise<void> | undefined = undefined
   try {
     const children = node.children
@@ -256,27 +261,27 @@ function runRenderChildrenThenDo(action: () => void): void {
         vanished = doFinalize(vanished, true)
       // Render current children
       const sequential = node.factory.sequential
-      let p1: Array<RxNodeImpl> | undefined = undefined
-      let p2: Array<RxNodeImpl> | undefined = undefined
+      let p1: Array<Chained<RxNodeImpl>> | undefined = undefined
+      let p2: Array<Chained<RxNodeImpl>> | undefined = undefined
       let after: Chained<RxNodeImpl> | undefined = undefined
       let child = children.first
       while (child !== undefined && !Transaction.isCanceled) {
-        const node = child.item
-        if (sequential && node.after !== after)
-          node.after = after?.item, node.reordering = true
-        if (node.priority === Priority.SyncP0)
-          doRender(node)
-        else if (node.priority === Priority.AsyncP1)
-          p1 = push(p1, node)
+        const n = child.self
+        if (sequential && n.after !== after)
+          n.after = after?.self, n.reordering = true
+        if (n.priority === Priority.SyncP0)
+          doRender(child)
+        else if (n.priority === Priority.AsyncP1)
+          p1 = push(p1, child)
         else
-          p2 = push(p2, node)
-        if (node.element)
+          p2 = push(p2, child)
+        if (n.element)
           after = child
         child = child.next
       }
       // Render incremental children (if any)
       if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
-        promised = startIncrementalRendering(node, p1, p2).then(action, action)
+        promised = startIncrementalRendering(dom, p1, p2).then(action, action)
     }
   }
   finally {
@@ -285,20 +290,22 @@ function runRenderChildrenThenDo(action: () => void): void {
   }
 }
 
-async function startIncrementalRendering(parent: RxNodeImpl,
-  children1?: Array<RxNodeImpl>, children2?: Array<RxNodeImpl>): Promise<void> {
+async function startIncrementalRendering(parent: Chained<RxNodeImpl>,
+  children1?: Array<Chained<RxNodeImpl>>,
+  children2?: Array<Chained<RxNodeImpl>>): Promise<void> {
   if (children1)
     await renderIncrementally(parent, children1)
   if (children2)
     await renderIncrementally(parent, children2)
 }
 
-async function renderIncrementally(parent: RxNodeImpl, children: Array<RxNodeImpl>): Promise<void> {
+async function renderIncrementally(parent: Chained<RxNodeImpl>,
+  children: Array<Chained<RxNodeImpl>>): Promise<void> {
   const checkEveryN = 30
   // if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
   await Transaction.requestNextFrame()
   if (!Transaction.isCanceled) {
-    if (parent.shuffle)
+    if (parent.self.shuffle)
       shuffle(children)
     for (const child of children) {
       doRender(child)
@@ -310,7 +317,8 @@ async function renderIncrementally(parent: RxNodeImpl, children: Array<RxNodeImp
   }
 }
 
-function doRender(node: RxNodeImpl): void {
+function doRender(dom: Chained<RxNodeImpl>): void {
+  const node = dom.self
   if (node.stamp >= 0) {
     if (!node.inline) {
       if (node.stamp === 0) {
@@ -328,14 +336,15 @@ function doRender(node: RxNodeImpl): void {
       nonreactive(node.autorender, node.triggers) // reactive auto-rendering
     }
     else
-      runRender(node)
+      runRender(dom)
   }
 }
 
-function runRender(node: RxNodeImpl): void {
+function runRender(dom: Chained<RxNodeImpl>): void {
+  const node = dom.self
   if (node.stamp >= 0) {
     try {
-      runUnder(node, () => {
+      runUnder(dom, () => {
         let result: void | Promise<void>
         try {
           const factory = node.factory
@@ -367,25 +376,25 @@ function runRender(node: RxNodeImpl): void {
   }
 }
 
-function doFinalize(chained: Chained<RxNodeImpl>, isLeader: boolean): Chained<RxNodeImpl> | undefined {
-  const next = chained.next
-  const node = chained.item
+function doFinalize(dom: Chained<RxNodeImpl>, isLeader: boolean): Chained<RxNodeImpl> | undefined {
+  const next = dom.next
+  const node = dom.self
   if (node.stamp >= 0) {
     node.stamp = ~node.stamp
     // Finalize node itself and unlink it from chain
     const childrenAreLeaders = node.factory.finalize(node, isLeader)
     if (next)
       next.prev = undefined
-    chained.next = undefined
+    dom.next = undefined
     // Defer disposal if node is reactive
     if (!node.inline) {
       const last = gLastToDispose
       if (last)
-        gLastToDispose = last.next = chained
+        gLastToDispose = last.next = dom
       else
-        gFirstToDispose = gLastToDispose = chained
-      if (gFirstToDispose === chained)
-        Transaction.run({ standalone: 'disposal', hint: `runDisposalLoop(initiator=${chained.item.name})` }, () => {
+        gFirstToDispose = gLastToDispose = dom
+      if (gFirstToDispose === dom)
+        Transaction.run({ standalone: 'disposal', hint: `runDisposalLoop(initiator=${dom.self.name})` }, () => {
           void runDisposalLoop().then(NOP, error => console.log(error))
         })
     }
@@ -403,36 +412,37 @@ async function runDisposalLoop(): Promise<void> {
   while (chained !== undefined) {
     if (Transaction.isFrameOver(500, 5))
       await Transaction.requestNextFrame()
-    Rx.dispose(chained.item)
+    Rx.dispose(chained.self)
     chained = chained.next
   }
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
-function forEachChildRecursively(node: RxNodeImpl, action: (e: any) => void): void {
+function forEachChildRecursively(dom: Chained<RxNodeImpl>, action: (e: any) => void): void {
+  const node = dom.self
   const e = node.element
   e && action(e)
   let child = node.children.first
   while (child !== undefined)
-    forEachChildRecursively(child.item, action), child = child.next
+    forEachChildRecursively(child, action), child = child.next
 }
 
 function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
-  const parent = gContext
+  const parent = gDom
   const wrappedRunUnder = (...args: any[]): T => {
     return runUnder(parent, func, ...args)
   }
   return wrappedRunUnder
 }
 
-function runUnder<T>(node: RxNodeImpl, func: (...args: any[]) => T, ...args: any[]): T {
-  const outer = gContext
+function runUnder<T>(dom: Chained<RxNodeImpl>, func: (...args: any[]) => T, ...args: any[]): T {
+  const outer = gDom
   try {
-    gContext = node
+    gDom = dom
     return func(...args)
   }
   finally {
-    gContext = outer
+    gDom = outer
   }
 }
 
@@ -498,17 +508,18 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-const gSystem = new RxNodeImpl<null, void>('SYSTEM',
+const gSysRoot = new Chained<RxNodeImpl>(new RxNodeImpl<null, void>('SYSTEM',
   new StaticNodeFactory<null>('SYSTEM', false, null), false,
-  { level: 0 } as RxNodeImpl, undefined, NOP) // fake parent (overwritten below)
+  { level: 0 } as RxNodeImpl, undefined, NOP)) // fake parent (overwritten below)
+gSysRoot.self.dom = gSysRoot
 
-Object.defineProperty(gSystem, 'parent', {
-  value: gSystem,
+Object.defineProperty(gSysRoot, 'parent', {
+  value: gSysRoot,
   writable: false,
   configurable: false,
   enumerable: true,
 })
 
-let gContext: RxNodeImpl = gSystem
+let gDom: Chained<RxNodeImpl> = gSysRoot
 let gFirstToDispose: Chained<RxNodeImpl> | undefined = undefined
 let gLastToDispose: Chained<RxNodeImpl> | undefined = undefined
