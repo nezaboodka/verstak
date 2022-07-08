@@ -50,7 +50,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
 
   static launch(render: () => void): void {
     gSysRoot.self.renderer = render
-    doRender(gSysRoot)
+    prepareThenRunRender(gSysRoot)
   }
 
   static get current(): RxNode {
@@ -259,7 +259,7 @@ function runRenderChildrenThenDo(action: () => void): void {
           child.reordering = true
         }
         if (n.priority === Priority.SyncP0)
-          doRender(child)
+          prepareThenRunRender(child)
         else if (n.priority === Priority.AsyncP1)
           p1 = push(p1, child)
         else
@@ -297,7 +297,7 @@ async function renderIncrementally(parent: Chained<RxNodeImpl>,
     if (parent.self.shuffle)
       shuffle(children)
     for (const child of children) {
-      doRender(child)
+      prepareThenRunRender(child)
       if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
         await Transaction.requestNextFrame(5)
       if (Transaction.isCanceled)
@@ -306,7 +306,7 @@ async function renderIncrementally(parent: Chained<RxNodeImpl>,
   }
 }
 
-function doRender(dom: Chained<RxNodeImpl>): void {
+function prepareThenRunRender(dom: Chained<RxNodeImpl>): void {
   const node = dom.self
   if (node.stamp >= 0) {
     if (!node.inline) {
@@ -322,21 +322,22 @@ function doRender(dom: Chained<RxNodeImpl>): void {
           })
         })
       }
+      prepareRender(dom)
       nonreactive(node.autorender, node.triggers) // reactive auto-rendering
     }
-    else
+    else {
+      prepareRender(dom)
       runRender(dom)
+    }
   }
 }
 
 function prepareRender(chained: Chained<RxNodeImpl>): void {
   const node = chained.self
   const factory = node.factory
-  // Initialize if needed
+  // Initialize and order if needed
   if (node.stamp === 0)
     factory.initialize?.(node, undefined)
-  node.stamp++
-  // Order if needed
   if (chained.reordering) {
     factory.order?.(node)
     chained.reordering = false
@@ -345,12 +346,12 @@ function prepareRender(chained: Chained<RxNodeImpl>): void {
 
 function runRender(chained: Chained<RxNodeImpl>): void {
   const node = chained.self
-  if (node.stamp >= 0) {
+  if (node.stamp >= 0) { // if node is alive
     try {
       runUnder(chained, () => {
         let result: void | Promise<void>
         try {
-          prepareRender(chained)
+          node.stamp++
           node.children.beginMerge(node.stamp)
           result = node.factory.render(node)
         }
