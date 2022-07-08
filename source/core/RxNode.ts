@@ -263,8 +263,10 @@ function runRenderChildrenThenDo(action: () => void): void {
       let child = children.first
       while (child !== undefined && !Transaction.isCanceled) {
         const n = child.self
-        if (sequential && child.after !== after)
-          child.after = after, child.reordering = true
+        if (sequential && child.after !== after) {
+          child.after = after
+          child.reordering = true
+        }
         if (n.priority === Priority.SyncP0)
           doRender(child)
         else if (n.priority === Priority.AsyncP1)
@@ -349,8 +351,10 @@ function runRender(dom: Chained<RxNodeImpl>): void {
             factory.initialize?.(node, undefined)
           // Render node itself
           node.stamp++
-          if (dom.reordering)
-            factory.order?.(node), dom.reordering = false
+          if (dom.reordering) {
+            factory.order?.(node)
+            dom.reordering = false
+          }
           node.children.beginMerge(node.stamp)
           result = factory.render(node)
         }
@@ -419,8 +423,10 @@ function forEachChildRecursively(dom: Chained<RxNodeImpl>, action: (e: any) => v
   const e = node.element
   e && action(e)
   let child = node.children.first
-  while (child !== undefined)
-    forEachChildRecursively(child, action), child = child.next
+  while (child !== undefined) {
+    forEachChildRecursively(child, action)
+    child = child.next
+  }
 }
 
 function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
