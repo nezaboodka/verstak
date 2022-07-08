@@ -41,10 +41,10 @@ export abstract class RxNode<E = any, M = unknown, R = void> implements RxNodeCo
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
+  abstract readonly dom: Chained<RxNode> | undefined
   abstract readonly parent: RxNode
   abstract readonly children: ReadonlyChain<RxNode>
   abstract readonly stamp: number
-  abstract readonly after?: RxNode
   abstract readonly element?: E
 
   render(): R {
@@ -192,13 +192,11 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   shuffle: boolean
   model?: M
   // System-managed properties
+  dom: Chained<RxNodeImpl> | undefined
   readonly level: number
   readonly parent: RxNodeImpl
-  dom: Chained<RxNodeImpl<E, M, R>> | undefined
   children: Chain<RxNodeImpl>
   stamp: number
-  after?: RxNodeImpl
-  reordering: boolean
   element?: E
 
   constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: RxNodeImpl,
@@ -219,13 +217,11 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     this.shuffle = false
     this.model = undefined
     // System-managed properties
+    this.dom = undefined
     this.level = parent.level + 1
     this.parent = parent
-    this.dom = undefined
     this.children = new Chain<RxNodeImpl>(getNodeName)
     this.stamp = 0
-    this.after = this
-    this.reordering = true
     this.element = undefined
   }
 
@@ -267,8 +263,8 @@ function runRenderChildrenThenDo(action: () => void): void {
       let child = children.first
       while (child !== undefined && !Transaction.isCanceled) {
         const n = child.self
-        if (sequential && n.after !== after)
-          n.after = after?.self, n.reordering = true
+        if (sequential && child.after !== after)
+          child.after = after, child.reordering = true
         if (n.priority === Priority.SyncP0)
           doRender(child)
         else if (n.priority === Priority.AsyncP1)
@@ -353,8 +349,8 @@ function runRender(dom: Chained<RxNodeImpl>): void {
             factory.initialize?.(node, undefined)
           // Render node itself
           node.stamp++
-          if (node.reordering)
-            factory.order?.(node), node.reordering = false
+          if (dom.reordering)
+            factory.order?.(node), dom.reordering = false
           node.children.beginMerge(node.stamp)
           result = factory.render(node)
         }
