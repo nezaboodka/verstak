@@ -50,7 +50,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
 
   static launch(render: () => void): void {
     gSysRoot.self.renderer = render
-    prepareThenRunRender(gSysRoot)
+    doRender(gSysRoot)
   }
 
   static get current(): RxNode {
@@ -259,7 +259,7 @@ function runRenderChildrenThenDo(action: () => void): void {
           child.reordering = true
         }
         if (n.priority === Priority.SyncP0)
-          prepareThenRunRender(child)
+          doRender(child)
         else if (n.priority === Priority.AsyncP1)
           p1 = push(p1, child)
         else
@@ -297,7 +297,7 @@ async function renderIncrementally(parent: Chained<RxNodeImpl>,
     if (parent.self.shuffle)
       shuffle(children)
     for (const child of children) {
-      prepareThenRunRender(child)
+      doRender(child)
       if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
         await Transaction.requestNextFrame(5)
       if (Transaction.isCanceled)
@@ -306,7 +306,7 @@ async function renderIncrementally(parent: Chained<RxNodeImpl>,
   }
 }
 
-function prepareThenRunRender(dom: Chained<RxNodeImpl>): void {
+function doRender(dom: Chained<RxNodeImpl>): void {
   const node = dom.self
   if (node.stamp >= 0) {
     if (!node.inline) {
