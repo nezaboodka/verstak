@@ -309,35 +309,33 @@ async function renderIncrementally(parent: Chained<RxNodeImpl>,
 function prepareThenRunRender(chained: Chained<RxNodeImpl>): void {
   const node = chained.self
   if (node.stamp >= 0) {
-    if (!node.inline) {
-      if (node.stamp === 0) {
-        Transaction.off(() => {
-          if (Rx.isLogging)
-            Rx.setLoggingHint(node, node.name)
-          Rx.getController(node.autorender).configure({
-            order: node.level,
-            monitor: node.monitor,
-            throttling: node.throttling,
-            logging: node.logging,
-          })
-        })
-      }
-      prepareRender(chained)
-      nonreactive(node.autorender, node.triggers) // reactive auto-rendering
-    }
-    else {
-      prepareRender(chained)
+    prepareRender(chained)
+    if (node.inline)
       runRender(chained)
-    }
+    else
+      nonreactive(node.autorender, node.triggers) // reactive auto-rendering
   }
 }
 
 function prepareRender(chained: Chained<RxNodeImpl>): void {
   const node = chained.self
   const factory = node.factory
-  // Initialize and order if needed
-  if (node.stamp === 0)
+  // Initialize if needed
+  if (node.stamp === 0) {
+    if (!node.inline)
+      Transaction.off(() => {
+        if (Rx.isLogging)
+          Rx.setLoggingHint(node, node.name)
+        Rx.getController(node.autorender).configure({
+          order: node.level,
+          monitor: node.monitor,
+          throttling: node.throttling,
+          logging: node.logging,
+        })
+      })
     factory.initialize?.(node, undefined)
+  }
+  // (Re)Order if needed
   if (chained.reordering) {
     factory.order?.(node)
     chained.reordering = false
