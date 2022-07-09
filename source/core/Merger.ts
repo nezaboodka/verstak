@@ -64,12 +64,18 @@ export class Merger<T> implements MergerApi<T> {
 
   isAdded(item: MergerItem<T>): boolean {
     const t = item as MergerItemImpl<T>
-    return t.status === ~t.cycle && t.cycle > 0
+    let cycle = this.cycle
+    if (cycle < 0)
+      cycle = ~cycle
+    return t.status === ~cycle && t.cycle > 0
   }
 
   isMoved(item: MergerItem<T>): boolean {
     const t = item as MergerItemImpl<T>
-    return t.status === t.cycle && t.cycle > 0
+    let cycle = this.cycle
+    if (cycle < 0)
+      cycle = ~cycle
+    return t.status === cycle && t.cycle > 0
   }
 
   isRemoved(item: MergerItem<T>): boolean {
