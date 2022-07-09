@@ -11,7 +11,7 @@ export type GetKey<T = unknown> = (item: T) => string | undefined
 
 export class Chained<T> {
   readonly self: T
-  merging: number = 0
+  stamp: number = 0
   next?: Chained<T> = undefined
   prev?: Chained<T> = undefined
   after?: Chained<T> | undefined = this
@@ -27,33 +27,33 @@ export interface ReadonlyChain<T> {
 export class Chain<T> implements ReadonlyChain<T> {
   private readonly getKey: GetKey<T>
   private map = new Map<string | undefined, Chained<T>>()
-  private merging: number = 0
-  private mergingFirst?: Chained<T> = undefined
-  private mergingLast?: Chained<T> = undefined
-  private mergingCount: number = 0
+  private stamp: number = 0
+  private mergedFirst?: Chained<T> = undefined
+  private mergedLast?: Chained<T> = undefined
+  private mergedCount: number = 0
   private likelyNextToMerge?: Chained<T> = undefined
   first?: Chained<T> = undefined
   count: number = 0
-  get isMergeInProgress(): boolean { return this.merging > 0 }
+  get isMergeInProgress(): boolean { return this.stamp > 0 }
 
   constructor(getKey: GetKey<T>) {
     this.getKey = getKey
   }
 
-  beginMerge(id: number): void {
+  beginMerge(stamp: number): void {
     if (this.isMergeInProgress)
       throw new Error('chain merge is not reentrant')
-    this.merging = id
+    this.stamp = stamp
   }
 
   endMerge(): Chained<T> | undefined {
     if (!this.isMergeInProgress)
       throw new Error('chain merge is ended already')
-    this.merging = 0
-    const mergingCount = this.mergingCount
-    if (mergingCount > 0) {
+    this.stamp = 0
+    const mergeCount = this.mergedCount
+    if (mergeCount > 0) {
       const getKey = this.getKey
-      if (mergingCount > this.count) { // it should be faster to delete vanished items
+      if (mergeCount > this.count) { // it should be faster to delete vanished items
         const map = this.map
         let child = this.first
         while (child !== undefined)
@@ -61,7 +61,7 @@ export class Chain<T> implements ReadonlyChain<T> {
       }
       else { // it should be faster to recreate map using merging items
         const map = this.map = new Map<string | undefined, Chained<T>>()
-        let child = this.mergingFirst
+        let child = this.mergedFirst
         while (child !== undefined)
           map.set(getKey(child.self), child), child = child.next
       }
@@ -69,10 +69,10 @@ export class Chain<T> implements ReadonlyChain<T> {
     else // just create new empty map
       this.map = new Map<string | undefined, Chained<T>>()
     const vanished = this.first
-    this.first = this.mergingFirst
-    this.count = mergingCount
-    this.mergingFirst = this.mergingLast = undefined
-    this.mergingCount = 0
+    this.first = this.mergedFirst
+    this.count = mergeCount
+    this.mergedFirst = this.mergedLast = undefined
+    this.mergedCount = 0
     this.likelyNextToMerge = this.first
     return vanished
   }
@@ -85,9 +85,9 @@ export class Chain<T> implements ReadonlyChain<T> {
       n = result ? this.getKey(result.self) : undefined
     }
     if (result && n !== undefined) {
-      if (result.merging === this.merging)
+      if (result.stamp === this.stamp)
         throw new Error(`duplicate item id: ${key}`)
-      result.merging = this.merging
+      result.stamp = this.stamp
       this.likelyNextToMerge = result.next
       // Exclude from main sequence
       if (result.prev !== undefined)
@@ -97,34 +97,34 @@ export class Chain<T> implements ReadonlyChain<T> {
       if (result === this.first)
         this.first = result.next
       this.count--
-      // Include into merging sequence
-      const last = this.mergingLast
+      // Include into merged sequence
+      const last = this.mergedLast
       if (last) {
         result.prev = last
         result.next = undefined
-        this.mergingLast = last.next = result
+        this.mergedLast = last.next = result
       }
       else {
         result.prev = result.next = undefined
-        this.mergingFirst = this.mergingLast = result
+        this.mergedFirst = this.mergedLast = result
       }
-      this.mergingCount++
+      this.mergedCount++
     }
     return result
   }
 
   mergeAsNewlyCreated(item: T): Chained<T> {
     const chained = new Chained<T>(item)
-    chained.merging = this.merging
+    chained.stamp = this.stamp
     this.map.set(this.getKey(item), chained)
-    const last = this.mergingLast
+    const last = this.mergedLast
     if (last) {
       chained.prev = last
-      this.mergingLast = last.next = chained
+      this.mergedLast = last.next = chained
     }
     else
-      this.mergingFirst = this.mergingLast = chained
-    this.mergingCount++
+      this.mergedFirst = this.mergedLast = chained
+    this.mergedCount++
     return chained
   }
 }
