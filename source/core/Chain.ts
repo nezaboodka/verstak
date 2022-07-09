@@ -94,12 +94,12 @@ export class Chain<T> implements ReadonlyChain<T> {
 
   tryMergeAsExisting(key: string): Chained<T> | undefined {
     let result = this.likelyNext
-    let n = result ? this.getKey(result.self) : undefined
-    if (n !== key) {
+    let k = result ? this.getKey(result.self) : undefined
+    if (k !== key) {
       result = this.map.get(key)
-      n = result ? this.getKey(result.self) : undefined
+      k = result ? this.getKey(result.self) : undefined
     }
-    if (result && n !== undefined) {
+    if (result && k !== undefined) {
       const rev = this.revision
       if (result.chainRevision === rev)
         throw new Error(`duplicate item id: ${key}`)
