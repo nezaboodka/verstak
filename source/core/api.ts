@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from './Chain'
+export * from './Collection'
 export * from './RxNode'
 export * from './Elements'
 export * from './Restyler'
