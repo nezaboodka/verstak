@@ -48,7 +48,7 @@ export class Collection<T> implements ReadonlyCollection<T> {
   private mergedFirst?: CollectionItem<T> = undefined
   private mergedLast?: CollectionItem<T> = undefined
   private mergedCount: number = 0
-  private likelyNext?: CollectionItem<T> = undefined
+  private strictNext?: CollectionItem<T> = undefined
   first?: CollectionItem<T> = undefined
   count: number = 0
 
@@ -90,13 +90,13 @@ export class Collection<T> implements ReadonlyCollection<T> {
     this.count = mergeCount
     this.mergedFirst = this.mergedLast = undefined
     this.mergedCount = 0
-    this.likelyNext = this.first
+    this.strictNext = this.first
     return vanished
   }
 
   tryMergeAsExisting(key: string): Item<T> | undefined {
     const rev = this.revision
-    let item = this.likelyNext
+    let item = this.strictNext
     let k = item ? this.getKey(item.self) : undefined
     if (k !== key) {
       item = this.map.get(key)
@@ -112,7 +112,7 @@ export class Collection<T> implements ReadonlyCollection<T> {
       if (item.collectionRevision === rev)
         throw new Error(`duplicate item id: ${key}`)
       item.collectionRevision = rev
-      this.likelyNext = item.next
+      this.strictNext = item.next
       // Exclude from main sequence
       if (item.prev !== undefined)
         item.prev.next = item.next
