@@ -246,7 +246,7 @@ function runRenderChildrenThenDo(action: () => void): void {
       let p1: Array<MergerItem<RxNodeImpl>> | undefined = undefined
       let p2: Array<MergerItem<RxNodeImpl>> | undefined = undefined
       let isMoved = false
-      const removed = children.endMerge()
+      const removed = children.endMergeAndGetRemoved()
       for (const item of removed)
         doFinalize(item, true)
       for (const item of children.items()) {
