@@ -12,8 +12,8 @@ export type GetKey<T = unknown> = (item: T) => string | undefined
 export interface Item<T> {
   readonly self: T
   readonly isAdded: boolean
-  readonly isRemoved: boolean
   readonly isMoved: boolean
+  readonly isRemoved: boolean
   next?: Item<T>
   prev?: Item<T>
 }
@@ -21,19 +21,19 @@ export interface Item<T> {
 export class CollectionItem<T> implements Item<T> {
   readonly self: T
   collectionRevision: number
-  arrangeRevision: number
+  arrangingRevision: number
   next?: CollectionItem<T> = undefined
   prev?: CollectionItem<T> = undefined
-  get isAdded(): boolean { return this.arrangeRevision === -1 }
+  get isAdded(): boolean { return this.arrangingRevision === -1 }
+  get isMoved(): boolean { return this.arrangingRevision === this.collectionRevision }
+  set isMoved(value: boolean) { if (value) this.arrangingRevision = this.collectionRevision }
   get isRemoved(): boolean { return this.collectionRevision < 0 }
   set isRemoved(value: boolean) { if (value) this.collectionRevision = ~this.collectionRevision }
-  get isMoved(): boolean { return this.arrangeRevision === this.collectionRevision }
-  set isMoved(value: boolean) { if (value) this.arrangeRevision = this.collectionRevision }
 
   constructor(self: T, revision: number) {
     this.self = self
     this.collectionRevision = revision
-    this.arrangeRevision = -1 // mark as added
+    this.arrangingRevision = -1 // mark as added
   }
 }
 
@@ -129,9 +129,9 @@ export class Collection<T> implements ReadonlyCollection<T> {
         throw new Error(`duplicate item id: ${key}`)
       item.collectionRevision = rev
       if (this.strict && item !== this.strictNext)
-        item.arrangeRevision = rev // IsAdded=false, IsMoved=true
-      else if (item.arrangeRevision === -1)
-        item.arrangeRevision = 0 // IsAdded=false, IsMoved=false
+        item.arrangingRevision = rev // IsAdded=false, IsMoved=true
+      else if (item.arrangingRevision === -1)
+        item.arrangingRevision = 0 // IsAdded=false, IsMoved=false
       this.strictNext = item.next
       // Exclude from current sequence
       if (item.prev !== undefined)
