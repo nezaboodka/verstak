@@ -131,7 +131,7 @@ export class Collection<T> implements ReadonlyCollection<T> {
       if (this.strict && item !== this.strictNext)
         item.selfIndexRevision = rev // is moved
       this.strictNext = item.next
-      // Exclude from main sequence
+      // Exclude from current sequence
       if (item.prev !== undefined)
         item.prev.next = item.next
       if (item.next !== undefined)
