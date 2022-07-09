@@ -11,6 +11,7 @@ export interface MergerApi<T> {
   readonly isMerging: boolean
   readonly count: number
   items(): Generator<MergerItem<T>>
+  removed(): Generator<MergerItem<T>>
   beginMerge(): void
   tryMergeAsExisting(key: string): MergerItem<T> | undefined
   mergeAsNew(self: T): MergerItem<T>
@@ -55,27 +56,21 @@ export class Merger<T> implements MergerApi<T> {
     }
   }
 
+  *removed(): Generator<MergerItem<T>> {
+    throw new Error('not implemented')
+  }
+
   beginMerge(): void {
     if (this.isMerging)
       throw new Error('merge is not reentrant')
     this.cycle = ~this.cycle + 1
   }
 
-  *endMerge(yieldRemoved: boolean): Generator<MergerItem<T>> {
+  *endMerge(): Generator<MergerItem<T>> {
     let item = this.doEndMerge()
-    // Removed
-    if (yieldRemoved) {
-      while (item !== undefined) {
-        const next = item.next
-        this.markAsRemoved(item)
-        yield item
-        item = next
-      }
-    }
-    // Retained
-    item = this.firstExisting
     while (item !== undefined) {
       const next = item.next
+      this.markAsRemoved(item)
       yield item
       item = next
     }

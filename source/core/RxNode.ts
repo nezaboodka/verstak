@@ -246,28 +246,27 @@ function runRenderChildrenThenDo(action: () => void): void {
       let p1: Array<MergerItem<RxNodeImpl>> | undefined = undefined
       let p2: Array<MergerItem<RxNodeImpl>> | undefined = undefined
       let isMoved = false
-      for (const item of children.endMerge(true)) {
-        if (!item.isRemoved) {
-          if (Transaction.isCanceled)
-            break
-          const n = item.self
-          if (n.element) {
-            if (isMoved) {
-              children.markAsMoved(item)
-              isMoved = false
-            }
+      const removed = children.endMerge()
+      for (const item of removed)
+        doFinalize(item, true)
+      for (const item of children.items()) {
+        if (Transaction.isCanceled)
+          break
+        const n = item.self
+        if (n.element) {
+          if (isMoved) {
+            children.markAsMoved(item)
+            isMoved = false
           }
-          else if (strict && item.isMoved)
-            isMoved = true // apply to the first node with an element
-          if (n.priority === Priority.SyncP0)
-            prepareThenRunRender(item, strict)
-          else if (n.priority === Priority.AsyncP1)
-            p1 = push(p1, item)
-          else
-            p2 = push(p2, item)
         }
+        else if (strict && item.isMoved)
+          isMoved = true // apply to the first node with an element
+        if (n.priority === Priority.SyncP0)
+          prepareThenRunRender(item, strict)
+        else if (n.priority === Priority.AsyncP1)
+          p1 = push(p1, item)
         else
-          doFinalize(item, true)
+          p2 = push(p2, item)
       }
       // Render incremental children (if any)
       if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
