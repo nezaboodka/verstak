@@ -27,8 +27,8 @@ export class CollectionItem<T> implements Item<T> {
   next?: CollectionItem<T> = undefined
   prev?: CollectionItem<T> = undefined
   get isAdded(): boolean { throw new Error('not implemented') }
-  get isRemoved(): boolean { return this.selfIndexRevision < 0 }
-  set isRemoved(value: boolean) { if (value) this.selfIndexRevision = ~this.selfIndexRevision }
+  get isRemoved(): boolean { return this.collectionRevision < 0 }
+  set isRemoved(value: boolean) { if (value) this.collectionRevision = ~this.collectionRevision }
   get isMoved(): boolean { return this.selfIndexRevision === this.collectionRevision }
   set isMoved(value: boolean) { if (value) this.selfIndexRevision = this.collectionRevision }
 
