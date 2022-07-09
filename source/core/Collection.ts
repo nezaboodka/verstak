@@ -33,7 +33,7 @@ export class CollectionItem<T> implements Item<T> {
   constructor(self: T, revision: number) {
     this.self = self
     this.collectionRevision = revision
-    this.arrangingRevision = -1 // mark as added
+    this.arrangingRevision = -1 // IsAdded=true
   }
 }
 
@@ -95,14 +95,18 @@ export class Collection<T> implements ReadonlyCollection<T> {
       if (mergeCount > this.count) { // it should be faster to delete vanished items
         const map = this.map
         let child = this.first
-        while (child !== undefined)
-          map.delete(getKey(child.self)), child = child.next
+        while (child !== undefined) {
+          map.delete(getKey(child.self))
+          child = child.next
+        }
       }
       else { // it should be faster to recreate map using merging items
         const map = this.map = new Map<string | undefined, CollectionItem<T>>()
         let child = this.mergedFirst
-        while (child !== undefined)
-          map.set(getKey(child.self), child), child = child.next
+        while (child !== undefined) {
+          map.set(getKey(child.self), child)
+          child = child.next
+        }
       }
     }
     else // just create new empty map
