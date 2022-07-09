@@ -92,7 +92,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
       node = new RxNodeImpl<E, M, R>(name, factory ?? NodeFactory.default,
         inline ?? false, parent, triggers, renderer, undefined,
         priority, monitor, throttling, logging)
-      item = children.mergeAsAdded(node)
+      item = children.mergeAsNew(node)
       node.item = item
     }
     return node
