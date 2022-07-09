@@ -324,7 +324,7 @@ function prepareThenRunRender(item: Item<RxNodeImpl>, strict: boolean): void {
 function prepareRender(item: Item<RxNodeImpl>, strict: boolean): void {
   const node = item.self
   const factory = node.factory
-  // Initialize if needed
+  // Initialize/arrange if needed
   if (node.stamp === 0) {
     if (!node.inline)
       Transaction.off(() => {
@@ -338,9 +338,9 @@ function prepareRender(item: Item<RxNodeImpl>, strict: boolean): void {
         })
       })
     factory.initialize?.(node, undefined)
+    factory.arrange?.(node, strict)
   }
-  // Arrange if needed
-  if (item.isAddedRecently || item.isMovedRecently)
+  else if (item.isMovedRecently)
     factory.arrange?.(node, strict)
 }
 
