@@ -50,7 +50,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
 
   static launch(render: () => void): void {
     gSysRoot.self.renderer = render
-    prepareThenRunRender(gSysRoot)
+    prepareThenRunRender(gSysRoot, false)
   }
 
   static get current(): RxNode {
@@ -115,11 +115,11 @@ export class NodeFactory<E> {
   public static readonly default = new NodeFactory<any>('default', false)
 
   readonly name: string
-  readonly sequential: boolean
+  readonly strict: boolean
 
-  constructor(name: string, sequential: boolean) {
+  constructor(name: string, strict: boolean) {
     this.name = name
-    this.sequential = sequential
+    this.strict = strict
   }
 
   initialize(node: RxNode<E>, element: E | undefined): void {
@@ -133,7 +133,7 @@ export class NodeFactory<E> {
     return isLeader // treat children as finalization leaders as well
   }
 
-  order(node: RxNode<E>): void {
+  put(node: RxNode<E>, strict: boolean): void {
     // nothing to do by default
   }
 
@@ -210,7 +210,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
-    this.children = new Chain<RxNodeImpl>(getNodeName, factory.sequential)
+    this.children = new Chain<RxNodeImpl>(getNodeName, factory.strict)
     this.chained = undefined
     this.stamp = 0
     this.element = undefined
@@ -241,32 +241,34 @@ function runRenderChildrenThenDo(action: () => void): void {
   let promised: Promise<void> | undefined = undefined
   try {
     const children = node.children
-    const rev = children.revision
-    if (rev > 0) { // is merge in progress
+    const chainRevision = children.revision
+    if (chainRevision > 0) { // is merge in progress
       let vanished = children.endMerge()
       // Unmount vanished children
       while (vanished !== undefined)
         vanished = doFinalize(vanished, true)
       // Render current children
-      const ordered = children.ordered
+      const strict = children.strict
       let p1: Array<Chained<RxNodeImpl>> | undefined = undefined
       let p2: Array<Chained<RxNodeImpl>> | undefined = undefined
-      let after: Chained<RxNodeImpl> | undefined = undefined
+      let indirectIndexChange = false
       let child = children.first
       while (child !== undefined && !Transaction.isCanceled) {
         const n = child.self
-        if (ordered && child.after !== after) {
-          child.after = after
-          child.orderRevision = rev
+        if (n.element) {
+          if (indirectIndexChange) {
+            child.indexRevision = chainRevision
+            indirectIndexChange = false
+          }
         }
+        else if (strict && child.indexRevision === child.chainRevision)
+          indirectIndexChange = true
         if (n.priority === Priority.SyncP0)
-          prepareThenRunRender(child)
+          prepareThenRunRender(child, strict)
         else if (n.priority === Priority.AsyncP1)
           p1 = push(p1, child)
         else
           p2 = push(p2, child)
-        if (n.element)
-          after = child
         child = child.next
       }
       // Render incremental children (if any)
@@ -295,10 +297,12 @@ async function renderIncrementally(parent: Chained<RxNodeImpl>,
   // if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
   await Transaction.requestNextFrame()
   if (!Transaction.isCanceled) {
-    if (parent.self.shuffle)
+    const node = parent.self
+    const strict = node.children.strict
+    if (node.shuffle)
       shuffle(children)
     for (const child of children) {
-      prepareThenRunRender(child)
+      prepareThenRunRender(child, strict)
       if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
         await Transaction.requestNextFrame(5)
       if (Transaction.isCanceled)
@@ -307,10 +311,10 @@ async function renderIncrementally(parent: Chained<RxNodeImpl>,
   }
 }
 
-function prepareThenRunRender(chained: Chained<RxNodeImpl>): void {
+function prepareThenRunRender(chained: Chained<RxNodeImpl>, strict: boolean): void {
   const node = chained.self
   if (node.stamp >= 0) {
-    prepareRender(chained)
+    prepareRender(chained, strict)
     if (node.inline)
       runRender(chained)
     else
@@ -318,7 +322,7 @@ function prepareThenRunRender(chained: Chained<RxNodeImpl>): void {
   }
 }
 
-function prepareRender(chained: Chained<RxNodeImpl>): void {
+function prepareRender(chained: Chained<RxNodeImpl>, strict: boolean): void {
   const node = chained.self
   const factory = node.factory
   // Initialize if needed
@@ -337,8 +341,8 @@ function prepareRender(chained: Chained<RxNodeImpl>): void {
     factory.initialize?.(node, undefined)
   }
   // (Re)Order if needed
-  if (chained.orderRevision === chained.chainRevision)
-    factory.order?.(node)
+  if (chained.indexRevision === chained.chainRevision)
+    factory.put?.(node, strict)
 }
 
 function runRender(chained: Chained<RxNodeImpl>): void {

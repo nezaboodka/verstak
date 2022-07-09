@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Rx } from 'reactronic'
-import { RxNode, NodeFactory } from '../core/api'
+import { RxNode, NodeFactory, Chained } from '../core/api'
 
 export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<E> {
 
@@ -28,18 +28,18 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
     return false // children of HTML nodes are not treated as leaders
   }
 
-  order(node: RxNode<E>): void {
+  put(node: RxNode<E>, strict: boolean): void {
     const e = node.element
     if (e) {
       const nativeParent = ElementNodeFactory.findEnvelopingElementNode(node).element
       if (nativeParent) {
-        const after = node.chained!.after
-        if (after === undefined) {
-          if (nativeParent !== e.parentNode || !e.previousSibling)
-            nativeParent.prepend(e)
-        }
-        else if (after !== node.chained) {
-          if (after.self.parent.element === nativeParent) {
+        if (strict) {
+          const after = ElementNodeFactory.findPrevSiblingHtmlElementNode(node.chained!)
+          if (after === undefined) {
+            if (nativeParent !== e.parentNode || !e.previousSibling)
+              nativeParent.prepend(e)
+          }
+          else if (after.self.parent.element === nativeParent) {
             const nativeAfter = after.self.element
             if (nativeAfter instanceof Element) {
               if (nativeAfter.nextSibling !== e)
@@ -47,7 +47,7 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
             }
           }
         }
-        else // after === node
+        else
           nativeParent.appendChild(e)
       }
     }
@@ -79,6 +79,13 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
     let p = node.parent
     while (p.element instanceof Element === false && p !== node)
       p = p.parent
+    return p
+  }
+
+  static findPrevSiblingHtmlElementNode(chained: Chained<RxNode>): Chained<RxNode<Element>> | undefined {
+    let p = chained.prev
+    while (p && !(p.self.element instanceof Element))
+      p = p.prev
     return p
   }
 

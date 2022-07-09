@@ -12,23 +12,21 @@ export type GetKey<T = unknown> = (item: T) => string | undefined
 export interface Chained<T> {
   readonly self: T
   readonly chainRevision: number
-  readonly orderRevision: number
+  readonly indexRevision: number
   next?: Chained<T>
   prev?: Chained<T>
-  readonly after?: Chained<T> | undefined
 }
 
 export class ChainItem<T> implements Chained<T> {
   readonly self: T
   chainRevision: number
-  orderRevision: number
+  indexRevision: number
   next?: ChainItem<T> = undefined
   prev?: ChainItem<T> = undefined
-  after?: ChainItem<T> | undefined = this
   constructor(self: T, revision: number) {
     this.self = self
     this.chainRevision = revision
-    this.orderRevision = revision
+    this.indexRevision = revision
   }
 }
 
@@ -40,7 +38,7 @@ export interface ReadonlyChain<T> {
 
 export class Chain<T> implements ReadonlyChain<T> {
   private readonly getKey: GetKey<T>
-  readonly ordered: boolean
+  readonly strict: boolean
   private map = new Map<string | undefined, ChainItem<T>>()
   revision: number = 0
   private mergedFirst?: ChainItem<T> = undefined
@@ -50,9 +48,9 @@ export class Chain<T> implements ReadonlyChain<T> {
   first?: ChainItem<T> = undefined
   count: number = 0
 
-  constructor(getKey: GetKey<T>, ordered: boolean) {
+  constructor(getKey: GetKey<T>, strict: boolean) {
     this.getKey = getKey
-    this.ordered = ordered
+    this.strict = strict
   }
 
   beginMerge(revision: number): void {
@@ -100,8 +98,8 @@ export class Chain<T> implements ReadonlyChain<T> {
       item = this.map.get(key)
       if (item) {
         k = this.getKey(item.self)
-        // if (this.ordered)
-        //   item.orderRevision = chainRevision
+        if (this.strict)
+          item.indexRevision = chainRevision
       }
       else
         k = undefined
