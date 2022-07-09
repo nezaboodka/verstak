@@ -181,6 +181,7 @@ export class Merger<T> implements ReadonlyMerger<T> {
     }
     else
       this.firstMerged = this.lastMerged = item
+    this.strictNext = undefined
     this.mergedCount++
     return item
   }
