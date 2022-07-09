@@ -26,9 +26,7 @@ export class CollectionItem<T> implements Item<T> {
   prev?: CollectionItem<T> = undefined
   get isAdded(): boolean { return this.arrangingRevision === -1 }
   get isMoved(): boolean { return this.arrangingRevision === this.collectionRevision }
-  set isMoved(value: boolean) { if (value) this.arrangingRevision = this.collectionRevision }
   get isRemoved(): boolean { return this.collectionRevision < 0 }
-  set isRemoved(value: boolean) { if (value) this.collectionRevision = ~this.collectionRevision }
 
   constructor(self: T, revision: number) {
     this.self = self
@@ -71,7 +69,7 @@ export class Collection<T> implements ReadonlyCollection<T> {
     // Removed
     if (yieldRemoved) {
       while (item !== undefined) {
-        item.isRemoved = true
+        this.markAsRemoved(item)
         const next = item.next
         yield item
         item = next
@@ -174,6 +172,12 @@ export class Collection<T> implements ReadonlyCollection<T> {
 
   markAsMoved(item: Item<T>): void {
     const t = item as CollectionItem<T>
-    t.isMoved = true
+    if (t.arrangingRevision >= 0) // do not interfere with IsAdded
+      t.arrangingRevision = t.collectionRevision
+  }
+
+  private markAsRemoved(item: CollectionItem<T>): void {
+    if (item.collectionRevision >= 0)
+      item.collectionRevision = ~item.collectionRevision
   }
 }
