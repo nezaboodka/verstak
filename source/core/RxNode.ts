@@ -242,14 +242,14 @@ function runRenderChildrenThenDo(action: () => void): void {
   try {
     const children = node.children
     if (children.isMerging) {
+      children.endMerge(true)
       const strict = children.strict
       let p1: Array<MergerItem<RxNodeImpl>> | undefined = undefined
       let p2: Array<MergerItem<RxNodeImpl>> | undefined = undefined
       let isMoved = false
-      const removed = children.endMergeAndGetRemoved()
-      for (const item of removed)
+      for (const item of children.obsoleteItems())
         doFinalize(item, true)
-      for (const item of children.items()) {
+      for (const item of children.actualItems()) {
         if (Transaction.isCanceled)
           break
         const n = item.self
@@ -400,7 +400,7 @@ function doFinalize(item: MergerItem<RxNodeImpl>, isLeader: boolean): MergerItem
         })
     }
     // Finalize children if any
-    for (const item of node.children.items())
+    for (const item of node.children.actualItems())
       doFinalize(item, childrenAreLeaders)
   }
   return next
@@ -422,7 +422,7 @@ function forEachChildRecursively(item: MergerItem<RxNodeImpl>, action: (e: any) 
   const node = item.self
   const e = node.element
   e && action(e)
-  for (const item of node.children.items())
+  for (const item of node.children.actualItems())
     forEachChildRecursively(item, action)
 }
 

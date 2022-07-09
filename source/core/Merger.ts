@@ -9,17 +9,17 @@ export type GetKey<T = unknown> = (item: T) => string | undefined
 
 export interface MergerApi<T> {
   readonly count: number
-  items(): Generator<MergerItem<T>>
+  actualItems(): Generator<MergerItem<T>>
+  obsoleteItems(keep?: boolean): Generator<MergerItem<T>>
   isAdded(item: MergerItem<T>): boolean
   isMoved(item: MergerItem<T>): boolean
   isRemoved(item: MergerItem<T>): boolean
-  isMerged(item: MergerItem<T>): boolean
+  isActual(item: MergerItem<T>): boolean
   readonly isMerging: boolean
   beginMerge(): void
   tryMergeAsExisting(key: string): MergerItem<T> | undefined
   mergeAsNew(self: T): MergerItem<T>
-  endMerge(): void
-  endMergeAndGetRemoved(): Generator<MergerItem<T>>
+  endMerge(keepRemoved?: boolean): void
 }
 
 export interface MergerItem<T> {
@@ -34,21 +34,36 @@ export class Merger<T> implements MergerApi<T> {
   private map = new Map<string | undefined, MergerItemImpl<T>>()
   private cycle: number = ~0
   private strictNext?: MergerItemImpl<T> = undefined
-  private firstMerged?: MergerItemImpl<T> = undefined
-  private lastMerged?: MergerItemImpl<T> = undefined
-  private mergedCount: number = 0
+  private firstActual?: MergerItemImpl<T> = undefined
+  private lastActual?: MergerItemImpl<T> = undefined
+  private actualCount: number = 0
   private firstOld?: MergerItemImpl<T> = undefined
   private oldCount: number = 0
-  get isMerging(): boolean { return this.cycle > 0 }
-  get count(): number { return this.mergedCount }
 
   constructor(getKey: GetKey<T>, strict: boolean) {
     this.getKey = getKey
     this.strict = strict
   }
 
-  items(): Generator<MergerItem<T>> {
-    return createIterator(this.firstMerged)
+  get isMerging(): boolean {
+    return this.cycle > 0
+  }
+
+  get count(): number {
+    return this.actualCount
+  }
+
+  actualItems(): Generator<MergerItem<T>> {
+    return createIterator(this.firstActual)
+  }
+
+  obsoleteItems(keep?: boolean): Generator<MergerItem<T>> {
+    const result = createIterator(this.firstOld)
+    if (keep === undefined || !keep) {
+      this.firstOld = undefined
+      this.oldCount = 0
+    }
+    return result
   }
 
   isAdded(item: MergerItem<T>): boolean {
@@ -73,7 +88,7 @@ export class Merger<T> implements MergerApi<T> {
     return cycle > 0 ? t.cycle < cycle : t.cycle < cycle - 1
   }
 
-  isMerged(item: MergerItem<T>): boolean {
+  isActual(item: MergerItem<T>): boolean {
     const t = item as MergerItemImpl<T>
     return t.cycle === this.cycle
   }
@@ -82,18 +97,18 @@ export class Merger<T> implements MergerApi<T> {
     if (this.isMerging)
       throw new Error('merge is not reentrant')
     this.cycle = ~this.cycle + 1
-    this.firstOld = this.firstMerged
-    this.oldCount = this.mergedCount
+    this.firstOld = this.firstActual
+    this.oldCount = this.actualCount
     this.strictNext = this.firstOld
-    this.firstMerged = this.lastMerged = undefined
-    this.mergedCount = 0
+    this.firstActual = this.lastActual = undefined
+    this.actualCount = 0
   }
 
-  endMerge(): void {
+  endMerge(keepRemoved?: boolean): void {
     if (!this.isMerging)
       throw new Error('merge is ended already')
     this.cycle = ~this.cycle
-    const mergedCount = this.mergedCount
+    const mergedCount = this.actualCount
     if (mergedCount > 0) {
       const getKey = this.getKey
       if (mergedCount > this.oldCount) { // it should be faster to delete vanished items
@@ -106,7 +121,7 @@ export class Merger<T> implements MergerApi<T> {
       }
       else { // it should be faster to recreate map using merging items
         const map = this.map = new Map<string | undefined, MergerItemImpl<T>>()
-        let item = this.firstMerged
+        let item = this.firstActual
         while (item !== undefined) {
           map.set(getKey(item.self), item)
           item = item.next
@@ -115,14 +130,10 @@ export class Merger<T> implements MergerApi<T> {
     }
     else // just create new empty map
       this.map = new Map<string | undefined, MergerItemImpl<T>>()
-    this.firstOld = undefined
-    this.oldCount = 0
-  }
-
-  endMergeAndGetRemoved(): Generator<MergerItem<T>> {
-    const firstOld = this.firstOld
-    this.endMerge()
-    return createIterator(firstOld)
+    if (keepRemoved === undefined || !keepRemoved) {
+      this.firstOld = undefined
+      this.oldCount = 0
+    }
   }
 
   tryMergeAsExisting(key: string): MergerItem<T> | undefined {
@@ -149,14 +160,14 @@ export class Merger<T> implements MergerApi<T> {
         this.firstOld = item.next
       this.oldCount--
       // Include into merged sequence
-      const last = this.lastMerged
+      const last = this.lastActual
       item.prev = last
       item.next = undefined
       if (last)
-        this.lastMerged = last.next = item
+        this.lastActual = last.next = item
       else
-        this.firstMerged = this.lastMerged = item
-      this.mergedCount++
+        this.firstActual = this.lastActual = item
+      this.actualCount++
     }
     return item
   }
@@ -165,14 +176,14 @@ export class Merger<T> implements MergerApi<T> {
     const item = new MergerItemImpl<T>(self, this.cycle)
     this.map.set(this.getKey(self), item)
     this.strictNext = undefined
-    const last = this.lastMerged
+    const last = this.lastActual
     if (last) {
       item.prev = last
-      this.lastMerged = last.next = item
+      this.lastActual = last.next = item
     }
     else
-      this.firstMerged = this.lastMerged = item
-    this.mergedCount++
+      this.firstActual = this.lastActual = item
+    this.actualCount++
     return item
   }
 
