@@ -21,19 +21,19 @@ export interface Item<T> {
 export class CollectionItem<T> implements Item<T> {
   readonly self: T
   collectionRevision: number
-  selfMoveRevision: number
+  arrangeRevision: number
   next?: CollectionItem<T> = undefined
   prev?: CollectionItem<T> = undefined
-  get isAdded(): boolean { throw new Error('not implemented') }
+  get isAdded(): boolean { return this.arrangeRevision === -1 }
   get isRemoved(): boolean { return this.collectionRevision < 0 }
   set isRemoved(value: boolean) { if (value) this.collectionRevision = ~this.collectionRevision }
-  get isMoved(): boolean { return this.selfMoveRevision === this.collectionRevision }
-  set isMoved(value: boolean) { if (value) this.selfMoveRevision = this.collectionRevision }
+  get isMoved(): boolean { return this.arrangeRevision === this.collectionRevision }
+  set isMoved(value: boolean) { if (value) this.arrangeRevision = this.collectionRevision }
 
   constructor(self: T, revision: number) {
     this.self = self
     this.collectionRevision = revision
-    this.selfMoveRevision = revision
+    this.arrangeRevision = -1 // mark as added
   }
 }
 
@@ -129,7 +129,9 @@ export class Collection<T> implements ReadonlyCollection<T> {
         throw new Error(`duplicate item id: ${key}`)
       item.collectionRevision = rev
       if (this.strict && item !== this.strictNext)
-        item.selfMoveRevision = rev // is moved
+        item.arrangeRevision = rev // IsAdded=false, IsMoved=true
+      else if (item.arrangeRevision === -1)
+        item.arrangeRevision = 0 // IsAdded=false, IsMoved=false
       this.strictNext = item.next
       // Exclude from current sequence
       if (item.prev !== undefined)

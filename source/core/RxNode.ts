@@ -339,8 +339,8 @@ function prepareRender(item: Item<RxNodeImpl>, strict: boolean): void {
       })
     factory.initialize?.(node, undefined)
   }
-  // (Re)Order if needed
-  if (item.isMoved)
+  // Arrange if needed
+  if (item.isAdded || item.isMoved)
     factory.arrange?.(node, strict)
 }
 
