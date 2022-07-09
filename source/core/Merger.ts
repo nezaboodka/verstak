@@ -70,8 +70,9 @@ export class Merger<T> implements IMerger<T> {
   *items(): Generator<MergerItem<T>> {
     let item = this.firstExisting
     while (item !== undefined) {
+      const next = item.next
       yield item
-      item = item.next
+      item = next
     }
   }
 
@@ -95,8 +96,9 @@ export class Merger<T> implements IMerger<T> {
     // Retained
     item = this.firstExisting
     while (item !== undefined) {
+      const next = item.next
       yield item
-      item = item.next
+      item = next
     }
   }
 
