@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions } from 'reactronic'
-import { Collection, Item, CollectionItem, ReadonlyCollection } from './Chain'
+import { Collection, Item, CollectionItem, ReadonlyCollection } from './Collection'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
 export type Render<E = unknown, M = unknown, R = void> = (element: E, node: RxNode<E, M, R>) => R
@@ -257,11 +257,11 @@ function runRenderChildrenThenDo(action: () => void): void {
         const n = child.self
         if (n.element) {
           if (indirectIndexChange) {
-            child.indexRevision = chainRevision
+            child.selfIndexRevision = chainRevision
             indirectIndexChange = false
           }
         }
-        else if (strict && child.indexRevision === child.chainRevision)
+        else if (strict && child.isMovedRecently)
           indirectIndexChange = true
         if (n.priority === Priority.SyncP0)
           prepareThenRunRender(child, strict)
@@ -341,7 +341,7 @@ function prepareRender(item: Item<RxNodeImpl>, strict: boolean): void {
     factory.initialize?.(node, undefined)
   }
   // (Re)Order if needed
-  if (item.indexRevision === item.chainRevision)
+  if (item.isMovedRecently)
     factory.put?.(node, strict)
 }
 

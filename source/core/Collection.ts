@@ -15,6 +15,7 @@ export interface Item<T> {
   readonly selfIndexRevision: number
   next?: Item<T>
   prev?: Item<T>
+  readonly isMovedRecently: boolean
 }
 
 export class CollectionItem<T> implements Item<T> {
@@ -23,6 +24,8 @@ export class CollectionItem<T> implements Item<T> {
   selfIndexRevision: number
   next?: CollectionItem<T> = undefined
   prev?: CollectionItem<T> = undefined
+  get isMovedRecently(): boolean { return this.selfIndexRevision === this.collectionRevision }
+
   constructor(self: T, revision: number) {
     this.self = self
     this.collectionRevision = revision
