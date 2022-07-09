@@ -33,10 +33,10 @@ export class Merger<T> implements MergerApi<T> {
   readonly strict: boolean
   private map = new Map<string | undefined, MergerItemImpl<T>>()
   private cycle: number = ~0
+  private strictNext?: MergerItemImpl<T> = undefined
   private firstMerged?: MergerItemImpl<T> = undefined
   private lastMerged?: MergerItemImpl<T> = undefined
   private mergedCount: number = 0
-  private strictNext?: MergerItemImpl<T> = undefined
   private firstExisting?: MergerItemImpl<T> = undefined
   private existingCount: number = 0
   get isMerging(): boolean { return this.cycle > 0 }
@@ -131,9 +131,9 @@ export class Merger<T> implements MergerApi<T> {
     const removed = this.firstExisting
     this.firstExisting = this.firstMerged
     this.existingCount = mergedCount
+    this.strictNext = this.firstExisting
     this.firstMerged = this.lastMerged = undefined
     this.mergedCount = 0
-    this.strictNext = this.firstExisting
     return removed
   }
 
@@ -176,6 +176,7 @@ export class Merger<T> implements MergerApi<T> {
   mergeAsNew(self: T): MergerItem<T> {
     const item = new MergerItemImpl<T>(self, this.cycle)
     this.map.set(this.getKey(self), item)
+    this.strictNext = undefined
     const last = this.lastMerged
     if (last) {
       item.prev = last
@@ -183,7 +184,6 @@ export class Merger<T> implements MergerApi<T> {
     }
     else
       this.firstMerged = this.lastMerged = item
-    this.strictNext = undefined
     this.mergedCount++
     return item
   }
