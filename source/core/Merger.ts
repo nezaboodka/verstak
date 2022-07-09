@@ -14,6 +14,7 @@ export interface MergerApi<T> {
   isAdded(item: MergerItem<T>): boolean
   isMoved(item: MergerItem<T>): boolean
   isRemoved(item: MergerItem<T>): boolean
+  isPending(item: MergerItem<T>): boolean
 
   readonly isMerging: boolean
   beginMerge(): void
@@ -74,6 +75,11 @@ export class Merger<T> implements MergerApi<T> {
   isRemoved(item: MergerItem<T>): boolean {
     const t = item as MergerItemImpl<T>
     return t.cycle < 0
+  }
+
+  isPending(item: MergerItem<T>): boolean {
+    const t = item as MergerItemImpl<T>
+    return t.cycle !== this.cycle
   }
 
   beginMerge(): void {
