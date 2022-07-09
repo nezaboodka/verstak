@@ -11,46 +11,46 @@ export type GetKey<T = unknown> = (item: T) => string | undefined
 
 export interface Item<T> {
   readonly self: T
-  readonly isAdded: boolean
-  readonly isMoved: boolean
-  readonly isRemoved: boolean
+  readonly isAddedRecently: boolean
+  readonly isMovedRecently: boolean
+  readonly isRemovedRecently: boolean
   next?: Item<T>
   prev?: Item<T>
 }
 
-export class CollectionItem<T> implements Item<T> {
+export class MergerItem<T> implements Item<T> {
   readonly self: T
-  collectionRevision: number
-  arrangingRevision: number
-  next?: CollectionItem<T> = undefined
-  prev?: CollectionItem<T> = undefined
-  get isAdded(): boolean { return this.arrangingRevision === -1 }
-  get isMoved(): boolean { return this.arrangingRevision === this.collectionRevision }
-  get isRemoved(): boolean { return this.collectionRevision < 0 }
+  mergeCycle: number
+  arrangeCycle: number
+  next?: MergerItem<T> = undefined
+  prev?: MergerItem<T> = undefined
+  get isAddedRecently(): boolean { return this.arrangeCycle === -1 }
+  get isMovedRecently(): boolean { return this.arrangeCycle === this.mergeCycle }
+  get isRemovedRecently(): boolean { return this.mergeCycle < 0 }
 
-  constructor(self: T, revision: number) {
+  constructor(self: T, cycle: number) {
     this.self = self
-    this.collectionRevision = revision
-    this.arrangingRevision = -1 // IsAdded=true
+    this.mergeCycle = cycle
+    this.arrangeCycle = -1 // IsAdded=true
   }
 }
 
-export interface ReadonlyCollection<T> {
-  readonly revision: number
+export interface ReadonlyMerger<T> {
+  readonly cycle: number
   readonly first?: Readonly<Item<T>>
   readonly count: number
 }
 
-export class Collection<T> implements ReadonlyCollection<T> {
+export class Merger<T> implements ReadonlyMerger<T> {
   private readonly getKey: GetKey<T>
   readonly strict: boolean
-  private map = new Map<string | undefined, CollectionItem<T>>()
-  revision: number = 0
-  private mergedFirst?: CollectionItem<T> = undefined
-  private mergedLast?: CollectionItem<T> = undefined
+  private map = new Map<string | undefined, MergerItem<T>>()
+  cycle: number = 0
+  private firstMerged?: MergerItem<T> = undefined
+  private lastMerged?: MergerItem<T> = undefined
   private mergedCount: number = 0
-  private strictNext?: CollectionItem<T> = undefined
-  first?: CollectionItem<T> = undefined
+  private strictNext?: MergerItem<T> = undefined
+  first?: MergerItem<T> = undefined
   count: number = 0
 
   constructor(getKey: GetKey<T>, strict: boolean) {
@@ -58,10 +58,10 @@ export class Collection<T> implements ReadonlyCollection<T> {
     this.strict = strict
   }
 
-  beginMerge(revision: number): void {
-    if (this.revision > 0)
-      throw new Error('chain merge is not reentrant')
-    this.revision = revision
+  beginMerge(cycle: number): void {
+    if (this.cycle > 0)
+      throw new Error('merge is not reentrant')
+    this.cycle = cycle
   }
 
   *endMerge(yieldRemoved: boolean): Generator<Item<T>> {
@@ -69,8 +69,8 @@ export class Collection<T> implements ReadonlyCollection<T> {
     // Removed
     if (yieldRemoved) {
       while (item !== undefined) {
-        this.markAsRemoved(item)
         const next = item.next
+        this.markAsRemoved(item)
         yield item
         item = next
       }
@@ -83,43 +83,43 @@ export class Collection<T> implements ReadonlyCollection<T> {
     }
   }
 
-  private doEndMerge(): CollectionItem<T> | undefined {
-    if (this.revision <= 0)
-      throw new Error('chain merge is ended already')
-    this.revision = 0
-    const mergeCount = this.mergedCount
-    if (mergeCount > 0) {
+  private doEndMerge(): MergerItem<T> | undefined {
+    if (this.cycle <= 0)
+      throw new Error('merge is ended already')
+    this.cycle = 0
+    const mergedCount = this.mergedCount
+    if (mergedCount > 0) {
       const getKey = this.getKey
-      if (mergeCount > this.count) { // it should be faster to delete vanished items
+      if (mergedCount > this.count) { // it should be faster to delete vanished items
         const map = this.map
-        let child = this.first
-        while (child !== undefined) {
-          map.delete(getKey(child.self))
-          child = child.next
+        let item = this.first
+        while (item !== undefined) {
+          map.delete(getKey(item.self))
+          item = item.next
         }
       }
       else { // it should be faster to recreate map using merging items
-        const map = this.map = new Map<string | undefined, CollectionItem<T>>()
-        let child = this.mergedFirst
-        while (child !== undefined) {
-          map.set(getKey(child.self), child)
-          child = child.next
+        const map = this.map = new Map<string | undefined, MergerItem<T>>()
+        let item = this.firstMerged
+        while (item !== undefined) {
+          map.set(getKey(item.self), item)
+          item = item.next
         }
       }
     }
     else // just create new empty map
-      this.map = new Map<string | undefined, CollectionItem<T>>()
+      this.map = new Map<string | undefined, MergerItem<T>>()
     const removed = this.first
-    this.first = this.mergedFirst
-    this.count = mergeCount
-    this.mergedFirst = this.mergedLast = undefined
+    this.first = this.firstMerged
+    this.count = mergedCount
+    this.firstMerged = this.lastMerged = undefined
     this.mergedCount = 0
     this.strictNext = this.first
     return removed
   }
 
   tryMergeAsExisting(key: string): Item<T> | undefined {
-    const rev = this.revision
+    const cycle = this.cycle
     let item = this.strictNext
     let k = item ? this.getKey(item.self) : undefined
     if (k !== key) {
@@ -127,13 +127,13 @@ export class Collection<T> implements ReadonlyCollection<T> {
       k = item ? this.getKey(item.self) : undefined
     }
     if (item && k !== undefined) {
-      if (item.collectionRevision === rev)
+      if (item.mergeCycle === cycle)
         throw new Error(`duplicate item id: ${key}`)
-      item.collectionRevision = rev
+      item.mergeCycle = cycle
       if (this.strict && item !== this.strictNext)
-        item.arrangingRevision = rev // IsAdded=false, IsMoved=true
-      else if (item.arrangingRevision === -1)
-        item.arrangingRevision = 0 // IsAdded=false, IsMoved=false
+        item.arrangeCycle = cycle // IsAdded=false, IsMoved=true
+      else if (item.arrangeCycle === -1)
+        item.arrangeCycle = 0 // IsAdded=false, IsMoved=false
       this.strictNext = item.next
       // Exclude from current sequence
       if (item.prev !== undefined)
@@ -144,40 +144,40 @@ export class Collection<T> implements ReadonlyCollection<T> {
         this.first = item.next
       this.count--
       // Include into merged sequence
-      const last = this.mergedLast
+      const last = this.lastMerged
       item.prev = last
       item.next = undefined
       if (last)
-        this.mergedLast = last.next = item
+        this.lastMerged = last.next = item
       else
-        this.mergedFirst = this.mergedLast = item
+        this.firstMerged = this.lastMerged = item
       this.mergedCount++
     }
     return item
   }
 
   mergeAsNewlyCreated(self: T): Item<T> {
-    const item = new CollectionItem<T>(self, this.revision)
+    const item = new MergerItem<T>(self, this.cycle)
     this.map.set(this.getKey(self), item)
-    const last = this.mergedLast
+    const last = this.lastMerged
     if (last) {
       item.prev = last
-      this.mergedLast = last.next = item
+      this.lastMerged = last.next = item
     }
     else
-      this.mergedFirst = this.mergedLast = item
+      this.firstMerged = this.lastMerged = item
     this.mergedCount++
     return item
   }
 
   markAsMoved(item: Item<T>): void {
-    const t = item as CollectionItem<T>
-    if (t.arrangingRevision >= 0) // do not interfere with IsAdded
-      t.arrangingRevision = t.collectionRevision
+    const t = item as MergerItem<T>
+    if (t.arrangeCycle >= 0) // do not interfere with IsAdded
+      t.arrangeCycle = t.mergeCycle
   }
 
-  private markAsRemoved(item: CollectionItem<T>): void {
-    if (item.collectionRevision >= 0)
-      item.collectionRevision = ~item.collectionRevision
+  private markAsRemoved(item: MergerItem<T>): void {
+    if (item.mergeCycle >= 0)
+      item.mergeCycle = ~item.mergeCycle
   }
 }

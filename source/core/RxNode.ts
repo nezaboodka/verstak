@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions } from 'reactronic'
-import { Collection, Item, CollectionItem, ReadonlyCollection } from './Collection'
+import { Merger, Item, MergerItem, ReadonlyMerger } from './Collection'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
 export type Render<E = unknown, M = unknown, R = void> = (element: E, node: RxNode<E, M, R>) => R
@@ -33,7 +33,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
   // System-managed properties
   abstract readonly level: number
   abstract readonly parent: RxNode
-  abstract readonly children: ReadonlyCollection<RxNode>
+  abstract readonly children: ReadonlyMerger<RxNode>
   abstract readonly item: Item<RxNode> | undefined
   abstract readonly stamp: number
   abstract readonly element?: E
@@ -185,7 +185,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   // System-managed properties
   readonly level: number
   readonly parent: RxNodeImpl
-  children: Collection<RxNodeImpl>
+  children: Merger<RxNodeImpl>
   item: Item<RxNodeImpl> | undefined
   stamp: number
   element?: E
@@ -210,7 +210,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
-    this.children = new Collection<RxNodeImpl>(getNodeName, factory.strict)
+    this.children = new Merger<RxNodeImpl>(getNodeName, factory.strict)
     this.item = undefined
     this.stamp = 0
     this.element = undefined
@@ -241,14 +241,14 @@ function runRenderChildrenThenDo(action: () => void): void {
   let promised: Promise<void> | undefined = undefined
   try {
     const children = node.children
-    const rev = children.revision
-    if (rev > 0) { // is merge in progress
+    const cycle = children.cycle
+    if (cycle > 0) { // is merge cycle in progress
       const strict = children.strict
       let p1: Array<Item<RxNodeImpl>> | undefined = undefined
       let p2: Array<Item<RxNodeImpl>> | undefined = undefined
       let isMoved = false
       for (const item of children.endMerge(true)) {
-        if (!item.isRemoved) {
+        if (!item.isRemovedRecently) {
           if (Transaction.isCanceled)
             break
           const n = item.self
@@ -258,7 +258,7 @@ function runRenderChildrenThenDo(action: () => void): void {
               isMoved = false
             }
           }
-          else if (strict && item.isMoved)
+          else if (strict && item.isMovedRecently)
             isMoved = true // apply to the first node with an element
           if (n.priority === Priority.SyncP0)
             prepareThenRunRender(item, strict)
@@ -340,7 +340,7 @@ function prepareRender(item: Item<RxNodeImpl>, strict: boolean): void {
     factory.initialize?.(node, undefined)
   }
   // Arrange if needed
-  if (item.isAdded || item.isMoved)
+  if (item.isAddedRecently || item.isMovedRecently)
     factory.arrange?.(node, strict)
 }
 
@@ -507,7 +507,7 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-const gSysRoot = new CollectionItem<RxNodeImpl>(new RxNodeImpl<null, void>('SYSTEM',
+const gSysRoot = new MergerItem<RxNodeImpl>(new RxNodeImpl<null, void>('SYSTEM',
   new StaticNodeFactory<null>('SYSTEM', false, null), false,
   { level: 0 } as RxNodeImpl, undefined, NOP), 0) // fake parent (overwritten below)
 gSysRoot.self.item = gSysRoot
