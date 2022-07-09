@@ -11,20 +11,20 @@ export type GetKey<T = unknown> = (item: T) => string | undefined
 
 export class Chained<T> {
   readonly self: T
-  stamp: number
-  reordered: number
+  chainRevision: number
+  orderRevision: number
   next?: Chained<T> = undefined
   prev?: Chained<T> = undefined
   after?: Chained<T> | undefined = this
-  constructor(self: T, stamp: number) {
+  constructor(self: T, revision: number) {
     this.self = self
-    this.stamp = stamp
-    this.reordered = stamp
+    this.chainRevision = revision
+    this.orderRevision = revision
   }
 }
 
 export interface ReadonlyChain<T> {
-  readonly stamp: number
+  readonly revision: number
   readonly first?: Readonly<Chained<T>>
   readonly count: number
 }
@@ -32,7 +32,7 @@ export interface ReadonlyChain<T> {
 export class Chain<T> implements ReadonlyChain<T> {
   private readonly getKey: GetKey<T>
   private map = new Map<string | undefined, Chained<T>>()
-  stamp: number = 0
+  revision: number = 0
   private mergedFirst?: Chained<T> = undefined
   private mergedLast?: Chained<T> = undefined
   private mergedCount: number = 0
@@ -44,16 +44,16 @@ export class Chain<T> implements ReadonlyChain<T> {
     this.getKey = getKey
   }
 
-  beginMerge(stamp: number): void {
-    if (this.stamp > 0)
+  beginMerge(revision: number): void {
+    if (this.revision > 0)
       throw new Error('chain merge is not reentrant')
-    this.stamp = stamp
+    this.revision = revision
   }
 
   endMerge(): Chained<T> | undefined {
-    if (this.stamp <= 0)
+    if (this.revision <= 0)
       throw new Error('chain merge is ended already')
-    this.stamp = 0
+    this.revision = 0
     const mergeCount = this.mergedCount
     if (mergeCount > 0) {
       const getKey = this.getKey
@@ -89,9 +89,10 @@ export class Chain<T> implements ReadonlyChain<T> {
       n = result ? this.getKey(result.self) : undefined
     }
     if (result && n !== undefined) {
-      if (result.stamp === this.stamp)
+      const rev = this.revision
+      if (result.chainRevision === rev)
         throw new Error(`duplicate item id: ${key}`)
-      result.stamp = this.stamp
+      result.chainRevision = rev
       this.likelyNextToMerge = result.next
       // Exclude from main sequence
       if (result.prev !== undefined)
@@ -117,9 +118,9 @@ export class Chain<T> implements ReadonlyChain<T> {
     return result
   }
 
-  mergeAsNewlyCreated(item: T): Chained<T> {
-    const chained = new Chained<T>(item, this.stamp)
-    this.map.set(this.getKey(item), chained)
+  mergeAsNewlyCreated(self: T): Chained<T> {
+    const chained = new Chained<T>(self, this.revision)
+    this.map.set(this.getKey(self), chained)
     const last = this.mergedLast
     if (last) {
       chained.prev = last

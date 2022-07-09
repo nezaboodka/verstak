@@ -241,8 +241,8 @@ function runRenderChildrenThenDo(action: () => void): void {
   let promised: Promise<void> | undefined = undefined
   try {
     const children = node.children
-    const stamp = children.stamp
-    if (stamp > 0) { // is merge in progress
+    const rev = children.revision
+    if (rev > 0) { // is merge in progress
       let vanished = children.endMerge()
       // Unmount vanished children
       while (vanished !== undefined)
@@ -257,7 +257,7 @@ function runRenderChildrenThenDo(action: () => void): void {
         const n = child.self
         if (sequential && child.after !== after) {
           child.after = after
-          child.reordered = stamp
+          child.orderRevision = rev
         }
         if (n.priority === Priority.SyncP0)
           prepareThenRunRender(child)
@@ -337,7 +337,7 @@ function prepareRender(chained: Chained<RxNodeImpl>): void {
     factory.initialize?.(node, undefined)
   }
   // (Re)Order if needed
-  if (chained.reordered === chained.stamp)
+  if (chained.orderRevision === chained.chainRevision)
     factory.order?.(node)
 }
 
