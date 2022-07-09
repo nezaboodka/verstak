@@ -241,8 +241,7 @@ function runRenderChildrenThenDo(action: () => void): void {
   let promised: Promise<void> | undefined = undefined
   try {
     const children = node.children
-    const cycle = children.cycle
-    if (cycle > 0) { // is merge cycle in progress
+    if (children.isMerging) {
       const strict = children.strict
       let p1: Array<Item<RxNodeImpl>> | undefined = undefined
       let p2: Array<Item<RxNodeImpl>> | undefined = undefined

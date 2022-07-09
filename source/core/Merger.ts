@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-// Collection
+// Merger API
 
 export type GetKey<T = unknown> = (item: T) => string | undefined
 
@@ -17,6 +17,18 @@ export interface Item<T> {
   next?: Item<T>
   prev?: Item<T>
 }
+
+export interface ReadonlyMerger<T> {
+  readonly isMerging: boolean
+  readonly count: number
+  items(): Generator<Item<T>>
+  beginMerge(cycle: number): void
+  tryMergeAsExisting(key: string): Item<T> | undefined
+  mergeAsNewlyCreated(self: T): Item<T>
+  endMerge(yieldRemoved: boolean): Generator<Item<T>>
+}
+
+// Merger Implementation
 
 export class MergerItem<T> implements Item<T> {
   readonly self: T
@@ -35,12 +47,6 @@ export class MergerItem<T> implements Item<T> {
   }
 }
 
-export interface ReadonlyMerger<T> {
-  readonly cycle: number
-  readonly first?: Readonly<Item<T>>
-  readonly count: number
-}
-
 export class Merger<T> implements ReadonlyMerger<T> {
   private readonly getKey: GetKey<T>
   readonly strict: boolean
@@ -52,10 +58,19 @@ export class Merger<T> implements ReadonlyMerger<T> {
   private strictNext?: MergerItem<T> = undefined
   first?: MergerItem<T> = undefined
   count: number = 0
+  get isMerging(): boolean { return this.cycle > 0 }
 
   constructor(getKey: GetKey<T>, strict: boolean) {
     this.getKey = getKey
     this.strict = strict
+  }
+
+  *items(): Generator<Item<T>> {
+    let item = this.first
+    while (item !== undefined) {
+      yield item
+      item = item.next
+    }
   }
 
   beginMerge(cycle: number): void {
