@@ -40,6 +40,7 @@ export interface ReadonlyChain<T> {
 
 export class Chain<T> implements ReadonlyChain<T> {
   private readonly getKey: GetKey<T>
+  readonly ordered: boolean
   private map = new Map<string | undefined, ChainItem<T>>()
   revision: number = 0
   private mergedFirst?: ChainItem<T> = undefined
@@ -49,8 +50,9 @@ export class Chain<T> implements ReadonlyChain<T> {
   first?: ChainItem<T> = undefined
   count: number = 0
 
-  constructor(getKey: GetKey<T>) {
+  constructor(getKey: GetKey<T>, ordered: boolean) {
     this.getKey = getKey
+    this.ordered = ordered
   }
 
   beginMerge(revision: number): void {

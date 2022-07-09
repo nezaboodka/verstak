@@ -210,7 +210,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
-    this.children = new Chain<RxNodeImpl>(getNodeName)
+    this.children = new Chain<RxNodeImpl>(getNodeName, factory.sequential)
     this.chained = undefined
     this.stamp = 0
     this.element = undefined
@@ -248,14 +248,14 @@ function runRenderChildrenThenDo(action: () => void): void {
       while (vanished !== undefined)
         vanished = doFinalize(vanished, true)
       // Render current children
-      const sequential = node.factory.sequential
+      const ordered = children.ordered
       let p1: Array<Chained<RxNodeImpl>> | undefined = undefined
       let p2: Array<Chained<RxNodeImpl>> | undefined = undefined
       let after: Chained<RxNodeImpl> | undefined = undefined
       let child = children.first
       while (child !== undefined && !Transaction.isCanceled) {
         const n = child.self
-        if (sequential && child.after !== after) {
+        if (ordered && child.after !== after) {
           child.after = after
           child.orderRevision = rev
         }
