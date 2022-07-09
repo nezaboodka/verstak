@@ -30,7 +30,7 @@ export interface MergerItem<T> {
 
 // Merger Implementation
 
-export class MergerItemImpl<T> implements MergerItem<T> {
+class MergerItemImpl<T> implements MergerItem<T> {
   readonly self: T
   cycle: number
   status: number
@@ -197,5 +197,9 @@ export class Merger<T> implements IMerger<T> {
   private markAsRemoved(item: MergerItemImpl<T>): void {
     if (item.cycle >= 0) // if not removed, >= is intentional
       item.cycle = ~item.cycle
+  }
+
+  static createMergerItem<T>(self: T): MergerItem<T> {
+    return new MergerItemImpl(self, 0)
   }
 }
