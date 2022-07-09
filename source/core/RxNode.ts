@@ -379,7 +379,7 @@ function doFinalize(item: Item<RxNodeImpl>, isLeader: boolean): Item<RxNodeImpl>
   const node = item.self
   if (node.stamp >= 0) {
     node.stamp = ~node.stamp
-    // Finalize node itself and unlink it from chain
+    // Finalize node itself and remove it from collection
     const childrenAreLeaders = node.factory.finalize(node, isLeader)
     if (next)
       next.prev = undefined
