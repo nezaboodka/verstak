@@ -11,22 +11,22 @@ export type GetKey<T = unknown> = (item: T) => string | undefined
 
 export interface Item<T> {
   readonly self: T
-  readonly chainRevision: number
-  readonly indexRevision: number
+  readonly collectionRevision: number
+  readonly selfIndexRevision: number
   next?: Item<T>
   prev?: Item<T>
 }
 
 export class CollectionItem<T> implements Item<T> {
   readonly self: T
-  chainRevision: number
-  indexRevision: number
+  collectionRevision: number
+  selfIndexRevision: number
   next?: CollectionItem<T> = undefined
   prev?: CollectionItem<T> = undefined
   constructor(self: T, revision: number) {
     this.self = self
-    this.chainRevision = revision
-    this.indexRevision = revision
+    this.collectionRevision = revision
+    this.selfIndexRevision = revision
   }
 }
 
@@ -91,7 +91,7 @@ export class Collection<T> implements ReadonlyCollection<T> {
   }
 
   tryMergeAsExisting(key: string): Item<T> | undefined {
-    const chainRevision = this.revision
+    const rev = this.revision
     let item = this.likelyNext
     let k = item ? this.getKey(item.self) : undefined
     if (k !== key) {
@@ -99,15 +99,15 @@ export class Collection<T> implements ReadonlyCollection<T> {
       if (item) {
         k = this.getKey(item.self)
         if (this.strict)
-          item.indexRevision = chainRevision
+          item.selfIndexRevision = rev
       }
       else
         k = undefined
     }
     if (item && k !== undefined) {
-      if (item.chainRevision === chainRevision)
+      if (item.collectionRevision === rev)
         throw new Error(`duplicate item id: ${key}`)
-      item.chainRevision = chainRevision
+      item.collectionRevision = rev
       this.likelyNext = item.next
       // Exclude from main sequence
       if (item.prev !== undefined)
