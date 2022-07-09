@@ -241,7 +241,8 @@ function runRenderChildrenThenDo(action: () => void): void {
   let promised: Promise<void> | undefined = undefined
   try {
     const children = node.children
-    if (children.isMergeInProgress) {
+    const stamp = children.stamp
+    if (stamp > 0) { // is merge in progress
       let vanished = children.endMerge()
       // Unmount vanished children
       while (vanished !== undefined)
@@ -256,7 +257,7 @@ function runRenderChildrenThenDo(action: () => void): void {
         const n = child.self
         if (sequential && child.after !== after) {
           child.after = after
-          child.reordering = true
+          child.reordered = stamp
         }
         if (n.priority === Priority.SyncP0)
           prepareThenRunRender(child)
@@ -336,10 +337,8 @@ function prepareRender(chained: Chained<RxNodeImpl>): void {
     factory.initialize?.(node, undefined)
   }
   // (Re)Order if needed
-  if (chained.reordering) {
+  if (chained.reordered === chained.stamp)
     factory.order?.(node)
-    chained.reordering = false
-  }
 }
 
 function runRender(chained: Chained<RxNodeImpl>): void {
@@ -507,7 +506,7 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const gSysRoot = new Chained<RxNodeImpl>(new RxNodeImpl<null, void>('SYSTEM',
   new StaticNodeFactory<null>('SYSTEM', false, null), false,
-  { level: 0 } as RxNodeImpl, undefined, NOP)) // fake parent (overwritten below)
+  { level: 0 } as RxNodeImpl, undefined, NOP), 0) // fake parent (overwritten below)
 gSysRoot.self.chained = gSysRoot
 
 Object.defineProperty(gSysRoot, 'parent', {

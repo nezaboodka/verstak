@@ -11,15 +11,20 @@ export type GetKey<T = unknown> = (item: T) => string | undefined
 
 export class Chained<T> {
   readonly self: T
-  stamp: number = 0
+  stamp: number
+  reordered: number
   next?: Chained<T> = undefined
   prev?: Chained<T> = undefined
   after?: Chained<T> | undefined = this
-  reordering: boolean = true
-  constructor(self: T) { this.self = self }
+  constructor(self: T, stamp: number) {
+    this.self = self
+    this.stamp = stamp
+    this.reordered = stamp
+  }
 }
 
 export interface ReadonlyChain<T> {
+  readonly stamp: number
   readonly first?: Readonly<Chained<T>>
   readonly count: number
 }
@@ -27,27 +32,26 @@ export interface ReadonlyChain<T> {
 export class Chain<T> implements ReadonlyChain<T> {
   private readonly getKey: GetKey<T>
   private map = new Map<string | undefined, Chained<T>>()
-  private stamp: number = 0
+  stamp: number = 0
   private mergedFirst?: Chained<T> = undefined
   private mergedLast?: Chained<T> = undefined
   private mergedCount: number = 0
   private likelyNextToMerge?: Chained<T> = undefined
   first?: Chained<T> = undefined
   count: number = 0
-  get isMergeInProgress(): boolean { return this.stamp > 0 }
 
   constructor(getKey: GetKey<T>) {
     this.getKey = getKey
   }
 
   beginMerge(stamp: number): void {
-    if (this.isMergeInProgress)
+    if (this.stamp > 0)
       throw new Error('chain merge is not reentrant')
     this.stamp = stamp
   }
 
   endMerge(): Chained<T> | undefined {
-    if (!this.isMergeInProgress)
+    if (this.stamp <= 0)
       throw new Error('chain merge is ended already')
     this.stamp = 0
     const mergeCount = this.mergedCount
@@ -114,8 +118,7 @@ export class Chain<T> implements ReadonlyChain<T> {
   }
 
   mergeAsNewlyCreated(item: T): Chained<T> {
-    const chained = new Chained<T>(item)
-    chained.stamp = this.stamp
+    const chained = new Chained<T>(item, this.stamp)
     this.map.set(this.getKey(item), chained)
     const last = this.mergedLast
     if (last) {
