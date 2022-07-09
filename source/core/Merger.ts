@@ -15,7 +15,7 @@ export interface IMerger<T> {
   items(): Generator<Item<T>>
   beginMerge(cycle: number): void
   tryMergeAsExisting(key: string): Item<T> | undefined
-  mergeAsNewlyCreated(self: T): Item<T>
+  mergeAsNew(self: T): Item<T>
   endMerge(yieldRemoved: boolean): Generator<Item<T>>
 }
 
@@ -171,7 +171,7 @@ export class Merger<T> implements IMerger<T> {
     return item
   }
 
-  mergeAsNewlyCreated(self: T): Item<T> {
+  mergeAsNew(self: T): Item<T> {
     const item = new MergerItem<T>(self, this.cycle)
     this.map.set(this.getKey(self), item)
     const last = this.lastMerged
