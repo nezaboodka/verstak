@@ -351,7 +351,7 @@ function runRender(item: Item<RxNodeImpl>): void {
         let result: void | Promise<void>
         try {
           node.stamp++
-          node.children.beginMerge(node.stamp)
+          node.children.beginMerge()
           result = node.factory.render(node)
         }
         finally {

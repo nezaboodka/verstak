@@ -13,7 +13,7 @@ export interface IMerger<T> {
   readonly isMerging: boolean
   readonly count: number
   items(): Generator<Item<T>>
-  beginMerge(cycle: number): void
+  beginMerge(): void
   tryMergeAsExisting(key: string): Item<T> | undefined
   mergeAsAdded(self: T): Item<T>
   endMerge(yieldRemoved: boolean): Generator<Item<T>>
@@ -51,7 +51,7 @@ export class Merger<T> implements IMerger<T> {
   private readonly getKey: GetKey<T>
   readonly strict: boolean
   private map = new Map<string | undefined, MergerItem<T>>()
-  cycle: number = 0
+  private cycle: number = ~0
   private firstMerged?: MergerItem<T> = undefined
   private lastMerged?: MergerItem<T> = undefined
   private mergedCount: number = 0
@@ -73,10 +73,10 @@ export class Merger<T> implements IMerger<T> {
     }
   }
 
-  beginMerge(cycle: number): void {
-    if (this.cycle > 0)
+  beginMerge(): void {
+    if (this.isMerging)
       throw new Error('merge is not reentrant')
-    this.cycle = cycle
+    this.cycle = ~this.cycle + 1
   }
 
   *endMerge(yieldRemoved: boolean): Generator<Item<T>> {
@@ -99,9 +99,9 @@ export class Merger<T> implements IMerger<T> {
   }
 
   private doEndMerge(): MergerItem<T> | undefined {
-    if (this.cycle <= 0)
+    if (!this.isMerging)
       throw new Error('merge is ended already')
-    this.cycle = 0
+    this.cycle = ~this.cycle
     const mergedCount = this.mergedCount
     if (mergedCount > 0) {
       const getKey = this.getKey
