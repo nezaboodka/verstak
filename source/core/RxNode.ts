@@ -254,7 +254,7 @@ function runRenderChildrenThenDo(action: () => void): void {
           const n = item.self
           if (n.element) {
             if (isMoved) {
-              item.isMoved = true
+              children.markAsMoved(item)
               isMoved = false
             }
           }
@@ -396,7 +396,7 @@ function doFinalize(item: Item<RxNodeImpl>, isLeader: boolean): Item<RxNodeImpl>
         })
     }
     // Finalize children if any
-    let child = node.children.first
+    let child = node.children.first as Item<RxNodeImpl> | undefined
     while (child !== undefined)
       child = doFinalize(child, childrenAreLeaders)
   }

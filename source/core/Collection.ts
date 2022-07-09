@@ -11,13 +11,11 @@ export type GetKey<T = unknown> = (item: T) => string | undefined
 
 export interface Item<T> {
   readonly self: T
-  readonly collectionRevision: number
-  readonly selfIndexRevision: number
-  next?: Item<T>
-  prev?: Item<T>
   readonly isAdded: boolean
   readonly isRemoved: boolean
-  isMoved: boolean
+  readonly isMoved: boolean
+  next?: Item<T>
+  prev?: Item<T>
 }
 
 export class CollectionItem<T> implements Item<T> {
@@ -87,6 +85,11 @@ export class Collection<T> implements ReadonlyCollection<T> {
     }
   }
 
+  markAsMoved(item: Item<T>): void {
+    const t = item as CollectionItem<T>
+    t.isMoved = true
+  }
+
   private doEndMerge(): CollectionItem<T> | undefined {
     if (this.revision <= 0)
       throw new Error('chain merge is ended already')
@@ -101,14 +104,14 @@ export class Collection<T> implements ReadonlyCollection<T> {
           map.delete(getKey(child.self)), child = child.next
       }
       else { // it should be faster to recreate map using merging items
-        const map = this.map = new Map<string | undefined, Item<T>>()
+        const map = this.map = new Map<string | undefined, CollectionItem<T>>()
         let child = this.mergedFirst
         while (child !== undefined)
           map.set(getKey(child.self), child), child = child.next
       }
     }
     else // just create new empty map
-      this.map = new Map<string | undefined, Item<T>>()
+      this.map = new Map<string | undefined, CollectionItem<T>>()
     const removed = this.first
     this.first = this.mergedFirst
     this.count = mergeCount
