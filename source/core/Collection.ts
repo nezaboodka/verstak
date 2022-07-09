@@ -85,11 +85,6 @@ export class Collection<T> implements ReadonlyCollection<T> {
     }
   }
 
-  markAsMoved(item: Item<T>): void {
-    const t = item as CollectionItem<T>
-    t.isMoved = true
-  }
-
   private doEndMerge(): CollectionItem<T> | undefined {
     if (this.revision <= 0)
       throw new Error('chain merge is ended already')
@@ -169,5 +164,10 @@ export class Collection<T> implements ReadonlyCollection<T> {
       this.mergedFirst = this.mergedLast = item
     this.mergedCount++
     return item
+  }
+
+  markAsMoved(item: Item<T>): void {
+    const t = item as CollectionItem<T>
+    t.isMoved = true
   }
 }
