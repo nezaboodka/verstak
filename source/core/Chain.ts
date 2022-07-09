@@ -93,50 +93,56 @@ export class Chain<T> implements ReadonlyChain<T> {
   }
 
   tryMergeAsExisting(key: string): Chained<T> | undefined {
-    let result = this.likelyNext
-    let k = result ? this.getKey(result.self) : undefined
+    const chainRevision = this.revision
+    let item = this.likelyNext
+    let k = item ? this.getKey(item.self) : undefined
     if (k !== key) {
-      result = this.map.get(key)
-      k = result ? this.getKey(result.self) : undefined
+      item = this.map.get(key)
+      if (item) {
+        k = this.getKey(item.self)
+        // if (this.ordered)
+        //   item.orderRevision = chainRevision
+      }
+      else
+        k = undefined
     }
-    if (result && k !== undefined) {
-      const rev = this.revision
-      if (result.chainRevision === rev)
+    if (item && k !== undefined) {
+      if (item.chainRevision === chainRevision)
         throw new Error(`duplicate item id: ${key}`)
-      result.chainRevision = rev
-      this.likelyNext = result.next
+      item.chainRevision = chainRevision
+      this.likelyNext = item.next
       // Exclude from main sequence
-      if (result.prev !== undefined)
-        result.prev.next = result.next
-      if (result.next !== undefined)
-        result.next.prev = result.prev
-      if (result === this.first)
-        this.first = result.next
+      if (item.prev !== undefined)
+        item.prev.next = item.next
+      if (item.next !== undefined)
+        item.next.prev = item.prev
+      if (item === this.first)
+        this.first = item.next
       this.count--
       // Include into merged sequence
       const last = this.mergedLast
-      result.prev = last
-      result.next = undefined
+      item.prev = last
+      item.next = undefined
       if (last)
-        this.mergedLast = last.next = result
+        this.mergedLast = last.next = item
       else
-        this.mergedFirst = this.mergedLast = result
+        this.mergedFirst = this.mergedLast = item
       this.mergedCount++
     }
-    return result
+    return item
   }
 
   mergeAsNewlyCreated(self: T): Chained<T> {
-    const chained = new ChainItem<T>(self, this.revision)
-    this.map.set(this.getKey(self), chained)
+    const item = new ChainItem<T>(self, this.revision)
+    this.map.set(this.getKey(self), item)
     const last = this.mergedLast
     if (last) {
-      chained.prev = last
-      this.mergedLast = last.next = chained
+      item.prev = last
+      this.mergedLast = last.next = item
     }
     else
-      this.mergedFirst = this.mergedLast = chained
+      this.mergedFirst = this.mergedLast = item
     this.mergedCount++
-    return chained
+    return item
   }
 }
