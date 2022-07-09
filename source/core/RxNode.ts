@@ -251,18 +251,18 @@ function runRenderChildrenThenDo(action: () => void): void {
       const strict = children.strict
       let p1: Array<Item<RxNodeImpl>> | undefined = undefined
       let p2: Array<Item<RxNodeImpl>> | undefined = undefined
-      let indirectMove = false
+      let isMoved = false
       let child = children.first
       while (child !== undefined && !Transaction.isCanceled) {
         const n = child.self
         if (n.element) {
-          if (indirectMove) {
+          if (isMoved) {
             child.isMoved = true
-            indirectMove = false
+            isMoved = false
           }
         }
         else if (strict && child.isMoved)
-          indirectMove = true
+          isMoved = true // apply to the first node with an element
         if (n.priority === Priority.SyncP0)
           prepareThenRunRender(child, strict)
         else if (n.priority === Priority.AsyncP1)

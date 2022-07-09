@@ -25,7 +25,7 @@ export class CollectionItem<T> implements Item<T> {
   next?: CollectionItem<T> = undefined
   prev?: CollectionItem<T> = undefined
   get isMoved(): boolean { return this.selfIndexRevision === this.collectionRevision }
-  set isMoved(value: boolean) { this.selfIndexRevision = value ? this.collectionRevision : this.collectionRevision - 1 }
+  set isMoved(value: boolean) { if (value) this.selfIndexRevision = this.collectionRevision }
 
   constructor(self: T, revision: number) {
     this.self = self
@@ -100,18 +100,14 @@ export class Collection<T> implements ReadonlyCollection<T> {
     let k = item ? this.getKey(item.self) : undefined
     if (k !== key) {
       item = this.map.get(key)
-      if (item) {
-        k = this.getKey(item.self)
-        if (this.strict)
-          item.selfIndexRevision = rev
-      }
-      else
-        k = undefined
+      k = item ? this.getKey(item.self) : undefined
     }
     if (item && k !== undefined) {
       if (item.collectionRevision === rev)
         throw new Error(`duplicate item id: ${key}`)
       item.collectionRevision = rev
+      if (this.strict && item !== this.strictNext)
+        item.selfIndexRevision = rev // is moved
       this.strictNext = item.next
       // Exclude from main sequence
       if (item.prev !== undefined)
