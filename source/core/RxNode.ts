@@ -50,7 +50,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
 
   static launch(render: () => void): void {
     gSysRoot.self.renderer = render
-    prepareThenRunRender(gSysRoot, false)
+    prepareThenRunRender(gSysRoot, false, false)
   }
 
   static get current(): RxNode {
@@ -259,10 +259,10 @@ function runRenderChildrenThenDo(action: () => void): void {
             isMoved = false
           }
         }
-        else if (strict && item.isMoved)
+        else if (strict && children.isMoved(item))
           isMoved = true // apply to the first node with an element
         if (n.priority === Priority.SyncP0)
-          prepareThenRunRender(item, strict)
+          prepareThenRunRender(item, children.isMoved(item), strict)
         else if (n.priority === Priority.AsyncP1)
           p1 = push(p1, item)
         else
@@ -270,7 +270,7 @@ function runRenderChildrenThenDo(action: () => void): void {
       }
       // Render incremental children (if any)
       if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
-        promised = startIncrementalRendering(item, p1, p2).then(action, action)
+        promised = startIncrementalRendering(item, children, p1, p2).then(action, action)
     }
   }
   finally {
@@ -280,16 +280,17 @@ function runRenderChildrenThenDo(action: () => void): void {
 }
 
 async function startIncrementalRendering(parent: MergerItem<RxNodeImpl>,
+  merger: Merger<RxNodeImpl>,
   children1?: Array<MergerItem<RxNodeImpl>>,
   children2?: Array<MergerItem<RxNodeImpl>>): Promise<void> {
   if (children1)
-    await renderIncrementally(parent, children1)
+    await renderIncrementally(parent, merger, children1)
   if (children2)
-    await renderIncrementally(parent, children2)
+    await renderIncrementally(parent, merger, children2)
 }
 
 async function renderIncrementally(parent: MergerItem<RxNodeImpl>,
-  children: Array<MergerItem<RxNodeImpl>>): Promise<void> {
+  merger: Merger<RxNodeImpl>, children: Array<MergerItem<RxNodeImpl>>): Promise<void> {
   const checkEveryN = 30
   // if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
   await Transaction.requestNextFrame()
@@ -299,7 +300,7 @@ async function renderIncrementally(parent: MergerItem<RxNodeImpl>,
     if (node.shuffle)
       shuffle(children)
     for (const child of children) {
-      prepareThenRunRender(child, strict)
+      prepareThenRunRender(child, merger.isMoved(child), strict)
       if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
         await Transaction.requestNextFrame(5)
       if (Transaction.isCanceled)
@@ -308,10 +309,11 @@ async function renderIncrementally(parent: MergerItem<RxNodeImpl>,
   }
 }
 
-function prepareThenRunRender(item: MergerItem<RxNodeImpl>, strict: boolean): void {
+function prepareThenRunRender(item: MergerItem<RxNodeImpl>,
+  moved: boolean, strict: boolean): void {
   const node = item.self
   if (node.stamp >= 0) {
-    prepareRender(item, strict)
+    prepareRender(item, moved, strict)
     if (node.inline)
       runRender(item)
     else
@@ -319,7 +321,8 @@ function prepareThenRunRender(item: MergerItem<RxNodeImpl>, strict: boolean): vo
   }
 }
 
-function prepareRender(item: MergerItem<RxNodeImpl>, strict: boolean): void {
+function prepareRender(item: MergerItem<RxNodeImpl>,
+  moved: boolean, strict: boolean): void {
   const node = item.self
   const factory = node.factory
   // Initialize/arrange if needed
@@ -338,7 +341,7 @@ function prepareRender(item: MergerItem<RxNodeImpl>, strict: boolean): void {
     factory.initialize?.(node, undefined)
     factory.arrange?.(node, strict)
   }
-  else if (item.isMoved)
+  else if (moved)
     factory.arrange?.(node, strict)
 }
 

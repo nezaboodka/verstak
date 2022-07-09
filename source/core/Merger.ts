@@ -8,10 +8,14 @@
 export type GetKey<T = unknown> = (item: T) => string | undefined
 
 export interface MergerApi<T> {
-  readonly isMerging: boolean
   readonly count: number
   items(): Generator<MergerItem<T>>
   removed(): Generator<MergerItem<T>>
+  isAdded(item: MergerItem<T>): boolean
+  isMoved(item: MergerItem<T>): boolean
+  isRemoved(item: MergerItem<T>): boolean
+
+  readonly isMerging: boolean
   beginMerge(): void
   tryMergeAsExisting(key: string): MergerItem<T> | undefined
   mergeAsNew(self: T): MergerItem<T>
@@ -20,9 +24,6 @@ export interface MergerApi<T> {
 
 export interface MergerItem<T> {
   readonly self: T
-  readonly isAdded: boolean
-  readonly isMoved: boolean
-  readonly isRemoved: boolean
   next?: MergerItem<T>
   prev?: MergerItem<T>
 }
@@ -58,6 +59,21 @@ export class Merger<T> implements MergerApi<T> {
 
   *removed(): Generator<MergerItem<T>> {
     throw new Error('not implemented')
+  }
+
+  isAdded(item: MergerItem<T>): boolean {
+    const t = item as MergerItemImpl<T>
+    return t.status === ~t.cycle && t.cycle > 0
+  }
+
+  isMoved(item: MergerItem<T>): boolean {
+    const t = item as MergerItemImpl<T>
+    return t.status === t.cycle && t.cycle > 0
+  }
+
+  isRemoved(item: MergerItem<T>): boolean {
+    const t = item as MergerItemImpl<T>
+    return t.cycle < 0
   }
 
   beginMerge(): void {
@@ -184,9 +200,6 @@ class MergerItemImpl<T> implements MergerItem<T> {
   status: number
   next?: MergerItemImpl<T> = undefined
   prev?: MergerItemImpl<T> = undefined
-  get isAdded(): boolean { return this.status === ~this.cycle && this.cycle > 0 }
-  get isMoved(): boolean { return this.status === this.cycle && this.cycle > 0 }
-  get isRemoved(): boolean { return this.cycle < 0 }
 
   constructor(self: T, cycle: number) {
     this.self = self
