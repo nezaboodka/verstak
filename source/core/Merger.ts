@@ -15,7 +15,6 @@ export interface MergerApi<T> {
   isMoved(item: MergerItem<T>): boolean
   isRemoved(item: MergerItem<T>): boolean
   isMerged(item: MergerItem<T>): boolean
-
   readonly isMerging: boolean
   beginMerge(): void
   tryMergeAsExisting(key: string): MergerItem<T> | undefined
@@ -42,7 +41,6 @@ export class Merger<T> implements MergerApi<T> {
   private existingCount: number = 0
   get isMerging(): boolean { return this.cycle > 0 }
   get count(): number { return this.existingCount }
-  get first(): MergerItemImpl<T> | undefined { return this.firstExisting }
 
   constructor(getKey: GetKey<T>, strict: boolean) {
     this.getKey = getKey

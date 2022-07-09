@@ -400,9 +400,8 @@ function doFinalize(item: MergerItem<RxNodeImpl>, isLeader: boolean): MergerItem
         })
     }
     // Finalize children if any
-    let child = node.children.first as MergerItem<RxNodeImpl> | undefined
-    while (child !== undefined)
-      child = doFinalize(child, childrenAreLeaders)
+    for (const item of node.children.items())
+      doFinalize(item, childrenAreLeaders)
   }
   return next
 }
@@ -423,11 +422,8 @@ function forEachChildRecursively(item: MergerItem<RxNodeImpl>, action: (e: any) 
   const node = item.self
   const e = node.element
   e && action(e)
-  let child = node.children.first
-  while (child !== undefined) {
-    forEachChildRecursively(child, action)
-    child = child.next
-  }
+  for (const item of node.children.items())
+    forEachChildRecursively(item, action)
 }
 
 function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
