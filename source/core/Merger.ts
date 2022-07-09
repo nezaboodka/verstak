@@ -7,15 +7,6 @@
 
 export type GetKey<T = unknown> = (item: T) => string | undefined
 
-export interface MergerItem<T> {
-  readonly self: T
-  readonly isAdded: boolean
-  readonly isMoved: boolean
-  readonly isRemoved: boolean
-  next?: MergerItem<T>
-  prev?: MergerItem<T>
-}
-
 export interface MergerApi<T> {
   readonly isMerging: boolean
   readonly count: number
@@ -24,6 +15,15 @@ export interface MergerApi<T> {
   tryMergeAsExisting(key: string): MergerItem<T> | undefined
   mergeAsNew(self: T): MergerItem<T>
   endMerge(yieldRemoved: boolean): Generator<MergerItem<T>>
+}
+
+export interface MergerItem<T> {
+  readonly self: T
+  readonly isAdded: boolean
+  readonly isMoved: boolean
+  readonly isRemoved: boolean
+  next?: MergerItem<T>
+  prev?: MergerItem<T>
 }
 
 export class Merger<T> implements MergerApi<T> {
