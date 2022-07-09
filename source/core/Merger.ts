@@ -5,19 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-// Merger API
-
 export type GetKey<T = unknown> = (item: T) => string | undefined
-
-export interface IMerger<T> {
-  readonly isMerging: boolean
-  readonly count: number
-  items(): Generator<MergerItem<T>>
-  beginMerge(): void
-  tryMergeAsExisting(key: string): MergerItem<T> | undefined
-  mergeAsNew(self: T): MergerItem<T>
-  endMerge(yieldRemoved: boolean): Generator<MergerItem<T>>
-}
 
 export interface MergerItem<T> {
   readonly self: T
@@ -28,26 +16,17 @@ export interface MergerItem<T> {
   prev?: MergerItem<T>
 }
 
-// Merger Implementation
-
-class MergerItemImpl<T> implements MergerItem<T> {
-  readonly self: T
-  cycle: number
-  status: number
-  next?: MergerItemImpl<T> = undefined
-  prev?: MergerItemImpl<T> = undefined
-  get isAdded(): boolean { return this.status === ~this.cycle && this.cycle > 0 }
-  get isMoved(): boolean { return this.status === this.cycle && this.cycle > 0 }
-  get isRemoved(): boolean { return this.cycle < 0 }
-
-  constructor(self: T, cycle: number) {
-    this.self = self
-    this.cycle = cycle
-    this.status = ~cycle // IsAdded=true
-  }
+export interface MergerApi<T> {
+  readonly isMerging: boolean
+  readonly count: number
+  items(): Generator<MergerItem<T>>
+  beginMerge(): void
+  tryMergeAsExisting(key: string): MergerItem<T> | undefined
+  mergeAsNew(self: T): MergerItem<T>
+  endMerge(yieldRemoved: boolean): Generator<MergerItem<T>>
 }
 
-export class Merger<T> implements IMerger<T> {
+export class Merger<T> implements MergerApi<T> {
   readonly getKey: GetKey<T>
   readonly strict: boolean
   private map = new Map<string | undefined, MergerItemImpl<T>>()
@@ -201,5 +180,22 @@ export class Merger<T> implements IMerger<T> {
 
   static createMergerItem<T>(self: T): MergerItem<T> {
     return new MergerItemImpl(self, 0)
+  }
+}
+
+class MergerItemImpl<T> implements MergerItem<T> {
+  readonly self: T
+  cycle: number
+  status: number
+  next?: MergerItemImpl<T> = undefined
+  prev?: MergerItemImpl<T> = undefined
+  get isAdded(): boolean { return this.status === ~this.cycle && this.cycle > 0 }
+  get isMoved(): boolean { return this.status === this.cycle && this.cycle > 0 }
+  get isRemoved(): boolean { return this.cycle < 0 }
+
+  constructor(self: T, cycle: number) {
+    this.self = self
+    this.cycle = cycle
+    this.status = ~cycle // IsAdded=true
   }
 }

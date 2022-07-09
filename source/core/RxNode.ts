@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions } from 'reactronic'
-import { Merger, MergerItem, IMerger } from './Merger'
+import { Merger, MergerItem, MergerApi } from './Merger'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
 export type Render<E = unknown, M = unknown, R = void> = (element: E, node: RxNode<E, M, R>) => R
@@ -33,7 +33,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
   // System-managed properties
   abstract readonly level: number
   abstract readonly parent: RxNode
-  abstract readonly children: IMerger<RxNode>
+  abstract readonly children: MergerApi<RxNode>
   abstract readonly item: MergerItem<RxNode> | undefined
   abstract readonly stamp: number
   abstract readonly element?: E
