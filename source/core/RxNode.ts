@@ -270,7 +270,7 @@ function runRenderChildrenThenDo(action: () => void): void {
       }
       // Render incremental children (if any)
       if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
-        promised = startIncrementalRendering(item, children, p1, p2).then(action, action)
+        promised = startIncrementalRendering(children, item, p1, p2).then(action, action)
     }
   }
   finally {
@@ -279,18 +279,21 @@ function runRenderChildrenThenDo(action: () => void): void {
   }
 }
 
-async function startIncrementalRendering(parent: MergerItem<RxNodeImpl>,
+async function startIncrementalRendering(
   merger: Merger<RxNodeImpl>,
+  parent: MergerItem<RxNodeImpl>,
   children1?: Array<MergerItem<RxNodeImpl>>,
   children2?: Array<MergerItem<RxNodeImpl>>): Promise<void> {
   if (children1)
-    await renderIncrementally(parent, merger, children1)
+    await renderIncrementally(merger, parent, children1)
   if (children2)
-    await renderIncrementally(parent, merger, children2)
+    await renderIncrementally(merger, parent, children2)
 }
 
-async function renderIncrementally(parent: MergerItem<RxNodeImpl>,
-  merger: Merger<RxNodeImpl>, children: Array<MergerItem<RxNodeImpl>>): Promise<void> {
+async function renderIncrementally(
+  merger: Merger<RxNodeImpl>,
+  parent: MergerItem<RxNodeImpl>,
+  children: Array<MergerItem<RxNodeImpl>>): Promise<void> {
   const checkEveryN = 30
   // if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
   await Transaction.requestNextFrame()
