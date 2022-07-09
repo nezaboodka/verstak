@@ -9,13 +9,22 @@
 
 export type GetKey<T = unknown> = (item: T) => string | undefined
 
-export class Chained<T> {
+export interface Chained<T> {
+  readonly self: T
+  readonly chainRevision: number
+  readonly orderRevision: number
+  next?: Chained<T>
+  prev?: Chained<T>
+  readonly after?: Chained<T> | undefined
+}
+
+export class ChainItem<T> implements Chained<T> {
   readonly self: T
   chainRevision: number
   orderRevision: number
-  next?: Chained<T> = undefined
-  prev?: Chained<T> = undefined
-  after?: Chained<T> | undefined = this
+  next?: ChainItem<T> = undefined
+  prev?: ChainItem<T> = undefined
+  after?: ChainItem<T> | undefined = this
   constructor(self: T, revision: number) {
     this.self = self
     this.chainRevision = revision
@@ -31,13 +40,13 @@ export interface ReadonlyChain<T> {
 
 export class Chain<T> implements ReadonlyChain<T> {
   private readonly getKey: GetKey<T>
-  private map = new Map<string | undefined, Chained<T>>()
+  private map = new Map<string | undefined, ChainItem<T>>()
   revision: number = 0
-  private mergedFirst?: Chained<T> = undefined
-  private mergedLast?: Chained<T> = undefined
+  private mergedFirst?: ChainItem<T> = undefined
+  private mergedLast?: ChainItem<T> = undefined
   private mergedCount: number = 0
-  private likelyNextToMerge?: Chained<T> = undefined
-  first?: Chained<T> = undefined
+  private likelyNextToMerge?: ChainItem<T> = undefined
+  first?: ChainItem<T> = undefined
   count: number = 0
 
   constructor(getKey: GetKey<T>) {
@@ -116,7 +125,7 @@ export class Chain<T> implements ReadonlyChain<T> {
   }
 
   mergeAsNewlyCreated(self: T): Chained<T> {
-    const chained = new Chained<T>(self, this.revision)
+    const chained = new ChainItem<T>(self, this.revision)
     this.map.set(this.getKey(self), chained)
     const last = this.mergedLast
     if (last) {
