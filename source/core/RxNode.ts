@@ -241,8 +241,8 @@ function runRenderChildrenThenDo(action: () => void): void {
   let promised: Promise<void> | undefined = undefined
   try {
     const children = node.children
-    const chainRevision = children.revision
-    if (chainRevision > 0) { // is merge in progress
+    const rev = children.revision
+    if (rev > 0) { // is merge in progress
       let vanished = children.endMerge()
       // Unmount vanished children
       while (vanished !== undefined)
@@ -257,7 +257,7 @@ function runRenderChildrenThenDo(action: () => void): void {
         const n = child.self
         if (n.element) {
           if (indirectIndexChange) {
-            child.selfIndexRevision = chainRevision
+            child.selfIndexRevision = rev
             indirectIndexChange = false
           }
         }
