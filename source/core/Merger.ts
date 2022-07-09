@@ -32,18 +32,18 @@ export interface MergerItem<T> {
 
 export class MergerItemImpl<T> implements MergerItem<T> {
   readonly self: T
-  mergeCycle: number
-  arrangeCycle: number
+  cycle: number
+  status: number
   next?: MergerItemImpl<T> = undefined
   prev?: MergerItemImpl<T> = undefined
-  get isAdded(): boolean { return this.arrangeCycle === -1 }
-  get isMoved(): boolean { return this.arrangeCycle === this.mergeCycle }
-  get isRemoved(): boolean { return this.mergeCycle < 0 }
+  get isAdded(): boolean { return this.status === ~this.cycle && this.cycle > 0 }
+  get isMoved(): boolean { return this.status === this.cycle && this.cycle > 0 }
+  get isRemoved(): boolean { return this.cycle < 0 }
 
   constructor(self: T, cycle: number) {
     this.self = self
-    this.mergeCycle = cycle
-    this.arrangeCycle = -1 // IsAdded=true
+    this.cycle = cycle
+    this.status = ~cycle // IsAdded=true
   }
 }
 
@@ -146,13 +146,11 @@ export class Merger<T> implements IMerger<T> {
       k = item ? this.getKey(item.self) : undefined
     }
     if (item && k !== undefined) {
-      if (item.mergeCycle === cycle)
+      if (item.cycle === cycle)
         throw new Error(`duplicate item id: ${key}`)
-      item.mergeCycle = cycle
+      item.cycle = cycle
       if (this.strict && item !== this.strictNext)
-        item.arrangeCycle = cycle // IsAdded=false, IsMoved=true
-      else if (item.arrangeCycle === -1)
-        item.arrangeCycle = 0 // IsAdded=false, IsMoved=false
+        item.status = cycle // IsAdded=false, IsMoved=true
       this.strictNext = item.next
       // Exclude from current sequence
       if (item.prev !== undefined)
@@ -192,12 +190,12 @@ export class Merger<T> implements IMerger<T> {
 
   markAsMoved(item: MergerItem<T>): void {
     const t = item as MergerItemImpl<T>
-    if (t.arrangeCycle >= 0) // do not interfere with IsAdded
-      t.arrangeCycle = t.mergeCycle
+    if (t.cycle > 0) // if not removed, > is intentional
+      t.status = t.cycle
   }
 
   private markAsRemoved(item: MergerItemImpl<T>): void {
-    if (item.mergeCycle >= 0)
-      item.mergeCycle = ~item.mergeCycle
+    if (item.cycle >= 0) // if not removed, >= is intentional
+      item.cycle = ~item.cycle
   }
 }
