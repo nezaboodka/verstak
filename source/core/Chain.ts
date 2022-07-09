@@ -5,24 +5,24 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-// Chain
+// Collection
 
 export type GetKey<T = unknown> = (item: T) => string | undefined
 
-export interface Chained<T> {
+export interface Item<T> {
   readonly self: T
   readonly chainRevision: number
   readonly indexRevision: number
-  next?: Chained<T>
-  prev?: Chained<T>
+  next?: Item<T>
+  prev?: Item<T>
 }
 
-export class ChainItem<T> implements Chained<T> {
+export class CollectionItem<T> implements Item<T> {
   readonly self: T
   chainRevision: number
   indexRevision: number
-  next?: ChainItem<T> = undefined
-  prev?: ChainItem<T> = undefined
+  next?: CollectionItem<T> = undefined
+  prev?: CollectionItem<T> = undefined
   constructor(self: T, revision: number) {
     this.self = self
     this.chainRevision = revision
@@ -30,22 +30,22 @@ export class ChainItem<T> implements Chained<T> {
   }
 }
 
-export interface ReadonlyChain<T> {
+export interface ReadonlyCollection<T> {
   readonly revision: number
-  readonly first?: Readonly<Chained<T>>
+  readonly first?: Readonly<Item<T>>
   readonly count: number
 }
 
-export class Chain<T> implements ReadonlyChain<T> {
+export class Collection<T> implements ReadonlyCollection<T> {
   private readonly getKey: GetKey<T>
   readonly strict: boolean
-  private map = new Map<string | undefined, ChainItem<T>>()
+  private map = new Map<string | undefined, CollectionItem<T>>()
   revision: number = 0
-  private mergedFirst?: ChainItem<T> = undefined
-  private mergedLast?: ChainItem<T> = undefined
+  private mergedFirst?: CollectionItem<T> = undefined
+  private mergedLast?: CollectionItem<T> = undefined
   private mergedCount: number = 0
-  private likelyNext?: ChainItem<T> = undefined
-  first?: ChainItem<T> = undefined
+  private likelyNext?: CollectionItem<T> = undefined
+  first?: CollectionItem<T> = undefined
   count: number = 0
 
   constructor(getKey: GetKey<T>, strict: boolean) {
@@ -59,7 +59,7 @@ export class Chain<T> implements ReadonlyChain<T> {
     this.revision = revision
   }
 
-  endMerge(): Chained<T> | undefined {
+  endMerge(): Item<T> | undefined {
     if (this.revision <= 0)
       throw new Error('chain merge is ended already')
     this.revision = 0
@@ -73,14 +73,14 @@ export class Chain<T> implements ReadonlyChain<T> {
           map.delete(getKey(child.self)), child = child.next
       }
       else { // it should be faster to recreate map using merging items
-        const map = this.map = new Map<string | undefined, Chained<T>>()
+        const map = this.map = new Map<string | undefined, Item<T>>()
         let child = this.mergedFirst
         while (child !== undefined)
           map.set(getKey(child.self), child), child = child.next
       }
     }
     else // just create new empty map
-      this.map = new Map<string | undefined, Chained<T>>()
+      this.map = new Map<string | undefined, Item<T>>()
     const vanished = this.first
     this.first = this.mergedFirst
     this.count = mergeCount
@@ -90,7 +90,7 @@ export class Chain<T> implements ReadonlyChain<T> {
     return vanished
   }
 
-  tryMergeAsExisting(key: string): Chained<T> | undefined {
+  tryMergeAsExisting(key: string): Item<T> | undefined {
     const chainRevision = this.revision
     let item = this.likelyNext
     let k = item ? this.getKey(item.self) : undefined
@@ -130,8 +130,8 @@ export class Chain<T> implements ReadonlyChain<T> {
     return item
   }
 
-  mergeAsNewlyCreated(self: T): Chained<T> {
-    const item = new ChainItem<T>(self, this.revision)
+  mergeAsNewlyCreated(self: T): Item<T> {
+    const item = new CollectionItem<T>(self, this.revision)
     this.map.set(this.getKey(self), item)
     const last = this.mergedLast
     if (last) {

@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Rx } from 'reactronic'
-import { RxNode, NodeFactory, Chained } from '../core/api'
+import { RxNode, NodeFactory, Item } from '../core/api'
 
 export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<E> {
 
@@ -34,7 +34,7 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
       const nativeParent = ElementNodeFactory.findEnvelopingElementNode(node).element
       if (nativeParent) {
         if (strict) {
-          const after = ElementNodeFactory.findPrevSiblingHtmlElementNode(node.chained!)
+          const after = ElementNodeFactory.findPrevSiblingHtmlElementNode(node.item!)
           if (after === undefined) {
             if (nativeParent !== e.parentNode || !e.previousSibling)
               nativeParent.prepend(e)
@@ -82,8 +82,8 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
     return p
   }
 
-  static findPrevSiblingHtmlElementNode(chained: Chained<RxNode>): Chained<RxNode<Element>> | undefined {
-    let p = chained.prev
+  static findPrevSiblingHtmlElementNode(item: Item<RxNode>): Item<RxNode<Element>> | undefined {
+    let p = item.prev
     while (p && !(p.self.element instanceof Element))
       p = p.prev
     return p
