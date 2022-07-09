@@ -45,7 +45,7 @@ export class Chain<T> implements ReadonlyChain<T> {
   private mergedFirst?: ChainItem<T> = undefined
   private mergedLast?: ChainItem<T> = undefined
   private mergedCount: number = 0
-  private likelyNextToMerge?: ChainItem<T> = undefined
+  private likelyNext?: ChainItem<T> = undefined
   first?: ChainItem<T> = undefined
   count: number = 0
 
@@ -86,12 +86,12 @@ export class Chain<T> implements ReadonlyChain<T> {
     this.count = mergeCount
     this.mergedFirst = this.mergedLast = undefined
     this.mergedCount = 0
-    this.likelyNextToMerge = this.first
+    this.likelyNext = this.first
     return vanished
   }
 
   tryMergeAsExisting(key: string): Chained<T> | undefined {
-    let result = this.likelyNextToMerge
+    let result = this.likelyNext
     let n = result ? this.getKey(result.self) : undefined
     if (n !== key) {
       result = this.map.get(key)
@@ -102,7 +102,7 @@ export class Chain<T> implements ReadonlyChain<T> {
       if (result.chainRevision === rev)
         throw new Error(`duplicate item id: ${key}`)
       result.chainRevision = rev
-      this.likelyNextToMerge = result.next
+      this.likelyNext = result.next
       // Exclude from main sequence
       if (result.prev !== undefined)
         result.prev.next = result.next
