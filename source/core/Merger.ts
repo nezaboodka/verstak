@@ -9,16 +9,7 @@
 
 export type GetKey<T = unknown> = (item: T) => string | undefined
 
-export interface Item<T> {
-  readonly self: T
-  readonly isAddedRecently: boolean
-  readonly isMovedRecently: boolean
-  readonly isRemovedRecently: boolean
-  next?: Item<T>
-  prev?: Item<T>
-}
-
-export interface ReadonlyMerger<T> {
+export interface IMerger<T> {
   readonly isMerging: boolean
   readonly count: number
   items(): Generator<Item<T>>
@@ -26,6 +17,15 @@ export interface ReadonlyMerger<T> {
   tryMergeAsExisting(key: string): Item<T> | undefined
   mergeAsNewlyCreated(self: T): Item<T>
   endMerge(yieldRemoved: boolean): Generator<Item<T>>
+}
+
+export interface Item<T> {
+  readonly self: T
+  readonly isAddedRecently: boolean
+  readonly isMovedRecently: boolean
+  readonly isRemovedRecently: boolean
+  next?: Item<T>
+  prev?: Item<T>
 }
 
 // Merger Implementation
@@ -47,7 +47,7 @@ export class MergerItem<T> implements Item<T> {
   }
 }
 
-export class Merger<T> implements ReadonlyMerger<T> {
+export class Merger<T> implements IMerger<T> {
   private readonly getKey: GetKey<T>
   readonly strict: boolean
   private map = new Map<string | undefined, MergerItem<T>>()
