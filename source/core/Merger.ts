@@ -30,12 +30,12 @@ export interface Item<T> {
 
 // Merger Implementation
 
-export class MergerItem<T> implements Item<T> {
+export class ItemImpl<T> implements Item<T> {
   readonly self: T
   mergeCycle: number
   arrangeCycle: number
-  next?: MergerItem<T> = undefined
-  prev?: MergerItem<T> = undefined
+  next?: ItemImpl<T> = undefined
+  prev?: ItemImpl<T> = undefined
   get isAddedRecently(): boolean { return this.arrangeCycle === -1 }
   get isMovedRecently(): boolean { return this.arrangeCycle === this.mergeCycle }
   get isRemovedRecently(): boolean { return this.mergeCycle < 0 }
@@ -48,17 +48,19 @@ export class MergerItem<T> implements Item<T> {
 }
 
 export class Merger<T> implements IMerger<T> {
-  private readonly getKey: GetKey<T>
+  readonly getKey: GetKey<T>
   readonly strict: boolean
-  private map = new Map<string | undefined, MergerItem<T>>()
+  private map = new Map<string | undefined, ItemImpl<T>>()
   private cycle: number = ~0
-  private firstMerged?: MergerItem<T> = undefined
-  private lastMerged?: MergerItem<T> = undefined
+  private firstMerged?: ItemImpl<T> = undefined
+  private lastMerged?: ItemImpl<T> = undefined
   private mergedCount: number = 0
-  private strictNext?: MergerItem<T> = undefined
-  first?: MergerItem<T> = undefined
-  count: number = 0
+  private strictNext?: ItemImpl<T> = undefined
+  private firstExisting?: ItemImpl<T> = undefined
+  private existingCount: number = 0
   get isMerging(): boolean { return this.cycle > 0 }
+  get count(): number { return this.existingCount }
+  get first(): ItemImpl<T> | undefined { return this.firstExisting }
 
   constructor(getKey: GetKey<T>, strict: boolean) {
     this.getKey = getKey
@@ -66,7 +68,7 @@ export class Merger<T> implements IMerger<T> {
   }
 
   *items(): Generator<Item<T>> {
-    let item = this.first
+    let item = this.firstExisting
     while (item !== undefined) {
       yield item
       item = item.next
@@ -91,30 +93,30 @@ export class Merger<T> implements IMerger<T> {
       }
     }
     // Retained
-    item = this.first
+    item = this.firstExisting
     while (item !== undefined) {
       yield item
       item = item.next
     }
   }
 
-  private doEndMerge(): MergerItem<T> | undefined {
+  private doEndMerge(): ItemImpl<T> | undefined {
     if (!this.isMerging)
       throw new Error('merge is ended already')
     this.cycle = ~this.cycle
     const mergedCount = this.mergedCount
     if (mergedCount > 0) {
       const getKey = this.getKey
-      if (mergedCount > this.count) { // it should be faster to delete vanished items
+      if (mergedCount > this.existingCount) { // it should be faster to delete vanished items
         const map = this.map
-        let item = this.first
+        let item = this.firstExisting
         while (item !== undefined) {
           map.delete(getKey(item.self))
           item = item.next
         }
       }
       else { // it should be faster to recreate map using merging items
-        const map = this.map = new Map<string | undefined, MergerItem<T>>()
+        const map = this.map = new Map<string | undefined, ItemImpl<T>>()
         let item = this.firstMerged
         while (item !== undefined) {
           map.set(getKey(item.self), item)
@@ -123,13 +125,13 @@ export class Merger<T> implements IMerger<T> {
       }
     }
     else // just create new empty map
-      this.map = new Map<string | undefined, MergerItem<T>>()
-    const removed = this.first
-    this.first = this.firstMerged
-    this.count = mergedCount
+      this.map = new Map<string | undefined, ItemImpl<T>>()
+    const removed = this.firstExisting
+    this.firstExisting = this.firstMerged
+    this.existingCount = mergedCount
     this.firstMerged = this.lastMerged = undefined
     this.mergedCount = 0
-    this.strictNext = this.first
+    this.strictNext = this.firstExisting
     return removed
   }
 
@@ -155,9 +157,9 @@ export class Merger<T> implements IMerger<T> {
         item.prev.next = item.next
       if (item.next !== undefined)
         item.next.prev = item.prev
-      if (item === this.first)
-        this.first = item.next
-      this.count--
+      if (item === this.firstExisting)
+        this.firstExisting = item.next
+      this.existingCount--
       // Include into merged sequence
       const last = this.lastMerged
       item.prev = last
@@ -172,7 +174,7 @@ export class Merger<T> implements IMerger<T> {
   }
 
   mergeAsNew(self: T): Item<T> {
-    const item = new MergerItem<T>(self, this.cycle)
+    const item = new ItemImpl<T>(self, this.cycle)
     this.map.set(this.getKey(self), item)
     const last = this.lastMerged
     if (last) {
@@ -187,12 +189,12 @@ export class Merger<T> implements IMerger<T> {
   }
 
   markAsMoved(item: Item<T>): void {
-    const t = item as MergerItem<T>
+    const t = item as ItemImpl<T>
     if (t.arrangeCycle >= 0) // do not interfere with IsAdded
       t.arrangeCycle = t.mergeCycle
   }
 
-  private markAsRemoved(item: MergerItem<T>): void {
+  private markAsRemoved(item: ItemImpl<T>): void {
     if (item.mergeCycle >= 0)
       item.mergeCycle = ~item.mergeCycle
   }

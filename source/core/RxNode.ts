@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions } from 'reactronic'
-import { IMerger, Item, Merger, MergerItem } from './Merger'
+import { IMerger, Item, Merger, ItemImpl } from './Merger'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
 export type Render<E = unknown, M = unknown, R = void> = (element: E, node: RxNode<E, M, R>) => R
@@ -506,7 +506,7 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-const gSysRoot = new MergerItem<RxNodeImpl>(new RxNodeImpl<null, void>('SYSTEM',
+const gSysRoot = new ItemImpl<RxNodeImpl>(new RxNodeImpl<null, void>('SYSTEM',
   new StaticNodeFactory<null>('SYSTEM', false, null), false,
   { level: 0 } as RxNodeImpl, undefined, NOP), 0) // fake parent (overwritten below)
 gSysRoot.self.item = gSysRoot
