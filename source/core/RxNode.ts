@@ -251,18 +251,18 @@ function runRenderChildrenThenDo(action: () => void): void {
       const strict = children.strict
       let p1: Array<Item<RxNodeImpl>> | undefined = undefined
       let p2: Array<Item<RxNodeImpl>> | undefined = undefined
-      let indirectIndexChange = false
+      let indirectMove = false
       let child = children.first
       while (child !== undefined && !Transaction.isCanceled) {
         const n = child.self
         if (n.element) {
-          if (indirectIndexChange) {
-            child.selfIndexRevision = rev
-            indirectIndexChange = false
+          if (indirectMove) {
+            child.isMoved = true
+            indirectMove = false
           }
         }
-        else if (strict && child.isMovedRecently)
-          indirectIndexChange = true
+        else if (strict && child.isMoved)
+          indirectMove = true
         if (n.priority === Priority.SyncP0)
           prepareThenRunRender(child, strict)
         else if (n.priority === Priority.AsyncP1)
@@ -341,7 +341,7 @@ function prepareRender(item: Item<RxNodeImpl>, strict: boolean): void {
     factory.initialize?.(node, undefined)
   }
   // (Re)Order if needed
-  if (item.isMovedRecently)
+  if (item.isMoved)
     factory.put?.(node, strict)
 }
 
