@@ -104,15 +104,12 @@ export class Chain<T> implements ReadonlyChain<T> {
       this.count--
       // Include into merged sequence
       const last = this.mergedLast
-      if (last) {
-        result.prev = last
-        result.next = undefined
+      result.prev = last
+      result.next = undefined
+      if (last)
         this.mergedLast = last.next = result
-      }
-      else {
-        result.prev = result.next = undefined
+      else
         this.mergedFirst = this.mergedLast = result
-      }
       this.mergedCount++
     }
     return result
