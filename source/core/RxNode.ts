@@ -282,12 +282,12 @@ function runRenderChildrenThenDo(action: () => void): void {
 async function startIncrementalRendering(
   merger: Merger<RxNodeImpl>,
   parent: MergerItem<RxNodeImpl>,
-  children1?: Array<MergerItem<RxNodeImpl>>,
-  children2?: Array<MergerItem<RxNodeImpl>>): Promise<void> {
-  if (children1)
-    await renderIncrementally(merger, parent, children1)
-  if (children2)
-    await renderIncrementally(merger, parent, children2)
+  priority1?: Array<MergerItem<RxNodeImpl>>,
+  priority2?: Array<MergerItem<RxNodeImpl>>): Promise<void> {
+  if (priority1)
+    await renderIncrementally(merger, parent, priority1)
+  if (priority2)
+    await renderIncrementally(merger, parent, priority2)
 }
 
 async function renderIncrementally(
