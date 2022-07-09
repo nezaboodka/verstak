@@ -15,6 +15,8 @@ export interface Item<T> {
   readonly selfIndexRevision: number
   next?: Item<T>
   prev?: Item<T>
+  readonly isAdded: boolean
+  readonly isRemoved: boolean
   isMoved: boolean
 }
 
@@ -24,6 +26,9 @@ export class CollectionItem<T> implements Item<T> {
   selfIndexRevision: number
   next?: CollectionItem<T> = undefined
   prev?: CollectionItem<T> = undefined
+  get isAdded(): boolean { throw new Error('not implemented') }
+  get isRemoved(): boolean { return this.selfIndexRevision < 0 }
+  set isRemoved(value: boolean) { if (value) this.selfIndexRevision = ~this.selfIndexRevision }
   get isMoved(): boolean { return this.selfIndexRevision === this.collectionRevision }
   set isMoved(value: boolean) { if (value) this.selfIndexRevision = this.collectionRevision }
 
@@ -63,7 +68,26 @@ export class Collection<T> implements ReadonlyCollection<T> {
     this.revision = revision
   }
 
-  endMerge(): Item<T> | undefined {
+  *endMerge(yieldRemoved: boolean): Generator<Item<T>> {
+    let item = this.doEndMerge()
+    // Removed
+    if (yieldRemoved) {
+      while (item !== undefined) {
+        item.isRemoved = true
+        const next = item.next
+        yield item
+        item = next
+      }
+    }
+    // Retained
+    item = this.first
+    while (item !== undefined) {
+      yield item
+      item = item.next
+    }
+  }
+
+  private doEndMerge(): CollectionItem<T> | undefined {
     if (this.revision <= 0)
       throw new Error('chain merge is ended already')
     this.revision = 0
@@ -85,13 +109,13 @@ export class Collection<T> implements ReadonlyCollection<T> {
     }
     else // just create new empty map
       this.map = new Map<string | undefined, Item<T>>()
-    const vanished = this.first
+    const removed = this.first
     this.first = this.mergedFirst
     this.count = mergeCount
     this.mergedFirst = this.mergedLast = undefined
     this.mergedCount = 0
     this.strictNext = this.first
-    return vanished
+    return removed
   }
 
   tryMergeAsExisting(key: string): Item<T> | undefined {

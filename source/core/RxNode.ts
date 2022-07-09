@@ -243,33 +243,32 @@ function runRenderChildrenThenDo(action: () => void): void {
     const children = node.children
     const rev = children.revision
     if (rev > 0) { // is merge in progress
-      let vanished = children.endMerge()
-      // Unmount vanished children
-      while (vanished !== undefined)
-        vanished = doFinalize(vanished, true)
-      // Render current children
       const strict = children.strict
       let p1: Array<Item<RxNodeImpl>> | undefined = undefined
       let p2: Array<Item<RxNodeImpl>> | undefined = undefined
       let isMoved = false
-      let child = children.first
-      while (child !== undefined && !Transaction.isCanceled) {
-        const n = child.self
-        if (n.element) {
-          if (isMoved) {
-            child.isMoved = true
-            isMoved = false
+      for (const item of children.endMerge(true)) {
+        if (!item.isRemoved) {
+          if (Transaction.isCanceled)
+            break
+          const n = item.self
+          if (n.element) {
+            if (isMoved) {
+              item.isMoved = true
+              isMoved = false
+            }
           }
+          else if (strict && item.isMoved)
+            isMoved = true // apply to the first node with an element
+          if (n.priority === Priority.SyncP0)
+            prepareThenRunRender(item, strict)
+          else if (n.priority === Priority.AsyncP1)
+            p1 = push(p1, item)
+          else
+            p2 = push(p2, item)
         }
-        else if (strict && child.isMoved)
-          isMoved = true // apply to the first node with an element
-        if (n.priority === Priority.SyncP0)
-          prepareThenRunRender(child, strict)
-        else if (n.priority === Priority.AsyncP1)
-          p1 = push(p1, child)
         else
-          p2 = push(p2, child)
-        child = child.next
+          doFinalize(item, true)
       }
       // Render incremental children (if any)
       if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
