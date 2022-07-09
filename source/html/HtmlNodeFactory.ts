@@ -28,7 +28,7 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
     return false // children of HTML nodes are not treated as leaders
   }
 
-  put(node: RxNode<E>, strict: boolean): void {
+  arrange(node: RxNode<E>, strict: boolean): void {
     const e = node.element
     if (e) {
       const nativeParent = ElementNodeFactory.findEnvelopingElementNode(node).element

@@ -133,7 +133,7 @@ export class NodeFactory<E> {
     return isLeader // treat children as finalization leaders as well
   }
 
-  put(node: RxNode<E>, strict: boolean): void {
+  arrange(node: RxNode<E>, strict: boolean): void {
     // nothing to do by default
   }
 
@@ -341,7 +341,7 @@ function prepareRender(item: Item<RxNodeImpl>, strict: boolean): void {
   }
   // (Re)Order if needed
   if (item.isMoved)
-    factory.put?.(node, strict)
+    factory.arrange?.(node, strict)
 }
 
 function runRender(item: Item<RxNodeImpl>): void {
