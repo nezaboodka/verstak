@@ -1,8 +1,9 @@
 ﻿
 # **MergeList**
 
-MergeList is a list providing fast merge of lists and detection
-of changes (added, moved, removed items).
+MergeList provides fast merge of lists and detection
+of differences/changes after the merge: which items
+are added, moved, and removed.
 
 ``` typescript
 const items1 = ['Hello', 'Welcome', 'Bye', 'End']
