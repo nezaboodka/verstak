@@ -39,6 +39,8 @@ export interface MergeListItem<T> {
 }
 
 export class MergeList<T> implements Merger<T> {
+  readonly strict: boolean
+  readonly getKey: GetKey<T>
   private map: Map<string | undefined, MergeListItemImpl<T>>
   private tag: number
   private lastNotFoundKey: string | undefined
@@ -46,10 +48,10 @@ export class MergeList<T> implements Merger<T> {
   private current: Sequence<T>
   private added: Sequence<T>
   private former: Sequence<T>
-  readonly getKey: GetKey<T>
-  readonly strict: boolean
 
-  constructor(getKey: GetKey<T>, strict: boolean) {
+  constructor(strict: boolean, getKey: GetKey<T>) {
+    this.strict = strict
+    this.getKey = getKey
     this.map = new Map<string | undefined, MergeListItemImpl<T>>()
     this.tag = ~0
     this.lastNotFoundKey = undefined
@@ -57,8 +59,6 @@ export class MergeList<T> implements Merger<T> {
     this.current = new Sequence<T>()
     this.added = new Sequence<T>()
     this.former = new Sequence<T>()
-    this.getKey = getKey
-    this.strict = strict
   }
 
   get count(): number {

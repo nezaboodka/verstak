@@ -13,7 +13,7 @@ test('MergeList', t => {
   const etalon2 = ['Added1', 'Bye', 'End', 'Added2', 'Hello', 'Added3']
 
   // Basic
-  const list = new MergeList<string>(s => s, true)
+  const list = new MergeList<string>(true, s => s)
   for (const x of etalon1)
     list.add(x)
   t.is(list.count, 4)

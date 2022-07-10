@@ -215,7 +215,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
-    this.children = new MergeList<RxNodeImpl>(getNodeName, factory.strict)
+    this.children = new MergeList<RxNodeImpl>(factory.strict, getNodeName)
     this.item = undefined
     this.stamp = 0
     this.element = undefined
