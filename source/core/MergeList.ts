@@ -15,8 +15,8 @@ export interface Merger<T> {
 
   items(): Generator<MergeListItem<T>>
   lookup(key: string): MergeListItem<T> | undefined
-  add(self: T): MergeListItem<T>
-  remove(item: MergeListItem<T>): void
+  add(self: T, keepInAdded?: boolean): MergeListItem<T>
+  remove(item: MergeListItem<T>, keepInRemoved?: boolean): void
   move(item: MergeListItem<T>, after: MergeListItem<T>): void
 
   beginMerge(): void
@@ -85,11 +85,7 @@ export class MergeList<T> implements Merger<T> {
     return result
   }
 
-  add(self: T): MergeListItem<T> {
-    return this.doAdd(self)
-  }
-
-  private doAdd(self: T): MergeListItem<T> {
+  add(self: T, keepInRemoved?: boolean): MergeListItem<T> {
     const key = this.getKey(self)
     if (this.lookup(key) !== undefined)
       throw new Error(`key is already in use: ${key}`)
