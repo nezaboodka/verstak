@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Rx } from 'reactronic'
-import { RxNode, NodeFactory, MergerItem } from '../core/api'
+import { RxNode, NodeFactory, MergeListItem } from '../core/api'
 
 export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<E> {
 
@@ -31,7 +31,7 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
   arrange(node: RxNode<E>, strict: boolean): void {
     const e = node.element
     if (e) {
-      const nativeParent = ElementNodeFactory.findEnvelopingElementNode(node).element
+      const nativeParent = ElementNodeFactory.findNearestParentHtmlElementNode(node).element
       if (nativeParent) {
         if (strict) {
           const after = ElementNodeFactory.findPrevSiblingHtmlElementNode(node.item!)
@@ -75,14 +75,14 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
     gBlinkingEffect = value
   }
 
-  static findEnvelopingElementNode(node: RxNode): RxNode<Element> {
+  static findNearestParentHtmlElementNode(node: RxNode): RxNode<Element> {
     let p = node.parent
     while (p.element instanceof Element === false && p !== node)
       p = p.parent
     return p
   }
 
-  static findPrevSiblingHtmlElementNode(item: MergerItem<RxNode>): MergerItem<RxNode<Element>> | undefined {
+  static findPrevSiblingHtmlElementNode(item: MergeListItem<RxNode>): MergeListItem<RxNode<Element>> | undefined {
     let p = item.prev
     while (p && !(p.self.element instanceof Element))
       p = p.prev

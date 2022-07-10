@@ -7,31 +7,31 @@
 
 export type GetKey<T = unknown> = (item: T) => string | undefined
 
-export interface MergerApi<T> {
+export interface Merger<T> {
   // readonly getKey: GetKey<T>
   readonly strict: boolean
   readonly count: number
   readonly isMergeInProgress: boolean
-  lookup(key: string): MergerItem<T> | undefined
-  actual(): Generator<MergerItem<T>>
-  removed(keep?: boolean): Generator<MergerItem<T>>
-  isAdded(item: MergerItem<T>): boolean
-  isMoved(item: MergerItem<T>): boolean
-  isRemoved(item: MergerItem<T>): boolean
-  isActual(item: MergerItem<T>): boolean
+  lookup(key: string): MergeListItem<T> | undefined
+  actual(): Generator<MergeListItem<T>>
+  removed(keep?: boolean): Generator<MergeListItem<T>>
+  isAdded(item: MergeListItem<T>): boolean
+  isMoved(item: MergeListItem<T>): boolean
+  isRemoved(item: MergeListItem<T>): boolean
+  isActual(item: MergeListItem<T>): boolean
   beginMerge(): void
-  tryMergeAsExisting(key: string): MergerItem<T> | undefined
-  mergeAsNew(self: T): MergerItem<T>
+  tryMergeAsExisting(key: string): MergeListItem<T> | undefined
+  mergeAsNew(self: T): MergeListItem<T>
   endMerge(keepRemoved?: boolean): void
 }
 
-export interface MergerItem<T> {
+export interface MergeListItem<T> {
   readonly self: T
-  next?: MergerItem<T>
-  prev?: MergerItem<T>
+  next?: MergeListItem<T>
+  prev?: MergeListItem<T>
 }
 
-export class Merger<T> implements MergerApi<T> {
+export class MergeList<T> implements Merger<T> {
   private map = new Map<string | undefined, MergerItemImpl<T>>()
   private cycle: number = ~0
   private strictNext?: MergerItemImpl<T> = undefined
@@ -57,18 +57,18 @@ export class Merger<T> implements MergerApi<T> {
     return this.cycle > 0
   }
 
-  lookup(key: string): MergerItem<T> | undefined {
+  lookup(key: string): MergeListItem<T> | undefined {
     let result = this.map.get(key)
     if (result && this.getKey(result.self) !== key)
       result = undefined
     return result
   }
 
-  actual(): Generator<MergerItem<T>> {
+  actual(): Generator<MergeListItem<T>> {
     return createIterator(this.firstActual)
   }
 
-  removed(keep?: boolean): Generator<MergerItem<T>> {
+  removed(keep?: boolean): Generator<MergeListItem<T>> {
     const result = createIterator(this.firstOld)
     if (keep === undefined || !keep) {
       this.firstOld = undefined
@@ -77,7 +77,7 @@ export class Merger<T> implements MergerApi<T> {
     return result
   }
 
-  isAdded(item: MergerItem<T>): boolean {
+  isAdded(item: MergeListItem<T>): boolean {
     const t = item as MergerItemImpl<T>
     let cycle = this.cycle
     if (cycle < 0)
@@ -85,7 +85,7 @@ export class Merger<T> implements MergerApi<T> {
     return t.status === ~cycle && t.cycle > 0
   }
 
-  isMoved(item: MergerItem<T>): boolean {
+  isMoved(item: MergeListItem<T>): boolean {
     const t = item as MergerItemImpl<T>
     let cycle = this.cycle
     if (cycle < 0)
@@ -93,13 +93,13 @@ export class Merger<T> implements MergerApi<T> {
     return t.status === cycle && t.cycle > 0
   }
 
-  isRemoved(item: MergerItem<T>): boolean {
+  isRemoved(item: MergeListItem<T>): boolean {
     const t = item as MergerItemImpl<T>
     const cycle = this.cycle
     return cycle > 0 ? t.cycle < cycle : t.cycle < cycle - 1
   }
 
-  isActual(item: MergerItem<T>): boolean {
+  isActual(item: MergeListItem<T>): boolean {
     const t = item as MergerItemImpl<T>
     return t.cycle === this.cycle
   }
@@ -147,7 +147,7 @@ export class Merger<T> implements MergerApi<T> {
     }
   }
 
-  tryMergeAsExisting(key: string): MergerItem<T> | undefined {
+  tryMergeAsExisting(key: string): MergeListItem<T> | undefined {
     const cycle = this.cycle
     let item = this.strictNext
     let k = item ? this.getKey(item.self) : undefined
@@ -183,7 +183,7 @@ export class Merger<T> implements MergerApi<T> {
     return item
   }
 
-  mergeAsNew(self: T): MergerItem<T> {
+  mergeAsNew(self: T): MergeListItem<T> {
     const item = new MergerItemImpl<T>(self, this.cycle)
     this.map.set(this.getKey(self), item)
     this.strictNext = undefined
@@ -198,18 +198,18 @@ export class Merger<T> implements MergerApi<T> {
     return item
   }
 
-  markAsMoved(item: MergerItem<T>): void {
+  markAsMoved(item: MergeListItem<T>): void {
     const t = item as MergerItemImpl<T>
     if (t.cycle > 0) // if not removed, > is intentional
       t.status = t.cycle
   }
 
-  static createMergerItem<T>(self: T): MergerItem<T> {
+  static createMergerItem<T>(self: T): MergeListItem<T> {
     return new MergerItemImpl(self, 0)
   }
 }
 
-class MergerItemImpl<T> implements MergerItem<T> {
+class MergerItemImpl<T> implements MergeListItem<T> {
   readonly self: T
   cycle: number
   status: number
@@ -223,7 +223,7 @@ class MergerItemImpl<T> implements MergerItem<T> {
   }
 }
 
-function *createIterator<T>(first: MergerItem<T> | undefined): Generator<MergerItem<T>> {
+function *createIterator<T>(first: MergeListItem<T> | undefined): Generator<MergeListItem<T>> {
   while (first !== undefined) {
     const next = first.next
     yield first
