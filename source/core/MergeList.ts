@@ -35,29 +35,53 @@ export interface MergeListItem<T> {
   readonly self: T
   next?: MergeListItem<T>
   prev?: MergeListItem<T>
+  aux?: MergeListItem<T>
 }
 
 export class MergeList<T> implements Merger<T> {
-  private map = new Map<string | undefined, MergeListItemImpl<T>>()
-  private tag: number = ~0
-  private lastNotFoundKey: string | undefined = undefined
-  private strictNext?: MergeListItemImpl<T> = undefined
-  private firstActual?: MergeListItemImpl<T> = undefined
-  private lastActual?: MergeListItemImpl<T> = undefined
-  private actualCount: number = 0
-  private firstPending?: MergeListItemImpl<T> = undefined
-  private pendingCount: number = 0
+  private map: Map<string | undefined, MergeListItemImpl<T>>
+  private tag: number
+  private lastNotFoundKey: string | undefined
+  private strictNext?: MergeListItemImpl<T>
+  private firstActual?: MergeListItemImpl<T>
+  private lastActual?: MergeListItemImpl<T>
+  private actualCount: number
+  private firstAdded?: MergeListItemImpl<T>
+  private lastAdded?: MergeListItemImpl<T>
+  private addedCount: number
+  private firstPending?: MergeListItemImpl<T>
+  private pendingCount: number
 
   readonly getKey: GetKey<T>
   readonly strict: boolean
 
   constructor(getKey: GetKey<T>, strict: boolean) {
+    this.map = new Map<string | undefined, MergeListItemImpl<T>>()
+    this.tag = ~0
+    this.lastNotFoundKey = undefined
+    this.strictNext = undefined
+    this.firstActual = undefined
+    this.lastActual = undefined
+    this.actualCount = 0
+    this.firstAdded = undefined
+    this.lastAdded = undefined
+    this.addedCount = 0
+    this.firstPending = undefined
+    this.pendingCount = 0
     this.getKey = getKey
     this.strict = strict
   }
 
   get count(): number {
     return this.actualCount
+  }
+
+  get addedItemCount(): number {
+    return this.addedCount
+  }
+
+  get removedItemCount(): number {
+    return this.pendingCount
   }
 
   get isMergeInProgress(): boolean {
@@ -98,6 +122,15 @@ export class MergeList<T> implements Merger<T> {
     this.map.set(key, item)
     this.lastNotFoundKey = undefined
     this.strictNext = undefined
+    // Append to added items
+    const lastAdded = this.lastAdded
+    if (lastAdded) {
+      this.lastAdded = lastAdded.aux = item
+    }
+    else
+      this.firstAdded = this.lastAdded = item
+    this.addedCount++
+    // Append to actual items
     const last = this.lastActual
     if (last) {
       item.prev = last
@@ -203,7 +236,12 @@ export class MergeList<T> implements Merger<T> {
   }
 
   addedItems(keep?: boolean): Generator<MergeListItem<T>> {
-    throw new Error('not implemented')
+    const result = createIterator(this.firstAdded, undefined)
+    if (keep === undefined || !keep) {
+      this.firstAdded = this.lastAdded = undefined
+      this.addedCount = 0
+    }
+    return result
   }
 
   removedItems(keep?: boolean): Generator<MergeListItem<T>> {
@@ -259,13 +297,17 @@ class MergeListItemImpl<T> implements MergeListItem<T> {
   readonly self: T
   tag: number
   status: number
-  next?: MergeListItemImpl<T> = undefined
-  prev?: MergeListItemImpl<T> = undefined
+  next?: MergeListItemImpl<T>
+  prev?: MergeListItemImpl<T>
+  aux?: MergeListItemImpl<T>
 
   constructor(self: T, tag: number) {
     this.self = self
     this.tag = tag
     this.status = ~tag // isAdded=true
+    this.next = undefined
+    this.prev = undefined
+    this.aux = undefined
   }
 }
 
