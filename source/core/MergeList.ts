@@ -197,19 +197,13 @@ export class MergeList<T> implements Merger<T> {
       const getKey = this.getKey
       if (currentCount > this.formerItemCount) { // it should be faster to delete vanished items
         const map = this.map
-        let x = this.firstFormerItem
-        while (x !== undefined) {
+        for (const x of all(this.firstFormerItem))
           map.delete(getKey(x.self))
-          x = x.next
-        }
       }
       else { // it should be faster to recreate map using merging items
         const map = this.map = new Map<string | undefined, MergeListItemImpl<T>>()
-        let x = this.firstCurrentItem
-        while (x !== undefined) {
+        for (const x of all(this.firstCurrentItem))
           map.set(getKey(x.self), x)
-          x = x.next
-        }
       }
     }
     else // just create new empty map
@@ -338,5 +332,12 @@ class MergeListItemImpl<T> implements MergeListItem<T> {
     this.next = undefined
     this.prev = undefined
     this.aux = undefined
+  }
+}
+
+function *all<T>(first: MergeListItemImpl<T> | undefined): Generator<MergeListItemImpl<T>> {
+  while (first !== undefined) {
+    yield first
+    first = first.next
   }
 }
