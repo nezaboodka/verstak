@@ -6,16 +6,17 @@ of differences/changes after the merge: which items
 are added, moved, and removed.
 
 ``` typescript
-const items1 = ['Hello', 'Welcome', 'Bye', 'End']
 const list = new MergeList<string>(true, s => s)
-for (const x of items1)
+
+const example1 = ['Hello', 'Welcome', 'Bye', 'End']
+for (const x of example1)
   list.add(x)
 // list.items: 'Hello', 'Welcome', 'Bye', 'End'
 
 // Merge list2 with list1
-const items2 = ['Added1', 'Bye', 'End', 'Added2', 'Hello', 'Added3']
+const example2 = ['Added1', 'Bye', 'End', 'Added2', 'Hello', 'Added3']
 list.beginMerge()
-for (const x of etalon2)
+for (const x of example2)
   if (!list.claim(x))
     list.add(x, true)
 list.endMerge(true)
