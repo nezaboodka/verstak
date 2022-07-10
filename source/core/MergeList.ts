@@ -17,11 +17,11 @@ export interface Merger<T> {
 
   lookup(key: string): MergeListItem<T> | undefined
   claim(key: string): MergeListItem<T> | undefined
-  add(self: T, keepInAdded?: boolean): MergeListItem<T>
-  remove(item: MergeListItem<T>, keepInRemoved?: boolean): void
+  add(self: T, keepInAddedItems?: boolean): MergeListItem<T>
+  remove(item: MergeListItem<T>, keepInRemovedItems?: boolean): void
   move(item: MergeListItem<T>, after: MergeListItem<T>): void
   beginMerge(): void
-  endMerge(keepAddedAndRemoved?: boolean): void
+  endMerge(keepAddedAndRemovedItems?: boolean): void
 
   items(): Generator<MergeListItem<T>>
   addedItems(keep?: boolean): Generator<MergeListItem<T>>
@@ -132,7 +132,7 @@ export class MergeList<T> implements Merger<T> {
     return item
   }
 
-  add(self: T, keepInAdded?: boolean): MergeListItem<T> {
+  add(self: T, keepInAddedItems?: boolean): MergeListItem<T> {
     const key = this.getKey(self)
     if (this.lookup(key) !== undefined)
       throw new Error(`key is already in use: ${key}`)
@@ -154,7 +154,7 @@ export class MergeList<T> implements Merger<T> {
     else
       this.current.first = this.current.last = item
     this.current.count++
-    if (keepInAdded === true) {
+    if (keepInAddedItems === true) {
       // Include into added sequence
       const lastAdded = this.added.last
       if (lastAdded)
@@ -166,11 +166,11 @@ export class MergeList<T> implements Merger<T> {
     return item
   }
 
-  remove(item: MergeListItem<T>, keepInRemoved?: boolean): void {
+  remove(item: MergeListItem<T>, keepInRemovedItems?: boolean): void {
     if (!this.isRemoved(item)) {
       const x = item as MergeListItemImpl<T>
       x.tag--
-      if (keepInRemoved === true) {
+      if (keepInRemovedItems === true) {
         throw new Error('not implemented')
         // move to this.firstOld
       }
@@ -193,7 +193,7 @@ export class MergeList<T> implements Merger<T> {
     this.added.count = 0
   }
 
-  endMerge(keepAddedAndRemoved?: boolean): void {
+  endMerge(keepAddedAndRemovedItems?: boolean): void {
     if (!this.isMergeInProgress)
       throw new Error('merge is ended already')
     this.tag = ~this.tag
@@ -213,7 +213,7 @@ export class MergeList<T> implements Merger<T> {
     }
     else // just create new empty map
       this.map = new Map<string | undefined, MergeListItemImpl<T>>()
-    if (keepAddedAndRemoved === undefined || !keepAddedAndRemoved) {
+    if (keepAddedAndRemovedItems === undefined || !keepAddedAndRemovedItems) {
       this.former.first = undefined
       this.former.count = 0
       this.added.first = undefined
