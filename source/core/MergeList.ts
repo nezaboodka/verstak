@@ -15,14 +15,14 @@ export interface Merger<T> {
   lookup(key: string): MergeListItem<T> | undefined
   actual(): Generator<MergeListItem<T>>
   removed(keep?: boolean): Generator<MergeListItem<T>>
-  isAdded(item: MergeListItem<T>): boolean
-  isMoved(item: MergeListItem<T>): boolean
-  isRemoved(item: MergeListItem<T>): boolean
-  isActual(item: MergeListItem<T>): boolean
   beginMerge(): void
   tryMergeAsExisting(key: string): MergeListItem<T> | undefined
   mergeAsNew(self: T): MergeListItem<T>
   endMerge(keepRemoved?: boolean): void
+  isAdded(item: MergeListItem<T>): boolean
+  isMoved(item: MergeListItem<T>): boolean
+  isRemoved(item: MergeListItem<T>): boolean
+  isActual(item: MergeListItem<T>): boolean
 }
 
 export interface MergeListItem<T> {
@@ -75,33 +75,6 @@ export class MergeList<T> implements Merger<T> {
       this.oldCount = 0
     }
     return result
-  }
-
-  isAdded(item: MergeListItem<T>): boolean {
-    const t = item as MergerItemImpl<T>
-    let cycle = this.cycle
-    if (cycle < 0)
-      cycle = ~cycle
-    return t.status === ~cycle && t.cycle > 0
-  }
-
-  isMoved(item: MergeListItem<T>): boolean {
-    const t = item as MergerItemImpl<T>
-    let cycle = this.cycle
-    if (cycle < 0)
-      cycle = ~cycle
-    return t.status === cycle && t.cycle > 0
-  }
-
-  isRemoved(item: MergeListItem<T>): boolean {
-    const t = item as MergerItemImpl<T>
-    const cycle = this.cycle
-    return cycle > 0 ? t.cycle < cycle : t.cycle < cycle - 1
-  }
-
-  isActual(item: MergeListItem<T>): boolean {
-    const t = item as MergerItemImpl<T>
-    return t.cycle === this.cycle
   }
 
   beginMerge(): void {
@@ -202,6 +175,33 @@ export class MergeList<T> implements Merger<T> {
     const t = item as MergerItemImpl<T>
     if (t.cycle > 0) // if not removed, > is intentional
       t.status = t.cycle
+  }
+
+  isAdded(item: MergeListItem<T>): boolean {
+    const t = item as MergerItemImpl<T>
+    let cycle = this.cycle
+    if (cycle < 0)
+      cycle = ~cycle
+    return t.status === ~cycle && t.cycle > 0
+  }
+
+  isMoved(item: MergeListItem<T>): boolean {
+    const t = item as MergerItemImpl<T>
+    let cycle = this.cycle
+    if (cycle < 0)
+      cycle = ~cycle
+    return t.status === cycle && t.cycle > 0
+  }
+
+  isRemoved(item: MergeListItem<T>): boolean {
+    const t = item as MergerItemImpl<T>
+    const cycle = this.cycle
+    return cycle > 0 ? t.cycle < cycle : t.cycle < cycle - 1
+  }
+
+  isActual(item: MergeListItem<T>): boolean {
+    const t = item as MergerItemImpl<T>
+    return t.cycle === this.cycle
   }
 
   static createMergerItem<T>(self: T): MergeListItem<T> {
