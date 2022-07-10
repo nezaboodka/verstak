@@ -21,7 +21,7 @@ export interface Merger<T> {
   remove(item: MergeListItem<T>, keepInRemoved?: boolean): void
   move(item: MergeListItem<T>, after: MergeListItem<T>): void
   beginMerge(): void
-  endMerge(keepRemoved?: boolean): void
+  endMerge(keepAddedAndRemoved?: boolean): void
 
   items(): Generator<MergeListItem<T>>
   addedItems(keep?: boolean): Generator<MergeListItem<T>>
@@ -193,7 +193,7 @@ export class MergeList<T> implements Merger<T> {
     this.added.count = 0
   }
 
-  endMerge(keepRemoved?: boolean): void {
+  endMerge(keepAddedAndRemoved?: boolean): void {
     if (!this.isMergeInProgress)
       throw new Error('merge is ended already')
     this.tag = ~this.tag
@@ -213,9 +213,12 @@ export class MergeList<T> implements Merger<T> {
     }
     else // just create new empty map
       this.map = new Map<string | undefined, MergeListItemImpl<T>>()
-    if (keepRemoved === undefined || !keepRemoved) {
+    if (keepAddedAndRemoved === undefined || !keepAddedAndRemoved) {
       this.former.first = undefined
       this.former.count = 0
+      this.added.first = undefined
+      this.added.last = undefined
+      this.added.count = 0
     }
   }
 
