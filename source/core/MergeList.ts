@@ -200,7 +200,7 @@ export class MergeList<T> implements Merger<T> {
         for (const x of all(this.firstFormerItem))
           map.delete(getKey(x.self))
       }
-      else { // it should be faster to recreate map using merging items
+      else { // it should be faster to recreate map using current items
         const map = this.map = new Map<string | undefined, MergeListItemImpl<T>>()
         for (const x of all(this.firstCurrentItem))
           map.set(getKey(x.self), x)
