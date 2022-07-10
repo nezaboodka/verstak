@@ -24,6 +24,9 @@ list.endMerge(true)
 // list.items: Added1, Bye, End, Added2, Hello, Added3
 // list.addedItems: Added1, Added2, Added3
 // list.removedItems: Welcome
+// list.isAdded: Added1, Added2, Added3
+// list.isMoved: Bye, Hello
+// list.isRemoved: Welcome
 ```
 
 MergeList API:
