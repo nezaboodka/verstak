@@ -9,8 +9,8 @@ export type GetKey<T = unknown> = (item: T) => string | undefined
 
 export interface MergerApi<T> {
   readonly count: number
-  actualItems(): Generator<MergerItem<T>>
-  obsoleteItems(keep?: boolean): Generator<MergerItem<T>>
+  actual(): Generator<MergerItem<T>>
+  removed(keep?: boolean): Generator<MergerItem<T>>
   isAdded(item: MergerItem<T>): boolean
   isMoved(item: MergerItem<T>): boolean
   isRemoved(item: MergerItem<T>): boolean
@@ -53,11 +53,11 @@ export class Merger<T> implements MergerApi<T> {
     return this.actualCount
   }
 
-  actualItems(): Generator<MergerItem<T>> {
+  actual(): Generator<MergerItem<T>> {
     return createIterator(this.firstActual)
   }
 
-  obsoleteItems(keep?: boolean): Generator<MergerItem<T>> {
+  removed(keep?: boolean): Generator<MergerItem<T>> {
     const result = createIterator(this.firstOld)
     if (keep === undefined || !keep) {
       this.firstOld = undefined
