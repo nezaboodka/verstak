@@ -23,8 +23,8 @@ export interface Merger<T> {
   tryMerge(key: string): MergeListItem<T> | undefined
   endMerge(keepRemoved?: boolean): void
 
-  removedItems(keep?: boolean): Generator<MergeListItem<T>>
   addedItems(keep?: boolean): Generator<MergeListItem<T>>
+  removedItems(keep?: boolean): Generator<MergeListItem<T>>
   isAdded(item: MergeListItem<T>): boolean
   isMoved(item: MergeListItem<T>): boolean
   isRemoved(item: MergeListItem<T>): boolean
@@ -206,6 +206,10 @@ export class MergeList<T> implements Merger<T> {
     return item
   }
 
+  addedItems(keep?: boolean): Generator<MergeListItem<T>> {
+    throw new Error('not implemented')
+  }
+
   removedItems(keep?: boolean): Generator<MergeListItem<T>> {
     const isMergeInProgress = this.isMergeInProgress
     const first = !isMergeInProgress ? this.firstPending : undefined
@@ -215,10 +219,6 @@ export class MergeList<T> implements Merger<T> {
       this.pendingCount = 0
     }
     return result
-  }
-
-  addedItems(keep?: boolean): Generator<MergeListItem<T>> {
-    throw new Error('not implemented')
   }
 
   isAdded(item: MergeListItem<T>): boolean {
