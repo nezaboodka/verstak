@@ -33,8 +33,8 @@ export interface Merger<T> {
 
 export interface MergeListItem<T> {
   readonly self: T
-  next?: MergeListItem<T>
-  prev?: MergeListItem<T>
+  readonly next?: MergeListItem<T>
+  readonly prev?: MergeListItem<T>
   aux?: MergeListItem<T>
 }
 
@@ -312,8 +312,8 @@ class MergeListItemImpl<T> implements MergeListItem<T> {
 }
 
 function *createIterator<T>(
-  first: MergeListItem<T> | undefined,
-  secondaryFirst: MergeListItem<T> | undefined): Generator<MergeListItem<T>> {
+  first: MergeListItemImpl<T> | undefined,
+  secondaryFirst: MergeListItemImpl<T> | undefined): Generator<MergeListItemImpl<T>> {
   while (first !== undefined) {
     const next = first.next
     yield first

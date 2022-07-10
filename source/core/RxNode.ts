@@ -43,7 +43,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
   }
 
   get isInitialRendering(): boolean {
-    return this.stamp === 1
+    return this.stamp === 2
   }
 
   abstract wrapBy(renderer: Render<E, M, R> | undefined): this
@@ -94,6 +94,9 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
         priority, monitor, throttling, logging)
       item = children.add(node)
       node.item = item
+      RxNodeImpl.grandCount++
+      if (!node.inline)
+        RxNodeImpl.disposableCount++
     }
     return node
   }
@@ -167,6 +170,8 @@ function getNodeName(node: RxNodeImpl): string | undefined {
 }
 
 class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
+  static grandCount: number = 0
+  static disposableCount: number = 0
   static logging?: LoggingOptions = undefined
 
   // User-defined properties
@@ -332,7 +337,8 @@ function prepareRender(item: MergeListItem<RxNodeImpl>,
   const factory = node.factory
   // Initialize/arrange if needed
   if (node.stamp === 0) {
-    if (!node.inline)
+    node.stamp = 1
+    if (!node.inline) {
       Transaction.off(() => {
         if (Rx.isLogging)
           Rx.setLoggingHint(node, node.name)
@@ -343,11 +349,12 @@ function prepareRender(item: MergeListItem<RxNodeImpl>,
           logging: node.logging,
         })
       })
+    }
     factory.initialize?.(node, undefined)
     factory.arrange?.(node, strict)
   }
   else if (moved)
-    factory.arrange?.(node, strict)
+    factory.arrange?.(node, strict) // , console.log(`moved: ${node.name}`)
 }
 
 function runRender(item: MergeListItem<RxNodeImpl>): void {
@@ -379,21 +386,18 @@ function runRender(item: MergeListItem<RxNodeImpl>): void {
   }
 }
 
-function doFinalize(item: MergeListItem<RxNodeImpl>, isLeader: boolean): MergeListItem<RxNodeImpl> | undefined {
-  const next = item.next
+function doFinalize(item: MergeListItem<RxNodeImpl>, isLeader: boolean): void {
   const node = item.self
   if (node.stamp >= 0) {
     node.stamp = ~node.stamp
     // Finalize node itself and remove it from collection
     const childrenAreLeaders = node.factory.finalize(node, isLeader)
-    if (next)
-      next.prev = undefined
-    item.next = undefined
-    // Defer disposal if node is reactive
     if (!node.inline) {
+      // Defer disposal if node is reactive
+      item.aux = undefined
       const last = gLastToDispose
       if (last)
-        gLastToDispose = last.next = item
+        gLastToDispose = last.aux = item
       else
         gFirstToDispose = gLastToDispose = item
       if (gFirstToDispose === item)
@@ -404,8 +408,8 @@ function doFinalize(item: MergeListItem<RxNodeImpl>, isLeader: boolean): MergeLi
     // Finalize children if any
     for (const item of node.children.items())
       doFinalize(item, childrenAreLeaders)
+    RxNodeImpl.grandCount--
   }
-  return next
 }
 
 async function runDisposalLoop(): Promise<void> {
@@ -415,8 +419,10 @@ async function runDisposalLoop(): Promise<void> {
     if (Transaction.isFrameOver(500, 5))
       await Transaction.requestNextFrame()
     Rx.dispose(item.self)
-    item = item.next
+    item = item.aux
+    RxNodeImpl.disposableCount--
   }
+  // console.log(`RxNode count: ${RxNodeImpl.grandCount} totally (${RxNodeImpl.disposableCount} disposable)`)
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
