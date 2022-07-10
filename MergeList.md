@@ -11,7 +11,7 @@ const list = new MergeList<string>(true, s => s)
 const example1 = ['Hello', 'Welcome', 'Bye', 'End']
 for (const x of example1)
   list.add(x)
-// list.items: 'Hello', 'Welcome', 'Bye', 'End'
+// list.items: Hello, Welcome, Bye, End
 
 // Merge list2 with list1
 const example2 = ['Added1', 'Bye', 'End', 'Added2', 'Hello', 'Added3']
@@ -20,9 +20,9 @@ for (const x of example2)
   if (!list.claim(x))
     list.add(x, true)
 list.endMerge(true)
-// list.items: 'Added1', 'Bye', 'End', 'Added2', 'Hello', 'Added3'
-// list.addedItems: 'Added1', 'Added2', 'Added3'
-// list.removedItems: 'Welcome'
+// list.items: Added1, Bye, End, Added2, Hello, Added3
+// list.addedItems: Added1, Added2, Added3
+// list.removedItems: Welcome
 ```
 
 MergeList API:
