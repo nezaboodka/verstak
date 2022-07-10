@@ -176,7 +176,7 @@ export class MergeList<T> implements Merger<T> {
       item = this.lookup(key) as MergeListItemImpl<T> | undefined
     if (item) {
       if (item.cycle === cycle)
-        throw new Error(`duplicate item id: ${key}`)
+        throw new Error(`duplicate item: ${key}`)
       item.cycle = cycle
       if (this.strict && item !== this.strictNext)
         item.status = cycle // IsAdded=false, IsMoved=true
