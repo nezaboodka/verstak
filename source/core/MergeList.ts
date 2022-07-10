@@ -39,7 +39,7 @@ export interface MergeListItem<T> {
 
 export class MergeList<T> implements Merger<T> {
   private map = new Map<string | undefined, MergeListItemImpl<T>>()
-  private cycle: number = ~0
+  private tag: number = ~0
   private lastNotFoundKey: string | undefined = undefined
   private strictNext?: MergeListItemImpl<T> = undefined
   private firstActual?: MergeListItemImpl<T> = undefined
@@ -61,7 +61,7 @@ export class MergeList<T> implements Merger<T> {
   }
 
   get isMergeInProgress(): boolean {
-    return this.cycle > 0
+    return this.tag > 0
   }
 
   items(): Generator<MergeListItem<T>> {
@@ -89,12 +89,12 @@ export class MergeList<T> implements Merger<T> {
     const key = this.getKey(self)
     if (this.lookup(key) !== undefined)
       throw new Error(`key is already in use: ${key}`)
-    let cycle = this.cycle
-    if (cycle < 0) { // merge is not in progress
-      cycle = ~this.cycle + 1
-      this.cycle = ~cycle // one item merge cycle
+    let tag = this.tag
+    if (tag < 0) { // merge is not in progress
+      tag = ~this.tag + 1
+      this.tag = ~tag // one item merge cycle
     }
-    const item = new MergeListItemImpl<T>(self, cycle)
+    const item = new MergeListItemImpl<T>(self, tag)
     this.map.set(key, item)
     this.lastNotFoundKey = undefined
     this.strictNext = undefined
@@ -112,7 +112,7 @@ export class MergeList<T> implements Merger<T> {
   remove(item: MergeListItem<T>, keepInRemoved?: boolean): void {
     if (!this.isRemoved(item)) {
       const t = item as MergeListItemImpl<T>
-      t.cycle--
+      t.tag--
       if (keepInRemoved === true) {
         throw new Error('not implemented')
         // move to this.firstOld
@@ -127,7 +127,7 @@ export class MergeList<T> implements Merger<T> {
   beginMerge(): void {
     if (this.isMergeInProgress)
       throw new Error('merge is not reentrant')
-    this.cycle = ~this.cycle + 1
+    this.tag = ~this.tag + 1
     this.strictNext = this.firstActual
     this.firstPending = this.firstActual
     this.pendingCount = this.actualCount
@@ -138,7 +138,7 @@ export class MergeList<T> implements Merger<T> {
   endMerge(keepRemoved?: boolean): void {
     if (!this.isMergeInProgress)
       throw new Error('merge is ended already')
-    this.cycle = ~this.cycle
+    this.tag = ~this.tag
     const actualCount = this.actualCount
     if (actualCount > 0) {
       const getKey = this.getKey
@@ -168,18 +168,18 @@ export class MergeList<T> implements Merger<T> {
   }
 
   tryMerge(key: string): MergeListItem<T> | undefined {
-    const cycle = this.cycle
-    if (cycle < 0)
+    const tag = this.tag
+    if (tag < 0)
       throw new Error('merge is not in progress')
     let item = this.strictNext
     if (key !== (item ? this.getKey(item.self) : undefined))
       item = this.lookup(key) as MergeListItemImpl<T> | undefined
     if (item) {
-      if (item.cycle === cycle)
+      if (item.tag === tag)
         throw new Error(`duplicate item: ${key}`)
-      item.cycle = cycle
+      item.tag = tag
       if (this.strict && item !== this.strictNext)
-        item.status = cycle // IsAdded=false, IsMoved=true
+        item.status = tag // IsAdded=false, IsMoved=true
       this.strictNext = item.next
       // Exclude from old sequence
       if (item.prev !== undefined)
@@ -219,35 +219,35 @@ export class MergeList<T> implements Merger<T> {
 
   isAdded(item: MergeListItem<T>): boolean {
     const t = item as MergeListItemImpl<T>
-    let cycle = this.cycle
-    if (cycle < 0)
-      cycle = ~cycle
-    return t.status === ~cycle && t.cycle > 0
+    let tag = this.tag
+    if (tag < 0)
+      tag = ~tag
+    return t.status === ~tag && t.tag > 0
   }
 
   isMoved(item: MergeListItem<T>): boolean {
     const t = item as MergeListItemImpl<T>
-    let cycle = this.cycle
-    if (cycle < 0)
-      cycle = ~cycle
-    return t.status === cycle && t.cycle > 0
+    let tag = this.tag
+    if (tag < 0)
+      tag = ~tag
+    return t.status === tag && t.tag > 0
   }
 
   isRemoved(item: MergeListItem<T>): boolean {
     const t = item as MergeListItemImpl<T>
-    const cycle = this.cycle
-    return cycle > 0 ? t.cycle < cycle : t.cycle < cycle - 1
+    const tag = this.tag
+    return tag > 0 ? t.tag < tag : t.tag < tag - 1
   }
 
   isActual(item: MergeListItem<T>): boolean {
     const t = item as MergeListItemImpl<T>
-    return t.cycle === this.cycle
+    return t.tag === this.tag
   }
 
   markAsMoved(item: MergeListItem<T>): void {
     const t = item as MergeListItemImpl<T>
-    if (t.cycle > 0) // if not removed, > is intentional
-      t.status = t.cycle
+    if (t.tag > 0) // if not removed, > is intentional
+      t.status = t.tag
   }
 
   static createMergerItem<T>(self: T): MergeListItem<T> {
@@ -257,15 +257,15 @@ export class MergeList<T> implements Merger<T> {
 
 class MergeListItemImpl<T> implements MergeListItem<T> {
   readonly self: T
-  cycle: number
+  tag: number
   status: number
   next?: MergeListItemImpl<T> = undefined
   prev?: MergeListItemImpl<T> = undefined
 
-  constructor(self: T, cycle: number) {
+  constructor(self: T, tag: number) {
     this.self = self
-    this.cycle = cycle
-    this.status = ~cycle // isAdded=true
+    this.tag = tag
+    this.status = ~tag // isAdded=true
   }
 }
 
