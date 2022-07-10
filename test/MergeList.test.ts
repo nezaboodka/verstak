@@ -9,14 +9,15 @@ import test from 'ava'
 import { MergeList, MergeListItem } from '../source/core/MergeList'
 
 test('MergeList', t => {
-  const etalon1 = ['Hello', 'Welcome', 'Bye']
-  const etalon2 = ['Added1', 'Hello', 'Added2', 'Bye', 'Added3']
+  const etalon1 = ['Hello', 'Welcome', 'Bye', 'End']
+  const etalon2 = ['Added1', 'Bye', 'End', 'Added2', 'Hello', 'Added3']
 
   // Basic
   const list = new MergeList<string>(s => s, true)
   for (const x of etalon1)
     list.add(x)
 
+  t.is(list.count, 4)
   t.true(compare(list.items(), etalon1))
 
   // Merge etalon2 with etalon1
@@ -26,7 +27,7 @@ test('MergeList', t => {
       list.add(x)
   list.endMerge(true)
 
-  t.is(list.count, 5)
+  t.is(list.count, 6)
   t.true(compare(list.items(), etalon2))
 
   t.is(list.removedItemCount, 1)
