@@ -12,13 +12,20 @@ export interface Merger<T> {
   readonly strict: boolean
   readonly count: number
   readonly isMergeInProgress: boolean
+
+  items(): Generator<MergeListItem<T>>
   lookup(key: string): MergeListItem<T> | undefined
-  actual(): Generator<MergeListItem<T>>
-  removed(keep?: boolean): Generator<MergeListItem<T>>
+  // add(self: T): MergeListItem<T>
+  // remove(item: MergeListItem<T>): void
+  // move(item: MergeListItem<T>, after: MergeListItem<T>): void
+
   beginMerge(): void
   tryMergeAsExisting(key: string): MergeListItem<T> | undefined
   mergeAsNew(self: T): MergeListItem<T>
   endMerge(keepRemoved?: boolean): void
+
+  removed(keep?: boolean): Generator<MergeListItem<T>>
+  added(keep?: boolean): Generator<MergeListItem<T>>
   isAdded(item: MergeListItem<T>): boolean
   isMoved(item: MergeListItem<T>): boolean
   isRemoved(item: MergeListItem<T>): boolean
@@ -57,23 +64,14 @@ export class MergeList<T> implements Merger<T> {
     return this.cycle > 0
   }
 
+  items(): Generator<MergeListItem<T>> {
+    return createIterator(this.firstActual)
+  }
+
   lookup(key: string): MergeListItem<T> | undefined {
     let result = this.map.get(key)
     if (result && this.getKey(result.self) !== key)
       result = undefined
-    return result
-  }
-
-  actual(): Generator<MergeListItem<T>> {
-    return createIterator(this.firstActual)
-  }
-
-  removed(keep?: boolean): Generator<MergeListItem<T>> {
-    const result = createIterator(this.firstOld)
-    if (keep === undefined || !keep) {
-      this.firstOld = undefined
-      this.oldCount = 0
-    }
     return result
   }
 
@@ -171,10 +169,17 @@ export class MergeList<T> implements Merger<T> {
     return item
   }
 
-  markAsMoved(item: MergeListItem<T>): void {
-    const t = item as MergerItemImpl<T>
-    if (t.cycle > 0) // if not removed, > is intentional
-      t.status = t.cycle
+  removed(keep?: boolean): Generator<MergeListItem<T>> {
+    const result = createIterator(this.firstOld)
+    if (keep === undefined || !keep) {
+      this.firstOld = undefined
+      this.oldCount = 0
+    }
+    return result
+  }
+
+  added(keep?: boolean): Generator<MergeListItem<T>> {
+    throw new Error('not implemented')
   }
 
   isAdded(item: MergeListItem<T>): boolean {
@@ -202,6 +207,12 @@ export class MergeList<T> implements Merger<T> {
   isActual(item: MergeListItem<T>): boolean {
     const t = item as MergerItemImpl<T>
     return t.cycle === this.cycle
+  }
+
+  markAsMoved(item: MergeListItem<T>): void {
+    const t = item as MergerItemImpl<T>
+    if (t.cycle > 0) // if not removed, > is intentional
+      t.status = t.cycle
   }
 
   static createMergerItem<T>(self: T): MergeListItem<T> {
