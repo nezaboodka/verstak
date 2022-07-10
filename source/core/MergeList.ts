@@ -124,7 +124,7 @@ export class MergeList<T> implements Merger<T> {
     return result
   }
 
-  add(self: T, keepInRemoved?: boolean): MergeListItem<T> {
+  add(self: T, keepInAdded?: boolean): MergeListItem<T> {
     const key = this.getKey(self)
     if (this.lookup(key) !== undefined)
       throw new Error(`key is already in use: ${key}`)
@@ -137,13 +137,6 @@ export class MergeList<T> implements Merger<T> {
     this.map.set(key, item)
     this.lastNotFoundKey = undefined
     this.strictNext = undefined
-    // Include into added sequence
-    const lastAdded = this.lastAdded
-    if (lastAdded)
-      this.lastAdded = lastAdded.aux = item
-    else
-      this.firstAdded = this.lastAdded = item
-    this.addedCount++
     // Include into current sequence
     const last = this.lastCurrent
     if (last) {
@@ -153,6 +146,15 @@ export class MergeList<T> implements Merger<T> {
     else
       this.firstCurrent = this.lastCurrent = item
     this.currentCount++
+    if (keepInAdded === true) {
+      // Include into added sequence
+      const lastAdded = this.lastAdded
+      if (lastAdded)
+        this.lastAdded = lastAdded.aux = item
+      else
+        this.firstAdded = this.lastAdded = item
+      this.addedCount++
+    }
     return item
   }
 
