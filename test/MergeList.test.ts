@@ -16,7 +16,6 @@ test('MergeList', t => {
   const list = new MergeList<string>(s => s, true)
   for (const x of etalon1)
     list.add(x)
-
   t.is(list.count, 4)
   t.true(compare(list.items(), etalon1))
 
@@ -25,17 +24,14 @@ test('MergeList', t => {
   for (const x of etalon2)
     if (!list.tryMerge(x))
       list.add(x, true)
+  t.is(list.count, 7)
   list.endMerge(true)
-
   t.is(list.count, 6)
   t.true(compare(list.items(), etalon2))
-
   t.is(list.removedItemCount, 1)
   t.true(compare(list.removedItems(), ['Welcome']))
-
   t.is(list.addedItemCount, 3)
   t.true(compare(list.addedItems(), ['Added1', 'Added2', 'Added3']))
-
   t.true(list.isAdded(list.lookup('Added1')!))
   t.true(list.isAdded(list.lookup('Added2')!))
   t.true(list.isAdded(list.lookup('Added3')!))

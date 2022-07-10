@@ -76,7 +76,10 @@ export class MergeList<T> implements Merger<T> {
   }
 
   get count(): number {
-    return this.currentCount
+    let result = this.currentCount
+    if (this.isMergeInProgress)
+      result += this.formerCount
+    return result
   }
 
   get addedItemCount(): number {
