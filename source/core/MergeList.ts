@@ -11,16 +11,18 @@ export interface Merger<T> {
   // readonly getKey: GetKey<T>
   readonly strict: boolean
   readonly count: number
+  readonly addedCount: number
+  readonly removedCount: number
   readonly isMergeInProgress: boolean
 
   items(): Generator<MergeListItem<T>>
   lookup(key: string): MergeListItem<T> | undefined
+
+  claim(key: string): MergeListItem<T> | undefined
   add(self: T, keepInAdded?: boolean): MergeListItem<T>
   remove(item: MergeListItem<T>, keepInRemoved?: boolean): void
   move(item: MergeListItem<T>, after: MergeListItem<T>): void
-
   beginMerge(): void
-  claim(key: string): MergeListItem<T> | undefined
   endMerge(keepRemoved?: boolean): void
 
   addedItems(keep?: boolean): Generator<MergeListItem<T>>
@@ -113,6 +115,41 @@ export class MergeList<T> implements Merger<T> {
     return result
   }
 
+  claim(key: string): MergeListItem<T> | undefined {
+    const tag = this.tag
+    if (tag < 0)
+      throw new Error('merge is not in progress')
+    let item = this.strictNextItem
+    if (key !== (item ? this.getKey(item.self) : undefined))
+      item = this.lookup(key) as MergeListItemImpl<T> | undefined
+    if (item) {
+      if (item.tag === tag)
+        throw new Error(`duplicate item: ${key}`)
+      item.tag = tag
+      if (this.strict && item !== this.strictNextItem)
+        item.status = tag // IsAdded=false, IsMoved=true
+      this.strictNextItem = item.next
+      // Exclude from former sequence
+      if (item.prev !== undefined)
+        item.prev.next = item.next
+      if (item.next !== undefined)
+        item.next.prev = item.prev
+      if (item === this.former.first)
+        this.former.first = item.next
+      this.former.count--
+      // Include into current sequence
+      const last = this.current.last
+      item.prev = last
+      item.next = undefined
+      if (last)
+        this.current.last = last.next = item
+      else
+        this.current.first = this.current.last = item
+      this.current.count++
+    }
+    return item
+  }
+
   add(self: T, keepInAdded?: boolean): MergeListItem<T> {
     const key = this.getKey(self)
     if (this.lookup(key) !== undefined)
@@ -198,41 +235,6 @@ export class MergeList<T> implements Merger<T> {
       this.former.first = undefined
       this.former.count = 0
     }
-  }
-
-  claim(key: string): MergeListItem<T> | undefined {
-    const tag = this.tag
-    if (tag < 0)
-      throw new Error('merge is not in progress')
-    let item = this.strictNextItem
-    if (key !== (item ? this.getKey(item.self) : undefined))
-      item = this.lookup(key) as MergeListItemImpl<T> | undefined
-    if (item) {
-      if (item.tag === tag)
-        throw new Error(`duplicate item: ${key}`)
-      item.tag = tag
-      if (this.strict && item !== this.strictNextItem)
-        item.status = tag // IsAdded=false, IsMoved=true
-      this.strictNextItem = item.next
-      // Exclude from former sequence
-      if (item.prev !== undefined)
-        item.prev.next = item.next
-      if (item.next !== undefined)
-        item.next.prev = item.prev
-      if (item === this.former.first)
-        this.former.first = item.next
-      this.former.count--
-      // Include into current sequence
-      const last = this.current.last
-      item.prev = last
-      item.next = undefined
-      if (last)
-        this.current.last = last.next = item
-      else
-        this.current.first = this.current.last = item
-      this.current.count++
-    }
-    return item
   }
 
   *addedItems(keep?: boolean): Generator<MergeListItem<T>> {
