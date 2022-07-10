@@ -24,8 +24,8 @@ export interface Merger<T> {
   mergeAsNew(self: T): MergeListItem<T>
   endMerge(keepRemoved?: boolean): void
 
-  allRemoved(keep?: boolean): Generator<MergeListItem<T>>
-  allAdded(keep?: boolean): Generator<MergeListItem<T>>
+  removedItems(keep?: boolean): Generator<MergeListItem<T>>
+  addedItems(keep?: boolean): Generator<MergeListItem<T>>
   isAdded(item: MergeListItem<T>): boolean
   isMoved(item: MergeListItem<T>): boolean
   isRemoved(item: MergeListItem<T>): boolean
@@ -169,7 +169,7 @@ export class MergeList<T> implements Merger<T> {
     return item
   }
 
-  allRemoved(keep?: boolean): Generator<MergeListItem<T>> {
+  removedItems(keep?: boolean): Generator<MergeListItem<T>> {
     const result = createIterator(this.firstOld)
     if (keep === undefined || !keep) {
       this.firstOld = undefined
@@ -178,7 +178,7 @@ export class MergeList<T> implements Merger<T> {
     return result
   }
 
-  allAdded(keep?: boolean): Generator<MergeListItem<T>> {
+  addedItems(keep?: boolean): Generator<MergeListItem<T>> {
     throw new Error('not implemented')
   }
 

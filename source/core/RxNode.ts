@@ -247,7 +247,7 @@ function runRenderChildrenThenDo(action: () => void): void {
       let p1: Array<MergeListItem<RxNodeImpl>> | undefined = undefined
       let p2: Array<MergeListItem<RxNodeImpl>> | undefined = undefined
       let isMoved = false
-      for (const item of children.allRemoved())
+      for (const item of children.removedItems())
         doFinalize(item, true)
       for (const item of children.items()) {
         if (Transaction.isCanceled)
