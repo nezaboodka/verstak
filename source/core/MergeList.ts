@@ -15,9 +15,9 @@ export interface Merger<T> {
 
   items(): Generator<MergeListItem<T>>
   lookup(key: string): MergeListItem<T> | undefined
-  // add(self: T): MergeListItem<T>
-  // remove(item: MergeListItem<T>): void
-  // move(item: MergeListItem<T>, after: MergeListItem<T>): void
+  add(self: T): MergeListItem<T>
+  remove(item: MergeListItem<T>): void
+  move(item: MergeListItem<T>, after: MergeListItem<T>): void
 
   beginMerge(): void
   tryMergeAsExisting(key: string): MergeListItem<T> | undefined
@@ -73,6 +73,18 @@ export class MergeList<T> implements Merger<T> {
     if (result && this.getKey(result.self) !== key)
       result = undefined
     return result
+  }
+
+  add(self: T): MergeListItem<T> {
+    throw new Error('not implemented')
+  }
+
+  remove(item: MergeListItem<T>): void {
+    throw new Error('not implemented')
+  }
+
+  move(item: MergeListItem<T>, after: MergeListItem<T>): void {
+    throw new Error('not implemented')
   }
 
   beginMerge(): void {
