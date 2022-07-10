@@ -45,8 +45,8 @@ export class MergeList<T> implements Merger<T> {
   private firstActual?: MergeListItemImpl<T> = undefined
   private lastActual?: MergeListItemImpl<T> = undefined
   private actualCount: number = 0
-  private firstOld?: MergeListItemImpl<T> = undefined
-  private oldCount: number = 0
+  private firstPending?: MergeListItemImpl<T> = undefined
+  private pendingCount: number = 0
 
   readonly getKey: GetKey<T>
   readonly strict: boolean
@@ -129,9 +129,9 @@ export class MergeList<T> implements Merger<T> {
     if (this.isMergeInProgress)
       throw new Error('merge is not reentrant')
     this.cycle = ~this.cycle + 1
-    this.firstOld = this.firstActual
-    this.oldCount = this.actualCount
-    this.strictNext = this.firstOld
+    this.strictNext = this.firstActual
+    this.firstPending = this.firstActual
+    this.pendingCount = this.actualCount
     this.firstActual = this.lastActual = undefined
     this.actualCount = 0
   }
@@ -140,12 +140,12 @@ export class MergeList<T> implements Merger<T> {
     if (!this.isMergeInProgress)
       throw new Error('merge is ended already')
     this.cycle = ~this.cycle
-    const mergedCount = this.actualCount
-    if (mergedCount > 0) {
+    const actualCount = this.actualCount
+    if (actualCount > 0) {
       const getKey = this.getKey
-      if (mergedCount > this.oldCount) { // it should be faster to delete vanished items
+      if (actualCount > this.pendingCount) { // it should be faster to delete vanished items
         const map = this.map
-        let item = this.firstOld
+        let item = this.firstPending
         while (item !== undefined) {
           map.delete(getKey(item.self))
           item = item.next
@@ -163,8 +163,8 @@ export class MergeList<T> implements Merger<T> {
     else // just create new empty map
       this.map = new Map<string | undefined, MergeListItemImpl<T>>()
     if (keepRemoved === undefined || !keepRemoved) {
-      this.firstOld = undefined
-      this.oldCount = 0
+      this.firstPending = undefined
+      this.pendingCount = 0
     }
   }
 
@@ -187,9 +187,9 @@ export class MergeList<T> implements Merger<T> {
         item.prev.next = item.next
       if (item.next !== undefined)
         item.next.prev = item.prev
-      if (item === this.firstOld)
-        this.firstOld = item.next
-      this.oldCount--
+      if (item === this.firstPending)
+        this.firstPending = item.next
+      this.pendingCount--
       // Include into merged sequence
       const last = this.lastActual
       item.prev = last
@@ -204,10 +204,10 @@ export class MergeList<T> implements Merger<T> {
   }
 
   removedItems(keep?: boolean): Generator<MergeListItem<T>> {
-    const result = createIterator(this.firstOld)
+    const result = createIterator(this.firstPending)
     if (keep === undefined || !keep) {
-      this.firstOld = undefined
-      this.oldCount = 0
+      this.firstPending = undefined
+      this.pendingCount = 0
     }
     return result
   }
