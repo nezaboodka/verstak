@@ -28,7 +28,7 @@ export interface Merger<T> {
   isAdded(item: MergeListItem<T>): boolean
   isMoved(item: MergeListItem<T>): boolean
   isRemoved(item: MergeListItem<T>): boolean
-  isActual(item: MergeListItem<T>): boolean
+  isCurrent(item: MergeListItem<T>): boolean
 }
 
 export interface MergeListItem<T> {
@@ -304,7 +304,7 @@ export class MergeList<T> implements Merger<T> {
     return tag > 0 ? t.tag < tag : t.tag < tag - 1
   }
 
-  isActual(item: MergeListItem<T>): boolean {
+  isCurrent(item: MergeListItem<T>): boolean {
     const t = item as MergeListItemImpl<T>
     return t.tag === this.tag
   }
