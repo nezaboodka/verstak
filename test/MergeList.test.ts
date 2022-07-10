@@ -24,7 +24,7 @@ test('MergeList', t => {
   list.beginMerge()
   for (const x of etalon2)
     if (!list.tryMerge(x))
-      list.add(x)
+      list.add(x, true)
   list.endMerge(true)
 
   t.is(list.count, 6)
