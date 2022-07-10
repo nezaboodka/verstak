@@ -35,6 +35,13 @@ test('MergeList', t => {
 
   t.is(list.addedItemCount, 3)
   t.true(compare(list.addedItems(), ['Added1', 'Added2', 'Added3']))
+
+  t.true(list.isAdded(list.lookup('Added1')!))
+  t.true(list.isAdded(list.lookup('Added2')!))
+  t.true(list.isAdded(list.lookup('Added3')!))
+  t.true(list.isMoved(list.lookup('Bye')!))
+  t.false(list.isMoved(list.lookup('End')!))
+  t.true(list.isMoved(list.lookup('Hello')!))
 })
 
 function compare(list: Generator<MergeListItem<string>>, array: Array<string>): boolean {
