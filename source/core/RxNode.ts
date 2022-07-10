@@ -77,7 +77,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
     // Emit node either by reusing existing one or by creating a new one
     const parent = gContext.self
     const children = parent.children
-    let item = children.tryMerge(name)
+    let item = children.claim(name)
     let node: RxNodeImpl<E, M, R>
     if (item) { // reuse existing
       node = item.self

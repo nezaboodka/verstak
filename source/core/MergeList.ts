@@ -20,7 +20,7 @@ export interface Merger<T> {
   move(item: MergeListItem<T>, after: MergeListItem<T>): void
 
   beginMerge(): void
-  tryMerge(key: string): MergeListItem<T> | undefined
+  claim(key: string): MergeListItem<T> | undefined
   endMerge(keepRemoved?: boolean): void
 
   addedItems(keep?: boolean): Generator<MergeListItem<T>>
@@ -200,7 +200,7 @@ export class MergeList<T> implements Merger<T> {
     }
   }
 
-  tryMerge(key: string): MergeListItem<T> | undefined {
+  claim(key: string): MergeListItem<T> | undefined {
     const tag = this.tag
     if (tag < 0)
       throw new Error('merge is not in progress')

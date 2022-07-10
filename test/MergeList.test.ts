@@ -24,7 +24,7 @@ test('MergeList', t => {
   // Merge etalon2 with etalon1
   list.beginMerge()
   for (const x of etalon2)
-    if (!list.tryMerge(x))
+    if (!list.claim(x))
       list.add(x, true)
   t.is(list.count, 7)
   list.endMerge(true)
