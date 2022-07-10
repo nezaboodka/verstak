@@ -76,7 +76,30 @@ export class MergeList<T> implements Merger<T> {
   }
 
   add(self: T): MergeListItem<T> {
-    throw new Error('not implemented')
+    return this.doAdd(self)
+  }
+
+  private doAdd(self: T): MergeListItem<T> {
+    const key = this.getKey(self)
+    let cycle = this.cycle
+    if (cycle < 0) { // merge is not in progress
+      const existing = this.map.get(key)
+      if (existing && this.getKey(existing.self) === key)
+        throw new Error(`item already exists: ${key}`)
+      cycle = ~cycle
+    }
+    const item = new MergerItemImpl<T>(self, cycle)
+    this.map.set(key, item)
+    this.strictNext = undefined
+    const last = this.lastActual
+    if (last) {
+      item.prev = last
+      this.lastActual = last.next = item
+    }
+    else
+      this.firstActual = this.lastActual = item
+    this.actualCount++
+    return item
   }
 
   remove(item: MergeListItem<T>): void {
@@ -167,18 +190,7 @@ export class MergeList<T> implements Merger<T> {
   }
 
   mergeAsNew(self: T): MergeListItem<T> {
-    const item = new MergerItemImpl<T>(self, this.cycle)
-    this.map.set(this.getKey(self), item)
-    this.strictNext = undefined
-    const last = this.lastActual
-    if (last) {
-      item.prev = last
-      this.lastActual = last.next = item
-    }
-    else
-      this.firstActual = this.lastActual = item
-    this.actualCount++
-    return item
+    return this.doAdd(self)
   }
 
   removedItems(keep?: boolean): Generator<MergeListItem<T>> {
