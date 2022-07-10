@@ -6,7 +6,13 @@
 // automatically licensed under the license referred above.
 
 import test from 'ava'
+import { MergeList } from '../source/api'
 
 test('Example', t => {
+  const ml = new MergeList<string>(s => s, true)
+  ml.add('Hello')
+  ml.add('Welcome')
+  for (const item of ml.items())
+    console.log(item.self)
   t.is('Example', 'Example')
 })
