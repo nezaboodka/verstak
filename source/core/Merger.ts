@@ -8,14 +8,17 @@
 export type GetKey<T = unknown> = (item: T) => string | undefined
 
 export interface MergerApi<T> {
+  // readonly getKey: GetKey<T>
+  readonly strict: boolean
   readonly count: number
+  readonly isMergeInProgress: boolean
+  lookup(key: string): MergerItem<T> | undefined
   actual(): Generator<MergerItem<T>>
   removed(keep?: boolean): Generator<MergerItem<T>>
   isAdded(item: MergerItem<T>): boolean
   isMoved(item: MergerItem<T>): boolean
   isRemoved(item: MergerItem<T>): boolean
   isActual(item: MergerItem<T>): boolean
-  readonly isMerging: boolean
   beginMerge(): void
   tryMergeAsExisting(key: string): MergerItem<T> | undefined
   mergeAsNew(self: T): MergerItem<T>
@@ -29,8 +32,6 @@ export interface MergerItem<T> {
 }
 
 export class Merger<T> implements MergerApi<T> {
-  readonly getKey: GetKey<T>
-  readonly strict: boolean
   private map = new Map<string | undefined, MergerItemImpl<T>>()
   private cycle: number = ~0
   private strictNext?: MergerItemImpl<T> = undefined
@@ -40,17 +41,27 @@ export class Merger<T> implements MergerApi<T> {
   private firstOld?: MergerItemImpl<T> = undefined
   private oldCount: number = 0
 
+  readonly getKey: GetKey<T>
+  readonly strict: boolean
+
   constructor(getKey: GetKey<T>, strict: boolean) {
     this.getKey = getKey
     this.strict = strict
   }
 
-  get isMerging(): boolean {
+  get count(): number {
+    return this.actualCount
+  }
+
+  get isMergeInProgress(): boolean {
     return this.cycle > 0
   }
 
-  get count(): number {
-    return this.actualCount
+  lookup(key: string): MergerItem<T> | undefined {
+    let result = this.map.get(key)
+    if (result && this.getKey(result.self) !== key)
+      result = undefined
+    return result
   }
 
   actual(): Generator<MergerItem<T>> {
@@ -94,7 +105,7 @@ export class Merger<T> implements MergerApi<T> {
   }
 
   beginMerge(): void {
-    if (this.isMerging)
+    if (this.isMergeInProgress)
       throw new Error('merge is not reentrant')
     this.cycle = ~this.cycle + 1
     this.firstOld = this.firstActual
@@ -105,7 +116,7 @@ export class Merger<T> implements MergerApi<T> {
   }
 
   endMerge(keepRemoved?: boolean): void {
-    if (!this.isMerging)
+    if (!this.isMergeInProgress)
       throw new Error('merge is ended already')
     this.cycle = ~this.cycle
     const mergedCount = this.actualCount

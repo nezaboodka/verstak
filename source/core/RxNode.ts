@@ -241,7 +241,7 @@ function runRenderChildrenThenDo(action: () => void): void {
   let promised: Promise<void> | undefined = undefined
   try {
     const children = node.children
-    if (children.isMerging) {
+    if (children.isMergeInProgress) {
       children.endMerge(true)
       const strict = children.strict
       let p1: Array<MergerItem<RxNodeImpl>> | undefined = undefined
