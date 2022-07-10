@@ -15,9 +15,7 @@ export interface Merger<T> {
   readonly removedCount: number
   readonly isMergeInProgress: boolean
 
-  items(): Generator<MergeListItem<T>>
   lookup(key: string): MergeListItem<T> | undefined
-
   claim(key: string): MergeListItem<T> | undefined
   add(self: T, keepInAdded?: boolean): MergeListItem<T>
   remove(item: MergeListItem<T>, keepInRemoved?: boolean): void
@@ -25,6 +23,7 @@ export interface Merger<T> {
   beginMerge(): void
   endMerge(keepRemoved?: boolean): void
 
+  items(): Generator<MergeListItem<T>>
   addedItems(keep?: boolean): Generator<MergeListItem<T>>
   removedItems(keep?: boolean): Generator<MergeListItem<T>>
   isAdded(item: MergeListItem<T>): boolean
@@ -80,23 +79,6 @@ export class MergeList<T> implements Merger<T> {
 
   get isMergeInProgress(): boolean {
     return this.tag > 0
-  }
-
-  *items(): Generator<MergeListItem<T>> {
-    let x = this.current.first
-    while (x !== undefined) {
-      const next = x.next
-      yield x
-      x = next
-    }
-    if (this.isMergeInProgress) {
-      x = this.former.first
-      while (x !== undefined) {
-        const next = x.next
-        yield x
-        x = next
-      }
-    }
   }
 
   lookup(key: string | undefined): MergeListItem<T> | undefined {
@@ -234,6 +216,23 @@ export class MergeList<T> implements Merger<T> {
     if (keepRemoved === undefined || !keepRemoved) {
       this.former.first = undefined
       this.former.count = 0
+    }
+  }
+
+  *items(): Generator<MergeListItem<T>> {
+    let x = this.current.first
+    while (x !== undefined) {
+      const next = x.next
+      yield x
+      x = next
+    }
+    if (this.isMergeInProgress) {
+      x = this.former.first
+      while (x !== undefined) {
+        const next = x.next
+        yield x
+        x = next
+      }
     }
   }
 
