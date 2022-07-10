@@ -113,12 +113,14 @@ export class MergeList<T> implements Merger<T> {
     return item
   }
 
-  remove(item: MergeListItem<T>): void {
+  remove(item: MergeListItem<T>, keepInRemoved?: boolean): void {
     if (!this.isRemoved(item)) {
       const t = item as MergeListItemImpl<T>
       t.cycle--
-      throw new Error('not implemented')
-      // move to this.firstOld
+      if (keepInRemoved === true) {
+        throw new Error('not implemented')
+        // move to this.firstOld
+      }
     }
   }
 
