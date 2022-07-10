@@ -243,17 +243,19 @@ function runRenderChildrenThenDo(action: () => void): void {
     const children = node.children
     if (children.isMergeInProgress) {
       children.endMerge(true)
+      // Finalize removed nodes
+      for (const item of children.recentlyRemoved())
+        doFinalize(item, true)
+      // Render actual nodes
       const strict = children.strict
       let p1: Array<MergeListItem<RxNodeImpl>> | undefined = undefined
       let p2: Array<MergeListItem<RxNodeImpl>> | undefined = undefined
       let isMoved = false
-      for (const item of children.removedItems())
-        doFinalize(item, true)
       for (const item of children.items()) {
         if (Transaction.isCanceled)
           break
-        const n = item.self
-        if (n.element) {
+        const x = item.self
+        if (x.element) {
           if (isMoved) {
             children.markAsMoved(item)
             isMoved = false
@@ -261,9 +263,9 @@ function runRenderChildrenThenDo(action: () => void): void {
         }
         else if (strict && children.isMoved(item))
           isMoved = true // apply to the first node with an element
-        if (n.priority === Priority.SyncP0)
+        if (x.priority === Priority.SyncP0)
           prepareThenRunRender(item, children.isMoved(item), strict)
-        else if (n.priority === Priority.AsyncP1)
+        else if (x.priority === Priority.AsyncP1)
           p1 = push(p1, item)
         else
           p2 = push(p2, item)
