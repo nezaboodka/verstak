@@ -9,26 +9,31 @@ import test from 'ava'
 import { MergeList, MergeListItem } from '../source/core/MergeList'
 
 test('MergeList', t => {
-  // Basic
-  const ml = new MergeList<string>(s => s, true)
   const etalon1 = ['Hello', 'Welcome', 'Bye']
-  for (const x of etalon1)
-    ml.add(x)
-  t.true(compare(ml.items(), etalon1))
-
-  // Merge
   const etalon2 = ['Added1', 'Hello', 'Added2', 'Bye', 'Added3']
-  ml.beginMerge()
+
+  // Basic
+  const list = new MergeList<string>(s => s, true)
+  for (const x of etalon1)
+    list.add(x)
+
+  t.true(compare(list.items(), etalon1))
+
+  // Merge etalon2 with etalon1
+  list.beginMerge()
   for (const x of etalon2)
-    if (!ml.tryMerge(x))
-      ml.add(x)
-  ml.endMerge(true)
-  t.is(ml.count, 5)
-  t.is(ml.removedItemCount, 1)
-  t.is(ml.addedItemCount, 3)
-  t.true(compare(ml.removedItems(), ['Welcome']))
-  t.true(compare(ml.addedItems(), ['Added1', 'Added2', 'Added3']))
-  t.true(compare(ml.items(), etalon2))
+    if (!list.tryMerge(x))
+      list.add(x)
+  list.endMerge(true)
+
+  t.is(list.count, 5)
+  t.true(compare(list.items(), etalon2))
+
+  t.is(list.removedItemCount, 1)
+  t.true(compare(list.removedItems(), ['Welcome']))
+
+  t.is(list.addedItemCount, 3)
+  t.true(compare(list.addedItems(), ['Added1', 'Added2', 'Added3']))
 })
 
 function compare(list: Generator<MergeListItem<string>>, array: Array<string>): boolean {
