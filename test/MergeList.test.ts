@@ -24,15 +24,15 @@ test('MergeList', t => {
       ml.add(x)
   ml.endMerge(true)
   t.is(ml.count, 4)
-  i = 0
-  for (const item of ml.items())
-    t.is(item.self, etalon2[i++])
   t.is(ml.removedItemCount, 1)
+  t.is(ml.addedItemCount, 2)
   for (const item of ml.removedItems())
     t.is(item.self, 'Welcome')
-  t.is(ml.addedItemCount, 2)
   i = 1
   for (const item of ml.addedItems()) {
     t.is(item.self, `Added${i++}`)
   }
+  i = 0
+  for (const item of ml.items())
+    t.is(item.self, etalon2[i++])
 })
