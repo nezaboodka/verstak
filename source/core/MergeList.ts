@@ -65,7 +65,8 @@ export class MergeList<T> implements Merger<T> {
   }
 
   items(): Generator<MergeListItem<T>> {
-    return createIterator(this.firstActual)
+    return createIterator(this.firstActual,
+      this.isMergeInProgress ? this.firstPending : undefined)
   }
 
   lookup(key: string | undefined): MergeListItem<T> | undefined {
@@ -204,8 +205,10 @@ export class MergeList<T> implements Merger<T> {
   }
 
   removedItems(keep?: boolean): Generator<MergeListItem<T>> {
-    const result = createIterator(this.firstPending)
-    if (keep === undefined || !keep) {
+    const isMergeInProgress = this.isMergeInProgress
+    const first = !isMergeInProgress ? this.firstPending : undefined
+    const result = createIterator(first, undefined)
+    if (!isMergeInProgress && (keep === undefined || !keep)) {
       this.firstPending = undefined
       this.pendingCount = 0
     }
@@ -268,10 +271,17 @@ class MergeListItemImpl<T> implements MergeListItem<T> {
   }
 }
 
-function *createIterator<T>(first: MergeListItem<T> | undefined): Generator<MergeListItem<T>> {
+function *createIterator<T>(
+  first: MergeListItem<T> | undefined,
+  secondaryFirst: MergeListItem<T> | undefined): Generator<MergeListItem<T>> {
   while (first !== undefined) {
     const next = first.next
     yield first
     first = next
+  }
+  while (secondaryFirst !== undefined) {
+    const next = secondaryFirst.next
+    yield secondaryFirst
+    secondaryFirst = next
   }
 }
