@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions } from 'reactronic'
-import { MergeList, MergeListItem, Merger } from './Merger'
+import { MergeList, MergeListItem, Merger } from './MergeList'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
 export type Render<E = unknown, M = unknown, R = void> = (element: E, node: RxNode<E, M, R>) => R
@@ -280,20 +280,20 @@ function runRenderChildrenThenDo(action: () => void): void {
 }
 
 async function startIncrementalRendering(
-  merger: MergeList<RxNodeImpl>,
+  allChildren: MergeList<RxNodeImpl>,
   parent: MergeListItem<RxNodeImpl>,
   priority1?: Array<MergeListItem<RxNodeImpl>>,
   priority2?: Array<MergeListItem<RxNodeImpl>>): Promise<void> {
   if (priority1)
-    await renderIncrementally(merger, parent, priority1)
+    await renderIncrementally(allChildren, parent, priority1)
   if (priority2)
-    await renderIncrementally(merger, parent, priority2)
+    await renderIncrementally(allChildren, parent, priority2)
 }
 
 async function renderIncrementally(
-  merger: MergeList<RxNodeImpl>,
+  allChildren: MergeList<RxNodeImpl>,
   parent: MergeListItem<RxNodeImpl>,
-  children: Array<MergeListItem<RxNodeImpl>>): Promise<void> {
+  items: Array<MergeListItem<RxNodeImpl>>): Promise<void> {
   const checkEveryN = 30
   // if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
   await Transaction.requestNextFrame()
@@ -301,9 +301,9 @@ async function renderIncrementally(
     const node = parent.self
     const strict = node.children.strict
     if (node.shuffle)
-      shuffle(children)
-    for (const child of children) {
-      prepareThenRunRender(child, merger.isMoved(child), strict)
+      shuffle(items)
+    for (const child of items) {
+      prepareThenRunRender(child, allChildren.isMoved(child), strict)
       if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
         await Transaction.requestNextFrame(5)
       if (Transaction.isCanceled)
