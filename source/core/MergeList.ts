@@ -44,9 +44,9 @@ export class MergeList<T> implements Merger<T> {
   readonly getKey: GetKey<T>
   private map: Map<string | undefined, MergeListItemImpl<T>>
   private tag: number
-  private current: Sequence<T>
-  private added: Sequence<T>
-  private former: Sequence<T>
+  private current: Chain<T>
+  private added: Chain<T>
+  private former: Chain<T>
   private lastNotFoundKey: string | undefined
   private strictNextItem?: MergeListItemImpl<T>
 
@@ -55,9 +55,9 @@ export class MergeList<T> implements Merger<T> {
     this.getKey = getKey
     this.map = new Map<string | undefined, MergeListItemImpl<T>>()
     this.tag = ~0
-    this.current = new Sequence<T>()
-    this.added = new Sequence<T>()
-    this.former = new Sequence<T>()
+    this.current = new Chain<T>()
+    this.added = new Chain<T>()
+    this.former = new Chain<T>()
     this.lastNotFoundKey = undefined
     this.strictNextItem = undefined
   }
@@ -202,12 +202,12 @@ export class MergeList<T> implements Merger<T> {
       const getKey = this.getKey
       if (currentCount > this.former.count) { // it should be faster to delete vanished items
         const map = this.map
-        for (const x of all(this.former.first))
+        for (const x of this.former.items())
           map.delete(getKey(x.self))
       }
       else { // it should be faster to recreate map using current items
         const map = this.map = new Map<string | undefined, MergeListItemImpl<T>>()
-        for (const x of all(this.current.first))
+        for (const x of this.current.items())
           map.set(getKey(x.self), x)
       }
     }
@@ -322,15 +322,16 @@ class MergeListItemImpl<T> implements MergeListItem<T> {
   }
 }
 
-class Sequence<T> {
+class Chain<T> {
   first?: MergeListItemImpl<T> = undefined
   last?: MergeListItemImpl<T> = undefined
-  count: number = 0
-}
+  count: number = 0;
 
-function *all<T>(first: MergeListItemImpl<T> | undefined): Generator<MergeListItemImpl<T>> {
-  while (first !== undefined) {
-    yield first
-    first = first.next
+  *items(): Generator<MergeListItemImpl<T>> {
+    let x = this.first
+    while (x !== undefined) {
+      yield x
+      x = x.next
+    }
   }
 }
