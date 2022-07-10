@@ -22,12 +22,12 @@
       "type": "node",
       "request": "launch",
       "sourceMaps": true,
-      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ava",
-      "runtimeArgs": ["--timeout", "1h", "${relativeFile}"],
+      "program": "${workspaceFolder}/node_modules/ava/entrypoints/cli.mjs",
+      "args": ["${file}"],
       "outputCapture": "std",
       "internalConsoleOptions": "openOnSessionStart",
       "env": {
-        "AVA_DEBUG": "${relativeFile}"
+        "AVA_DEBUG": "${file}"
       },
       "smartStep": true,
       "skipFiles": [

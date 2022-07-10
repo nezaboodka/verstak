@@ -178,6 +178,8 @@ export class MergeList<T> implements Merger<T> {
     this.pendingCount = this.actualCount
     this.firstActual = this.lastActual = undefined
     this.actualCount = 0
+    this.firstAdded = this.lastAdded = undefined
+    this.addedCount = 0
   }
 
   endMerge(keepRemoved?: boolean): void {
