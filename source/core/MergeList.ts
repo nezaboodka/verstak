@@ -39,13 +39,13 @@ export interface MergeListItem<T> {
 }
 
 export class MergeList<T> implements Merger<T> {
-  private map = new Map<string | undefined, MergerItemImpl<T>>()
+  private map = new Map<string | undefined, MergeListItemImpl<T>>()
   private cycle: number = ~0
-  private strictNext?: MergerItemImpl<T> = undefined
-  private firstActual?: MergerItemImpl<T> = undefined
-  private lastActual?: MergerItemImpl<T> = undefined
+  private strictNext?: MergeListItemImpl<T> = undefined
+  private firstActual?: MergeListItemImpl<T> = undefined
+  private lastActual?: MergeListItemImpl<T> = undefined
   private actualCount: number = 0
-  private firstOld?: MergerItemImpl<T> = undefined
+  private firstOld?: MergeListItemImpl<T> = undefined
   private oldCount: number = 0
 
   readonly getKey: GetKey<T>
@@ -88,7 +88,7 @@ export class MergeList<T> implements Merger<T> {
         throw new Error(`item already exists: ${key}`)
       cycle = ~cycle
     }
-    const item = new MergerItemImpl<T>(self, cycle)
+    const item = new MergeListItemImpl<T>(self, cycle)
     this.map.set(key, item)
     this.strictNext = undefined
     const last = this.lastActual
@@ -104,7 +104,7 @@ export class MergeList<T> implements Merger<T> {
 
   remove(item: MergeListItem<T>): void {
     if (!this.isRemoved(item)) {
-      const t = item as MergerItemImpl<T>
+      const t = item as MergeListItemImpl<T>
       t.cycle--
       throw new Error('not implemented')
       // move to this.firstOld
@@ -142,7 +142,7 @@ export class MergeList<T> implements Merger<T> {
         }
       }
       else { // it should be faster to recreate map using merging items
-        const map = this.map = new Map<string | undefined, MergerItemImpl<T>>()
+        const map = this.map = new Map<string | undefined, MergeListItemImpl<T>>()
         let item = this.firstActual
         while (item !== undefined) {
           map.set(getKey(item.self), item)
@@ -151,7 +151,7 @@ export class MergeList<T> implements Merger<T> {
       }
     }
     else // just create new empty map
-      this.map = new Map<string | undefined, MergerItemImpl<T>>()
+      this.map = new Map<string | undefined, MergeListItemImpl<T>>()
     if (keepRemoved === undefined || !keepRemoved) {
       this.firstOld = undefined
       this.oldCount = 0
@@ -212,7 +212,7 @@ export class MergeList<T> implements Merger<T> {
   }
 
   isAdded(item: MergeListItem<T>): boolean {
-    const t = item as MergerItemImpl<T>
+    const t = item as MergeListItemImpl<T>
     let cycle = this.cycle
     if (cycle < 0)
       cycle = ~cycle
@@ -220,7 +220,7 @@ export class MergeList<T> implements Merger<T> {
   }
 
   isMoved(item: MergeListItem<T>): boolean {
-    const t = item as MergerItemImpl<T>
+    const t = item as MergeListItemImpl<T>
     let cycle = this.cycle
     if (cycle < 0)
       cycle = ~cycle
@@ -228,33 +228,33 @@ export class MergeList<T> implements Merger<T> {
   }
 
   isRemoved(item: MergeListItem<T>): boolean {
-    const t = item as MergerItemImpl<T>
+    const t = item as MergeListItemImpl<T>
     const cycle = this.cycle
     return cycle > 0 ? t.cycle < cycle : t.cycle < cycle - 1
   }
 
   isActual(item: MergeListItem<T>): boolean {
-    const t = item as MergerItemImpl<T>
+    const t = item as MergeListItemImpl<T>
     return t.cycle === this.cycle
   }
 
   markAsMoved(item: MergeListItem<T>): void {
-    const t = item as MergerItemImpl<T>
+    const t = item as MergeListItemImpl<T>
     if (t.cycle > 0) // if not removed, > is intentional
       t.status = t.cycle
   }
 
   static createMergerItem<T>(self: T): MergeListItem<T> {
-    return new MergerItemImpl(self, 0)
+    return new MergeListItemImpl(self, 0)
   }
 }
 
-class MergerItemImpl<T> implements MergeListItem<T> {
+class MergeListItemImpl<T> implements MergeListItem<T> {
   readonly self: T
   cycle: number
   status: number
-  next?: MergerItemImpl<T> = undefined
-  prev?: MergerItemImpl<T> = undefined
+  next?: MergeListItemImpl<T> = undefined
+  prev?: MergeListItemImpl<T> = undefined
 
   constructor(self: T, cycle: number) {
     this.self = self
