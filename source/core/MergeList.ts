@@ -20,8 +20,7 @@ export interface Merger<T> {
   move(item: MergeListItem<T>, after: MergeListItem<T>): void
 
   beginMerge(): void
-  tryMergeAsExisting(key: string): MergeListItem<T> | undefined
-  mergeAsNew(self: T): MergeListItem<T>
+  tryMerge(key: string): MergeListItem<T> | undefined
   endMerge(keepRemoved?: boolean): void
 
   removedItems(keep?: boolean): Generator<MergeListItem<T>>
@@ -41,6 +40,7 @@ export interface MergeListItem<T> {
 export class MergeList<T> implements Merger<T> {
   private map = new Map<string | undefined, MergeListItemImpl<T>>()
   private cycle: number = ~0
+  private lastNotFoundKey: string | undefined = undefined
   private strictNext?: MergeListItemImpl<T> = undefined
   private firstActual?: MergeListItemImpl<T> = undefined
   private lastActual?: MergeListItemImpl<T> = undefined
@@ -68,10 +68,19 @@ export class MergeList<T> implements Merger<T> {
     return createIterator(this.firstActual)
   }
 
-  lookup(key: string): MergeListItem<T> | undefined {
-    let result = this.map.get(key)
-    if (result && this.getKey(result.self) !== key)
-      result = undefined
+  lookup(key: string | undefined): MergeListItem<T> | undefined {
+    let result: MergeListItem<T> | undefined = undefined
+    if (key !== undefined && key !== this.lastNotFoundKey) {
+      result = this.map.get(key)
+      if (result) {
+        if (this.getKey(result.self) !== key) {
+          this.lastNotFoundKey = key
+          result = undefined
+        }
+      }
+      else
+        this.lastNotFoundKey = key
+    }
     return result
   }
 
@@ -81,15 +90,16 @@ export class MergeList<T> implements Merger<T> {
 
   private doAdd(self: T): MergeListItem<T> {
     const key = this.getKey(self)
+    if (this.lookup(key) !== undefined)
+      throw new Error(`key is already in use: ${key}`)
     let cycle = this.cycle
     if (cycle < 0) { // merge is not in progress
-      const existing = this.map.get(key)
-      if (existing && this.getKey(existing.self) === key)
-        throw new Error(`item already exists: ${key}`)
-      cycle = ~cycle
+      cycle = ~this.cycle + 1
+      this.cycle = ~cycle // one item merge cycle
     }
     const item = new MergeListItemImpl<T>(self, cycle)
     this.map.set(key, item)
+    this.lastNotFoundKey = undefined
     this.strictNext = undefined
     const last = this.lastActual
     if (last) {
@@ -158,15 +168,14 @@ export class MergeList<T> implements Merger<T> {
     }
   }
 
-  tryMergeAsExisting(key: string): MergeListItem<T> | undefined {
+  tryMerge(key: string): MergeListItem<T> | undefined {
     const cycle = this.cycle
+    if (cycle < 0)
+      throw new Error('merge is not in progress')
     let item = this.strictNext
-    let k = item ? this.getKey(item.self) : undefined
-    if (k !== key) {
-      item = this.map.get(key)
-      k = item ? this.getKey(item.self) : undefined
-    }
-    if (item && k !== undefined) {
+    if (key !== (item ? this.getKey(item.self) : undefined))
+      item = this.lookup(key) as MergeListItemImpl<T> | undefined
+    if (item) {
       if (item.cycle === cycle)
         throw new Error(`duplicate item id: ${key}`)
       item.cycle = cycle
@@ -192,10 +201,6 @@ export class MergeList<T> implements Merger<T> {
       this.actualCount++
     }
     return item
-  }
-
-  mergeAsNew(self: T): MergeListItem<T> {
-    return this.doAdd(self)
   }
 
   removedItems(keep?: boolean): Generator<MergeListItem<T>> {
@@ -259,7 +264,7 @@ class MergeListItemImpl<T> implements MergeListItem<T> {
   constructor(self: T, cycle: number) {
     this.self = self
     this.cycle = cycle
-    this.status = ~cycle // IsAdded=true
+    this.status = ~cycle // isAdded=true
   }
 }
 

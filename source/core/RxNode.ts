@@ -77,7 +77,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
     // Emit node either by reusing existing one or by creating a new one
     const parent = gContext.self
     const children = parent.children
-    let item = children.tryMergeAsExisting(name)
+    let item = children.tryMerge(name)
     let node: RxNodeImpl<E, M, R>
     if (item) { // reuse existing
       node = item.self
@@ -92,7 +92,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
       node = new RxNodeImpl<E, M, R>(name, factory ?? NodeFactory.default,
         inline ?? false, parent, triggers, renderer, undefined,
         priority, monitor, throttling, logging)
-      item = children.mergeAsNew(node)
+      item = children.add(node)
       node.item = item
     }
     return node
