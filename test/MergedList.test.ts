@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import test from 'ava'
-import { MergedList, MergedListItem } from '../source/core/MergedList'
+import { MergedList, MergedItem } from '../source/core/MergedList'
 
 test('MergedList', t => {
   const etalon1 = ['Hello', 'Welcome', 'Bye', 'End']
@@ -44,7 +44,7 @@ test('MergedList', t => {
   t.true(list.isMoved(list.lookup('Hello')!))
 })
 
-function compare(list: Generator<MergedListItem<string>>, array: Array<string>): boolean {
+function compare(list: Generator<MergedItem<string>>, array: Array<string>): boolean {
   let result = true
   let i = 0
   for (const item of list) {

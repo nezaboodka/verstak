@@ -15,45 +15,45 @@ export interface Merged<T> {
   readonly removedCount: number
   readonly isMergeInProgress: boolean
 
-  lookup(key: string): MergedListItem<T> | undefined
-  claim(key: string): MergedListItem<T> | undefined
-  add(self: T, keepInAddedItems?: boolean): MergedListItem<T>
-  remove(item: MergedListItem<T>, keepInRemovedItems?: boolean): void
-  move(item: MergedListItem<T>, after: MergedListItem<T>): void
+  lookup(key: string): MergedItem<T> | undefined
+  claim(key: string): MergedItem<T> | undefined
+  add(self: T, keepInAddedItems?: boolean): MergedItem<T>
+  remove(item: MergedItem<T>, keepInRemovedItems?: boolean): void
+  move(item: MergedItem<T>, after: MergedItem<T>): void
   beginMerge(): void
   endMerge(keepAddedAndRemovedItems?: boolean): void
 
-  items(): Generator<MergedListItem<T>>
-  addedItems(keep?: boolean): Generator<MergedListItem<T>>
-  removedItems(keep?: boolean): Generator<MergedListItem<T>>
-  isAdded(item: MergedListItem<T>): boolean
-  isMoved(item: MergedListItem<T>): boolean
-  isRemoved(item: MergedListItem<T>): boolean
-  isCurrent(item: MergedListItem<T>): boolean
+  items(): Generator<MergedItem<T>>
+  addedItems(keep?: boolean): Generator<MergedItem<T>>
+  removedItems(keep?: boolean): Generator<MergedItem<T>>
+  isAdded(item: MergedItem<T>): boolean
+  isMoved(item: MergedItem<T>): boolean
+  isRemoved(item: MergedItem<T>): boolean
+  isCurrent(item: MergedItem<T>): boolean
 }
 
-export interface MergedListItem<T> {
+export interface MergedItem<T> {
   readonly self: T
   // readonly next?: MergedListItem<T>
-  readonly prev?: MergedListItem<T> // TODO: hide
-  aux?: MergedListItem<T> // TODO: hide
+  readonly prev?: MergedItem<T> // TODO: hide
+  aux?: MergedItem<T> // TODO: hide
 }
 
 export class MergedList<T> implements Merged<T> {
   readonly strict: boolean
   readonly getKey: GetKey<T>
-  private map: Map<string | undefined, MergedListItemImpl<T>>
+  private map: Map<string | undefined, MergedItemImpl<T>>
   private tag: number
   private current: ItemChain<T>
   private added: ItemChain<T>
   private former: ItemChain<T>
   private lastNotFoundKey: string | undefined
-  private strictNextItem?: MergedListItemImpl<T>
+  private strictNextItem?: MergedItemImpl<T>
 
   constructor(strict: boolean, getKey: GetKey<T>) {
     this.strict = strict
     this.getKey = getKey
-    this.map = new Map<string | undefined, MergedListItemImpl<T>>()
+    this.map = new Map<string | undefined, MergedItemImpl<T>>()
     this.tag = ~0
     this.current = new ItemChain<T>()
     this.added = new ItemChain<T>()
@@ -81,8 +81,8 @@ export class MergedList<T> implements Merged<T> {
     return this.tag > 0
   }
 
-  lookup(key: string | undefined): MergedListItem<T> | undefined {
-    let result: MergedListItem<T> | undefined = undefined
+  lookup(key: string | undefined): MergedItem<T> | undefined {
+    let result: MergedItem<T> | undefined = undefined
     if (key !== undefined && key !== this.lastNotFoundKey) {
       result = this.map.get(key)
       if (result) {
@@ -97,13 +97,13 @@ export class MergedList<T> implements Merged<T> {
     return result
   }
 
-  claim(key: string): MergedListItem<T> | undefined {
+  claim(key: string): MergedItem<T> | undefined {
     const tag = this.tag
     if (tag < 0)
       throw new Error('merge is not in progress')
     let item = this.strictNextItem
     if (key !== (item ? this.getKey(item.self) : undefined))
-      item = this.lookup(key) as MergedListItemImpl<T> | undefined
+      item = this.lookup(key) as MergedItemImpl<T> | undefined
     if (item) {
       if (item.tag === tag)
         throw new Error(`duplicate item: ${key}`)
@@ -132,7 +132,7 @@ export class MergedList<T> implements Merged<T> {
     return item
   }
 
-  add(self: T, keepInAddedItems?: boolean): MergedListItem<T> {
+  add(self: T, keepInAddedItems?: boolean): MergedItem<T> {
     const key = this.getKey(self)
     if (this.lookup(key) !== undefined)
       throw new Error(`key is already in use: ${key}`)
@@ -141,7 +141,7 @@ export class MergedList<T> implements Merged<T> {
       tag = ~this.tag + 1
       this.tag = ~tag // one item merge cycle
     }
-    const item = new MergedListItemImpl<T>(self, tag)
+    const item = new MergedItemImpl<T>(self, tag)
     this.map.set(key, item)
     this.lastNotFoundKey = undefined
     this.strictNextItem = undefined
@@ -166,9 +166,9 @@ export class MergedList<T> implements Merged<T> {
     return item
   }
 
-  remove(item: MergedListItem<T>, keepInRemovedItems?: boolean): void {
+  remove(item: MergedItem<T>, keepInRemovedItems?: boolean): void {
     if (!this.isRemoved(item)) {
-      const x = item as MergedListItemImpl<T>
+      const x = item as MergedItemImpl<T>
       x.tag--
       if (keepInRemovedItems === true) {
         throw new Error('not implemented')
@@ -177,7 +177,7 @@ export class MergedList<T> implements Merged<T> {
     }
   }
 
-  move(item: MergedListItem<T>, after: MergedListItem<T>): void {
+  move(item: MergedItem<T>, after: MergedItem<T>): void {
     throw new Error('not implemented')
   }
 
@@ -206,13 +206,13 @@ export class MergedList<T> implements Merged<T> {
           map.delete(getKey(x.self))
       }
       else { // it should be faster to recreate map using current items
-        const map = this.map = new Map<string | undefined, MergedListItemImpl<T>>()
+        const map = this.map = new Map<string | undefined, MergedItemImpl<T>>()
         for (const x of this.current.items())
           map.set(getKey(x.self), x)
       }
     }
     else // just create new empty map
-      this.map = new Map<string | undefined, MergedListItemImpl<T>>()
+      this.map = new Map<string | undefined, MergedItemImpl<T>>()
     if (keepAddedAndRemovedItems === undefined || !keepAddedAndRemovedItems) {
       this.former.first = undefined
       this.former.count = 0
@@ -222,7 +222,7 @@ export class MergedList<T> implements Merged<T> {
     }
   }
 
-  *items(): Generator<MergedListItem<T>> {
+  *items(): Generator<MergedItem<T>> {
     let x = this.current.first
     while (x !== undefined) {
       const next = x.next
@@ -239,7 +239,7 @@ export class MergedList<T> implements Merged<T> {
     }
   }
 
-  *addedItems(keep?: boolean): Generator<MergedListItem<T>> {
+  *addedItems(keep?: boolean): Generator<MergedItem<T>> {
     let x = this.added.first
     while (x !== undefined) {
       const next = x.aux
@@ -253,7 +253,7 @@ export class MergedList<T> implements Merged<T> {
     }
   }
 
-  *removedItems(keep?: boolean): Generator<MergedListItem<T>> {
+  *removedItems(keep?: boolean): Generator<MergedItem<T>> {
     const isMergeInProgress = this.isMergeInProgress
     if (!isMergeInProgress) {
       let x = this.former.first
@@ -269,51 +269,51 @@ export class MergedList<T> implements Merged<T> {
     }
   }
 
-  isAdded(item: MergedListItem<T>): boolean {
-    const t = item as MergedListItemImpl<T>
+  isAdded(item: MergedItem<T>): boolean {
+    const t = item as MergedItemImpl<T>
     let tag = this.tag
     if (tag < 0)
       tag = ~tag
     return t.status === ~tag && t.tag > 0
   }
 
-  isMoved(item: MergedListItem<T>): boolean {
-    const t = item as MergedListItemImpl<T>
+  isMoved(item: MergedItem<T>): boolean {
+    const t = item as MergedItemImpl<T>
     let tag = this.tag
     if (tag < 0)
       tag = ~tag
     return t.status === tag && t.tag > 0
   }
 
-  isRemoved(item: MergedListItem<T>): boolean {
-    const t = item as MergedListItemImpl<T>
+  isRemoved(item: MergedItem<T>): boolean {
+    const t = item as MergedItemImpl<T>
     const tag = this.tag
     return tag > 0 ? t.tag < tag : t.tag < tag - 1
   }
 
-  isCurrent(item: MergedListItem<T>): boolean {
-    const t = item as MergedListItemImpl<T>
+  isCurrent(item: MergedItem<T>): boolean {
+    const t = item as MergedItemImpl<T>
     return t.tag === this.tag
   }
 
-  markAsMoved(item: MergedListItem<T>): void {
-    const t = item as MergedListItemImpl<T>
+  markAsMoved(item: MergedItem<T>): void {
+    const t = item as MergedItemImpl<T>
     if (t.tag > 0) // if not removed, > is intentional
       t.status = t.tag
   }
 
-  static createMergedListItem<T>(self: T): MergedListItem<T> {
-    return new MergedListItemImpl(self, 0)
+  static createMergedListItem<T>(self: T): MergedItem<T> {
+    return new MergedItemImpl(self, 0)
   }
 }
 
-class MergedListItemImpl<T> implements MergedListItem<T> {
+class MergedItemImpl<T> implements MergedItem<T> {
   readonly self: T
   tag: number
   status: number
-  next?: MergedListItemImpl<T>
-  prev?: MergedListItemImpl<T>
-  aux?: MergedListItemImpl<T>
+  next?: MergedItemImpl<T>
+  prev?: MergedItemImpl<T>
+  aux?: MergedItemImpl<T>
 
   constructor(self: T, tag: number) {
     this.self = self
@@ -326,11 +326,11 @@ class MergedListItemImpl<T> implements MergedListItem<T> {
 }
 
 class ItemChain<T> {
-  first?: MergedListItemImpl<T> = undefined
-  last?: MergedListItemImpl<T> = undefined
+  first?: MergedItemImpl<T> = undefined
+  last?: MergedItemImpl<T> = undefined
   count: number = 0;
 
-  *items(): Generator<MergedListItemImpl<T>> {
+  *items(): Generator<MergedItemImpl<T>> {
     let x = this.first
     while (x !== undefined) {
       yield x
