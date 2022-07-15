@@ -32,7 +32,7 @@ list.endMerge(true)
 MergedList API:
 
 ``` typescript
-interface MergedListItem<T> {
+interface MergedItem<T> {
   readonly self: T
 }
 
@@ -44,20 +44,20 @@ class MergedList<T> {
   readonly removedCount: number
   readonly isMergeInProgress: boolean
 
-  lookup(key: string): MergedListItem<T> | undefined
-  claim(key: string): MergedListItem<T> | undefined
-  add(self: T, keepInAddedItems?: boolean): MergedListItem<T>
-  remove(item: MergedListItem<T>, keepInRemovedItems?: boolean): void
-  move(item: MergedListItem<T>, after: MergedListItem<T>): void
+  lookup(key: string): MergedItem<T> | undefined
+  claim(key: string): MergedItem<T> | undefined
+  add(self: T, keepInAddedItems?: boolean): MergedItem<T>
+  remove(item: MergedItem<T>, keepInRemovedItems?: boolean): void
+  move(item: MergedItem<T>, after: MergedItem<T>): void
   beginMerge(): void
   endMerge(keepAddedAndRemovedItems?: boolean): void
 
-  items(): Generator<MergedListItem<T>>
-  addedItems(keep?: boolean): Generator<MergedListItem<T>>
-  removedItems(keep?: boolean): Generator<MergedListItem<T>>
-  isAdded(item: MergedListItem<T>): boolean
-  isMoved(item: MergedListItem<T>): boolean
-  isRemoved(item: MergedListItem<T>): boolean
-  isCurrent(item: MergedListItem<T>): boolean
+  items(): Generator<MergedItem<T>>
+  addedItems(keep?: boolean): Generator<MergedItem<T>>
+  removedItems(keep?: boolean): Generator<MergedItem<T>>
+  isAdded(item: MergedItem<T>): boolean
+  isMoved(item: MergedItem<T>): boolean
+  isRemoved(item: MergedItem<T>): boolean
+  isCurrent(item: MergedItem<T>): boolean
 }
 ```

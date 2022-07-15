@@ -514,7 +514,7 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-const gSysRoot = MergedList.createMergedListItem<RxNodeImpl>(new RxNodeImpl<null, void>('SYSTEM',
+const gSysRoot = MergedList.createMergedItem<RxNodeImpl>(new RxNodeImpl<null, void>('SYSTEM',
   new StaticNodeFactory<null>('SYSTEM', false, null), false,
   { level: 0 } as RxNodeImpl, undefined, NOP)) // fake parent (overwritten below)
 gSysRoot.self.item = gSysRoot

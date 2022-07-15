@@ -34,7 +34,7 @@ export interface Merged<T> {
 
 export interface MergedItem<T> {
   readonly self: T
-  // readonly next?: MergedListItem<T>
+  // readonly next?: MergedItem<T>
   readonly prev?: MergedItem<T> // TODO: hide
   aux?: MergedItem<T> // TODO: hide
 }
@@ -302,7 +302,7 @@ export class MergedList<T> implements Merged<T> {
       t.status = t.tag
   }
 
-  static createMergedListItem<T>(self: T): MergedItem<T> {
+  static createMergedItem<T>(self: T): MergedItem<T> {
     return new MergedItemImpl(self, 0)
   }
 }
