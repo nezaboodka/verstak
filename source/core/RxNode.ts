@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions } from 'reactronic'
-import { MergeList, MergeListItem, Merger } from './MergeList'
+import { MergedList, MergedListItem, Merged } from './MergedList'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
 export type Render<E = unknown, M = unknown, R = void> = (element: E, node: RxNode<E, M, R>) => R
@@ -33,8 +33,8 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
   // System-managed properties
   abstract readonly level: number
   abstract readonly parent: RxNode
-  abstract readonly children: Merger<RxNode>
-  abstract readonly item: MergeListItem<RxNode> | undefined
+  abstract readonly children: Merged<RxNode>
+  abstract readonly item: MergedListItem<RxNode> | undefined
   abstract readonly stamp: number
   abstract readonly element?: E
 
@@ -189,8 +189,8 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   // System-managed properties
   readonly level: number
   readonly parent: RxNodeImpl
-  children: MergeList<RxNodeImpl>
-  item: MergeListItem<RxNodeImpl> | undefined
+  children: MergedList<RxNodeImpl>
+  item: MergedListItem<RxNodeImpl> | undefined
   stamp: number
   element?: E
 
@@ -214,7 +214,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
-    this.children = new MergeList<RxNodeImpl>(factory.strict, getNodeName)
+    this.children = new MergedList<RxNodeImpl>(factory.strict, getNodeName)
     this.item = undefined
     this.stamp = 0
     this.element = undefined
@@ -252,8 +252,8 @@ function runRenderChildrenThenDo(action: () => void): void {
         doFinalize(item, true)
       // Render actual nodes
       const strict = children.strict
-      let p1: Array<MergeListItem<RxNodeImpl>> | undefined = undefined
-      let p2: Array<MergeListItem<RxNodeImpl>> | undefined = undefined
+      let p1: Array<MergedListItem<RxNodeImpl>> | undefined = undefined
+      let p2: Array<MergedListItem<RxNodeImpl>> | undefined = undefined
       let isMoved = false
       for (const item of children.items()) {
         if (Transaction.isCanceled)
@@ -286,10 +286,10 @@ function runRenderChildrenThenDo(action: () => void): void {
 }
 
 async function startIncrementalRendering(
-  allChildren: MergeList<RxNodeImpl>,
-  parent: MergeListItem<RxNodeImpl>,
-  priority1?: Array<MergeListItem<RxNodeImpl>>,
-  priority2?: Array<MergeListItem<RxNodeImpl>>): Promise<void> {
+  allChildren: MergedList<RxNodeImpl>,
+  parent: MergedListItem<RxNodeImpl>,
+  priority1?: Array<MergedListItem<RxNodeImpl>>,
+  priority2?: Array<MergedListItem<RxNodeImpl>>): Promise<void> {
   if (priority1)
     await renderIncrementally(allChildren, parent, priority1)
   if (priority2)
@@ -297,9 +297,9 @@ async function startIncrementalRendering(
 }
 
 async function renderIncrementally(
-  allChildren: MergeList<RxNodeImpl>,
-  parent: MergeListItem<RxNodeImpl>,
-  items: Array<MergeListItem<RxNodeImpl>>): Promise<void> {
+  allChildren: MergedList<RxNodeImpl>,
+  parent: MergedListItem<RxNodeImpl>,
+  items: Array<MergedListItem<RxNodeImpl>>): Promise<void> {
   const checkEveryN = 30
   // if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
   await Transaction.requestNextFrame()
@@ -318,7 +318,7 @@ async function renderIncrementally(
   }
 }
 
-function prepareThenRunRender(item: MergeListItem<RxNodeImpl>,
+function prepareThenRunRender(item: MergedListItem<RxNodeImpl>,
   moved: boolean, strict: boolean): void {
   const node = item.self
   if (node.stamp >= 0) {
@@ -330,7 +330,7 @@ function prepareThenRunRender(item: MergeListItem<RxNodeImpl>,
   }
 }
 
-function prepareRender(item: MergeListItem<RxNodeImpl>,
+function prepareRender(item: MergedListItem<RxNodeImpl>,
   moved: boolean, strict: boolean): void {
   const node = item.self
   const factory = node.factory
@@ -356,7 +356,7 @@ function prepareRender(item: MergeListItem<RxNodeImpl>,
     factory.arrange?.(node, strict) // , console.log(`moved: ${node.name}`)
 }
 
-function runRender(item: MergeListItem<RxNodeImpl>): void {
+function runRender(item: MergedListItem<RxNodeImpl>): void {
   const node = item.self
   if (node.stamp >= 0) { // if node is alive
     try {
@@ -385,7 +385,7 @@ function runRender(item: MergeListItem<RxNodeImpl>): void {
   }
 }
 
-function doFinalize(item: MergeListItem<RxNodeImpl>, isLeader: boolean): void {
+function doFinalize(item: MergedListItem<RxNodeImpl>, isLeader: boolean): void {
   const node = item.self
   if (node.stamp >= 0) {
     node.stamp = ~node.stamp
@@ -425,7 +425,7 @@ async function runDisposalLoop(): Promise<void> {
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
-function forEachChildRecursively(item: MergeListItem<RxNodeImpl>, action: (e: any) => void): void {
+function forEachChildRecursively(item: MergedListItem<RxNodeImpl>, action: (e: any) => void): void {
   const node = item.self
   const e = node.element
   e && action(e)
@@ -441,7 +441,7 @@ function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
   return wrappedRunUnder
 }
 
-function runUnder<T>(item: MergeListItem<RxNodeImpl>, func: (...args: any[]) => T, ...args: any[]): T {
+function runUnder<T>(item: MergedListItem<RxNodeImpl>, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gContext
   try {
     gContext = item
@@ -514,7 +514,7 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-const gSysRoot = MergeList.createMergerItem<RxNodeImpl>(new RxNodeImpl<null, void>('SYSTEM',
+const gSysRoot = MergedList.createMergedListItem<RxNodeImpl>(new RxNodeImpl<null, void>('SYSTEM',
   new StaticNodeFactory<null>('SYSTEM', false, null), false,
   { level: 0 } as RxNodeImpl, undefined, NOP)) // fake parent (overwritten below)
 gSysRoot.self.item = gSysRoot
@@ -526,6 +526,6 @@ Object.defineProperty(gSysRoot, 'parent', {
   enumerable: true,
 })
 
-let gContext: MergeListItem<RxNodeImpl> = gSysRoot
-let gFirstToDispose: MergeListItem<RxNodeImpl> | undefined = undefined
-let gLastToDispose: MergeListItem<RxNodeImpl> | undefined = undefined
+let gContext: MergedListItem<RxNodeImpl> = gSysRoot
+let gFirstToDispose: MergedListItem<RxNodeImpl> | undefined = undefined
+let gLastToDispose: MergedListItem<RxNodeImpl> | undefined = undefined
