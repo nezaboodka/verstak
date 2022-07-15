@@ -8,7 +8,7 @@
 import test from 'ava'
 import { MergedList, MergedListItem } from '../source/core/MergedList'
 
-test('MergeList', t => {
+test('MergedList', t => {
   const etalon1 = ['Hello', 'Welcome', 'Bye', 'End']
   const etalon2 = ['Added1', 'Bye', 'End', 'Added2', 'Hello', 'Added3']
 
@@ -17,10 +17,10 @@ test('MergeList', t => {
   for (const x of etalon1)
     list.add(x)
 
-  t.true(compare(list.items(), etalon1))
   t.is(list.count, 4)
   t.is(list.addedCount, 0)
   t.is(list.removedCount, 0)
+  t.true(compare(list.items(), etalon1))
 
   // Merge etalon2 with etalon1
   list.beginMerge()
@@ -30,12 +30,12 @@ test('MergeList', t => {
   t.is(list.count, 7)
   list.endMerge(true)
 
-  t.true(compare(list.items(), etalon2))
-  t.true(compare(list.removedItems(), ['Welcome']))
-  t.true(compare(list.addedItems(), ['Added1', 'Added2', 'Added3']))
   t.is(list.count, 6)
   t.is(list.removedCount, 1)
   t.is(list.addedCount, 3)
+  t.true(compare(list.items(), etalon2))
+  t.true(compare(list.removedItems(), ['Welcome']))
+  t.true(compare(list.addedItems(), ['Added1', 'Added2', 'Added3']))
   t.true(list.isAdded(list.lookup('Added1')!))
   t.true(list.isAdded(list.lookup('Added2')!))
   t.true(list.isAdded(list.lookup('Added3')!))
