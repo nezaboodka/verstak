@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Rx } from 'reactronic'
-import { RxNode, NodeFactory, MergeListItem } from '../core/api'
+import { RxNode, NodeFactory, MergedListItem } from '../core/api'
 
 export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<E> {
 
@@ -82,7 +82,7 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
     return p
   }
 
-  static findPrevSiblingHtmlElementNode(item: MergeListItem<RxNode>): MergeListItem<RxNode<Element>> | undefined {
+  static findPrevSiblingHtmlElementNode(item: MergedListItem<RxNode>): MergedListItem<RxNode<Element>> | undefined {
     let p = item.prev
     while (p && !(p.self.element instanceof Element))
       p = p.prev

@@ -34,7 +34,7 @@ export interface Merged<T> {
 
 export interface MergedListItem<T> {
   readonly self: T
-  // readonly next?: MergeListItem<T>
+  // readonly next?: MergedListItem<T>
   readonly prev?: MergedListItem<T> // TODO: hide
   aux?: MergedListItem<T> // TODO: hide
 }

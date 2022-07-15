@@ -1,12 +1,12 @@
 ﻿
-# **MergeList**
+# **MergedList**
 
-MergeList provides fast merge of lists and detection of
+MergedList provides fast merge of lists and detection of
 differences/changes after the merge: which items are
 added, moved, and removed.
 
 ``` typescript
-const list = new MergeList<string>(true, s => s)
+const list = new MergedList<string>(true, s => s)
 
 const example1 = ['Hello', 'Welcome', 'Bye', 'End']
 for (const x of example1)
@@ -29,14 +29,14 @@ list.endMerge(true)
 // list.isRemoved: Welcome
 ```
 
-MergeList API:
+MergedList API:
 
 ``` typescript
-interface MergeListItem<T> {
+interface MergedListItem<T> {
   readonly self: T
 }
 
-class MergeList<T> {
+class MergedList<T> {
   readonly getKey: GetKey<T>
   readonly strict: boolean
   readonly count: number
@@ -44,20 +44,20 @@ class MergeList<T> {
   readonly removedCount: number
   readonly isMergeInProgress: boolean
 
-  lookup(key: string): MergeListItem<T> | undefined
-  claim(key: string): MergeListItem<T> | undefined
-  add(self: T, keepInAddedItems?: boolean): MergeListItem<T>
-  remove(item: MergeListItem<T>, keepInRemovedItems?: boolean): void
-  move(item: MergeListItem<T>, after: MergeListItem<T>): void
+  lookup(key: string): MergedListItem<T> | undefined
+  claim(key: string): MergedListItem<T> | undefined
+  add(self: T, keepInAddedItems?: boolean): MergedListItem<T>
+  remove(item: MergedListItem<T>, keepInRemovedItems?: boolean): void
+  move(item: MergedListItem<T>, after: MergedListItem<T>): void
   beginMerge(): void
   endMerge(keepAddedAndRemovedItems?: boolean): void
 
-  items(): Generator<MergeListItem<T>>
-  addedItems(keep?: boolean): Generator<MergeListItem<T>>
-  removedItems(keep?: boolean): Generator<MergeListItem<T>>
-  isAdded(item: MergeListItem<T>): boolean
-  isMoved(item: MergeListItem<T>): boolean
-  isRemoved(item: MergeListItem<T>): boolean
-  isCurrent(item: MergeListItem<T>): boolean
+  items(): Generator<MergedListItem<T>>
+  addedItems(keep?: boolean): Generator<MergedListItem<T>>
+  removedItems(keep?: boolean): Generator<MergedListItem<T>>
+  isAdded(item: MergedListItem<T>): boolean
+  isMoved(item: MergedListItem<T>): boolean
+  isRemoved(item: MergedListItem<T>): boolean
+  isCurrent(item: MergedListItem<T>): boolean
 }
 ```

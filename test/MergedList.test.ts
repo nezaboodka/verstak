@@ -6,14 +6,14 @@
 // automatically licensed under the license referred above.
 
 import test from 'ava'
-import { MergeList, MergeListItem } from '../source/core/MergeList'
+import { MergedList, MergedListItem } from '../source/core/MergedList'
 
 test('MergeList', t => {
   const etalon1 = ['Hello', 'Welcome', 'Bye', 'End']
   const etalon2 = ['Added1', 'Bye', 'End', 'Added2', 'Hello', 'Added3']
 
   // Basic
-  const list = new MergeList<string>(true, s => s)
+  const list = new MergedList<string>(true, s => s)
   for (const x of etalon1)
     list.add(x)
 
@@ -44,7 +44,7 @@ test('MergeList', t => {
   t.true(list.isMoved(list.lookup('Hello')!))
 })
 
-function compare(list: Generator<MergeListItem<string>>, array: Array<string>): boolean {
+function compare(list: Generator<MergedListItem<string>>, array: Array<string>): boolean {
   let result = true
   let i = 0
   for (const item of list) {
