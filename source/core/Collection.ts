@@ -134,9 +134,11 @@ export class Collection<T> implements CollectionReader<T> {
   }
 
   remove(item: Item<T>): void {
-    if (!this.isRemoved(item)) {
-      const x = item as ItemImpl<T>
-      x.tag--
+    const t = item as ItemImpl<T>
+    if (!this.isRemoved(t)) {
+      this.current.exclude(t)
+      this.removed.include(t)
+      t.tag--
     }
   }
 
