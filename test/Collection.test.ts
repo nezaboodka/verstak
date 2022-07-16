@@ -46,6 +46,22 @@ test('Collection Brief Tests', t => {
   t.true(list.isMoved(list.lookup('Bye')!))
   t.false(list.isMoved(list.lookup('End')!))
   t.true(list.isMoved(list.lookup('Hello')!))
+
+  // // Merge back
+  // list.beginMerge()
+  // for (const x of etalon1)
+  //   if (!list.claim(x))
+  //     list.add(x)
+  // t.is(list.count, 4)
+  // t.is(list.removedCount, 3)
+  // t.is(list.addedCount, 1)
+  // list.endMerge('error')
+  // t.is(list.count, 6)
+  // t.is(list.removedCount, 0)
+  // t.is(list.addedCount, 0)
+  // // t.true(compare(list.items(), etalon2))
+  // for (const x of list.items())
+  //   console.log(x.self)
 })
 
 function compare(list: Generator<Item<string>>, array: Array<string>): boolean {

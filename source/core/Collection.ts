@@ -157,22 +157,33 @@ export class Collection<T> implements CollectionReader<T> {
     if (!this.isMergeInProgress)
       throw new Error('merge is ended already')
     this.tag = ~this.tag
-    const currentCount = this.current.count
-    if (currentCount > 0) {
-      const getKey = this.getKey
-      if (currentCount > this.removed.count) { // it should be faster to delete vanished items
-        const map = this.map
-        for (const x of this.removed.items())
-          map.delete(getKey(x.self))
+    if (error === undefined) {
+      const currentCount = this.current.count
+      if (currentCount > 0) {
+        const getKey = this.getKey
+        if (currentCount > this.removed.count) { // it should be faster to delete vanished items
+          const map = this.map
+          for (const x of this.removed.items())
+            map.delete(getKey(x.self))
+        }
+        else { // it should be faster to recreate map using current items
+          const map = this.map = new Map<string | undefined, ItemImpl<T>>()
+          for (const x of this.current.items())
+            map.set(getKey(x.self), x)
+        }
       }
-      else { // it should be faster to recreate map using current items
-        const map = this.map = new Map<string | undefined, ItemImpl<T>>()
-        for (const x of this.current.items())
-          map.set(getKey(x.self), x)
-      }
+      else // just create new empty map
+        this.map = new Map<string | undefined, ItemImpl<T>>()
     }
-    else // just create new empty map
-      this.map = new Map<string | undefined, ItemImpl<T>>()
+    else {
+      this.current.grab(this.removed, true)
+      const getKey = this.getKey
+      for (const x of this.added.itemsViaAux()) {
+        this.map.delete(getKey(x.self))
+        this.current.exclude(x)
+      }
+      this.added.reset()
+    }
   }
 
   resetAddedAndRemovedLists(): void {
@@ -277,6 +288,15 @@ class ItemChain<T> {
     let x = this.first
     while (x !== undefined) {
       const next = x.next
+      yield x
+      x = next
+    }
+  }
+
+  public *itemsViaAux(): Generator<ItemImpl<T>> {
+    let x = this.first
+    while (x !== undefined) {
+      const next = x.aux
       yield x
       x = next
     }
