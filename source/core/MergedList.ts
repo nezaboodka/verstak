@@ -182,12 +182,9 @@ export class MergedList<T> implements Merged<T> {
     if (this.isMergeInProgress)
       throw new Error('merge is not reentrant')
     this.tag = ~this.tag + 1
-    this.strictNextItem = this.removed.first = this.current.first
-    this.removed.count = this.current.count
-    this.current.first = this.current.last = undefined
-    this.current.count = 0
-    this.added.first = this.added.last = undefined
-    this.added.count = 0
+    this.strictNextItem = this.current.first
+    this.removed.grab(this.current)
+    this.added.grab(undefined)
   }
 
   endMerge(keepAddedAndRemovedItems?: boolean): void {
@@ -211,11 +208,8 @@ export class MergedList<T> implements Merged<T> {
     else // just create new empty map
       this.map = new Map<string | undefined, MergedItemImpl<T>>()
     if (keepAddedAndRemovedItems === undefined || !keepAddedAndRemovedItems) {
-      this.removed.first = undefined
-      this.removed.count = 0
-      this.added.first = undefined
-      this.added.last = undefined
-      this.added.count = 0
+      this.removed.grab(undefined)
+      this.added.grab(undefined)
     }
   }
 
@@ -236,10 +230,8 @@ export class MergedList<T> implements Merged<T> {
         yield x
       x = next
     }
-    if (keep === undefined || !keep) {
-      this.added.first = this.added.last = undefined
-      this.added.count = 0
-    }
+    if (keep === undefined || !keep)
+      this.added.grab(undefined)
   }
 
   *removedItems(keep?: boolean): Generator<MergedItem<T>> {
@@ -250,10 +242,8 @@ export class MergedList<T> implements Merged<T> {
       yield x
       x = next
     }
-    if (!isMergeInProgress && (keep === undefined || !keep)) {
-      this.removed.first = undefined
-      this.removed.count = 0
-    }
+    if (!isMergeInProgress && (keep === undefined || !keep))
+      this.removed.grab(undefined)
   }
 
   isAdded(item: MergedItem<T>): boolean {
@@ -313,15 +303,31 @@ class MergedItemImpl<T> implements MergedItem<T> {
 }
 
 class ItemChain<T> {
+  count: number = 0
   first?: MergedItemImpl<T> = undefined
   last?: MergedItemImpl<T> = undefined
-  count: number = 0;
 
-  *items(): Generator<MergedItemImpl<T>> {
+  public *items(): Generator<MergedItemImpl<T>> {
     let x = this.first
     while (x !== undefined) {
+      const next = x.next
       yield x
-      x = x.next
+      x = next
     }
+  }
+
+  grab(from: ItemChain<T> | undefined): void {
+    let clear: ItemChain<T>
+    if (from) {
+      this.count = from.count
+      this.first = from.first
+      this.last = from.last
+      clear = from
+    }
+    else
+      clear = this
+    clear.count = 0
+    clear.first = undefined
+    clear.last = undefined
   }
 }
