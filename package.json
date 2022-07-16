@@ -1,6 +1,6 @@
 {
   "name": "reactronic-dom",
-  "version": "0.22.313",
+  "version": "0.22.315",
   "description": "Reactronic DOM - Transactional Reactive Front-End Development Framework",
   "type": "module",
   "main": "build/dist/source/api.js",
