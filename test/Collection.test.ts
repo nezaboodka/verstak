@@ -48,7 +48,7 @@ test('Collection Brief Tests', t => {
   t.false(list.isMoved(list.lookup('End')!))
   t.true(list.isMoved(list.lookup('Hello')!))
 
-  // Merge back
+  // Merge back, but with error
   list.beginMerge()
   for (const x of etalon1)
     if (!list.claim(x))
@@ -61,6 +61,20 @@ test('Collection Brief Tests', t => {
   t.is(list.removedCount, 0)
   t.is(list.addedCount, 0)
   t.true(compare(list.items(), etalon2a))
+
+  // Merge back again (success)
+  list.beginMerge()
+  for (const x of etalon1)
+    if (!list.claim(x))
+      list.add(x)
+  t.is(list.count, 4)
+  t.is(list.removedCount, 3)
+  t.is(list.addedCount, 1)
+  list.endMerge()
+  t.is(list.count, 4)
+  t.is(list.removedCount, 3)
+  t.is(list.addedCount, 1)
+  t.true(compare(list.items(), etalon1))
 })
 
 function compare(list: Generator<Item<string>>, array: Array<string>): boolean {
