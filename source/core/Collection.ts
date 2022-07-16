@@ -21,7 +21,7 @@ export interface CollectionReader<T> {
   remove(item: Item<T>, keepInRemovedItems?: boolean): void
   move(item: Item<T>, after: Item<T>): void
   beginMerge(): void
-  endMerge(keepAddedAndRemovedItems?: boolean): void
+  endMerge(clearAddedAndRemovedItems: boolean): void
 
   items(): Generator<Item<T>>
   addedItems(keep?: boolean): Generator<Item<T>>
@@ -157,7 +157,7 @@ export class Collection<T> implements CollectionReader<T> {
     this.added.grab(undefined)
   }
 
-  endMerge(keepAddedAndRemovedItems?: boolean): void {
+  endMerge(clearAddedAndRemovedItems: boolean): void {
     if (!this.isMergeInProgress)
       throw new Error('merge is ended already')
     this.tag = ~this.tag
@@ -177,7 +177,7 @@ export class Collection<T> implements CollectionReader<T> {
     }
     else // just create new empty map
       this.map = new Map<string | undefined, ItemImpl<T>>()
-    if (keepAddedAndRemovedItems === undefined || !keepAddedAndRemovedItems) {
+    if (clearAddedAndRemovedItems) {
       this.removed.grab(undefined)
       this.added.grab(undefined)
     }

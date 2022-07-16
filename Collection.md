@@ -50,7 +50,7 @@ class Collection<T> {
   remove(item: Item<T>, keepInRemovedItems?: boolean): void
   move(item: Item<T>, after: Item<T>): void
   beginMerge(): void
-  endMerge(keepAddedAndRemovedItems?: boolean): void
+  endMerge(clearAddedAndRemovedItems: boolean): void
 
   items(): Generator<Item<T>>
   addedItems(keep?: boolean): Generator<Item<T>>

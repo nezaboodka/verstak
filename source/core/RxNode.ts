@@ -246,7 +246,7 @@ function runRenderChildrenThenDo(action: () => void): void {
   try {
     const children = node.children
     if (children.isMergeInProgress) {
-      children.endMerge(true)
+      children.endMerge(false)
       // Finalize removed nodes
       for (const item of children.removedItems())
         doFinalize(item, true)
