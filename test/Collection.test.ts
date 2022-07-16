@@ -15,7 +15,7 @@ test('Collection Brief Tests', t => {
   // Basic
   const list = new Collection<string>(true, s => s)
   for (const x of etalon1)
-    list.add(x)
+    list.add(x, true)
 
   t.is(list.count, 4)
   t.is(list.addedCount, 0)
@@ -26,7 +26,7 @@ test('Collection Brief Tests', t => {
   list.beginMerge()
   for (const x of etalon2)
     if (!list.claim(x))
-      list.add(x, true)
+      list.add(x)
   list.endMerge()
 
   t.is(list.count, 6)

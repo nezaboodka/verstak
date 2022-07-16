@@ -17,15 +17,15 @@ export interface CollectionReader<T> {
 
   lookup(key: string): Item<T> | undefined
   claim(key: string): Item<T> | undefined
-  add(self: T, keepInAddedItems?: boolean): Item<T>
-  remove(item: Item<T>, keepInRemovedItems?: boolean): void
+  add(self: T, notToAddedItems?: boolean): Item<T>
+  remove(item: Item<T>, notToRemovedItems?: boolean): void
   move(item: Item<T>, after: Item<T>): void
   beginMerge(): void
   endMerge(clearAddedAndRemovedItems: boolean): void
 
   items(): Generator<Item<T>>
-  addedItems(keep?: boolean): Generator<Item<T>>
-  removedItems(keep?: boolean): Generator<Item<T>>
+  addedItems(clear?: boolean): Generator<Item<T>>
+  removedItems(clear?: boolean): Generator<Item<T>>
   isAdded(item: Item<T>): boolean
   isMoved(item: Item<T>): boolean
   isRemoved(item: Item<T>): boolean
@@ -114,7 +114,7 @@ export class Collection<T> implements CollectionReader<T> {
     return item
   }
 
-  add(self: T, keepInAddedItems?: boolean): Item<T> {
+  add(self: T, notInAddedItems?: boolean): Item<T> {
     const key = this.getKey(self)
     if (this.lookup(key) !== undefined)
       throw new Error(`key is already in use: ${key}`)
@@ -128,16 +128,16 @@ export class Collection<T> implements CollectionReader<T> {
     this.lastNotFoundKey = undefined
     this.strictNextItem = undefined
     this.current.include(item)
-    if (keepInAddedItems === true)
+    if (!notInAddedItems)
       this.added.aux(item)
     return item
   }
 
-  remove(item: Item<T>, keepInRemovedItems?: boolean): void {
+  remove(item: Item<T>, notInRemovedItems?: boolean): void {
     if (!this.isRemoved(item)) {
       const x = item as ItemImpl<T>
       x.tag--
-      if (keepInRemovedItems === true) {
+      if (!notInRemovedItems) {
         throw new Error('not implemented')
         // move to this.firstOld
       }
@@ -192,7 +192,7 @@ export class Collection<T> implements CollectionReader<T> {
     }
   }
 
-  *addedItems(keep?: boolean): Generator<Item<T>> {
+  *addedItems(clear?: boolean): Generator<Item<T>> {
     let x = this.added.first
     while (x !== undefined) {
       const next = x.aux
@@ -200,19 +200,18 @@ export class Collection<T> implements CollectionReader<T> {
         yield x
       x = next
     }
-    if (keep === undefined || !keep)
+    if (clear)
       this.added.grab(undefined)
   }
 
-  *removedItems(keep?: boolean): Generator<Item<T>> {
-    const isMergeInProgress = this.isMergeInProgress
+  *removedItems(clear?: boolean): Generator<Item<T>> {
     let x = this.removed.first
     while (x !== undefined) {
       const next = x.next
       yield x
       x = next
     }
-    if (!isMergeInProgress && (keep === undefined || !keep))
+    if (clear)
       this.removed.grab(undefined)
   }
 
