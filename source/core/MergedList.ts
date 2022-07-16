@@ -46,7 +46,7 @@ export class MergedList<T> implements Merged<T> {
   private tag: number
   private current: ItemChain<T>
   private added: ItemChain<T>
-  private former: ItemChain<T>
+  private removed: ItemChain<T>
   private lastNotFoundKey: string | undefined
   private strictNextItem?: MergedItemImpl<T>
 
@@ -57,7 +57,7 @@ export class MergedList<T> implements Merged<T> {
     this.tag = ~0
     this.current = new ItemChain<T>()
     this.added = new ItemChain<T>()
-    this.former = new ItemChain<T>()
+    this.removed = new ItemChain<T>()
     this.lastNotFoundKey = undefined
     this.strictNextItem = undefined
   }
@@ -65,7 +65,7 @@ export class MergedList<T> implements Merged<T> {
   get count(): number {
     let result = this.current.count
     if (this.isMergeInProgress)
-      result += this.former.count
+      result += this.removed.count
     return result
   }
 
@@ -74,7 +74,7 @@ export class MergedList<T> implements Merged<T> {
   }
 
   get removedCount(): number {
-    return this.former.count
+    return this.removed.count
   }
 
   get isMergeInProgress(): boolean {
@@ -116,9 +116,9 @@ export class MergedList<T> implements Merged<T> {
         item.prev.next = item.next
       if (item.next !== undefined)
         item.next.prev = item.prev
-      if (item === this.former.first)
-        this.former.first = item.next
-      this.former.count--
+      if (item === this.removed.first)
+        this.removed.first = item.next
+      this.removed.count--
       // Include into current sequence
       const last = this.current.last
       item.prev = last
@@ -185,8 +185,8 @@ export class MergedList<T> implements Merged<T> {
     if (this.isMergeInProgress)
       throw new Error('merge is not reentrant')
     this.tag = ~this.tag + 1
-    this.strictNextItem = this.former.first = this.current.first
-    this.former.count = this.current.count
+    this.strictNextItem = this.removed.first = this.current.first
+    this.removed.count = this.current.count
     this.current.first = this.current.last = undefined
     this.current.count = 0
     this.added.first = this.added.last = undefined
@@ -200,9 +200,9 @@ export class MergedList<T> implements Merged<T> {
     const currentCount = this.current.count
     if (currentCount > 0) {
       const getKey = this.getKey
-      if (currentCount > this.former.count) { // it should be faster to delete vanished items
+      if (currentCount > this.removed.count) { // it should be faster to delete vanished items
         const map = this.map
-        for (const x of this.former.items())
+        for (const x of this.removed.items())
           map.delete(getKey(x.self))
       }
       else { // it should be faster to recreate map using current items
@@ -214,8 +214,8 @@ export class MergedList<T> implements Merged<T> {
     else // just create new empty map
       this.map = new Map<string | undefined, MergedItemImpl<T>>()
     if (keepAddedAndRemovedItems === undefined || !keepAddedAndRemovedItems) {
-      this.former.first = undefined
-      this.former.count = 0
+      this.removed.first = undefined
+      this.removed.count = 0
       this.added.first = undefined
       this.added.last = undefined
       this.added.count = 0
@@ -230,7 +230,7 @@ export class MergedList<T> implements Merged<T> {
       x = next
     }
     if (this.isMergeInProgress) {
-      x = this.former.first
+      x = this.removed.first
       while (x !== undefined) {
         const next = x.next
         yield x
@@ -256,15 +256,15 @@ export class MergedList<T> implements Merged<T> {
   *removedItems(keep?: boolean): Generator<MergedItem<T>> {
     const isMergeInProgress = this.isMergeInProgress
     if (!isMergeInProgress) {
-      let x = this.former.first
+      let x = this.removed.first
       while (x !== undefined) {
         const next = x.next
         yield x
         x = next
       }
       if (!isMergeInProgress && (keep === undefined || !keep)) {
-        this.former.first = undefined
-        this.former.count = 0
+        this.removed.first = undefined
+        this.removed.count = 0
       }
     }
   }
