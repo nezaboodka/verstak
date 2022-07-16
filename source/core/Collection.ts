@@ -21,11 +21,12 @@ export interface CollectionReader<T> {
   remove(item: Item<T>): void
   move(item: Item<T>, after: Item<T>): void
   beginMerge(): void
-  endMerge(clearAddedAndRemovedItems: boolean): void
+  endMerge(): void
+  resetAddedAndRemovedLists(): void
 
   items(): Generator<Item<T>>
-  addedItems(clear?: boolean): Generator<Item<T>>
-  removedItems(clear?: boolean): Generator<Item<T>>
+  addedItems(reset?: boolean): Generator<Item<T>>
+  removedItems(reset?: boolean): Generator<Item<T>>
   isAdded(item: Item<T>): boolean
   isMoved(item: Item<T>): boolean
   isRemoved(item: Item<T>): boolean
@@ -152,7 +153,7 @@ export class Collection<T> implements CollectionReader<T> {
     this.added.grab(undefined)
   }
 
-  endMerge(clearAddedAndRemovedItems?: boolean): void {
+  endMerge(): void {
     if (!this.isMergeInProgress)
       throw new Error('merge is ended already')
     this.tag = ~this.tag
@@ -172,10 +173,11 @@ export class Collection<T> implements CollectionReader<T> {
     }
     else // just create new empty map
       this.map = new Map<string | undefined, ItemImpl<T>>()
-    if (clearAddedAndRemovedItems) {
-      this.removed.grab(undefined)
-      this.added.grab(undefined)
-    }
+  }
+
+  resetAddedAndRemovedLists(): void {
+    this.removed.grab(undefined)
+    this.added.grab(undefined)
   }
 
   *items(): Generator<Item<T>> {
@@ -187,7 +189,7 @@ export class Collection<T> implements CollectionReader<T> {
     }
   }
 
-  *addedItems(clear?: boolean): Generator<Item<T>> {
+  *addedItems(reset?: boolean): Generator<Item<T>> {
     let x = this.added.first
     while (x !== undefined) {
       const next = x.aux
@@ -195,18 +197,18 @@ export class Collection<T> implements CollectionReader<T> {
         yield x
       x = next
     }
-    if (clear)
+    if (reset)
       this.added.grab(undefined)
   }
 
-  *removedItems(clear?: boolean): Generator<Item<T>> {
+  *removedItems(reset?: boolean): Generator<Item<T>> {
     let x = this.removed.first
     while (x !== undefined) {
       const next = x.next
       yield x
       x = next
     }
-    if (clear)
+    if (reset)
       this.removed.grab(undefined)
   }
 
