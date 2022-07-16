@@ -27,7 +27,6 @@ test('MergedList', t => {
   for (const x of etalon2)
     if (!list.claim(x))
       list.add(x, true)
-  t.is(list.count, 7)
   list.endMerge(true)
 
   t.is(list.count, 6)

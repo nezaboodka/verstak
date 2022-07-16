@@ -63,10 +63,7 @@ export class MergedList<T> implements Merged<T> {
   }
 
   get count(): number {
-    let result = this.current.count
-    if (this.isMergeInProgress)
-      result += this.removed.count
-    return result
+    return this.current.count
   }
 
   get addedCount(): number {
@@ -229,14 +226,6 @@ export class MergedList<T> implements Merged<T> {
       yield x
       x = next
     }
-    if (this.isMergeInProgress) {
-      x = this.removed.first
-      while (x !== undefined) {
-        const next = x.next
-        yield x
-        x = next
-      }
-    }
   }
 
   *addedItems(keep?: boolean): Generator<MergedItem<T>> {
@@ -255,17 +244,15 @@ export class MergedList<T> implements Merged<T> {
 
   *removedItems(keep?: boolean): Generator<MergedItem<T>> {
     const isMergeInProgress = this.isMergeInProgress
-    if (!isMergeInProgress) {
-      let x = this.removed.first
-      while (x !== undefined) {
-        const next = x.next
-        yield x
-        x = next
-      }
-      if (!isMergeInProgress && (keep === undefined || !keep)) {
-        this.removed.first = undefined
-        this.removed.count = 0
-      }
+    let x = this.removed.first
+    while (x !== undefined) {
+      const next = x.next
+      yield x
+      x = next
+    }
+    if (!isMergeInProgress && (keep === undefined || !keep)) {
+      this.removed.first = undefined
+      this.removed.count = 0
     }
   }
 
