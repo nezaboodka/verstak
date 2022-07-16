@@ -1,12 +1,12 @@
 ﻿
-# **MergedList**
+# **Collection**
 
-MergedList provides fast merge of lists and detection of
+Collection provides fast merge of lists and detection of
 differences/changes after the merge: which items are
 added, moved, and removed.
 
 ``` typescript
-const list = new MergedList<string>(true, s => s)
+const list = new Collection<string>(true, s => s)
 
 const example1 = ['Hello', 'Welcome', 'Bye', 'End']
 for (const x of example1)
@@ -29,14 +29,14 @@ list.endMerge(true)
 // list.isRemoved: Welcome
 ```
 
-MergedList API:
+Collection API:
 
 ``` typescript
-interface MergedItem<T> {
+interface Item<T> {
   readonly self: T
 }
 
-class MergedList<T> {
+class Collection<T> {
   readonly getKey: GetKey<T>
   readonly strict: boolean
   readonly count: number
@@ -44,20 +44,20 @@ class MergedList<T> {
   readonly removedCount: number
   readonly isMergeInProgress: boolean
 
-  lookup(key: string): MergedItem<T> | undefined
-  claim(key: string): MergedItem<T> | undefined
-  add(self: T, keepInAddedItems?: boolean): MergedItem<T>
-  remove(item: MergedItem<T>, keepInRemovedItems?: boolean): void
-  move(item: MergedItem<T>, after: MergedItem<T>): void
+  lookup(key: string): Item<T> | undefined
+  claim(key: string): Item<T> | undefined
+  add(self: T, keepInAddedItems?: boolean): Item<T>
+  remove(item: Item<T>, keepInRemovedItems?: boolean): void
+  move(item: Item<T>, after: Item<T>): void
   beginMerge(): void
   endMerge(keepAddedAndRemovedItems?: boolean): void
 
-  items(): Generator<MergedItem<T>>
-  addedItems(keep?: boolean): Generator<MergedItem<T>>
-  removedItems(keep?: boolean): Generator<MergedItem<T>>
-  isAdded(item: MergedItem<T>): boolean
-  isMoved(item: MergedItem<T>): boolean
-  isRemoved(item: MergedItem<T>): boolean
-  isCurrent(item: MergedItem<T>): boolean
+  items(): Generator<Item<T>>
+  addedItems(keep?: boolean): Generator<Item<T>>
+  removedItems(keep?: boolean): Generator<Item<T>>
+  isAdded(item: Item<T>): boolean
+  isMoved(item: Item<T>): boolean
+  isRemoved(item: Item<T>): boolean
+  isCurrent(item: Item<T>): boolean
 }
 ```
