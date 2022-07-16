@@ -146,7 +146,7 @@ export class Collection<T> implements CollectionReader<T> {
 
   beginMerge(): void {
     if (this.isMergeInProgress)
-      throw new Error('merge is not reentrant')
+      throw new Error('merge is in progress already')
     this.tag = ~this.tag + 1
     this.strictNextItem = this.current.first
     this.removed.grab(this.current)
