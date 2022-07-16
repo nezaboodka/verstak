@@ -149,8 +149,8 @@ export class Collection<T> implements CollectionReader<T> {
       throw new Error('merge is in progress already')
     this.tag = ~this.tag + 1
     this.strictNextItem = this.current.first
-    this.removed.grab(this.current)
-    this.added.grab(undefined)
+    this.removed.grab(this.current, false)
+    this.added.reset()
   }
 
   endMerge(error?: unknown): void {
@@ -176,8 +176,8 @@ export class Collection<T> implements CollectionReader<T> {
   }
 
   resetAddedAndRemovedLists(): void {
-    this.removed.grab(undefined)
-    this.added.grab(undefined)
+    this.removed.reset()
+    this.added.reset()
   }
 
   *items(): Generator<Item<T>> {
@@ -198,7 +198,7 @@ export class Collection<T> implements CollectionReader<T> {
       x = next
     }
     if (reset)
-      this.added.grab(undefined)
+      this.added.reset()
   }
 
   *removedItems(reset?: boolean): Generator<Item<T>> {
@@ -209,7 +209,7 @@ export class Collection<T> implements CollectionReader<T> {
       x = next
     }
     if (reset)
-      this.removed.grab(undefined)
+      this.removed.reset()
   }
 
   isAdded(item: Item<T>): boolean {
@@ -282,19 +282,30 @@ class ItemChain<T> {
     }
   }
 
-  grab(from: ItemChain<T> | undefined): void {
-    let clear: ItemChain<T>
-    if (from) {
-      this.count = from.count
-      this.first = from.first
-      this.last = from.last
-      clear = from
+  reset(): void {
+    this.count = 0
+    this.first = undefined
+    this.last = undefined
+  }
+
+  grab(from: ItemChain<T>, join: boolean): void {
+    const head = from.first
+    if (join && head) {
+      const last = this.last
+      head.prev = last
+      head.next = undefined
+      if (last)
+        this.last = last.next = head
+      else
+        this.first = this.last = head
+      this.count += from.count
     }
-    else
-      clear = this
-    clear.count = 0
-    clear.first = undefined
-    clear.last = undefined
+    else {
+      this.count = from.count
+      this.first = head
+      this.last = from.last
+    }
+    from.reset()
   }
 
   include(item: ItemImpl<T>): void {
@@ -319,6 +330,7 @@ class ItemChain<T> {
   }
 
   aux(item: ItemImpl<T>): void {
+    item.aux = undefined
     const last = this.last
     if (last)
       this.last = last.aux = item
