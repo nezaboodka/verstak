@@ -313,7 +313,6 @@ class ItemChain<T> {
     if (join && head) {
       const last = this.last
       head.prev = last
-      head.next = undefined
       if (last)
         this.last = last.next = head
       else

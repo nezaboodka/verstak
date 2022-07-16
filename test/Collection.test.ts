@@ -11,6 +11,7 @@ import { Collection, Item } from '../source/core/Collection'
 test('Collection Brief Tests', t => {
   const etalon1 = ['Hello', 'Welcome', 'Bye', 'End']
   const etalon2 = ['Added1', 'Bye', 'End', 'Added2', 'Hello', 'Added3']
+  const etalon2a = ['Hello', 'Bye', 'End', 'Added1', 'Added2', 'Added3']
 
   // Basic
   const list = new Collection<string>(true, s => s)
@@ -47,21 +48,19 @@ test('Collection Brief Tests', t => {
   t.false(list.isMoved(list.lookup('End')!))
   t.true(list.isMoved(list.lookup('Hello')!))
 
-  // // Merge back
-  // list.beginMerge()
-  // for (const x of etalon1)
-  //   if (!list.claim(x))
-  //     list.add(x)
-  // t.is(list.count, 4)
-  // t.is(list.removedCount, 3)
-  // t.is(list.addedCount, 1)
-  // list.endMerge('error')
-  // t.is(list.count, 6)
-  // t.is(list.removedCount, 0)
-  // t.is(list.addedCount, 0)
-  // // t.true(compare(list.items(), etalon2))
-  // for (const x of list.items())
-  //   console.log(x.self)
+  // Merge back
+  list.beginMerge()
+  for (const x of etalon1)
+    if (!list.claim(x))
+      list.add(x)
+  t.is(list.count, 4)
+  t.is(list.removedCount, 3)
+  t.is(list.addedCount, 1)
+  list.endMerge('error')
+  t.is(list.count, 6)
+  t.is(list.removedCount, 0)
+  t.is(list.addedCount, 0)
+  t.true(compare(list.items(), etalon2a))
 })
 
 function compare(list: Generator<Item<string>>, array: Array<string>): boolean {
