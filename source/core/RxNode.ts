@@ -15,6 +15,7 @@ export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 // RxNode
 
 export abstract class RxNode<E = any, M = unknown, R = void> {
+  static currentRenderingPriority = Priority.SyncP0
   static frameDuration = 100 // ms
   // User-defined properties
   abstract readonly name: string
@@ -292,18 +293,21 @@ async function startIncrementalRendering(
   priority1?: Array<Item<RxNodeImpl>>,
   priority2?: Array<Item<RxNodeImpl>>): Promise<void> {
   if (priority1)
-    await renderIncrementally(allChildren, parent, priority1)
+    await renderIncrementally(allChildren, parent, priority1, Priority.AsyncP1)
   if (priority2)
-    await renderIncrementally(allChildren, parent, priority2)
+    await renderIncrementally(allChildren, parent, priority2, Priority.AsyncP2)
 }
 
 async function renderIncrementally(
   allChildren: Collection<RxNodeImpl>,
   parent: Item<RxNodeImpl>,
-  items: Array<Item<RxNodeImpl>>): Promise<void> {
+  items: Array<Item<RxNodeImpl>>,
+  priority: Priority): Promise<void> {
   const checkEveryN = 30
   // if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
   await Transaction.requestNextFrame()
+  let outerPriority = RxNode.currentRenderingPriority
+  RxNode.currentRenderingPriority = priority
   if (!Transaction.isCanceled) {
     const node = parent.self
     const strict = node.children.strict
@@ -311,12 +315,16 @@ async function renderIncrementally(
       shuffle(items)
     for (const child of items) {
       prepareThenRunRender(child, allChildren.isMoved(child), strict)
-      if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
-        await Transaction.requestNextFrame(5)
+      if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration)) {
+        RxNode.currentRenderingPriority = outerPriority
+        await Transaction.requestNextFrame(2)
+        outerPriority = RxNode.currentRenderingPriority
+      }
       if (Transaction.isCanceled)
         break
     }
   }
+  RxNode.currentRenderingPriority = outerPriority
 }
 
 function prepareThenRunRender(item: Item<RxNodeImpl>,

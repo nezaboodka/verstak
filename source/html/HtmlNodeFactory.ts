@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Rx, Item } from 'reactronic'
-import { RxNode, NodeFactory } from '../core/api'
+import { RxNode, NodeFactory, Priority } from '../core/api'
 
 export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<E> {
 
@@ -56,7 +56,7 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
   render(node: RxNode<E>): void | Promise<void> {
     const result = super.render(node)
     if (gBlinkingEffect)
-      blink(node.element, node.stamp)
+      blink(node.element, RxNode.currentRenderingPriority, node.stamp)
     return result
   }
 
@@ -104,13 +104,13 @@ export class SvgElementNodeFactory<E extends SVGElement> extends ElementNodeFact
   }
 }
 
-function blink(e: Element | undefined, revision: number): void {
+function blink(e: Element | undefined, priority: Priority, revision: number): void {
   if (e !== undefined) {
     const n1 = revision % 2
     const n2 = 1 >> n1
     const effect = gBlinkingEffect
-    e.classList.toggle(`${effect}-${n1}`, true)
-    e.classList.toggle(`${effect}-${n2}`, false)
+    e.classList.toggle(`${effect}-${priority}-${n1}`, true)
+    e.classList.toggle(`${effect}-${priority}-${n2}`, false)
   }
 }
 
