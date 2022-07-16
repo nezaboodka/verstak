@@ -108,23 +108,8 @@ export class Collection<T> implements CollectionReader<T> {
       if (this.strict && item !== this.strictNextItem)
         item.status = tag // IsAdded=false, IsMoved=true
       this.strictNextItem = item.next
-      // Exclude from former sequence
-      if (item.prev !== undefined)
-        item.prev.next = item.next
-      if (item.next !== undefined)
-        item.next.prev = item.prev
-      if (item === this.removed.first)
-        this.removed.first = item.next
-      this.removed.count--
-      // Include into current sequence
-      const last = this.current.last
-      item.prev = last
-      item.next = undefined
-      if (last)
-        this.current.last = last.next = item
-      else
-        this.current.first = this.current.last = item
-      this.current.count++
+      this.removed.exclude(item)
+      this.current.include(item)
     }
     return item
   }
@@ -329,5 +314,26 @@ class ItemChain<T> {
     clear.count = 0
     clear.first = undefined
     clear.last = undefined
+  }
+
+  include(item: ItemImpl<T>): void {
+    const last = this.last
+    item.prev = last
+    item.next = undefined
+    if (last)
+      this.last = last.next = item
+    else
+      this.first = this.last = item
+    this.count++
+  }
+
+  exclude(item: ItemImpl<T>): void {
+    if (item.prev !== undefined)
+      item.prev.next = item.next
+    if (item.next !== undefined)
+      item.next.prev = item.prev
+    if (item === this.first)
+      this.first = item.next
+    this.count--
   }
 }
