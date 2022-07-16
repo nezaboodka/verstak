@@ -5,8 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Rx } from 'reactronic'
-import { RxNode, NodeFactory, Item } from '../core/api'
+import { Rx, Item } from 'reactronic'
+import { RxNode, NodeFactory } from '../core/api'
 
 export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<E> {
 
