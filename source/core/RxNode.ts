@@ -15,7 +15,7 @@ export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 // RxNode
 
 export abstract class RxNode<E = any, M = unknown, R = void> {
-  static frameDuration = 10 // ms
+  static frameDuration = 100 // ms
   // User-defined properties
   abstract readonly name: string
   abstract readonly factory: NodeFactory<E>
