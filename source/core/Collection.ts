@@ -21,7 +21,7 @@ export interface CollectionReader<T> {
   remove(item: Item<T>): void
   move(item: Item<T>, after: Item<T>): void
   beginMerge(): void
-  endMerge(): void
+  endMerge(error?: unknown): void
   resetAddedAndRemovedLists(): void
 
   items(): Generator<Item<T>>
@@ -153,7 +153,7 @@ export class Collection<T> implements CollectionReader<T> {
     this.added.grab(undefined)
   }
 
-  endMerge(): void {
+  endMerge(error?: unknown): void {
     if (!this.isMergeInProgress)
       throw new Error('merge is ended already')
     this.tag = ~this.tag

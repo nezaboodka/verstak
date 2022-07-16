@@ -61,8 +61,8 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
     gContext.self.shuffle = shuffle
   }
 
-  static renderChildrenThenDo(error: unknown, action: (error: unknown) => void): void {
-    runRenderChildrenThenDo(error, action)
+  static renderChildrenThenDo(action: (error: unknown) => void): void {
+    runRenderChildrenThenDo(undefined, action)
   }
 
   static forAllNodesDo<E>(action: (e: E) => void): void {
@@ -240,50 +240,50 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
 // Internal
 
 function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => void): void {
-  const item = gContext
-  const node = item.self
-  let promised: Promise<void> | undefined = undefined
-  try {
-    const children = node.children
-    if (children.isMergeInProgress) {
-      children.endMerge()
+  const context = gContext
+  const node = context.self
+  const children = node.children
+  if (children.isMergeInProgress) {
+    let promised: Promise<void> | undefined = undefined
+    try {
+      children.endMerge(error)
       // Finalize removed nodes
-      for (const item of children.removedItems(true))
-        doFinalize(item, true)
+      for (const child of children.removedItems(true))
+        doFinalize(child, true)
       // Render actual nodes
       const strict = children.strict
       let p1: Array<Item<RxNodeImpl>> | undefined = undefined
       let p2: Array<Item<RxNodeImpl>> | undefined = undefined
       let isMoved = false
-      for (const item of children.items()) {
+      for (const child of children.items()) {
         if (Transaction.isCanceled)
           break
-        const x = item.self
+        const x = child.self
         if (x.element) {
           if (isMoved) {
-            children.markAsMoved(item)
+            children.markAsMoved(child)
             isMoved = false
           }
         }
-        else if (strict && children.isMoved(item))
+        else if (strict && children.isMoved(child))
           isMoved = true // apply to the first node with an element
         if (x.priority === Priority.SyncP0)
-          prepareThenRunRender(item, children.isMoved(item), strict)
+          prepareThenRunRender(child, children.isMoved(child), strict)
         else if (x.priority === Priority.AsyncP1)
-          p1 = push(p1, item)
+          p1 = push(p1, child)
         else
-          p2 = push(p2, item)
+          p2 = push(p2, child)
       }
       // Render incremental children (if any)
       if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
-        promised = startIncrementalRendering(children, item, p1, p2).then(
+        promised = startIncrementalRendering(children, context, p1, p2).then(
           () => action(error),
           e => action(e))
     }
-  }
-  finally {
-    if (!promised)
-      action(error)
+    finally {
+      if (!promised)
+        action(error)
+    }
   }
 }
 
@@ -362,27 +362,22 @@ function runRender(item: Item<RxNodeImpl>): void {
   const node = item.self
   if (node.stamp >= 0) { // if node is alive
     runUnder(item, () => {
-      let err: unknown = undefined
-      let result: void | Promise<void> | undefined = undefined
+      let result: unknown = undefined
       try {
         node.stamp++
         node.children.beginMerge()
         result = node.factory.render(node)
-      }
-      catch(e: unknown) {
-        err = e
-        console.log(`Rendering failed: ${node.name}`)
-        console.log(`${e}`)
-        throw e
-      }
-      finally {
-        // Render children (skipped if children were already rendered explicitly)
         if (result instanceof Promise)
           result.then(
-            value => { RxNode.renderChildrenThenDo(undefined, NOP); return value },
-            error => { console.log(error); RxNode.renderChildrenThenDo(error, NOP) })
+            v => { runRenderChildrenThenDo(undefined, NOP); return v },
+            e => { console.log(e); runRenderChildrenThenDo(e ?? new Error('unknown error'), NOP) })
         else
-          RxNode.renderChildrenThenDo(err, NOP) // calls node.children.endMerge()
+          runRenderChildrenThenDo(undefined, NOP)
+      }
+      catch(e: unknown) {
+        runRenderChildrenThenDo(e, NOP)
+        console.log(`Rendering failed: ${node.name}`)
+        console.log(`${e}`)
       }
     })
   }
