@@ -157,7 +157,7 @@ export class Collection<T> implements CollectionReader<T> {
     this.added.grab(undefined)
   }
 
-  endMerge(clearAddedAndRemovedItems: boolean): void {
+  endMerge(clearAddedAndRemovedItems?: boolean): void {
     if (!this.isMergeInProgress)
       throw new Error('merge is ended already')
     this.tag = ~this.tag

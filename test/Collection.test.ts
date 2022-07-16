@@ -27,7 +27,7 @@ test('Collection Brief Tests', t => {
   for (const x of etalon2)
     if (!list.claim(x))
       list.add(x, true)
-  list.endMerge(false)
+  list.endMerge()
 
   t.is(list.count, 6)
   t.is(list.removedCount, 1)
