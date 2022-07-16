@@ -61,8 +61,8 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
     gContext.self.shuffle = shuffle
   }
 
-  static renderChildrenThenDo(action: () => void): void {
-    runRenderChildrenThenDo(action)
+  static renderChildrenThenDo(error: unknown, action: (error: unknown) => void): void {
+    runRenderChildrenThenDo(error, action)
   }
 
   static forAllNodesDo<E>(action: (e: E) => void): void {
@@ -239,7 +239,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
 
 // Internal
 
-function runRenderChildrenThenDo(action: () => void): void {
+function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => void): void {
   const item = gContext
   const node = item.self
   let promised: Promise<void> | undefined = undefined
@@ -276,12 +276,14 @@ function runRenderChildrenThenDo(action: () => void): void {
       }
       // Render incremental children (if any)
       if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
-        promised = startIncrementalRendering(children, item, p1, p2).then(action, action)
+        promised = startIncrementalRendering(children, item, p1, p2).then(
+          () => action(error),
+          e => action(e))
     }
   }
   finally {
     if (!promised)
-      action()
+      action(error)
   }
 }
 
@@ -359,29 +361,30 @@ function prepareRender(item: Item<RxNodeImpl>,
 function runRender(item: Item<RxNodeImpl>): void {
   const node = item.self
   if (node.stamp >= 0) { // if node is alive
-    try {
-      runUnder(item, () => {
-        let result: void | Promise<void>
-        try {
-          node.stamp++
-          node.children.beginMerge()
-          result = node.factory.render(node)
-        }
-        finally {
-          // Render children (skipped if children were already rendered explicitly)
-          if (result instanceof Promise)
-            result.then(
-              value => { RxNode.renderChildrenThenDo(NOP); return value },
-              error => { console.log(error); RxNode.renderChildrenThenDo(NOP) })
-          else
-            RxNode.renderChildrenThenDo(NOP) // calls node.children.endMerge()
-        }
-      })
-    }
-    catch (e) {
-      console.log(`Rendering failed: ${node.name}`)
-      console.log(`${e}`)
-    }
+    runUnder(item, () => {
+      let err: unknown = undefined
+      let result: void | Promise<void> | undefined = undefined
+      try {
+        node.stamp++
+        node.children.beginMerge()
+        result = node.factory.render(node)
+      }
+      catch(e: unknown) {
+        err = e
+        console.log(`Rendering failed: ${node.name}`)
+        console.log(`${e}`)
+        throw e
+      }
+      finally {
+        // Render children (skipped if children were already rendered explicitly)
+        if (result instanceof Promise)
+          result.then(
+            value => { RxNode.renderChildrenThenDo(undefined, NOP); return value },
+            error => { console.log(error); RxNode.renderChildrenThenDo(error, NOP) })
+        else
+          RxNode.renderChildrenThenDo(err, NOP) // calls node.children.endMerge()
+      }
+    })
   }
 }
 
