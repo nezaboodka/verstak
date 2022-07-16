@@ -17,8 +17,8 @@ export interface CollectionReader<T> {
 
   lookup(key: string): Item<T> | undefined
   claim(key: string): Item<T> | undefined
-  add(self: T, notToAddedItems?: boolean): Item<T>
-  remove(item: Item<T>, notToRemovedItems?: boolean): void
+  add(self: T): Item<T>
+  remove(item: Item<T>): void
   move(item: Item<T>, after: Item<T>): void
   beginMerge(): void
   endMerge(clearAddedAndRemovedItems: boolean): void
@@ -114,7 +114,7 @@ export class Collection<T> implements CollectionReader<T> {
     return item
   }
 
-  add(self: T, notInAddedItems?: boolean): Item<T> {
+  add(self: T): Item<T> {
     const key = this.getKey(self)
     if (this.lookup(key) !== undefined)
       throw new Error(`key is already in use: ${key}`)
@@ -128,19 +128,14 @@ export class Collection<T> implements CollectionReader<T> {
     this.lastNotFoundKey = undefined
     this.strictNextItem = undefined
     this.current.include(item)
-    if (!notInAddedItems)
-      this.added.aux(item)
+    this.added.aux(item)
     return item
   }
 
-  remove(item: Item<T>, notInRemovedItems?: boolean): void {
+  remove(item: Item<T>): void {
     if (!this.isRemoved(item)) {
       const x = item as ItemImpl<T>
       x.tag--
-      if (!notInRemovedItems) {
-        throw new Error('not implemented')
-        // move to this.firstOld
-      }
     }
   }
 

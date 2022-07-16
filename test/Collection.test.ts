@@ -15,10 +15,10 @@ test('Collection Brief Tests', t => {
   // Basic
   const list = new Collection<string>(true, s => s)
   for (const x of etalon1)
-    list.add(x, true)
+    list.add(x)
 
   t.is(list.count, 4)
-  t.is(list.addedCount, 0)
+  t.is(list.addedCount, 4)
   t.is(list.removedCount, 0)
   t.true(compare(list.items(), etalon1))
 
