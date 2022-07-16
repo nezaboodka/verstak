@@ -127,24 +127,9 @@ export class Collection<T> implements CollectionReader<T> {
     this.map.set(key, item)
     this.lastNotFoundKey = undefined
     this.strictNextItem = undefined
-    // Include into current sequence
-    const last = this.current.last
-    if (last) {
-      item.prev = last
-      this.current.last = last.next = item
-    }
-    else
-      this.current.first = this.current.last = item
-    this.current.count++
-    if (keepInAddedItems === true) {
-      // Include into added sequence
-      const lastAdded = this.added.last
-      if (lastAdded)
-        this.added.last = lastAdded.aux = item
-      else
-        this.added.first = this.added.last = item
-      this.added.count++
-    }
+    this.current.include(item)
+    if (keepInAddedItems === true)
+      this.added.aux(item)
     return item
   }
 
@@ -335,5 +320,14 @@ class ItemChain<T> {
     if (item === this.first)
       this.first = item.next
     this.count--
+  }
+
+  aux(item: ItemImpl<T>): void {
+    const last = this.last
+    if (last)
+      this.last = last.aux = item
+    else
+      this.first = this.last = item
+    this.count++
   }
 }
