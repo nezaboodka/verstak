@@ -310,6 +310,7 @@ async function renderIncrementally(
   await Transaction.requestNextFrame()
   let outerPriority = RxNode.currentRenderingPriority
   RxNode.currentRenderingPriority = priority
+  const maxFrameDuration = priority === Priority.AsyncP2 ? RxNode.shortFrameDuration : Infinity
   if (!Transaction.isCanceled) {
     const node = parent.self
     const strict = node.children.strict
@@ -317,7 +318,7 @@ async function renderIncrementally(
       shuffle(items)
     for (const child of items) {
       prepareThenRunRender(child, allChildren.isMoved(child), strict)
-      if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration)) {
+      if (Transaction.isFrameOver(checkEveryN, Math.min(RxNode.frameDuration, maxFrameDuration))) {
         RxNode.currentRenderingPriority = outerPriority
         await Transaction.requestNextFrame(2)
         outerPriority = RxNode.currentRenderingPriority
