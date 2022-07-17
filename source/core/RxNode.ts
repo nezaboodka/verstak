@@ -16,7 +16,9 @@ export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export abstract class RxNode<E = any, M = unknown, R = void> {
   static currentRenderingPriority = Priority.SyncP0
-  static frameDuration = 60 // ms
+  static readonly shortFrameDuration = 16 // ms
+  static readonly longFrameDuration = 300 // ms
+  static frameDuration = RxNode.longFrameDuration
   // User-defined properties
   abstract readonly name: string
   abstract readonly factory: NodeFactory<E>
