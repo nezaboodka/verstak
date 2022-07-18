@@ -300,34 +300,35 @@ async function startIncrementalRendering(
     await renderIncrementally(allChildren, parent, priority2, Priority.AsyncP2)
 }
 
-async function renderIncrementally(
-  allChildren: Collection<RxNodeImpl>,
-  parent: Item<RxNodeImpl>,
-  items: Array<Item<RxNodeImpl>>,
-  priority: Priority): Promise<void> {
-  const checkEveryN = 1
-  // if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
+async function renderIncrementally(allChildren: Collection<RxNodeImpl>,
+  parent: Item<RxNodeImpl>, items: Array<Item<RxNodeImpl>>, priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
-  let outerPriority = RxNode.currentRenderingPriority
-  RxNode.currentRenderingPriority = priority
-  const maxFrameDuration = priority === Priority.AsyncP2 ? RxNode.shortFrameDuration : Infinity
   if (!Transaction.isCanceled) {
-    const node = parent.self
-    const strict = node.children.strict
-    if (node.shuffle)
-      shuffle(items)
-    for (const child of items) {
-      prepareThenRunRender(child, allChildren.isMoved(child), strict)
-      if (Transaction.isFrameOver(checkEveryN, Math.min(RxNode.frameDuration, maxFrameDuration))) {
-        RxNode.currentRenderingPriority = outerPriority
-        await Transaction.requestNextFrame(2)
-        outerPriority = RxNode.currentRenderingPriority
+    let outerPriority = RxNode.currentRenderingPriority
+    RxNode.currentRenderingPriority = priority
+    try {
+      const node = parent.self
+      const strict = node.children.strict
+      if (node.shuffle)
+        shuffle(items)
+      const frameDurationLimit = priority === Priority.AsyncP2 ? RxNode.shortFrameDuration : Infinity
+      let frameDuration = Math.min(3 * RxNode.shortFrameDuration, RxNode.frameDuration)
+      for (const child of items) {
+        prepareThenRunRender(child, allChildren.isMoved(child), strict)
+        if (Transaction.isFrameOver(1, frameDuration)) {
+          RxNode.currentRenderingPriority = outerPriority
+          await Transaction.requestNextFrame(0)
+          outerPriority = RxNode.currentRenderingPriority
+          frameDuration = Math.min(3 * frameDuration, Math.min(frameDurationLimit, RxNode.frameDuration))
+        }
+        if (Transaction.isCanceled)
+          break
       }
-      if (Transaction.isCanceled)
-        break
+    }
+    finally {
+      RxNode.currentRenderingPriority = outerPriority
     }
   }
-  RxNode.currentRenderingPriority = outerPriority
 }
 
 function prepareThenRunRender(item: Item<RxNodeImpl>,
