@@ -305,7 +305,7 @@ async function renderIncrementally(
   parent: Item<RxNodeImpl>,
   items: Array<Item<RxNodeImpl>>,
   priority: Priority): Promise<void> {
-  const checkEveryN = 30
+  const checkEveryN = 1
   // if (Transaction.isFrameOver(checkEveryN, RxNode.frameDuration))
   await Transaction.requestNextFrame()
   let outerPriority = RxNode.currentRenderingPriority
