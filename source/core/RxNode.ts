@@ -303,7 +303,7 @@ async function startIncrementalRendering(
 async function renderIncrementally(allChildren: Collection<RxNodeImpl>,
   parent: Item<RxNodeImpl>, items: Array<Item<RxNodeImpl>>, priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
-  if (!Transaction.isCanceled) {
+  if (!Transaction.isCanceled || !Transaction.isFrameOver(1, 2 * RxNode.shortFrameDuration / 3)) {
     let outerPriority = RxNode.currentRenderingPriority
     RxNode.currentRenderingPriority = priority
     try {
@@ -312,7 +312,7 @@ async function renderIncrementally(allChildren: Collection<RxNodeImpl>,
       if (node.shuffle)
         shuffle(items)
       const frameDurationLimit = priority === Priority.AsyncP2 ? RxNode.shortFrameDuration : Infinity
-      let frameDuration = Math.min(4.0 * RxNode.shortFrameDuration, Math.min(frameDurationLimit, RxNode.frameDuration))
+      let frameDuration = Math.min(1.5 * RxNode.shortFrameDuration, Math.min(frameDurationLimit, RxNode.frameDuration))
       for (const child of items) {
         prepareThenRunRender(child, allChildren.isMoved(child), strict)
         if (Transaction.isFrameOver(1, frameDuration)) {
@@ -321,7 +321,7 @@ async function renderIncrementally(allChildren: Collection<RxNodeImpl>,
           outerPriority = RxNode.currentRenderingPriority
           frameDuration = Math.min(3.0 * frameDuration, Math.min(frameDurationLimit, RxNode.frameDuration))
         }
-        if (Transaction.isCanceled)
+        if (Transaction.isCanceled && Transaction.isFrameOver(1, 2 * RxNode.shortFrameDuration / 3))
           break
       }
     }
