@@ -312,7 +312,7 @@ async function renderIncrementally(allChildren: Collection<RxNodeImpl>,
       if (node.shuffle)
         shuffle(items)
       const frameDurationLimit = priority === Priority.AsyncP2 ? RxNode.shortFrameDuration : Infinity
-      let frameDuration = Math.min(3 * RxNode.shortFrameDuration, RxNode.frameDuration)
+      let frameDuration = Math.min(3 * RxNode.shortFrameDuration, Math.min(frameDurationLimit, RxNode.frameDuration))
       for (const child of items) {
         prepareThenRunRender(child, allChildren.isMoved(child), strict)
         if (Transaction.isFrameOver(1, frameDuration)) {
