@@ -492,9 +492,10 @@ function push<T>(array: Array<T> | undefined, item: T): Array<T> {
 }
 
 function shuffle<T>(array: Array<T>): Array<T> {
-  let i = array.length - 1
+  const n = array.length - 1
+  let i = n
   while (i >= 0) {
-    const j = Math.floor(Math.random() * i)
+    const j = Math.floor(Math.random() * n)
     const t = array[i]
     array[i] = array[j]
     array[j] = t
