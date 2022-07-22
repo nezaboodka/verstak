@@ -224,7 +224,7 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
 
   @reaction
   @options({
-    reentrance: Reentrance.CancelAndWaitPrevious,
+    reentrance: Reentrance.CancelPrevious,
     triggeringArgs: true,
     noSideEffects: false,
   })
@@ -252,35 +252,37 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       // Finalize removed nodes
       for (const child of children.removedItems(true))
         doFinalize(child, true)
-      // Render actual nodes
-      const strict = children.strict
-      let p1: Array<Item<RxNodeImpl>> | undefined = undefined
-      let p2: Array<Item<RxNodeImpl>> | undefined = undefined
-      let isMoved = false
-      for (const child of children.items()) {
-        if (Transaction.isCanceled)
-          break
-        const x = child.self
-        if (x.element) {
-          if (isMoved) {
-            children.markAsMoved(child)
-            isMoved = false
+      if (!error) {
+        // Render actual nodes
+        const strict = children.strict
+        let p1: Array<Item<RxNodeImpl>> | undefined = undefined
+        let p2: Array<Item<RxNodeImpl>> | undefined = undefined
+        let isMoved = false
+        for (const child of children.items()) {
+          if (Transaction.isCanceled)
+            break
+          const x = child.self
+          if (x.element) {
+            if (isMoved) {
+              children.markAsMoved(child)
+              isMoved = false
+            }
           }
+          else if (strict && children.isMoved(child))
+            isMoved = true // apply to the first node with an element
+          if (x.priority === Priority.SyncP0)
+            prepareThenRunRender(child, children.isMoved(child), strict)
+          else if (x.priority === Priority.AsyncP1)
+            p1 = push(p1, child)
+          else
+            p2 = push(p2, child)
         }
-        else if (strict && children.isMoved(child))
-          isMoved = true // apply to the first node with an element
-        if (x.priority === Priority.SyncP0)
-          prepareThenRunRender(child, children.isMoved(child), strict)
-        else if (x.priority === Priority.AsyncP1)
-          p1 = push(p1, child)
-        else
-          p2 = push(p2, child)
+        // Render incremental children (if any)
+        if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
+          promised = startIncrementalRendering(context, children, p1, p2).then(
+            () => action(error),
+            e => action(e))
       }
-      // Render incremental children (if any)
-      if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
-        promised = startIncrementalRendering(children, context, p1, p2).then(
-          () => action(error),
-          e => action(e))
     }
     finally {
       if (!promised)
@@ -290,24 +292,26 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
 }
 
 async function startIncrementalRendering(
-  allChildren: Collection<RxNodeImpl>,
   parent: Item<RxNodeImpl>,
+  allChildren: Collection<RxNodeImpl>,
   priority1?: Array<Item<RxNodeImpl>>,
   priority2?: Array<Item<RxNodeImpl>>): Promise<void> {
+  const stamp = parent.self.stamp
   if (priority1)
-    await renderIncrementally(allChildren, parent, priority1, Priority.AsyncP1)
+    await renderIncrementally(parent, stamp, allChildren, priority1, Priority.AsyncP1)
   if (priority2)
-    await renderIncrementally(allChildren, parent, priority2, Priority.AsyncP2)
+    await renderIncrementally(parent, stamp, allChildren, priority2, Priority.AsyncP2)
 }
 
-async function renderIncrementally(allChildren: Collection<RxNodeImpl>,
-  parent: Item<RxNodeImpl>, items: Array<Item<RxNodeImpl>>, priority: Priority): Promise<void> {
+async function renderIncrementally(parent: Item<RxNodeImpl>, stamp: number,
+  allChildren: Collection<RxNodeImpl>, items: Array<Item<RxNodeImpl>>,
+  priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
-  if (!Transaction.isCanceled || !Transaction.isFrameOver(1, 2 * RxNode.shortFrameDuration / 3)) {
+  const node = parent.self
+  if (/*node.stamp === stamp &&*/ (!Transaction.isCanceled || !Transaction.isFrameOver(1, 2 * RxNode.shortFrameDuration / 3))) {
     let outerPriority = RxNode.currentRenderingPriority
     RxNode.currentRenderingPriority = priority
     try {
-      const node = parent.self
       const strict = node.children.strict
       if (node.shuffle)
         shuffle(items)
@@ -321,7 +325,7 @@ async function renderIncrementally(allChildren: Collection<RxNodeImpl>,
           outerPriority = RxNode.currentRenderingPriority
           frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, RxNode.frameDuration))
         }
-        if (Transaction.isCanceled && Transaction.isFrameOver(1, 2 * RxNode.shortFrameDuration / 3))
+        if (/*node.stamp !== stamp ||*/ (Transaction.isCanceled && Transaction.isFrameOver(1, 2 * RxNode.shortFrameDuration / 3)))
           break
       }
     }
