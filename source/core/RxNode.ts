@@ -308,7 +308,7 @@ async function renderIncrementally(parent: Item<RxNodeImpl>, stamp: number,
   priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
   const node = parent.self
-  if (/*node.stamp === stamp &&*/ (!Transaction.isCanceled || !Transaction.isFrameOver(1, 2 * RxNode.shortFrameDuration / 3))) {
+  if (!Transaction.isCanceled || !Transaction.isFrameOver(1, RxNode.shortFrameDuration / 3)) {
     let outerPriority = RxNode.currentRenderingPriority
     RxNode.currentRenderingPriority = priority
     try {
@@ -325,7 +325,7 @@ async function renderIncrementally(parent: Item<RxNodeImpl>, stamp: number,
           outerPriority = RxNode.currentRenderingPriority
           frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, RxNode.frameDuration))
         }
-        if (/*node.stamp !== stamp ||*/ (Transaction.isCanceled && Transaction.isFrameOver(1, 2 * RxNode.shortFrameDuration / 3)))
+        if (Transaction.isCanceled && Transaction.isFrameOver(1, RxNode.shortFrameDuration / 3))
           break
       }
     }
