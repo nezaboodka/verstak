@@ -9,17 +9,14 @@ import { Reaction } from '../core/Elements'
 import { FocusModel } from './sensors/FocusSensor'
 
 export function RxFocuser(name: string, target: HTMLElement, model: FocusModel,
-  setNativeFocus: (() => void) | undefined = undefined): void {
+  switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {
   Reaction(name, { target, model }, (_, node) => {
-    const isEditMode = model.isEditMode
-    // console.log(`${isEditMode ? '🟢' : '🔴'} RxFocuser [${name}]: ${isEditMode ? 'focus()' : 'blur()'}`)
-    if (setNativeFocus === undefined)
-      setNativeFocus = () => target.focus()
-    if (node.isInitialRendering)
-      target.dataForSensor.focus = model
-    if (isEditMode)
-      setNativeFocus()/* nonreactive(() => setNativeFocus!()) */
-    else
-      target.blur()
+    if (switchEditMode !== undefined) {
+      switchEditMode(model)
+    }
+    else {
+      model.isEditMode ? target.focus() : target.blur()
+      // console.log(`${model.isEditMode ? '🟢' : '🔴'} RxFocuser [${name}]: ${model.isEditMode ? 'focus()' : 'blur()'}`)
+    }
   }, undefined, undefined, 0)
 }
