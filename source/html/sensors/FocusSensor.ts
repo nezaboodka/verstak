@@ -12,7 +12,7 @@ import { HtmlElementSensor } from './HtmlElementSensor'
 import { WindowSensor } from './WindowSensor'
 
 export interface FocusModel {
-  isFocused: boolean
+  isEditMode: boolean
   onFocusIn?: (focus: FocusSensor) => void
   onFocusOut?: (focus: FocusSensor) => void
 }
@@ -39,15 +39,15 @@ export class FocusSensor extends HtmlElementSensor {
   setActiveData(data: unknown, debugHint: string = ''): void {
     if (data !== this.activeData) {
       const activeData = this.activeData
-      if (activeData !== undefined && objectHasMember<FocusModel>(activeData, 'isFocused')) {
-        // console.log(`${activeData.constructor.name}.isFocused = %cfalse`, 'color: #BB0000')
-        activeData.isFocused = false
+      if (activeData !== undefined && objectHasMember<FocusModel>(activeData, 'isEditMode')) {
+        // console.log(`${activeData.constructor.name}.isEditMode = %cfalse`, 'color: #BB0000')
+        activeData.isEditMode = false
         activeData.onFocusOut?.(this)
       }
       if (data !== undefined) {
-        if (objectHasMember<FocusModel>(data, 'isFocused')) {
-          // console.log(`${data.constructor.name}.isFocused = %ctrue`, 'color: #00BB00')
-          data.isFocused = true
+        if (objectHasMember<FocusModel>(data, 'isEditMode')) {
+          // console.log(`${data.constructor.name}.isEditMode = %ctrue`, 'color: #00BB00')
+          data.isEditMode = true
           data.onFocusIn?.(this)
         }
       }
@@ -174,9 +174,9 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   private trySetFocus(candidateData: unknown, indent: string = ''): void {
-    if (candidateData !== undefined && objectHasMember<FocusModel>(candidateData, 'isFocused')) {
-      // console.log(`${indent}try focus: ${candidateData.constructor.name}.isFocused = %ctrue`, 'color: #00BB00')
-      candidateData.isFocused = true
+    if (candidateData !== undefined && objectHasMember<FocusModel>(candidateData, 'isEditMode')) {
+      // console.log(`${indent}try focus: ${candidateData.constructor.name}.isEditMode = %ctrue`, 'color: #00BB00')
+      candidateData.isEditMode = true
     }
   }
 }
