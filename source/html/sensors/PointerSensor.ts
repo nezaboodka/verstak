@@ -15,6 +15,8 @@ import { WindowSensor } from './WindowSensor'
 export class PointerSensor extends BasePointerSensor {
   pointerButton: PointerButton
   @isnonreactive private clickable: unknown
+  hotPositionX: number
+  hotPositionY: number
   clicking: unknown
   clicked: unknown
   clickX: number // position relative to browser's viewport
@@ -46,6 +48,8 @@ export class PointerSensor extends BasePointerSensor {
 
   constructor(focusSensor: FocusSensor, windowSensor: WindowSensor) {
     super(focusSensor, windowSensor)
+    this.hotPositionX = Infinity
+    this.hotPositionY = Infinity
     this.pointerButton = PointerButton.None
     this.tryingDragging = false
     this.clickable = undefined
@@ -117,6 +121,7 @@ export class PointerSensor extends BasePointerSensor {
   }
 
   protected onPointerMove(e: PointerEvent): void {
+    this.moveOver(e)
     if (isPointerButtonDown(this.pointerButton, e.buttons)) {
       if (this.tryingDragging) {
         if (Math.abs(e.clientX - this.startX) > PointerSensor.DraggingThreshold ||
@@ -169,6 +174,12 @@ export class PointerSensor extends BasePointerSensor {
       this.cancelDragging()
       this.reset()
     }
+  }
+
+  @transaction @options({ logging: LoggingLevel.Off })
+  protected moveOver(e: PointerEvent): void {
+    this.hotPositionX = e.clientX
+    this.hotPositionY = e.clientY
   }
 
   @transaction @options({ logging: LoggingLevel.Off })
