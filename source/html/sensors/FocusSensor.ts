@@ -152,9 +152,10 @@ export class FocusSensor extends HtmlElementSensor {
 
   @transaction @options({ logging: LoggingLevel.Off })
   protected doMouseDown(e: MouseEvent): void {
-    const path = e.composedPath()
-    const isFirstElementFocusable = ((path[0] as HTMLElement)?.tabIndex ?? -1) >= 0
-    if (path.length > 0 && !isFirstElementFocusable) {
+    const path = e.composedPath() as Array<HTMLElement>
+    const isClickInsideTabIndexedElement =
+      path.find(el => el !== document.body && el.tabIndex >= 0) !== undefined
+    if (path.length > 0 && !isClickInsideTabIndexedElement) {
       // console.log('[info]: non-focusable element')
       // Focus
       const { dataList } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true)
