@@ -126,14 +126,14 @@ export class FocusSensor extends HtmlElementSensor {
       const filteredElementDataList = dataList.filter(x => x !== this.activeData)
       if (filteredElementDataList.length > 0) {
         // console.log('└─ [info]: focus data found')
-        this.trySetFocus(filteredElementDataList[0], '  └─')
+        this.trySetEditMode(filteredElementDataList[0], '  └─')
       }
       else {
         // console.log('├─ [info]: no focus data found')
         const defaultData = this.getDefaultSensorData()
         if (defaultData?.focus !== undefined) {
           // console.log('└─ [info]: default data is used')
-          this.trySetFocus(defaultData.focus, '    └─')
+          this.trySetEditMode(defaultData.focus, '    └─')
         }
         else {
           // console.log('└─ [skip]: no default data found')
@@ -160,7 +160,7 @@ export class FocusSensor extends HtmlElementSensor {
       const { dataList } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true)
       this.elementDataList = dataList
       if (dataList.length > 0) {
-        this.trySetFocus(dataList[0], '└─')
+        this.trySetEditMode(dataList[0], '└─')
         e.preventDefault()
       }
       // Context
@@ -173,7 +173,7 @@ export class FocusSensor extends HtmlElementSensor {
     }
   }
 
-  private trySetFocus(candidateData: unknown, indent: string = ''): void {
+  private trySetEditMode(candidateData: unknown, indent: string = ''): void {
     if (candidateData !== undefined && objectHasMember<FocusModel>(candidateData, 'isEditMode')) {
       // console.log(`${indent}try focus: ${candidateData.constructor.name}.isEditMode = %ctrue`, 'color: #00BB00')
       candidateData.isEditMode = true
