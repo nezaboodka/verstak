@@ -3,9 +3,9 @@
 [![NPM Version](https://img.shields.io/npm/v/reactron.svg?style=flat&colorB=success)](https://www.npmjs.com/package/reactron)
 [![Package Size](https://img.shields.io/bundlephobia/minzip/reactron.svg?colorB=success)](https://bundlephobia.com/result?p=reactron)
 
-# **Reactronic DOM** - Transactional Reactive Front-End Development Framework
+# **Reactron** - Transactional Reactive Front-End Development Framework
 
-Reactronic DOM is a JavaScript library that provides
+Reactron is a JavaScript library that provides
 [transactional reactive](https://blog.nezaboodka.com/post/2019/593-modern-database-should-natively-support-transactionally-reactive-programming)
 facilities for building front-end applications.
 
