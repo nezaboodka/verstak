@@ -1,7 +1,7 @@
 {
-  "name": "reactronic-dom",
+  "name": "reactron",
   "version": "0.22.315",
-  "description": "Reactronic DOM - Transactional Reactive Front-End Development Framework",
+  "description": "Reactron - Transactional Reactive Front-End Development Framework",
   "type": "module",
   "main": "build/dist/source/api.js",
   "types": "build/dist/source/api.d.ts",
@@ -10,7 +10,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/nezaboodka/reactronic-dom.git"
+    "url": "https://github.com/nezaboodka/reactron.git"
   },
   "keywords": [
     "nezaboodka",
@@ -27,11 +27,11 @@
   "author": "Yury Chetyrko <ychetyrko@gmail.com> (https://github.com/ychetyrko)",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/nezaboodka/reactronic-dom/issues"
+    "url": "https://github.com/nezaboodka/reactron/issues"
   },
-  "homepage": "https://github.com/nezaboodka/reactronic-dom/blob/master/README.md#readme",
+  "homepage": "https://github.com/nezaboodka/reactron/blob/master/README.md#readme",
   "dependencies": {
-    "reactronic": "^0.22.315"
+    "reactronic": "^0.22.316"
   },
   "devDependencies": {
     "@types/node": "18.0.5",

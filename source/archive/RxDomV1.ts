@@ -1,7 +1,7 @@
 // The below copyright notice and the license permission notice
 // shall be included in all copies or substantial portions.
 // Copyright (C) 2019-2022 Yury Chetyrko <ychetyrko@gmail.com>
-// License: https://raw.githubusercontent.com/nezaboodka/reactronic-dom/master/LICENSE
+// License: https://raw.githubusercontent.com/nezaboodka/reactron/master/LICENSE
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
@@ -52,7 +52,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
     if (inst) {
       inst.native = undefined
       if (!node.inline && node.instance) // TODO: Consider creating one transaction for all finalizations at once
-        Transaction.standalone(() => Rx.dispose(node.instance))
+        Transaction.separate(() => Rx.dispose(node.instance))
       for (const x of inst.children)
         tryToFinalize(x, initiator)
       for (const x of inst.guests)

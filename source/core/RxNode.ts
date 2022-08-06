@@ -1,7 +1,7 @@
 // The below copyright notice and the license permission notice
 // shall be included in all copies or substantial portions.
 // Copyright (C) 2019-2022 Yury Chetyrko <ychetyrko@gmail.com>
-// License: https://raw.githubusercontent.com/nezaboodka/reactronic-dom/master/LICENSE
+// License: https://raw.githubusercontent.com/nezaboodka/reactron/master/LICENSE
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
@@ -355,7 +355,7 @@ function prepareRender(item: Item<RxNodeImpl>,
   if (node.stamp === 0) {
     node.stamp = 1
     if (!node.inline) {
-      Transaction.off(() => {
+      Transaction.outside(() => {
         if (Rx.isLogging)
           Rx.setLoggingHint(node, node.name)
         Rx.getController(node.autorender).configure({
@@ -413,7 +413,7 @@ function doFinalize(item: Item<RxNodeImpl>, isLeader: boolean): void {
       else
         gFirstToDispose = gLastToDispose = item
       if (gFirstToDispose === item)
-        Transaction.run({ standalone: 'disposal', hint: `runDisposalLoop(initiator=${item.self.name})` }, () => {
+        Transaction.run({ separation: 'disposal', hint: `runDisposalLoop(initiator=${item.self.name})` }, () => {
           void runDisposalLoop().then(NOP, error => console.log(error))
         })
     }

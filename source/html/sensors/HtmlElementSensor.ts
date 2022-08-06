@@ -1,22 +1,22 @@
 // The below copyright notice and the license permission notice
 // shall be included in all copies or substantial portions.
 // Copyright (C) 2019-2022 Yury Chetyrko <ychetyrko@gmail.com>
-// License: https://raw.githubusercontent.com/nezaboodka/reactronic-dom/master/LICENSE
+// License: https://raw.githubusercontent.com/nezaboodka/reactron/master/LICENSE
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { isnonreactive } from 'reactronic'
+import { raw } from 'reactronic'
 import { DataForSensor, SymDataForSensor } from './DataForSensor'
 // import { FocusSensor } from './FocusSensor'
 import { Sensor } from './Sensor'
 import { WindowSensor } from './WindowSensor'
 
 export class HtmlElementSensor extends Sensor {
-  @isnonreactive readonly focusSensor?: any
-  @isnonreactive readonly windowSensor?: WindowSensor
+  @raw readonly focusSensor?: any
+  @raw readonly windowSensor?: WindowSensor
   sourceElement: HTMLElement | undefined = undefined
-  @isnonreactive preventDefault: boolean
-  @isnonreactive stopPropagation: boolean
+  @raw preventDefault: boolean
+  @raw stopPropagation: boolean
 
   constructor(focusSensor?: any, windowSensor?: WindowSensor) {
     super()

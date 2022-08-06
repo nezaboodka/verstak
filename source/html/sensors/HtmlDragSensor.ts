@@ -1,11 +1,11 @@
 // The below copyright notice and the license permission notice
 // shall be included in all copies or substantial portions.
 // Copyright (C) 2019-2022 Yury Chetyrko <ychetyrko@gmail.com>
-// License: https://raw.githubusercontent.com/nezaboodka/reactronic-dom/master/LICENSE
+// License: https://raw.githubusercontent.com/nezaboodka/reactron/master/LICENSE
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, transaction, isnonreactive, Transaction, LoggingLevel } from 'reactronic'
+import { options, reaction, transaction, raw, Transaction, LoggingLevel } from 'reactronic'
 import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { FocusSensor } from './FocusSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
@@ -25,14 +25,14 @@ export class HtmlDragSensor extends HtmlElementSensor {
   dragFinished: boolean
   startX: number // position relative to browser's viewport
   startY: number // position relative to browser's viewport
-  @isnonreactive private dataByFormat: Map<string, unknown>
-  @isnonreactive private draggingImage: HTMLElement | undefined
-  @isnonreactive private draggingImageX: number
-  @isnonreactive private draggingImageY: number
-  @isnonreactive dropEffect: DropEffect
-  @isnonreactive dataTypesAllowed: string[]
-  @isnonreactive effectAllowed: DragEffectAllowed
-  @isnonreactive dropAllowed: boolean
+  @raw private dataByFormat: Map<string, unknown>
+  @raw private draggingImage: HTMLElement | undefined
+  @raw private draggingImageX: number
+  @raw private draggingImageY: number
+  @raw dropEffect: DropEffect
+  @raw dataTypesAllowed: string[]
+  @raw effectAllowed: DragEffectAllowed
+  @raw dropAllowed: boolean
   draggingOver: boolean
   draggingDataTypes: string[]
   positionX: number // position relative to browser's viewport
@@ -177,7 +177,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.dragTargetWindow = undefined
     this.previousDragTarget = undefined
     this.revision++
-    Transaction.standalone(() => {
+    Transaction.separate(() => {
       this.windowSensor?.setActiveWindow(window, 'htmlDrag')
     })
   }
