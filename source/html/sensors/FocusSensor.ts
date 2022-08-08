@@ -156,7 +156,7 @@ export class FocusSensor extends HtmlElementSensor {
     const isClickInsideTabIndexedElement =
       path.find(el => el !== document.body && el.tabIndex >= 0) !== undefined
     if (path.length > 0 && !isClickInsideTabIndexedElement) {
-      // console.log('[info]: non-focusable element')
+      // console.log('[info]: a path does not contain any editable elements')
       // Focus
       const { dataList } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true)
       this.elementDataList = dataList
@@ -170,7 +170,7 @@ export class FocusSensor extends HtmlElementSensor {
       this.reset()
     }
     else {
-      // console.log('[skip]: focusable element')
+      // console.log('[skip]: editable element found')
     }
   }
 
