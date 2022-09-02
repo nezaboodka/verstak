@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/nezaboodka/reactron/blob/master/README.md#readme",
   "dependencies": {
-    "reactronic": "^0.22.316"
+    "reactronic": "^0.22.317"
   },
   "devDependencies": {
     "@types/node": "18.0.5",
