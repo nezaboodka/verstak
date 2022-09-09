@@ -50,7 +50,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
 
   abstract wrapBy(renderer: Render<E, M, R> | undefined): this
 
-  static launch(render: () => void): void {
+  static root(render: () => void): void {
     gSysRoot.self.renderer = render
     prepareThenRunRender(gSysRoot, false, false)
   }
