@@ -71,7 +71,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
     forEachChildRecursively(gSysRoot, action)
   }
 
-  static emit<E = undefined, M = unknown, R = void>(
+  static claim<E = undefined, M = unknown, R = void>(
     name: string, triggers: unknown, inline: boolean,
     renderer: Render<E, M, R>, priority?: Priority,
     monitor?: Monitor, throttling?: number,

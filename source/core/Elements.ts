@@ -12,13 +12,13 @@ export function Reaction<E = undefined, M = unknown, R = void>(
   name: string, triggers: unknown, renderer: Render<E, M, R>,
   priority?: Priority, monitor?: Monitor, throttling?: number,
   logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): RxNode<E, M, R> {
-  return RxNode.emit(name, triggers, false, renderer,
+  return RxNode.claim(name, triggers, false, renderer,
     priority, monitor, throttling, logging, factory)
 }
 
 export function Inline<E = undefined, M = unknown, R = void>(
   name: string, renderer: Render<E, M, R>, priority?: Priority,
   factory?: NodeFactory<E>): RxNode<E, M, R> {
-  return RxNode.emit(name, undefined, true, renderer,
+  return RxNode.claim(name, undefined, true, renderer,
     priority, undefined, undefined, undefined, factory)
 }
