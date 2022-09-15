@@ -5,7 +5,7 @@
 
 # **Reactron** - Transactional Reactive Front-End Development Framework
 
-Reactron is a JavaScript library that provides
+Reactron is an experimental JavaScript library that provides
 [transactional reactive](https://blog.nezaboodka.com/post/2019/593-modern-database-should-natively-support-transactionally-reactive-programming)
 facilities for building front-end applications.
 
