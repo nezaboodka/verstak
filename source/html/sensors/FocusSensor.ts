@@ -186,13 +186,13 @@ function toggleContextRefs(focusSensor: FocusSensor, existing: unknown[], update
   if (updated !== existing) {
     existing.forEach(x => {
       if (objectHasMember<ContextModel>(x, 'contextToggle') && x.contextToggle && x.contextToggle.valueOn !== x.contextToggle.valueOff)
-        x.contextToggle.value = x.contextToggle.valueOff
+        x.contextToggle.variable = x.contextToggle.valueOff
       if (objectHasMember<ContextModel>(x, 'onContextOut'))
         x.onContextOut?.(focusSensor)
     })
     updated.forEach(x => {
       if (objectHasMember<ContextModel>(x, 'contextToggle') && x.contextToggle)
-        x.contextToggle.value = x.contextToggle.valueOn
+        x.contextToggle.variable = x.contextToggle.valueOn
       if (objectHasMember<ContextModel>(x, 'onContextIn'))
         x.onContextIn?.(focusSensor)
     })

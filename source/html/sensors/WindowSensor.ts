@@ -28,7 +28,7 @@ export class WindowSensor extends Sensor {
       if (activeData && objectHasMember<WindowModel>(activeData, 'popupToggle')) {
         const popupToggle = activeData.popupToggle
         if (popupToggle instanceof ToggleRef) {
-          popupToggle.value = popupToggle.valueOff
+          popupToggle.variable = popupToggle.valueOff
         }
       }
       // if (window && objectHasMember<WindowModel>(window, 'popupToggle')) {
