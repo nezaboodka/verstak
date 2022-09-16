@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reaction, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
+import { reaction, unobservable, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
 export type Render<E = unknown, M = unknown, R = void> = (element: E, node: RxNode<E, M, R>) => R
@@ -343,7 +343,7 @@ function prepareThenRunRender(item: Item<RxNodeImpl>,
     if (node.inline)
       runRender(item)
     else
-      nonreactive(node.autorender, node.triggers) // reactive auto-rendering
+      unobservable(node.autorender, node.triggers) // reactive auto-rendering
   }
 }
 

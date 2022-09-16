@@ -31,18 +31,18 @@
   },
   "homepage": "https://github.com/nezaboodka/reactron/blob/master/README.md#readme",
   "dependencies": {
-    "reactronic": "^0.22.318"
+    "reactronic": "^0.22.320"
   },
   "devDependencies": {
-    "@types/node": "18.0.5",
-    "@typescript-eslint/eslint-plugin": "5.30.6",
-    "@typescript-eslint/parser": "5.30.6",
-    "ava": "4.3.1",
-    "c8": "7.11.3",
-    "eslint": "8.19.0",
+    "@types/node": "18.7.18",
+    "@typescript-eslint/eslint-plugin": "5.37.0",
+    "@typescript-eslint/parser": "5.37.0",
+    "ava": "4.3.3",
+    "c8": "7.12.0",
+    "eslint": "8.23.1",
     "ts-node": "10.9.1",
-    "tsconfig-paths": "4.0.0",
-    "typescript": "4.7.3"
+    "tsconfig-paths": "4.1.0",
+    "typescript": "4.8.2"
   },
   "scripts": {
     "build": "eslint source/**/*.ts test/**/*.ts && tsc",
