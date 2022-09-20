@@ -251,7 +251,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       children.endMerge(error)
       // Finalize removed nodes
       for (const child of children.removedItems(true))
-        doFinalize(child, true)
+        runFinalize(child, true)
       if (!error) {
         // Render actual nodes
         const strict = children.strict
@@ -398,7 +398,7 @@ function runRender(item: Item<RxNodeImpl>): void {
   }
 }
 
-function doFinalize(item: Item<RxNodeImpl>, isLeader: boolean): void {
+function runFinalize(item: Item<RxNodeImpl>, isLeader: boolean): void {
   const node = item.self
   if (node.stamp >= 0) {
     node.stamp = ~node.stamp
@@ -419,7 +419,7 @@ function doFinalize(item: Item<RxNodeImpl>, isLeader: boolean): void {
     }
     // Finalize children if any
     for (const item of node.children.items())
-      doFinalize(item, childrenAreLeaders)
+      runFinalize(item, childrenAreLeaders)
     RxNodeImpl.grandCount--
   }
 }
