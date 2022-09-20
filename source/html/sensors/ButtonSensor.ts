@@ -194,7 +194,7 @@ export class ButtonSensor extends BasePointerSensor {
     this.revision++
   }
 
-  // @reaction
+  // @reactive
   // protected debug(): void {
   //   console.log(`Button stage = ${ButtonState[this.state]}, originData = ${this.originData}, selected = ${this.selected}, selectedData = ${this.selectedData}, selectedXY = (${this.selectedX}, ${this.selectedY})`)
   // }

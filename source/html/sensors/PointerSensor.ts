@@ -346,7 +346,7 @@ export class PointerSensor extends BasePointerSensor {
     }
   }
 
-  // @reaction
+  // @reactive
   // protected debug(): void {
   //   this.revision // subscribe
   //   const status = this.getDebugStatus()

@@ -326,7 +326,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     }
   }
 
-  // @reaction
+  // @reactive
   // protected debug(): void {
   //   const status: string[] = []
   //   if (this.dragStarted)

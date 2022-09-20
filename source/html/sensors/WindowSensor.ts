@@ -42,7 +42,7 @@ export class WindowSensor extends Sensor {
     }
   }
 
-  // @reaction
+  // @reactive
   // protected debug(): void {
   //   console.log('WindowSensor - activeWindow, previousActiveWindow:')
   //   console.log(this.activeData)
