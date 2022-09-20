@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, sensitive, transaction, LoggingLevel } from 'reactronic'
+import { options, sensitive, transactional, LoggingLevel } from 'reactronic'
 import { grabElementDataList, SymDataForSensor } from './DataForSensor'
 import { HtmlElementSensor } from './HtmlElementSensor'
 
@@ -39,7 +39,7 @@ export class KeyboardSensor extends HtmlElementSensor {
     this.modifiers = KeyboardModifiers.None
   }
 
-  @transaction
+  @transactional
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
     const existing = this.sourceElement
     if (element !== existing) {
@@ -55,7 +55,7 @@ export class KeyboardSensor extends HtmlElementSensor {
     }
   }
 
-  @transaction
+  @transactional
   reset(): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -74,14 +74,14 @@ export class KeyboardSensor extends HtmlElementSensor {
     this.setPreventDefaultAndStopPropagation(e)
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected keyDown(e: KeyboardEvent): void {
     this.updateSensorData(e)
     this.up = ''
     sensitive(true, () => this.down = e.key)
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected keyUp(e: KeyboardEvent): void {
     this.updateSensorData(e)
     this.down = ''

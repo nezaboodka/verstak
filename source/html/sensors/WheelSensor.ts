@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, transaction, LoggingLevel } from 'reactronic'
+import { options, Reentrance, transactional, LoggingLevel } from 'reactronic'
 import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { BasePointerSensor } from './BasePointerSensor'
@@ -22,7 +22,7 @@ export class WheelSensor extends BasePointerSensor {
     this.deltaY = Infinity
   }
 
-  @transaction
+  @transactional
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
     const existing = this.sourceElement
     if (element !== existing) {
@@ -36,7 +36,7 @@ export class WheelSensor extends BasePointerSensor {
     }
   }
 
-  @transaction
+  @transactional
   reset(): void {
     this.doReset()
   }
@@ -46,7 +46,7 @@ export class WheelSensor extends BasePointerSensor {
     // this.reset()
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, logging: LoggingLevel.Off })
+  @transactional @options({ reentrance: Reentrance.CancelPrevious, logging: LoggingLevel.Off })
   protected doWheel(e: WheelEvent): void {
     this.updateSensorData(e)
   }

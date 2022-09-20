@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, transaction, Transaction, LoggingLevel } from 'reactronic'
+import { options, Reentrance, transactional, Transaction, LoggingLevel } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from './BasePointerSensor'
 import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { FocusSensor } from './FocusSensor'
@@ -39,7 +39,7 @@ export class ButtonSensor extends BasePointerSensor {
     this.selected = false
   }
 
-  @transaction
+  @transactional
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
     const existing = this.sourceElement
     if (element !== existing) {
@@ -113,7 +113,7 @@ export class ButtonSensor extends BasePointerSensor {
     }
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected press(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -135,14 +135,14 @@ export class ButtonSensor extends BasePointerSensor {
     })
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, logging: LoggingLevel.Off })
+  @transactional @options({ reentrance: Reentrance.CancelPrevious, logging: LoggingLevel.Off })
   protected selecting(e: PointerEvent): void {
     this.updateSensorData(e)
     this.state = ButtonState.Selecting
     this.selected = false
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected select(e: PointerEvent): void {
     this.updateSensorData(e)
     this.state = ButtonState.Selected
@@ -151,7 +151,7 @@ export class ButtonSensor extends BasePointerSensor {
     this.selected = true
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected release(): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -159,14 +159,14 @@ export class ButtonSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected cancel(): void {
     this.state = ButtonState.Released
     this.selected = false
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected reset(): void {
     this.preventDefault = false
     this.stopPropagation = false

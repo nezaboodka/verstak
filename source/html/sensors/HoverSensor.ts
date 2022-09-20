@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, transaction, LoggingLevel } from 'reactronic'
+import { options, transactional, LoggingLevel } from 'reactronic'
 import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
 import { BasePointerSensor } from './BasePointerSensor'
@@ -18,7 +18,7 @@ export class HoverSensor extends BasePointerSensor {
     this.target = undefined
   }
 
-  @transaction
+  @transactional
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
     const existing = this.sourceElement
     if (element !== existing) {
@@ -42,7 +42,7 @@ export class HoverSensor extends BasePointerSensor {
     this.doPointerOut()
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected doPointerOver(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -55,7 +55,7 @@ export class HoverSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected doPointerOut(): void {
     this.preventDefault = false
     this.stopPropagation = false

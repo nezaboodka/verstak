@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, transaction, LoggingLevel } from 'reactronic'
+import { options, transactional, LoggingLevel } from 'reactronic'
 import { RxNode } from '../../core/api'
 import { Sensor } from './Sensor'
 
@@ -25,7 +25,7 @@ export class ResizeSensor extends Sensor {
     this.observer = new ResizeObserver(this.onResize.bind(this))
   }
 
-  @transaction
+  @transactional
   reset(): void {
     this.doReset()
   }
@@ -55,7 +55,7 @@ export class ResizeSensor extends Sensor {
     this.reset()
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected resize(entries: Array<ResizeObserverEntry>): void {
     this.revision++
     this.resizedElements = entries.map(entry => {

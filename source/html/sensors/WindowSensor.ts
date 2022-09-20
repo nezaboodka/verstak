@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ToggleRef, transaction } from 'reactronic'
+import { ToggleRef, transactional } from 'reactronic'
 import { objectHasMember } from '../../core/Utils'
 import { Sensor } from './Sensor'
 
@@ -17,7 +17,7 @@ export class WindowSensor extends Sensor {
   activeData: unknown = undefined
   previousActiveData: unknown = undefined
 
-  @transaction
+  @transactional
   setActiveWindow(window: unknown, debugHint: string = ''): void {
 
     // console.log(`====> setActiveWindow, ${debugHint}`)

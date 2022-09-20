@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, Reentrance, transaction, raw, Transaction, LoggingLevel } from 'reactronic'
+import { options, reactive, Reentrance, transactional, raw, Transaction, LoggingLevel } from 'reactronic'
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from './BasePointerSensor'
 import { findTargetElementData, SymDataForSensor } from './DataForSensor'
 import { FocusSensor } from './FocusSensor'
@@ -88,7 +88,7 @@ export class PointerSensor extends BasePointerSensor {
     this.draggingData = value
   }
 
-  @transaction
+  @transactional
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
     const existing = this.sourceElement
     if (element !== existing) {
@@ -176,13 +176,13 @@ export class PointerSensor extends BasePointerSensor {
     }
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected moveOver(e: PointerEvent): void {
     this.hotPositionX = e.clientX
     this.hotPositionY = e.clientY
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected tryClickingOrDragging(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -214,13 +214,13 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ reentrance: Reentrance.CancelPrevious, logging: LoggingLevel.Off })
+  @transactional @options({ reentrance: Reentrance.CancelPrevious, logging: LoggingLevel.Off })
   protected clickingOver(e: PointerEvent): void {
     this.updateClicking(e)
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected click(e: PointerEvent): void {
     if (this.updateClicking(e)) {
       this.modifiers = this.immediateModifiers
@@ -232,7 +232,7 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected startDragging(e: PointerEvent): void {
     this.updateDragTarget(e)
     this.clickable = undefined
@@ -243,7 +243,7 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected dragOver(e: PointerEvent): void {
     this.updateDragTarget(e)
     this.draggingOver = true
@@ -251,7 +251,7 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected drop(e: PointerEvent): void {
     this.updateDragTarget(e)
     this.modifiers = this.immediateModifiers
@@ -261,14 +261,14 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected finishDragging(): void {
     this.dragFinished = true
     this.tryingDragging = false
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected cancelDragging(): void {
     this.dragFinished = true
     this.tryingDragging = false
@@ -276,7 +276,7 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transaction @options({ logging: LoggingLevel.Off })
+  @transactional @options({ logging: LoggingLevel.Off })
   protected reset(): void {
     this.pointerButton = PointerButton.None
     this.clickable = undefined
@@ -337,7 +337,7 @@ export class PointerSensor extends BasePointerSensor {
     this.immediatePositionY = e.clientY
   }
 
-  @reaction @options({ throttling: 0 })
+  @reactive @options({ throttling: 0 })
   protected whenClickingOrDragging(): void {
     if (this.draggingOver || this.clickable) {
       this.positionX = this.immediatePositionX

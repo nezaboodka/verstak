@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { transaction } from 'reactronic'
+import { transactional } from 'reactronic'
 import { FocusSensor } from './FocusSensor'
 import { HoverSensor } from './HoverSensor'
 import { HtmlDragSensor } from './HtmlDragSensor'
@@ -39,7 +39,7 @@ export class HtmlSensors {
     this.pointer = new PointerSensor(this.focus, this.window)
   }
 
-  @transaction
+  @transactional
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
     this.focus.listen(element, enabled)
     this.hover.listen(element, enabled)
