@@ -323,6 +323,7 @@ async function renderIncrementally(parent: Item<RxNodeImpl>, stamp: number,
           RxNode.currentRenderingPriority = outerPriority
           await Transaction.requestNextFrame(0)
           outerPriority = RxNode.currentRenderingPriority
+          RxNode.currentRenderingPriority = priority
           frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, RxNode.frameDuration))
         }
         if (Transaction.isCanceled && Transaction.isFrameOver(1, RxNode.shortFrameDuration / 3))
