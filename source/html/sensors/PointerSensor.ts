@@ -348,8 +348,10 @@ export class PointerSensor extends BasePointerSensor {
 
   @reactive @options({ throttling: 0 })
   protected whenMoving(): void {
-    this.hotPositionX = this.immediatePositionX
-    this.hotPositionY = this.immediatePositionY
+    if (Number.isFinite(this.immediatePositionX) && Number.isFinite(this.immediatePositionY)) {
+      this.hotPositionX = this.immediatePositionX
+      this.hotPositionY = this.immediatePositionY
+    }
   }
 
   // @reactive
