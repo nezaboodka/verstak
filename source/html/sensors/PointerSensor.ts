@@ -178,8 +178,8 @@ export class PointerSensor extends BasePointerSensor {
 
   @transactional @options({ logging: LoggingLevel.Off })
   protected moveOver(e: PointerEvent): void {
-    this.hotPositionX = e.clientX
-    this.hotPositionY = e.clientY
+    this.immediatePositionX = e.clientX
+    this.immediatePositionY = e.clientY
   }
 
   @transactional @options({ logging: LoggingLevel.Off })
@@ -344,6 +344,12 @@ export class PointerSensor extends BasePointerSensor {
       this.positionY = this.immediatePositionY
       this.modifiers = this.immediateModifiers
     }
+  }
+
+  @reactive @options({ throttling: 0 })
+  protected whenMoving(): void {
+    this.hotPositionX = this.immediatePositionX
+    this.hotPositionY = this.immediatePositionY
   }
 
   // @reactive
