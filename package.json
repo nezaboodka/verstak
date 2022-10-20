@@ -1,6 +1,6 @@
 {
   "name": "reactron",
-  "version": "0.22.400",
+  "version": "0.22.401",
   "description": "Reactron - Transactional Reactive Front-End Development Framework",
   "type": "module",
   "main": "build/dist/source/api.js",
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/nezaboodka/reactron/blob/master/README.md#readme",
   "dependencies": {
-    "reactronic": "^0.22.400"
+    "reactronic": "^0.22.401"
   },
   "devDependencies": {
     "@types/node": "18.7.18",
