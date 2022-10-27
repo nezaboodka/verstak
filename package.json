@@ -1,7 +1,7 @@
 {
-  "name": "reactron",
+  "name": "verstak",
   "version": "0.22.411",
-  "description": "Reactron - Transactional Reactive Front-End Development Framework",
+  "description": "Verstak - Transactional Reactive Front-End Development Framework",
   "publisher": "Nezaboodka Software",
   "license": "Apache-2.0",
   "type": "module",
@@ -12,7 +12,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/nezaboodka/reactron.git"
+    "url": "https://github.com/nezaboodka/verstak.git"
   },
   "keywords": [
     "nezaboodka",
@@ -27,9 +27,9 @@
     "ui"
   ],
   "bugs": {
-    "url": "https://github.com/nezaboodka/reactron/issues"
+    "url": "https://github.com/nezaboodka/verstak/issues"
   },
-  "homepage": "https://github.com/nezaboodka/reactron/blob/master/README.md#readme",
+  "homepage": "https://github.com/nezaboodka/verstak/blob/master/README.md#readme",
   "dependencies": {
     "reactronic": "^0.22.411"
   },
