@@ -3,7 +3,7 @@
 [![NPM Version](https://img.shields.io/npm/v/verstak.svg?style=flat&colorB=success)](https://www.npmjs.com/package/verstak)
 [![Package Size](https://img.shields.io/bundlephobia/minzip/verstak.svg?colorB=success)](https://bundlephobia.com/result?p=verstak)
 
-# **Verstak** - Transactional Reactive Front-End Development Framework
+# **Verstak** - Experimental Front-End Development Framework
 
 Verstak is an experimental JavaScript library that provides
 [transactional reactive](https://blog.nezaboodka.com/post/2019/593-modern-database-should-natively-support-transactionally-reactive-programming)
