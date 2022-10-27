@@ -3,7 +3,7 @@
 [![NPM Version](https://img.shields.io/npm/v/verstak.svg?style=flat&colorB=success)](https://www.npmjs.com/package/verstak)
 [![Package Size](https://img.shields.io/bundlephobia/minzip/verstak.svg?colorB=success)](https://bundlephobia.com/result?p=verstak)
 
-# **Verstak** - Experimental Front-End Development Framework
+# **Verstak** - Experimental Front-End Library
 
 Verstak is an experimental JavaScript library that provides
 grid-based layout and
