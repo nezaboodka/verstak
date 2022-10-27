@@ -6,8 +6,9 @@
 # **Verstak** - Experimental Front-End Development Framework
 
 Verstak is an experimental JavaScript library that provides
+grid-based layout and
 [transactional reactive](https://blog.nezaboodka.com/post/2019/593-modern-database-should-natively-support-transactionally-reactive-programming)
-facilities and grid-based layout for building front-end applications.
+facilities for building front-end applications.
 
 Transactional reactivity means that state changes are being made in an
 isolated data snapshot and then, once atomically applied, are
