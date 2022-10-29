@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from './RxNode'
+export * from './VerstakNode'
 export * from './Elements'
 export * from './Restyler'
 export * from './Utils'

@@ -10,7 +10,7 @@ import { FocusModel } from './sensors/FocusSensor'
 
 export function RxFocuser(name: string, target: HTMLElement, model: FocusModel,
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {
-  Reaction(name, { target, model }, (_, node) => {
+  Reaction(name, { target, model }, () => {
     if (switchEditMode !== undefined) {
       switchEditMode(model)
     }

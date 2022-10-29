@@ -6,19 +6,19 @@
 // automatically licensed under the license referred above.
 
 import { Monitor, LoggingOptions } from 'reactronic'
-import { RxNode, Render, NodeFactory, Priority } from './RxNode'
+import { VerstakNode, Render, NodeFactory, Priority } from './VerstakNode'
 
 export function Reaction<E = undefined, M = unknown, R = void>(
   name: string, triggers: unknown, renderer: Render<E, M, R>,
   priority?: Priority, monitor?: Monitor, throttling?: number,
-  logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): RxNode<E, M, R> {
-  return RxNode.claim(name, triggers, false, renderer,
+  logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): VerstakNode<E, M, R> {
+  return VerstakNode.claim(name, triggers, false, renderer,
     priority, monitor, throttling, logging, factory)
 }
 
 export function Inline<E = undefined, M = unknown, R = void>(
   name: string, renderer: Render<E, M, R>, priority?: Priority,
-  factory?: NodeFactory<E>): RxNode<E, M, R> {
-  return RxNode.claim(name, undefined, true, renderer,
+  factory?: NodeFactory<E>): VerstakNode<E, M, R> {
+  return VerstakNode.claim(name, undefined, true, renderer,
     priority, undefined, undefined, undefined, factory)
 }

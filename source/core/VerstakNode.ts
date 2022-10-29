@@ -8,17 +8,17 @@
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
-export type Render<E = unknown, M = unknown, R = void> = (element: E, node: RxNode<E, M, R>) => R
-export type AsyncRender<E = unknown, M = unknown> = (element: E, node: RxNode<E, M, Promise<void>>) => Promise<void>
+export type Render<E = unknown, M = unknown, R = void> = (element: E, node: VerstakNode<E, M, R>) => R
+export type AsyncRender<E = unknown, M = unknown> = (element: E, node: VerstakNode<E, M, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
-// RxNode
+// VerstakNode
 
-export abstract class RxNode<E = any, M = unknown, R = void> {
+export abstract class VerstakNode<E = any, M = unknown, R = void> {
   static currentRenderingPriority = Priority.SyncP0
   static readonly shortFrameDuration = 16 // ms
   static readonly longFrameDuration = 300 // ms
-  static frameDuration = RxNode.longFrameDuration
+  static frameDuration = VerstakNode.longFrameDuration
   // User-defined properties
   abstract readonly name: string
   abstract readonly factory: NodeFactory<E>
@@ -34,9 +34,9 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
-  abstract readonly parent: RxNode
-  abstract readonly children: CollectionReader<RxNode>
-  abstract readonly item: Item<RxNode> | undefined
+  abstract readonly parent: VerstakNode
+  abstract readonly children: CollectionReader<VerstakNode>
+  abstract readonly item: Item<VerstakNode> | undefined
   abstract readonly stamp: number
   abstract readonly element?: E
 
@@ -55,7 +55,7 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
     prepareThenRunRender(gSysRoot, false, false)
   }
 
-  static get current(): RxNode {
+  static get current(): VerstakNode {
     return gContext.self
   }
 
@@ -75,12 +75,12 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
     name: string, triggers: unknown, inline: boolean,
     renderer: Render<E, M, R>, priority?: Priority,
     monitor?: Monitor, throttling?: number,
-    logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): RxNode<E, M, R> {
+    logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): VerstakNode<E, M, R> {
     // Emit node either by reusing existing one or by creating a new one
     const parent = gContext.self
     const children = parent.children
     const item = children.claim(name)
-    let node: RxNodeImpl<E, M, R>
+    let node: VerstakNodeImpl<E, M, R>
     if (item) { // reuse existing
       node = item.self
       if (node.factory !== factory && factory !== undefined)
@@ -91,23 +91,23 @@ export abstract class RxNode<E = any, M = unknown, R = void> {
       node.priority = priority ?? Priority.SyncP0
     }
     else { // create new
-      node = new RxNodeImpl<E, M, R>(name, factory ?? NodeFactory.default,
+      node = new VerstakNodeImpl<E, M, R>(name, factory ?? NodeFactory.default,
         inline ?? false, parent, triggers, renderer, undefined,
         priority, monitor, throttling, logging)
       node.item = children.add(node)
-      RxNodeImpl.grandCount++
+      VerstakNodeImpl.grandCount++
       if (!node.inline)
-        RxNodeImpl.disposableCount++
+        VerstakNodeImpl.disposableCount++
     }
     return node
   }
 
   static getDefaultLoggingOptions(): LoggingOptions | undefined {
-    return RxNodeImpl.logging
+    return VerstakNodeImpl.logging
   }
 
   static setDefaultLoggingOptions(logging?: LoggingOptions): void {
-    RxNodeImpl.logging = logging
+    VerstakNodeImpl.logging = logging
   }
 }
 
@@ -126,22 +126,22 @@ export class NodeFactory<E> {
     this.strict = strict
   }
 
-  initialize(node: RxNode<E>, element: E | undefined): void {
-    const impl = node as RxNodeImpl<E>
+  initialize(node: VerstakNode<E>, element: E | undefined): void {
+    const impl = node as VerstakNodeImpl<E>
     impl.element = element
   }
 
-  finalize(node: RxNode<E>, isLeader: boolean): boolean {
-    const impl = node as RxNodeImpl<E>
+  finalize(node: VerstakNode<E>, isLeader: boolean): boolean {
+    const impl = node as VerstakNodeImpl<E>
     impl.element = undefined
     return isLeader // treat children as finalization leaders as well
   }
 
-  arrange(node: RxNode<E>, strict: boolean): void {
+  arrange(node: VerstakNode<E>, strict: boolean): void {
     // nothing to do by default
   }
 
-  render(node: RxNode<E>): void | Promise<void> {
+  render(node: VerstakNode<E>): void | Promise<void> {
     let result: void | Promise<void>
     if (node.wrapper)
       result = node.wrapper(node.element!, node)
@@ -159,18 +159,18 @@ export class StaticNodeFactory<E> extends NodeFactory<E> {
     this.element = element
   }
 
-  initialize(node: RxNode<E>, element: E | undefined): void {
+  initialize(node: VerstakNode<E>, element: E | undefined): void {
     super.initialize(node, this.element)
   }
 }
 
-// RxNodeImpl
+// VerstakNodeImpl
 
-function getNodeName(node: RxNodeImpl): string | undefined {
+function getNodeName(node: VerstakNodeImpl): string | undefined {
   return node.stamp >= 0 ? node.name : undefined
 }
 
-class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
+class VerstakNodeImpl<E = any, M = any, R = any> extends VerstakNode<E, M, R> {
   static grandCount: number = 0
   static disposableCount: number = 0
   static logging?: LoggingOptions = undefined
@@ -190,13 +190,13 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
   model?: M
   // System-managed properties
   readonly level: number
-  readonly parent: RxNodeImpl
-  children: Collection<RxNodeImpl>
-  item: Item<RxNodeImpl> | undefined
+  readonly parent: VerstakNodeImpl
+  children: Collection<VerstakNodeImpl>
+  item: Item<VerstakNodeImpl> | undefined
   stamp: number
   element?: E
 
-  constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: RxNodeImpl,
+  constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: VerstakNodeImpl,
     triggers: unknown, renderer: Render<E, M, R>, wrapper?: Render<E, M, R>,
     priority?: Priority, monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>) {
     super()
@@ -209,14 +209,14 @@ class RxNodeImpl<E = any, M = any, R = any> extends RxNode<E, M, R> {
     this.wrapper = wrapper
     this.monitor = monitor
     this.throttling = throttling ?? -1
-    this.logging = logging ?? RxNodeImpl.logging
+    this.logging = logging ?? VerstakNodeImpl.logging
     this.priority = priority ?? Priority.SyncP0
     this.shuffle = false
     this.model = undefined
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
-    this.children = new Collection<RxNodeImpl>(factory.strict, getNodeName)
+    this.children = new Collection<VerstakNodeImpl>(factory.strict, getNodeName)
     this.item = undefined
     this.stamp = 0
     this.element = undefined
@@ -255,8 +255,8 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       if (!error) {
         // Render actual nodes
         const strict = children.strict
-        let p1: Array<Item<RxNodeImpl>> | undefined = undefined
-        let p2: Array<Item<RxNodeImpl>> | undefined = undefined
+        let p1: Array<Item<VerstakNodeImpl>> | undefined = undefined
+        let p2: Array<Item<VerstakNodeImpl>> | undefined = undefined
         let isMoved = false
         for (const child of children.items()) {
           if (Transaction.isCanceled)
@@ -292,10 +292,10 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
 }
 
 async function startIncrementalRendering(
-  parent: Item<RxNodeImpl>,
-  allChildren: Collection<RxNodeImpl>,
-  priority1?: Array<Item<RxNodeImpl>>,
-  priority2?: Array<Item<RxNodeImpl>>): Promise<void> {
+  parent: Item<VerstakNodeImpl>,
+  allChildren: Collection<VerstakNodeImpl>,
+  priority1?: Array<Item<VerstakNodeImpl>>,
+  priority2?: Array<Item<VerstakNodeImpl>>): Promise<void> {
   const stamp = parent.self.stamp
   if (priority1)
     await renderIncrementally(parent, stamp, allChildren, priority1, Priority.AsyncP1)
@@ -303,40 +303,40 @@ async function startIncrementalRendering(
     await renderIncrementally(parent, stamp, allChildren, priority2, Priority.AsyncP2)
 }
 
-async function renderIncrementally(parent: Item<RxNodeImpl>, stamp: number,
-  allChildren: Collection<RxNodeImpl>, items: Array<Item<RxNodeImpl>>,
+async function renderIncrementally(parent: Item<VerstakNodeImpl>, stamp: number,
+  allChildren: Collection<VerstakNodeImpl>, items: Array<Item<VerstakNodeImpl>>,
   priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
   const node = parent.self
-  if (!Transaction.isCanceled || !Transaction.isFrameOver(1, RxNode.shortFrameDuration / 3)) {
-    let outerPriority = RxNode.currentRenderingPriority
-    RxNode.currentRenderingPriority = priority
+  if (!Transaction.isCanceled || !Transaction.isFrameOver(1, VerstakNode.shortFrameDuration / 3)) {
+    let outerPriority = VerstakNode.currentRenderingPriority
+    VerstakNode.currentRenderingPriority = priority
     try {
       const strict = node.children.strict
       if (node.shuffle)
         shuffle(items)
-      const frameDurationLimit = priority === Priority.AsyncP2 ? RxNode.shortFrameDuration : Infinity
-      let frameDuration = Math.min(frameDurationLimit, Math.max(RxNode.frameDuration / 4, RxNode.shortFrameDuration))
+      const frameDurationLimit = priority === Priority.AsyncP2 ? VerstakNode.shortFrameDuration : Infinity
+      let frameDuration = Math.min(frameDurationLimit, Math.max(VerstakNode.frameDuration / 4, VerstakNode.shortFrameDuration))
       for (const child of items) {
         prepareThenRunRender(child, allChildren.isMoved(child), strict)
         if (Transaction.isFrameOver(1, frameDuration)) {
-          RxNode.currentRenderingPriority = outerPriority
+          VerstakNode.currentRenderingPriority = outerPriority
           await Transaction.requestNextFrame(0)
-          outerPriority = RxNode.currentRenderingPriority
-          RxNode.currentRenderingPriority = priority
-          frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, RxNode.frameDuration))
+          outerPriority = VerstakNode.currentRenderingPriority
+          VerstakNode.currentRenderingPriority = priority
+          frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, VerstakNode.frameDuration))
         }
-        if (Transaction.isCanceled && Transaction.isFrameOver(1, RxNode.shortFrameDuration / 3))
+        if (Transaction.isCanceled && Transaction.isFrameOver(1, VerstakNode.shortFrameDuration / 3))
           break
       }
     }
     finally {
-      RxNode.currentRenderingPriority = outerPriority
+      VerstakNode.currentRenderingPriority = outerPriority
     }
   }
 }
 
-function prepareThenRunRender(item: Item<RxNodeImpl>,
+function prepareThenRunRender(item: Item<VerstakNodeImpl>,
   moved: boolean, strict: boolean): void {
   const node = item.self
   if (node.stamp >= 0) {
@@ -348,7 +348,7 @@ function prepareThenRunRender(item: Item<RxNodeImpl>,
   }
 }
 
-function prepareRender(item: Item<RxNodeImpl>,
+function prepareRender(item: Item<VerstakNodeImpl>,
   moved: boolean, strict: boolean): void {
   const node = item.self
   const factory = node.factory
@@ -374,7 +374,7 @@ function prepareRender(item: Item<RxNodeImpl>,
     factory.arrange?.(node, strict) // , console.log(`moved: ${node.name}`)
 }
 
-function runRender(item: Item<RxNodeImpl>): void {
+function runRender(item: Item<VerstakNodeImpl>): void {
   const node = item.self
   if (node.stamp >= 0) { // if node is alive
     runUnder(item, () => {
@@ -399,7 +399,7 @@ function runRender(item: Item<RxNodeImpl>): void {
   }
 }
 
-function runFinalize(item: Item<RxNodeImpl>, isLeader: boolean): void {
+function runFinalize(item: Item<VerstakNodeImpl>, isLeader: boolean): void {
   const node = item.self
   if (node.stamp >= 0) {
     node.stamp = ~node.stamp
@@ -421,7 +421,7 @@ function runFinalize(item: Item<RxNodeImpl>, isLeader: boolean): void {
     // Finalize children if any
     for (const item of node.children.items())
       runFinalize(item, childrenAreLeaders)
-    RxNodeImpl.grandCount--
+    VerstakNodeImpl.grandCount--
   }
 }
 
@@ -433,13 +433,13 @@ async function runDisposalLoop(): Promise<void> {
       await Transaction.requestNextFrame()
     Rx.dispose(item.self)
     item = item.aux
-    RxNodeImpl.disposableCount--
+    VerstakNodeImpl.disposableCount--
   }
-  // console.log(`RxNode count: ${RxNodeImpl.grandCount} totally (${RxNodeImpl.disposableCount} disposable)`)
+  // console.log(`VerstakNode count: ${VerstakNodeImpl.grandCount} totally (${VerstakNodeImpl.disposableCount} disposable)`)
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
-function forEachChildRecursively(item: Item<RxNodeImpl>, action: (e: any) => void): void {
+function forEachChildRecursively(item: Item<VerstakNodeImpl>, action: (e: any) => void): void {
   const node = item.self
   const e = node.element
   e && action(e)
@@ -455,7 +455,7 @@ function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
   return wrappedRunUnder
 }
 
-function runUnder<T>(item: Item<RxNodeImpl>, func: (...args: any[]) => T, ...args: any[]): T {
+function runUnder<T>(item: Item<VerstakNodeImpl>, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gContext
   try {
     gContext = item
@@ -529,9 +529,9 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-const gSysRoot = Collection.createItem<RxNodeImpl>(new RxNodeImpl<null, void>('SYSTEM',
+const gSysRoot = Collection.createItem<VerstakNodeImpl>(new VerstakNodeImpl<null, void>('SYSTEM',
   new StaticNodeFactory<null>('SYSTEM', false, null), false,
-  { level: 0 } as RxNodeImpl, undefined, NOP)) // fake parent (overwritten below)
+  { level: 0 } as VerstakNodeImpl, undefined, NOP)) // fake parent (overwritten below)
 gSysRoot.self.item = gSysRoot
 
 Object.defineProperty(gSysRoot, 'parent', {
@@ -541,6 +541,6 @@ Object.defineProperty(gSysRoot, 'parent', {
   enumerable: true,
 })
 
-let gContext: Item<RxNodeImpl> = gSysRoot
-let gFirstToDispose: Item<RxNodeImpl> | undefined = undefined
-let gLastToDispose: Item<RxNodeImpl> | undefined = undefined
+let gContext: Item<VerstakNodeImpl> = gSysRoot
+let gFirstToDispose: Item<VerstakNodeImpl> | undefined = undefined
+let gLastToDispose: Item<VerstakNodeImpl> | undefined = undefined

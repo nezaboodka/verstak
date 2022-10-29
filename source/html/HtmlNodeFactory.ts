@@ -6,18 +6,18 @@
 // automatically licensed under the license referred above.
 
 import { Rx, Item } from 'reactronic'
-import { RxNode, NodeFactory, Priority } from '../core/api'
+import { VerstakNode, NodeFactory, Priority } from '../core/api'
 
 export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<E> {
 
-  initialize(node: RxNode<E>, element: E | undefined): void {
+  initialize(node: VerstakNode<E>, element: E | undefined): void {
     element = this.createElement(node)
     if (Rx.isLogging)
       element.id = node.name
     super.initialize(node, element)
   }
 
-  finalize(node: RxNode<E>, isLeader: boolean): boolean {
+  finalize(node: VerstakNode<E>, isLeader: boolean): boolean {
     const e = node.element
     if (e) {
       e.resizeObserver?.unobserve(e) // is it really needed or browser does this automatically?
@@ -28,7 +28,7 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
     return false // children of HTML nodes are not treated as leaders
   }
 
-  arrange(node: RxNode<E>, strict: boolean): void {
+  arrange(node: VerstakNode<E>, strict: boolean): void {
     const e = node.element
     if (e) {
       const nativeParent = ElementNodeFactory.findNearestParentHtmlElementNode(node).element
@@ -53,10 +53,10 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
     }
   }
 
-  render(node: RxNode<E>): void | Promise<void> {
+  render(node: VerstakNode<E>): void | Promise<void> {
     const result = super.render(node)
     if (gBlinkingEffect)
-      blink(node.element, RxNode.currentRenderingPriority, node.stamp)
+      blink(node.element, VerstakNode.currentRenderingPriority, node.stamp)
     return result
   }
 
@@ -67,7 +67,7 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
   static set blinkingEffect(value: string | undefined) {
     if (value === undefined) {
       const effect = gBlinkingEffect
-      RxNode.forAllNodesDo((e: any) => {
+      VerstakNode.forAllNodesDo((e: any) => {
         if (e instanceof HTMLElement)
           e.classList.remove(`${effect}-0`, `${effect}-1`)
       })
@@ -75,31 +75,31 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
     gBlinkingEffect = value
   }
 
-  static findNearestParentHtmlElementNode(node: RxNode): RxNode<Element> {
+  static findNearestParentHtmlElementNode(node: VerstakNode): VerstakNode<Element> {
     let p = node.parent
     while (p.element instanceof Element === false && p !== node)
       p = p.parent
     return p
   }
 
-  static findPrevSiblingHtmlElementNode(item: Item<RxNode>): Item<RxNode<Element>> | undefined {
+  static findPrevSiblingHtmlElementNode(item: Item<VerstakNode>): Item<VerstakNode<Element>> | undefined {
     let p = item.prev
     while (p && !(p.self.element instanceof Element))
       p = p.prev
     return p
   }
 
-  protected abstract createElement(node: RxNode<E>): E
+  protected abstract createElement(node: VerstakNode<E>): E
 }
 
 export class HtmlElementNodeFactory<E extends HTMLElement> extends ElementNodeFactory<E> {
-  protected createElement(node: RxNode<E>): E {
+  protected createElement(node: VerstakNode<E>): E {
     return document.createElement(node.factory.name) as E
   }
 }
 
 export class SvgElementNodeFactory<E extends SVGElement> extends ElementNodeFactory<E> {
-  protected createElement(node: RxNode<E>): E {
+  protected createElement(node: VerstakNode<E>): E {
     return document.createElementNS('http://www.w3.org/2000/svg', node.factory.name) as E
   }
 }
