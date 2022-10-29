@@ -5,20 +5,20 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { LayoutArea, LayoutAreaUtils } from '../source/core/Layout'
 import test from 'ava'
+import { CellRange, LayoutManager } from '../source/core/Layout'
 
-function parse(text: string): LayoutArea {
-  const result: LayoutArea = { x1: 0, y1: 0, x2: 0, y2: 0 }
-  LayoutAreaUtils.parseLayoutArea(text, result)
+function parse(text: string): CellRange {
+  const result: CellRange = { x1: 0, y1: 0, x2: 0, y2: 0 }
+  LayoutManager.parseCellRange(text, result)
   return result
 }
 
-function emit(value: LayoutArea): string {
-  return LayoutAreaUtils.emitLayoutArea(value)
+function emit(value: CellRange): string {
+  return LayoutManager.emitCellRange(value)
 }
 
-test('LayoutArea', t => {
+test('CellRange', t => {
   // Parse
   t.deepEqual(parse(''), { x1: 0, y1: 0, x2: 0, y2: 0 })
   t.deepEqual(parse(' '), { x1: 0, y1: 0, x2: 0, y2: 0 })

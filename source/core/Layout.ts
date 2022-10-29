@@ -10,15 +10,15 @@ export interface Quantity {
   units: string // ln, px, em, rem, vw, vh, %, f, ...
 }
 
-export interface LayoutLineSize {
-  name: string | number
+export interface ElasticSize {
+  line: string | number
   min: Quantity
   max: Quantity
   growth: number
 }
 
 export interface LayoutParams {
-  fromNewLine?: boolean
+  lineBegin?: boolean
   area?: string
   width?: number
   height?: number
@@ -26,7 +26,7 @@ export interface LayoutParams {
   cursorDown?: boolean
 }
 
-export interface LayoutArea {
+export interface CellRange {
   x1: number
   y1: number
   x2: number
@@ -43,20 +43,20 @@ export class LayoutManager {
   private nextRow: number = 0
 
   claimColumns(maxCount: number,
-    defaultSize: LayoutLineSize,
-    customSizes: Array<LayoutLineSize>): void {
+    defaultSize: ElasticSize,
+    customSizes: Array<ElasticSize>): void {
     // ...
   }
 
   claimRows(maxCount: number,
-    defaultSize: LayoutLineSize,
-    customSizes: Array<LayoutLineSize>): void {
+    defaultSize: ElasticSize,
+    customSizes: Array<ElasticSize>): void {
     // ...
   }
 
-  claimBlock(li: LayoutParams, result: LayoutArea): LayoutArea {
+  claimBlock(li: LayoutParams, result: CellRange): CellRange {
     if (!li.area) {
-      if (li.fromNewLine && this.prevColumn > 0) {
+      if (li.lineBegin && this.prevColumn > 0) {
         this.prevColumn = 0
         this.prevRow = this.nextRow
       }
@@ -92,16 +92,15 @@ export class LayoutManager {
         result.y2 = this.prevRow
       }
     }
-    else {
-      LayoutAreaUtils.parseLayoutArea(li.area, result)
-    }
+    else
+      LayoutManager.absCellRange(
+        LayoutManager.parseCellRange(li.area, result),
+        this.prevColumn + 1, this.prevRow + 1,
+        this.maxColumnCount, this.maxRowCount, result)
     return result
   }
-}
 
-export class LayoutAreaUtils {
-
-  static parseLayoutArea(text: string, result: LayoutArea): LayoutArea {
+  static parseCellRange(text: string, result: CellRange): CellRange {
     let i = 0
     let value = 0
     let sign = 1
@@ -223,62 +222,43 @@ export class LayoutAreaUtils {
           result.y2 = sign
       }
     }
-    return result as LayoutArea
+    return result as CellRange
   }
 
-  static emitLayoutArea(value: LayoutArea): string {
-    const p1 = LayoutAreaUtils.emitCellPos(value.x1, value.y1)
-    const p2 = LayoutAreaUtils.emitCellPos(value.x2, value.y2)
+  static emitCellRange(value: CellRange): string {
+    const p1 = LayoutManager.emitCellPos(value.x1, value.y1)
+    const p2 = LayoutManager.emitCellPos(value.x2, value.y2)
     return `${p1}${p2 !== '' ? `:${p2}` : ''}`
   }
 
-  // static absolutizeLayoutArea(area: LayoutArea, maxWidth: number, maxHeight: number, result: LayoutArea): LayoutArea {
-  //   let x1 = area.x1
-  //   let y1 = area.y1
-  //   let x2 = area.x2
-  //   let y2 = area.y2
-  //   if (x1 < 0)
-  //     x1 = maxWidth
+  private static absCellRange(area: CellRange,
+    cursorX: number, cursorY: number,
+    maxWidth: number, maxHeight: number,
+    result: CellRange): CellRange {
+    // X1, X2
+    const x1 = LayoutManager.absPos(area.x1, cursorX, maxWidth)
+    const x2 = LayoutManager.absPos(area.x2, cursorX, maxWidth)
+    if (x1 <= x2)
+      result.x1 = x1, result.x2 = x2
+    else
+      result.x1 = x2, result.x2 = x1
+    // Y1, Y2
+    const y1 = LayoutManager.absPos(area.y1, cursorY, maxHeight)
+    const y2 = LayoutManager.absPos(area.y2, cursorY, maxHeight)
+    if (y1 <= y2)
+      result.y1 = y1, result.y2 = y2
+    else
+      result.y1 = y2, result.y2 = y1
+    return result
+  }
 
-  //   let x2: number
-  //   if (area.x1 <= area.x2) {
-  //     x1 =
-  //   }
-
-  //   const x1 = area.x1 < area.x2 Math.min(area.x1, area.x2)
-  //   if (area.x1 > 0) {
-  //   }
-
-  //   const x1 = area.x1 > 0
-  //     ? area.x1 - 1
-  //     : area.x1 < 0
-  //       ? maxWidth + area.x1
-  //       : 0
-  //   const y1 = area.y1 > 0
-  //     ? area.y1 - 1
-  //     : area.y1 < 0
-  //       ? maxHeight + area.y1
-  //       : 0
-  //   const x2 = area.x2 > 0
-  //     ? area.x2 - 1
-  //     : area.x2 < 0
-  //       ? maxWidth + area.x2
-  //       : 1
-  //   const y2 = area.y2 > 0
-  //     ? area.y2 - 1
-  //     : area.y2 < 0
-  //       ? maxHeight + area.y2
-  //       : 1
-  //   const x = area.x2 !== 0 ? Math.min(x1, x2) : x1
-  //   const y = area.y2 !== 0 ? Math.min(y1, y2) : y1
-  //   const width = area.x2 !== 0 ? Math.abs(x2 - x1) + 1 : 1
-  //   const height = area.y2 !== 0 ? Math.abs(y2 - y1) + 1 : 1
-  //   result.x1 = x + 1
-  //   result.y1 = y + 1
-  //   result.x2 = x + width
-  //   result.y2 = y + height
-  //   return result
-  // }
+  private static absPos(pos: number, cursor: number, max: number): number {
+    if (pos < 0)
+      pos = Math.max(max + pos, 1)
+    else if (pos === 0)
+      pos = cursor
+    return pos
+  }
 
   private static emitCellPos(x: number, y: number): string {
     let result = ''
