@@ -17,13 +17,13 @@ export interface LayoutLineSize {
   growth: number
 }
 
-export interface LayoutRequest {
+export interface LayoutParams {
+  fromNewLine?: boolean
+  area?: string
   width?: number
   height?: number
-  area?: string
   cursorRight?: boolean
   cursorDown?: boolean
-  fromNewLine?: boolean
 }
 
 export interface LayoutArea {
@@ -54,20 +54,20 @@ export class LayoutManager {
     // ...
   }
 
-  claimBlock(lr: LayoutRequest, result: LayoutArea): LayoutArea {
-    if (!lr.area) {
-      if (lr.fromNewLine && this.prevColumn > 0) {
+  claimBlock(li: LayoutParams, result: LayoutArea): LayoutArea {
+    if (!li.area) {
+      if (li.fromNewLine && this.prevColumn > 0) {
         this.prevColumn = 0
         this.prevRow = this.nextRow
       }
       // Horizontal
-      let w = lr.width ?? 1
+      let w = li.width ?? 1
       if (w === Infinity)
         w = this.maxColumnCount ?? this.actualColumnCount
       if (w >= 0) {
         result.x1 = this.prevColumn + 1
         result.x2 = result.x1 + w
-        if (lr.cursorRight !== false)
+        if (li.cursorRight !== false)
           this.prevColumn += w
       }
       else {
@@ -75,13 +75,13 @@ export class LayoutManager {
         result.x2 = this.prevColumn
       }
       // Vertical
-      let h = lr.height ?? 1
+      let h = li.height ?? 1
       if (h === Infinity)
         h = this.maxRowCount ?? this.actualRowCount
       if (h >= 0) {
         result.y1 = this.prevRow + 1
         result.y2 = result.y1 + h
-        if (lr.cursorDown !== false) {
+        if (li.cursorDown !== false) {
           const n = this.prevRow + h
           if (n > this.nextRow)
             this.nextRow = this.actualRowCount = n
@@ -93,7 +93,7 @@ export class LayoutManager {
       }
     }
     else
-      LayoutAreaUtils.parseLayoutArea(lr.area, result)
+      LayoutAreaUtils.parseLayoutArea(li.area, result)
     return result
   }
 }
