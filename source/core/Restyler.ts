@@ -7,11 +7,11 @@
 
 import { cached, Transaction } from 'reactronic'
 
-export function restyler<T>(restyle: () => T): RxStyler<T> {
-  return Transaction.run(null, () => new RxStyler<T>(restyle))
+export function restyler<T>(restyle: () => T): ObservablesStyles<T> {
+  return Transaction.run(null, () => new ObservablesStyles<T>(restyle))
 }
 
-export class RxStyler<T> {
+export class ObservablesStyles<T> {
   constructor(private readonly restyle: () => T) {
   }
 
