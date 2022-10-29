@@ -262,14 +262,19 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
           if (Transaction.isCanceled)
             break
           const x = child.self
-          if (x.element) {
-            if (isMoved) {
-              children.markAsMoved(child)
-              isMoved = false
+          {
+            // This block of code detects element movements
+            // when abstract nodes exist among regular nodes
+            // with HTML elements
+            if (x.element) {
+              if (isMoved) {
+                children.markAsMoved(child)
+                isMoved = false
+              }
             }
+            else if (strict && children.isMoved(child))
+              isMoved = true // apply to the first node with an element
           }
-          else if (strict && children.isMoved(child))
-            isMoved = true // apply to the first node with an element
           if (x.priority === Priority.SyncP0)
             prepareThenRunRender(child, children.isMoved(child), strict)
           else if (x.priority === Priority.AsyncP1)
