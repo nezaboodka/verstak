@@ -6,11 +6,11 @@
 // automatically licensed under the license referred above.
 
 import { LoggingOptions, Monitor } from 'reactronic'
-import { VerstakNode, Render, Priority, LayoutProps } from '../core/api'
+import { VerstakNode, Render, Priority, LayoutRequest } from '../core/api'
 import { Div, RxDiv } from './HtmlElements'
 
 export function RxBlock<M = unknown, R = void>(name: string,
-  layout: LayoutProps | null, triggers: unknown,
+  layout: LayoutRequest | null, triggers: unknown,
   renderer: Render<HTMLDivElement, M, R>, priority?: Priority,
   monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>):
   VerstakNode<HTMLDivElement, M, R> {
@@ -19,7 +19,7 @@ export function RxBlock<M = unknown, R = void>(name: string,
 }
 
 export function Block<M = unknown, R = void>(name: string,
-  layout: LayoutProps | null,
+  layout: LayoutRequest | null,
   renderer: Render<HTMLDivElement, M, R>, priority?: Priority):
   VerstakNode<HTMLDivElement, M, R> {
   return Div(name, renderer, priority)

@@ -10,7 +10,7 @@ export class LayoutCursor {
   currentRow: number = 0
 }
 
-export interface LayoutProps {
+export interface LayoutRequest {
   width?: number
   height?: number
   area?: string
