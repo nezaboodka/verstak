@@ -137,7 +137,7 @@ export class NodeFactory<E> {
     return isLeader // treat children as finalization leaders as well
   }
 
-  arrange(node: VerstakNode<E>, strict: boolean): void {
+  layout(node: VerstakNode<E>, strict: boolean): void {
     // nothing to do by default
   }
 
@@ -352,7 +352,7 @@ function prepareRender(item: Item<VerstakNodeImpl>,
   moved: boolean, strict: boolean): void {
   const node = item.self
   const factory = node.factory
-  // Initialize/arrange if needed
+  // Initialize/layout if needed
   if (node.stamp === 0) {
     node.stamp = 1
     if (!node.inline) {
@@ -368,10 +368,10 @@ function prepareRender(item: Item<VerstakNodeImpl>,
       })
     }
     factory.initialize?.(node, undefined)
-    factory.arrange?.(node, strict)
+    factory.layout?.(node, strict)
   }
   else if (moved)
-    factory.arrange?.(node, strict) // , console.log(`moved: ${node.name}`)
+    factory.layout?.(node, strict) // , console.log(`moved: ${node.name}`)
 }
 
 function runRender(item: Item<VerstakNodeImpl>): void {
