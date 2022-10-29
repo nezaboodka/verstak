@@ -34,13 +34,13 @@ export interface CellRange {
 }
 
 export class LayoutManager {
-  private maxColumnCount: number = Infinity
-  private maxRowCount: number = Infinity
+  private maxColumnCount: number = 0
+  private maxRowCount: number = 0
   private actualColumnCount: number = 0
   private actualRowCount: number = 0
-  private prevColumn: number = 0
-  private prevRow: number = 0
-  private nextRow: number = 0
+  private columnCursor: number = 0
+  private rowCursor: number = 0
+  private newRowCursor: number = 0
 
   configureColumns(maxCount: number,
     defaultSize: ElasticSize,
@@ -55,48 +55,47 @@ export class LayoutManager {
   }
 
   claim(lp: LayoutParams, result: CellRange): CellRange {
-    if (!lp.area) {
-      if (lp.lineBegin && this.prevColumn > 0) {
-        this.prevColumn = 0
-        this.prevRow = this.nextRow
+    const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
+    const maxRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
+    if (lp.area) { // absolute positioning
+      LayoutManager.parseCellRange(lp.area, result)
+      absolutizeCellRange(result,
+        this.columnCursor + 1, this.rowCursor + 1,
+        maxColumnCount, maxRowCount, result)
+    }
+    else { // relative positioning
+      if (lp.lineBegin) {
+        this.columnCursor = 0
+        this.rowCursor = this.newRowCursor
       }
       // Horizontal
       let w = lp.width ?? 1
-      if (w === Infinity)
-        w = this.maxColumnCount ?? this.actualColumnCount
+      if (w === 0)
+        w = maxColumnCount
       if (w >= 0) {
-        result.x1 = this.prevColumn + 1
-        result.x2 = result.x1 + w
+        result.x1 = this.columnCursor + 1
+        result.x2 = absolutizePosition(result.x1 + w, 0, maxColumnCount)
         if (lp.cursorRight !== false)
-          this.prevColumn += w
+          this.columnCursor = result.x2
       }
       else {
-        result.x1 = this.prevColumn + w
-        result.x2 = this.prevColumn
+        result.x1 = Math.max(this.columnCursor + w, 1)
+        result.x2 = this.columnCursor
       }
       // Vertical
       let h = lp.height ?? 1
-      if (h === Infinity)
-        h = this.maxRowCount ?? this.actualRowCount
+      if (h === 0)
+        h = maxRowCount
       if (h >= 0) {
-        result.y1 = this.prevRow + 1
-        result.y2 = result.y1 + h
-        if (lp.cursorDown !== false) {
-          const n = this.prevRow + h
-          if (n > this.nextRow)
-            this.nextRow = this.actualRowCount = n
-        }
+        result.y1 = this.rowCursor + 1
+        result.y2 = absolutizePosition(result.y1 + h, 0, maxRowCount)
+        if (lp.cursorDown !== false && result.y2 > this.newRowCursor)
+          this.newRowCursor = result.y2
       }
       else {
-        result.y1 = this.prevRow + h
-        result.y2 = this.prevRow
+        result.y1 = Math.max(this.rowCursor + h, 1)
+        result.y2 = this.rowCursor
       }
-    }
-    else {
-      LayoutManager.parseCellRange(lp.area, result)
-      absolutizeCellRange(result,
-        this.prevColumn + 1, this.prevRow + 1,
-        this.maxColumnCount, this.maxRowCount, result)
     }
     return result
   }
@@ -299,9 +298,11 @@ function absolutizeCellRange(area: CellRange,
 }
 
 function absolutizePosition(pos: number, cursor: number, max: number): number {
-  if (pos < 0)
-    pos = Math.max(max + pos, 1)
-  else if (pos === 0)
+  if (pos === 0)
     pos = cursor
+  else if (pos < 0)
+    pos = Math.max(max + pos, 1)
+  else
+    pos = Math.min(pos, max)
   return pos
 }
