@@ -92,8 +92,9 @@ export class LayoutManager {
         result.y2 = this.prevRow
       }
     }
-    else
+    else {
       LayoutAreaUtils.parseLayoutArea(li.area, result)
+    }
     return result
   }
 }
@@ -230,6 +231,54 @@ export class LayoutAreaUtils {
     const p2 = LayoutAreaUtils.emitCellPos(value.x2, value.y2)
     return `${p1}${p2 !== '' ? `:${p2}` : ''}`
   }
+
+  // static absolutizeLayoutArea(area: LayoutArea, maxWidth: number, maxHeight: number, result: LayoutArea): LayoutArea {
+  //   let x1 = area.x1
+  //   let y1 = area.y1
+  //   let x2 = area.x2
+  //   let y2 = area.y2
+  //   if (x1 < 0)
+  //     x1 = maxWidth
+
+  //   let x2: number
+  //   if (area.x1 <= area.x2) {
+  //     x1 =
+  //   }
+
+  //   const x1 = area.x1 < area.x2 Math.min(area.x1, area.x2)
+  //   if (area.x1 > 0) {
+  //   }
+
+  //   const x1 = area.x1 > 0
+  //     ? area.x1 - 1
+  //     : area.x1 < 0
+  //       ? maxWidth + area.x1
+  //       : 0
+  //   const y1 = area.y1 > 0
+  //     ? area.y1 - 1
+  //     : area.y1 < 0
+  //       ? maxHeight + area.y1
+  //       : 0
+  //   const x2 = area.x2 > 0
+  //     ? area.x2 - 1
+  //     : area.x2 < 0
+  //       ? maxWidth + area.x2
+  //       : 1
+  //   const y2 = area.y2 > 0
+  //     ? area.y2 - 1
+  //     : area.y2 < 0
+  //       ? maxHeight + area.y2
+  //       : 1
+  //   const x = area.x2 !== 0 ? Math.min(x1, x2) : x1
+  //   const y = area.y2 !== 0 ? Math.min(y1, y2) : y1
+  //   const width = area.x2 !== 0 ? Math.abs(x2 - x1) + 1 : 1
+  //   const height = area.y2 !== 0 ? Math.abs(y2 - y1) + 1 : 1
+  //   result.x1 = x + 1
+  //   result.y1 = y + 1
+  //   result.x2 = x + width
+  //   result.y2 = y + height
+  //   return result
+  // }
 
   private static emitCellPos(x: number, y: number): string {
     let result = ''

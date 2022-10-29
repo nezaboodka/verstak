@@ -20,6 +20,8 @@ function emit(value: LayoutArea): string {
 
 test('LayoutArea', t => {
   // Parse
+  t.deepEqual(parse(''), { x1: 0, y1: 0, x2: 0, y2: 0 })
+  t.deepEqual(parse(' '), { x1: 0, y1: 0, x2: 0, y2: 0 })
   t.deepEqual(parse('B2'), { x1: 2, y1: 2, x2: 0, y2: 0 })
   t.deepEqual(parse('B2:C3'), { x1: 2, y1: 2, x2: 3, y2: 3 })
   t.deepEqual(parse('B2:(A1)'), { x1: 2, y1: 2, x2: -1, y2: -1 })
@@ -34,6 +36,7 @@ test('LayoutArea', t => {
   t.deepEqual(parse('B2 : C3'), { x1: 2, y1: 2, x2: 3, y2: 3 })
   t.deepEqual(parse('( A1 ) : B2'), { x1: -1, y1: -1, x2: 2, y2: 2 })
   // Emit
+  t.deepEqual(emit({ x1: 0, y1: 0, x2: 0, y2: 0 }), '')
   t.deepEqual(emit({ x1: 2, y1: 2, x2: 0, y2: 0 }), 'B2')
   t.deepEqual(emit({ x1: 2, y1: 2, x2: 3, y2: 3 }), 'B2:C3')
   t.deepEqual(emit({ x1: 2, y1: 2, x2: -1, y2: -1 }), 'B2:(A1)')
