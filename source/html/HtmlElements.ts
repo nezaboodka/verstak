@@ -6,13 +6,16 @@
 // automatically licensed under the license referred above.
 
 import { LoggingOptions, Monitor } from 'reactronic'
-import { VerstakNode, Reaction, Inline, Render, StaticNodeFactory, Priority } from '../core/api'
+import { VerstakNode, Reaction, Inline, Render, StaticNodeFactory, Priority, LayoutProps } from '../core/api'
 import { HtmlElementNodeFactory, SvgElementNodeFactory } from './HtmlNodeFactory'
 
 export function RxHtmlBody(name: string, triggers: unknown, renderer: Render<HTMLElement>): VerstakNode<HTMLElement> {
   const factory = new StaticNodeFactory(name, true, global.document.body)
   return Reaction(name, triggers, renderer, undefined, undefined, undefined, undefined, factory)
 }
+
+export function RxBlock<M = unknown, R = void>(name: string, layout: LayoutProps | null, triggers: unknown, renderer: Render<HTMLDivElement, M, R>, priority?: Priority, monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>): VerstakNode<HTMLDivElement, M, R> { return Reaction(name, triggers, renderer, priority, monitor, throttling, logging, HtmlTags.div) }
+export function Block<M = unknown, R = void>(name: string, layout: LayoutProps | null, renderer: Render<HTMLDivElement, M, R>, priority?: Priority): VerstakNode<HTMLDivElement, M, R> { return Inline(name, renderer, priority, HtmlTags.div) }
 
 export function RxA<M = unknown, R = void>(name: string, triggers: unknown, renderer: Render<HTMLAnchorElement, M, R>, priority?: Priority, monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>): VerstakNode<HTMLAnchorElement, M, R> { return Reaction(name, triggers, renderer, priority, monitor, throttling, logging, HtmlTags.a) }
 export function RxAbbr<M = unknown, R = void>(name: string, triggers: unknown, renderer: Render<HTMLElement, M, R>, priority?: Priority, monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>): VerstakNode<HTMLElement, M, R> { return Reaction(name, triggers, renderer, priority, monitor, throttling, logging, HtmlTags.abbr) }

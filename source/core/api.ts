@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 export * from './Utils'
-export * from './CellRange'
+export * from './Layout'
 export * from './VerstakNode'
 export * from './Elements'
 export * from './Restyler'

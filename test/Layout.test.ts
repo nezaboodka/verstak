@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { CellRange, CellRangeUtils } from '../source/core/CellRange'
+import { CellRange, CellRangeUtils } from '../source/core/Layout'
 import test from 'ava'
 
 function parse(text: string): CellRange {

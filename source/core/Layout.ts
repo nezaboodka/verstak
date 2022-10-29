@@ -5,6 +5,19 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
+export class LayoutCursor {
+  currentColumn: number = 0
+  currentRow: number = 0
+}
+
+export interface LayoutProps {
+  width?: number
+  height?: number
+  area?: string
+  cursorRight?: boolean
+  cursorDown?: boolean
+}
+
 export interface CellRange {
   x1: number
   y1: number
