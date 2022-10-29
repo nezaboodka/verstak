@@ -5,9 +5,57 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export class LayoutCursor {
-  currentColumn: number = 0
-  currentRow: number = 0
+export class LayoutManager {
+  maxWidth?: number = undefined
+  maxHeight?: number = undefined
+  actualWidth: number = 0
+  actualHeight: number = 0
+  prevColumn: number = 0
+  prevRow: number = 0
+  nextRow: number = 0
+
+  claim(lr: LayoutRequest, result: LayoutArea): LayoutArea {
+    if (!lr.area) {
+      if (lr.fromNewLine && this.prevColumn > 0) {
+        this.prevColumn = 0
+        this.prevRow = this.nextRow
+      }
+      // Horizontal
+      let w = lr.width ?? 1
+      if (w === Infinity)
+        w = this.maxWidth ?? this.actualWidth
+      if (w >= 0) {
+        result.x1 = this.prevColumn + 1
+        result.x2 = result.x1 + w
+        if (lr.cursorRight !== false)
+          this.prevColumn += w
+      }
+      else {
+        result.x1 = this.prevColumn + w
+        result.x2 = this.prevColumn
+      }
+      // Vertical
+      let h = lr.height ?? 1
+      if (h === Infinity)
+        h = this.maxHeight ?? this.actualHeight
+      if (h >= 0) {
+        result.y1 = this.prevRow + 1
+        result.y2 = result.y1 + h
+        if (lr.cursorDown !== false) {
+          const n = this.prevRow + h
+          if (n > this.nextRow)
+            this.nextRow = this.actualHeight = n
+        }
+      }
+      else {
+        result.y1 = this.prevRow + h
+        result.y2 = this.prevRow
+      }
+    }
+    else
+      LayoutAreaUtils.parseLayoutArea(lr.area, result)
+    return result
+  }
 }
 
 export interface LayoutRequest {
@@ -16,6 +64,7 @@ export interface LayoutRequest {
   area?: string
   cursorRight?: boolean
   cursorDown?: boolean
+  fromNewLine?: boolean
 }
 
 export interface LayoutArea {
