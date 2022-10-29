@@ -42,32 +42,32 @@ export class LayoutManager {
   private prevRow: number = 0
   private nextRow: number = 0
 
-  claimColumns(maxCount: number,
+  configureColumns(maxCount: number,
     defaultSize: ElasticSize,
     customSizes: Array<ElasticSize>): void {
     // ...
   }
 
-  claimRows(maxCount: number,
+  configureRows(maxCount: number,
     defaultSize: ElasticSize,
     customSizes: Array<ElasticSize>): void {
     // ...
   }
 
-  claimBlock(li: LayoutParams, result: CellRange): CellRange {
-    if (!li.area) {
-      if (li.lineBegin && this.prevColumn > 0) {
+  claim(lp: LayoutParams, result: CellRange): CellRange {
+    if (!lp.area) {
+      if (lp.lineBegin && this.prevColumn > 0) {
         this.prevColumn = 0
         this.prevRow = this.nextRow
       }
       // Horizontal
-      let w = li.width ?? 1
+      let w = lp.width ?? 1
       if (w === Infinity)
         w = this.maxColumnCount ?? this.actualColumnCount
       if (w >= 0) {
         result.x1 = this.prevColumn + 1
         result.x2 = result.x1 + w
-        if (li.cursorRight !== false)
+        if (lp.cursorRight !== false)
           this.prevColumn += w
       }
       else {
@@ -75,13 +75,13 @@ export class LayoutManager {
         result.x2 = this.prevColumn
       }
       // Vertical
-      let h = li.height ?? 1
+      let h = lp.height ?? 1
       if (h === Infinity)
         h = this.maxRowCount ?? this.actualRowCount
       if (h >= 0) {
         result.y1 = this.prevRow + 1
         result.y2 = result.y1 + h
-        if (li.cursorDown !== false) {
+        if (lp.cursorDown !== false) {
           const n = this.prevRow + h
           if (n > this.nextRow)
             this.nextRow = this.actualRowCount = n
@@ -92,11 +92,12 @@ export class LayoutManager {
         result.y2 = this.prevRow
       }
     }
-    else
-      LayoutManager.absCellRange(
-        LayoutManager.parseCellRange(li.area, result),
+    else {
+      LayoutManager.parseCellRange(lp.area, result)
+      absolutizeCellRange(result,
         this.prevColumn + 1, this.prevRow + 1,
         this.maxColumnCount, this.maxRowCount, result)
+    }
     return result
   }
 
@@ -226,53 +227,9 @@ export class LayoutManager {
   }
 
   static emitCellRange(value: CellRange): string {
-    const p1 = LayoutManager.emitCellPos(value.x1, value.y1)
-    const p2 = LayoutManager.emitCellPos(value.x2, value.y2)
+    const p1 = emitCellPosition(value.x1, value.y1)
+    const p2 = emitCellPosition(value.x2, value.y2)
     return `${p1}${p2 !== '' ? `:${p2}` : ''}`
-  }
-
-  private static absCellRange(area: CellRange,
-    cursorX: number, cursorY: number,
-    maxWidth: number, maxHeight: number,
-    result: CellRange): CellRange {
-    // X1, X2
-    const x1 = LayoutManager.absPos(area.x1, cursorX, maxWidth)
-    const x2 = LayoutManager.absPos(area.x2, cursorX, maxWidth)
-    if (x1 <= x2)
-      result.x1 = x1, result.x2 = x2
-    else
-      result.x1 = x2, result.x2 = x1
-    // Y1, Y2
-    const y1 = LayoutManager.absPos(area.y1, cursorY, maxHeight)
-    const y2 = LayoutManager.absPos(area.y2, cursorY, maxHeight)
-    if (y1 <= y2)
-      result.y1 = y1, result.y2 = y2
-    else
-      result.y1 = y2, result.y2 = y1
-    return result
-  }
-
-  private static absPos(pos: number, cursor: number, max: number): number {
-    if (pos < 0)
-      pos = Math.max(max + pos, 1)
-    else if (pos === 0)
-      pos = cursor
-    return pos
-  }
-
-  private static emitCellPos(x: number, y: number): string {
-    let result = ''
-    if (x > 0 && y > 0)
-      result = `${emitLetters(x - 1)}${y}`
-    else if (x > 0 && y < 0)
-      result = `${emitLetters(x - 1)}(${-y})`
-    else if (x < 0 && y > 0)
-      result = `(${emitLetters(-x - 1)})${y}`
-    else if (x < 0 && y < 0)
-      result = `(${emitLetters(-x - 1)}${-y})`
-    else
-      result = ''
-    return result
   }
 }
 
@@ -303,4 +260,48 @@ function emitLetters(n: number): string {
     result = String.fromCharCode(65 + r) + result
   }
   return result
+}
+
+function emitCellPosition(x: number, y: number): string {
+  let result = ''
+  if (x > 0 && y > 0)
+    result = `${emitLetters(x - 1)}${y}`
+  else if (x > 0 && y < 0)
+    result = `${emitLetters(x - 1)}(${-y})`
+  else if (x < 0 && y > 0)
+    result = `(${emitLetters(-x - 1)})${y}`
+  else if (x < 0 && y < 0)
+    result = `(${emitLetters(-x - 1)}${-y})`
+  else
+    result = ''
+  return result
+}
+
+function absolutizeCellRange(area: CellRange,
+  cursorX: number, cursorY: number,
+  maxWidth: number, maxHeight: number,
+  result: CellRange): CellRange {
+  // X1, X2
+  const x1 = absolutizePosition(area.x1, cursorX, maxWidth)
+  const x2 = absolutizePosition(area.x2, cursorX, maxWidth)
+  if (x1 <= x2)
+    result.x1 = x1, result.x2 = x2
+  else
+    result.x1 = x2, result.x2 = x1
+  // Y1, Y2
+  const y1 = absolutizePosition(area.y1, cursorY, maxHeight)
+  const y2 = absolutizePosition(area.y2, cursorY, maxHeight)
+  if (y1 <= y2)
+    result.y1 = y1, result.y2 = y2
+  else
+    result.y1 = y2, result.y2 = y1
+  return result
+}
+
+function absolutizePosition(pos: number, cursor: number, max: number): number {
+  if (pos < 0)
+    pos = Math.max(max + pos, 1)
+  else if (pos === 0)
+    pos = cursor
+  return pos
 }
