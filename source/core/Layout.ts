@@ -5,18 +5,6 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export interface Quantity {
-  value: number
-  units: string // ln, px, em, rem, vw, vh, %, f, ...
-}
-
-export interface ElasticSize {
-  line: string | number
-  min: Quantity
-  max: Quantity
-  growth: number
-}
-
 export interface LayoutParams {
   lineBegin?: boolean
   area?: string
@@ -42,16 +30,14 @@ export class LayoutManager {
   private rowCursor: number = 0
   private newRowCursor: number = 0
 
-  configureColumns(maxCount: number,
-    defaultSize: ElasticSize,
-    customSizes: Array<ElasticSize>): void {
-    // ...
-  }
-
-  configureRows(maxCount: number,
-    defaultSize: ElasticSize,
-    customSizes: Array<ElasticSize>): void {
-    // ...
+  reset(maxColumnCount: number, maxRowCount: number): void {
+    this.maxColumnCount = maxColumnCount
+    this.maxRowCount = maxRowCount
+    this.actualColumnCount = 0
+    this.actualRowCount = 0
+    this.columnCursor = 0
+    this.rowCursor = 0
+    this.newRowCursor = 0
   }
 
   claim(lp: LayoutParams, result: CellRange): CellRange {

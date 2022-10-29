@@ -9,6 +9,13 @@ import { LoggingOptions, Monitor } from 'reactronic'
 import { VerstakNode, Render, Priority, LayoutParams, Reaction, Inline } from '../core/api'
 import { Div, RxDiv } from './HtmlElements'
 
+export interface ElasticSize {
+  line: string | number
+  min?: string // undefined means min-content
+  max?: string
+  growth?: number
+}
+
 export function Block<M = unknown, R = void>(name: string,
   layout: LayoutParams | null, renderer: Render<HTMLDivElement, M, R>,
   priority?: Priority): VerstakNode<HTMLDivElement, M, R> {
