@@ -164,7 +164,7 @@ export class StaticNodeFactory<E> extends NodeFactory<E> {
   }
 }
 
-// VerstakNodeImpl
+// VNode
 
 function getNodeName(node: VNode): string | undefined {
   return node.stamp >= 0 ? node.name : undefined
@@ -435,7 +435,7 @@ async function runDisposalLoop(): Promise<void> {
     item = item.aux
     VNode.disposableCount--
   }
-  // console.log(`VerstakNode count: ${VerstakNodeImpl.grandCount} totally (${VerstakNodeImpl.disposableCount} disposable)`)
+  // console.log(`VerstakNode count: ${VNode.grandCount} totally (${VNode.disposableCount} disposable)`)
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
