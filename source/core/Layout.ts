@@ -18,16 +18,16 @@ export interface LayoutProps {
   cursorDown?: boolean
 }
 
-export interface CellRange {
+export interface LayoutArea {
   x1: number
   y1: number
   x2: number
   y2: number
 }
 
-export class CellRangeUtils {
+export class LayoutAreaUtils {
 
-  static parseCellRange(text: string, result: CellRange): CellRange {
+  static parseLayoutArea(text: string, result: LayoutArea): LayoutArea {
     let i = 0
     let value = 0
     let sign = 1
@@ -149,12 +149,12 @@ export class CellRangeUtils {
           result.y2 = sign
       }
     }
-    return result as CellRange
+    return result as LayoutArea
   }
 
-  static emitCellRange(value: CellRange): string {
-    const p1 = CellRangeUtils.emitCellPos(value.x1, value.y1)
-    const p2 = CellRangeUtils.emitCellPos(value.x2, value.y2)
+  static emitLayoutArea(value: LayoutArea): string {
+    const p1 = LayoutAreaUtils.emitCellPos(value.x1, value.y1)
+    const p2 = LayoutAreaUtils.emitCellPos(value.x2, value.y2)
     return `${p1}${p2 !== '' ? `:${p2}` : ''}`
   }
 
