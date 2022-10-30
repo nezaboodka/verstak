@@ -14,7 +14,7 @@ export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 // VerstakNode
 
-export abstract class VerstakNode<E = any, M = unknown, R = void> {
+export abstract class VerstakNode<E = unknown, M = unknown, R = void> {
   static readonly shortFrameDuration = 16 // ms
   static readonly longFrameDuration = 300 // ms
   static currentRenderingPriority = Priority.SyncP0

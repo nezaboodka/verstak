@@ -75,14 +75,14 @@ export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<
     gBlinkingEffect = value
   }
 
-  static findNearestParentHtmlElementNode(node: VerstakNode): VerstakNode<Element> {
+  static findNearestParentHtmlElementNode(node: VerstakNode<any>): VerstakNode<Element> {
     let p = node.parent
     while (p.element instanceof Element === false && p !== node)
       p = p.parent
-    return p
+    return p as VerstakNode<Element>
   }
 
-  static findPrevSiblingHtmlElementNode(item: Item<VerstakNode>): Item<VerstakNode<Element>> | undefined {
+  static findPrevSiblingHtmlElementNode(item: Item<VerstakNode<any>>): Item<VerstakNode<Element>> | undefined {
     let p = item.prev
     while (p && !(p.self.element instanceof Element))
       p = p.prev
