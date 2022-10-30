@@ -261,20 +261,8 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
         for (const child of children.items()) {
           if (Transaction.isCanceled)
             break
+          isMoved = checkIfReLayoutNeeded(isMoved, child, children, strict)
           const x = child.self
-          {
-            // This block of code detects element movements
-            // when abstract nodes exist among regular nodes
-            // with HTML elements
-            if (x.element) {
-              if (isMoved) {
-                children.markAsMoved(child)
-                isMoved = false
-              }
-            }
-            else if (strict && children.isMoved(child))
-              isMoved = true // apply to the first node with an element
-          }
           if (x.priority === Priority.SyncP0)
             prepareThenRunRender(child, children.isMoved(child), strict)
           else if (x.priority === Priority.AsyncP1)
@@ -294,6 +282,22 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
         action(error)
     }
   }
+}
+
+function checkIfReLayoutNeeded(isMoved: boolean, child: Item<VNode>,
+  children: Collection<VNode>, strict: boolean): boolean
+{
+  // Detects element movements when abstract nodes exist among
+  // regular nodes with HTML elements
+  if (child.self.element) {
+    if (isMoved) {
+      children.markAsMoved(child)
+      isMoved = false
+    }
+  }
+  else if (strict && children.isMoved(child))
+    isMoved = true // apply to the first node with an element
+  return isMoved
 }
 
 async function startIncrementalRendering(
