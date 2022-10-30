@@ -7,6 +7,6 @@
 
 export * from './Utils'
 export * from './Layout'
-export * from './VerstakNode'
+export * from './Block'
 export * from './Elements'
 export * from './Restyler'

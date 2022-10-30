@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Block, Render, BlockFactory, VerstakOptions } from './VerstakNode'
+import { Block, Render, BlockFactory, VerstakOptions } from './Block'
 
 export function Reaction<E = undefined, M = unknown, P = void, R = void>(
   name: string, options: VerstakOptions<P> | undefined,
