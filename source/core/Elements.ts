@@ -8,17 +8,17 @@
 import { Monitor, LoggingOptions } from 'reactronic'
 import { VerstakNode, Render, NodeFactory, Priority } from './VerstakNode'
 
-export function Reaction<E = undefined, M = unknown, R = void>(
-  name: string, triggers: unknown, renderer: Render<E, M, R>,
+export function Reaction<E = undefined, M = unknown, L = void, R = void>(
+  name: string, layout: L, triggers: unknown, renderer: Render<E, M, L, R>,
   priority?: Priority, monitor?: Monitor, throttling?: number,
-  logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): VerstakNode<E, M, R> {
-  return VerstakNode.claim(name, triggers, false, renderer,
+  logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): VerstakNode<E, M, L, R> {
+  return VerstakNode.claim(name, layout, triggers, false, renderer,
     priority, monitor, throttling, logging, factory)
 }
 
-export function Inline<E = undefined, M = unknown, R = void>(
-  name: string, renderer: Render<E, M, R>, priority?: Priority,
-  factory?: NodeFactory<E>): VerstakNode<E, M, R> {
-  return VerstakNode.claim(name, undefined, true, renderer,
+export function Inline<E = undefined, M = unknown, L = void, R = void>(
+  name: string, layout: L, renderer: Render<E, M, L, R>, priority?: Priority,
+  factory?: NodeFactory<E>): VerstakNode<E, M, L, R> {
+  return VerstakNode.claim(name, layout, undefined, true, renderer,
     priority, undefined, undefined, undefined, factory)
 }

@@ -8,13 +8,13 @@
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
-export type Render<E = unknown, M = unknown, R = void> = (element: E, node: VerstakNode<E, M, R>) => R
-export type AsyncRender<E = unknown, M = unknown> = (element: E, node: VerstakNode<E, M, Promise<void>>) => Promise<void>
+export type Render<E = unknown, M = unknown, L = void, R = void> = (element: E, node: VerstakNode<E, M, L, R>) => R
+export type AsyncRender<E = unknown, M = unknown, L = void> = (element: E, node: VerstakNode<E, M, L, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 // VerstakNode
 
-export abstract class VerstakNode<E = unknown, M = unknown, R = void> {
+export abstract class VerstakNode<E = unknown, M = unknown, L = void, R = void> {
   static readonly shortFrameDuration = 16 // ms
   static readonly longFrameDuration = 300 // ms
   static currentRenderingPriority = Priority.SyncP0
@@ -23,9 +23,10 @@ export abstract class VerstakNode<E = unknown, M = unknown, R = void> {
   abstract readonly name: string
   abstract readonly factory: NodeFactory<E>
   abstract readonly inline: boolean
+  abstract readonly layout: L
   abstract readonly triggers: unknown
-  abstract readonly renderer: Render<E, M, R>
-  abstract readonly wrapper: Render<E, M, R> | undefined
+  abstract readonly renderer: Render<E, M, L, R>
+  abstract readonly wrapper: Render<E, M, L, R> | undefined
   abstract readonly monitor?: Monitor
   abstract readonly throttling?: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
   abstract readonly logging?: Partial<LoggingOptions>
@@ -48,7 +49,7 @@ export abstract class VerstakNode<E = unknown, M = unknown, R = void> {
     return this.stamp === 2
   }
 
-  abstract wrapBy(renderer: Render<E, M, R> | undefined): this
+  abstract wrapBy(renderer: Render<E, M, L, R> | undefined): this
 
   static root(render: () => void): void {
     gSysRoot.self.renderer = render
@@ -71,16 +72,16 @@ export abstract class VerstakNode<E = unknown, M = unknown, R = void> {
     forEachChildRecursively(gSysRoot, action)
   }
 
-  static claim<E = undefined, M = unknown, R = void>(
-    name: string, triggers: unknown, inline: boolean,
-    renderer: Render<E, M, R>, priority?: Priority,
+  static claim<E = undefined, M = unknown, L = void, R = void>(
+    name: string, layout: L, triggers: unknown, inline: boolean,
+    renderer: Render<E, M, L, R>, priority?: Priority,
     monitor?: Monitor, throttling?: number,
-    logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): VerstakNode<E, M, R> {
+    logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): VerstakNode<E, M, L, R> {
     // Emit node either by reusing existing one or by creating a new one
     const parent = gContext.self
     const children = parent.children
     const item = children.claim(name)
-    let node: VNode<E, M, R>
+    let node: VNode<E, M, L, R>
     if (item) { // reuse existing
       node = item.self
       if (node.factory !== factory && factory !== undefined)
@@ -91,8 +92,8 @@ export abstract class VerstakNode<E = unknown, M = unknown, R = void> {
       node.priority = priority ?? Priority.SyncP0
     }
     else { // create new
-      node = new VNode<E, M, R>(name, factory ?? NodeFactory.default,
-        inline ?? false, parent, triggers, renderer, undefined,
+      node = new VNode<E, M, L, R>(name, factory ?? NodeFactory.default,
+        inline ?? false, parent, layout, triggers, renderer, undefined,
         priority, monitor, throttling, logging)
       node.item = children.add(node)
       VNode.grandCount++
@@ -170,7 +171,7 @@ function getNodeName(node: VNode): string | undefined {
   return node.stamp >= 0 ? node.name : undefined
 }
 
-class VNode<E = any, M = any, R = any> extends VerstakNode<E, M, R> {
+class VNode<E = any, M = any, L = any, R = any> extends VerstakNode<E, M, L, R> {
   static grandCount: number = 0
   static disposableCount: number = 0
   static logging?: LoggingOptions = undefined
@@ -179,9 +180,10 @@ class VNode<E = any, M = any, R = any> extends VerstakNode<E, M, R> {
   readonly name: string
   readonly factory: NodeFactory<E>
   readonly inline: boolean
+  readonly layout: L
   triggers: unknown
-  renderer: Render<E, M, R>
-  wrapper: Render<E, M, R> | undefined
+  renderer: Render<E, M, L, R>
+  wrapper: Render<E, M, L, R> | undefined
   readonly monitor?: Monitor
   readonly throttling: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
   readonly logging?: Partial<LoggingOptions>
@@ -197,13 +199,14 @@ class VNode<E = any, M = any, R = any> extends VerstakNode<E, M, R> {
   element?: E
 
   constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: VNode,
-    triggers: unknown, renderer: Render<E, M, R>, wrapper?: Render<E, M, R>,
+    layout: L, triggers: unknown, renderer: Render<E, M, L, R>, wrapper?: Render<E, M, L, R>,
     priority?: Priority, monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>) {
     super()
     // User-defined properties
     this.name = name
     this.factory = factory
     this.inline = inline
+    this.layout = layout
     this.triggers = triggers
     this.renderer = renderer
     this.wrapper = wrapper
@@ -233,7 +236,7 @@ class VNode<E = any, M = any, R = any> extends VerstakNode<E, M, R> {
     runRender(this.item!)
   }
 
-  wrapBy(renderer: Render<E, M, R> | undefined): this {
+  wrapBy(renderer: Render<E, M, L, R> | undefined): this {
     this.wrapper = renderer
     return this
   }
@@ -540,7 +543,7 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const gSysRoot = Collection.createItem<VNode>(new VNode<null, void>('SYSTEM',
   new StaticNodeFactory<null>('SYSTEM', false, null), false,
-  { level: 0 } as VNode, undefined, NOP)) // fake parent (overwritten below)
+  { level: 0 } as VNode, undefined, undefined, NOP)) // fake parent (overwritten below)
 gSysRoot.self.item = gSysRoot
 
 Object.defineProperty(gSysRoot, 'parent', {

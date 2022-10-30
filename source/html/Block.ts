@@ -17,30 +17,30 @@ export interface ElasticSize {
 }
 
 export function Block<M = unknown, R = void>(name: string,
-  layout: LayoutParams | null, renderer: Render<HTMLDivElement, M, R>,
-  priority?: Priority): VerstakNode<HTMLDivElement, M, R> {
-  return Div(name, renderer, priority)
+  layout: LayoutParams | undefined, renderer: Render<HTMLDivElement, M, LayoutParams | undefined, R>,
+  priority?: Priority): VerstakNode<HTMLDivElement, M, LayoutParams | undefined, R> {
+  return Div(name, layout, renderer, priority)
 }
 
 export function RxBlock<M = unknown, R = void>(name: string,
-  layout: LayoutParams | null, triggers: unknown,
-  renderer: Render<HTMLDivElement, M, R>,
+  layout: LayoutParams | undefined, triggers: unknown,
+  renderer: Render<HTMLDivElement, M, LayoutParams | undefined, R>,
   priority?: Priority, monitor?: Monitor, throttling?: number,
-  logging?: Partial<LoggingOptions>): VerstakNode<HTMLDivElement, M, R> {
-  return RxDiv(name, triggers, renderer,
+  logging?: Partial<LoggingOptions>): VerstakNode<HTMLDivElement, M, LayoutParams | undefined, R> {
+  return RxDiv(name, layout, triggers, renderer,
     priority, monitor, throttling, logging)
 }
 
 export function Cluster<M = unknown, R = void>(name: string,
-  renderer: Render<HTMLDivElement, M, R>, priority?: Priority):
-  VerstakNode<HTMLDivElement, M, R> {
-  return Inline(name, renderer, priority)
+  renderer: Render<HTMLDivElement, M, void, R>, priority?: Priority):
+  VerstakNode<HTMLDivElement, M, void, R> {
+  return Inline(name, undefined, renderer, priority)
 }
 
 export function RxCluster<M = unknown, R = void>(name: string,
-  triggers: unknown, renderer: Render<HTMLDivElement, M, R>,
+  triggers: unknown, renderer: Render<HTMLDivElement, M, void, R>,
   priority?: Priority, monitor?: Monitor, throttling?: number,
-  logging?: Partial<LoggingOptions>): VerstakNode<HTMLDivElement, M, R> {
-  return Reaction(name, triggers, renderer,
+  logging?: Partial<LoggingOptions>): VerstakNode<HTMLDivElement, M, void, R> {
+  return Reaction(name, undefined, triggers, renderer,
     priority, monitor, throttling, logging)
 }
