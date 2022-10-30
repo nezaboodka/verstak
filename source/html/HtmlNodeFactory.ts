@@ -6,9 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { Rx, Item } from 'reactronic'
-import { VerstakNode, NodeFactory, Priority } from '../core/api'
+import { VerstakNode, VerstakNodeFactory, Priority } from '../core/api'
 
-export abstract class ElementNodeFactory<E extends Element> extends NodeFactory<E> {
+export abstract class ElementNodeFactory<E extends Element> extends VerstakNodeFactory<E> {
 
   initialize(node: VerstakNode<E>, element: E | undefined): void {
     element = this.createElement(node)

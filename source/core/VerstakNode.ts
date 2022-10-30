@@ -31,7 +31,7 @@ export abstract class VerstakNode<E = unknown, M = unknown, P = void, R = void> 
   static frameDuration = VerstakNode.longFrameDuration
   // User-defined properties
   abstract readonly name: string
-  abstract readonly factory: NodeFactory<E>
+  abstract readonly factory: VerstakNodeFactory<E>
   abstract readonly inline: boolean
   abstract readonly renderer: Render<E, M, P, R>
   abstract readonly wrapper: Render<E, M, P, R> | undefined
@@ -76,7 +76,7 @@ export abstract class VerstakNode<E = unknown, M = unknown, P = void, R = void> 
     name: string, inline: boolean,
     options: VerstakOptions<P> | undefined,
     renderer: Render<E, M, P, R>,
-    factory?: NodeFactory<E>): VerstakNode<E, M, P, R> {
+    factory?: VerstakNodeFactory<E>): VerstakNode<E, M, P, R> {
     // Emit node either by reusing existing one or by creating a new one
     const parent = gContext.self
     const children = parent.children
@@ -95,7 +95,7 @@ export abstract class VerstakNode<E = unknown, M = unknown, P = void, R = void> 
       node.renderer = renderer
     }
     else { // create new
-      node = new VNode<E, M, P, R>(name, factory ?? NodeFactory.default,
+      node = new VNode<E, M, P, R>(name, factory ?? VerstakNodeFactory.default,
         inline ?? false, parent, options, renderer, undefined)
       node.item = children.add(node)
       VNode.grandCount++
@@ -118,8 +118,8 @@ export abstract class VerstakNode<E = unknown, M = unknown, P = void, R = void> 
 
 const NOP = (): void => { /* nop */ }
 
-export class NodeFactory<E> {
-  public static readonly default = new NodeFactory<any>('default', false)
+export class VerstakNodeFactory<E> {
+  public static readonly default = new VerstakNodeFactory<any>('default', false)
 
   readonly name: string
   readonly strict: boolean
@@ -154,7 +154,7 @@ export class NodeFactory<E> {
   }
 }
 
-export class StaticNodeFactory<E> extends NodeFactory<E> {
+export class StaticNodeFactory<E> extends VerstakNodeFactory<E> {
   readonly element: E
 
   constructor(name: string, sequential: boolean, element: E) {
@@ -180,7 +180,7 @@ class VNode<E = any, M = any, P = any, R = any> extends VerstakNode<E, M, P, R> 
 
   // User-defined properties
   readonly name: string
-  readonly factory: NodeFactory<E>
+  readonly factory: VerstakNodeFactory<E>
   readonly inline: boolean
   renderer: Render<E, M, P, R>
   wrapper: Render<E, M, P, R> | undefined
@@ -194,7 +194,7 @@ class VNode<E = any, M = any, P = any, R = any> extends VerstakNode<E, M, P, R> 
   stamp: number
   element?: E
 
-  constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: VNode,
+  constructor(name: string, factory: VerstakNodeFactory<E>, inline: boolean, parent: VNode,
     options: VerstakOptions<P> | undefined,
     renderer: Render<E, M, P, R>, wrapper?: Render<E, M, P, R>) {
     super()
