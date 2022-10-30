@@ -5,8 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from './HtmlNodeFactory'
-export * from './HtmlElements'
+export * from './HtmlBlockFactory'
+export * from './HtmlBlocks'
 export * from './HtmlApiExt'
 export * from './RxFocuser'
 export * from './sensors/Sensor'

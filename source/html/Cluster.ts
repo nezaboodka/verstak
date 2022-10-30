@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Block, Render, Place, Reaction, Inline, BlockOptions } from '../core/api'
-import { Div, RxDiv } from './HtmlElements'
+import { Div, RxDiv } from './HtmlBlocks'
 
 export interface ElasticSize {
   line: string | number

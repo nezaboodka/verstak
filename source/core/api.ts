@@ -8,5 +8,5 @@
 export * from './Utils'
 export * from './Layout'
 export * from './Block'
-export * from './Elements'
+export * from './BasicBlocks'
 export * from './Restyler'

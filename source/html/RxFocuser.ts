@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Reaction } from '../core/Elements'
+import { Reaction } from '../core/BasicBlocks'
 import { FocusModel } from './sensors/FocusSensor'
 
 export function RxFocuser(name: string, target: HTMLElement, model: FocusModel,

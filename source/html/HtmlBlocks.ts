@@ -7,7 +7,7 @@
 
 import { LoggingOptions, Monitor } from 'reactronic'
 import { Block, Reaction, Inline, Render, StaticBlockFactory, Priority, Place, BlockOptions } from '../core/api'
-import { HtmlBlockFactory, SvgBlockFactory } from './HtmlNodeFactory'
+import { HtmlBlockFactory, SvgBlockFactory } from './HtmlBlockFactory'
 
 export function RxHtmlBody(name: string, triggers: unknown, renderer: Render<HTMLElement>): Block<HTMLElement> {
   const factory = new StaticBlockFactory(name, true, global.document.body)
