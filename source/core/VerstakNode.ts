@@ -8,8 +8,8 @@
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
-export type Render<E = unknown, M = unknown, P = void, R = void> = (element: E, node: VerstakNode<E, M, P, R>) => R
-export type AsyncRender<E = unknown, M = unknown, P = void> = (element: E, node: VerstakNode<E, M, P, Promise<void>>) => Promise<void>
+export type Render<E = unknown, M = unknown, P = void, R = void> = (element: E, block: Block<E, M, P, R>) => R
+export type AsyncRender<E = unknown, M = unknown, P = void> = (element: E, block: Block<E, M, P, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export interface VerstakOptions<P = void> {
@@ -22,16 +22,16 @@ export interface VerstakOptions<P = void> {
   shuffle?: boolean
 }
 
-// VerstakNode
+// Block
 
-export abstract class VerstakNode<E = unknown, M = unknown, P = void, R = void> {
+export abstract class Block<E = unknown, M = unknown, P = void, R = void> {
   static readonly shortFrameDuration = 16 // ms
   static readonly longFrameDuration = 300 // ms
   static currentRenderingPriority = Priority.SyncP0
-  static frameDuration = VerstakNode.longFrameDuration
+  static frameDuration = Block.longFrameDuration
   // User-defined properties
   abstract readonly name: string
-  abstract readonly factory: VerstakNodeFactory<E>
+  abstract readonly factory: BlockFactory<E>
   abstract readonly inline: boolean
   abstract readonly renderer: Render<E, M, P, R>
   abstract readonly wrapper: Render<E, M, P, R> | undefined
@@ -39,9 +39,9 @@ export abstract class VerstakNode<E = unknown, M = unknown, P = void, R = void> 
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
-  abstract readonly parent: VerstakNode
-  abstract readonly children: CollectionReader<VerstakNode>
-  abstract readonly item: Item<VerstakNode> | undefined
+  abstract readonly parent: Block
+  abstract readonly children: CollectionReader<Block>
+  abstract readonly item: Item<Block> | undefined
   abstract readonly stamp: number
   abstract readonly element?: E
 
@@ -60,7 +60,7 @@ export abstract class VerstakNode<E = unknown, M = unknown, P = void, R = void> 
     prepareThenRunRender(gSysRoot, false, false)
   }
 
-  static get current(): VerstakNode {
+  static get current(): Block {
     return gContext.self
   }
 
@@ -68,7 +68,7 @@ export abstract class VerstakNode<E = unknown, M = unknown, P = void, R = void> 
     runRenderChildrenThenDo(undefined, action)
   }
 
-  static forAllNodesDo<E>(action: (e: E) => void): void {
+  static forAllBlocksDo<E>(action: (e: E) => void): void {
     forEachChildRecursively(gSysRoot, action)
   }
 
@@ -76,50 +76,50 @@ export abstract class VerstakNode<E = unknown, M = unknown, P = void, R = void> 
     name: string, inline: boolean,
     options: VerstakOptions<P> | undefined,
     renderer: Render<E, M, P, R>,
-    factory?: VerstakNodeFactory<E>): VerstakNode<E, M, P, R> {
-    // Emit node either by reusing existing one or by creating a new one
+    factory?: BlockFactory<E>): Block<E, M, P, R> {
+    // Emit block either by reusing existing one or by creating a new one
     const parent = gContext.self
     const children = parent.children
     const item = children.claim(name)
-    let node: VNode<E, M, P, R>
+    let block: BlockImpl<E, M, P, R>
     if (item) { // reuse existing
-      node = item.self
-      if (node.factory !== factory && factory !== undefined)
-        throw new Error(`changing node type is not yet supported: "${node.factory.name}" -> "${factory?.name}"`)
+      block = item.self
+      if (block.factory !== factory && factory !== undefined)
+        throw new Error(`changing block type is not yet supported: "${block.factory.name}" -> "${factory?.name}"`)
       if (options) {
-        const existingTriggers = node.options?.triggers
+        const existingTriggers = block.options?.triggers
         if (triggersAreEqual(options.triggers, existingTriggers))
           options.triggers = existingTriggers // preserve triggers instance
       }
-      node.options = options
-      node.renderer = renderer
+      block.options = options
+      block.renderer = renderer
     }
     else { // create new
-      node = new VNode<E, M, P, R>(name, factory ?? VerstakNodeFactory.default,
+      block = new BlockImpl<E, M, P, R>(name, factory ?? BlockFactory.default,
         inline ?? false, parent, options, renderer, undefined)
-      node.item = children.add(node)
-      VNode.grandCount++
-      if (!node.inline)
-        VNode.disposableCount++
+      block.item = children.add(block)
+      BlockImpl.grandCount++
+      if (!block.inline)
+        BlockImpl.disposableCount++
     }
-    return node
+    return block
   }
 
   static getDefaultLoggingOptions(): LoggingOptions | undefined {
-    return VNode.logging
+    return BlockImpl.logging
   }
 
   static setDefaultLoggingOptions(logging?: LoggingOptions): void {
-    VNode.logging = logging
+    BlockImpl.logging = logging
   }
 }
 
-// NodeFactory
+// BlockFactory
 
 const NOP = (): void => { /* nop */ }
 
-export class VerstakNodeFactory<E> {
-  public static readonly default = new VerstakNodeFactory<any>('default', false)
+export class BlockFactory<E> {
+  public static readonly default = new BlockFactory<any>('default', false)
 
   readonly name: string
   readonly strict: boolean
@@ -129,32 +129,32 @@ export class VerstakNodeFactory<E> {
     this.strict = strict
   }
 
-  initialize(node: VerstakNode<E>, element: E | undefined): void {
-    const impl = node as VNode<E>
+  initialize(block: Block<E>, element: E | undefined): void {
+    const impl = block as BlockImpl<E>
     impl.element = element
   }
 
-  finalize(node: VerstakNode<E>, isLeader: boolean): boolean {
-    const impl = node as VNode<E>
+  finalize(block: Block<E>, isLeader: boolean): boolean {
+    const impl = block as BlockImpl<E>
     impl.element = undefined
     return isLeader // treat children as finalization leaders as well
   }
 
-  layout(node: VerstakNode<E>, strict: boolean): void {
+  layout(block: Block<E>, strict: boolean): void {
     // nothing to do by default
   }
 
-  render(node: VerstakNode<E>): void | Promise<void> {
+  render(block: Block<E>): void | Promise<void> {
     let result: void | Promise<void>
-    if (node.wrapper)
-      result = node.wrapper(node.element!, node)
+    if (block.wrapper)
+      result = block.wrapper(block.element!, block)
     else
-      result = node.render()
+      result = block.render()
     return result
   }
 }
 
-export class StaticNodeFactory<E> extends VerstakNodeFactory<E> {
+export class StaticBlockFactory<E> extends BlockFactory<E> {
   readonly element: E
 
   constructor(name: string, sequential: boolean, element: E) {
@@ -162,25 +162,25 @@ export class StaticNodeFactory<E> extends VerstakNodeFactory<E> {
     this.element = element
   }
 
-  initialize(node: VerstakNode<E>, element: E | undefined): void {
-    super.initialize(node, this.element)
+  initialize(block: Block<E>, element: E | undefined): void {
+    super.initialize(block, this.element)
   }
 }
 
-// VNode
+// BlockImpl
 
-function getNodeName(node: VNode): string | undefined {
-  return node.stamp >= 0 ? node.name : undefined
+function getBlockName(block: BlockImpl): string | undefined {
+  return block.stamp >= 0 ? block.name : undefined
 }
 
-class VNode<E = any, M = any, P = any, R = any> extends VerstakNode<E, M, P, R> {
+class BlockImpl<E = any, M = any, P = any, R = any> extends Block<E, M, P, R> {
   static grandCount: number = 0
   static disposableCount: number = 0
   static logging?: LoggingOptions = undefined
 
   // User-defined properties
   readonly name: string
-  readonly factory: VerstakNodeFactory<E>
+  readonly factory: BlockFactory<E>
   readonly inline: boolean
   renderer: Render<E, M, P, R>
   wrapper: Render<E, M, P, R> | undefined
@@ -188,13 +188,13 @@ class VNode<E = any, M = any, P = any, R = any> extends VerstakNode<E, M, P, R> 
   model?: M
   // System-managed properties
   readonly level: number
-  readonly parent: VNode
-  children: Collection<VNode>
-  item: Item<VNode> | undefined
+  readonly parent: BlockImpl
+  children: Collection<BlockImpl>
+  item: Item<BlockImpl> | undefined
   stamp: number
   element?: E
 
-  constructor(name: string, factory: VerstakNodeFactory<E>, inline: boolean, parent: VNode,
+  constructor(name: string, factory: BlockFactory<E>, inline: boolean, parent: BlockImpl,
     options: VerstakOptions<P> | undefined,
     renderer: Render<E, M, P, R>, wrapper?: Render<E, M, P, R>) {
     super()
@@ -209,7 +209,7 @@ class VNode<E = any, M = any, P = any, R = any> extends VerstakNode<E, M, P, R> 
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
-    this.children = new Collection<VNode>(factory.strict, getNodeName)
+    this.children = new Collection<BlockImpl>(factory.strict, getBlockName)
     this.item = undefined
     this.stamp = 0
     this.element = undefined
@@ -236,20 +236,20 @@ class VNode<E = any, M = any, P = any, R = any> extends VerstakNode<E, M, P, R> 
 
 function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => void): void {
   const context = gContext
-  const node = context.self
-  const children = node.children
+  const block = context.self
+  const children = block.children
   if (children.isMergeInProgress) {
     let promised: Promise<void> | undefined = undefined
     try {
       children.endMerge(error)
-      // Finalize removed nodes
+      // Finalize removed blocks
       for (const child of children.removedItems(true))
         runFinalize(child, true)
       if (!error) {
-        // Render actual nodes
+        // Render actual blocks
         const strict = children.strict
-        let p1: Array<Item<VNode>> | undefined = undefined
-        let p2: Array<Item<VNode>> | undefined = undefined
+        let p1: Array<Item<BlockImpl>> | undefined = undefined
+        let p2: Array<Item<BlockImpl>> | undefined = undefined
         let isMoved = false
         for (const child of children.items()) {
           if (Transaction.isCanceled)
@@ -278,11 +278,11 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
   }
 }
 
-function checkIsMoved(isMoved: boolean, child: Item<VNode>,
-  children: Collection<VNode>, strict: boolean): boolean
+function checkIsMoved(isMoved: boolean, child: Item<BlockImpl>,
+  children: Collection<BlockImpl>, strict: boolean): boolean
 {
-  // Detects element movements when abstract nodes exist among
-  // regular nodes with HTML elements
+  // Detects element movements when abstract blocks exist among
+  // regular blocks with HTML elements
   if (child.self.element) {
     if (isMoved) {
       children.markAsMoved(child)
@@ -290,15 +290,15 @@ function checkIsMoved(isMoved: boolean, child: Item<VNode>,
     }
   }
   else if (strict && children.isMoved(child))
-    isMoved = true // apply to the first node with an element
+    isMoved = true // apply to the first block with an element
   return isMoved
 }
 
 async function startIncrementalRendering(
-  parent: Item<VNode>,
-  allChildren: Collection<VNode>,
-  priority1?: Array<Item<VNode>>,
-  priority2?: Array<Item<VNode>>): Promise<void> {
+  parent: Item<BlockImpl>,
+  allChildren: Collection<BlockImpl>,
+  priority1?: Array<Item<BlockImpl>>,
+  priority2?: Array<Item<BlockImpl>>): Promise<void> {
   const stamp = parent.self.stamp
   if (priority1)
     await renderIncrementally(parent, stamp, allChildren, priority1, Priority.AsyncP1)
@@ -306,86 +306,86 @@ async function startIncrementalRendering(
     await renderIncrementally(parent, stamp, allChildren, priority2, Priority.AsyncP2)
 }
 
-async function renderIncrementally(parent: Item<VNode>, stamp: number,
-  allChildren: Collection<VNode>, items: Array<Item<VNode>>,
+async function renderIncrementally(parent: Item<BlockImpl>, stamp: number,
+  allChildren: Collection<BlockImpl>, items: Array<Item<BlockImpl>>,
   priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
-  const node = parent.self
-  if (!Transaction.isCanceled || !Transaction.isFrameOver(1, VerstakNode.shortFrameDuration / 3)) {
-    let outerPriority = VerstakNode.currentRenderingPriority
-    VerstakNode.currentRenderingPriority = priority
+  const block = parent.self
+  if (!Transaction.isCanceled || !Transaction.isFrameOver(1, Block.shortFrameDuration / 3)) {
+    let outerPriority = Block.currentRenderingPriority
+    Block.currentRenderingPriority = priority
     try {
-      const strict = node.children.strict
-      if (node.options?.shuffle)
+      const strict = block.children.strict
+      if (block.options?.shuffle)
         shuffle(items)
-      const frameDurationLimit = priority === Priority.AsyncP2 ? VerstakNode.shortFrameDuration : Infinity
-      let frameDuration = Math.min(frameDurationLimit, Math.max(VerstakNode.frameDuration / 4, VerstakNode.shortFrameDuration))
+      const frameDurationLimit = priority === Priority.AsyncP2 ? Block.shortFrameDuration : Infinity
+      let frameDuration = Math.min(frameDurationLimit, Math.max(Block.frameDuration / 4, Block.shortFrameDuration))
       for (const child of items) {
         prepareThenRunRender(child, allChildren.isMoved(child), strict)
         if (Transaction.isFrameOver(1, frameDuration)) {
-          VerstakNode.currentRenderingPriority = outerPriority
+          Block.currentRenderingPriority = outerPriority
           await Transaction.requestNextFrame(0)
-          outerPriority = VerstakNode.currentRenderingPriority
-          VerstakNode.currentRenderingPriority = priority
-          frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, VerstakNode.frameDuration))
+          outerPriority = Block.currentRenderingPriority
+          Block.currentRenderingPriority = priority
+          frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, Block.frameDuration))
         }
-        if (Transaction.isCanceled && Transaction.isFrameOver(1, VerstakNode.shortFrameDuration / 3))
+        if (Transaction.isCanceled && Transaction.isFrameOver(1, Block.shortFrameDuration / 3))
           break
       }
     }
     finally {
-      VerstakNode.currentRenderingPriority = outerPriority
+      Block.currentRenderingPriority = outerPriority
     }
   }
 }
 
-function prepareThenRunRender(item: Item<VNode>,
+function prepareThenRunRender(item: Item<BlockImpl>,
   moved: boolean, strict: boolean): void {
-  const node = item.self
-  if (node.stamp >= 0) {
+  const block = item.self
+  if (block.stamp >= 0) {
     prepareRender(item, moved, strict)
-    if (node.inline)
+    if (block.inline)
       runRender(item)
     else
-      nonreactive(node.autorender, node.options?.triggers) // reactive auto-rendering
+      nonreactive(block.autorender, block.options?.triggers) // reactive auto-rendering
   }
 }
 
-function prepareRender(item: Item<VNode>,
+function prepareRender(item: Item<BlockImpl>,
   moved: boolean, strict: boolean): void {
-  const node = item.self
-  const factory = node.factory
+  const block = item.self
+  const factory = block.factory
   // Initialize/layout if needed
-  if (node.stamp === 0) {
-    node.stamp = 1
-    if (!node.inline) {
+  if (block.stamp === 0) {
+    block.stamp = 1
+    if (!block.inline) {
       Transaction.outside(() => {
         if (Rx.isLogging)
-          Rx.setLoggingHint(node, node.name)
-        Rx.getController(node.autorender).configure({
-          order: node.level,
-          monitor: node.options?.monitor,
-          throttling: node.options?.throttling,
-          logging: node.options?.logging,
+          Rx.setLoggingHint(block, block.name)
+        Rx.getController(block.autorender).configure({
+          order: block.level,
+          monitor: block.options?.monitor,
+          throttling: block.options?.throttling,
+          logging: block.options?.logging,
         })
       })
     }
-    factory.initialize?.(node, undefined)
-    factory.layout?.(node, strict)
+    factory.initialize?.(block, undefined)
+    factory.layout?.(block, strict)
   }
   else if (moved)
-    factory.layout?.(node, strict) // , console.log(`moved: ${node.name}`)
+    factory.layout?.(block, strict) // , console.log(`moved: ${block.name}`)
 }
 
-function runRender(item: Item<VNode>): void {
-  const node = item.self
-  if (node.stamp >= 0) { // if node is alive
+function runRender(item: Item<BlockImpl>): void {
+  const block = item.self
+  if (block.stamp >= 0) { // if block is alive
     runUnder(item, () => {
       let result: unknown = undefined
       try {
-        node.stamp++
-        node.children.beginMerge()
-        result = node.factory.render(node)
+        block.stamp++
+        block.children.beginMerge()
+        result = block.factory.render(block)
         if (result instanceof Promise)
           result.then(
             v => { runRenderChildrenThenDo(undefined, NOP); return v },
@@ -395,21 +395,21 @@ function runRender(item: Item<VNode>): void {
       }
       catch(e: unknown) {
         runRenderChildrenThenDo(e, NOP)
-        console.log(`Rendering failed: ${node.name}`)
+        console.log(`Rendering failed: ${block.name}`)
         console.log(`${e}`)
       }
     })
   }
 }
 
-function runFinalize(item: Item<VNode>, isLeader: boolean): void {
-  const node = item.self
-  if (node.stamp >= 0) {
-    node.stamp = ~node.stamp
-    // Finalize node itself and remove it from collection
-    const childrenAreLeaders = node.factory.finalize(node, isLeader)
-    if (!node.inline) {
-      // Defer disposal if node is reactive
+function runFinalize(item: Item<BlockImpl>, isLeader: boolean): void {
+  const block = item.self
+  if (block.stamp >= 0) {
+    block.stamp = ~block.stamp
+    // Finalize block itself and remove it from collection
+    const childrenAreLeaders = block.factory.finalize(block, isLeader)
+    if (!block.inline) {
+      // Defer disposal if block is reactive
       item.aux = undefined
       const last = gLastToDispose
       if (last)
@@ -422,9 +422,9 @@ function runFinalize(item: Item<VNode>, isLeader: boolean): void {
         })
     }
     // Finalize children if any
-    for (const item of node.children.items())
+    for (const item of block.children.items())
       runFinalize(item, childrenAreLeaders)
-    VNode.grandCount--
+    BlockImpl.grandCount--
   }
 }
 
@@ -436,17 +436,17 @@ async function runDisposalLoop(): Promise<void> {
       await Transaction.requestNextFrame()
     Rx.dispose(item.self)
     item = item.aux
-    VNode.disposableCount--
+    BlockImpl.disposableCount--
   }
-  // console.log(`VerstakNode count: ${VNode.grandCount} totally (${VNode.disposableCount} disposable)`)
+  // console.log(`Block count: ${BlockImpl.grandCount} totally (${BlockImpl.disposableCount} disposable)`)
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
-function forEachChildRecursively(item: Item<VNode>, action: (e: any) => void): void {
-  const node = item.self
-  const e = node.element
+function forEachChildRecursively(item: Item<BlockImpl>, action: (e: any) => void): void {
+  const block = item.self
+  const e = block.element
   e && action(e)
-  for (const item of node.children.items())
+  for (const item of block.children.items())
     forEachChildRecursively(item, action)
 }
 
@@ -458,7 +458,7 @@ function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
   return wrappedRunUnder
 }
 
-function runUnder<T>(item: Item<VNode>, func: (...args: any[]) => T, ...args: any[]): T {
+function runUnder<T>(item: Item<BlockImpl>, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gContext
   try {
     gContext = item
@@ -532,9 +532,9 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-const gSysRoot = Collection.createItem<VNode>(new VNode<null, void>('SYSTEM',
-  new StaticNodeFactory<null>('SYSTEM', false, null), false,
-  { level: 0 } as VNode, undefined, NOP)) // fake parent (overwritten below)
+const gSysRoot = Collection.createItem<BlockImpl>(new BlockImpl<null, void>('SYSTEM',
+  new StaticBlockFactory<null>('SYSTEM', false, null), false,
+  { level: 0 } as BlockImpl, undefined, NOP)) // fake parent (overwritten below)
 gSysRoot.self.item = gSysRoot
 
 Object.defineProperty(gSysRoot, 'parent', {
@@ -544,6 +544,6 @@ Object.defineProperty(gSysRoot, 'parent', {
   enumerable: true,
 })
 
-let gContext: Item<VNode> = gSysRoot
-let gFirstToDispose: Item<VNode> | undefined = undefined
-let gLastToDispose: Item<VNode> | undefined = undefined
+let gContext: Item<BlockImpl> = gSysRoot
+let gFirstToDispose: Item<BlockImpl> | undefined = undefined
+let gLastToDispose: Item<BlockImpl> | undefined = undefined

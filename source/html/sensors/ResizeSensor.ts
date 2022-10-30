@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, transactional, LoggingLevel } from 'reactronic'
-import { VerstakNode } from '../../core/api'
+import { Block } from '../../core/api'
 import { Sensor } from './Sensor'
 
 export interface ResizedElement {
@@ -30,8 +30,8 @@ export class ResizeSensor extends Sensor {
     this.doReset()
   }
 
-  observeResizing(node: VerstakNode<any, any ,any>, value: boolean, boxSizing: ResizeObserverBoxOptions = 'content-box'): void {
-    const native = node.element
+  observeResizing(block: Block<any, any ,any>, value: boolean, boxSizing: ResizeObserverBoxOptions = 'content-box'): void {
+    const native = block.element
     if (native instanceof Element) {
       if (value) {
         if (native.resizeObserver !== undefined && native.resizeObserver !== this.observer)
@@ -47,7 +47,7 @@ export class ResizeSensor extends Sensor {
       }
     }
     else
-      throw new Error('cannot observe resizing of non-HTML node')
+      throw new Error('cannot observe resizing of non-HTML block')
   }
 
   protected onResize(entries: Array<ResizeObserverEntry>): void {

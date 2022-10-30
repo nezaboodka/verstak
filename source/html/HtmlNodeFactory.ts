@@ -6,35 +6,35 @@
 // automatically licensed under the license referred above.
 
 import { Rx, Item } from 'reactronic'
-import { VerstakNode, VerstakNodeFactory, Priority } from '../core/api'
+import { Block, BlockFactory, Priority } from '../core/api'
 
-export abstract class ElementNodeFactory<E extends Element> extends VerstakNodeFactory<E> {
+export abstract class AbstractHtmlBlockFactory<E extends Element> extends BlockFactory<E> {
 
-  initialize(node: VerstakNode<E>, element: E | undefined): void {
-    element = this.createElement(node)
+  initialize(block: Block<E>, element: E | undefined): void {
+    element = this.createElement(block)
     if (Rx.isLogging)
-      element.id = node.name
-    super.initialize(node, element)
+      element.id = block.name
+    super.initialize(block, element)
   }
 
-  finalize(node: VerstakNode<E>, isLeader: boolean): boolean {
-    const e = node.element
+  finalize(block: Block<E>, isLeader: boolean): boolean {
+    const e = block.element
     if (e) {
       e.resizeObserver?.unobserve(e) // is it really needed or browser does this automatically?
       if (isLeader)
         e.remove()
     }
-    super.finalize(node, isLeader)
-    return false // children of HTML nodes are not treated as leaders
+    super.finalize(block, isLeader)
+    return false // children of HTML blocks are not treated as leaders
   }
 
-  layout(node: VerstakNode<E>, strict: boolean): void {
-    const e = node.element
+  layout(block: Block<E>, strict: boolean): void {
+    const e = block.element
     if (e) {
-      const nativeParent = ElementNodeFactory.findNearestParentHtmlElementNode(node).element
+      const nativeParent = AbstractHtmlBlockFactory.findNearestParentHtmlBlock(block).element
       if (nativeParent) {
         if (strict) {
-          const after = ElementNodeFactory.findPrevSiblingHtmlElementNode(node.item!)
+          const after = AbstractHtmlBlockFactory.findPrevSiblingHtmlBlock(block.item!)
           if (after === undefined) {
             if (nativeParent !== e.parentNode || !e.previousSibling)
               nativeParent.prepend(e)
@@ -53,10 +53,10 @@ export abstract class ElementNodeFactory<E extends Element> extends VerstakNodeF
     }
   }
 
-  render(node: VerstakNode<E>): void | Promise<void> {
-    const result = super.render(node)
+  render(block: Block<E>): void | Promise<void> {
+    const result = super.render(block)
     if (gBlinkingEffect)
-      blink(node.element, VerstakNode.currentRenderingPriority, node.stamp)
+      blink(block.element, Block.currentRenderingPriority, block.stamp)
     return result
   }
 
@@ -67,7 +67,7 @@ export abstract class ElementNodeFactory<E extends Element> extends VerstakNodeF
   static set blinkingEffect(value: string | undefined) {
     if (value === undefined) {
       const effect = gBlinkingEffect
-      VerstakNode.forAllNodesDo((e: any) => {
+      Block.forAllBlocksDo((e: any) => {
         if (e instanceof HTMLElement)
           e.classList.remove(`${effect}-0`, `${effect}-1`)
       })
@@ -75,32 +75,32 @@ export abstract class ElementNodeFactory<E extends Element> extends VerstakNodeF
     gBlinkingEffect = value
   }
 
-  static findNearestParentHtmlElementNode(node: VerstakNode<any>): VerstakNode<Element> {
-    let p = node.parent
-    while (p.element instanceof Element === false && p !== node)
+  static findNearestParentHtmlBlock(block: Block<any>): Block<Element> {
+    let p = block.parent
+    while (p.element instanceof Element === false && p !== block)
       p = p.parent
-    return p as VerstakNode<Element>
+    return p as Block<Element>
   }
 
-  static findPrevSiblingHtmlElementNode(item: Item<VerstakNode<any>>): Item<VerstakNode<Element>> | undefined {
+  static findPrevSiblingHtmlBlock(item: Item<Block<any>>): Item<Block<Element>> | undefined {
     let p = item.prev
     while (p && !(p.self.element instanceof Element))
       p = p.prev
     return p
   }
 
-  protected abstract createElement(node: VerstakNode<E>): E
+  protected abstract createElement(block: Block<E>): E
 }
 
-export class HtmlElementNodeFactory<E extends HTMLElement> extends ElementNodeFactory<E> {
-  protected createElement(node: VerstakNode<E>): E {
-    return document.createElement(node.factory.name) as E
+export class HtmlBlockFactory<E extends HTMLElement> extends AbstractHtmlBlockFactory<E> {
+  protected createElement(block: Block<E>): E {
+    return document.createElement(block.factory.name) as E
   }
 }
 
-export class SvgElementNodeFactory<E extends SVGElement> extends ElementNodeFactory<E> {
-  protected createElement(node: VerstakNode<E>): E {
-    return document.createElementNS('http://www.w3.org/2000/svg', node.factory.name) as E
+export class SvgBlockFactory<E extends SVGElement> extends AbstractHtmlBlockFactory<E> {
+  protected createElement(block: Block<E>): E {
+    return document.createElementNS('http://www.w3.org/2000/svg', block.factory.name) as E
   }
 }
 
