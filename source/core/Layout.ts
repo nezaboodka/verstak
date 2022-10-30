@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export interface LayoutParams {
+export interface LayoutOptions {
   lineBegin?: boolean
   area?: string
   width?: number
@@ -40,28 +40,28 @@ export class LayoutManager {
     this.newRowCursor = 0
   }
 
-  claim(lp: LayoutParams, result: CellRange): CellRange {
+  claim(lo: LayoutOptions, result: CellRange): CellRange {
     const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
     const maxRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
-    if (lp.area) { // absolute positioning
-      LayoutManager.parseCellRange(lp.area, result)
+    if (lo.area) { // absolute positioning
+      LayoutManager.parseCellRange(lo.area, result)
       absolutizeCellRange(result,
         this.columnCursor + 1, this.rowCursor + 1,
         maxColumnCount, maxRowCount, result)
     }
     else { // relative positioning
-      if (lp.lineBegin) {
+      if (lo.lineBegin) {
         this.columnCursor = 0
         this.rowCursor = this.newRowCursor
       }
       // Horizontal
-      let w = lp.width ?? 1
+      let w = lo.width ?? 1
       if (w === 0)
         w = maxColumnCount
       if (w >= 0) {
         result.x1 = this.columnCursor + 1
         result.x2 = absolutizePosition(result.x1 + w, 0, maxColumnCount)
-        if (lp.cursorRight !== false)
+        if (lo.cursorRight !== false)
           this.columnCursor = result.x2
       }
       else {
@@ -69,13 +69,13 @@ export class LayoutManager {
         result.x2 = this.columnCursor
       }
       // Vertical
-      let h = lp.height ?? 1
+      let h = lo.height ?? 1
       if (h === 0)
         h = maxRowCount
       if (h >= 0) {
         result.y1 = this.rowCursor + 1
         result.y2 = absolutizePosition(result.y1 + h, 0, maxRowCount)
-        if (lp.cursorDown !== false && result.y2 > this.newRowCursor)
+        if (lo.cursorDown !== false && result.y2 > this.newRowCursor)
           this.newRowCursor = result.y2
       }
       else {

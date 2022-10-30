@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VerstakNode, Render, LayoutParams, Reaction, Inline, VerstakNodeOptions } from '../core/api'
+import { VerstakNode, Render, LayoutOptions, Reaction, Inline, VerstakNodeOptions } from '../core/api'
 import { Div, RxDiv } from './HtmlElements'
 
 export interface ElasticSize {
@@ -16,16 +16,16 @@ export interface ElasticSize {
 }
 
 export function Block<M = unknown, R = void>(name: string,
-  options: VerstakNodeOptions<LayoutParams> | undefined,
-  renderer: Render<HTMLDivElement, M, LayoutParams, R>):
-  VerstakNode<HTMLDivElement, M, LayoutParams, R> {
+  options: VerstakNodeOptions<LayoutOptions> | undefined,
+  renderer: Render<HTMLDivElement, M, LayoutOptions, R>):
+  VerstakNode<HTMLDivElement, M, LayoutOptions, R> {
   return Div(name, options, renderer)
 }
 
 export function RxBlock<M = unknown, R = void>(name: string,
-  options: VerstakNodeOptions<LayoutParams> | undefined,
-  renderer: Render<HTMLDivElement, M, LayoutParams, R>):
-  VerstakNode<HTMLDivElement, M, LayoutParams, R> {
+  options: VerstakNodeOptions<LayoutOptions> | undefined,
+  renderer: Render<HTMLDivElement, M, LayoutOptions, R>):
+  VerstakNode<HTMLDivElement, M, LayoutOptions, R> {
   return RxDiv(name, options, renderer)
 }
 
