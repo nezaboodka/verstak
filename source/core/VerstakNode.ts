@@ -261,7 +261,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
         for (const child of children.items()) {
           if (Transaction.isCanceled)
             break
-          isMoved = checkIfReLayoutNeeded(isMoved, child, children, strict)
+          isMoved = checkIsMoved(isMoved, child, children, strict)
           const x = child.self
           if (x.priority === Priority.SyncP0)
             prepareThenRunRender(child, children.isMoved(child), strict)
@@ -284,7 +284,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
   }
 }
 
-function checkIfReLayoutNeeded(isMoved: boolean, child: Item<VNode>,
+function checkIsMoved(isMoved: boolean, child: Item<VNode>,
   children: Collection<VNode>, strict: boolean): boolean
 {
   // Detects element movements when abstract nodes exist among
