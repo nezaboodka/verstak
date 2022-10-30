@@ -7,14 +7,14 @@
 
 import { Block, Render, BlockFactory, BlockOptions } from './Block'
 
-export function Reaction<E = undefined, M = unknown, P = void, R = void>(
+export function Reaction<T = undefined, M = unknown, P = void, R = void>(
   name: string, options: BlockOptions<P> | undefined,
-  renderer: Render<E, M, P, R>, factory?: BlockFactory<E>): Block<E, M, P, R> {
+  renderer: Render<T, M, P, R>, factory?: BlockFactory<T>): Block<T, M, P, R> {
   return Block.claim(name, false, options, renderer, factory)
 }
 
-export function Inline<E = undefined, M = unknown, P = void, R = void>(
+export function Inline<T = undefined, M = unknown, P = void, R = void>(
   name: string, options: BlockOptions<P> | undefined,
-  renderer: Render<E, M, P, R>, factory?: BlockFactory<E>): Block<E, M, P, R> {
+  renderer: Render<T, M, P, R>, factory?: BlockFactory<T>): Block<T, M, P, R> {
   return Block.claim(name, true, options, renderer, factory)
 }

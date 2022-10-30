@@ -31,18 +31,18 @@ export class ResizeSensor extends Sensor {
   }
 
   observeResizing(block: Block<any, any ,any>, value: boolean, boxSizing: ResizeObserverBoxOptions = 'content-box'): void {
-    const native = block.element
-    if (native instanceof Element) {
+    const impl = block.impl
+    if (impl instanceof Element) {
       if (value) {
-        if (native.resizeObserver !== undefined && native.resizeObserver !== this.observer)
-          native.resizeObserver.unobserve(native)
-        native.resizeObserver = this.observer
-        this.observer.observe(native, { box: boxSizing })
+        if (impl.resizeObserver !== undefined && impl.resizeObserver !== this.observer)
+          impl.resizeObserver.unobserve(impl)
+        impl.resizeObserver = this.observer
+        this.observer.observe(impl, { box: boxSizing })
       }
       else {
-        if (native.resizeObserver === this.observer) {
-          this.observer.unobserve(native)
-          native.resizeObserver = undefined
+        if (impl.resizeObserver === this.observer) {
+          this.observer.unobserve(impl)
+          impl.resizeObserver = undefined
         }
       }
     }

@@ -8,17 +8,17 @@
 import { Rx, Item } from 'reactronic'
 import { Block, BlockFactory, Priority } from '../core/api'
 
-export abstract class AbstractHtmlBlockFactory<E extends Element> extends BlockFactory<E> {
+export abstract class AbstractHtmlBlockFactory<T extends Element> extends BlockFactory<T> {
 
-  initialize(block: Block<E>, element: E | undefined): void {
+  initialize(block: Block<T>, element: T | undefined): void {
     element = this.createElement(block)
     if (Rx.isLogging)
       element.id = block.name
     super.initialize(block, element)
   }
 
-  finalize(block: Block<E>, isLeader: boolean): boolean {
-    const e = block.element
+  finalize(block: Block<T>, isLeader: boolean): boolean {
+    const e = block.impl
     if (e) {
       e.resizeObserver?.unobserve(e) // is it really needed or browser does this automatically?
       if (isLeader)
@@ -28,10 +28,10 @@ export abstract class AbstractHtmlBlockFactory<E extends Element> extends BlockF
     return false // children of HTML blocks are not treated as leaders
   }
 
-  layout(block: Block<E>, strict: boolean): void {
-    const e = block.element
+  layout(block: Block<T>, strict: boolean): void {
+    const e = block.impl
     if (e) {
-      const nativeParent = AbstractHtmlBlockFactory.findNearestParentHtmlBlock(block).element
+      const nativeParent = AbstractHtmlBlockFactory.findNearestParentHtmlBlock(block).impl
       if (nativeParent) {
         if (strict) {
           const after = AbstractHtmlBlockFactory.findPrevSiblingHtmlBlock(block.item!)
@@ -39,8 +39,8 @@ export abstract class AbstractHtmlBlockFactory<E extends Element> extends BlockF
             if (nativeParent !== e.parentNode || !e.previousSibling)
               nativeParent.prepend(e)
           }
-          else if (after.self.parent.element === nativeParent) {
-            const nativeAfter = after.self.element
+          else if (after.self.parent.impl === nativeParent) {
+            const nativeAfter = after.self.impl
             if (nativeAfter instanceof Element) {
               if (nativeAfter.nextSibling !== e)
                 nativeParent.insertBefore(e, nativeAfter.nextSibling)
@@ -53,10 +53,10 @@ export abstract class AbstractHtmlBlockFactory<E extends Element> extends BlockF
     }
   }
 
-  render(block: Block<E>): void | Promise<void> {
+  render(block: Block<T>): void | Promise<void> {
     const result = super.render(block)
     if (gBlinkingEffect)
-      blink(block.element, Block.currentRenderingPriority, block.stamp)
+      blink(block.impl, Block.currentRenderingPriority, block.stamp)
     return result
   }
 
@@ -77,30 +77,30 @@ export abstract class AbstractHtmlBlockFactory<E extends Element> extends BlockF
 
   static findNearestParentHtmlBlock(block: Block<any>): Block<Element> {
     let p = block.parent
-    while (p.element instanceof Element === false && p !== block)
+    while (p.impl instanceof Element === false && p !== block)
       p = p.parent
     return p as Block<Element>
   }
 
   static findPrevSiblingHtmlBlock(item: Item<Block<any>>): Item<Block<Element>> | undefined {
     let p = item.prev
-    while (p && !(p.self.element instanceof Element))
+    while (p && !(p.self.impl instanceof Element))
       p = p.prev
     return p
   }
 
-  protected abstract createElement(block: Block<E>): E
+  protected abstract createElement(block: Block<T>): T
 }
 
-export class HtmlBlockFactory<E extends HTMLElement> extends AbstractHtmlBlockFactory<E> {
-  protected createElement(block: Block<E>): E {
-    return document.createElement(block.factory.name) as E
+export class HtmlBlockFactory<T extends HTMLElement> extends AbstractHtmlBlockFactory<T> {
+  protected createElement(block: Block<T>): T {
+    return document.createElement(block.factory.name) as T
   }
 }
 
-export class SvgBlockFactory<E extends SVGElement> extends AbstractHtmlBlockFactory<E> {
-  protected createElement(block: Block<E>): E {
-    return document.createElementNS('http://www.w3.org/2000/svg', block.factory.name) as E
+export class SvgBlockFactory<T extends SVGElement> extends AbstractHtmlBlockFactory<T> {
+  protected createElement(block: Block<T>): T {
+    return document.createElementNS('http://www.w3.org/2000/svg', block.factory.name) as T
   }
 }
 
