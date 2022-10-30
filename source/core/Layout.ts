@@ -21,7 +21,7 @@ export interface CellRange {
   y2: number
 }
 
-export class LayoutManager {
+export class Layout {
   private maxColumnCount: number = 0
   private maxRowCount: number = 0
   private actualColumnCount: number = 0
@@ -44,7 +44,7 @@ export class LayoutManager {
     const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
     const maxRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
     if (p.area) { // absolute positioning
-      LayoutManager.parseCellRange(p.area, result)
+      Layout.parseCellRange(p.area, result)
       absolutizeCellRange(result,
         this.columnCursor + 1, this.rowCursor + 1,
         maxColumnCount, maxRowCount, result)

@@ -6,16 +6,16 @@
 // automatically licensed under the license referred above.
 
 import test from 'ava'
-import { CellRange, LayoutManager } from '../source/core/Layout'
+import { CellRange, Layout } from '../source/core/Layout'
 
 function parse(text: string): CellRange {
   const result: CellRange = { x1: 0, y1: 0, x2: 0, y2: 0 }
-  LayoutManager.parseCellRange(text, result)
+  Layout.parseCellRange(text, result)
   return result
 }
 
 function emit(value: CellRange): string {
-  return LayoutManager.emitCellRange(value)
+  return Layout.emitCellRange(value)
 }
 
 test('CellRange', t => {
