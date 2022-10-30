@@ -264,11 +264,11 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
           isMoved = checkIsMoved(isMoved, child, children, strict)
           const x = child.self
           if (x.priority === Priority.SyncP0)
-            prepareThenRunRender(child, children.isMoved(child), strict)
+            prepareThenRunRender(child, children.isMoved(child), strict) // render synchronously
           else if (x.priority === Priority.AsyncP1)
-            p1 = push(p1, child)
+            p1 = push(p1, child) // defer for P1 async rendering
           else
-            p2 = push(p2, child)
+            p2 = push(p2, child) // defer for P2 async rendering
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
