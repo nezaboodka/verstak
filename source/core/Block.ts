@@ -167,7 +167,7 @@ export class StaticBlockFactory<T> extends BlockFactory<T> {
   }
 }
 
-// BlockImpl
+// VerstakBlock
 
 function getBlockName(block: VerstakBlock): string | undefined {
   return block.stamp >= 0 ? block.name : undefined
@@ -438,7 +438,7 @@ async function runDisposalLoop(): Promise<void> {
     item = item.aux
     VerstakBlock.disposableCount--
   }
-  // console.log(`Block count: ${BlockImpl.grandCount} totally (${BlockImpl.disposableCount} disposable)`)
+  // console.log(`Block count: ${VerstakBlock.grandCount} totally (${VerstakBlock.disposableCount} disposable)`)
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
