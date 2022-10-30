@@ -5,16 +5,16 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Block, Render, BlockFactory, VerstakOptions } from './Block'
+import { Block, Render, BlockFactory, BlockOptions } from './Block'
 
 export function Reaction<E = undefined, M = unknown, P = void, R = void>(
-  name: string, options: VerstakOptions<P> | undefined,
+  name: string, options: BlockOptions<P> | undefined,
   renderer: Render<E, M, P, R>, factory?: BlockFactory<E>): Block<E, M, P, R> {
   return Block.claim(name, false, options, renderer, factory)
 }
 
 export function Inline<E = undefined, M = unknown, P = void, R = void>(
-  name: string, options: VerstakOptions<P> | undefined,
+  name: string, options: BlockOptions<P> | undefined,
   renderer: Render<E, M, P, R>, factory?: BlockFactory<E>): Block<E, M, P, R> {
   return Block.claim(name, true, options, renderer, factory)
 }

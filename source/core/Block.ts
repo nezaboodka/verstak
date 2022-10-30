@@ -12,7 +12,7 @@ export type Render<E = unknown, M = unknown, P = void, R = void> = (element: E, 
 export type AsyncRender<E = unknown, M = unknown, P = void> = (element: E, block: Block<E, M, P, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
-export interface VerstakOptions<P = void> {
+export interface BlockOptions<P = void> {
   place?: P
   triggers?: unknown
   priority?: Priority,
@@ -35,7 +35,7 @@ export abstract class Block<E = unknown, M = unknown, P = void, R = void> {
   abstract readonly inline: boolean
   abstract readonly renderer: Render<E, M, P, R>
   abstract readonly wrapper: Render<E, M, P, R> | undefined
-  abstract readonly options: Readonly<VerstakOptions<P>> | undefined
+  abstract readonly options: Readonly<BlockOptions<P>> | undefined
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
@@ -74,7 +74,7 @@ export abstract class Block<E = unknown, M = unknown, P = void, R = void> {
 
   static claim<E = undefined, M = unknown, P = void, R = void>(
     name: string, inline: boolean,
-    options: VerstakOptions<P> | undefined,
+    options: BlockOptions<P> | undefined,
     renderer: Render<E, M, P, R>,
     factory?: BlockFactory<E>): Block<E, M, P, R> {
     // Emit block either by reusing existing one or by creating a new one
@@ -184,7 +184,7 @@ class BlockImpl<E = any, M = any, P = any, R = any> extends Block<E, M, P, R> {
   readonly inline: boolean
   renderer: Render<E, M, P, R>
   wrapper: Render<E, M, P, R> | undefined
-  options: VerstakOptions<P> | undefined
+  options: BlockOptions<P> | undefined
   model?: M
   // System-managed properties
   readonly level: number
@@ -195,7 +195,7 @@ class BlockImpl<E = any, M = any, P = any, R = any> extends Block<E, M, P, R> {
   element?: E
 
   constructor(name: string, factory: BlockFactory<E>, inline: boolean, parent: BlockImpl,
-    options: VerstakOptions<P> | undefined,
+    options: BlockOptions<P> | undefined,
     renderer: Render<E, M, P, R>, wrapper?: Render<E, M, P, R>) {
     super()
     // User-defined properties
