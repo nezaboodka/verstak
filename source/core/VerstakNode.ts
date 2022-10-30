@@ -266,9 +266,9 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
           if (x.priority === Priority.SyncP0)
             prepareThenRunRender(child, children.isMoved(child), strict) // render synchronously
           else if (x.priority === Priority.AsyncP1)
-            p1 = push(p1, child) // defer for P1 async rendering
+            p1 = push(child, p1) // defer for P1 async rendering
           else
-            p2 = push(p2, child) // defer for P2 async rendering
+            p2 = push(child, p2) // defer for P2 async rendering
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
@@ -494,7 +494,7 @@ function triggersAreEqual(a1: any, a2: any): boolean {
   return result
 }
 
-function push<T>(array: Array<T> | undefined, item: T): Array<T> {
+function push<T>(item: T, array: Array<T> | undefined): Array<T> {
   if (array == undefined)
     array = new Array<T>()
   array.push(item)
