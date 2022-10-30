@@ -17,15 +17,15 @@ export interface ElasticSize {
 
 export function Block<M = unknown, R = void>(name: string,
   options: VerstakNodeOptions<LayoutParams> | undefined,
-  renderer: Render<HTMLDivElement, M, LayoutParams | undefined, R>):
-  VerstakNode<HTMLDivElement, M, LayoutParams | undefined, R> {
+  renderer: Render<HTMLDivElement, M, LayoutParams, R>):
+  VerstakNode<HTMLDivElement, M, LayoutParams, R> {
   return Div(name, options, renderer)
 }
 
 export function RxBlock<M = unknown, R = void>(name: string,
   options: VerstakNodeOptions<LayoutParams> | undefined,
-  renderer: Render<HTMLDivElement, M, LayoutParams | undefined, R>):
-  VerstakNode<HTMLDivElement, M, LayoutParams | undefined, R> {
+  renderer: Render<HTMLDivElement, M, LayoutParams, R>):
+  VerstakNode<HTMLDivElement, M, LayoutParams, R> {
   return RxDiv(name, options, renderer)
 }
 
