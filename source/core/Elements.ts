@@ -5,16 +5,16 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VerstakNode, Render, NodeFactory, VerstakNodeOptions } from './VerstakNode'
+import { VerstakNode, Render, NodeFactory, VerstakOptions } from './VerstakNode'
 
-export function Reaction<E = undefined, M = unknown, L = void, R = void>(
-  name: string, options: VerstakNodeOptions<L> | undefined,
-  renderer: Render<E, M, L, R>, factory?: NodeFactory<E>): VerstakNode<E, M, L, R> {
+export function Reaction<E = undefined, M = unknown, P = void, R = void>(
+  name: string, options: VerstakOptions<P> | undefined,
+  renderer: Render<E, M, P, R>, factory?: NodeFactory<E>): VerstakNode<E, M, P, R> {
   return VerstakNode.claim(name, false, options, renderer, factory)
 }
 
-export function Inline<E = undefined, M = unknown, L = void, R = void>(
-  name: string, options: VerstakNodeOptions<L> | undefined,
-  renderer: Render<E, M, L, R>, factory?: NodeFactory<E>): VerstakNode<E, M, L, R> {
+export function Inline<E = undefined, M = unknown, P = void, R = void>(
+  name: string, options: VerstakOptions<P> | undefined,
+  renderer: Render<E, M, P, R>, factory?: NodeFactory<E>): VerstakNode<E, M, P, R> {
   return VerstakNode.claim(name, true, options, renderer, factory)
 }

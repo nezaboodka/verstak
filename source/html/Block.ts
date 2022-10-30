@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VerstakNode, Render, LayoutOptions, Reaction, Inline, VerstakNodeOptions } from '../core/api'
+import { VerstakNode, Render, Place, Reaction, Inline, VerstakOptions } from '../core/api'
 import { Div, RxDiv } from './HtmlElements'
 
 export interface ElasticSize {
@@ -16,28 +16,28 @@ export interface ElasticSize {
 }
 
 export function Block<M = unknown, R = void>(name: string,
-  options: VerstakNodeOptions<LayoutOptions> | undefined,
-  renderer: Render<HTMLDivElement, M, LayoutOptions, R>):
-  VerstakNode<HTMLDivElement, M, LayoutOptions, R> {
+  options: VerstakOptions<Place> | undefined,
+  renderer: Render<HTMLDivElement, M, Place, R>):
+  VerstakNode<HTMLDivElement, M, Place, R> {
   return Div(name, options, renderer)
 }
 
 export function RxBlock<M = unknown, R = void>(name: string,
-  options: VerstakNodeOptions<LayoutOptions> | undefined,
-  renderer: Render<HTMLDivElement, M, LayoutOptions, R>):
-  VerstakNode<HTMLDivElement, M, LayoutOptions, R> {
+  options: VerstakOptions<Place> | undefined,
+  renderer: Render<HTMLDivElement, M, Place, R>):
+  VerstakNode<HTMLDivElement, M, Place, R> {
   return RxDiv(name, options, renderer)
 }
 
 export function Cluster<M = unknown, R = void>(name: string,
-  options: VerstakNodeOptions | undefined,
+  options: VerstakOptions | undefined,
   renderer: Render<HTMLDivElement, M, void, R>):
   VerstakNode<HTMLDivElement, M, void, R> {
   return Inline(name, options, renderer)
 }
 
 export function RxCluster<M = unknown, R = void>(name: string,
-  options: VerstakNodeOptions | undefined,
+  options: VerstakOptions | undefined,
   renderer: Render<HTMLDivElement, M, void, R>):
   VerstakNode<HTMLDivElement, M, void, R> {
   return Reaction(name, options, renderer)

@@ -8,12 +8,12 @@
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
 
 export type Callback<E = unknown> = (element: E) => void // to be deleted
-export type Render<E = unknown, M = unknown, L = void, R = void> = (element: E, node: VerstakNode<E, M, L, R>) => R
-export type AsyncRender<E = unknown, M = unknown, L = void> = (element: E, node: VerstakNode<E, M, L, Promise<void>>) => Promise<void>
+export type Render<E = unknown, M = unknown, P = void, R = void> = (element: E, node: VerstakNode<E, M, P, R>) => R
+export type AsyncRender<E = unknown, M = unknown, P = void> = (element: E, node: VerstakNode<E, M, P, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
-export interface VerstakNodeOptions<L = void> {
-  layout?: L
+export interface VerstakOptions<P = void> {
+  place?: P
   triggers?: unknown
   priority?: Priority,
   monitor?: Monitor
@@ -24,7 +24,7 @@ export interface VerstakNodeOptions<L = void> {
 
 // VerstakNode
 
-export abstract class VerstakNode<E = unknown, M = unknown, L = void, R = void> {
+export abstract class VerstakNode<E = unknown, M = unknown, P = void, R = void> {
   static readonly shortFrameDuration = 16 // ms
   static readonly longFrameDuration = 300 // ms
   static currentRenderingPriority = Priority.SyncP0
@@ -33,9 +33,9 @@ export abstract class VerstakNode<E = unknown, M = unknown, L = void, R = void> 
   abstract readonly name: string
   abstract readonly factory: NodeFactory<E>
   abstract readonly inline: boolean
-  abstract readonly renderer: Render<E, M, L, R>
-  abstract readonly wrapper: Render<E, M, L, R> | undefined
-  abstract readonly options: Readonly<VerstakNodeOptions<L>> | undefined
+  abstract readonly renderer: Render<E, M, P, R>
+  abstract readonly wrapper: Render<E, M, P, R> | undefined
+  abstract readonly options: Readonly<VerstakOptions<P>> | undefined
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
@@ -53,7 +53,7 @@ export abstract class VerstakNode<E = unknown, M = unknown, L = void, R = void> 
     return this.stamp === 2
   }
 
-  abstract wrapBy(renderer: Render<E, M, L, R> | undefined): this
+  abstract wrapBy(renderer: Render<E, M, P, R> | undefined): this
 
   static root(render: () => void): void {
     gSysRoot.self.renderer = render
@@ -72,16 +72,16 @@ export abstract class VerstakNode<E = unknown, M = unknown, L = void, R = void> 
     forEachChildRecursively(gSysRoot, action)
   }
 
-  static claim<E = undefined, M = unknown, L = void, R = void>(
+  static claim<E = undefined, M = unknown, P = void, R = void>(
     name: string, inline: boolean,
-    options: VerstakNodeOptions<L> | undefined,
-    renderer: Render<E, M, L, R>,
-    factory?: NodeFactory<E>): VerstakNode<E, M, L, R> {
+    options: VerstakOptions<P> | undefined,
+    renderer: Render<E, M, P, R>,
+    factory?: NodeFactory<E>): VerstakNode<E, M, P, R> {
     // Emit node either by reusing existing one or by creating a new one
     const parent = gContext.self
     const children = parent.children
     const item = children.claim(name)
-    let node: VNode<E, M, L, R>
+    let node: VNode<E, M, P, R>
     if (item) { // reuse existing
       node = item.self
       if (node.factory !== factory && factory !== undefined)
@@ -95,7 +95,7 @@ export abstract class VerstakNode<E = unknown, M = unknown, L = void, R = void> 
       node.renderer = renderer
     }
     else { // create new
-      node = new VNode<E, M, L, R>(name, factory ?? NodeFactory.default,
+      node = new VNode<E, M, P, R>(name, factory ?? NodeFactory.default,
         inline ?? false, parent, options, renderer, undefined)
       node.item = children.add(node)
       VNode.grandCount++
@@ -173,7 +173,7 @@ function getNodeName(node: VNode): string | undefined {
   return node.stamp >= 0 ? node.name : undefined
 }
 
-class VNode<E = any, M = any, L = any, R = any> extends VerstakNode<E, M, L, R> {
+class VNode<E = any, M = any, P = any, R = any> extends VerstakNode<E, M, P, R> {
   static grandCount: number = 0
   static disposableCount: number = 0
   static logging?: LoggingOptions = undefined
@@ -182,9 +182,9 @@ class VNode<E = any, M = any, L = any, R = any> extends VerstakNode<E, M, L, R> 
   readonly name: string
   readonly factory: NodeFactory<E>
   readonly inline: boolean
-  renderer: Render<E, M, L, R>
-  wrapper: Render<E, M, L, R> | undefined
-  options: VerstakNodeOptions<L> | undefined
+  renderer: Render<E, M, P, R>
+  wrapper: Render<E, M, P, R> | undefined
+  options: VerstakOptions<P> | undefined
   model?: M
   // System-managed properties
   readonly level: number
@@ -195,8 +195,8 @@ class VNode<E = any, M = any, L = any, R = any> extends VerstakNode<E, M, L, R> 
   element?: E
 
   constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: VNode,
-    options: VerstakNodeOptions<L> | undefined,
-    renderer: Render<E, M, L, R>, wrapper?: Render<E, M, L, R>) {
+    options: VerstakOptions<P> | undefined,
+    renderer: Render<E, M, P, R>, wrapper?: Render<E, M, P, R>) {
     super()
     // User-defined properties
     this.name = name
@@ -226,7 +226,7 @@ class VNode<E = any, M = any, L = any, R = any> extends VerstakNode<E, M, L, R> 
     runRender(this.item!)
   }
 
-  wrapBy(renderer: Render<E, M, L, R> | undefined): this {
+  wrapBy(renderer: Render<E, M, P, R> | undefined): this {
     this.wrapper = renderer
     return this
   }

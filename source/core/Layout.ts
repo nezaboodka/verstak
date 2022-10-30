@@ -5,11 +5,11 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export interface LayoutOptions {
+export interface Place {
   lineBegin?: boolean
   area?: string
-  width?: number
-  height?: number
+  columns?: number
+  rows?: number
   cursorRight?: boolean
   cursorDown?: boolean
 }
@@ -40,28 +40,28 @@ export class LayoutManager {
     this.newRowCursor = 0
   }
 
-  claim(lo: LayoutOptions, result: CellRange): CellRange {
+  claim(p: Place, result: CellRange): CellRange {
     const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
     const maxRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
-    if (lo.area) { // absolute positioning
-      LayoutManager.parseCellRange(lo.area, result)
+    if (p.area) { // absolute positioning
+      LayoutManager.parseCellRange(p.area, result)
       absolutizeCellRange(result,
         this.columnCursor + 1, this.rowCursor + 1,
         maxColumnCount, maxRowCount, result)
     }
     else { // relative positioning
-      if (lo.lineBegin) {
+      if (p.lineBegin) {
         this.columnCursor = 0
         this.rowCursor = this.newRowCursor
       }
       // Horizontal
-      let w = lo.width ?? 1
+      let w = p.columns ?? 1
       if (w === 0)
         w = maxColumnCount
       if (w >= 0) {
         result.x1 = this.columnCursor + 1
         result.x2 = absolutizePosition(result.x1 + w, 0, maxColumnCount)
-        if (lo.cursorRight !== false)
+        if (p.cursorRight !== false)
           this.columnCursor = result.x2
       }
       else {
@@ -69,13 +69,13 @@ export class LayoutManager {
         result.x2 = this.columnCursor
       }
       // Vertical
-      let h = lo.height ?? 1
+      let h = p.rows ?? 1
       if (h === 0)
         h = maxRowCount
       if (h >= 0) {
         result.y1 = this.rowCursor + 1
         result.y2 = absolutizePosition(result.y1 + h, 0, maxRowCount)
-        if (lo.cursorDown !== false && result.y2 > this.newRowCursor)
+        if (p.cursorDown !== false && result.y2 > this.newRowCursor)
           this.newRowCursor = result.y2
       }
       else {
