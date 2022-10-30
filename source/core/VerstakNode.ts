@@ -12,6 +12,16 @@ export type Render<E = unknown, M = unknown, L = void, R = void> = (element: E, 
 export type AsyncRender<E = unknown, M = unknown, L = void> = (element: E, node: VerstakNode<E, M, L, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
+export interface VerstakNodeOptions<L = void> {
+  layout?: L
+  triggers?: unknown
+  priority?: Priority,
+  monitor?: Monitor
+  throttling?: number,
+  logging?: Partial<LoggingOptions>
+  shuffle?: boolean
+}
+
 // VerstakNode
 
 export abstract class VerstakNode<E = unknown, M = unknown, L = void, R = void> {
@@ -23,15 +33,9 @@ export abstract class VerstakNode<E = unknown, M = unknown, L = void, R = void> 
   abstract readonly name: string
   abstract readonly factory: NodeFactory<E>
   abstract readonly inline: boolean
-  abstract readonly layout: L
-  abstract readonly triggers: unknown
   abstract readonly renderer: Render<E, M, L, R>
   abstract readonly wrapper: Render<E, M, L, R> | undefined
-  abstract readonly monitor?: Monitor
-  abstract readonly throttling?: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
-  abstract readonly logging?: Partial<LoggingOptions>
-  abstract readonly priority: Priority
-  abstract readonly shuffle: boolean
+  abstract readonly options: Readonly<VerstakNodeOptions<L>> | undefined
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
@@ -60,10 +64,6 @@ export abstract class VerstakNode<E = unknown, M = unknown, L = void, R = void> 
     return gContext.self
   }
 
-  static shuffleChildrenRendering(shuffle: boolean): void {
-    gContext.self.shuffle = shuffle
-  }
-
   static renderChildrenThenDo(action: (error: unknown) => void): void {
     runRenderChildrenThenDo(undefined, action)
   }
@@ -73,10 +73,10 @@ export abstract class VerstakNode<E = unknown, M = unknown, L = void, R = void> 
   }
 
   static claim<E = undefined, M = unknown, L = void, R = void>(
-    name: string, layout: L, triggers: unknown, inline: boolean,
-    renderer: Render<E, M, L, R>, priority?: Priority,
-    monitor?: Monitor, throttling?: number,
-    logging?: Partial<LoggingOptions>, factory?: NodeFactory<E>): VerstakNode<E, M, L, R> {
+    name: string, inline: boolean,
+    options: VerstakNodeOptions<L> | undefined,
+    renderer: Render<E, M, L, R>,
+    factory?: NodeFactory<E>): VerstakNode<E, M, L, R> {
     // Emit node either by reusing existing one or by creating a new one
     const parent = gContext.self
     const children = parent.children
@@ -86,15 +86,17 @@ export abstract class VerstakNode<E = unknown, M = unknown, L = void, R = void> 
       node = item.self
       if (node.factory !== factory && factory !== undefined)
         throw new Error(`changing node type is not yet supported: "${node.factory.name}" -> "${factory?.name}"`)
-      if (node.inline || !triggersAreEqual(node.triggers, triggers))
-        node.triggers = triggers
+      if (options) {
+        const existingTriggers = node.options?.triggers
+        if (triggersAreEqual(options.triggers, existingTriggers))
+          options.triggers = existingTriggers // preserve triggers instance
+      }
+      node.options = options
       node.renderer = renderer
-      node.priority = priority ?? Priority.SyncP0
     }
     else { // create new
       node = new VNode<E, M, L, R>(name, factory ?? NodeFactory.default,
-        inline ?? false, parent, layout, triggers, renderer, undefined,
-        priority, monitor, throttling, logging)
+        inline ?? false, parent, options, renderer, undefined)
       node.item = children.add(node)
       VNode.grandCount++
       if (!node.inline)
@@ -180,15 +182,9 @@ class VNode<E = any, M = any, L = any, R = any> extends VerstakNode<E, M, L, R> 
   readonly name: string
   readonly factory: NodeFactory<E>
   readonly inline: boolean
-  readonly layout: L
-  triggers: unknown
   renderer: Render<E, M, L, R>
   wrapper: Render<E, M, L, R> | undefined
-  readonly monitor?: Monitor
-  readonly throttling: number // milliseconds, -1 is immediately, Number.MAX_SAFE_INTEGER is never
-  readonly logging?: Partial<LoggingOptions>
-  priority: Priority
-  shuffle: boolean
+  options: VerstakNodeOptions<L> | undefined
   model?: M
   // System-managed properties
   readonly level: number
@@ -199,22 +195,16 @@ class VNode<E = any, M = any, L = any, R = any> extends VerstakNode<E, M, L, R> 
   element?: E
 
   constructor(name: string, factory: NodeFactory<E>, inline: boolean, parent: VNode,
-    layout: L, triggers: unknown, renderer: Render<E, M, L, R>, wrapper?: Render<E, M, L, R>,
-    priority?: Priority, monitor?: Monitor, throttling?: number, logging?: Partial<LoggingOptions>) {
+    options: VerstakNodeOptions<L> | undefined,
+    renderer: Render<E, M, L, R>, wrapper?: Render<E, M, L, R>) {
     super()
     // User-defined properties
     this.name = name
     this.factory = factory
     this.inline = inline
-    this.layout = layout
-    this.triggers = triggers
+    this.options = options
     this.renderer = renderer
     this.wrapper = wrapper
-    this.monitor = monitor
-    this.throttling = throttling ?? -1
-    this.logging = logging ?? VNode.logging
-    this.priority = priority ?? Priority.SyncP0
-    this.shuffle = false
     this.model = undefined
     // System-managed properties
     this.level = parent.level + 1
@@ -266,9 +256,10 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
             break
           isMoved = checkIsMoved(isMoved, child, children, strict)
           const x = child.self
-          if (x.priority === Priority.SyncP0)
+          const priority = x.options?.priority ?? Priority.SyncP0
+          if (priority === Priority.SyncP0)
             prepareThenRunRender(child, children.isMoved(child), strict) // render synchronously
-          else if (x.priority === Priority.AsyncP1)
+          else if (priority === Priority.AsyncP1)
             p1 = push(child, p1) // defer for P1 async rendering
           else
             p2 = push(child, p2) // defer for P2 async rendering
@@ -325,7 +316,7 @@ async function renderIncrementally(parent: Item<VNode>, stamp: number,
     VerstakNode.currentRenderingPriority = priority
     try {
       const strict = node.children.strict
-      if (node.shuffle)
+      if (node.options?.shuffle)
         shuffle(items)
       const frameDurationLimit = priority === Priority.AsyncP2 ? VerstakNode.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(VerstakNode.frameDuration / 4, VerstakNode.shortFrameDuration))
@@ -356,7 +347,7 @@ function prepareThenRunRender(item: Item<VNode>,
     if (node.inline)
       runRender(item)
     else
-      nonreactive(node.autorender, node.triggers) // reactive auto-rendering
+      nonreactive(node.autorender, node.options?.triggers) // reactive auto-rendering
   }
 }
 
@@ -373,9 +364,9 @@ function prepareRender(item: Item<VNode>,
           Rx.setLoggingHint(node, node.name)
         Rx.getController(node.autorender).configure({
           order: node.level,
-          monitor: node.monitor,
-          throttling: node.throttling,
-          logging: node.logging,
+          monitor: node.options?.monitor,
+          throttling: node.options?.throttling,
+          logging: node.options?.logging,
         })
       })
     }
@@ -543,7 +534,7 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const gSysRoot = Collection.createItem<VNode>(new VNode<null, void>('SYSTEM',
   new StaticNodeFactory<null>('SYSTEM', false, null), false,
-  { level: 0 } as VNode, undefined, undefined, NOP)) // fake parent (overwritten below)
+  { level: 0 } as VNode, undefined, NOP)) // fake parent (overwritten below)
 gSysRoot.self.item = gSysRoot
 
 Object.defineProperty(gSysRoot, 'parent', {
