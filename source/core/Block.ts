@@ -6,14 +6,15 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
+import { Place } from './Layout'
 
 export type Callback<T = unknown> = (impl: T) => void // to be deleted
-export type Render<T = unknown, M = unknown, P = void, R = void> = (impl: T, block: Block<T, M, P, R>) => R
-export type AsyncRender<T = unknown, M = unknown, P = void> = (impl: T, block: Block<T, M, P, Promise<void>>) => Promise<void>
+export type Render<T = unknown, M = unknown, R = void> = (impl: T, block: Block<T, M, R>) => R
+export type AsyncRender<T = unknown, M = unknown> = (impl: T, block: Block<T, M, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
-export interface BlockOptions<P = void> {
-  place?: P
+export interface BlockOptions {
+  place?: Place
   triggers?: unknown
   priority?: Priority,
   monitor?: Monitor
@@ -24,7 +25,7 @@ export interface BlockOptions<P = void> {
 
 // Block
 
-export abstract class Block<T = unknown, M = unknown, P = void, R = void> {
+export abstract class Block<T = unknown, M = unknown, R = void> {
   static readonly shortFrameDuration = 16 // ms
   static readonly longFrameDuration = 300 // ms
   static currentRenderingPriority = Priority.SyncP0
@@ -33,9 +34,9 @@ export abstract class Block<T = unknown, M = unknown, P = void, R = void> {
   abstract readonly name: string
   abstract readonly factory: BlockFactory<T>
   abstract readonly inline: boolean
-  abstract readonly renderer: Render<T, M, P, R>
-  abstract readonly wrapper: Render<T, M, P, R> | undefined
-  abstract readonly options: Readonly<BlockOptions<P>> | undefined
+  abstract readonly renderer: Render<T, M, R>
+  abstract readonly wrapper: Render<T, M, R> | undefined
+  abstract readonly options: Readonly<BlockOptions> | undefined
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
@@ -53,7 +54,7 @@ export abstract class Block<T = unknown, M = unknown, P = void, R = void> {
     return this.stamp === 2
   }
 
-  abstract wrapBy(renderer: Render<T, M, P, R> | undefined): this
+  abstract wrapBy(renderer: Render<T, M, R> | undefined): this
 
   static root(render: () => void): void {
     gSysRoot.self.renderer = render
@@ -72,16 +73,16 @@ export abstract class Block<T = unknown, M = unknown, P = void, R = void> {
     forEachChildRecursively(gSysRoot, action)
   }
 
-  static claim<T = undefined, M = unknown, P = void, R = void>(
+  static claim<T = undefined, M = unknown, R = void>(
     name: string, inline: boolean,
-    options: BlockOptions<P> | undefined,
-    renderer: Render<T, M, P, R>,
-    factory?: BlockFactory<T>): Block<T, M, P, R> {
+    options: BlockOptions | undefined,
+    renderer: Render<T, M, R>,
+    factory?: BlockFactory<T>): Block<T, M, R> {
     // Emit block either by reusing existing one or by creating a new one
     const parent = gContext.self
     const children = parent.children
     const item = children.claim(name)
-    let block: VerstakBlock<T, M, P, R>
+    let block: VerstakBlock<T, M, R>
     if (item) { // reuse existing
       block = item.self
       if (block.factory !== factory && factory !== undefined)
@@ -95,7 +96,7 @@ export abstract class Block<T = unknown, M = unknown, P = void, R = void> {
       block.renderer = renderer
     }
     else { // create new
-      block = new VerstakBlock<T, M, P, R>(name, factory ?? BlockFactory.default,
+      block = new VerstakBlock<T, M, R>(name, factory ?? BlockFactory.default,
         inline ?? false, parent, options, renderer, undefined)
       block.item = children.add(block)
       VerstakBlock.grandCount++
@@ -173,7 +174,7 @@ function getBlockName(block: VerstakBlock): string | undefined {
   return block.stamp >= 0 ? block.name : undefined
 }
 
-class VerstakBlock<T = any, M = any, P = any, R = any> extends Block<T, M, P, R> {
+class VerstakBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   static grandCount: number = 0
   static disposableCount: number = 0
   static logging?: LoggingOptions = undefined
@@ -182,9 +183,9 @@ class VerstakBlock<T = any, M = any, P = any, R = any> extends Block<T, M, P, R>
   readonly name: string
   readonly factory: BlockFactory<T>
   readonly inline: boolean
-  renderer: Render<T, M, P, R>
-  wrapper: Render<T, M, P, R> | undefined
-  options: BlockOptions<P> | undefined
+  renderer: Render<T, M, R>
+  wrapper: Render<T, M, R> | undefined
+  options: BlockOptions | undefined
   model?: M
   // System-managed properties
   readonly level: number
@@ -194,9 +195,9 @@ class VerstakBlock<T = any, M = any, P = any, R = any> extends Block<T, M, P, R>
   stamp: number
   impl?: T
 
-  constructor(name: string, factory: BlockFactory<T>, inline: boolean, parent: VerstakBlock,
-    options: BlockOptions<P> | undefined,
-    renderer: Render<T, M, P, R>, wrapper?: Render<T, M, P, R>) {
+  constructor(name: string, factory: BlockFactory<T>, inline: boolean,
+    parent: VerstakBlock, options: BlockOptions | undefined,
+    renderer: Render<T, M, R>, wrapper?: Render<T, M, R>) {
     super()
     // User-defined properties
     this.name = name
@@ -226,7 +227,7 @@ class VerstakBlock<T = any, M = any, P = any, R = any> extends Block<T, M, P, R>
     runRender(this.item!)
   }
 
-  wrapBy(renderer: Render<T, M, P, R> | undefined): this {
+  wrapBy(renderer: Render<T, M, R> | undefined): this {
     this.wrapper = renderer
     return this
   }
