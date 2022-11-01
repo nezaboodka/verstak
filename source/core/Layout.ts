@@ -21,7 +21,7 @@ export interface CellRange {
   y2: number
 }
 
-export class Layout {
+export class LayoutManager {
   private maxColumnCount: number = 0
   private maxRowCount: number = 0
   private actualColumnCount: number = 0
@@ -40,28 +40,28 @@ export class Layout {
     this.newRowCursor = 0
   }
 
-  claim(p: Place, result: CellRange): CellRange {
+  claim(layout: Place, result: CellRange): CellRange {
     const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
     const maxRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
-    if (p.area) { // absolute positioning
-      Layout.parseCellRange(p.area, result)
+    if (layout.area) { // absolute positioning
+      LayoutManager.parseCellRange(layout.area, result)
       absolutizeCellRange(result,
         this.columnCursor + 1, this.rowCursor + 1,
         maxColumnCount, maxRowCount, result)
     }
     else { // relative positioning
-      if (p.lineBegin) {
+      if (layout.lineBegin) {
         this.columnCursor = 0
         this.rowCursor = this.newRowCursor
       }
       // Horizontal
-      let w = p.columns ?? 1
+      let w = layout.columns ?? 1
       if (w === 0)
         w = maxColumnCount
       if (w >= 0) {
         result.x1 = this.columnCursor + 1
         result.x2 = absolutizePosition(result.x1 + w, 0, maxColumnCount)
-        if (p.cursorRight !== false)
+        if (layout.cursorRight !== false)
           this.columnCursor = result.x2
       }
       else {
@@ -69,13 +69,13 @@ export class Layout {
         result.x2 = this.columnCursor
       }
       // Vertical
-      let h = p.rows ?? 1
+      let h = layout.rows ?? 1
       if (h === 0)
         h = maxRowCount
       if (h >= 0) {
         result.y1 = this.rowCursor + 1
         result.y2 = absolutizePosition(result.y1 + h, 0, maxRowCount)
-        if (p.cursorDown !== false && result.y2 > this.newRowCursor)
+        if (layout.cursorDown !== false && result.y2 > this.newRowCursor)
           this.newRowCursor = result.y2
       }
       else {
