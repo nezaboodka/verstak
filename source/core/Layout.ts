@@ -8,17 +8,23 @@
 import { CellRange, parseCellRange } from './CellRange'
 
 export enum Alignment {
-  topLeft,     topCenter,      topRight,    topJustify,
-  middleLeft, middleCenter, middleRight,    middleJustify,
-  bottomLeft, bottomCenter, bottomRight,    bottomJustify,
+  TopLeft,     TopCenter,      TopRight,
+  MiddleLeft, MiddleCenter, MiddleRight,
+  BottomLeft, BottomCenter, BottomRight,
+
+  Fit,
+  FitButLeft, FitButCenter, FitButRight,
+  FitButTop,
+  FitButMiddle,
+  FitButBottom,
 }
 
 export interface Place {
   area?: string
   columns?: number
   rows?: number
-  alignment?: Alignment
-  boxAlignment?: Alignment
+  alignment?: Alignment // default: TopLeft
+  boxAlignment?: Alignment // default: Fit
   lineBegin?: boolean
   keepColumn?: boolean
   keepRow?: boolean
