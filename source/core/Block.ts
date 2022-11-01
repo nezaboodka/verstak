@@ -54,8 +54,6 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     return this.stamp === 2
   }
 
-  abstract wrapBy(renderer: Render<T, M, R> | undefined): this
-
   static root(render: () => void): void {
     gSysRoot.self.renderer = render
     prepareThenRunRender(gSysRoot, false, false)
@@ -97,7 +95,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     }
     else { // create new
       block = new VerstakBlock<T, M, R>(name, factory ?? BlockFactory.default,
-        inline ?? false, parent, options, renderer, undefined)
+        inline ?? false, parent, options, renderer)
       block.item = children.add(block)
       VerstakBlock.grandCount++
       if (!block.inline)
@@ -185,7 +183,6 @@ class VerstakBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   readonly factory: BlockFactory<T>
   readonly inline: boolean
   renderer: Render<T, M, R>
-  wrapper: Render<T, M, R> | undefined
   options: BlockOptions<T, M, R> | undefined
   model?: M
   // System-managed properties
@@ -198,7 +195,7 @@ class VerstakBlock<T = any, M = any, R = any> extends Block<T, M, R> {
 
   constructor(name: string, factory: BlockFactory<T>, inline: boolean,
     parent: VerstakBlock, options: BlockOptions<T, M, R> | undefined,
-    renderer: Render<T, M, R>, wrapper?: Render<T, M, R>) {
+    renderer: Render<T, M, R>) {
     super()
     // User-defined properties
     this.name = name
@@ -206,7 +203,6 @@ class VerstakBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     this.inline = inline
     this.options = options
     this.renderer = renderer
-    this.wrapper = wrapper
     this.model = undefined
     // System-managed properties
     this.level = parent.level + 1
@@ -226,11 +222,6 @@ class VerstakBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   autorender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by parent
     runRender(this.item!)
-  }
-
-  wrapBy(renderer: Render<T, M, R> | undefined): this {
-    this.wrapper = renderer
-    return this
   }
 }
 
