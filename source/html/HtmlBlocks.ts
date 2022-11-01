@@ -6,11 +6,39 @@
 // automatically licensed under the license referred above.
 
 import { Block, Reaction, Inline, Render, StaticBlockFactory, BlockOptions } from '../core/api'
-import { HtmlBlockFactory, SvgBlockFactory } from './HtmlBlockFactory'
+import { HtmlBlockFactory, SvgBlockFactory, UniversalHtmlBlockFactory } from './HtmlBlockFactory'
 
 export function RxHtmlBody(name: string, triggers: unknown, renderer: Render<HTMLElement>): Block<HTMLElement> {
   const factory = new StaticBlockFactory(name, true, global.document.body)
   return Reaction(name, undefined, renderer, factory)
+}
+
+export function block<M = unknown, R = void>(name: string,
+  options: BlockOptions<HTMLDivElement, M, R> | undefined,
+  renderer: Render<HTMLDivElement, M, R>):
+  Block<HTMLDivElement, M, R> {
+  return Inline(name, options, renderer, HtmlTags.__block__)
+}
+
+export function blockRx<M = unknown, R = void>(name: string,
+  options: BlockOptions<HTMLDivElement, M, R> | undefined,
+  renderer: Render<HTMLDivElement, M, R>):
+  Block<HTMLDivElement, M, R> {
+  return Reaction(name, options, renderer, HtmlTags.__block__)
+}
+
+export function cluster<M = unknown, R = void>(name: string,
+  options: BlockOptions<HTMLDivElement, M, R> | undefined,
+  renderer: Render<HTMLDivElement, M, R>):
+  Block<HTMLDivElement, M, R> {
+  return Inline(name, options, renderer, HtmlTags.__cluster__)
+}
+
+export function clusterRx<M = unknown, R = void>(name: string,
+  options: BlockOptions<HTMLDivElement, M, R> | undefined,
+  renderer: Render<HTMLDivElement, M, R>):
+  Block<HTMLDivElement, M, R> {
+  return Reaction(name, options, renderer, HtmlTags.__cluster__)
 }
 
 export function RxA<M = unknown, R = void>(name: string, options: BlockOptions<HTMLAnchorElement, M, R> | undefined, renderer: Render<HTMLAnchorElement, M, R>): Block<HTMLAnchorElement, M, R> { return Reaction(name, options, renderer, HtmlTags.a) }
@@ -364,6 +392,8 @@ export function Use<M = unknown, R = void>(name: string, options: BlockOptions<S
 export function View<M = unknown, R = void>(name: string, options: BlockOptions<SVGViewElement, M, R> | undefined, renderer: Render<SVGViewElement, M, R>): Block<SVGViewElement, M, R> { return Inline(name, options, renderer, SvgTags.view) }
 
 const HtmlTags = {
+  __block__: new UniversalHtmlBlockFactory<HTMLDivElement>('div', 'grid'),
+  __cluster__: new UniversalHtmlBlockFactory<HTMLDivElement>('div', 'contents'),
   a: new HtmlBlockFactory<HTMLAnchorElement>('a', true),
   abbr: new HtmlBlockFactory<HTMLElement>('abbr', true),
   address: new HtmlBlockFactory<HTMLElement>('address', true),

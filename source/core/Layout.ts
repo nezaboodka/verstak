@@ -8,26 +8,37 @@
 import { CellRange, parseCellRange } from './CellRange'
 
 export enum Alignment {
+  Fit = 0,
+
   TopLeft,     TopCenter,      TopRight,
   MiddleLeft, MiddleCenter, MiddleRight,
   BottomLeft, BottomCenter, BottomRight,
 
-  Fit,
   FitButLeft, FitButCenter, FitButRight,
   FitButTop,
   FitButMiddle,
   FitButBottom,
 }
 
+export interface ElasticSize {
+  id?: string | number      // <current>
+  min?: string              // min-content
+  max?: string              // min-content
+  growth?: number           // 0
+}
+
 export interface Place {
-  area?: string
-  columns?: number
-  rows?: number
-  alignment?: Alignment // default: TopLeft
-  boxAlignment?: Alignment // default: Fit
-  lineBegin?: boolean
-  keepColumn?: boolean
-  keepRow?: boolean
+  area?: string             // ""
+  columns?: number          // 1
+  rows?: number             // 1
+  alignment?: Alignment     // MiddleLeft
+  boxAlignment?: Alignment  // Fit
+  width?: ElasticSize       // min-content
+  height?: ElasticSize      // min-content
+  lineBegin?: boolean       // false
+  wrap?: boolean            // false
+  keepColumn?: boolean      // false
+  keepRow?: boolean         // false
 }
 
 export class LayoutManager {

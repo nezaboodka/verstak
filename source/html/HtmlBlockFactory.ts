@@ -98,6 +98,21 @@ export class HtmlBlockFactory<T extends HTMLElement> extends AbstractHtmlBlockFa
   }
 }
 
+export class UniversalHtmlBlockFactory<T extends HTMLElement> extends AbstractHtmlBlockFactory<T> {
+  readonly display: string
+
+  constructor(name: string, display: string) {
+    super(name, false)
+    this.display = display
+  }
+
+  protected createElement(block: Block<T>): T {
+    const e = document.createElement(block.factory.name) as T
+    e.style.display = this.display
+    return e
+  }
+}
+
 export class SvgBlockFactory<T extends SVGElement> extends AbstractHtmlBlockFactory<T> {
   protected createElement(block: Block<T>): T {
     return document.createElementNS('http://www.w3.org/2000/svg', block.factory.name) as T
