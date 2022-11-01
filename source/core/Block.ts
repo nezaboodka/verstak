@@ -8,9 +8,9 @@
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
 import { Place } from './Layout'
 
-export type Callback<T = unknown> = (impl: T) => void // to be deleted
-export type Render<T = unknown, M = unknown, R = void> = (impl: T, block: Block<T, M, R>) => R
-export type AsyncRender<T = unknown, M = unknown> = (impl: T, block: Block<T, M, Promise<void>>) => Promise<void>
+export type Callback<T = unknown> = (native: T) => void // to be deleted
+export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
+export type AsyncRender<T = unknown, M = unknown> = (native: T, block: Block<T, M, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export interface BlockOptions<T = unknown, M = unknown, R = void> {
@@ -44,10 +44,10 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   abstract readonly children: CollectionReader<Block>
   abstract readonly item: Item<Block> | undefined
   abstract readonly stamp: number
-  abstract readonly impl?: T
+  abstract readonly native?: T
 
   render(): R {
-    return this.renderer(this.impl!, this)
+    return this.renderer(this.native!, this)
   }
 
   get isInitialRendering(): boolean {
@@ -128,14 +128,14 @@ export class BlockFactory<T> {
     this.strict = strict
   }
 
-  initialize(block: Block<T>, impl: T | undefined): void {
+  initialize(block: Block<T>, native: T | undefined): void {
     const b = block as VerstakBlock<T>
-    b.impl = impl
+    b.native = native
   }
 
   finalize(block: Block<T>, isLeader: boolean): boolean {
     const b = block as VerstakBlock<T>
-    b.impl = undefined
+    b.native = undefined
     return isLeader // treat children as finalization leaders as well
   }
 
@@ -147,7 +147,7 @@ export class BlockFactory<T> {
     let result: void | Promise<void>
     const wrapper = block.options?.wrapper
     if (wrapper)
-      result = wrapper(block.impl!, block)
+      result = wrapper(block.native!, block)
     else
       result = block.render()
     return result
@@ -191,7 +191,7 @@ class VerstakBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   children: Collection<VerstakBlock>
   item: Item<VerstakBlock> | undefined
   stamp: number
-  impl?: T
+  native?: T
 
   constructor(name: string, factory: BlockFactory<T>, inline: boolean,
     parent: VerstakBlock, options: BlockOptions<T, M, R> | undefined,
@@ -210,7 +210,7 @@ class VerstakBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     this.children = new Collection<VerstakBlock>(factory.strict, getBlockName)
     this.item = undefined
     this.stamp = 0
-    this.impl = undefined
+    this.native = undefined
   }
 
   @reactive
@@ -276,7 +276,7 @@ function checkIsMoved(isMoved: boolean, child: Item<VerstakBlock>,
 {
   // Detects element movements when abstract blocks exist among
   // regular blocks with HTML elements
-  if (child.self.impl) {
+  if (child.self.native) {
     if (isMoved) {
       children.markAsMoved(child)
       isMoved = false
@@ -437,8 +437,8 @@ async function runDisposalLoop(): Promise<void> {
 
 function forEachChildRecursively(item: Item<VerstakBlock>, action: (e: any) => void): void {
   const block = item.self
-  const impl = block.impl
-  impl && action(impl)
+  const native = block.native
+  native && action(native)
   for (const item of block.children.items())
     forEachChildRecursively(item, action)
 }

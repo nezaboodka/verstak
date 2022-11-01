@@ -18,7 +18,7 @@ export abstract class AbstractHtmlBlockFactory<T extends Element> extends BlockF
   }
 
   finalize(block: Block<T>, isLeader: boolean): boolean {
-    const e = block.impl
+    const e = block.native
     if (e) {
       e.resizeObserver?.unobserve(e) // is it really needed or browser does this automatically?
       if (isLeader)
@@ -29,9 +29,9 @@ export abstract class AbstractHtmlBlockFactory<T extends Element> extends BlockF
   }
 
   layout(block: Block<T>, strict: boolean): void {
-    const e = block.impl
+    const e = block.native
     if (e) {
-      const nativeParent = AbstractHtmlBlockFactory.findNearestParentHtmlBlock(block).impl
+      const nativeParent = AbstractHtmlBlockFactory.findNearestParentHtmlBlock(block).native
       if (nativeParent) {
         if (strict) {
           const after = AbstractHtmlBlockFactory.findPrevSiblingHtmlBlock(block.item!)
@@ -39,8 +39,8 @@ export abstract class AbstractHtmlBlockFactory<T extends Element> extends BlockF
             if (nativeParent !== e.parentNode || !e.previousSibling)
               nativeParent.prepend(e)
           }
-          else if (after.self.parent.impl === nativeParent) {
-            const nativeAfter = after.self.impl
+          else if (after.self.parent.native === nativeParent) {
+            const nativeAfter = after.self.native
             if (nativeAfter instanceof Element) {
               if (nativeAfter.nextSibling !== e)
                 nativeParent.insertBefore(e, nativeAfter.nextSibling)
@@ -56,7 +56,7 @@ export abstract class AbstractHtmlBlockFactory<T extends Element> extends BlockF
   render(block: Block<T>): void | Promise<void> {
     const result = super.render(block)
     if (gBlinkingEffect)
-      blink(block.impl, Block.currentRenderingPriority, block.stamp)
+      blink(block.native, Block.currentRenderingPriority, block.stamp)
     return result
   }
 
@@ -77,14 +77,14 @@ export abstract class AbstractHtmlBlockFactory<T extends Element> extends BlockF
 
   static findNearestParentHtmlBlock(block: Block<any>): Block<Element> {
     let p = block.parent
-    while (p.impl instanceof Element === false && p !== block)
+    while (p.native instanceof Element === false && p !== block)
       p = p.parent
     return p as Block<Element>
   }
 
   static findPrevSiblingHtmlBlock(item: Item<Block<any>>): Item<Block<Element>> | undefined {
     let p = item.prev
-    while (p && !(p.self.impl instanceof Element))
+    while (p && !(p.self.native instanceof Element))
       p = p.prev
     return p
   }
