@@ -101,8 +101,8 @@ export class HtmlBlockFactory<T extends HTMLElement> extends AbstractHtmlBlockFa
 export class UniversalHtmlBlockFactory<T extends HTMLElement> extends AbstractHtmlBlockFactory<T> {
   readonly display: string
 
-  constructor(name: string, display: string) {
-    super(name, false)
+  constructor(name: string, strict: boolean, display: string) {
+    super(name, strict)
     this.display = display
   }
 
