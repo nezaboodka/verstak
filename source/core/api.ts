@@ -6,6 +6,7 @@
 // automatically licensed under the license referred above.
 
 export * from './Utils'
+export * from './CellRange'
 export * from './Layout'
 export * from './Block'
 export * from './Basic'
