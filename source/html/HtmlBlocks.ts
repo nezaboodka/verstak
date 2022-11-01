@@ -17,28 +17,28 @@ export function block<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLDivElement, M, R> | undefined,
   renderer: Render<HTMLDivElement, M, R>):
   Block<HTMLDivElement, M, R> {
-  return Inline(name, options, renderer, HtmlTags.__block__)
+  return Inline(name, options, renderer, VerstakTags.block)
 }
 
 export function blockRx<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLDivElement, M, R> | undefined,
   renderer: Render<HTMLDivElement, M, R>):
   Block<HTMLDivElement, M, R> {
-  return Reaction(name, options, renderer, HtmlTags.__block__)
+  return Reaction(name, options, renderer, VerstakTags.block)
 }
 
-export function cluster<M = unknown, R = void>(name: string,
+export function group<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLDivElement, M, R> | undefined,
   renderer: Render<HTMLDivElement, M, R>):
   Block<HTMLDivElement, M, R> {
-  return Inline(name, options, renderer, HtmlTags.__cluster__)
+  return Inline(name, options, renderer, VerstakTags.group)
 }
 
-export function clusterRx<M = unknown, R = void>(name: string,
+export function groupRx<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLDivElement, M, R> | undefined,
   renderer: Render<HTMLDivElement, M, R>):
   Block<HTMLDivElement, M, R> {
-  return Reaction(name, options, renderer, HtmlTags.__cluster__)
+  return Reaction(name, options, renderer, VerstakTags.group)
 }
 
 export function RxA<M = unknown, R = void>(name: string, options: BlockOptions<HTMLAnchorElement, M, R> | undefined, renderer: Render<HTMLAnchorElement, M, R>): Block<HTMLAnchorElement, M, R> { return Reaction(name, options, renderer, HtmlTags.a) }
@@ -391,9 +391,12 @@ export function TSpan<M = unknown, R = void>(name: string, options: BlockOptions
 export function Use<M = unknown, R = void>(name: string, options: BlockOptions<SVGUseElement, M, R> | undefined, renderer: Render<SVGUseElement, M, R>): Block<SVGUseElement, M, R> { return Inline(name, options, renderer, SvgTags.use) }
 export function View<M = unknown, R = void>(name: string, options: BlockOptions<SVGViewElement, M, R> | undefined, renderer: Render<SVGViewElement, M, R>): Block<SVGViewElement, M, R> { return Inline(name, options, renderer, SvgTags.view) }
 
+const VerstakTags = {
+  block: new UniversalHtmlBlockFactory<HTMLDivElement>('div', 'grid'),
+  group: new UniversalHtmlBlockFactory<HTMLDivElement>('div', 'contents'),
+}
+
 const HtmlTags = {
-  __block__: new UniversalHtmlBlockFactory<HTMLDivElement>('div', 'grid'),
-  __cluster__: new UniversalHtmlBlockFactory<HTMLDivElement>('div', 'contents'),
   a: new HtmlBlockFactory<HTMLAnchorElement>('a', true),
   abbr: new HtmlBlockFactory<HTMLElement>('abbr', true),
   address: new HtmlBlockFactory<HTMLElement>('address', true),
