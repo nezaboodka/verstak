@@ -5,11 +5,19 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
+export enum Alignment {
+  topLeft,     topCenter,      topRight,    topJustify,
+  middleLeft, middleCenter, middleRight,    middleJustify,
+  bottomLeft, bottomCenter, bottomRight,    bottomJustify,
+}
+
 export interface Place {
-  lineBegin?: boolean
   area?: string
   columns?: number
   rows?: number
+  alignment?: Alignment
+  boxAlignment?: Alignment
+  lineBegin?: boolean
   keepColumn?: boolean
   keepRow?: boolean
 }
