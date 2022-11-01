@@ -67,7 +67,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     runRenderChildrenThenDo(undefined, action)
   }
 
-  static forAllBlocksDo<T>(action: (e: T) => void): void {
+  static runForAllBlocks<T>(action: (e: T) => void): void {
     forEachChildRecursively(gSysRoot, action)
   }
 

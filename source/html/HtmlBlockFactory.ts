@@ -67,7 +67,7 @@ export abstract class AbstractHtmlBlockFactory<T extends Element> extends BlockF
   static set blinkingEffect(value: string | undefined) {
     if (value === undefined) {
       const effect = gBlinkingEffect
-      Block.forAllBlocksDo((e: any) => {
+      Block.runForAllBlocks((e: any) => {
         if (e instanceof HTMLElement)
           e.classList.remove(`${effect}-0`, `${effect}-1`)
       })
