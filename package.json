@@ -1,7 +1,7 @@
 {
   "name": "verstak",
   "version": "0.22.500",
-  "description": "Verstak - Transactional Reactive Front-End Development Framework",
+  "description": "Verstak - Front-End Library",
   "publisher": "Nezaboodka Software",
   "license": "Apache-2.0",
   "type": "module",
