@@ -8,13 +8,13 @@
 import { Block, Render, BlockFactory, BlockOptions } from './Block'
 
 export function Reaction<T = undefined, M = unknown, R = void>(
-  name: string, options: BlockOptions | undefined,
+  name: string, options: BlockOptions<T, M, R> | undefined,
   renderer: Render<T, M, R>, factory?: BlockFactory<T>): Block<T, M, R> {
   return Block.claim(name, false, options, renderer, factory)
 }
 
 export function Inline<T = undefined, M = unknown, R = void>(
-  name: string, options: BlockOptions | undefined,
+  name: string, options: BlockOptions<T, M, R> | undefined,
   renderer: Render<T, M, R>, factory?: BlockFactory<T>): Block<T, M, R> {
   return Block.claim(name, true, options, renderer, factory)
 }

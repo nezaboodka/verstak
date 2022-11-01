@@ -13,7 +13,7 @@ export type Render<T = unknown, M = unknown, R = void> = (impl: T, block: Block<
 export type AsyncRender<T = unknown, M = unknown> = (impl: T, block: Block<T, M, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
-export interface BlockOptions {
+export interface BlockOptions<T = unknown, M = unknown, R = void> {
   place?: Place
   triggers?: unknown
   priority?: Priority,
@@ -21,6 +21,7 @@ export interface BlockOptions {
   throttling?: number,
   logging?: Partial<LoggingOptions>
   shuffle?: boolean
+  wrapper?: Render<T, M, R>
 }
 
 // Block
@@ -35,8 +36,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   abstract readonly factory: BlockFactory<T>
   abstract readonly inline: boolean
   abstract readonly renderer: Render<T, M, R>
-  abstract readonly wrapper: Render<T, M, R> | undefined
-  abstract readonly options: Readonly<BlockOptions> | undefined
+  abstract readonly options: Readonly<BlockOptions<T, M, R>> | undefined
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
@@ -75,7 +75,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
 
   static claim<T = undefined, M = unknown, R = void>(
     name: string, inline: boolean,
-    options: BlockOptions | undefined,
+    options: BlockOptions<T, M, R> | undefined,
     renderer: Render<T, M, R>,
     factory?: BlockFactory<T>): Block<T, M, R> {
     // Emit block either by reusing existing one or by creating a new one
@@ -147,8 +147,9 @@ export class BlockFactory<T> {
 
   render(block: Block<T>): void | Promise<void> {
     let result: void | Promise<void>
-    if (block.wrapper)
-      result = block.wrapper(block.impl!, block)
+    const wrapper = block.options?.wrapper
+    if (wrapper)
+      result = wrapper(block.impl!, block)
     else
       result = block.render()
     return result
@@ -185,7 +186,7 @@ class VerstakBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   readonly inline: boolean
   renderer: Render<T, M, R>
   wrapper: Render<T, M, R> | undefined
-  options: BlockOptions | undefined
+  options: BlockOptions<T, M, R> | undefined
   model?: M
   // System-managed properties
   readonly level: number
@@ -196,7 +197,7 @@ class VerstakBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   impl?: T
 
   constructor(name: string, factory: BlockFactory<T>, inline: boolean,
-    parent: VerstakBlock, options: BlockOptions | undefined,
+    parent: VerstakBlock, options: BlockOptions<T, M, R> | undefined,
     renderer: Render<T, M, R>, wrapper?: Render<T, M, R>) {
     super()
     // User-defined properties

@@ -16,28 +16,28 @@ export interface ElasticSize {
 }
 
 export function InlBlock<M = unknown, R = void>(name: string,
-  options: BlockOptions | undefined,
+  options: BlockOptions<HTMLDivElement, M, R> | undefined,
   renderer: Render<HTMLDivElement, M, R>):
   Block<HTMLDivElement, M, R> {
   return Div(name, options, renderer)
 }
 
 export function RxBlock<M = unknown, R = void>(name: string,
-  options: BlockOptions | undefined,
+  options: BlockOptions<HTMLDivElement, M, R> | undefined,
   renderer: Render<HTMLDivElement, M, R>):
   Block<HTMLDivElement, M, R> {
   return RxDiv(name, options, renderer)
 }
 
 export function InlCluster<M = unknown, R = void>(name: string,
-  options: BlockOptions | undefined,
+  options: BlockOptions<HTMLDivElement, M, R> | undefined,
   renderer: Render<HTMLDivElement, M, R>):
   Block<HTMLDivElement, M, R> {
   return Inline(name, options, renderer)
 }
 
 export function RxCluster<M = unknown, R = void>(name: string,
-  options: BlockOptions | undefined,
+  options: BlockOptions<HTMLDivElement, M, R> | undefined,
   renderer: Render<HTMLDivElement, M, R>):
   Block<HTMLDivElement, M, R> {
   return Reaction(name, options, renderer)
