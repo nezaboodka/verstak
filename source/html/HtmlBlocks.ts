@@ -6,60 +6,11 @@
 // automatically licensed under the license referred above.
 
 import { Block, Reaction, Inline, Render, StaticBlockFactory, BlockOptions } from '../core/api'
-import { HtmlBlockFactory, SvgBlockFactory, UniversalHtmlBlockFactory } from './HtmlBlockFactory'
+import { HtmlBlockFactory, SvgBlockFactory } from './HtmlBlockFactory'
 
 export function RxHtmlBody(name: string, triggers: unknown, renderer: Render<HTMLElement>): Block<HTMLElement> {
   const factory = new StaticBlockFactory(name, true, global.document.body)
   return Reaction(name, undefined, renderer, factory)
-}
-
-// Block is a piece of information shown on a screen
-
-export function block<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLDivElement, M, R> | undefined,
-  renderer: Render<HTMLDivElement, M, R>):
-  Block<HTMLDivElement, M, R> {
-  return Inline(name, options, renderer, VerstakTags.block)
-}
-
-export function blockRx<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLDivElement, M, R> | undefined,
-  renderer: Render<HTMLDivElement, M, R>):
-  Block<HTMLDivElement, M, R> {
-  return Reaction(name, options, renderer, VerstakTags.block)
-}
-
-// Board is a block with all children blocks being
-// absolutely positioned using Place.area option
-
-export function board<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLDivElement, M, R> | undefined,
-  renderer: Render<HTMLDivElement, M, R>):
-  Block<HTMLDivElement, M, R> {
-  return Inline(name, options, renderer, VerstakTags.board)
-}
-
-export function boardRx<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLDivElement, M, R> | undefined,
-  renderer: Render<HTMLDivElement, M, R>):
-  Block<HTMLDivElement, M, R> {
-  return Reaction(name, options, renderer, VerstakTags.board)
-}
-
-// Group is a mean of logical grouping of blocks
-
-export function group<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLDivElement, M, R> | undefined,
-  renderer: Render<HTMLDivElement, M, R>):
-  Block<HTMLDivElement, M, R> {
-  return Inline(name, options, renderer, VerstakTags.group)
-}
-
-export function groupRx<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLDivElement, M, R> | undefined,
-  renderer: Render<HTMLDivElement, M, R>):
-  Block<HTMLDivElement, M, R> {
-  return Reaction(name, options, renderer, VerstakTags.group)
 }
 
 export function RxA<M = unknown, R = void>(name: string, options: BlockOptions<HTMLAnchorElement, M, R> | undefined, renderer: Render<HTMLAnchorElement, M, R>): Block<HTMLAnchorElement, M, R> { return Reaction(name, options, renderer, HtmlTags.a) }
@@ -411,12 +362,6 @@ export function TextPath<M = unknown, R = void>(name: string, options: BlockOpti
 export function TSpan<M = unknown, R = void>(name: string, options: BlockOptions<SVGTSpanElement, M, R> | undefined, renderer: Render<SVGTSpanElement, M, R>): Block<SVGTSpanElement, M, R> { return Inline(name, options, renderer, SvgTags.tspan) }
 export function Use<M = unknown, R = void>(name: string, options: BlockOptions<SVGUseElement, M, R> | undefined, renderer: Render<SVGUseElement, M, R>): Block<SVGUseElement, M, R> { return Inline(name, options, renderer, SvgTags.use) }
 export function View<M = unknown, R = void>(name: string, options: BlockOptions<SVGViewElement, M, R> | undefined, renderer: Render<SVGViewElement, M, R>): Block<SVGViewElement, M, R> { return Inline(name, options, renderer, SvgTags.view) }
-
-const VerstakTags = {
-  block: new UniversalHtmlBlockFactory<HTMLDivElement>('div', true, 'grid'),
-  board: new UniversalHtmlBlockFactory<HTMLDivElement>('div', false, 'grid'),
-  group: new UniversalHtmlBlockFactory<HTMLDivElement>('div', true, 'contents'),
-}
 
 const HtmlTags = {
   a: new HtmlBlockFactory<HTMLAnchorElement>('a', true),
