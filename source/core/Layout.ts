@@ -10,8 +10,8 @@ export interface Place {
   area?: string
   columns?: number
   rows?: number
-  cursorRight?: boolean
-  cursorDown?: boolean
+  keepColumn?: boolean
+  keepRow?: boolean
 }
 
 export interface CellRange {
@@ -61,7 +61,7 @@ export class LayoutManager {
       if (w >= 0) {
         result.x1 = this.columnCursor + 1
         result.x2 = absolutizePosition(result.x1 + w, 0, maxColumnCount)
-        if (layout.cursorRight !== false)
+        if (!layout.keepColumn)
           this.columnCursor = result.x2
       }
       else {
@@ -75,7 +75,7 @@ export class LayoutManager {
       if (h >= 0) {
         result.y1 = this.rowCursor + 1
         result.y2 = absolutizePosition(result.y1 + h, 0, maxRowCount)
-        if (layout.cursorDown !== false && result.y2 > this.newRowCursor)
+        if (!layout.keepRow && result.y2 > this.newRowCursor)
           this.newRowCursor = result.y2
       }
       else {
