@@ -21,29 +21,29 @@ export enum Alignment {
 }
 
 export interface ElasticSize {
-  cells?: number               // 1
-  min?: string                 // min-content
-  max?: string                 // min-content
-  growth?: number              // 0
+  cells?: number                // 1 (grid layout only)
+  min?: string                  // min-content
+  max?: string                  // min-content
+  growth?: number               // 0
 }
 
 export interface TrackSize extends ElasticSize {
-  track?: string | number      // <current>
+  track?: string | number       // <current>
 }
 
-export interface Place {
-  area?: string                // ""
-  width?: ElasticSize          // cells=1, min/max=min-content
-  height?: ElasticSize         // cells=1, min/max=min-content
-  alignment?: Alignment        // MiddleLeft
-  boxAlignment?: Alignment     // Fit
-  lineBegin?: boolean          // false
-  wrap?: boolean               // false
-  overlappingWidth?: boolean   // false
-  overlappingHeight?: boolean  // false
+export interface Box {
+  place?: string                // ""
+  width?: ElasticSize           // cells=1, min/max=min-content
+  height?: ElasticSize          // cells=1, min/max=min-content
+  alignment?: Alignment         // MiddleLeft
+  boxAlignment?: Alignment      // Fit
+  lineBegin?: boolean           // false
+  wrap?: boolean                // false
+  overlappingWidth?: boolean    // false
+  overlappingHeight?: boolean   // false
 }
 
-export class LayoutManager {
+export class GridLayoutManager {
   private maxColumnCount: number = 0
   private maxRowCount: number = 0
   private actualColumnCount: number = 0
@@ -62,28 +62,28 @@ export class LayoutManager {
     this.newRowCursor = 0
   }
 
-  claim(layout: Place, result: CellRange): CellRange {
+  claim(box: Box, result: CellRange): CellRange {
     const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
     const maxRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
-    if (layout.area) { // absolute positioning
-      parseCellRange(layout.area, result)
+    if (box.place) { // absolute positioning
+      parseCellRange(box.place, result)
       absolutizeCellRange(result,
         this.columnCursor + 1, this.rowCursor + 1,
         maxColumnCount, maxRowCount, result)
     }
     else { // relative positioning
-      if (layout.lineBegin) {
+      if (box.lineBegin) {
         this.columnCursor = 0
         this.rowCursor = this.newRowCursor
       }
       // Horizontal
-      let w = layout.width?.cells ?? 1
+      let w = box.width?.cells ?? 1
       if (w === 0)
         w = maxColumnCount
       if (w >= 0) {
         result.x1 = this.columnCursor + 1
         result.x2 = absolutizePosition(result.x1 + w, 0, maxColumnCount)
-        if (!layout.overlappingWidth)
+        if (!box.overlappingWidth)
           this.columnCursor = result.x2
       }
       else {
@@ -91,13 +91,13 @@ export class LayoutManager {
         result.x2 = this.columnCursor
       }
       // Vertical
-      let h = layout.height?.cells ?? 1
+      let h = box.height?.cells ?? 1
       if (h === 0)
         h = maxRowCount
       if (h >= 0) {
         result.y1 = this.rowCursor + 1
         result.y2 = absolutizePosition(result.y1 + h, 0, maxRowCount)
-        if (!layout.overlappingHeight && result.y2 > this.newRowCursor)
+        if (!box.overlappingHeight && result.y2 > this.newRowCursor)
           this.newRowCursor = result.y2
       }
       else {

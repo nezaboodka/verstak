@@ -8,44 +8,43 @@
 import { Block, Render, BlockOptions } from '../core/api'
 import { HtmlBlockFactory } from './HtmlBlockFactory'
 
-// Verstak layouts are based on two types of layout
-// structures, namely flow block and table block;
-// and two types of special non-visual control elements,
-// namely begin and group.
+// Verstak is based on two fundamental layout structures
+// called block and grid block; and on two special
+// non-visual elements called line begin and group.
 
-// *Flow* block is a layout structure, which children are
+// Block is a layout structure, which children are
 // layed out using left-to-right-and-top-to-bottom flow.
 
-// *Table* block is layout structure, which children are
-// layed out in table cells, either naturally or randomly.
+// Grid block is layout structure, which children are
+// layed out over grid cells.
 
-// *Begin* is a special non-visual element, which begins
-// new layout line within flow block or table block.
+// Line begin is a special non-visual element, which
+// begins new layout line inside block or grid block.
 
-// *Group* is a special non-visual element for logical
-// grouping of other blocks.
+// Group is a special non-visual element for logical
+// grouping of blocks, grid blocks and other groups.
 
-// flow
+// block
 
-export function flow<M = unknown, R = void>(name: string,
+export function block<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
-  return Block.claim(name, options, renderer, VerstakTags.flow)
+  return Block.claim(name, options, renderer, VerstakTags.block)
 }
 
-// table
+// grid
 
-export function table<M = unknown, R = void>(name: string,
+export function grid<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
-  return Block.claim(name, options, renderer, VerstakTags.flow)
+  return Block.claim(name, options, renderer, VerstakTags.block)
 }
 
-// begin
+// lb (line begin)
 
-export function begin(): void {
+export function lb(spacing?: boolean): void {
   throw new Error('not implemented yet')
 }
 
@@ -55,13 +54,13 @@ export function group<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
-  return Block.claim(name, options, renderer, VerstakTags.flow)
+  return Block.claim(name, options, renderer, VerstakTags.block)
 }
 
 // VerstakTags
 
 const VerstakTags = {
-  flow: new HtmlBlockFactory<HTMLElement>('x-flow', true),    // display: flex
-  table: new HtmlBlockFactory<HTMLElement>('x-table', false), // display: grid
-  group: new HtmlBlockFactory<HTMLElement>('x-group', false), // display: contents
+  block: new HtmlBlockFactory<HTMLElement>('v-block', true),  // display: flex
+  grid: new HtmlBlockFactory<HTMLElement>('v-grid', false),   // display: grid
+  group: new HtmlBlockFactory<HTMLElement>('v-group', false), // display: contents
 }
