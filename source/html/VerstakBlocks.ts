@@ -9,20 +9,20 @@ import { Block, Reaction, Inline, Render, BlockOptions } from '../core/api'
 import { HtmlBlockFactory } from './HtmlBlockFactory'
 
 // Verstak layouts are based on two types of layout
-// structures, namely *flow* block and *table* block;
+// structures, namely flow block and table block;
 // and two types of special non-visual control elements,
-// namely *begin* and *group*.
+// namely begin and group.
 
-// Flow block is a layout structure, which children are
+// *Flow* block is a layout structure, which children are
 // layed out using left-to-right-and-top-to-bottom flow.
 
-// Table block is layout structure, which children are
+// *Table* block is layout structure, which children are
 // layed out in table cells, either naturally or randomly.
 
-// Begin is a special non-visual element, which begins
+// *Begin* is a special non-visual element, which begins
 // new layout line within flow block or table block.
 
-// Group is a special non-visual element for logical
+// *Group* is a special non-visual element for logical
 // grouping of other blocks.
 
 // flow
