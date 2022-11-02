@@ -8,8 +8,8 @@
 import { Block, Reaction, Inline, Render, BlockOptions } from '../core/api'
 import { AbstractHtmlBlockFactory } from './HtmlBlockFactory'
 
-// Verstak layouts are based on 4 fundamental types of blocks:
-// section, table, board, and group.
+// Verstak layouts are based on 4 fundamental types of
+// structural blocks: section, table, board, and group.
 
 // Section: a block, which children are layed out
 // either vertically (default) or horizontally
