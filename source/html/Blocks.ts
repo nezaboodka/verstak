@@ -39,12 +39,13 @@ export function grid<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
-  return Block.claim(name, options, renderer, VerstakTags.block)
+  return Block.claim(name, options, renderer, VerstakTags.grid)
 }
 
 // Line Begin
 
 export function lb(spacing?: boolean): void {
+  // Block.claim(name, options, renderer, VerstakTags.grouping)
   throw new Error('not implemented yet')
 }
 
@@ -54,7 +55,7 @@ export function grouping<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
-  return Block.claim(name, options, renderer, VerstakTags.block)
+  return Block.claim(name, options, renderer, VerstakTags.grouping)
 }
 
 // VerstakTags
