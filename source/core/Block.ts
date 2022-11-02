@@ -242,7 +242,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
         for (const child of children.items()) {
           if (Transaction.isCanceled)
             break
-          isMoved = checkIsMoved(isMoved, child, children, strict)
+          isMoved = markAsMovedIfNeeded(isMoved, child, children, strict)
           const x = child.self
           const priority = x.options?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
@@ -266,7 +266,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
   }
 }
 
-function checkIsMoved(isMoved: boolean, child: Item<VerstakBlock>,
+function markAsMovedIfNeeded(isMoved: boolean, child: Item<VerstakBlock>,
   children: Collection<VerstakBlock>, strict: boolean): boolean
 {
   // Detects element movements when abstract blocks exist among
