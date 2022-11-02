@@ -1,0 +1,17 @@
+x-flow
+{
+  display: flex;
+  flex-direction: row;
+}
+
+x-table
+{
+  display: grid;
+  grid-auto-rows: min-content;
+  grid-auto-columns: min-content;
+}
+
+x-group
+{
+  display: contents;
+}
