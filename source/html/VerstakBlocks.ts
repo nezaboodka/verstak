@@ -8,24 +8,41 @@
 import { Block, Reaction, Inline, Render, BlockOptions } from '../core/api'
 import { AbstractHtmlBlockFactory } from './HtmlBlockFactory'
 
-// Block is a piece of information shown on a screen
+// Section is a block, which children are layed out
+// either vertically (default) or horizontally
 
-export function block<M = unknown, R = void>(name: string,
+export function section<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLDivElement, M, R> | undefined,
   renderer: Render<HTMLDivElement, M, R>):
   Block<HTMLDivElement, M, R> {
   return Inline(name, options, renderer, VerstakTags.block)
 }
 
-export function blockRx<M = unknown, R = void>(name: string,
+export function sectionRx<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLDivElement, M, R> | undefined,
   renderer: Render<HTMLDivElement, M, R>):
   Block<HTMLDivElement, M, R> {
   return Reaction(name, options, renderer, VerstakTags.block)
 }
 
-// Board is a block with all children blocks being
-// absolutely positioned using Place.area option
+// Table is a block, which children a layed you in cells
+
+export function table<M = unknown, R = void>(name: string,
+  options: BlockOptions<HTMLDivElement, M, R> | undefined,
+  renderer: Render<HTMLDivElement, M, R>):
+  Block<HTMLDivElement, M, R> {
+  return Inline(name, options, renderer, VerstakTags.block)
+}
+
+export function tableRx<M = unknown, R = void>(name: string,
+  options: BlockOptions<HTMLDivElement, M, R> | undefined,
+  renderer: Render<HTMLDivElement, M, R>):
+  Block<HTMLDivElement, M, R> {
+  return Reaction(name, options, renderer, VerstakTags.block)
+}
+
+// Board is a block, which children are layed out
+// in table cells with absolute Place.area option
 
 export function board<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLDivElement, M, R> | undefined,
@@ -41,7 +58,8 @@ export function boardRx<M = unknown, R = void>(name: string,
   return Reaction(name, options, renderer, VerstakTags.board)
 }
 
-// Group is a mean of logical grouping of blocks
+// Group is a non-visual block aimed at
+// logical grouping of other blocks
 
 export function group<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLDivElement, M, R> | undefined,
