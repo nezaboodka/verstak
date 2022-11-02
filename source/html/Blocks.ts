@@ -9,10 +9,10 @@ import { Block, Render, BlockOptions } from '../core/api'
 import { HtmlBlockFactory } from './HtmlBlockFactory'
 
 // Verstak is based on two fundamental layout structures
-// called block and grid block; and on two special
+// called simple block and grid block; and on two special
 // non-visual elements called line begin and group.
 
-// Block is a layout structure, which children are
+// Simple block is a layout structure, which children are
 // layed out using left-to-right-and-top-to-bottom flow.
 
 // Grid block is layout structure, which children are
@@ -21,10 +21,10 @@ import { HtmlBlockFactory } from './HtmlBlockFactory'
 // Line begin is a special non-visual element, which
 // begins new layout line inside block or grid block.
 
-// Group is a special non-visual element for logical
-// grouping of blocks, grid blocks and other groups.
+// Grouping is a special non-visual element for logical
+// grouping of simple blocks, grid blocks and other groups.
 
-// block
+// Simple Block
 
 export function block<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLElement, M, R> | undefined,
@@ -33,7 +33,7 @@ export function block<M = unknown, R = void>(name: string,
   return Block.claim(name, options, renderer, VerstakTags.block)
 }
 
-// grid
+// Grid Block
 
 export function grid<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLElement, M, R> | undefined,
@@ -42,15 +42,15 @@ export function grid<M = unknown, R = void>(name: string,
   return Block.claim(name, options, renderer, VerstakTags.block)
 }
 
-// lb (line begin)
+// Line Begin
 
 export function lb(spacing?: boolean): void {
   throw new Error('not implemented yet')
 }
 
-// group
+// Grouping
 
-export function group<M = unknown, R = void>(name: string,
+export function grouping<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {

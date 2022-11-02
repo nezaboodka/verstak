@@ -244,8 +244,11 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
         let isMoved = false
         for (const child of children.items()) {
           const x = child.self
-          if (layout) {
-            // layout.claim(x.options?.box, ...)
+          const box = x.options?.box
+          if (layout) { // grid block
+            // layout.claim(box, ...)
+          }
+          else if (box) { // simple block
           }
           isMoved = markAsMovedIfNeeded(isMoved, child, children, strict)
           if (!Transaction.isCanceled) {
