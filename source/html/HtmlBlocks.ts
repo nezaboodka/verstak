@@ -13,10 +13,6 @@ export function ReactiveHtmlBody(name: string, triggers: unknown, renderer: Rend
   return Block.claim(name, { rx: true }, renderer, factory)
 }
 
-export function Reaction<M = void>(name: string, triggers: unknown, renderer: Render<HTMLElement, M>): Block<HTMLElement, M> {
-  return Block.claim(name, { rx: true, triggers }, renderer)
-}
-
 export function A<M = unknown, R = void>(name: string, options: BlockOptions<HTMLAnchorElement, M, R> | undefined, renderer: Render<HTMLAnchorElement, M, R>): Block<HTMLAnchorElement, M, R> { return Block.claim(name, options, renderer, HtmlTags.a) }
 export function Abbr<M = unknown, R = void>(name: string, options: BlockOptions<HTMLElement, M, R> | undefined, renderer: Render<HTMLElement, M, R>): Block<HTMLElement, M, R> { return Block.claim(name, options, renderer, HtmlTags.abbr) }
 export function Address<M = unknown, R = void>(name: string, options: BlockOptions<HTMLElement, M, R> | undefined, renderer: Render<HTMLElement, M, R>): Block<HTMLElement, M, R> { return Block.claim(name, options, renderer, HtmlTags.address) }
