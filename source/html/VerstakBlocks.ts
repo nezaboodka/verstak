@@ -8,8 +8,23 @@
 import { Block, Reaction, Inline, Render, BlockOptions } from '../core/api'
 import { AbstractHtmlBlockFactory } from './HtmlBlockFactory'
 
-// Section is a block, which children are layed out
+// Verstak layouts are based on 4 fundamental types of blocks:
+// section, table, board, and group.
+
+// Section: a block, which children are layed out
 // either vertically (default) or horizontally
+
+// Table: is a block, which children a layed you in its cells
+// either naturally (left-to-right top-to-bottom) or absolutely
+
+// Board: a block, which children are layed out
+// in table cells with absolute Place.area option
+
+// Group: a non-visual block aimed at logical grouping
+// of other blocks
+
+
+// Section
 
 export function section<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLDivElement, M, R> | undefined,
@@ -25,7 +40,7 @@ export function sectionRx<M = unknown, R = void>(name: string,
   return Reaction(name, options, renderer, VerstakTags.block)
 }
 
-// Table is a block, which children a layed you in cells
+// Table
 
 export function table<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLDivElement, M, R> | undefined,
@@ -41,8 +56,7 @@ export function tableRx<M = unknown, R = void>(name: string,
   return Reaction(name, options, renderer, VerstakTags.block)
 }
 
-// Board is a block, which children are layed out
-// in table cells with absolute Place.area option
+// Board
 
 export function board<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLDivElement, M, R> | undefined,
@@ -58,8 +72,7 @@ export function boardRx<M = unknown, R = void>(name: string,
   return Reaction(name, options, renderer, VerstakTags.board)
 }
 
-// Group is a non-visual block aimed at
-// logical grouping of other blocks
+// Group
 
 export function group<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLDivElement, M, R> | undefined,
