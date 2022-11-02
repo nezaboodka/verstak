@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
-import { Box } from './Layout'
+import { Box, GridLayoutManager } from './Layout'
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
@@ -238,21 +238,25 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       if (!error) {
         // Render actual blocks
         const strict = children.strict
+        const layout = block.factory.stacker ? new GridLayoutManager() : undefined
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
         let isMoved = false
         for (const child of children.items()) {
-          if (Transaction.isCanceled)
-            break
-          isMoved = markAsMovedIfNeeded(isMoved, child, children, strict)
           const x = child.self
-          const priority = x.options?.priority ?? Priority.SyncP0
-          if (priority === Priority.SyncP0)
-            prepareThenRunRender(child, children.isMoved(child), strict) // render synchronously
-          else if (priority === Priority.AsyncP1)
-            p1 = push(child, p1) // defer for P1 async rendering
-          else
-            p2 = push(child, p2) // defer for P2 async rendering
+          if (layout) {
+            // layout.claim(x.options?.box, ...)
+          }
+          isMoved = markAsMovedIfNeeded(isMoved, child, children, strict)
+          if (!Transaction.isCanceled) {
+            const priority = x.options?.priority ?? Priority.SyncP0
+            if (priority === Priority.SyncP0)
+              prepareThenRunRender(child, children.isMoved(child), strict) // render synchronously
+            else if (priority === Priority.AsyncP1)
+              p1 = push(child, p1) // defer for P1 async rendering
+            else
+              p2 = push(child, p2) // defer for P2 async rendering
+          }
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))

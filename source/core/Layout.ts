@@ -65,28 +65,28 @@ export class GridLayoutManager {
     this.newRowCursor = 0
   }
 
-  claim(box: Box, result: CellRange): CellRange {
+  claim(box: Box | undefined, result: CellRange): CellRange {
     const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
     const maxRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
-    if (box.place) { // absolute positioning
+    if (box?.place) { // absolute positioning
       parseCellRange(box.place, result)
       absolutizeCellRange(result,
         this.columnCursor + 1, this.rowCursor + 1,
         maxColumnCount, maxRowCount, result)
     }
     else { // relative positioning
-      if (box.lineBegin) {
+      if (box?.lineBegin) {
         this.columnCursor = 0
         this.rowCursor = this.newRowCursor
       }
       // Horizontal
-      let w = box.width?.cells ?? 1
+      let w = box?.width?.cells ?? 1
       if (w === 0)
         w = maxColumnCount
       if (w >= 0) {
         result.x1 = this.columnCursor + 1
         result.x2 = absolutizePosition(result.x1 + w, 0, maxColumnCount)
-        if (!box.widthOverlapped)
+        if (!box?.widthOverlapped)
           this.columnCursor = result.x2
       }
       else {
@@ -94,13 +94,13 @@ export class GridLayoutManager {
         result.x2 = this.columnCursor
       }
       // Vertical
-      let h = box.height?.cells ?? 1
+      let h = box?.height?.cells ?? 1
       if (h === 0)
         h = maxRowCount
       if (h >= 0) {
         result.y1 = this.rowCursor + 1
         result.y2 = absolutizePosition(result.y1 + h, 0, maxRowCount)
-        if (!box.heightOverlapped && result.y2 > this.newRowCursor)
+        if (!box?.heightOverlapped && result.y2 > this.newRowCursor)
           this.newRowCursor = result.y2
       }
       else {
