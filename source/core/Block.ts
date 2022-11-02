@@ -78,7 +78,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     const parent = gContext.self
     const children = parent.children
     const item = children.claim(name)
-    let block: VerstakBlock<T, M, R>
+    let block: VBlock<T, M, R>
     if (item) { // reuse existing
       block = item.self
       if (block.factory !== factory && factory !== undefined)
@@ -92,22 +92,22 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
       block.renderer = renderer
     }
     else { // create new
-      block = new VerstakBlock<T, M, R>(name, factory ?? BlockFactory.default,
+      block = new VBlock<T, M, R>(name, factory ?? BlockFactory.default,
         parent, options, renderer)
       block.item = children.add(block)
-      VerstakBlock.grandCount++
+      VBlock.grandCount++
       if (options?.rx)
-        VerstakBlock.disposableCount++
+        VBlock.disposableCount++
     }
     return block
   }
 
   static getDefaultLoggingOptions(): LoggingOptions | undefined {
-    return VerstakBlock.logging
+    return VBlock.logging
   }
 
   static setDefaultLoggingOptions(logging?: LoggingOptions): void {
-    VerstakBlock.logging = logging
+    VBlock.logging = logging
   }
 }
 
@@ -127,12 +127,12 @@ export class BlockFactory<T> {
   }
 
   initialize(block: Block<T>, native: T | undefined): void {
-    const b = block as VerstakBlock<T>
+    const b = block as VBlock<T>
     b.native = native
   }
 
   finalize(block: Block<T>, isLeader: boolean): boolean {
-    const b = block as VerstakBlock<T>
+    const b = block as VBlock<T>
     b.native = undefined
     return isLeader // treat children as finalization leaders as well
   }
@@ -165,13 +165,13 @@ export class StaticBlockFactory<T> extends BlockFactory<T> {
   }
 }
 
-// VerstakBlock
+// VBlock
 
-function getBlockName(block: VerstakBlock): string | undefined {
+function getBlockName(block: VBlock): string | undefined {
   return block.stamp >= 0 ? block.name : undefined
 }
 
-class VerstakBlock<T = any, M = any, R = any> extends Block<T, M, R> {
+class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   static grandCount: number = 0
   static disposableCount: number = 0
   static logging?: LoggingOptions = undefined
@@ -184,13 +184,13 @@ class VerstakBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   model?: M
   // System-managed properties
   readonly level: number
-  readonly parent: VerstakBlock
-  children: Collection<VerstakBlock>
-  item: Item<VerstakBlock> | undefined
+  readonly parent: VBlock
+  children: Collection<VBlock>
+  item: Item<VBlock> | undefined
   stamp: number
   native?: T
 
-  constructor(name: string, factory: BlockFactory<T>, parent: VerstakBlock,
+  constructor(name: string, factory: BlockFactory<T>, parent: VBlock,
     options: BlockOptions<T, M, R> | undefined, renderer: Render<T, M, R>) {
     super()
     // User-defined properties
@@ -202,7 +202,7 @@ class VerstakBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
-    this.children = new Collection<VerstakBlock>(factory.strict, getBlockName)
+    this.children = new Collection<VBlock>(factory.strict, getBlockName)
     this.item = undefined
     this.stamp = 0
     this.native = undefined
@@ -236,8 +236,8 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       if (!error) {
         // Render actual blocks
         const strict = children.strict
-        let p1: Array<Item<VerstakBlock>> | undefined = undefined
-        let p2: Array<Item<VerstakBlock>> | undefined = undefined
+        let p1: Array<Item<VBlock>> | undefined = undefined
+        let p2: Array<Item<VBlock>> | undefined = undefined
         let isMoved = false
         for (const child of children.items()) {
           if (Transaction.isCanceled)
@@ -266,8 +266,8 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
   }
 }
 
-function markAsMovedIfNeeded(isMoved: boolean, child: Item<VerstakBlock>,
-  children: Collection<VerstakBlock>, strict: boolean): boolean
+function markAsMovedIfNeeded(isMoved: boolean, child: Item<VBlock>,
+  children: Collection<VBlock>, strict: boolean): boolean
 {
   // Detects element movements when abstract blocks exist among
   // regular blocks with HTML elements
@@ -283,10 +283,10 @@ function markAsMovedIfNeeded(isMoved: boolean, child: Item<VerstakBlock>,
 }
 
 async function startIncrementalRendering(
-  parent: Item<VerstakBlock>,
-  allChildren: Collection<VerstakBlock>,
-  priority1?: Array<Item<VerstakBlock>>,
-  priority2?: Array<Item<VerstakBlock>>): Promise<void> {
+  parent: Item<VBlock>,
+  allChildren: Collection<VBlock>,
+  priority1?: Array<Item<VBlock>>,
+  priority2?: Array<Item<VBlock>>): Promise<void> {
   const stamp = parent.self.stamp
   if (priority1)
     await renderIncrementally(parent, stamp, allChildren, priority1, Priority.AsyncP1)
@@ -294,8 +294,8 @@ async function startIncrementalRendering(
     await renderIncrementally(parent, stamp, allChildren, priority2, Priority.AsyncP2)
 }
 
-async function renderIncrementally(parent: Item<VerstakBlock>, stamp: number,
-  allChildren: Collection<VerstakBlock>, items: Array<Item<VerstakBlock>>,
+async function renderIncrementally(parent: Item<VBlock>, stamp: number,
+  allChildren: Collection<VBlock>, items: Array<Item<VBlock>>,
   priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
   const block = parent.self
@@ -327,7 +327,7 @@ async function renderIncrementally(parent: Item<VerstakBlock>, stamp: number,
   }
 }
 
-function prepareThenRunRender(item: Item<VerstakBlock>,
+function prepareThenRunRender(item: Item<VBlock>,
   moved: boolean, strict: boolean): void {
   const block = item.self
   if (block.stamp >= 0) {
@@ -339,7 +339,7 @@ function prepareThenRunRender(item: Item<VerstakBlock>,
   }
 }
 
-function prepareRender(item: Item<VerstakBlock>,
+function prepareRender(item: Item<VBlock>,
   moved: boolean, strict: boolean): void {
   const block = item.self
   const factory = block.factory
@@ -365,7 +365,7 @@ function prepareRender(item: Item<VerstakBlock>,
     factory.layout?.(block, strict) // , console.log(`moved: ${block.name}`)
 }
 
-function runRender(item: Item<VerstakBlock>): void {
+function runRender(item: Item<VBlock>): void {
   const block = item.self
   if (block.stamp >= 0) { // if block is alive
     runUnder(item, () => {
@@ -390,7 +390,7 @@ function runRender(item: Item<VerstakBlock>): void {
   }
 }
 
-function runFinalize(item: Item<VerstakBlock>, isLeader: boolean): void {
+function runFinalize(item: Item<VBlock>, isLeader: boolean): void {
   const block = item.self
   if (block.stamp >= 0) {
     block.stamp = ~block.stamp
@@ -412,7 +412,7 @@ function runFinalize(item: Item<VerstakBlock>, isLeader: boolean): void {
     // Finalize children if any
     for (const item of block.children.items())
       runFinalize(item, childrenAreLeaders)
-    VerstakBlock.grandCount--
+    VBlock.grandCount--
   }
 }
 
@@ -424,13 +424,13 @@ async function runDisposalLoop(): Promise<void> {
       await Transaction.requestNextFrame()
     Rx.dispose(item.self)
     item = item.aux
-    VerstakBlock.disposableCount--
+    VBlock.disposableCount--
   }
-  // console.log(`Block count: ${VerstakBlock.grandCount} totally (${VerstakBlock.disposableCount} disposable)`)
+  // console.log(`Block count: ${VBlock.grandCount} totally (${VBlock.disposableCount} disposable)`)
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
-function forEachChildRecursively(item: Item<VerstakBlock>, action: (e: any) => void): void {
+function forEachChildRecursively(item: Item<VBlock>, action: (e: any) => void): void {
   const block = item.self
   const native = block.native
   native && action(native)
@@ -446,7 +446,7 @@ function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
   return wrappedRunUnder
 }
 
-function runUnder<T>(item: Item<VerstakBlock>, func: (...args: any[]) => T, ...args: any[]): T {
+function runUnder<T>(item: Item<VBlock>, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gContext
   try {
     gContext = item
@@ -520,9 +520,9 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-const gSysRoot = Collection.createItem<VerstakBlock>(new VerstakBlock<null, void>('SYSTEM',
+const gSysRoot = Collection.createItem<VBlock>(new VBlock<null, void>('SYSTEM',
   new StaticBlockFactory<null>('SYSTEM', false, null),
-  { level: 0 } as VerstakBlock, { rx: true }, NOP)) // fake parent (overwritten below)
+  { level: 0 } as VBlock, { rx: true }, NOP)) // fake parent (overwritten below)
 gSysRoot.self.item = gSysRoot
 
 Object.defineProperty(gSysRoot, 'parent', {
@@ -532,6 +532,6 @@ Object.defineProperty(gSysRoot, 'parent', {
   enumerable: true,
 })
 
-let gContext: Item<VerstakBlock> = gSysRoot
-let gFirstToDispose: Item<VerstakBlock> | undefined = undefined
-let gLastToDispose: Item<VerstakBlock> | undefined = undefined
+let gContext: Item<VBlock> = gSysRoot
+let gFirstToDispose: Item<VBlock> | undefined = undefined
+let gLastToDispose: Item<VBlock> | undefined = undefined
