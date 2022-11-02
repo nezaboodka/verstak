@@ -60,7 +60,7 @@ export function group<M = unknown, R = void>(name: string,
 // VerstakTags
 
 const VerstakTags = {
-  block: new HtmlBlockFactory<HTMLElement>('v-block', true),  // display: flex
-  grid: new HtmlBlockFactory<HTMLElement>('v-grid', false),   // display: grid
-  group: new HtmlBlockFactory<HTMLElement>('v-group', false), // display: contents
+  block: new HtmlBlockFactory<HTMLElement>('v-block', true, false),  // display: flex
+  grid: new HtmlBlockFactory<HTMLElement>('v-grid', false, true),    // display: grid
+  group: new HtmlBlockFactory<HTMLElement>('v-group', false, false), // display: contents
 }

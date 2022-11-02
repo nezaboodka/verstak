@@ -8,6 +8,7 @@
 export * from './HtmlBlockFactory'
 export * from './HtmlBlocks'
 export * from './HtmlApiExt'
+export * from './Blocks'
 export * from './RxFocuser'
 export * from './sensors/Sensor'
 export * from './sensors/PointerSensor'

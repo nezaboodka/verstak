@@ -116,14 +116,16 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
 const NOP = (): void => { /* nop */ }
 
 export class BlockFactory<T> {
-  public static readonly default = new BlockFactory<any>('default', false)
+  public static readonly default = new BlockFactory<any>('default', false, false)
 
   readonly name: string
   readonly strict: boolean
+  readonly stacker: boolean
 
-  constructor(name: string, strict: boolean) {
+  constructor(name: string, strict: boolean, stacker: boolean) {
     this.name = name
     this.strict = strict
+    this.stacker = stacker
   }
 
   initialize(block: Block<T>, native: T | undefined): void {
@@ -137,7 +139,7 @@ export class BlockFactory<T> {
     return isLeader // treat children as finalization leaders as well
   }
 
-  layout(block: Block<T>, strict: boolean): void {
+  place(block: Block<T>, strict: boolean): void {
     // nothing to do by default
   }
 
@@ -155,8 +157,8 @@ export class BlockFactory<T> {
 export class StaticBlockFactory<T> extends BlockFactory<T> {
   readonly element: T
 
-  constructor(name: string, sequential: boolean, element: T) {
-    super(name, sequential)
+  constructor(name: string, strict: boolean, element: T) {
+    super(name, strict, false)
     this.element = element
   }
 
@@ -359,10 +361,10 @@ function prepareRender(item: Item<VBlock>,
       })
     }
     factory.initialize?.(block, undefined)
-    factory.layout?.(block, strict)
+    factory.place?.(block, strict)
   }
   else if (moved)
-    factory.layout?.(block, strict) // , console.log(`moved: ${block.name}`)
+    factory.place?.(block, strict) // , console.log(`moved: ${block.name}`)
 }
 
 function runRender(item: Item<VBlock>): void {
