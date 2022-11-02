@@ -8,89 +8,57 @@
 import { Block, Reaction, Inline, Render, BlockOptions } from '../core/api'
 import { AbstractHtmlBlockFactory } from './HtmlBlockFactory'
 
-// Verstak layouts are based on 4 fundamental types of
-// structural blocks: section, table, board, and group.
+// Verstak layouts are based on 3 fundamental types of
+// layout structures: basic block, table, and group.
 
-// Section: a block, which children are layed out
-// either vertically (default) or horizontally
+// Basic block is a layout structure, which children are
+// layed out either vertically (default) or horizontally
 
-// Table: is a block, which children a layed you in its cells
-// either naturally (left-to-right top-to-bottom) or absolutely
+// Table is layout structure, which children a layed you
+// in its cells either naturally or absolutely
 
-// Board: a block, which children are layed out
-// in table cells with absolute Place.area option
+// Group is a non-visual block aimed at logical grouping
+// of blocks, such as basic block, table or other groups.
 
-// Group: a non-visual block aimed at logical grouping
-// of other blocks
+// block
 
-
-// Section
-
-export function section<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLDivElement, M, R> | undefined,
-  renderer: Render<HTMLDivElement, M, R>):
-  Block<HTMLDivElement, M, R> {
-  return Inline(name, options, renderer, VerstakTags.block)
+export function block<M = unknown, R = void>(name: string,
+  reactive: boolean, // temporary
+  options: BlockOptions<HTMLElement, M, R> | undefined,
+  renderer: Render<HTMLElement, M, R>):
+  Block<HTMLElement, M, R> {
+  return reactive ?
+    Reaction(name, options, renderer, VerstakTags.block) :
+    Inline(name, options, renderer, VerstakTags.block)
 }
 
-export function sectionRx<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLDivElement, M, R> | undefined,
-  renderer: Render<HTMLDivElement, M, R>):
-  Block<HTMLDivElement, M, R> {
-  return Reaction(name, options, renderer, VerstakTags.block)
-}
-
-// Table
+// table
 
 export function table<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLDivElement, M, R> | undefined,
-  renderer: Render<HTMLDivElement, M, R>):
-  Block<HTMLDivElement, M, R> {
-  return Inline(name, options, renderer, VerstakTags.block)
+  reactive: boolean, // temporary
+  options: BlockOptions<HTMLElement, M, R> | undefined,
+  renderer: Render<HTMLElement, M, R>):
+  Block<HTMLElement, M, R> {
+  return reactive ?
+    Reaction(name, options, renderer, VerstakTags.block) :
+    Inline(name, options, renderer, VerstakTags.block)
 }
 
-export function tableRx<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLDivElement, M, R> | undefined,
-  renderer: Render<HTMLDivElement, M, R>):
-  Block<HTMLDivElement, M, R> {
-  return Reaction(name, options, renderer, VerstakTags.block)
-}
-
-// Board
-
-export function board<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLDivElement, M, R> | undefined,
-  renderer: Render<HTMLDivElement, M, R>):
-  Block<HTMLDivElement, M, R> {
-  return Inline(name, options, renderer, VerstakTags.board)
-}
-
-export function boardRx<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLDivElement, M, R> | undefined,
-  renderer: Render<HTMLDivElement, M, R>):
-  Block<HTMLDivElement, M, R> {
-  return Reaction(name, options, renderer, VerstakTags.board)
-}
-
-// Group
+// group
 
 export function group<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLDivElement, M, R> | undefined,
-  renderer: Render<HTMLDivElement, M, R>):
-  Block<HTMLDivElement, M, R> {
-  return Inline(name, options, renderer, VerstakTags.group)
+  reactive: boolean, // temporary
+  options: BlockOptions<HTMLElement, M, R> | undefined,
+  renderer: Render<HTMLElement, M, R>):
+  Block<HTMLElement, M, R> {
+  return reactive ?
+    Reaction(name, options, renderer, VerstakTags.block) :
+    Inline(name, options, renderer, VerstakTags.block)
 }
 
-export function groupRx<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLDivElement, M, R> | undefined,
-  renderer: Render<HTMLDivElement, M, R>):
-  Block<HTMLDivElement, M, R> {
-  return Reaction(name, options, renderer, VerstakTags.group)
-}
+// VerstakBlockFactory
 
-// UniversalHtmlBlockFactory
-
-export class UniversalHtmlBlockFactory<T extends HTMLElement> extends AbstractHtmlBlockFactory<T> {
+export class VerstakBlockFactory<T extends HTMLElement> extends AbstractHtmlBlockFactory<T> {
   readonly display: string
 
   constructor(name: string, strict: boolean, display: string) {
@@ -108,7 +76,7 @@ export class UniversalHtmlBlockFactory<T extends HTMLElement> extends AbstractHt
 // VerstakTags
 
 const VerstakTags = {
-  block: new UniversalHtmlBlockFactory<HTMLDivElement>('div', true, 'grid'),
-  board: new UniversalHtmlBlockFactory<HTMLDivElement>('div', false, 'grid'),
-  group: new UniversalHtmlBlockFactory<HTMLDivElement>('div', true, 'contents'),
+  block: new VerstakBlockFactory<HTMLElement>('x-blk', true, 'flex'),
+  table: new VerstakBlockFactory<HTMLElement>('x-tbl', false, 'grid'),
+  group: new VerstakBlockFactory<HTMLElement>('x-grp', false, 'contents'),
 }
