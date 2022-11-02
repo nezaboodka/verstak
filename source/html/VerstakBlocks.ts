@@ -11,7 +11,7 @@ import { HtmlBlockFactory } from './HtmlBlockFactory'
 // Verstak layouts are based on two types of layout
 // structures, namely *flow* block and *table* block;
 // and two types of special non-visual control elements,
-// namely *break* and *group*.
+// namely *begin* and *group*.
 
 // Flow block is a layout structure, which children are
 // layed out using left-to-right-and-top-to-bottom flow.
@@ -19,7 +19,7 @@ import { HtmlBlockFactory } from './HtmlBlockFactory'
 // Table block is layout structure, which children are
 // layed out in table cells, either naturally or randomly.
 
-// Break is a special non-visual element, which starts
+// Begin is a special non-visual element, which begins
 // new layout line within flow block or table block.
 
 // Group is a special non-visual element for logical
@@ -49,9 +49,9 @@ export function table<M = unknown, R = void>(name: string,
     Inline(name, options, renderer, VerstakTags.flow)
 }
 
-// brk
+// begin
 
-export function brk(): void {
+export function begin(): void {
   throw new Error('not implemented yet')
 }
 
