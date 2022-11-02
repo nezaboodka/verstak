@@ -36,8 +36,8 @@ export interface Box {
   place?: string                // ""
   width?: ElasticSize           // cells=1, min/max=min-content
   height?: ElasticSize          // cells=1, min/max=min-content
-  widthOverlap?: boolean        // false
-  heightOverlap?: boolean       // false
+  widthOverlapped?: boolean     // false
+  heightOverlapped?: boolean    // false
   // Alignment
   alignment?: Alignment         // MiddleLeft
   boxAlignment?: Alignment      // Fit
@@ -86,7 +86,7 @@ export class GridLayoutManager {
       if (w >= 0) {
         result.x1 = this.columnCursor + 1
         result.x2 = absolutizePosition(result.x1 + w, 0, maxColumnCount)
-        if (!box.widthOverlap)
+        if (!box.widthOverlapped)
           this.columnCursor = result.x2
       }
       else {
@@ -100,7 +100,7 @@ export class GridLayoutManager {
       if (h >= 0) {
         result.y1 = this.rowCursor + 1
         result.y2 = absolutizePosition(result.y1 + h, 0, maxRowCount)
-        if (!box.heightOverlap && result.y2 > this.newRowCursor)
+        if (!box.heightOverlapped && result.y2 > this.newRowCursor)
           this.newRowCursor = result.y2
       }
       else {
