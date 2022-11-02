@@ -21,24 +21,26 @@ export enum Alignment {
 }
 
 export interface ElasticSize {
-  id?: string | number      // <current>
-  min?: string              // min-content
-  max?: string              // min-content
-  growth?: number           // 0
+  cells?: number               // 1
+  min?: string                 // min-content
+  max?: string                 // min-content
+  growth?: number              // 0
+}
+
+export interface TrackSize extends ElasticSize {
+  track?: string | number      // <current>
 }
 
 export interface Place {
-  area?: string             // ""
-  columns?: number          // 1
-  rows?: number             // 1
-  alignment?: Alignment     // MiddleLeft
-  boxAlignment?: Alignment  // Fit
-  width?: ElasticSize       // min-content
-  height?: ElasticSize      // min-content
-  lineBegin?: boolean       // false
-  wrap?: boolean            // false
-  keepColumn?: boolean      // false
-  keepRow?: boolean         // false
+  area?: string                // ""
+  width?: ElasticSize          // cells=1, min/max=min-content
+  height?: ElasticSize         // cells=1, min/max=min-content
+  alignment?: Alignment        // MiddleLeft
+  boxAlignment?: Alignment     // Fit
+  lineBegin?: boolean          // false
+  wrap?: boolean               // false
+  overlappingWidth?: boolean   // false
+  overlappingHeight?: boolean  // false
 }
 
 export class LayoutManager {
@@ -75,13 +77,13 @@ export class LayoutManager {
         this.rowCursor = this.newRowCursor
       }
       // Horizontal
-      let w = layout.columns ?? 1
+      let w = layout.width?.cells ?? 1
       if (w === 0)
         w = maxColumnCount
       if (w >= 0) {
         result.x1 = this.columnCursor + 1
         result.x2 = absolutizePosition(result.x1 + w, 0, maxColumnCount)
-        if (!layout.keepColumn)
+        if (!layout.overlappingWidth)
           this.columnCursor = result.x2
       }
       else {
@@ -89,13 +91,13 @@ export class LayoutManager {
         result.x2 = this.columnCursor
       }
       // Vertical
-      let h = layout.rows ?? 1
+      let h = layout.height?.cells ?? 1
       if (h === 0)
         h = maxRowCount
       if (h >= 0) {
         result.y1 = this.rowCursor + 1
         result.y2 = absolutizePosition(result.y1 + h, 0, maxRowCount)
-        if (!layout.keepRow && result.y2 > this.newRowCursor)
+        if (!layout.overlappingHeight && result.y2 > this.newRowCursor)
           this.newRowCursor = result.y2
       }
       else {
