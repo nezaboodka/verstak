@@ -8,28 +8,33 @@
 import { Block, Reaction, Inline, Render, BlockOptions } from '../core/api'
 import { AbstractHtmlBlockFactory } from './HtmlBlockFactory'
 
-// Verstak layouts are based on 3 fundamental types of
-// layout structures: basic block, table, and group.
+// Verstak layouts are based on two types of layout
+// structures: flow block and table block. And
+// two types of special non-visual control elements:
+// break and group.
 
-// Basic block is a layout structure, which children are
-// layed out either vertically (default) or horizontally
+// Flow block is a layout structure, which children are
+// layed out using left-to-right-and-top-to-bottom flow.
 
-// Table is layout structure, which children a layed you
-// in its cells either naturally or absolutely
+// Table block is layout structure, which children are
+// layed you in table cells, either naturally or randomly.
 
-// Group is a non-visual block aimed at logical grouping
-// of blocks, such as basic block, table or other groups.
+// Break is a special non-visual element, which starts
+// new layout line within flow block or table block.
 
-// block
+// Group is a special non-visual element for logical
+// grouping of other blocks.
 
-export function block<M = unknown, R = void>(name: string,
+// flow
+
+export function flow<M = unknown, R = void>(name: string,
   reactive: boolean, // temporary
   options: BlockOptions<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
   return reactive ?
-    Reaction(name, options, renderer, VerstakTags.block) :
-    Inline(name, options, renderer, VerstakTags.block)
+    Reaction(name, options, renderer, VerstakTags.flow) :
+    Inline(name, options, renderer, VerstakTags.flow)
 }
 
 // table
@@ -40,8 +45,14 @@ export function table<M = unknown, R = void>(name: string,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
   return reactive ?
-    Reaction(name, options, renderer, VerstakTags.block) :
-    Inline(name, options, renderer, VerstakTags.block)
+    Reaction(name, options, renderer, VerstakTags.flow) :
+    Inline(name, options, renderer, VerstakTags.flow)
+}
+
+// brk
+
+export function brk(): void {
+  throw new Error('not implemented yet')
 }
 
 // group
@@ -52,8 +63,8 @@ export function group<M = unknown, R = void>(name: string,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
   return reactive ?
-    Reaction(name, options, renderer, VerstakTags.block) :
-    Inline(name, options, renderer, VerstakTags.block)
+    Reaction(name, options, renderer, VerstakTags.flow) :
+    Inline(name, options, renderer, VerstakTags.flow)
 }
 
 // VerstakBlockFactory
@@ -76,7 +87,7 @@ export class VerstakBlockFactory<T extends HTMLElement> extends AbstractHtmlBloc
 // VerstakTags
 
 const VerstakTags = {
-  block: new VerstakBlockFactory<HTMLElement>('x-blk', true, 'flex'),
-  table: new VerstakBlockFactory<HTMLElement>('x-tbl', false, 'grid'),
-  group: new VerstakBlockFactory<HTMLElement>('x-grp', false, 'contents'),
+  flow: new VerstakBlockFactory<HTMLElement>('x-flow', true, 'flex'),
+  table: new VerstakBlockFactory<HTMLElement>('x-table', false, 'grid'),
+  group: new VerstakBlockFactory<HTMLElement>('x-group', false, 'contents'),
 }
