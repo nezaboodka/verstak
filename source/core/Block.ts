@@ -14,6 +14,7 @@ export type AsyncRender<T = unknown, M = unknown> = (native: T, block: Block<T, 
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export interface BlockOptions<T = unknown, M = unknown, R = void> {
+  rx?: boolean
   place?: Place
   triggers?: unknown
   priority?: Priority,
@@ -34,7 +35,6 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   // User-defined properties
   abstract readonly name: string
   abstract readonly factory: BlockFactory<T>
-  abstract readonly inline: boolean
   abstract readonly renderer: Render<T, M, R>
   abstract readonly options: Readonly<BlockOptions<T, M, R>> | undefined
   abstract model?: M
@@ -72,10 +72,8 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   }
 
   static claim<T = undefined, M = unknown, R = void>(
-    name: string, inline: boolean,
-    options: BlockOptions<T, M, R> | undefined,
-    renderer: Render<T, M, R>,
-    factory?: BlockFactory<T>): Block<T, M, R> {
+    name: string, options: BlockOptions<T, M, R> | undefined,
+    renderer: Render<T, M, R>, factory?: BlockFactory<T>): Block<T, M, R> {
     // Emit block either by reusing existing one or by creating a new one
     const parent = gContext.self
     const children = parent.children
@@ -95,10 +93,10 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     }
     else { // create new
       block = new VerstakBlock<T, M, R>(name, factory ?? BlockFactory.default,
-        inline ?? false, parent, options, renderer)
+        parent, options, renderer)
       block.item = children.add(block)
       VerstakBlock.grandCount++
-      if (!block.inline)
+      if (options?.rx)
         VerstakBlock.disposableCount++
     }
     return block
@@ -181,7 +179,6 @@ class VerstakBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   // User-defined properties
   readonly name: string
   readonly factory: BlockFactory<T>
-  readonly inline: boolean
   renderer: Render<T, M, R>
   options: BlockOptions<T, M, R> | undefined
   model?: M
@@ -193,14 +190,12 @@ class VerstakBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   stamp: number
   native?: T
 
-  constructor(name: string, factory: BlockFactory<T>, inline: boolean,
-    parent: VerstakBlock, options: BlockOptions<T, M, R> | undefined,
-    renderer: Render<T, M, R>) {
+  constructor(name: string, factory: BlockFactory<T>, parent: VerstakBlock,
+    options: BlockOptions<T, M, R> | undefined, renderer: Render<T, M, R>) {
     super()
     // User-defined properties
     this.name = name
     this.factory = factory
-    this.inline = inline
     this.options = options
     this.renderer = renderer
     this.model = undefined
@@ -337,10 +332,10 @@ function prepareThenRunRender(item: Item<VerstakBlock>,
   const block = item.self
   if (block.stamp >= 0) {
     prepareRender(item, moved, strict)
-    if (block.inline)
-      runRender(item)
-    else
+    if (block.options?.rx)
       nonreactive(block.autorender, block.options?.triggers) // reactive auto-rendering
+    else
+      runRender(item)
   }
 }
 
@@ -351,7 +346,7 @@ function prepareRender(item: Item<VerstakBlock>,
   // Initialize/layout if needed
   if (block.stamp === 0) {
     block.stamp = 1
-    if (!block.inline) {
+    if (block.options?.rx) {
       Transaction.outside(() => {
         if (Rx.isLogging)
           Rx.setLoggingHint(block, block.name)
@@ -401,7 +396,7 @@ function runFinalize(item: Item<VerstakBlock>, isLeader: boolean): void {
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
     const childrenAreLeaders = block.factory.finalize(block, isLeader)
-    if (!block.inline) {
+    if (block.options?.rx) {
       // Defer disposal if block is reactive
       item.aux = undefined
       const last = gLastToDispose
@@ -526,8 +521,8 @@ Promise.prototype.then = reactronicDomHookedThen
 // Globals
 
 const gSysRoot = Collection.createItem<VerstakBlock>(new VerstakBlock<null, void>('SYSTEM',
-  new StaticBlockFactory<null>('SYSTEM', false, null), false,
-  { level: 0 } as VerstakBlock, undefined, NOP)) // fake parent (overwritten below)
+  new StaticBlockFactory<null>('SYSTEM', false, null),
+  { level: 0 } as VerstakBlock, { rx: true }, NOP)) // fake parent (overwritten below)
 gSysRoot.self.item = gSysRoot
 
 Object.defineProperty(gSysRoot, 'parent', {

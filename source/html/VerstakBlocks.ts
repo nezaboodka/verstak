@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Block, Reaction, Inline, Render, BlockOptions } from '../core/api'
+import { Block, Render, BlockOptions } from '../core/api'
 import { HtmlBlockFactory } from './HtmlBlockFactory'
 
 // Verstak layouts are based on two types of layout
@@ -28,25 +28,19 @@ import { HtmlBlockFactory } from './HtmlBlockFactory'
 // flow
 
 export function flow<M = unknown, R = void>(name: string,
-  reactive: boolean, // temporary
   options: BlockOptions<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
-  return reactive ?
-    Reaction(name, options, renderer, VerstakTags.flow) :
-    Inline(name, options, renderer, VerstakTags.flow)
+  return Block.claim(name, options, renderer, VerstakTags.flow)
 }
 
 // table
 
 export function table<M = unknown, R = void>(name: string,
-  reactive: boolean, // temporary
   options: BlockOptions<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
-  return reactive ?
-    Reaction(name, options, renderer, VerstakTags.flow) :
-    Inline(name, options, renderer, VerstakTags.flow)
+  return Block.claim(name, options, renderer, VerstakTags.flow)
 }
 
 // begin
@@ -58,13 +52,10 @@ export function begin(): void {
 // group
 
 export function group<M = unknown, R = void>(name: string,
-  reactive: boolean, // temporary
   options: BlockOptions<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
-  return reactive ?
-    Reaction(name, options, renderer, VerstakTags.flow) :
-    Inline(name, options, renderer, VerstakTags.flow)
+  return Block.claim(name, options, renderer, VerstakTags.flow)
 }
 
 // VerstakTags

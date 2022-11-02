@@ -5,12 +5,12 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Reaction } from '../core/Basic'
+import { Block } from '../core/api'
 import { FocusModel } from './sensors/FocusSensor'
 
 export function RxFocuser(name: string, target: HTMLElement, model: FocusModel,
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {
-  Reaction(name, { triggers: { target, model }, throttling: 0 }, () => {
+  Block.claim(name, { rx: true, triggers: { target, model }, throttling: 0 }, () => {
     if (switchEditMode !== undefined) {
       switchEditMode(model)
     }
