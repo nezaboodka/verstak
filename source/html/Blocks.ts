@@ -60,7 +60,12 @@ export function grouping<M = unknown, R = void>(name: string,
 // VerstakTags
 
 const VerstakTags = {
-  block: new HtmlBlockFactory<HTMLElement>('v-block', true, false),  // display: flex
-  grid: new HtmlBlockFactory<HTMLElement>('v-grid', false, true),    // display: grid
-  group: new HtmlBlockFactory<HTMLElement>('v-group', false, false), // display: contents
+  // display: flex
+  block: new HtmlBlockFactory<HTMLElement>('v-block', true, false),
+
+  // display: grid
+  grid: new HtmlBlockFactory<HTMLElement>('v-grid', false, true),
+
+  // display: contents
+  grouping: new HtmlBlockFactory<HTMLElement>('v-grouping', false, false),
 }
