@@ -240,7 +240,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       if (!error) {
         // Render actual blocks
         const strict = children.strict
-        const layout = block.factory.stacker ? new GridLayoutManager() : undefined
+        // const layout = block.factory.stacker ? new GridLayoutManager() : undefined
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
         let isMoved = false
