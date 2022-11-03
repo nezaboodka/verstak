@@ -46,7 +46,8 @@ export interface Box {
   wrap?: boolean                // false
 }
 
-export interface EffectiveBox extends CellRange {
+export interface Placement {
+  cellRange: CellRange | undefined
   widthMin: string
   widthMax: string
   widthGrow: number
@@ -57,7 +58,7 @@ export interface EffectiveBox extends CellRange {
   boxAlignment: Alignment
 }
 
-export class GridLayoutManager {
+export class LayoutManager {
   private maxColumnCount: number = 0
   private maxRowCount: number = 0
   private actualColumnCount: number = 0
@@ -76,9 +77,9 @@ export class GridLayoutManager {
     this.newRowCursor = 0
   }
 
-  claim(box: Box | undefined): EffectiveBox {
-    const result: EffectiveBox = {
-      x1: 0, y1: 0, x2: 0, y2: 0,
+  place(box: Box | undefined): Placement {
+    const result: Placement = {
+      cellRange: undefined,
       widthMin: '', widthMax: '', widthGrow: 0,
       heightMin: '', heightMax: '', heightGrow: 0,
       alignment: Alignment.TopLeft, boxAlignment: Alignment.Fit,
@@ -86,12 +87,13 @@ export class GridLayoutManager {
     const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
     const maxRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
     if (box?.place) { // absolute positioning
-      parseCellRange(box.place, result)
-      absolutizeCellRange(result,
+      result.cellRange = parseCellRange(box.place, { x1: 0, y1: 0, x2: 0, y2: 0 })
+      absolutizeCellRange(result.cellRange,
         this.columnCursor + 1, this.rowCursor + 1,
-        maxColumnCount, maxRowCount, result)
+        maxColumnCount, maxRowCount, result.cellRange)
     }
     else { // relative positioning
+      const cr = result.cellRange = { x1: 0, y1: 0, x2: 0, y2: 0 }
       if (box?.lineBegin) {
         this.columnCursor = 0
         this.rowCursor = this.newRowCursor
@@ -101,28 +103,28 @@ export class GridLayoutManager {
       if (w === 0)
         w = maxColumnCount
       if (w >= 0) {
-        result.x1 = this.columnCursor + 1
-        result.x2 = absolutizePosition(result.x1 + w, 0, maxColumnCount)
+        cr.x1 = this.columnCursor + 1
+        cr.x2 = absolutizePosition(cr.x1 + w, 0, maxColumnCount)
         if (!box?.widthOverlapped)
-          this.columnCursor = result.x2
+          this.columnCursor = cr.x2
       }
       else {
-        result.x1 = Math.max(this.columnCursor + w, 1)
-        result.x2 = this.columnCursor
+        cr.x1 = Math.max(this.columnCursor + w, 1)
+        cr.x2 = this.columnCursor
       }
       // Vertical
       let h = box?.height?.cells ?? 1
       if (h === 0)
         h = maxRowCount
       if (h >= 0) {
-        result.y1 = this.rowCursor + 1
-        result.y2 = absolutizePosition(result.y1 + h, 0, maxRowCount)
-        if (!box?.heightOverlapped && result.y2 > this.newRowCursor)
-          this.newRowCursor = result.y2
+        cr.y1 = this.rowCursor + 1
+        cr.y2 = absolutizePosition(cr.y1 + h, 0, maxRowCount)
+        if (!box?.heightOverlapped && cr.y2 > this.newRowCursor)
+          this.newRowCursor = cr.y2
       }
       else {
-        result.y1 = Math.max(this.rowCursor + h, 1)
-        result.y2 = this.rowCursor
+        cr.y1 = Math.max(this.rowCursor + h, 1)
+        cr.y2 = this.rowCursor
       }
     }
     return result
@@ -160,6 +162,6 @@ function absolutizePosition(pos: number, cursor: number, max: number): number {
   return pos
 }
 
-export function isSameBoxes(a: EffectiveBox | undefined, b: EffectiveBox | undefined): boolean {
+export function isSameBoxes(a: Placement | undefined, b: Placement | undefined): boolean {
   return false
 }

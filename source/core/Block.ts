@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
-import { Box, EffectiveBox, GridLayoutManager, isSameBoxes } from './Layout'
+import { Box, Placement, LayoutManager, isSameBoxes as isSamePlacement, Alignment } from './Layout'
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
@@ -120,12 +120,12 @@ export class BlockFactory<T> {
 
   readonly name: string
   readonly strict: boolean
-  readonly stacker: boolean
+  readonly layout: boolean
 
-  constructor(name: string, strict: boolean, stacker: boolean) {
+  constructor(name: string, strict: boolean, layout: boolean) {
     this.name = name
     this.strict = strict
-    this.stacker = stacker
+    this.layout = layout
   }
 
   initialize(block: Block<T>, native: T | undefined): void {
@@ -183,7 +183,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   readonly factory: BlockFactory<T>
   renderer: Render<T, M, R>
   options: BlockOptions<T, M, R> | undefined
-  box: EffectiveBox | undefined
+  placement: Placement | undefined
   model: M | undefined
   // System-managed properties
   readonly level: number
@@ -201,7 +201,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     this.factory = factory
     this.renderer = renderer
     this.options = options
-    this.box = undefined
+    this.placement = undefined
     this.model = undefined
     // System-managed properties
     this.level = parent.level + 1
@@ -240,23 +240,16 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       if (!error) {
         // Render actual blocks
         const strict = children.strict
-        const layout = block.factory.stacker ? new GridLayoutManager() : undefined
+        const lm = block.factory.layout ? new LayoutManager() : undefined
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
         let placing = false
         for (const child of children.items()) {
           const x = child.self
           const box = x.options?.box
-
-          // WIP:
-          if (layout) { // grid block
-            const effective = layout.claim(box)
-            if (!isSameBoxes(effective, x.box))
-              placing = true
-          }
-          else if (box) { // simple block
-          }
-
+          const placement = lm ? lm.place(box) : place(box)
+          if (!isSamePlacement(placement, x.placement))
+            placing = true, x.placement = placement
           placing = markAsMovedIfNeeded(placing, child, children, strict)
           if (!Transaction.isCanceled) {
             const priority = x.options?.priority ?? Priority.SyncP0
@@ -279,6 +272,16 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       if (!promised)
         action(error)
     }
+  }
+}
+
+function place(box: Box | undefined): Placement | undefined {
+  return !box ? undefined : {
+    cellRange: undefined,
+    widthMin: '', widthMax: '', widthGrow: 0,
+    heightMin: '', heightMax: '', heightGrow: 0,
+    alignment: box.alignment ?? Alignment.TopLeft,
+    boxAlignment: box.boxAlignment ?? Alignment.Fit,
   }
 }
 
