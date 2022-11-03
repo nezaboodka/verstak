@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
-import { Box, GridLayoutManager } from './Layout'
+import { Box, EffectiveBox, GridLayoutManager, isSameBoxes } from './Layout'
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
@@ -44,7 +44,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   abstract readonly children: CollectionReader<Block>
   abstract readonly item: Item<Block> | undefined
   abstract readonly stamp: number
-  abstract readonly native?: T
+  abstract readonly native: T | undefined
 
   render(): R {
     return this.renderer(this.native!, this)
@@ -176,21 +176,22 @@ function getBlockName(block: VBlock): string | undefined {
 class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   static grandCount: number = 0
   static disposableCount: number = 0
-  static logging?: LoggingOptions = undefined
+  static logging: LoggingOptions | undefined = undefined
 
   // User-defined properties
   readonly name: string
   readonly factory: BlockFactory<T>
   renderer: Render<T, M, R>
   options: BlockOptions<T, M, R> | undefined
-  model?: M
+  box: EffectiveBox | undefined
+  model: M | undefined
   // System-managed properties
   readonly level: number
   readonly parent: VBlock
   children: Collection<VBlock>
   item: Item<VBlock> | undefined
   stamp: number
-  native?: T
+  native: T | undefined
 
   constructor(name: string, factory: BlockFactory<T>, parent: VBlock,
     options: BlockOptions<T, M, R> | undefined, renderer: Render<T, M, R>) {
@@ -198,8 +199,9 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     // User-defined properties
     this.name = name
     this.factory = factory
-    this.options = options
     this.renderer = renderer
+    this.options = options
+    this.box = undefined
     this.model = undefined
     // System-managed properties
     this.level = parent.level + 1
@@ -244,12 +246,14 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
         let isMoved = false
         for (const child of children.items()) {
           const x = child.self
-          const box = x.options?.box
-          if (layout) { // grid block
-            // layout.claim(box, ...)
-          }
-          else if (box) { // simple block
-          }
+          // const box = x.options?.box
+          // if (layout) { // grid block
+          //   const effective = layout.claim(box)
+          //   if (!isSameBoxes(effective, x.box))
+          //     isMoved = true
+          // }
+          // else if (box) { // simple block
+          // }
           isMoved = markAsMovedIfNeeded(isMoved, child, children, strict)
           if (!Transaction.isCanceled) {
             const priority = x.options?.priority ?? Priority.SyncP0

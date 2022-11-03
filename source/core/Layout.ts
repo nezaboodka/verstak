@@ -46,6 +46,17 @@ export interface Box {
   wrap?: boolean                // false
 }
 
+export interface EffectiveBox extends CellRange {
+  widthMin: string
+  widthMax: string
+  widthGrow: number
+  heightMin: string
+  heightMax: string
+  heightGrow: number
+  alignment: Alignment
+  boxAlignment: Alignment
+}
+
 export class GridLayoutManager {
   private maxColumnCount: number = 0
   private maxRowCount: number = 0
@@ -65,7 +76,13 @@ export class GridLayoutManager {
     this.newRowCursor = 0
   }
 
-  claim(box: Box | undefined, result: CellRange): CellRange {
+  claim(box: Box | undefined): EffectiveBox {
+    const result: EffectiveBox = {
+      x1: 0, y1: 0, x2: 0, y2: 0,
+      widthMin: '', widthMax: '', widthGrow: 0,
+      heightMin: '', heightMax: '', heightGrow: 0,
+      alignment: Alignment.TopLeft, boxAlignment: Alignment.Fit,
+    }
     const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
     const maxRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
     if (box?.place) { // absolute positioning
@@ -141,4 +158,8 @@ function absolutizePosition(pos: number, cursor: number, max: number): number {
   else
     pos = Math.min(pos, max)
   return pos
+}
+
+export function isSameBoxes(a: EffectiveBox | undefined, b: EffectiveBox | undefined): boolean {
+  return false
 }
