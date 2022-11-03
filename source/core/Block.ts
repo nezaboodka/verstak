@@ -243,7 +243,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
         const layout = block.factory.stacker ? new GridLayoutManager() : undefined
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
-        let isMoving = false
+        let moved = false
         for (const child of children.items()) {
           const x = child.self
           const box = x.options?.box
@@ -252,12 +252,12 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
           if (layout) { // grid block
             const effective = layout.claim(box)
             if (!isSameBoxes(effective, x.box))
-              isMoving = true
+              moved = true
           }
           else if (box) { // simple block
           }
 
-          isMoving = markAsMovedIfNeeded(isMoving, child, children, strict)
+          moved = markAsMovedIfNeeded(moved, child, children, strict)
           if (!Transaction.isCanceled) {
             const priority = x.options?.priority ?? Priority.SyncP0
             if (priority === Priority.SyncP0)
@@ -282,20 +282,20 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
   }
 }
 
-function markAsMovedIfNeeded(isMoved: boolean, child: Item<VBlock>,
+function markAsMovedIfNeeded(moved: boolean, child: Item<VBlock>,
   children: Collection<VBlock>, strict: boolean): boolean
 {
   // Detects element movements when abstract blocks exist among
   // regular blocks with HTML elements
   if (child.self.native) {
-    if (isMoved) {
+    if (moved) {
       children.markAsMoved(child)
-      isMoved = false
+      moved = false
     }
   }
   else if (strict && children.isMoved(child))
-    isMoved = true // apply to the first block with an element
-  return isMoved
+    moved = true // apply to the first block with an element
+  return moved
 }
 
 async function startIncrementalRendering(
