@@ -139,7 +139,11 @@ export class BlockFactory<T> {
     return isLeader // treat children as finalization leaders as well
   }
 
-  place(block: Block<T>, strict: boolean): void {
+  deploy(block: Block<T>, strict: boolean): void {
+    // nothing to do by default
+  }
+
+  place(block: Block<T>): void {
     // nothing to do by default
   }
 
@@ -243,16 +247,18 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
         const lm = block.factory.layout ? new LayoutManager() : undefined
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
-        let placing = false
+        let redeploy = false
         for (const child of children.items()) {
           if (Transaction.isCanceled)
             break
           const x = child.self
           const box = x.options?.box
           const placement = lm ? lm.place(box) : place(box)
-          if (!isSamePlacement(placement, x.placement))
-            placing = true, x.placement = placement
-          placing = markAsMovedIfNeeded(placing, child, children, strict)
+          if (!isSamePlacement(placement, x.placement)) {
+            x.placement = placement
+            x.factory.place(x)
+          }
+          redeploy = markAsMovedIfNeeded(redeploy, child, children, strict)
           const priority = x.options?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
             prepareThenRunRender(child, children.isMoved(child), strict) // render synchronously
@@ -285,20 +291,20 @@ function place(box: Box | undefined): Placement | undefined {
   }
 }
 
-function markAsMovedIfNeeded(placing: boolean, child: Item<VBlock>,
+function markAsMovedIfNeeded(redeploy: boolean, child: Item<VBlock>,
   children: Collection<VBlock>, strict: boolean): boolean
 {
   // Detects element movements when abstract blocks exist among
   // regular blocks with HTML elements
   if (child.self.native) {
-    if (placing) {
+    if (redeploy) {
       children.markAsMoved(child)
-      placing = false
+      redeploy = false
     }
   }
   else if (strict && children.isMoved(child))
-    placing = true // apply to the first block with an element
-  return placing
+    redeploy = true // apply to the first block with an element
+  return redeploy
 }
 
 async function startIncrementalRendering(
@@ -347,10 +353,10 @@ async function renderIncrementally(parent: Item<VBlock>, stamp: number,
 }
 
 function prepareThenRunRender(item: Item<VBlock>,
-  placing: boolean, strict: boolean): void {
+  redeploy: boolean, strict: boolean): void {
   const block = item.self
   if (block.stamp >= 0) {
-    prepareRender(item, placing, strict)
+    prepareRender(item, redeploy, strict)
     if (block.options?.rx)
       nonreactive(block.autorender, block.options?.triggers) // reactive auto-rendering
     else
@@ -359,7 +365,7 @@ function prepareThenRunRender(item: Item<VBlock>,
 }
 
 function prepareRender(item: Item<VBlock>,
-  placing: boolean, strict: boolean): void {
+  redeploy: boolean, strict: boolean): void {
   const block = item.self
   const factory = block.factory
   // Initialize/layout if needed
@@ -377,11 +383,12 @@ function prepareRender(item: Item<VBlock>,
         })
       })
     }
-    factory.initialize?.(block, undefined)
-    factory.place?.(block, strict)
+    factory.initialize(block, undefined)
+    factory.deploy(block, strict) // initial deployment
+    factory.place(block) // initial placement
   }
-  else if (placing)
-    factory.place?.(block, strict) // , console.log(`relocated: ${block.name}`)
+  else if (redeploy)
+    factory.deploy(block, strict) // , console.log(`redeployed: ${block.name}`)
 }
 
 function runRender(item: Item<VBlock>): void {

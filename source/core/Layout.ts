@@ -163,5 +163,5 @@ function absolutizePosition(pos: number, cursor: number, max: number): number {
 }
 
 export function isSameBoxes(a: Placement | undefined, b: Placement | undefined): boolean {
-  return false
+  return true // not implemented
 }
