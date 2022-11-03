@@ -47,7 +47,6 @@ export interface Box {
 }
 
 export interface Placement {
-  applied: boolean
   cellRange: CellRange | undefined
   widthMin: string
   widthMax: string
@@ -80,7 +79,6 @@ export class GridLayoutCursor {
 
   place(box: Box | undefined): Placement {
     const result: Placement = {
-      applied: false,
       cellRange: undefined,
       widthMin: '', widthMax: '', widthGrow: 0,
       heightMin: '', heightMax: '', heightGrow: 0,
@@ -164,6 +162,6 @@ function absolutizePosition(pos: number, cursor: number, max: number): number {
   return pos
 }
 
-export function isSameBoxes(a: Placement | undefined, b: Placement | undefined): boolean {
+export function samePlacements(a: Placement | undefined, b: Placement | undefined): boolean {
   return true // not implemented
 }

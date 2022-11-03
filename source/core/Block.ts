@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
-import { Box, Placement, GridLayoutCursor, isSameBoxes as isSamePlacement, Alignment } from './Layout'
+import { Box, Placement, GridLayoutCursor, samePlacements, Alignment } from './Layout'
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
@@ -252,13 +252,16 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
         for (const child of children.items()) {
           if (Transaction.isCanceled)
             break
-          const x = child.self
-          const box = x.options?.box
+          const cb = child.self // child as block
+          const box = cb.options?.box
           const placement = glc ? glc.place(box) : place(box)
-          if (!isSamePlacement(placement, x.placement))
-            x.placement = placement
+          if (!samePlacements(placement, cb.placement)) {
+            cb.placement = placement
+            if (cb.stamp > 0) // initial placement is done during the first rendering
+              cb.factory.place(cb) // here we do only 2nd and subsequent placements
+          }
           redeploy = markAsMovedIfNeeded(redeploy, child, children, strict)
-          const priority = x.options?.priority ?? Priority.SyncP0
+          const priority = cb.options?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
             prepareThenRunRender(child, children.isMoved(child), strict) // render synchronously
           else if (priority === Priority.AsyncP1)
@@ -282,7 +285,6 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
 
 function place(box: Box | undefined): Placement | undefined {
   return !box ? undefined : {
-    applied: false,
     cellRange: undefined,
     widthMin: '', widthMax: '', widthGrow: 0,
     heightMin: '', heightMax: '', heightGrow: 0,
