@@ -21,7 +21,7 @@ import { HtmlBlockFactory } from './HtmlBlockFactory'
 // Line begin is a special non-visual element, which
 // begins new layout line inside block or grid block.
 
-// Grouping is a special non-visual element for logical
+// Group is a special non-visual element for logical
 // grouping of simple blocks, grid blocks and other groups.
 
 // Simple Block
@@ -45,17 +45,17 @@ export function grid<M = unknown, R = void>(name: string,
 // Line Begin
 
 export function lb(spacing?: boolean): void {
-  // Block.claim(name, options, renderer, VerstakTags.grouping)
+  // Block.claim(name, options, renderer, VerstakTags.group)
   throw new Error('not implemented yet')
 }
 
-// Grouping
+// Group
 
-export function grouping<M = unknown, R = void>(name: string,
+export function group<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
-  return Block.claim(name, options, renderer, VerstakTags.grouping)
+  return Block.claim(name, options, renderer, VerstakTags.group)
 }
 
 // VerstakTags
@@ -68,5 +68,5 @@ const VerstakTags = {
   grid: new HtmlBlockFactory<HTMLElement>('v-grid', false, true),
 
   // display: contents
-  grouping: new HtmlBlockFactory<HTMLElement>('v-grouping', false, false),
+  group: new HtmlBlockFactory<HTMLElement>('v-group', false, false),
 }
