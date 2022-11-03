@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
-import { Box, Placement, LayoutManager, isSameBoxes as isSamePlacement, Alignment } from './Layout'
+import { Box, Placement, GridLayoutCursor, isSameBoxes as isSamePlacement, Alignment } from './Layout'
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
@@ -120,12 +120,12 @@ export class BlockFactory<T> {
 
   readonly name: string
   readonly strict: boolean
-  readonly layout: boolean
+  readonly grid: boolean
 
-  constructor(name: string, strict: boolean, layout: boolean) {
+  constructor(name: string, strict: boolean, grid: boolean) {
     this.name = name
     this.strict = strict
-    this.layout = layout
+    this.grid = grid
   }
 
   initialize(block: Block<T>, native: T | undefined): void {
@@ -244,7 +244,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       if (!error) {
         // Render actual blocks
         const strict = children.strict
-        const lm = block.factory.layout ? new LayoutManager() : undefined
+        const glc = block.factory.grid ? new GridLayoutCursor() : undefined
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
         let redeploy = false
@@ -253,7 +253,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
             break
           const x = child.self
           const box = x.options?.box
-          const placement = lm ? lm.place(box) : place(box)
+          const placement = glc ? glc.place(box) : place(box)
           if (!isSamePlacement(placement, x.placement)) {
             x.placement = placement
             x.factory.place(x)

@@ -58,7 +58,7 @@ export interface Placement {
   boxAlignment: Alignment
 }
 
-export class LayoutManager {
+export class GridLayoutCursor {
   private maxColumnCount: number = 0
   private maxRowCount: number = 0
   private actualColumnCount: number = 0
