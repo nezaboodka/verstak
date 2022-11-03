@@ -245,21 +245,21 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
         let p2: Array<Item<VBlock>> | undefined = undefined
         let placing = false
         for (const child of children.items()) {
+          if (Transaction.isCanceled)
+            break
           const x = child.self
           const box = x.options?.box
           const placement = lm ? lm.place(box) : place(box)
           if (!isSamePlacement(placement, x.placement))
             placing = true, x.placement = placement
           placing = markAsMovedIfNeeded(placing, child, children, strict)
-          if (!Transaction.isCanceled) {
-            const priority = x.options?.priority ?? Priority.SyncP0
-            if (priority === Priority.SyncP0)
-              prepareThenRunRender(child, children.isMoved(child), strict) // render synchronously
-            else if (priority === Priority.AsyncP1)
-              p1 = push(child, p1) // defer for P1 async rendering
-            else
-              p2 = push(child, p2) // defer for P2 async rendering
-          }
+          const priority = x.options?.priority ?? Priority.SyncP0
+          if (priority === Priority.SyncP0)
+            prepareThenRunRender(child, children.isMoved(child), strict) // render synchronously
+          else if (priority === Priority.AsyncP1)
+            p1 = push(child, p1) // defer for P1 async rendering
+          else
+            p2 = push(child, p2) // defer for P2 async rendering
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
