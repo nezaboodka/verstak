@@ -139,7 +139,7 @@ export class BlockFactory<T> {
     return isLeader // treat children as finalization leaders as well
   }
 
-  move(block: Block<T>, strict: boolean): void {
+  place(block: Block<T>, strict: boolean): void {
     // nothing to do by default
   }
 
@@ -243,7 +243,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
         const layout = block.factory.stacker ? new GridLayoutManager() : undefined
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
-        let moved = false
+        let placing = false
         for (const child of children.items()) {
           const x = child.self
           const box = x.options?.box
@@ -252,12 +252,12 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
           if (layout) { // grid block
             const effective = layout.claim(box)
             if (!isSameBoxes(effective, x.box))
-              moved = true
+              placing = true
           }
           else if (box) { // simple block
           }
 
-          moved = markAsMovedIfNeeded(moved, child, children, strict)
+          placing = markAsMovedIfNeeded(placing, child, children, strict)
           if (!Transaction.isCanceled) {
             const priority = x.options?.priority ?? Priority.SyncP0
             if (priority === Priority.SyncP0)
@@ -282,20 +282,20 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
   }
 }
 
-function markAsMovedIfNeeded(moved: boolean, child: Item<VBlock>,
+function markAsMovedIfNeeded(placing: boolean, child: Item<VBlock>,
   children: Collection<VBlock>, strict: boolean): boolean
 {
   // Detects element movements when abstract blocks exist among
   // regular blocks with HTML elements
   if (child.self.native) {
-    if (moved) {
+    if (placing) {
       children.markAsMoved(child)
-      moved = false
+      placing = false
     }
   }
   else if (strict && children.isMoved(child))
-    moved = true // apply to the first block with an element
-  return moved
+    placing = true // apply to the first block with an element
+  return placing
 }
 
 async function startIncrementalRendering(
@@ -344,10 +344,10 @@ async function renderIncrementally(parent: Item<VBlock>, stamp: number,
 }
 
 function prepareThenRunRender(item: Item<VBlock>,
-  moved: boolean, strict: boolean): void {
+  placing: boolean, strict: boolean): void {
   const block = item.self
   if (block.stamp >= 0) {
-    prepareRender(item, moved, strict)
+    prepareRender(item, placing, strict)
     if (block.options?.rx)
       nonreactive(block.autorender, block.options?.triggers) // reactive auto-rendering
     else
@@ -356,7 +356,7 @@ function prepareThenRunRender(item: Item<VBlock>,
 }
 
 function prepareRender(item: Item<VBlock>,
-  moved: boolean, strict: boolean): void {
+  placing: boolean, strict: boolean): void {
   const block = item.self
   const factory = block.factory
   // Initialize/layout if needed
@@ -375,10 +375,10 @@ function prepareRender(item: Item<VBlock>,
       })
     }
     factory.initialize?.(block, undefined)
-    factory.move?.(block, strict)
+    factory.place?.(block, strict)
   }
-  else if (moved)
-    factory.move?.(block, strict) // , console.log(`moved: ${block.name}`)
+  else if (placing)
+    factory.place?.(block, strict) // , console.log(`relocated: ${block.name}`)
 }
 
 function runRender(item: Item<VBlock>): void {
