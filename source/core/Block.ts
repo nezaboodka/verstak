@@ -37,6 +37,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   abstract readonly factory: BlockFactory<T>
   abstract readonly renderer: Render<T, M, R>
   abstract readonly options: Readonly<BlockOptions<T, M, R>> | undefined
+  abstract readonly placement: Readonly<Placement> | undefined
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
@@ -256,7 +257,8 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
           const placement = glc ? glc.place(box) : place(box)
           if (!isSamePlacement(placement, x.placement)) {
             x.placement = placement
-            x.factory.place(x)
+            // WIP:
+            // x.factory.place(x)
           }
           redeploy = markAsMovedIfNeeded(redeploy, child, children, strict)
           const priority = x.options?.priority ?? Priority.SyncP0

@@ -53,6 +53,10 @@ export abstract class BaseHtmlBlockFactory<T extends Element> extends BlockFacto
     }
   }
 
+  place(block: Block<T>): void {
+    // nothing to do by default
+  }
+
   render(block: Block<T>): void | Promise<void> {
     const result = super.render(block)
     if (gBlinkingEffect)
