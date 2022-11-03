@@ -139,7 +139,7 @@ export class BlockFactory<T> {
     return isLeader // treat children as finalization leaders as well
   }
 
-  place(block: Block<T>, strict: boolean): void {
+  move(block: Block<T>, strict: boolean): void {
     // nothing to do by default
   }
 
@@ -240,21 +240,24 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       if (!error) {
         // Render actual blocks
         const strict = children.strict
-        // const layout = block.factory.stacker ? new GridLayoutManager() : undefined
+        const layout = block.factory.stacker ? new GridLayoutManager() : undefined
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
-        let isMoved = false
+        let isMoving = false
         for (const child of children.items()) {
           const x = child.self
-          // const box = x.options?.box
-          // if (layout) { // grid block
-          //   const effective = layout.claim(box)
-          //   if (!isSameBoxes(effective, x.box))
-          //     isMoved = true
-          // }
-          // else if (box) { // simple block
-          // }
-          isMoved = markAsMovedIfNeeded(isMoved, child, children, strict)
+          const box = x.options?.box
+
+          // WIP:
+          if (layout) { // grid block
+            const effective = layout.claim(box)
+            if (!isSameBoxes(effective, x.box))
+              isMoving = true
+          }
+          else if (box) { // simple block
+          }
+
+          isMoving = markAsMovedIfNeeded(isMoving, child, children, strict)
           if (!Transaction.isCanceled) {
             const priority = x.options?.priority ?? Priority.SyncP0
             if (priority === Priority.SyncP0)
@@ -372,10 +375,10 @@ function prepareRender(item: Item<VBlock>,
       })
     }
     factory.initialize?.(block, undefined)
-    factory.place?.(block, strict)
+    factory.move?.(block, strict)
   }
   else if (moved)
-    factory.place?.(block, strict) // , console.log(`moved: ${block.name}`)
+    factory.move?.(block, strict) // , console.log(`moved: ${block.name}`)
 }
 
 function runRender(item: Item<VBlock>): void {

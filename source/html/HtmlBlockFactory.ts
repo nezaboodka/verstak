@@ -28,7 +28,7 @@ export abstract class BaseHtmlBlockFactory<T extends Element> extends BlockFacto
     return false // children of HTML blocks are not treated as leaders
   }
 
-  place(block: Block<T>, strict: boolean): void {
+  move(block: Block<T>, strict: boolean): void {
     const e = block.native
     if (e) {
       const nativeParent = BaseHtmlBlockFactory.findNearestParentHtmlBlock(block).native
