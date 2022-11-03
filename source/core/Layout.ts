@@ -47,6 +47,7 @@ export interface Box {
 }
 
 export interface Placement {
+  applied: boolean
   cellRange: CellRange | undefined
   widthMin: string
   widthMax: string
@@ -79,6 +80,7 @@ export class GridLayoutCursor {
 
   place(box: Box | undefined): Placement {
     const result: Placement = {
+      applied: false,
       cellRange: undefined,
       widthMin: '', widthMax: '', widthGrow: 0,
       heightMin: '', heightMax: '', heightGrow: 0,

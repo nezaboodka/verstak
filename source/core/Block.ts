@@ -255,11 +255,8 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
           const x = child.self
           const box = x.options?.box
           const placement = glc ? glc.place(box) : place(box)
-          if (!isSamePlacement(placement, x.placement)) {
+          if (!isSamePlacement(placement, x.placement))
             x.placement = placement
-            // WIP:
-            // x.factory.place(x)
-          }
           redeploy = markAsMovedIfNeeded(redeploy, child, children, strict)
           const priority = x.options?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
@@ -285,6 +282,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
 
 function place(box: Box | undefined): Placement | undefined {
   return !box ? undefined : {
+    applied: false,
     cellRange: undefined,
     widthMin: '', widthMax: '', widthGrow: 0,
     heightMin: '', heightMax: '', heightGrow: 0,
