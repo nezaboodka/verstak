@@ -34,7 +34,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   static frameDuration = Block.longFrameDuration
   // User-defined properties
   abstract readonly name: string
-  abstract readonly factory: BlockFactory<T>
+  abstract readonly kind: BlockKind<T>
   abstract readonly renderer: Render<T, M, R>
   abstract readonly options: Readonly<BlockOptions<T, M, R>> | undefined
   abstract readonly allocation: Readonly<Allocation> | undefined
@@ -74,7 +74,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
 
   static claim<T = undefined, M = unknown, R = void>(
     name: string, options: BlockOptions<T, M, R> | undefined,
-    renderer: Render<T, M, R>, factory?: BlockFactory<T>): Block<T, M, R> {
+    renderer: Render<T, M, R>, kind?: BlockKind<T>): Block<T, M, R> {
     // Emit block either by reusing existing one or by creating a new one
     const parent = gContext.self
     const children = parent.children
@@ -82,8 +82,8 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     let block: VBlock<T, M, R>
     if (item) { // reuse existing
       block = item.self
-      if (block.factory !== factory && factory !== undefined)
-        throw new Error(`changing block type is not yet supported: "${block.factory.name}" -> "${factory?.name}"`)
+      if (block.kind !== kind && kind !== undefined)
+        throw new Error(`changing block kind is not yet supported: "${block.kind.name}" -> "${kind?.name}"`)
       if (options) {
         const existingTriggers = block.options?.triggers
         if (triggersAreEqual(options.triggers, existingTriggers))
@@ -93,7 +93,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
       block.renderer = renderer
     }
     else { // create new
-      block = new VBlock<T, M, R>(name, factory ?? BlockFactory.default,
+      block = new VBlock<T, M, R>(name, kind ?? BlockKind.blank,
         parent, options, renderer)
       block.item = children.add(block)
       VBlock.grandCount++
@@ -116,8 +116,8 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
 
 const NOP = (): void => { /* nop */ }
 
-export class BlockFactory<T> {
-  public static readonly default = new BlockFactory<any>('default', false, false)
+export class BlockKind<T> {
+  public static readonly blank = new BlockKind<any>('blank', false, false)
 
   readonly name: string
   readonly strict: boolean
@@ -159,7 +159,7 @@ export class BlockFactory<T> {
   }
 }
 
-export class StaticBlockFactory<T> extends BlockFactory<T> {
+export class StaticBlockKind<T> extends BlockKind<T> {
   readonly element: T
 
   constructor(name: string, strict: boolean, element: T) {
@@ -185,7 +185,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
 
   // User-defined properties
   readonly name: string
-  readonly factory: BlockFactory<T>
+  readonly kind: BlockKind<T>
   renderer: Render<T, M, R>
   options: BlockOptions<T, M, R> | undefined
   allocation: Allocation | undefined
@@ -198,12 +198,12 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   stamp: number
   native: T | undefined
 
-  constructor(name: string, factory: BlockFactory<T>, parent: VBlock,
+  constructor(name: string, kind: BlockKind<T>, parent: VBlock,
     options: BlockOptions<T, M, R> | undefined, renderer: Render<T, M, R>) {
     super()
     // User-defined properties
     this.name = name
-    this.factory = factory
+    this.kind = kind
     this.renderer = renderer
     this.options = options
     this.allocation = undefined
@@ -211,7 +211,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
-    this.children = new Collection<VBlock>(factory.strict, getBlockName)
+    this.children = new Collection<VBlock>(kind.strict, getBlockName)
     this.item = undefined
     this.stamp = 0
     this.native = undefined
@@ -245,7 +245,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       if (!error) {
         // Render actual blocks
         const strict = children.strict
-        const glc = block.factory.grid ? new GridLayoutCursor() : undefined
+        const glc = block.kind.grid ? new GridLayoutCursor() : undefined
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
         let redeploy = false
@@ -259,7 +259,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
           if (checkForRelocation(allocation, x.allocation)) {
             x.allocation = allocation
             if (x.stamp > 0) // initial placement is done during the first rendering
-              x.factory.relocate(x) // here we do only 2nd and subsequent placements
+              x.kind.relocate(x) // here we do only 2nd and subsequent placements
           }
           redeploy = checkForRedeployment(redeploy, child, children, strict)
           const priority = opt?.priority ?? Priority.SyncP0
@@ -370,7 +370,7 @@ function prepareThenRunRender(item: Item<VBlock>,
 function prepareRender(item: Item<VBlock>,
   redeploy: boolean, strict: boolean): void {
   const block = item.self
-  const factory = block.factory
+  const kind = block.kind
   // Initialize/layout if needed
   if (block.stamp === 0) {
     block.stamp = 1
@@ -386,12 +386,12 @@ function prepareRender(item: Item<VBlock>,
         })
       })
     }
-    factory.initialize(block, undefined)
-    factory.deploy(block, strict) // initial deployment
-    factory.relocate(block) // initial placement
+    kind.initialize(block, undefined)
+    kind.deploy(block, strict) // initial deployment
+    kind.relocate(block) // initial placement
   }
   else if (redeploy)
-    factory.deploy(block, strict) // , console.log(`redeployed: ${block.name}`)
+    kind.deploy(block, strict) // , console.log(`redeployed: ${block.name}`)
 }
 
 function runRender(item: Item<VBlock>): void {
@@ -402,7 +402,7 @@ function runRender(item: Item<VBlock>): void {
       try {
         block.stamp++
         block.children.beginMerge()
-        result = block.factory.render(block)
+        result = block.kind.render(block)
         if (result instanceof Promise)
           result.then(
             v => { runRenderChildrenThenDo(undefined, NOP); return v },
@@ -424,7 +424,7 @@ function runFinalize(item: Item<VBlock>, isLeader: boolean): void {
   if (block.stamp >= 0) {
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
-    const childrenAreLeaders = block.factory.finalize(block, isLeader)
+    const childrenAreLeaders = block.kind.finalize(block, isLeader)
     if (block.options?.rx) {
       // Defer disposal if block is reactive
       item.aux = undefined
@@ -550,7 +550,7 @@ Promise.prototype.then = reactronicDomHookedThen
 // Globals
 
 const gSysRoot = Collection.createItem<VBlock>(new VBlock<null, void>('SYSTEM',
-  new StaticBlockFactory<null>('SYSTEM', false, null),
+  new StaticBlockKind<null>('SYSTEM', false, null),
   { level: 0 } as VBlock, { rx: true }, NOP)) // fake parent (overwritten below)
 gSysRoot.self.item = gSysRoot
 

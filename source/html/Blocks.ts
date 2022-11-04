@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Block, Render, BlockOptions } from '../core/api'
-import { HtmlBlockFactory } from './HtmlBlockFactory'
+import { HtmlBlockKind } from './HtmlBlockFactory'
 
 // Verstak is based on two fundamental layout structures
 // called simple block and grid block; and on two special
@@ -62,11 +62,11 @@ export function group<M = unknown, R = void>(name: string,
 
 const VerstakTags = {
   // display: flex
-  block: new HtmlBlockFactory<HTMLElement>('v-block', true, false),
+  block: new HtmlBlockKind<HTMLElement>('v-block', true, false),
 
   // display: grid
-  grid: new HtmlBlockFactory<HTMLElement>('v-grid', false, true),
+  grid: new HtmlBlockKind<HTMLElement>('v-grid', false, true),
 
   // display: contents
-  group: new HtmlBlockFactory<HTMLElement>('v-group', false, false),
+  group: new HtmlBlockKind<HTMLElement>('v-group', false, false),
 }

@@ -6,9 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { Rx, Item } from 'reactronic'
-import { Block, BlockFactory, Priority } from '../core/api'
+import { Block, BlockKind, Priority } from '../core/api'
 
-export abstract class BaseHtmlBlockFactory<T extends Element> extends BlockFactory<T> {
+export abstract class BaseHtmlBlockKind<T extends Element> extends BlockKind<T> {
 
   initialize(block: Block<T>, element: T | undefined): void {
     element = this.createElement(block)
@@ -31,10 +31,10 @@ export abstract class BaseHtmlBlockFactory<T extends Element> extends BlockFacto
   deploy(block: Block<T>, strict: boolean): void {
     const e = block.native
     if (e) {
-      const nativeParent = BaseHtmlBlockFactory.findNearestParentHtmlBlock(block).native
+      const nativeParent = BaseHtmlBlockKind.findNearestParentHtmlBlock(block).native
       if (nativeParent) {
         if (strict) {
-          const after = BaseHtmlBlockFactory.findPrevSiblingHtmlBlock(block.item!)
+          const after = BaseHtmlBlockKind.findPrevSiblingHtmlBlock(block.item!)
           if (after === undefined) {
             if (nativeParent !== e.parentNode || !e.previousSibling)
               nativeParent.prepend(e)
@@ -96,15 +96,15 @@ export abstract class BaseHtmlBlockFactory<T extends Element> extends BlockFacto
   protected abstract createElement(block: Block<T>): T
 }
 
-export class HtmlBlockFactory<T extends HTMLElement> extends BaseHtmlBlockFactory<T> {
+export class HtmlBlockKind<T extends HTMLElement> extends BaseHtmlBlockKind<T> {
   protected createElement(block: Block<T>): T {
-    return document.createElement(block.factory.name) as T
+    return document.createElement(block.kind.name) as T
   }
 }
 
-export class SvgBlockFactory<T extends SVGElement> extends BaseHtmlBlockFactory<T> {
+export class SvgBlockKind<T extends SVGElement> extends BaseHtmlBlockKind<T> {
   protected createElement(block: Block<T>): T {
-    return document.createElementNS('http://www.w3.org/2000/svg', block.factory.name) as T
+    return document.createElementNS('http://www.w3.org/2000/svg', block.kind.name) as T
   }
 }
 
