@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
-import { Box, BlockLocation, GridLayoutCursor, checkForRelocation, Alignment } from './Layout'
+import { Box, EffectiveBox, GridLayoutCursor, checkForRelocation, Alignment } from './Layout'
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
@@ -37,7 +37,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   abstract readonly factory: BlockFactory<T>
   abstract readonly renderer: Render<T, M, R>
   abstract readonly options: Readonly<BlockOptions<T, M, R>> | undefined
-  abstract readonly location: Readonly<BlockLocation> | undefined
+  abstract readonly box: Readonly<EffectiveBox> | undefined
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
@@ -188,7 +188,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   readonly factory: BlockFactory<T>
   renderer: Render<T, M, R>
   options: BlockOptions<T, M, R> | undefined
-  location: BlockLocation | undefined
+  box: EffectiveBox | undefined
   model: M | undefined
   // System-managed properties
   readonly level: number
@@ -206,7 +206,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     this.factory = factory
     this.renderer = renderer
     this.options = options
-    this.location = undefined
+    this.box = undefined
     this.model = undefined
     // System-managed properties
     this.level = parent.level + 1
@@ -253,10 +253,10 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
           if (Transaction.isCanceled)
             break
           const c = child.self
-          const box = c.options?.box
-          const location = glc ? glc.layOut(box) : layOut(box)
-          if (checkForRelocation(location, c.location)) {
-            c.location = location
+          const optBox = c.options?.box
+          const box = glc ? glc.layOut(optBox) : layOut(optBox)
+          if (checkForRelocation(box, c.box)) {
+            c.box = box
             if (c.stamp > 0) // initial placement is done during the first rendering
               c.factory.relocate(c) // here we do only 2nd and subsequent placements
           }
@@ -283,9 +283,9 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
   }
 }
 
-function layOut(box: Box | undefined): BlockLocation | undefined {
+function layOut(box: Box | undefined): EffectiveBox | undefined {
   return !box ? undefined : {
-    cellRange: undefined,
+    bounds: undefined,
     widthMin: '', widthMax: '', widthGrow: 0,
     heightMin: '', heightMax: '', heightGrow: 0,
     alignment: box.alignment ?? Alignment.TopLeft,

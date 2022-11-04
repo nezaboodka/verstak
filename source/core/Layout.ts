@@ -33,7 +33,7 @@ export interface TrackSize extends ElasticSize {
 
 export interface Box {
   // Sizing
-  place?: string                // ""
+  bounds?: string                // ""
   width?: ElasticSize           // cells=1, min/max=min-content
   height?: ElasticSize          // cells=1, min/max=min-content
   widthOverlapped?: boolean     // false
@@ -46,8 +46,8 @@ export interface Box {
   wrap?: boolean                // false
 }
 
-export interface BlockLocation {
-  cellRange: CellRange | undefined
+export interface EffectiveBox {
+  bounds: CellRange | undefined
   widthMin: string
   widthMax: string
   widthGrow: number
@@ -77,23 +77,23 @@ export class GridLayoutCursor {
     this.newRowCursor = 0
   }
 
-  layOut(box: Box | undefined): BlockLocation {
-    const result: BlockLocation = {
-      cellRange: undefined,
+  layOut(box: Box | undefined): EffectiveBox {
+    const result: EffectiveBox = {
+      bounds: undefined,
       widthMin: '', widthMax: '', widthGrow: 0,
       heightMin: '', heightMax: '', heightGrow: 0,
       alignment: Alignment.TopLeft, boxAlignment: Alignment.Fit,
     }
     const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
     const maxRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
-    if (box?.place) { // absolute positioning
-      result.cellRange = parseCellRange(box.place, { x1: 0, y1: 0, x2: 0, y2: 0 })
-      absolutizeCellRange(result.cellRange,
+    if (box?.bounds) { // absolute positioning
+      result.bounds = parseCellRange(box.bounds, { x1: 0, y1: 0, x2: 0, y2: 0 })
+      absolutizeCellRange(result.bounds,
         this.columnCursor + 1, this.rowCursor + 1,
-        maxColumnCount, maxRowCount, result.cellRange)
+        maxColumnCount, maxRowCount, result.bounds)
     }
     else { // relative positioning
-      const cr = result.cellRange = { x1: 0, y1: 0, x2: 0, y2: 0 }
+      const cr = result.bounds = { x1: 0, y1: 0, x2: 0, y2: 0 }
       if (box?.lineBegin) {
         this.columnCursor = 0
         this.rowCursor = this.newRowCursor
@@ -162,6 +162,6 @@ function absolutizePosition(pos: number, cursor: number, max: number): number {
   return pos
 }
 
-export function checkForRelocation(a: BlockLocation | undefined, b: BlockLocation | undefined): boolean {
+export function checkForRelocation(a: EffectiveBox | undefined, b: EffectiveBox | undefined): boolean {
   return false // not implemented
 }
