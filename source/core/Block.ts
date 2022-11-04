@@ -252,16 +252,17 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
         for (const child of children.items()) {
           if (Transaction.isCanceled)
             break
-          const c = child.self
-          const box = c.options?.box
+          const x = child.self
+          const opt = x.options
+          const box = opt?.box
           const allocation = glc ? glc.allocate(box) : allocate(box)
-          if (checkForRelocation(allocation, c.allocation)) {
-            c.allocation = allocation
-            if (c.stamp > 0) // initial placement is done during the first rendering
-              c.factory.relocate(c) // here we do only 2nd and subsequent placements
+          if (checkForRelocation(allocation, x.allocation)) {
+            x.allocation = allocation
+            if (x.stamp > 0) // initial placement is done during the first rendering
+              x.factory.relocate(x) // here we do only 2nd and subsequent placements
           }
           redeploy = checkForRedeployment(redeploy, child, children, strict)
-          const priority = c.options?.priority ?? Priority.SyncP0
+          const priority = opt?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
             prepareThenRunRender(child, children.isMoved(child), strict) // render synchronously
           else if (priority === Priority.AsyncP1)
