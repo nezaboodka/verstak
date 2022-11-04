@@ -46,7 +46,7 @@ export interface Box {
   wrap?: boolean                // false
 }
 
-export interface Placement {
+export interface BlockLocation {
   cellRange: CellRange | undefined
   widthMin: string
   widthMax: string
@@ -77,8 +77,8 @@ export class GridLayoutCursor {
     this.newRowCursor = 0
   }
 
-  acquirePlace(box: Box | undefined): Placement {
-    const result: Placement = {
+  layOut(box: Box | undefined): BlockLocation {
+    const result: BlockLocation = {
       cellRange: undefined,
       widthMin: '', widthMax: '', widthGrow: 0,
       heightMin: '', heightMax: '', heightGrow: 0,
@@ -162,6 +162,6 @@ function absolutizePosition(pos: number, cursor: number, max: number): number {
   return pos
 }
 
-export function checkForRelocation(a: Placement | undefined, b: Placement | undefined): boolean {
-  return true // not implemented
+export function checkForRelocation(a: BlockLocation | undefined, b: BlockLocation | undefined): boolean {
+  return false // not implemented
 }
