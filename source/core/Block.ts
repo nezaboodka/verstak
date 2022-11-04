@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
-import { Box, EffectiveBox, GridLayoutCursor, checkForRelocation, Alignment } from './Layout'
+import { Box, Allocation, GridLayoutCursor, checkForRelocation, Alignment } from './Layout'
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
@@ -37,7 +37,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   abstract readonly factory: BlockFactory<T>
   abstract readonly renderer: Render<T, M, R>
   abstract readonly options: Readonly<BlockOptions<T, M, R>> | undefined
-  abstract readonly box: Readonly<EffectiveBox> | undefined
+  abstract readonly allocation: Readonly<Allocation> | undefined
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
@@ -188,7 +188,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   readonly factory: BlockFactory<T>
   renderer: Render<T, M, R>
   options: BlockOptions<T, M, R> | undefined
-  box: EffectiveBox | undefined
+  allocation: Allocation | undefined
   model: M | undefined
   // System-managed properties
   readonly level: number
@@ -206,7 +206,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     this.factory = factory
     this.renderer = renderer
     this.options = options
-    this.box = undefined
+    this.allocation = undefined
     this.model = undefined
     // System-managed properties
     this.level = parent.level + 1
@@ -253,10 +253,10 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
           if (Transaction.isCanceled)
             break
           const c = child.self
-          const optBox = c.options?.box
-          const box = glc ? glc.allocate(optBox) : allocate(optBox)
-          if (checkForRelocation(box, c.box)) {
-            c.box = box
+          const box = c.options?.box
+          const allocation = glc ? glc.allocate(box) : allocate(box)
+          if (checkForRelocation(allocation, c.allocation)) {
+            c.allocation = allocation
             if (c.stamp > 0) // initial placement is done during the first rendering
               c.factory.relocate(c) // here we do only 2nd and subsequent placements
           }
@@ -283,7 +283,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
   }
 }
 
-function allocate(box: Box | undefined): EffectiveBox | undefined {
+function allocate(box: Box | undefined): Allocation | undefined {
   return !box ? undefined : {
     bounds: undefined,
     widthMin: '', widthMax: '', widthGrow: 0,

@@ -46,7 +46,7 @@ export interface Box {
   wrap?: boolean                // false
 }
 
-export interface EffectiveBox {
+export interface Allocation {
   bounds: CellRange | undefined
   widthMin: string
   widthMax: string
@@ -77,8 +77,8 @@ export class GridLayoutCursor {
     this.newRowCursor = 0
   }
 
-  allocate(box: Box | undefined): EffectiveBox {
-    const result: EffectiveBox = {
+  allocate(box: Box | undefined): Allocation {
+    const result: Allocation = {
       bounds: undefined,
       widthMin: '', widthMax: '', widthGrow: 0,
       heightMin: '', heightMax: '', heightGrow: 0,
@@ -162,6 +162,6 @@ function absolutizePosition(pos: number, cursor: number, max: number): number {
   return pos
 }
 
-export function checkForRelocation(a: EffectiveBox | undefined, b: EffectiveBox | undefined): boolean {
+export function checkForRelocation(a: Allocation | undefined, b: Allocation | undefined): boolean {
   return false // not implemented
 }
