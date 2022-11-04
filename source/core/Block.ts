@@ -254,7 +254,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
             break
           const c = child.self
           const optBox = c.options?.box
-          const box = glc ? glc.layOut(optBox) : layOut(optBox)
+          const box = glc ? glc.allocate(optBox) : allocate(optBox)
           if (checkForRelocation(box, c.box)) {
             c.box = box
             if (c.stamp > 0) // initial placement is done during the first rendering
@@ -283,7 +283,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
   }
 }
 
-function layOut(box: Box | undefined): EffectiveBox | undefined {
+function allocate(box: Box | undefined): EffectiveBox | undefined {
   return !box ? undefined : {
     bounds: undefined,
     widthMin: '', widthMax: '', widthGrow: 0,

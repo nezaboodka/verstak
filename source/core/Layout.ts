@@ -77,7 +77,7 @@ export class GridLayoutCursor {
     this.newRowCursor = 0
   }
 
-  layOut(box: Box | undefined): EffectiveBox {
+  allocate(box: Box | undefined): EffectiveBox {
     const result: EffectiveBox = {
       bounds: undefined,
       widthMin: '', widthMax: '', widthGrow: 0,
