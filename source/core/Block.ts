@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
-import { Box, Placement, GridLayoutCursor, samePlacements, Alignment } from './Layout'
+import { Box, Placement, GridLayoutCursor, checkForRelocation, Alignment } from './Layout'
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
@@ -144,7 +144,7 @@ export class BlockFactory<T> {
     // nothing to do by default
   }
 
-  place(block: Block<T>): void {
+  relocate(block: Block<T>): void {
     // nothing to do by default
   }
 
@@ -252,16 +252,16 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
         for (const child of children.items()) {
           if (Transaction.isCanceled)
             break
-          const cb = child.self // child as block
-          const box = cb.options?.box
-          const placement = glc ? glc.place(box) : place(box)
-          if (!samePlacements(placement, cb.placement)) {
-            cb.placement = placement
-            if (cb.stamp > 0) // initial placement is done during the first rendering
-              cb.factory.place(cb) // here we do only 2nd and subsequent placements
+          const c = child.self
+          const box = c.options?.box
+          const placement = glc ? glc.acquirePlace(box) : acquirePlace(box)
+          if (!checkForRelocation(placement, c.placement)) {
+            c.placement = placement
+            if (c.stamp > 0) // initial placement is done during the first rendering
+              c.factory.relocate(c) // here we do only 2nd and subsequent placements
           }
-          redeploy = markAsMovedIfNeeded(redeploy, child, children, strict)
-          const priority = cb.options?.priority ?? Priority.SyncP0
+          redeploy = checkForRedeployment(redeploy, child, children, strict)
+          const priority = c.options?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
             prepareThenRunRender(child, children.isMoved(child), strict) // render synchronously
           else if (priority === Priority.AsyncP1)
@@ -283,7 +283,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
   }
 }
 
-function place(box: Box | undefined): Placement | undefined {
+function acquirePlace(box: Box | undefined): Placement | undefined {
   return !box ? undefined : {
     cellRange: undefined,
     widthMin: '', widthMax: '', widthGrow: 0,
@@ -293,7 +293,7 @@ function place(box: Box | undefined): Placement | undefined {
   }
 }
 
-function markAsMovedIfNeeded(redeploy: boolean, child: Item<VBlock>,
+function checkForRedeployment(redeploy: boolean, child: Item<VBlock>,
   children: Collection<VBlock>, strict: boolean): boolean
 {
   // Detects element movements when abstract blocks exist among
@@ -387,7 +387,7 @@ function prepareRender(item: Item<VBlock>,
     }
     factory.initialize(block, undefined)
     factory.deploy(block, strict) // initial deployment
-    factory.place(block) // initial placement
+    factory.relocate(block) // initial placement
   }
   else if (redeploy)
     factory.deploy(block, strict) // , console.log(`redeployed: ${block.name}`)

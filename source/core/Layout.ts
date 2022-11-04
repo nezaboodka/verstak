@@ -77,7 +77,7 @@ export class GridLayoutCursor {
     this.newRowCursor = 0
   }
 
-  place(box: Box | undefined): Placement {
+  acquirePlace(box: Box | undefined): Placement {
     const result: Placement = {
       cellRange: undefined,
       widthMin: '', widthMax: '', widthGrow: 0,
@@ -162,6 +162,6 @@ function absolutizePosition(pos: number, cursor: number, max: number): number {
   return pos
 }
 
-export function samePlacements(a: Placement | undefined, b: Placement | undefined): boolean {
+export function checkForRelocation(a: Placement | undefined, b: Placement | undefined): boolean {
   return true // not implemented
 }

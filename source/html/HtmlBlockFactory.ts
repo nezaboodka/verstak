@@ -53,7 +53,7 @@ export abstract class BaseHtmlBlockFactory<T extends Element> extends BlockFacto
     }
   }
 
-  place(block: Block<T>): void {
+  relocate(block: Block<T>): void {
     // nothing to do by default
   }
 
