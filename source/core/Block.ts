@@ -114,9 +114,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   }
 }
 
-// Driver
-
-const NOP = (): void => { /* nop */ }
+// AbstractDriver
 
 export class AbstractDriver<T> {
   public static readonly blank = new AbstractDriver<any>('blank', false, false)
@@ -554,6 +552,8 @@ function defaultReject(error: any): never {
 Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
+
+const NOP = (): void => { /* nop */ }
 
 const gSysRoot = Collection.createItem<VBlock>(new VBlock<null, void>('SYSTEM',
   new StaticDriver<null>('SYSTEM', false, null),
