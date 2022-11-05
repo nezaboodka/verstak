@@ -6,9 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { Rx, Item } from 'reactronic'
-import { Block, BlockKind, Priority } from '../core/api'
+import { Block, AbstractDriver, Priority } from '../core/api'
 
-export abstract class BaseHtmlBlockKind<T extends Element> extends BlockKind<T> {
+export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T> {
 
   initialize(block: Block<T>, element: T | undefined): void {
     element = this.createElement(block)
@@ -31,10 +31,10 @@ export abstract class BaseHtmlBlockKind<T extends Element> extends BlockKind<T> 
   deploy(block: Block<T>, strict: boolean): void {
     const e = block.native
     if (e) {
-      const nativeParent = BaseHtmlBlockKind.findNearestParentHtmlBlock(block).native
+      const nativeParent = BaseHtmlDriver.findNearestParentHtmlBlock(block).native
       if (nativeParent) {
         if (strict) {
-          const after = BaseHtmlBlockKind.findPrevSiblingHtmlBlock(block.item!)
+          const after = BaseHtmlDriver.findPrevSiblingHtmlBlock(block.item!)
           if (after === undefined) {
             if (nativeParent !== e.parentNode || !e.previousSibling)
               nativeParent.prepend(e)
@@ -96,15 +96,15 @@ export abstract class BaseHtmlBlockKind<T extends Element> extends BlockKind<T> 
   protected abstract createElement(block: Block<T>): T
 }
 
-export class HtmlBlockKind<T extends HTMLElement> extends BaseHtmlBlockKind<T> {
+export class HtmlDriver<T extends HTMLElement> extends BaseHtmlDriver<T> {
   protected createElement(block: Block<T>): T {
-    return document.createElement(block.kind.name) as T
+    return document.createElement(block.driver.name) as T
   }
 }
 
-export class SvgBlockKind<T extends SVGElement> extends BaseHtmlBlockKind<T> {
+export class SvgDriver<T extends SVGElement> extends BaseHtmlDriver<T> {
   protected createElement(block: Block<T>): T {
-    return document.createElementNS('http://www.w3.org/2000/svg', block.kind.name) as T
+    return document.createElementNS('http://www.w3.org/2000/svg', block.driver.name) as T
   }
 }
 

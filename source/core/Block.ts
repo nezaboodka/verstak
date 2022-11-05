@@ -34,7 +34,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   static frameDuration = Block.longFrameDuration
   // User-defined properties
   abstract readonly name: string
-  abstract readonly kind: BlockKind<T>
+  abstract readonly driver: AbstractDriver<T>
   abstract readonly renderer: Render<T, M, R>
   abstract readonly options: Readonly<BlockOptions<T, M, R>> | undefined
   abstract readonly allocation: Readonly<Allocation> | undefined
@@ -74,7 +74,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
 
   static claim<T = undefined, M = unknown, R = void>(
     name: string, options: BlockOptions<T, M, R> | undefined,
-    renderer: Render<T, M, R>, kind?: BlockKind<T>): Block<T, M, R> {
+    renderer: Render<T, M, R>, driver?: AbstractDriver<T>): Block<T, M, R> {
     // Emit block either by reusing existing one or by creating a new one
     let result: VBlock<T, M, R>
     const parent = gContext.self
@@ -84,8 +84,8 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     const existing = children.claim(name)
     if (existing) { // reuse existing
       result = existing.self
-      if (result.kind !== kind && kind !== undefined)
-        throw new Error(`changing block kind is not yet supported: "${result.kind.name}" -> "${kind?.name}"`)
+      if (result.driver !== driver && driver !== undefined)
+        throw new Error(`changing block driver is not yet supported: "${result.driver.name}" -> "${driver?.name}"`)
       if (options) {
         const existingTriggers = result.options?.triggers
         if (triggersAreEqual(options.triggers, existingTriggers))
@@ -95,7 +95,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
       result.renderer = renderer
     }
     else { // create new
-      result = new VBlock<T, M, R>(name, kind ?? BlockKind.blank,
+      result = new VBlock<T, M, R>(name, driver ?? AbstractDriver.blank,
         parent, options, renderer)
       result.item = children.add(result)
       VBlock.grandCount++
@@ -114,12 +114,12 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   }
 }
 
-// BlockFactory
+// Driver
 
 const NOP = (): void => { /* nop */ }
 
-export class BlockKind<T> {
-  public static readonly blank = new BlockKind<any>('blank', false, false)
+export class AbstractDriver<T> {
+  public static readonly blank = new AbstractDriver<any>('blank', false, false)
 
   readonly name: string
   readonly strict: boolean
@@ -161,7 +161,7 @@ export class BlockKind<T> {
   }
 }
 
-export class StaticBlockKind<T> extends BlockKind<T> {
+export class StaticDriver<T> extends AbstractDriver<T> {
   readonly element: T
 
   constructor(name: string, strict: boolean, element: T) {
@@ -187,7 +187,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
 
   // User-defined properties
   readonly name: string
-  readonly kind: BlockKind<T>
+  readonly driver: AbstractDriver<T>
   renderer: Render<T, M, R>
   options: BlockOptions<T, M, R> | undefined
   allocation: Allocation | undefined
@@ -201,12 +201,12 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   stamp: number
   native: T | undefined
 
-  constructor(name: string, kind: BlockKind<T>, parent: VBlock,
+  constructor(name: string, driver: AbstractDriver<T>, parent: VBlock,
     options: BlockOptions<T, M, R> | undefined, renderer: Render<T, M, R>) {
     super()
     // User-defined properties
     this.name = name
-    this.kind = kind
+    this.driver = driver
     this.renderer = renderer
     this.options = options
     this.allocation = undefined
@@ -214,7 +214,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
-    this.children = new Collection<VBlock>(kind.strict, getBlockName)
+    this.children = new Collection<VBlock>(driver.strict, getBlockName)
     this.numerator = 0
     this.item = undefined
     this.stamp = 0
@@ -249,7 +249,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       if (!error) {
         // Render actual blocks
         const strict = children.strict
-        const k = block.kind
+        const k = block.driver
         const glc = k.strict || k.control ? undefined : new GridLayoutCursor()
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
@@ -264,7 +264,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
           if (checkForRelocation(allocation, x.allocation)) {
             x.allocation = allocation
             if (x.stamp > 0) // initial placement is done during the first rendering
-              x.kind.relocate(x) // here we do only 2nd and subsequent placements
+              x.driver.relocate(x) // here we do only 2nd and subsequent placements
           }
           redeploy = checkForRedeployment(redeploy, child, children, strict)
           const priority = opt?.priority ?? Priority.SyncP0
@@ -375,7 +375,7 @@ function prepareThenRunRender(item: Item<VBlock>,
 function prepareRender(item: Item<VBlock>,
   redeploy: boolean, strict: boolean): void {
   const block = item.self
-  const kind = block.kind
+  const driver = block.driver
   // Initialize/layout if needed
   if (block.stamp === 0) {
     block.stamp = 1
@@ -391,12 +391,12 @@ function prepareRender(item: Item<VBlock>,
         })
       })
     }
-    kind.initialize(block, undefined)
-    kind.deploy(block, strict) // initial deployment
-    kind.relocate(block) // initial placement
+    driver.initialize(block, undefined)
+    driver.deploy(block, strict) // initial deployment
+    driver.relocate(block) // initial placement
   }
   else if (redeploy)
-    kind.deploy(block, strict) // , console.log(`redeployed: ${block.name}`)
+    driver.deploy(block, strict) // , console.log(`redeployed: ${block.name}`)
 }
 
 function runRender(item: Item<VBlock>): void {
@@ -408,7 +408,7 @@ function runRender(item: Item<VBlock>): void {
         block.stamp++
         block.numerator = 0
         block.children.beginMerge()
-        result = block.kind.render(block)
+        result = block.driver.render(block)
         if (result instanceof Promise)
           result.then(
             v => { runRenderChildrenThenDo(undefined, NOP); return v },
@@ -430,7 +430,7 @@ function runFinalize(item: Item<VBlock>, isLeader: boolean): void {
   if (block.stamp >= 0) {
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
-    const childrenAreLeaders = block.kind.finalize(block, isLeader)
+    const childrenAreLeaders = block.driver.finalize(block, isLeader)
     if (block.options?.rx) {
       // Defer disposal if block is reactive
       item.aux = undefined
@@ -556,7 +556,7 @@ Promise.prototype.then = reactronicDomHookedThen
 // Globals
 
 const gSysRoot = Collection.createItem<VBlock>(new VBlock<null, void>('SYSTEM',
-  new StaticBlockKind<null>('SYSTEM', false, null),
+  new StaticDriver<null>('SYSTEM', false, null),
   { level: 0 } as VBlock, { rx: true }, NOP)) // fake parent (overwritten below)
 gSysRoot.self.item = gSysRoot
 

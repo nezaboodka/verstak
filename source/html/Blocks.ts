@@ -6,13 +6,13 @@
 // automatically licensed under the license referred above.
 
 import { Block, Render, BlockOptions } from '../core/api'
-import { HtmlBlockKind } from './HtmlBlockFactory'
+import { HtmlDriver } from './HtmlBlockFactory'
 
 // Verstak is based on two fundamental layout structures
-// called simple block and grid block; and on two special
+// called basic block and grid block; and on two special
 // non-visual elements called line begin and group.
 
-// Simple block is a layout structure, which children are
+// Basic block is a layout structure, which children are
 // layed out using left-to-right-and-top-to-bottom flow.
 
 // Grid block is layout structure, which children are
@@ -57,22 +57,33 @@ export function group<M = unknown, R = void>(name: string,
   return Block.claim(name, options, renderer, VerstakTags.group)
 }
 
+// VerstakDriver
+
+export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
+  render(block: Block<T>): void | Promise<void> {
+    const k = block.driver
+    if (k.strict && !k.control)
+      lb()
+    return super.render(block)
+  }
+}
+
 // VerstakTags
 
 const VerstakTags = {
   // display: flex, flex-direction: column
-  block: new HtmlBlockKind<HTMLElement>('v-block', true, false),
+  block: new VerstakDriver<HTMLElement>('v-block', true, false),
 
   // display: grid
-  grid: new HtmlBlockKind<HTMLElement>('v-grid', false, false),
+  grid: new VerstakDriver<HTMLElement>('v-grid', false, false),
 
   // display:
   //   - flex (row) if parent is regular block
   //   - contents if parent is grid
-  line: new HtmlBlockKind<HTMLElement>('v-line', true, true),
+  line: new VerstakDriver<HTMLElement>('v-line', true, true),
 
   // display: contents
-  group: new HtmlBlockKind<HTMLElement>('v-group', false, true),
+  group: new VerstakDriver<HTMLElement>('v-group', false, true),
 }
 
 const NOP = (): void => { /* nop */ }
