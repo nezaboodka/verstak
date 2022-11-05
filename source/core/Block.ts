@@ -76,31 +76,31 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     name: string, options: BlockOptions<T, M, R> | undefined,
     renderer: Render<T, M, R>, kind?: BlockKind<T>): Block<T, M, R> {
     // Emit block either by reusing existing one or by creating a new one
+    let result: VBlock<T, M, R>
     const parent = gContext.self
     const children = parent.children
-    const item = children.claim(name)
-    let block: VBlock<T, M, R>
-    if (item) { // reuse existing
-      block = item.self
-      if (block.kind !== kind && kind !== undefined)
-        throw new Error(`changing block kind is not yet supported: "${block.kind.name}" -> "${kind?.name}"`)
+    const existing = children.claim(name)
+    if (existing) { // reuse existing
+      result = existing.self
+      if (result.kind !== kind && kind !== undefined)
+        throw new Error(`changing block kind is not yet supported: "${result.kind.name}" -> "${kind?.name}"`)
       if (options) {
-        const existingTriggers = block.options?.triggers
+        const existingTriggers = result.options?.triggers
         if (triggersAreEqual(options.triggers, existingTriggers))
           options.triggers = existingTriggers // preserve triggers instance
       }
-      block.options = options
-      block.renderer = renderer
+      result.options = options
+      result.renderer = renderer
     }
     else { // create new
-      block = new VBlock<T, M, R>(name, kind ?? BlockKind.blank,
+      result = new VBlock<T, M, R>(name, kind ?? BlockKind.blank,
         parent, options, renderer)
-      block.item = children.add(block)
+      result.item = children.add(result)
       VBlock.grandCount++
       if (options?.rx)
         VBlock.disposableCount++
     }
-    return block
+    return result
   }
 
   static getDefaultLoggingOptions(): LoggingOptions | undefined {
