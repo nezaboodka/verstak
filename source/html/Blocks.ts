@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Block, Render, BlockOptions, BlockKind } from '../core/api'
+import { Block, Render, BlockOptions, BlockKind, BasicLayoutManager } from '../core/api'
 import { HtmlDriver } from './HtmlDriver'
 
 // Verstak is based on two fundamental layout structures
@@ -72,18 +72,18 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 const VerstakTags = {
   // display: flex, flex-direction: column
-  block: new VerstakDriver<HTMLElement>('v-block', BlockKind.Block),
+  block: new VerstakDriver<HTMLElement>('v-block', BlockKind.Block, () => new BasicLayoutManager()),
 
   // display: grid
-  grid: new VerstakDriver<HTMLElement>('v-grid', BlockKind.Grid),
+  grid: new VerstakDriver<HTMLElement>('v-grid', BlockKind.Grid, () => new BasicLayoutManager()),
 
   // display:
   //   - flex (row) if parent is regular block
   //   - contents if parent is grid
-  part: new VerstakDriver<HTMLElement>('v-part', BlockKind.Part),
+  part: new VerstakDriver<HTMLElement>('v-part', BlockKind.Part, () => new BasicLayoutManager()),
 
   // display: contents
-  group: new VerstakDriver<HTMLElement>('v-group', BlockKind.Group),
+  group: new VerstakDriver<HTMLElement>('v-group', BlockKind.Group, () => new BasicLayoutManager()),
 }
 
 const NOP = (): void => { /* nop */ }

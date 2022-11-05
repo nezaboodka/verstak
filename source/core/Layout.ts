@@ -65,7 +65,7 @@ export interface LayoutManager {
 
 export class BasicLayoutManager implements LayoutManager {
   begin(): void {
-    throw new Error('Method not implemented.')
+    // not implemented
   }
 
   place(box: Box | undefined): Place | undefined {
