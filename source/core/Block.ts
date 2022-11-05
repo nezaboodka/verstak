@@ -133,7 +133,7 @@ export enum BlockKind {
 
 // AbstractDriver
 
-const NoLayoutManager: () => LayoutManager = () => new LayoutManager()
+const NoLayoutManager = (): LayoutManager => new LayoutManager()
 
 export class AbstractDriver<T> {
   public static readonly group = new AbstractDriver<any>('group', BlockKind.Group)
