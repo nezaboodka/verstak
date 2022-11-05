@@ -65,7 +65,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     return gContext.self
   }
 
-  static renderChildrenThenDo(action: (error: unknown) => void): void {
+  static renderNestedTreesThenDo(action: (error: unknown) => void): void {
     runRenderChildrenThenDo(undefined, action)
   }
 
