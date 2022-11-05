@@ -10,7 +10,7 @@ import { HtmlDriver } from './HtmlDriver'
 
 // Verstak is based on two fundamental layout structures
 // called basic block and grid block; and on two special
-// non-visual elements called line begin and group.
+// non-visual elements called separator and group.
 
 // Basic block is a layout structure, which children are
 // layed out using left-to-right-and-top-to-bottom flow.
@@ -18,8 +18,8 @@ import { HtmlDriver } from './HtmlDriver'
 // Grid block is layout structure, which children are
 // layed out over grid cells.
 
-// Line begin is a special non-visual element, which
-// begins new layout line inside block or grid block.
+// Separator is a special non-visual element, which
+// begins new line inside block or grid block.
 
 // Group is a special non-visual element for logical
 // grouping of simple blocks, grid blocks and other groups.
@@ -42,10 +42,10 @@ export function grid<M = unknown, R = void>(name: string,
   return Block.claim(name, options, renderer, VerstakTags.grid)
 }
 
-// Line Begin
+// Separator
 
-export function lb(spacing?: boolean): Block<HTMLElement> {
-  return Block.claim('', undefined, NOP, VerstakTags.paragraph)
+export function sep(spacing?: boolean): Block<HTMLElement> {
+  return Block.claim('', undefined, NOP, VerstakTags.part)
 }
 
 // Group
@@ -61,8 +61,9 @@ export function group<M = unknown, R = void>(name: string,
 
 export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: Block<T>): void | Promise<void> {
+    // Create initial part inside basic block automatically
     if (block.driver.kind === BlockKind.Block)
-      lb() // automatic initial line begin for basic blocks
+      sep() // Block.claim('', undefined, NOP, VerstakTags.part)
     return super.render(block)
   }
 }
@@ -79,7 +80,7 @@ const VerstakTags = {
   // display:
   //   - flex (row) if parent is regular block
   //   - contents if parent is grid
-  paragraph: new VerstakDriver<HTMLElement>('v-paragraph', BlockKind.Paragraph),
+  part: new VerstakDriver<HTMLElement>('v-part', BlockKind.Part),
 
   // display: contents
   group: new VerstakDriver<HTMLElement>('v-group', BlockKind.Group),
