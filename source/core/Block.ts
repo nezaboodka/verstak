@@ -95,7 +95,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
       result.renderer = renderer
     }
     else { // create new
-      result = new VBlock<T, M, R>(name, driver ?? AbstractDriver.blank,
+      result = new VBlock<T, M, R>(name, driver ?? AbstractDriver.group,
         parent, options, renderer)
       result.item = children.add(result)
       VBlock.grandCount++
@@ -126,7 +126,7 @@ export enum BlockKind {
 // AbstractDriver
 
 export class AbstractDriver<T> {
-  public static readonly blank = new AbstractDriver<any>('blank', BlockKind.Regular)
+  public static readonly group = new AbstractDriver<any>('group', BlockKind.Group)
 
   readonly name: string
   readonly kind: BlockKind
