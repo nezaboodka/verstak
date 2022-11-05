@@ -40,7 +40,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
-  abstract readonly parent: Block
+  abstract readonly host: Block
   abstract readonly children: CollectionReader<Block>
   abstract readonly item: Item<Block> | undefined
   abstract readonly stamp: number
@@ -78,12 +78,12 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     renderer: Render<T, M, R>, driver?: AbstractDriver<T>): Block<T, M, R> {
     // Emit block either by reusing existing one or by creating a new one
     let result: VBlock<T, M, R>
-    const parent = gContext.self
-    const children = parent.children
+    const owner = gContext.self
+    const children = owner.children
     let existing: Item<VBlock<any, any, any>> | undefined = undefined
     // Check for coalescing separators or lookup for existing block
     driver ??= AbstractDriver.group
-    name ||= `!=${++parent.numerator}`
+    name ||= `!=${++owner.numerator}`
     if (driver.kind === BlockKind.Part) {
       const last = children.lastClaimedItem()
       if (last?.self?.driver === driver)
@@ -104,7 +104,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
       result.renderer = renderer
     }
     else { // create new
-      result = new VBlock<T, M, R>(name, driver, parent, options, renderer)
+      result = new VBlock<T, M, R>(name, driver, owner, options, renderer)
       result.item = children.add(result)
       VBlock.grandCount++
       if (options?.rx)
@@ -213,7 +213,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   model: M | undefined
   // System-managed properties
   readonly level: number
-  readonly parent: VBlock
+  readonly host: VBlock
   children: Collection<VBlock>
   numerator: number
   item: Item<VBlock> | undefined
@@ -222,7 +222,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   place: Place | undefined
   allocator: Allocator
 
-  constructor(name: string, driver: AbstractDriver<T>, parent: VBlock,
+  constructor(name: string, driver: AbstractDriver<T>, owner: VBlock,
     options: BlockOptions<T, M, R> | undefined, renderer: Render<T, M, R>) {
     super()
     // User-defined properties
@@ -232,8 +232,8 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     this.options = options
     this.model = undefined
     // System-managed properties
-    this.level = parent.level + 1
-    this.parent = parent
+    this.level = owner.level + 1
+    this.host = owner // owner is default host, but can be changed
     this.children = new Collection<VBlock>(driver.isSequential, getBlockName)
     this.numerator = 0
     this.item = undefined
@@ -250,7 +250,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     noSideEffects: false,
   })
   autorender(_triggers: unknown): void {
-    // triggers parameter is used to enforce rendering by parent
+    // triggers parameter is used to enforce rendering by owner
     runRender(this.item!)
   }
 }
@@ -327,22 +327,22 @@ function checkForRedeployment(redeploy: boolean, child: Item<VBlock>,
 }
 
 async function startIncrementalRendering(
-  parent: Item<VBlock>,
+  owner: Item<VBlock>,
   allChildren: Collection<VBlock>,
   priority1?: Array<Item<VBlock>>,
   priority2?: Array<Item<VBlock>>): Promise<void> {
-  const stamp = parent.self.stamp
+  const stamp = owner.self.stamp
   if (priority1)
-    await renderIncrementally(parent, stamp, allChildren, priority1, Priority.AsyncP1)
+    await renderIncrementally(owner, stamp, allChildren, priority1, Priority.AsyncP1)
   if (priority2)
-    await renderIncrementally(parent, stamp, allChildren, priority2, Priority.AsyncP2)
+    await renderIncrementally(owner, stamp, allChildren, priority2, Priority.AsyncP2)
 }
 
-async function renderIncrementally(parent: Item<VBlock>, stamp: number,
+async function renderIncrementally(owner: Item<VBlock>, stamp: number,
   allChildren: Collection<VBlock>, items: Array<Item<VBlock>>,
   priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
-  const block = parent.self
+  const block = owner.self
   if (!Transaction.isCanceled || !Transaction.isFrameOver(1, Block.shortFrameDuration / 3)) {
     let outerPriority = Block.currentRenderingPriority
     Block.currentRenderingPriority = priority
@@ -485,9 +485,9 @@ function forEachChildRecursively(item: Item<VBlock>, action: (e: any) => void): 
 }
 
 function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
-  const parent = gContext
+  const ctx = gContext
   const wrappedRunUnder = (...args: any[]): T => {
-    return runUnder(parent, func, ...args)
+    return runUnder(ctx, func, ...args)
   }
   return wrappedRunUnder
 }
@@ -570,10 +570,10 @@ const NOP = (): void => { /* nop */ }
 
 const gSysRoot = Collection.createItem<VBlock>(new VBlock<null, void>('SYSTEM',
   new StaticDriver<null>(null, 'SYSTEM', BlockKind.Group),
-  { level: 0 } as VBlock, { rx: true }, NOP)) // fake parent (overwritten below)
+  { level: 0 } as VBlock, { rx: true }, NOP)) // fake owner/host (overwritten below)
 gSysRoot.self.item = gSysRoot
 
-Object.defineProperty(gSysRoot, 'parent', {
+Object.defineProperty(gSysRoot, 'host', {
   value: gSysRoot,
   writable: false,
   configurable: false,

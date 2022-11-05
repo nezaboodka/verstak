@@ -39,7 +39,7 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
             if (nativeParent !== e.parentNode || !e.previousSibling)
               nativeParent.prepend(e)
           }
-          else if (after.self.parent.native === nativeParent) {
+          else if (after.self.host.native === nativeParent) {
             const nativeAfter = after.self.native
             if (nativeAfter instanceof Element) {
               if (nativeAfter.nextSibling !== e)
@@ -80,9 +80,9 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
   }
 
   static findNearestParentHtmlBlock(block: Block<any>): Block<Element> {
-    let p = block.parent
+    let p = block.host
     while (p.native instanceof Element === false && p !== block)
-      p = p.parent
+      p = p.host
     return p as Block<Element>
   }
 
