@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from './HtmlBlockFactory'
+export * from './HtmlDriver'
 export * from './HtmlBlocks'
 export * from './HtmlApiExt'
 export * from './Blocks'

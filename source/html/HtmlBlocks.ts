@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Block, Render, StaticDriver, BlockOptions } from '../core/api'
-import { HtmlDriver, SvgDriver } from './HtmlBlockFactory'
+import { HtmlDriver, SvgDriver } from './HtmlDriver'
 
 export function ReactiveHtmlBody(name: string, triggers: unknown, renderer: Render<HTMLElement>): Block<HTMLElement> {
   const driver = new StaticDriver(name, true, global.document.body)

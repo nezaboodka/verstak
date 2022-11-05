@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Block, Render, BlockOptions } from '../core/api'
-import { HtmlDriver } from './HtmlBlockFactory'
+import { HtmlDriver } from './HtmlDriver'
 
 // Verstak is based on two fundamental layout structures
 // called basic block and grid block; and on two special
@@ -63,7 +63,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: Block<T>): void | Promise<void> {
     const k = block.driver
     if (k.strict && !k.control)
-      lb()
+      lb() // initial line begin is added automatically for basic blocks
     return super.render(block)
   }
 }
