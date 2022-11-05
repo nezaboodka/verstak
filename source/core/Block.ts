@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
-import { Box, Place, checkIfPlaceChanged, LayoutManager } from './Layout'
+import { Box, Place, checkIfPlaceChanged, Allocator } from './Layout'
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
@@ -46,7 +46,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   abstract readonly stamp: number
   abstract readonly native: T | undefined
   abstract readonly place: Readonly<Place> | undefined
-  abstract readonly layout: LayoutManager
+  abstract readonly allocator: Allocator
 
   render(): R {
     return this.renderer(this.native!, this)
@@ -133,21 +133,21 @@ export enum BlockKind {
 
 // AbstractDriver
 
-const NoLayoutManager = (): LayoutManager => new LayoutManager()
+const createDefaultAllocator = (): Allocator => new Allocator()
 
 export class AbstractDriver<T> {
   public static readonly group = new AbstractDriver<any>('group', BlockKind.Group)
 
   readonly name: string
   readonly kind: BlockKind
-  readonly layout: () => LayoutManager
+  readonly createAllocator: () => Allocator
   get isSequential(): boolean { return (this.kind & 1) === 0 } // Block, Line
   get isAuxiliary(): boolean { return (this.kind & 2) === 2 } // Grid, Group
 
-  constructor(name: string, kind: BlockKind, layout?: () => LayoutManager) {
+  constructor(name: string, kind: BlockKind, createAllocator?: () => Allocator) {
     this.name = name
     this.kind = kind
-    this.layout = layout ?? NoLayoutManager
+    this.createAllocator = createAllocator ?? createDefaultAllocator
   }
 
   initialize(block: Block<T>, native: T | undefined): void {
@@ -184,8 +184,8 @@ export class AbstractDriver<T> {
 export class StaticDriver<T> extends AbstractDriver<T> {
   readonly element: T
 
-  constructor(element: T, name: string, kind: BlockKind, layout?: () => LayoutManager) {
-    super(name, kind, layout)
+  constructor(element: T, name: string, kind: BlockKind, createAllocator?: () => Allocator) {
+    super(name, kind, createAllocator)
     this.element = element
   }
 
@@ -220,7 +220,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   stamp: number
   native: T | undefined
   place: Place | undefined
-  layout: LayoutManager
+  allocator: Allocator
 
   constructor(name: string, driver: AbstractDriver<T>, parent: VBlock,
     options: BlockOptions<T, M, R> | undefined, renderer: Render<T, M, R>) {
@@ -240,7 +240,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     this.stamp = 0
     this.native = undefined
     this.place = undefined
-    this.layout = driver.layout()
+    this.allocator = driver.createAllocator()
   }
 
   @reactive
@@ -271,17 +271,17 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       if (!error) {
         // Lay out and render actual blocks
         const sequential = children.strict
-        const layout = block.layout
+        const allocator = block.allocator
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
         let redeploy = false
-        layout.begin()
+        allocator.begin()
         for (const child of children.items()) {
           if (Transaction.isCanceled)
             break
           const x = child.self
           const opt = x.options
-          const place = layout.place(opt?.box)
+          const place = allocator.allocate(opt?.box)
           if (checkIfPlaceChanged(x.place, place)) {
             x.place = place
             if (x.stamp > 0)

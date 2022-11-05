@@ -58,22 +58,12 @@ export interface Place {
   boxAlignment: Alignment
 }
 
-export class LayoutManager {
+export class Allocator {
   begin(): void {
     // do nothing
   }
 
-  place(box: Box | undefined): Place | undefined {
-    return undefined // do nothing
-  }
-}
-
-export class BasicLayoutManager extends LayoutManager {
-  begin(): void {
-    // not implemented
-  }
-
-  place(box: Box | undefined): Place | undefined {
+  allocate(box: Box | undefined): Place | undefined {
     return !box ? undefined : {
       bounds: undefined,
       widthMin: '', widthMax: '', widthGrow: 0,
@@ -84,7 +74,7 @@ export class BasicLayoutManager extends LayoutManager {
   }
 }
 
-export class GridLayoutManager implements LayoutManager {
+export class GridBasedAllocator implements Allocator {
   private maxColumnCount: number = 0
   private maxRowCount: number = 0
   private actualColumnCount: number = 0
@@ -103,7 +93,7 @@ export class GridLayoutManager implements LayoutManager {
     this.newRowCursor = 0
   }
 
-  place(box: Box | undefined): Place | undefined {
+  allocate(box: Box | undefined): Place | undefined {
     const result: Place = {
       bounds: undefined,
       widthMin: '', widthMax: '', widthGrow: 0,
