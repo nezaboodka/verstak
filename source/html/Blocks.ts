@@ -22,7 +22,7 @@ import { HtmlDriver } from './HtmlDriver'
 // begins new line inside block or grid block.
 
 // Group is a special non-visual element for logical
-// grouping of simple blocks, grid blocks and other groups.
+// grouping of basic blocks, grid blocks and other groups.
 
 // Simple Block
 
