@@ -213,7 +213,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   model: M | undefined
   // System-managed properties
   readonly level: number
-  readonly host: VBlock
+  host: VBlock
   children: Collection<VBlock>
   numerator: number
   item: Item<VBlock> | undefined
@@ -276,7 +276,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
         let redeploy = false
-        // let host = owner
+        let host = owner
         for (const child of children.items()) {
           if (Transaction.isCanceled)
             break
@@ -288,7 +288,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             if (x.stamp > 0)
               x.driver.move(x, false)
           }
-          redeploy = checkForRedeployment(redeploy, child, children, sequential)
+          redeploy = checkForRedeployment(redeploy, host, child, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
             prepareThenRunRender(child, children.isMoved(child), sequential) // render synchronously
@@ -296,8 +296,8 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(child, p1) // defer for P1 async rendering
           else
             p2 = push(child, p2) // defer for P2 async rendering
-          // if (x.driver.kind === BlockKind.Part)
-          //   host = x
+          if (x.driver.kind === BlockKind.Part)
+            host = x
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
@@ -313,12 +313,18 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
   }
 }
 
-function checkForRedeployment(redeploy: boolean, child: Item<VBlock>,
-  children: Collection<VBlock>, sequential: boolean): boolean
+function checkForRedeployment(redeploy: boolean, host: VBlock,
+  child: Item<VBlock>, children: Collection<VBlock>, sequential: boolean): boolean
 {
+  const block = child.self
+  // WIP:
+  // if (b.host !== host) {
+  //   b.host = host
+  //   redeploy = true
+  // }
   // Detects element movements when abstract blocks exist among
   // regular blocks with HTML elements
-  if (child.self.native) {
+  if (block.native) {
     if (redeploy) {
       children.markAsMoved(child)
       redeploy = false
