@@ -66,7 +66,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   }
 
   static renderNestedTreesThenDo(action: (error: unknown) => void): void {
-    runRenderChildrenThenDo(undefined, action)
+    runRenderNestedTreesThenDo(undefined, action)
   }
 
   static runForAllBlocks<T>(action: (e: T) => void): void {
@@ -257,10 +257,10 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
 
 // Internal
 
-function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => void): void {
+function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => void): void {
   const context = gContext
-  const block = context.self
-  const children = block.children
+  const owner = context.self
+  const children = owner.children
   if (children.isMergeInProgress) {
     let promised: Promise<void> | undefined = undefined
     try {
@@ -271,11 +271,12 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       if (!error) {
         // Lay out and render actual blocks
         const sequential = children.strict
-        const allocator = block.allocator
+        const allocator = owner.allocator
+        allocator.reset()
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
         let redeploy = false
-        allocator.reset()
+        // let host = owner
         for (const child of children.items()) {
           if (Transaction.isCanceled)
             break
@@ -295,6 +296,8 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
             p1 = push(child, p1) // defer for P1 async rendering
           else
             p2 = push(child, p2) // defer for P2 async rendering
+          // if (x.driver.kind === BlockKind.Part)
+          //   host = x
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
@@ -422,13 +425,13 @@ function runRender(item: Item<VBlock>): void {
         result = block.driver.render(block)
         if (result instanceof Promise)
           result.then(
-            v => { runRenderChildrenThenDo(undefined, NOP); return v },
-            e => { console.log(e); runRenderChildrenThenDo(e ?? new Error('unknown error'), NOP) })
+            v => { runRenderNestedTreesThenDo(undefined, NOP); return v },
+            e => { console.log(e); runRenderNestedTreesThenDo(e ?? new Error('unknown error'), NOP) })
         else
-          runRenderChildrenThenDo(undefined, NOP)
+          runRenderNestedTreesThenDo(undefined, NOP)
       }
       catch(e: unknown) {
-        runRenderChildrenThenDo(e, NOP)
+        runRenderNestedTreesThenDo(e, NOP)
         console.log(`Rendering failed: ${block.name}`)
         console.log(`${e}`)
       }
