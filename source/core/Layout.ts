@@ -46,7 +46,7 @@ export interface Box {
   wrap?: boolean                // false
 }
 
-export interface Allocation {
+export interface Place {
   bounds: CellRange | undefined
   widthMin: string
   widthMax: string
@@ -58,7 +58,28 @@ export interface Allocation {
   boxAlignment: Alignment
 }
 
-export class GridLayoutCursor {
+export interface LayoutManager {
+  begin(): void
+  place(box: Box | undefined): Place | undefined
+}
+
+export class BasicLayoutManager implements LayoutManager {
+  begin(): void {
+    throw new Error('Method not implemented.')
+  }
+
+  place(box: Box | undefined): Place | undefined {
+    return !box ? undefined : {
+      bounds: undefined,
+      widthMin: '', widthMax: '', widthGrow: 0,
+      heightMin: '', heightMax: '', heightGrow: 0,
+      alignment: box.alignment ?? Alignment.TopLeft,
+      boxAlignment: box.boxAlignment ?? Alignment.Fit,
+    }
+  }
+}
+
+export class GridLayoutManager implements LayoutManager {
   private maxColumnCount: number = 0
   private maxRowCount: number = 0
   private actualColumnCount: number = 0
@@ -67,9 +88,9 @@ export class GridLayoutCursor {
   private rowCursor: number = 0
   private newRowCursor: number = 0
 
-  reset(maxColumnCount: number, maxRowCount: number): void {
-    this.maxColumnCount = maxColumnCount
-    this.maxRowCount = maxRowCount
+  begin(): void {
+    this.maxColumnCount = 0
+    this.maxRowCount = 0
     this.actualColumnCount = 0
     this.actualRowCount = 0
     this.columnCursor = 0
@@ -77,8 +98,8 @@ export class GridLayoutCursor {
     this.newRowCursor = 0
   }
 
-  allocate(box: Box | undefined): Allocation {
-    const result: Allocation = {
+  place(box: Box | undefined): Place | undefined {
+    const result: Place = {
       bounds: undefined,
       widthMin: '', widthMax: '', widthGrow: 0,
       heightMin: '', heightMax: '', heightGrow: 0,
@@ -162,6 +183,6 @@ function absolutizePosition(pos: number, cursor: number, max: number): number {
   return pos
 }
 
-export function checkForRelocation(a: Allocation | undefined, b: Allocation | undefined): boolean {
+export function checkIfPlaceChanged(a: Place | undefined, b: Place | undefined): boolean {
   return false // not implemented
 }

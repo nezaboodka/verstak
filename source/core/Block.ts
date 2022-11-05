@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
-import { Box, Allocation, GridLayoutCursor, checkForRelocation, Alignment } from './Layout'
+import { Box, Place, checkIfPlaceChanged, LayoutManager, BasicLayoutManager } from './Layout'
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
@@ -37,7 +37,6 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   abstract readonly driver: AbstractDriver<T>
   abstract readonly renderer: Render<T, M, R>
   abstract readonly options: Readonly<BlockOptions<T, M, R>> | undefined
-  abstract readonly allocation: Readonly<Allocation> | undefined
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
@@ -46,6 +45,8 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   abstract readonly item: Item<Block> | undefined
   abstract readonly stamp: number
   abstract readonly native: T | undefined
+  abstract readonly place: Readonly<Place> | undefined
+  abstract readonly layout: LayoutManager
 
   render(): R {
     return this.renderer(this.native!, this)
@@ -133,16 +134,19 @@ export enum BlockKind {
 // AbstractDriver
 
 export class AbstractDriver<T> {
-  public static readonly group = new AbstractDriver<any>('group', BlockKind.Group)
+  public static readonly group = new AbstractDriver<any>(
+    'group', BlockKind.Group, () => new BasicLayoutManager())
 
   readonly name: string
   readonly kind: BlockKind
+  readonly layout: () => LayoutManager
   get isSequential(): boolean { return (this.kind & 1) === 0 } // Block, Line
   get isAuxiliary(): boolean { return (this.kind & 2) === 2 } // Grid, Group
 
-  constructor(name: string, kind: BlockKind) {
+  constructor(name: string, kind: BlockKind, layout: () => LayoutManager) {
     this.name = name
     this.kind = kind
+    this.layout =layout
   }
 
   initialize(block: Block<T>, native: T | undefined): void {
@@ -160,8 +164,9 @@ export class AbstractDriver<T> {
     // nothing to do by default
   }
 
-  relocate(block: Block<T>): void {
-    // nothing to do by default
+  move(block: Block<T>, initialization: boolean): boolean {
+    // const b = block as VBlock<T>
+    return false
   }
 
   render(block: Block<T>): void | Promise<void> {
@@ -178,8 +183,8 @@ export class AbstractDriver<T> {
 export class StaticDriver<T> extends AbstractDriver<T> {
   readonly element: T
 
-  constructor(name: string, kind: BlockKind, element: T) {
-    super(name, kind)
+  constructor(name: string, kind: BlockKind, layout: () => LayoutManager, element: T) {
+    super(name, kind, layout)
     this.element = element
   }
 
@@ -204,7 +209,6 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   readonly driver: AbstractDriver<T>
   renderer: Render<T, M, R>
   options: BlockOptions<T, M, R> | undefined
-  allocation: Allocation | undefined
   model: M | undefined
   // System-managed properties
   readonly level: number
@@ -214,6 +218,8 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   item: Item<VBlock> | undefined
   stamp: number
   native: T | undefined
+  place: Place | undefined
+  layout: LayoutManager
 
   constructor(name: string, driver: AbstractDriver<T>, parent: VBlock,
     options: BlockOptions<T, M, R> | undefined, renderer: Render<T, M, R>) {
@@ -223,7 +229,6 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     this.driver = driver
     this.renderer = renderer
     this.options = options
-    this.allocation = undefined
     this.model = undefined
     // System-managed properties
     this.level = parent.level + 1
@@ -233,6 +238,8 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     this.item = undefined
     this.stamp = 0
     this.native = undefined
+    this.place = undefined
+    this.layout = driver.layout()
   }
 
   @reactive
@@ -261,23 +268,23 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       for (const child of children.removedItems(true))
         runFinalize(child, true)
       if (!error) {
-        // Render actual blocks
+        // Lay out and render actual blocks
         const sequential = children.strict
-        const glc = block.driver.kind === BlockKind.Grid ? new GridLayoutCursor() : undefined
+        const layout = block.layout
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
         let redeploy = false
+        layout.begin()
         for (const child of children.items()) {
           if (Transaction.isCanceled)
             break
           const x = child.self
           const opt = x.options
-          const box = opt?.box
-          const allocation = glc ? glc.allocate(box) : allocate(box)
-          if (checkForRelocation(allocation, x.allocation)) {
-            x.allocation = allocation
-            if (x.stamp > 0) // initial placement is done during the first rendering
-              x.driver.relocate(x) // here we do only 2nd and subsequent placements
+          const place = layout.place(opt?.box)
+          if (checkIfPlaceChanged(x.place, place)) {
+            x.place = place
+            if (x.stamp > 0)
+              x.driver.move(x, false)
           }
           redeploy = checkForRedeployment(redeploy, child, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
@@ -299,16 +306,6 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       if (!promised)
         action(error)
     }
-  }
-}
-
-function allocate(box: Box | undefined): Allocation | undefined {
-  return !box ? undefined : {
-    bounds: undefined,
-    widthMin: '', widthMax: '', widthGrow: 0,
-    heightMin: '', heightMax: '', heightGrow: 0,
-    alignment: box.alignment ?? Alignment.TopLeft,
-    boxAlignment: box.boxAlignment ?? Alignment.Fit,
   }
 }
 
@@ -405,8 +402,8 @@ function prepareRender(item: Item<VBlock>,
       })
     }
     driver.initialize(block, undefined)
-    driver.deploy(block, sequential) // initial deployment
-    driver.relocate(block) // initial placement
+    driver.deploy(block, sequential)
+    driver.move(block, true)
   }
   else if (redeploy)
     driver.deploy(block, sequential) // , console.log(`redeployed: ${block.name}`)
@@ -571,7 +568,7 @@ Promise.prototype.then = reactronicDomHookedThen
 const NOP = (): void => { /* nop */ }
 
 const gSysRoot = Collection.createItem<VBlock>(new VBlock<null, void>('SYSTEM',
-  new StaticDriver<null>('SYSTEM', BlockKind.Group, null),
+  new StaticDriver<null>('SYSTEM', BlockKind.Group, () => new BasicLayoutManager(), null),
   { level: 0 } as VBlock, { rx: true }, NOP)) // fake parent (overwritten below)
 gSysRoot.self.item = gSysRoot
 
