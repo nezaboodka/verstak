@@ -117,10 +117,10 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
 // BlockKind
 
 export enum BlockKind {
-  Block = 0, // 00
-  Grid = 1,  // 01
-  Line = 2,  // 10
-  Group = 3, // 11
+  Block = 0,      // 00
+  Grid = 1,       // 01
+  Paragraph = 2,  // 10
+  Group = 3,      // 11
 }
 
 // AbstractDriver

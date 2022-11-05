@@ -45,7 +45,7 @@ export function grid<M = unknown, R = void>(name: string,
 // Line Begin
 
 export function lb(spacing?: boolean): Block<HTMLElement> {
-  return Block.claim('', undefined, NOP, VerstakTags.line)
+  return Block.claim('', undefined, NOP, VerstakTags.paragraph)
 }
 
 // Group
@@ -61,7 +61,7 @@ export function group<M = unknown, R = void>(name: string,
 
 export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: Block<T>): void | Promise<void> {
-    if (block.driver.kind === BlockKind.Line)
+    if (block.driver.kind === BlockKind.Block)
       lb() // automatic initial line begin for basic blocks
     return super.render(block)
   }
@@ -79,7 +79,7 @@ const VerstakTags = {
   // display:
   //   - flex (row) if parent is regular block
   //   - contents if parent is grid
-  line: new VerstakDriver<HTMLElement>('v-line', BlockKind.Line),
+  paragraph: new VerstakDriver<HTMLElement>('v-paragraph', BlockKind.Paragraph),
 
   // display: contents
   group: new VerstakDriver<HTMLElement>('v-group', BlockKind.Group),
