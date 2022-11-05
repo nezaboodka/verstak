@@ -79,10 +79,18 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     let result: VBlock<T, M, R>
     const parent = gContext.self
     const children = parent.children
-    if (!name)
-      name = `!#${++parent.numerator}`
-    const existing = children.claim(name)
-    if (existing) { // reuse existing
+    let existing: Item<VBlock<any, any, any>> | undefined = undefined
+    // Check for coalescing separators or lookup for existing block
+    driver ??= AbstractDriver.group
+    name ||= `!=${++parent.numerator}`
+    if (driver.kind === BlockKind.Part) {
+      const last = children.lastClaimedItem()
+      if (last?.self?.driver === driver)
+        existing = last
+    }
+    existing ??= children.claim(name)
+    // Reuse existing block or claim a new one
+    if (existing) {
       result = existing.self
       if (result.driver !== driver && driver !== undefined)
         throw new Error(`changing block driver is not yet supported: "${result.driver.name}" -> "${driver?.name}"`)
@@ -95,8 +103,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
       result.renderer = renderer
     }
     else { // create new
-      result = new VBlock<T, M, R>(name, driver ?? AbstractDriver.group,
-        parent, options, renderer)
+      result = new VBlock<T, M, R>(name, driver, parent, options, renderer)
       result.item = children.add(result)
       VBlock.grandCount++
       if (options?.rx)
