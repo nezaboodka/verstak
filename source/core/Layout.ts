@@ -59,7 +59,7 @@ export interface Place {
 }
 
 export class Allocator {
-  begin(): void {
+  reset(): void {
     // do nothing
   }
 
@@ -83,7 +83,7 @@ export class GridBasedAllocator implements Allocator {
   private rowCursor: number = 0
   private newRowCursor: number = 0
 
-  begin(): void {
+  reset(): void {
     this.maxColumnCount = 0
     this.maxRowCount = 0
     this.actualColumnCount = 0

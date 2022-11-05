@@ -275,7 +275,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
         let redeploy = false
-        allocator.begin()
+        allocator.reset()
         for (const child of children.items()) {
           if (Transaction.isCanceled)
             break
