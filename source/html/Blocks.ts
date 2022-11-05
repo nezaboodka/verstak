@@ -45,7 +45,7 @@ export function grid<M = unknown, R = void>(name: string,
 // Line Begin
 
 export function lb(spacing?: boolean): Block<HTMLElement> {
-  return Block.claim(`l:${0}`, undefined, NOP, VerstakTags.line)
+  return Block.claim('', undefined, NOP, VerstakTags.line)
 }
 
 // Group
@@ -63,14 +63,16 @@ const VerstakTags = {
   // display: flex, flex-direction: column
   block: new HtmlBlockKind<HTMLElement>('v-block', true, false),
 
-  // display: flex, flex-direction: row
-  line: new HtmlBlockKind<HTMLElement>('v-line', true, false),
-
   // display: grid
-  grid: new HtmlBlockKind<HTMLElement>('v-grid', false, true),
+  grid: new HtmlBlockKind<HTMLElement>('v-grid', false, false),
+
+  // display:
+  //   - flex (row) if parent is regular block
+  //   - contents if parent is grid
+  line: new HtmlBlockKind<HTMLElement>('v-line', true, true),
 
   // display: contents
-  group: new HtmlBlockKind<HTMLElement>('v-group', false, false),
+  group: new HtmlBlockKind<HTMLElement>('v-group', false, true),
 }
 
 const NOP = (): void => { /* nop */ }

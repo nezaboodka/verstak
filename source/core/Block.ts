@@ -79,6 +79,8 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     let result: VBlock<T, M, R>
     const parent = gContext.self
     const children = parent.children
+    if (!name)
+      name = `!#${++parent.numerator}`
     const existing = children.claim(name)
     if (existing) { // reuse existing
       result = existing.self
@@ -121,12 +123,12 @@ export class BlockKind<T> {
 
   readonly name: string
   readonly strict: boolean
-  readonly grid: boolean
+  readonly control: boolean
 
-  constructor(name: string, strict: boolean, grid: boolean) {
+  constructor(name: string, strict: boolean, control: boolean) {
     this.name = name
     this.strict = strict
-    this.grid = grid
+    this.control = control
   }
 
   initialize(block: Block<T>, native: T | undefined): void {
@@ -194,6 +196,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   readonly level: number
   readonly parent: VBlock
   children: Collection<VBlock>
+  numerator: number
   item: Item<VBlock> | undefined
   stamp: number
   native: T | undefined
@@ -212,6 +215,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     this.level = parent.level + 1
     this.parent = parent
     this.children = new Collection<VBlock>(kind.strict, getBlockName)
+    this.numerator = 0
     this.item = undefined
     this.stamp = 0
     this.native = undefined
@@ -245,7 +249,8 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       if (!error) {
         // Render actual blocks
         const strict = children.strict
-        const glc = block.kind.grid ? new GridLayoutCursor() : undefined
+        const k = block.kind
+        const glc = k.strict || k.control ? undefined : new GridLayoutCursor()
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
         let redeploy = false
@@ -401,6 +406,7 @@ function runRender(item: Item<VBlock>): void {
       let result: unknown = undefined
       try {
         block.stamp++
+        block.numerator = 0
         block.children.beginMerge()
         result = block.kind.render(block)
         if (result instanceof Promise)
