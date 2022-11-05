@@ -62,7 +62,7 @@ export function group<M = unknown, R = void>(name: string,
 export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: Block<T>): void | Promise<void> {
     const k = block.driver
-    if (k.strict && !k.control)
+    if (k.sequential && !k.auxiliary)
       lb() // automatic initial line begin for basic blocks
     return super.render(block)
   }

@@ -120,13 +120,13 @@ export class AbstractDriver<T> {
   public static readonly blank = new AbstractDriver<any>('blank', false, false)
 
   readonly name: string
-  readonly strict: boolean
-  readonly control: boolean
+  readonly sequential: boolean
+  readonly auxiliary: boolean
 
-  constructor(name: string, strict: boolean, control: boolean) {
+  constructor(name: string, sequential: boolean, auxiliary: boolean) {
     this.name = name
-    this.strict = strict
-    this.control = control
+    this.sequential = sequential
+    this.auxiliary = auxiliary
   }
 
   initialize(block: Block<T>, native: T | undefined): void {
@@ -140,7 +140,7 @@ export class AbstractDriver<T> {
     return isLeader // treat children as finalization leaders as well
   }
 
-  deploy(block: Block<T>, strict: boolean): void {
+  deploy(block: Block<T>, sequential: boolean): void {
     // nothing to do by default
   }
 
@@ -162,8 +162,8 @@ export class AbstractDriver<T> {
 export class StaticDriver<T> extends AbstractDriver<T> {
   readonly element: T
 
-  constructor(name: string, strict: boolean, element: T) {
-    super(name, strict, false)
+  constructor(name: string, sequential: boolean, element: T) {
+    super(name, sequential, false)
     this.element = element
   }
 
@@ -212,7 +212,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
-    this.children = new Collection<VBlock>(driver.strict, getBlockName)
+    this.children = new Collection<VBlock>(driver.sequential, getBlockName)
     this.numerator = 0
     this.item = undefined
     this.stamp = 0
@@ -246,9 +246,9 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
         runFinalize(child, true)
       if (!error) {
         // Render actual blocks
-        const strict = children.strict
+        const sequential = children.strict
         const k = block.driver
-        const glc = k.strict || k.control ? undefined : new GridLayoutCursor()
+        const glc = k.sequential || k.auxiliary ? undefined : new GridLayoutCursor()
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
         let redeploy = false
@@ -264,10 +264,10 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
             if (x.stamp > 0) // initial placement is done during the first rendering
               x.driver.relocate(x) // here we do only 2nd and subsequent placements
           }
-          redeploy = checkForRedeployment(redeploy, child, children, strict)
+          redeploy = checkForRedeployment(redeploy, child, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
-            prepareThenRunRender(child, children.isMoved(child), strict) // render synchronously
+            prepareThenRunRender(child, children.isMoved(child), sequential) // render synchronously
           else if (priority === Priority.AsyncP1)
             p1 = push(child, p1) // defer for P1 async rendering
           else
@@ -298,7 +298,7 @@ function allocate(box: Box | undefined): Allocation | undefined {
 }
 
 function checkForRedeployment(redeploy: boolean, child: Item<VBlock>,
-  children: Collection<VBlock>, strict: boolean): boolean
+  children: Collection<VBlock>, sequential: boolean): boolean
 {
   // Detects element movements when abstract blocks exist among
   // regular blocks with HTML elements
@@ -308,7 +308,7 @@ function checkForRedeployment(redeploy: boolean, child: Item<VBlock>,
       redeploy = false
     }
   }
-  else if (strict && children.isMoved(child))
+  else if (sequential && children.isMoved(child))
     redeploy = true // apply to the first block with an element
   return redeploy
 }
@@ -334,13 +334,13 @@ async function renderIncrementally(parent: Item<VBlock>, stamp: number,
     let outerPriority = Block.currentRenderingPriority
     Block.currentRenderingPriority = priority
     try {
-      const strict = block.children.strict
+      const sequential = block.children.strict
       if (block.options?.shuffle)
         shuffle(items)
       const frameDurationLimit = priority === Priority.AsyncP2 ? Block.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(Block.frameDuration / 4, Block.shortFrameDuration))
       for (const child of items) {
-        prepareThenRunRender(child, allChildren.isMoved(child), strict)
+        prepareThenRunRender(child, allChildren.isMoved(child), sequential)
         if (Transaction.isFrameOver(1, frameDuration)) {
           Block.currentRenderingPriority = outerPriority
           await Transaction.requestNextFrame(0)
@@ -359,10 +359,10 @@ async function renderIncrementally(parent: Item<VBlock>, stamp: number,
 }
 
 function prepareThenRunRender(item: Item<VBlock>,
-  redeploy: boolean, strict: boolean): void {
+  redeploy: boolean, sequential: boolean): void {
   const block = item.self
   if (block.stamp >= 0) {
-    prepareRender(item, redeploy, strict)
+    prepareRender(item, redeploy, sequential)
     if (block.options?.rx)
       nonreactive(block.autorender, block.options?.triggers) // reactive auto-rendering
     else
@@ -371,7 +371,7 @@ function prepareThenRunRender(item: Item<VBlock>,
 }
 
 function prepareRender(item: Item<VBlock>,
-  redeploy: boolean, strict: boolean): void {
+  redeploy: boolean, sequential: boolean): void {
   const block = item.self
   const driver = block.driver
   // Initialize/layout if needed
@@ -390,11 +390,11 @@ function prepareRender(item: Item<VBlock>,
       })
     }
     driver.initialize(block, undefined)
-    driver.deploy(block, strict) // initial deployment
+    driver.deploy(block, sequential) // initial deployment
     driver.relocate(block) // initial placement
   }
   else if (redeploy)
-    driver.deploy(block, strict) // , console.log(`redeployed: ${block.name}`)
+    driver.deploy(block, sequential) // , console.log(`redeployed: ${block.name}`)
 }
 
 function runRender(item: Item<VBlock>): void {
