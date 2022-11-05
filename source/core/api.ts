@@ -8,5 +8,5 @@
 export * from './Utils'
 export * from './CellRange'
 export * from './Layout'
-export * from './Block'
+export * from './Kernel'
 export * from './Restyler'
