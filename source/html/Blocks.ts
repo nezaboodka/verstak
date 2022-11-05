@@ -63,7 +63,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: Block<T>): void | Promise<void> {
     const k = block.driver
     if (k.strict && !k.control)
-      lb() // initial line begin is added automatically for basic blocks
+      lb() // automatic initial line begin for basic blocks
     return super.render(block)
   }
 }
