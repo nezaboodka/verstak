@@ -61,7 +61,7 @@ export function group<M = unknown, R = void>(name: string,
 
 export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: Block<T>): void | Promise<void> {
-    if (block.driver.kind === BlockKind.LineBegin)
+    if (block.driver.kind === BlockKind.Line)
       lb() // automatic initial line begin for basic blocks
     return super.render(block)
   }
@@ -71,7 +71,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 const VerstakTags = {
   // display: flex, flex-direction: column
-  block: new VerstakDriver<HTMLElement>('v-block', BlockKind.Regular),
+  block: new VerstakDriver<HTMLElement>('v-block', BlockKind.Block),
 
   // display: grid
   grid: new VerstakDriver<HTMLElement>('v-grid', BlockKind.Grid),
@@ -79,7 +79,7 @@ const VerstakTags = {
   // display:
   //   - flex (row) if parent is regular block
   //   - contents if parent is grid
-  line: new VerstakDriver<HTMLElement>('v-line', BlockKind.LineBegin),
+  line: new VerstakDriver<HTMLElement>('v-line', BlockKind.Line),
 
   // display: contents
   group: new VerstakDriver<HTMLElement>('v-group', BlockKind.Group),

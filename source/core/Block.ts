@@ -117,9 +117,9 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
 // BlockKind
 
 export enum BlockKind {
-  Regular = 0,   // 00
+  Block = 0,   // 00
   Grid = 1,      // 01
-  LineBegin = 2, // 10
+  Line = 2, // 10
   Group = 3,     // 11
 }
 
@@ -130,8 +130,8 @@ export class AbstractDriver<T> {
 
   readonly name: string
   readonly kind: BlockKind
-  get isSequential(): boolean { return (this.kind & 1) === 0 }
-  get isAuxiliary(): boolean { return (this.kind & 2) === 2 }
+  get isSequential(): boolean { return (this.kind & 1) === 0 } // Block, Line
+  get isAuxiliary(): boolean { return (this.kind & 2) === 2 } // Grid, Group
 
   constructor(name: string, kind: BlockKind) {
     this.name = name
