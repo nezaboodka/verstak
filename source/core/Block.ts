@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
-import { Box, Place, checkIfPlaceChanged, LayoutManager, BasicLayoutManager } from './Layout'
+import { Box, Place, checkIfPlaceChanged, LayoutManager } from './Layout'
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
@@ -133,9 +133,10 @@ export enum BlockKind {
 
 // AbstractDriver
 
+const NoLayoutManager: () => LayoutManager = () => new LayoutManager()
+
 export class AbstractDriver<T> {
-  public static readonly group = new AbstractDriver<any>(
-    'group', BlockKind.Group, () => new BasicLayoutManager())
+  public static readonly group = new AbstractDriver<any>('group', BlockKind.Group)
 
   readonly name: string
   readonly kind: BlockKind
@@ -143,10 +144,10 @@ export class AbstractDriver<T> {
   get isSequential(): boolean { return (this.kind & 1) === 0 } // Block, Line
   get isAuxiliary(): boolean { return (this.kind & 2) === 2 } // Grid, Group
 
-  constructor(name: string, kind: BlockKind, layout: () => LayoutManager) {
+  constructor(name: string, kind: BlockKind, layout?: () => LayoutManager) {
     this.name = name
     this.kind = kind
-    this.layout =layout
+    this.layout = layout ?? NoLayoutManager
   }
 
   initialize(block: Block<T>, native: T | undefined): void {
@@ -183,7 +184,7 @@ export class AbstractDriver<T> {
 export class StaticDriver<T> extends AbstractDriver<T> {
   readonly element: T
 
-  constructor(name: string, kind: BlockKind, layout: () => LayoutManager, element: T) {
+  constructor(element: T, name: string, kind: BlockKind, layout?: () => LayoutManager) {
     super(name, kind, layout)
     this.element = element
   }
@@ -568,7 +569,7 @@ Promise.prototype.then = reactronicDomHookedThen
 const NOP = (): void => { /* nop */ }
 
 const gSysRoot = Collection.createItem<VBlock>(new VBlock<null, void>('SYSTEM',
-  new StaticDriver<null>('SYSTEM', BlockKind.Group, () => new BasicLayoutManager(), null),
+  new StaticDriver<null>(null, 'SYSTEM', BlockKind.Group),
   { level: 0 } as VBlock, { rx: true }, NOP)) // fake parent (overwritten below)
 gSysRoot.self.item = gSysRoot
 

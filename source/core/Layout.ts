@@ -58,12 +58,17 @@ export interface Place {
   boxAlignment: Alignment
 }
 
-export interface LayoutManager {
-  begin(): void
-  place(box: Box | undefined): Place | undefined
+export class LayoutManager {
+  begin(): void {
+    // do nothing
+  }
+
+  place(box: Box | undefined): Place | undefined {
+    return undefined // do nothing
+  }
 }
 
-export class BasicLayoutManager implements LayoutManager {
+export class BasicLayoutManager extends LayoutManager {
   begin(): void {
     // not implemented
   }
