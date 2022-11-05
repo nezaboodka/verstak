@@ -24,7 +24,7 @@ import { HtmlDriver } from './HtmlDriver'
 // Group is a special non-visual element for logical
 // grouping of basic blocks, grid blocks and other groups.
 
-// Simple Block
+// Basic Block
 
 export function block<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLElement, M, R> | undefined,
