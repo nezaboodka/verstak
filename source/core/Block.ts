@@ -114,19 +114,28 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   }
 }
 
+// BlockKind
+
+export enum BlockKind {
+  Regular = 0,   // 00
+  Grid = 1,      // 01
+  LineBegin = 2, // 10
+  Group = 3,     // 11
+}
+
 // AbstractDriver
 
 export class AbstractDriver<T> {
-  public static readonly blank = new AbstractDriver<any>('blank', false, false)
+  public static readonly blank = new AbstractDriver<any>('blank', BlockKind.Regular)
 
   readonly name: string
-  readonly sequential: boolean
-  readonly auxiliary: boolean
+  readonly kind: BlockKind
+  get isSequential(): boolean { return (this.kind & 1) === 0 }
+  get isAuxiliary(): boolean { return (this.kind & 2) === 2 }
 
-  constructor(name: string, sequential: boolean, auxiliary: boolean) {
+  constructor(name: string, kind: BlockKind) {
     this.name = name
-    this.sequential = sequential
-    this.auxiliary = auxiliary
+    this.kind = kind
   }
 
   initialize(block: Block<T>, native: T | undefined): void {
@@ -162,8 +171,8 @@ export class AbstractDriver<T> {
 export class StaticDriver<T> extends AbstractDriver<T> {
   readonly element: T
 
-  constructor(name: string, sequential: boolean, element: T) {
-    super(name, sequential, false)
+  constructor(name: string, kind: BlockKind, element: T) {
+    super(name, kind)
     this.element = element
   }
 
@@ -212,7 +221,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     // System-managed properties
     this.level = parent.level + 1
     this.parent = parent
-    this.children = new Collection<VBlock>(driver.sequential, getBlockName)
+    this.children = new Collection<VBlock>(driver.isSequential, getBlockName)
     this.numerator = 0
     this.item = undefined
     this.stamp = 0
@@ -247,8 +256,7 @@ function runRenderChildrenThenDo(error: unknown, action: (error: unknown) => voi
       if (!error) {
         // Render actual blocks
         const sequential = children.strict
-        const k = block.driver
-        const glc = k.sequential || k.auxiliary ? undefined : new GridLayoutCursor()
+        const glc = block.driver.kind === BlockKind.Grid ? new GridLayoutCursor() : undefined
         let p1: Array<Item<VBlock>> | undefined = undefined
         let p2: Array<Item<VBlock>> | undefined = undefined
         let redeploy = false
@@ -556,7 +564,7 @@ Promise.prototype.then = reactronicDomHookedThen
 const NOP = (): void => { /* nop */ }
 
 const gSysRoot = Collection.createItem<VBlock>(new VBlock<null, void>('SYSTEM',
-  new StaticDriver<null>('SYSTEM', false, null),
+  new StaticDriver<null>('SYSTEM', BlockKind.Group, null),
   { level: 0 } as VBlock, { rx: true }, NOP)) // fake parent (overwritten below)
 gSysRoot.self.item = gSysRoot
 
