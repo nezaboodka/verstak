@@ -55,12 +55,12 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   }
 
   static root(render: () => void): void {
-    gSysRoot.self.renderer = render
+    gSysRoot.instance.renderer = render
     prepareThenRunRender(gSysRoot, false, false)
   }
 
   static get current(): Block {
-    return gContext.self
+    return gContext.instance
   }
 
   static renderNestedTreesThenDo(action: (error: unknown) => void): void {
@@ -76,7 +76,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     renderer: Render<T, M, R>, driver?: AbstractDriver<T>): Block<T, M, R> {
     // Emit block either by reusing existing one or by creating a new one
     let result: VBlock<T, M, R>
-    const owner = gContext.self
+    const owner = gContext.instance
     const children = owner.children
     let existing: Item<VBlock<any, any, any>> | undefined = undefined
     // Check for coalescing separators or lookup for existing block
@@ -84,13 +84,13 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     name ||= `!=${++owner.numerator}`
     if (driver.layout === LayoutKind.Part) {
       const last = children.lastClaimedItem()
-      if (last?.self?.driver === driver)
+      if (last?.instance?.driver === driver)
         existing = last
     }
     existing ??= children.claim(name)
     // Reuse existing block or claim a new one
     if (existing) {
-      result = existing.self
+      result = existing.instance
       if (result.driver !== driver && driver !== undefined)
         throw new Error(`changing block driver is not yet supported: "${result.driver.name}" -> "${driver?.name}"`)
       if (options) {
@@ -123,10 +123,10 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
 // LayoutKind
 
 export enum LayoutKind {
-  Block = 0,  // 00
-  Grid = 1,   // 01
-  Part = 2,   // 10
-  Group = 3,  // 11
+  Block = 0, // 00
+  Grid = 1,  // 01
+  Part = 2,  // 10
+  Group = 3, // 11
 }
 
 // AbstractDriver
@@ -257,15 +257,15 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
 
 function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => void): void {
   const context = gContext
-  const owner = context.self
+  const owner = context.instance
   const children = owner.children
   if (children.isMergeInProgress) {
     let promised: Promise<void> | undefined = undefined
     try {
       children.endMerge(error)
       // Finalize removed blocks
-      for (const child of children.removedItems(true))
-        runFinalize(child, true)
+      for (const item of children.removedItems(true))
+        runFinalize(item, true)
       if (!error) {
         // Lay out and render actual blocks
         const sequential = children.strict
@@ -275,27 +275,23 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         let p2: Array<Item<VBlock>> | undefined = undefined
         let redeploy = false
         let host = owner
-        for (const child of children.items()) {
+        for (const item of children.items()) {
           if (Transaction.isCanceled)
             break
-          const x = child.self
-          const opt = x.options
+          const block = item.instance
+          const opt = block.options
           const place = allocator.allocate(opt?.box)
-          if (checkIfPlaceChanged(x.place, place)) {
-            x.place = place
-            if (x.stamp > 0)
-              x.driver.move(x, false)
-          }
-          redeploy = checkForRedeployment(redeploy, host, child, children, sequential)
+          moveIfNecessary(block, place)
+          redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
-            prepareThenRunRender(child, children.isMoved(child), sequential) // render synchronously
+            prepareThenRunRender(item, children.isMoved(item), sequential) // render synchronously
           else if (priority === Priority.AsyncP1)
-            p1 = push(child, p1) // defer for P1 async rendering
+            p1 = push(item, p1) // defer for P1 async rendering
           else
-            p2 = push(child, p2) // defer for P2 async rendering
-          if (x.driver.layout === LayoutKind.Part)
-            host = x
+            p2 = push(item, p2) // defer for P2 async rendering
+          if (block.driver.layout === LayoutKind.Part)
+            host = block
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
@@ -311,18 +307,25 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
   }
 }
 
-function checkForRedeployment(redeploy: boolean, host: VBlock,
-  child: Item<VBlock>, children: Collection<VBlock>, sequential: boolean): boolean {
+function moveIfNecessary(block: VBlock, place: Place | undefined): void {
+  if (checkIfPlaceChanged(block.place, place)) {
+    block.place = place
+    block.driver.move(block, false)
+  }
+}
+
+function markToRedeployIfNecessary(redeploy: boolean, host: VBlock,
+  item: Item<VBlock>, children: Collection<VBlock>, sequential: boolean): boolean {
   // Detects element redeployment when abstract blocks
   // exist among regular blocks with HTML elements
-  const block = child.self
+  const block = item.instance
   if (block.native) {
     if (redeploy || block.host !== host) {
-      children.markAsMoved(child)
+      children.markAsMoved(item)
       redeploy = false
     }
   }
-  else if (sequential && children.isMoved(child))
+  else if (sequential && children.isMoved(item))
     redeploy = true // apply to the first block with an element
   block.host = host
   return redeploy
@@ -333,7 +336,7 @@ async function startIncrementalRendering(
   allChildren: Collection<VBlock>,
   priority1?: Array<Item<VBlock>>,
   priority2?: Array<Item<VBlock>>): Promise<void> {
-  const stamp = owner.self.stamp
+  const stamp = owner.instance.stamp
   if (priority1)
     await renderIncrementally(owner, stamp, allChildren, priority1, Priority.AsyncP1)
   if (priority2)
@@ -344,7 +347,7 @@ async function renderIncrementally(owner: Item<VBlock>, stamp: number,
   allChildren: Collection<VBlock>, items: Array<Item<VBlock>>,
   priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
-  const block = owner.self
+  const block = owner.instance
   if (!Transaction.isCanceled || !Transaction.isFrameOver(1, Block.shortFrameDuration / 3)) {
     let outerPriority = Block.currentRenderingPriority
     Block.currentRenderingPriority = priority
@@ -375,7 +378,7 @@ async function renderIncrementally(owner: Item<VBlock>, stamp: number,
 
 function prepareThenRunRender(item: Item<VBlock>,
   redeploy: boolean, sequential: boolean): void {
-  const block = item.self
+  const block = item.instance
   if (block.stamp >= 0) {
     prepareRender(item, redeploy, sequential)
     if (block.options?.rx)
@@ -387,7 +390,7 @@ function prepareThenRunRender(item: Item<VBlock>,
 
 function prepareRender(item: Item<VBlock>,
   redeploy: boolean, sequential: boolean): void {
-  const block = item.self
+  const block = item.instance
   const driver = block.driver
   // Initialize, deploy, and move (if needed)
   if (block.stamp === 0) {
@@ -413,7 +416,7 @@ function prepareRender(item: Item<VBlock>,
 }
 
 function runRender(item: Item<VBlock>): void {
-  const block = item.self
+  const block = item.instance
   if (block.stamp >= 0) { // if block is alive
     runUnder(item, () => {
       let result: unknown = undefined
@@ -439,7 +442,7 @@ function runRender(item: Item<VBlock>): void {
 }
 
 function runFinalize(item: Item<VBlock>, isLeader: boolean): void {
-  const block = item.self
+  const block = item.instance
   if (block.stamp >= 0) {
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
@@ -453,7 +456,7 @@ function runFinalize(item: Item<VBlock>, isLeader: boolean): void {
       else
         gFirstToDispose = gLastToDispose = item
       if (gFirstToDispose === item)
-        Transaction.run({ separation: 'disposal', hint: `runDisposalLoop(initiator=${item.self.name})` }, () => {
+        Transaction.run({ separation: 'disposal', hint: `runDisposalLoop(initiator=${item.instance.name})` }, () => {
           void runDisposalLoop().then(NOP, error => console.log(error))
         })
     }
@@ -470,7 +473,7 @@ async function runDisposalLoop(): Promise<void> {
   while (item !== undefined) {
     if (Transaction.isFrameOver(500, 5))
       await Transaction.requestNextFrame()
-    Rx.dispose(item.self)
+    Rx.dispose(item.instance)
     item = item.aux
     VBlock.disposableCount--
   }
@@ -479,7 +482,7 @@ async function runDisposalLoop(): Promise<void> {
 }
 
 function forEachChildRecursively(item: Item<VBlock>, action: (e: any) => void): void {
-  const block = item.self
+  const block = item.instance
   const native = block.native
   native && action(native)
   for (const item of block.children.items())
@@ -573,7 +576,7 @@ const NOP = (): void => { /* nop */ }
 const gSysRoot = Collection.createItem<VBlock>(new VBlock<null, void>('SYSTEM',
   new StaticDriver<null>(null, 'SYSTEM', LayoutKind.Group),
   { level: 0 } as VBlock, { rx: true }, NOP)) // fake owner/host (overwritten below)
-gSysRoot.self.item = gSysRoot
+gSysRoot.instance.item = gSysRoot
 
 Object.defineProperty(gSysRoot, 'host', {
   value: gSysRoot,

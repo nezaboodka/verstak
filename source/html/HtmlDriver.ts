@@ -39,8 +39,8 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
             if (nativeParent !== e.parentNode || !e.previousSibling)
               nativeParent.prepend(e)
           }
-          else if (after.self.host.native === nativeParent) {
-            const nativeAfter = after.self.native
+          else if (after.instance.host.native === nativeParent) {
+            const nativeAfter = after.instance.native
             if (nativeAfter instanceof Element) {
               if (nativeAfter.nextSibling !== e)
                 nativeParent.insertBefore(e, nativeAfter.nextSibling)
@@ -88,7 +88,7 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
 
   static findPrevSiblingHtmlBlock(item: Item<Block<any>>): Item<Block<Element>> | undefined {
     let p = item.prev
-    while (p && !(p.self.native instanceof Element))
+    while (p && !(p.instance.native instanceof Element))
       p = p.prev
     return p
   }
