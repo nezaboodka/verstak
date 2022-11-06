@@ -7,6 +7,6 @@
 
 export * from './Utils'
 export * from './CellRange'
-export * from './Layout'
+export * from './Allocator'
 export * from './Kernel'
 export * from './Restyler'
