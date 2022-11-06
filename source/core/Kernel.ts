@@ -84,7 +84,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     // Check for coalescing separators or lookup for existing block
     driver ??= AbstractDriver.group
     name ||= `!=${++owner.numerator}`
-    if (driver.kind === BlockKind.Part) {
+    if (driver.layout === LayoutKind.Part) {
       const last = children.lastClaimedItem()
       if (last?.self?.driver === driver)
         existing = last
@@ -122,9 +122,9 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   }
 }
 
-// BlockKind
+// LayoutKind
 
-export enum BlockKind {
+export enum LayoutKind {
   Block = 0,  // 00
   Grid = 1,   // 01
   Part = 2,   // 10
@@ -136,17 +136,17 @@ export enum BlockKind {
 const createDefaultAllocator = (): Allocator => new Allocator()
 
 export class AbstractDriver<T> {
-  public static readonly group = new AbstractDriver<any>('group', BlockKind.Group)
+  public static readonly group = new AbstractDriver<any>('group', LayoutKind.Group)
 
   readonly name: string
-  readonly kind: BlockKind
+  readonly layout: LayoutKind
   readonly createAllocator: () => Allocator
-  get isSequential(): boolean { return (this.kind & 1) === 0 } // Block, Line
-  get isAuxiliary(): boolean { return (this.kind & 2) === 2 } // Grid, Group
+  get isSequential(): boolean { return (this.layout & 1) === 0 } // Block, Line
+  get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Grid, Group
 
-  constructor(name: string, kind: BlockKind, createAllocator?: () => Allocator) {
+  constructor(name: string, layout: LayoutKind, createAllocator?: () => Allocator) {
     this.name = name
-    this.kind = kind
+    this.layout = layout
     this.createAllocator = createAllocator ?? createDefaultAllocator
   }
 
@@ -184,8 +184,8 @@ export class AbstractDriver<T> {
 export class StaticDriver<T> extends AbstractDriver<T> {
   readonly element: T
 
-  constructor(element: T, name: string, kind: BlockKind, createAllocator?: () => Allocator) {
-    super(name, kind, createAllocator)
+  constructor(element: T, name: string, layout: LayoutKind, createAllocator?: () => Allocator) {
+    super(name, layout, createAllocator)
     this.element = element
   }
 
@@ -296,7 +296,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(child, p1) // defer for P1 async rendering
           else
             p2 = push(child, p2) // defer for P2 async rendering
-          if (x.driver.kind === BlockKind.Part)
+          if (x.driver.layout === LayoutKind.Part)
             host = x
         }
         // Render incremental children (if any)
@@ -396,7 +396,7 @@ function prepareRender(item: Item<VBlock>,
   redeploy: boolean, sequential: boolean): void {
   const block = item.self
   const driver = block.driver
-  // Initialize/layout if needed
+  // Initialize, deploy, and move (if needed)
   if (block.stamp === 0) {
     block.stamp = 1
     if (block.options?.rx) {
@@ -578,7 +578,7 @@ Promise.prototype.then = reactronicDomHookedThen
 const NOP = (): void => { /* nop */ }
 
 const gSysRoot = Collection.createItem<VBlock>(new VBlock<null, void>('SYSTEM',
-  new StaticDriver<null>(null, 'SYSTEM', BlockKind.Group),
+  new StaticDriver<null>(null, 'SYSTEM', LayoutKind.Group),
   { level: 0 } as VBlock, { rx: true }, NOP)) // fake owner/host (overwritten below)
 gSysRoot.self.item = gSysRoot
 

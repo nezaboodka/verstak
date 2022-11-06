@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Block, Render, BlockOptions, BlockKind } from '../core/api'
+import { Block, Render, BlockOptions, LayoutKind } from '../core/api'
 import { HtmlDriver } from './HtmlDriver'
 
 // Verstak is based on two fundamental layout structures
@@ -62,7 +62,7 @@ export function group<M = unknown, R = void>(name: string,
 export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: Block<T>): void | Promise<void> {
     // Create initial part inside basic block automatically
-    if (block.driver.kind === BlockKind.Block)
+    if (block.driver.layout === LayoutKind.Block)
       sep() // Block.claim('', undefined, NOP, VerstakTags.part)
     return super.render(block)
   }
@@ -72,18 +72,18 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 const VerstakTags = {
   // display: flex, flex-direction: column
-  block: new VerstakDriver<HTMLElement>('v-block', BlockKind.Block),
+  block: new VerstakDriver<HTMLElement>('v-block', LayoutKind.Block),
 
   // display: grid
-  grid: new VerstakDriver<HTMLElement>('v-grid', BlockKind.Grid),
+  grid: new VerstakDriver<HTMLElement>('v-grid', LayoutKind.Grid),
 
   // display:
   //   - flex (row) if parent is regular block
   //   - contents if parent is grid
-  part: new VerstakDriver<HTMLElement>('v-part', BlockKind.Part),
+  part: new VerstakDriver<HTMLElement>('v-part', LayoutKind.Part),
 
   // display: contents
-  group: new VerstakDriver<HTMLElement>('v-group', BlockKind.Group),
+  group: new VerstakDriver<HTMLElement>('v-group', LayoutKind.Group),
 }
 
 const NOP = (): void => { /* nop */ }
