@@ -13,7 +13,7 @@ import { HtmlDriver } from './HtmlDriver'
 // non-visual elements called separator and group.
 
 // Basic block is a layout structure, which children are
-// layed out using left-to-right-and-top-to-bottom flow.
+// layed out naturally: rightwards-downwards.
 
 // Grid block is layout structure, which children are
 // layed out over grid cells.
