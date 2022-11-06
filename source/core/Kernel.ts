@@ -40,7 +40,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
-  abstract readonly host: Block
+  abstract readonly host: Block // (!) may differ from owner
   abstract readonly children: CollectionReader<Block>
   abstract readonly item: Item<Block> | undefined
   abstract readonly stamp: number
@@ -312,24 +312,19 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
 }
 
 function checkForRedeployment(redeploy: boolean, host: VBlock,
-  child: Item<VBlock>, children: Collection<VBlock>, sequential: boolean): boolean
-{
+  child: Item<VBlock>, children: Collection<VBlock>, sequential: boolean): boolean {
+  // Detects element redeployment when abstract blocks
+  // exist among regular blocks with HTML elements
   const block = child.self
-  // WIP:
-  // if (b.host !== host) {
-  //   b.host = host
-  //   redeploy = true
-  // }
-  // Detects element movements when abstract blocks exist among
-  // regular blocks with HTML elements
   if (block.native) {
-    if (redeploy) {
+    if (redeploy || block.host !== host) {
       children.markAsMoved(child)
       redeploy = false
     }
   }
   else if (sequential && children.isMoved(child))
     redeploy = true // apply to the first block with an element
+  block.host = host
   return redeploy
 }
 
