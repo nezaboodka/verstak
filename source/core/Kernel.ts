@@ -45,8 +45,6 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   abstract readonly item: Item<Block> | undefined
   abstract readonly stamp: number
   abstract readonly native: T | undefined
-  abstract readonly place: Readonly<Place> | undefined
-  abstract readonly allocator: Allocator
 
   render(): R {
     return this.renderer(this.native!, this)
