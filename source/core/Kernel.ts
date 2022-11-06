@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
-import { Box, Place, checkIfPlaceChanged, Allocator } from './Allocator'
+import { Box, Place, comparePlaces, Allocator } from './Allocator'
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
@@ -163,7 +163,7 @@ export class AbstractDriver<T> {
     // nothing to do by default
   }
 
-  move(block: Block<T>, initialization: boolean): boolean {
+  place(block: Block<T>): boolean {
     // const b = block as VBlock<T>
     return false
   }
@@ -281,7 +281,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const block = item.instance
           const opt = block.options
           const place = allocator.allocate(opt?.box)
-          moveIfNecessary(block, place)
+          adjustPlaceIfNecessary(block, place)
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
@@ -307,10 +307,10 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
   }
 }
 
-function moveIfNecessary(block: VBlock, place: Place | undefined): void {
-  if (checkIfPlaceChanged(block.place, place)) {
+function adjustPlaceIfNecessary(block: VBlock, place: Place | undefined): void {
+  if (comparePlaces(block.place, place)) {
     block.place = place
-    block.driver.move(block, false)
+    block.driver.place(block)
   }
 }
 
@@ -409,7 +409,7 @@ function prepareRender(item: Item<VBlock>,
     }
     driver.initialize(block, undefined)
     driver.deploy(block, sequential)
-    driver.move(block, true)
+    driver.place(block)
   }
   else if (redeploy)
     driver.deploy(block, sequential) // , console.log(`redeployed: ${block.name}`)
