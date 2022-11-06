@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
-import { Box, Place, comparePlaces, Allocator } from './Allocator'
+import { Box, Place, equalPlaces, Allocator } from './Allocator'
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
@@ -308,7 +308,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
 }
 
 function adjustPlaceIfNecessary(block: VBlock, place: Place | undefined): void {
-  if (comparePlaces(block.place, place)) {
+  if (!equalPlaces(block.place, place)) {
     block.place = place
     block.driver.place(block)
   }

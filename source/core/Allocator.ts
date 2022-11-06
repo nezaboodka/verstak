@@ -178,6 +178,6 @@ function absolutizePosition(pos: number, cursor: number, max: number): number {
   return pos
 }
 
-export function comparePlaces(a: Place | undefined, b: Place | undefined): boolean {
-  return false // not implemented
+export function equalPlaces(a: Place | undefined, b: Place | undefined): boolean {
+  return true // not implemented
 }
