@@ -56,7 +56,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
 
   static root(render: () => void): void {
     gSysRoot.instance.renderer = render
-    prepareThenRunRender(gSysRoot, false, false)
+    prepareAndRunRender(gSysRoot, false, false)
   }
 
   static get current(): Block {
@@ -285,7 +285,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
-            prepareThenRunRender(item, children.isMoved(item), sequential) // render synchronously
+            prepareAndRunRender(item, children.isMoved(item), sequential) // render synchronously
           else if (priority === Priority.AsyncP1)
             p1 = push(item, p1) // defer for P1 async rendering
           else
@@ -358,7 +358,7 @@ async function renderIncrementally(owner: Item<VBlock>, stamp: number,
       const frameDurationLimit = priority === Priority.AsyncP2 ? Block.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(Block.frameDuration / 4, Block.shortFrameDuration))
       for (const child of items) {
-        prepareThenRunRender(child, allChildren.isMoved(child), sequential)
+        prepareAndRunRender(child, allChildren.isMoved(child), sequential)
         if (Transaction.isFrameOver(1, frameDuration)) {
           Block.currentRenderingPriority = outerPriority
           await Transaction.requestNextFrame(0)
@@ -376,7 +376,7 @@ async function renderIncrementally(owner: Item<VBlock>, stamp: number,
   }
 }
 
-function prepareThenRunRender(item: Item<VBlock>,
+function prepareAndRunRender(item: Item<VBlock>,
   redeploy: boolean, sequential: boolean): void {
   const block = item.instance
   if (block.stamp >= 0) {
