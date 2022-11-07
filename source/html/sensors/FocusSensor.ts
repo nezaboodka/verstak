@@ -5,11 +5,11 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, transactional, LoggingLevel, ToggleRef } from 'reactronic'
-import { objectHasMember } from '../../core/Utils'
-import { grabElementDataList, SymDataForSensor } from './DataForSensor'
-import { HtmlElementSensor } from './HtmlElementSensor'
-import { WindowSensor } from './WindowSensor'
+import { options, transactional, LoggingLevel, ToggleRef } from "reactronic"
+import { objectHasMember } from "../../core/Utils"
+import { grabElementDataList, SymDataForSensor } from "./DataForSensor"
+import { HtmlElementSensor } from "./HtmlElementSensor"
+import { WindowSensor } from "./WindowSensor"
 
 export interface FocusModel {
   isEditMode: boolean
@@ -36,16 +36,16 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   @transactional
-  setActiveData(data: unknown, debugHint: string = ''): void {
+  setActiveData(data: unknown, debugHint: string = ""): void {
     if (data !== this.activeData) {
       const activeData = this.activeData
-      if (activeData !== undefined && objectHasMember<FocusModel>(activeData, 'isEditMode')) {
+      if (activeData !== undefined && objectHasMember<FocusModel>(activeData, "isEditMode")) {
         // console.log(`${activeData.constructor.name}.isEditMode = %cfalse`, 'color: #BB0000')
         activeData.isEditMode = false
         activeData.onFocusOut?.(this)
       }
       if (data !== undefined) {
-        if (objectHasMember<FocusModel>(data, 'isEditMode')) {
+        if (objectHasMember<FocusModel>(data, "isEditMode")) {
           // console.log(`${data.constructor.name}.isEditMode = %ctrue`, 'color: #00BB00')
           data.isEditMode = true
           data.onFocusIn?.(this)
@@ -61,15 +61,15 @@ export class FocusSensor extends HtmlElementSensor {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
-        existing.removeEventListener('focusin', this.onFocusIn.bind(this), { capture: true })
-        existing.removeEventListener('focusout', this.onFocusOut.bind(this), { capture: true })
-        existing.removeEventListener('mousedown', this.onMouseDown.bind(this), { capture: true })
+        existing.removeEventListener("focusin", this.onFocusIn.bind(this), { capture: true })
+        existing.removeEventListener("focusout", this.onFocusOut.bind(this), { capture: true })
+        existing.removeEventListener("mousedown", this.onMouseDown.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('focusin', this.onFocusIn.bind(this), { capture: true })
-        element.addEventListener('focusout', this.onFocusOut.bind(this), { capture: true })
-        element.addEventListener('mousedown', this.onMouseDown.bind(this), { capture: true })
+        element.addEventListener("focusin", this.onFocusIn.bind(this), { capture: true })
+        element.addEventListener("focusout", this.onFocusOut.bind(this), { capture: true })
+        element.addEventListener("mousedown", this.onMouseDown.bind(this), { capture: true })
       }
     }
   }
@@ -104,12 +104,12 @@ export class FocusSensor extends HtmlElementSensor {
   protected doFocusIn(e: FocusEvent): void {
     const path = e.composedPath()
     // Focus
-    const { dataList: focusDataList, activeData: focusActiveData, window } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, false, e => document.activeElement === e)
+    const { dataList: focusDataList, activeData: focusActiveData, window } = grabElementDataList(path, SymDataForSensor, "focus", this.elementDataList, false, e => document.activeElement === e)
     this.elementDataList = focusDataList
     this.setActiveData(focusActiveData)
     this.windowSensor?.setActiveWindow(window)
     // Context
-    const { dataList: contextDataList } = grabElementDataList(path, SymDataForSensor, 'context', this.contextElementDataList, true)
+    const { dataList: contextDataList } = grabElementDataList(path, SymDataForSensor, "context", this.contextElementDataList, true)
     this.contextElementDataList = toggleContextRefs(this, this.contextElementDataList, contextDataList)
     this.reset()
   }
@@ -121,19 +121,19 @@ export class FocusSensor extends HtmlElementSensor {
       // console.log('[info]: browser is losing focus')
       const path = e.composedPath()
       // Focus
-      const { dataList } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true)
+      const { dataList } = grabElementDataList(path, SymDataForSensor, "focus", this.elementDataList, true)
       this.elementDataList = dataList
       const filteredElementDataList = dataList.filter(x => x !== this.activeData)
       if (filteredElementDataList.length > 0) {
         // console.log('└─ [info]: focus data found')
-        this.trySetEditMode(filteredElementDataList[0], '  └─')
+        this.trySetEditMode(filteredElementDataList[0], "  └─")
       }
       else {
         // console.log('├─ [info]: no focus data found')
         const defaultData = this.getDefaultSensorData()
         if (defaultData?.focus !== undefined) {
           // console.log('└─ [info]: default data is used')
-          this.trySetEditMode(defaultData.focus, '    └─')
+          this.trySetEditMode(defaultData.focus, "    └─")
         }
         else {
           // console.log('└─ [skip]: no default data found')
@@ -158,14 +158,14 @@ export class FocusSensor extends HtmlElementSensor {
     if (path.length > 0 && !isClickInsideTabIndexedElement) {
       // console.log('[info]: a path does not contain any editable elements')
       // Focus
-      const { dataList } = grabElementDataList(path, SymDataForSensor, 'focus', this.elementDataList, true)
+      const { dataList } = grabElementDataList(path, SymDataForSensor, "focus", this.elementDataList, true)
       this.elementDataList = dataList
       if (dataList.length > 0) {
-        this.trySetEditMode(dataList[0], '└─')
+        this.trySetEditMode(dataList[0], "└─")
         e.preventDefault()
       }
       // Context
-      const { dataList: contextDataList } = grabElementDataList(path, SymDataForSensor, 'context', this.contextElementDataList, true)
+      const { dataList: contextDataList } = grabElementDataList(path, SymDataForSensor, "context", this.contextElementDataList, true)
       this.contextElementDataList = toggleContextRefs(this, this.contextElementDataList, contextDataList)
       this.reset()
     }
@@ -174,8 +174,8 @@ export class FocusSensor extends HtmlElementSensor {
     }
   }
 
-  private trySetEditMode(candidateData: unknown, indent: string = ''): void {
-    if (candidateData !== undefined && objectHasMember<FocusModel>(candidateData, 'isEditMode')) {
+  private trySetEditMode(candidateData: unknown, indent: string = ""): void {
+    if (candidateData !== undefined && objectHasMember<FocusModel>(candidateData, "isEditMode")) {
       // console.log(`${indent}try focus: ${candidateData.constructor.name}.isEditMode = %ctrue`, 'color: #00BB00')
       candidateData.isEditMode = true
     }
@@ -185,15 +185,15 @@ export class FocusSensor extends HtmlElementSensor {
 function toggleContextRefs(focusSensor: FocusSensor, existing: unknown[], updated: unknown[]): unknown[] {
   if (updated !== existing) {
     existing.forEach(x => {
-      if (objectHasMember<ContextModel>(x, 'contextToggle') && x.contextToggle && x.contextToggle.valueOn !== x.contextToggle.valueOff)
+      if (objectHasMember<ContextModel>(x, "contextToggle") && x.contextToggle && x.contextToggle.valueOn !== x.contextToggle.valueOff)
         x.contextToggle.variable = x.contextToggle.valueOff
-      if (objectHasMember<ContextModel>(x, 'onContextOut'))
+      if (objectHasMember<ContextModel>(x, "onContextOut"))
         x.onContextOut?.(focusSensor)
     })
     updated.forEach(x => {
-      if (objectHasMember<ContextModel>(x, 'contextToggle') && x.contextToggle)
+      if (objectHasMember<ContextModel>(x, "contextToggle") && x.contextToggle)
         x.contextToggle.variable = x.contextToggle.valueOn
-      if (objectHasMember<ContextModel>(x, 'onContextIn'))
+      if (objectHasMember<ContextModel>(x, "onContextIn"))
         x.onContextIn?.(focusSensor)
     })
   }

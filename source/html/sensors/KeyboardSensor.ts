@@ -5,9 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, sensitive, transactional, LoggingLevel } from 'reactronic'
-import { grabElementDataList, SymDataForSensor } from './DataForSensor'
-import { HtmlElementSensor } from './HtmlElementSensor'
+import { options, sensitive, transactional, LoggingLevel } from "reactronic"
+import { grabElementDataList, SymDataForSensor } from "./DataForSensor"
+import { HtmlElementSensor } from "./HtmlElementSensor"
 
 export enum KeyboardModifiers {
   None = 0,
@@ -34,8 +34,8 @@ export class KeyboardSensor extends HtmlElementSensor {
 
   constructor() {
     super()
-    this.down = ''
-    this.up = ''
+    this.down = ""
+    this.up = ""
     this.modifiers = KeyboardModifiers.None
   }
 
@@ -44,13 +44,13 @@ export class KeyboardSensor extends HtmlElementSensor {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
-        existing.removeEventListener('keydown', this.onKeyDown.bind(this), { capture: true })
-        existing.removeEventListener('keyup', this.onKeyUp.bind(this), { capture: true })
+        existing.removeEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
+        existing.removeEventListener("keyup", this.onKeyUp.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('keydown', this.onKeyDown.bind(this), { capture: true })
-        element.addEventListener('keyup', this.onKeyUp.bind(this), { capture: true })
+        element.addEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
+        element.addEventListener("keyup", this.onKeyUp.bind(this), { capture: true })
       }
     }
   }
@@ -59,8 +59,8 @@ export class KeyboardSensor extends HtmlElementSensor {
   reset(): void {
     this.preventDefault = false
     this.stopPropagation = false
-    this.down = ''
-    this.up = ''
+    this.down = ""
+    this.up = ""
     this.modifiers = KeyboardModifiers.None
   }
 
@@ -77,14 +77,14 @@ export class KeyboardSensor extends HtmlElementSensor {
   @transactional @options({ logging: LoggingLevel.Off })
   protected keyDown(e: KeyboardEvent): void {
     this.updateSensorData(e)
-    this.up = ''
+    this.up = ""
     sensitive(true, () => this.down = e.key)
   }
 
   @transactional @options({ logging: LoggingLevel.Off })
   protected keyUp(e: KeyboardEvent): void {
     this.updateSensorData(e)
-    this.down = ''
+    this.down = ""
     sensitive(true, () => this.up = e.key)
   }
 
@@ -96,20 +96,20 @@ export class KeyboardSensor extends HtmlElementSensor {
     // console.log('KeyboardSensor.updateSensorData:')
     // console.log(path)
 
-    this.elementDataList = grabElementDataList(path, SymDataForSensor, 'keyboard', this.elementDataList).dataList
+    this.elementDataList = grabElementDataList(path, SymDataForSensor, "keyboard", this.elementDataList).dataList
     this.modifiers = extractModifierKeys(e)
     this.revision++
   }
 
   protected static getKeyAsModifierIfAny(key: string): KeyboardModifiers {
     let modifier = KeyboardModifiers.None
-    if (key === 'Control')
+    if (key === "Control")
       modifier = KeyboardModifiers.Ctrl
-    else if (key === 'Shift')
+    else if (key === "Shift")
       modifier = KeyboardModifiers.Shift
-    else if (key === 'Alt')
+    else if (key === "Alt")
       modifier = KeyboardModifiers.Alt
-    else if (key === 'Meta')
+    else if (key === "Meta")
       modifier = KeyboardModifiers.Meta
     return modifier
   }

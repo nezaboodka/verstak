@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { CellRange, parseCellRange } from './CellRange'
+import { CellRange, parseCellRange } from "./CellRange"
 
 export enum Alignment {
   Fit = 0,
@@ -66,8 +66,8 @@ export class Allocator {
   allocate(box: Box | undefined): Place | undefined {
     return !box ? undefined : {
       bounds: undefined,
-      widthMin: '', widthMax: '', widthGrow: 0,
-      heightMin: '', heightMax: '', heightGrow: 0,
+      widthMin: "", widthMax: "", widthGrow: 0,
+      heightMin: "", heightMax: "", heightGrow: 0,
       alignment: box.alignment ?? Alignment.TopLeft,
       boxAlignment: box.boxAlignment ?? Alignment.Fit,
     }
@@ -96,8 +96,8 @@ export class GridBasedAllocator implements Allocator {
   allocate(box: Box | undefined): Place | undefined {
     const result: Place = {
       bounds: undefined,
-      widthMin: '', widthMax: '', widthGrow: 0,
-      heightMin: '', heightMax: '', heightGrow: 0,
+      widthMin: "", widthMax: "", widthGrow: 0,
+      heightMin: "", heightMax: "", heightGrow: 0,
       alignment: Alignment.TopLeft, boxAlignment: Alignment.Fit,
     }
     const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount

@@ -21,8 +21,8 @@ export interface DataForSensor {
   button?: unknown
 }
 
-export const SymDataForSensor: unique symbol = Symbol('DataForSensor')
-export const SymResizeObserver: unique symbol = Symbol('ResizeObserver')
+export const SymDataForSensor: unique symbol = Symbol("DataForSensor")
+export const SymResizeObserver: unique symbol = Symbol("ResizeObserver")
 
 export const EmptyDataArray: any[] = []
 
@@ -38,8 +38,8 @@ export function findTargetElementData(targetPath: any[], underPointer: any[], sy
     if (candidateData !== undefined) {
       if (!ignoreWindow) {
         if (window === undefined)
-          window = candidateData['window']
-        else if (window !== candidateData['window'])
+          window = candidateData["window"]
+        else if (window !== candidateData["window"])
           break
       }
       if (result === undefined) {
@@ -72,8 +72,8 @@ export function grabElementDataList(targetPath: any[], sym: symbol,
     if (candidateData !== undefined) {
       if (!ignoreWindow) {
         if (window === undefined)
-          window = candidateData['window']
-        else if (window !== candidateData['window'])
+          window = candidateData["window"]
+        else if (window !== candidateData["window"])
           break
       }
       payload = candidateData[payloadKey]

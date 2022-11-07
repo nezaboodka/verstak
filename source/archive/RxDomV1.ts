@@ -4,8 +4,8 @@
 // License: https://raw.githubusercontent.com/nezaboodka/verstak/master/LICENSE
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
-import { reactive, nonreactive, Transaction, Rx, options, Reentrance } from 'reactronic'
-import { Render, SuperRender, RxNodeType, RxNodeInstance, RxNode } from './RxDomV1.Types'
+import { reactive, nonreactive, Transaction, Rx, options, Reentrance } from "reactronic"
+import { Render, SuperRender, RxNodeType, RxNodeInstance, RxNode } from "./RxDomV1.Types"
 
 // BasicNodeType
 
@@ -23,9 +23,9 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
   render(node: RxNode<E, O>, args: unknown): void {
     const inst = node.instance
     if (!inst)
-      throw new Error('element must be initialized before rendering')
+      throw new Error("element must be initialized before rendering")
     if (inst.buffer)
-      throw new Error('rendering re-entrance is not supported yet')
+      throw new Error("rendering re-entrance is not supported yet")
     inst.buffer = []
     let result: any
     if (node.superRender)
@@ -92,12 +92,12 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
 // RxDom
 
 export class RxDom {
-  public static readonly basic = new BasicNodeType<any, any>('basic', false)
+  public static readonly basic = new BasicNodeType<any, any>("basic", false)
 
   static Root<T>(render: () => T): T {
     const inst = SYSTEM.instance!
     if (inst.buffer)
-      throw new Error('rendering re-entrance is not supported yet')
+      throw new Error("rendering re-entrance is not supported yet")
     inst.buffer = []
     let result: any = render()
     if (result instanceof Promise)
@@ -116,14 +116,14 @@ export class RxDom {
     const o = creator ?? gCreator
     const inst = o.instance
     if (!inst)
-      throw new Error('element must be initialized before children')
+      throw new Error("element must be initialized before children")
     if (type === undefined)
       type = RxDom.basic
     if (!host)
       host = gHost
     const node = new RxNode<E, O>(id, args, render, superRender, 0, false, type, inline ?? false, o, host)
     if (inst.buffer === undefined)
-      throw new Error('children are rendered already') // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      throw new Error("children are rendered already") // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const rev = host.instance?.revision ?? ~1
     if (rev >= ~0) // emit only if host is alive
       inst.buffer.push(node)
@@ -168,8 +168,8 @@ export class RxDom {
       inst)                     // instance
     // Initialize
     const a: any = node
-    a['creator'] = node
-    a['host'] = node
+    a["creator"] = node
+    a["host"] = node
     inst.native = native
     return node
   }
@@ -181,14 +181,14 @@ export class RxDom {
   static currentNodeInstance<T>(): { model?: T } {
     const inst = gCreator.instance
     if (!inst)
-      throw new Error('currentNodeInstance function can be called only inside rendering function')
+      throw new Error("currentNodeInstance function can be called only inside rendering function")
     return inst as { model?: T }
   }
 
   static currentNodeInstanceInternal<E>(): RxNodeInstanceImpl<E> {
     const inst = gCreator.instance
     if (!inst)
-      throw new Error('currentNodeInstanceInternal function can be called only inside rendering function')
+      throw new Error("currentNodeInstanceInternal function can be called only inside rendering function")
     return inst
   }
 
@@ -611,6 +611,6 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const NOP = (): void => { /* nop */ }
 const EMPTY: Array<RxNode> = Object.freeze([]) as any
-const SYSTEM = RxDom.createRootNode<unknown>('SYSTEM', false, 'SYSTEM')
+const SYSTEM = RxDom.createRootNode<unknown>("SYSTEM", false, "SYSTEM")
 let gCreator: RxNode = SYSTEM
 let gHost: RxNode = SYSTEM

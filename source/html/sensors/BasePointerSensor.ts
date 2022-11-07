@@ -5,10 +5,10 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { FocusSensor } from './FocusSensor'
-import { HtmlElementSensor } from './HtmlElementSensor'
-import { KeyboardModifiers } from './KeyboardSensor'
-import { WindowSensor } from './WindowSensor'
+import { FocusSensor } from "./FocusSensor"
+import { HtmlElementSensor } from "./HtmlElementSensor"
+import { KeyboardModifiers } from "./KeyboardSensor"
+import { WindowSensor } from "./WindowSensor"
 
 export enum PointerButton {
   None = 0,

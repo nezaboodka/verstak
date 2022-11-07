@@ -5,15 +5,15 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reactive, transactional, raw, Transaction, LoggingLevel } from 'reactronic'
-import { findTargetElementData, SymDataForSensor } from './DataForSensor'
-import { FocusSensor } from './FocusSensor'
-import { HtmlElementSensor } from './HtmlElementSensor'
-import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
-import { WindowSensor } from './WindowSensor'
+import { options, reactive, transactional, raw, Transaction, LoggingLevel } from "reactronic"
+import { findTargetElementData, SymDataForSensor } from "./DataForSensor"
+import { FocusSensor } from "./FocusSensor"
+import { HtmlElementSensor } from "./HtmlElementSensor"
+import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor"
+import { WindowSensor } from "./WindowSensor"
 
-export type DragEffectAllowed = 'none' | 'copy' | 'copyLink' | 'copyMove' | 'link' | 'linkMove' | 'move' | 'all' | 'uninitialized'
-export type DropEffect = 'none' | 'copy' | 'link' | 'move'
+export type DragEffectAllowed = "none" | "copy" | "copyLink" | "copyMove" | "link" | "linkMove" | "move" | "all" | "uninitialized"
+export type DropEffect = "none" | "copy" | "link" | "move"
 
 export class HtmlDragSensor extends HtmlElementSensor {
   draggable: unknown
@@ -60,9 +60,9 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.draggingImage = undefined
     this.draggingImageX = Infinity
     this.draggingImageY = Infinity
-    this.dropEffect = 'none'
+    this.dropEffect = "none"
     this.dataTypesAllowed = []
-    this.effectAllowed = 'uninitialized'
+    this.effectAllowed = "uninitialized"
     this.dropAllowed = false
     this.draggingOver = false
     this.draggingDataTypes = []
@@ -103,23 +103,23 @@ export class HtmlDragSensor extends HtmlElementSensor {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
-        existing.removeEventListener('dragstart', this.onDragStart.bind(this), { capture: true })
-        existing.removeEventListener('drag', this.onDrag.bind(this), { capture: true })
-        existing.removeEventListener('dragenter', this.onDragEnter.bind(this), { capture: false })
-        existing.removeEventListener('dragleave', this.onDragLeave.bind(this), { capture: false })
-        existing.removeEventListener('dragover', this.onDragOver.bind(this), { capture: true })
-        existing.removeEventListener('drop', this.onDrop.bind(this), { capture: true })
-        existing.removeEventListener('dragend', this.onDragEnd.bind(this), { capture: true })
+        existing.removeEventListener("dragstart", this.onDragStart.bind(this), { capture: true })
+        existing.removeEventListener("drag", this.onDrag.bind(this), { capture: true })
+        existing.removeEventListener("dragenter", this.onDragEnter.bind(this), { capture: false })
+        existing.removeEventListener("dragleave", this.onDragLeave.bind(this), { capture: false })
+        existing.removeEventListener("dragover", this.onDragOver.bind(this), { capture: true })
+        existing.removeEventListener("drop", this.onDrop.bind(this), { capture: true })
+        existing.removeEventListener("dragend", this.onDragEnd.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('dragstart', this.onDragStart.bind(this), { capture: true })
-        element.addEventListener('drag', this.onDrag.bind(this), { capture: true })
-        element.addEventListener('dragenter', this.onDragEnter.bind(this), { capture: false })
-        element.addEventListener('dragleave', this.onDragLeave.bind(this), { capture: false })
-        element.addEventListener('dragover', this.onDragOver.bind(this), { capture: true })
-        element.addEventListener('drop', this.onDrop.bind(this), { capture: true })
-        element.addEventListener('dragend', this.onDragEnd.bind(this), { capture: true })
+        element.addEventListener("dragstart", this.onDragStart.bind(this), { capture: true })
+        element.addEventListener("drag", this.onDrag.bind(this), { capture: true })
+        element.addEventListener("dragenter", this.onDragEnter.bind(this), { capture: false })
+        element.addEventListener("dragleave", this.onDragLeave.bind(this), { capture: false })
+        element.addEventListener("dragover", this.onDragOver.bind(this), { capture: true })
+        element.addEventListener("drop", this.onDrop.bind(this), { capture: true })
+        element.addEventListener("dragend", this.onDragEnd.bind(this), { capture: true })
       }
     }
   }
@@ -162,9 +162,9 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.stopPropagation = false
     const targetPath = e.composedPath()
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDraggable'])
+    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ["htmlDraggable"])
     this.draggable = data?.htmlDraggable
-    this.dragSource = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDrag'], true).data?.htmlDrag
+    this.dragSource = findTargetElementData(targetPath, underPointer, SymDataForSensor, ["htmlDrag"], true).data?.htmlDrag
     this.dragStarted = true
     this.dragFinished = false
     this.startX = e.clientX
@@ -178,7 +178,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.previousDragTarget = undefined
     this.revision++
     Transaction.separate(() => {
-      this.windowSensor?.setActiveWindow(window, 'htmlDrag')
+      this.windowSensor?.setActiveWindow(window, "htmlDrag")
     })
   }
 
@@ -227,7 +227,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
       dt.types.forEach(type => {
         if (!dataByFormat.has(type)) {
           const data = dt.getData(type)
-          if (data !== '') {
+          if (data !== "") {
             this.dataByFormat = dataByFormat = dataByFormat.toMutable()
             dataByFormat.set(type, data)
           }
@@ -244,7 +244,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
       dt.dropEffect = this.dropEffect
       dt.effectAllowed = this.effectAllowed
       this.dataByFormat.forEach((data, format) => {
-        if (typeof data === 'string')
+        if (typeof data === "string")
           dt.setData(format, data)
       })
       if (this.draggingImage) {
@@ -274,9 +274,9 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.draggingImage = undefined
     this.draggingImageX = Infinity
     this.draggingImageY = Infinity
-    this.dropEffect = 'none'
+    this.dropEffect = "none"
     this.dataTypesAllowed = []
-    this.effectAllowed = 'uninitialized'
+    this.effectAllowed = "uninitialized"
     this.dropAllowed = false
     this.draggingOver = false
     this.draggingDataTypes = []
@@ -295,7 +295,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
   protected updateDragTarget(e: DragEvent): void {
     const targetPath = e.composedPath()
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['htmlDrag'])
+    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ["htmlDrag"])
     const dragTarget = data?.htmlDrag
     if (dragTarget !== this.dragTarget) {
       this.previousDragTarget = this.dragTarget

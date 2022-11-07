@@ -57,12 +57,12 @@ export function parseCellRange(text: string, result: CellRange): CellRange {
         value = 0
       }
       else {
-        console.error('Sign must not be negative')
+        console.error("Sign must not be negative")
       }
     }
     else if (charCode === 41) { // )
       if (sign > 0) {
-        console.error('Sign must be negative')
+        console.error("Sign must be negative")
       }
       switch (component) {
         case 0: result.x1 = value * sign; break
@@ -140,7 +140,7 @@ export function parseCellRange(text: string, result: CellRange): CellRange {
 export function emitCellRange(value: CellRange): string {
   const p1 = emitCellPosition(value.x1, value.y1)
   const p2 = emitCellPosition(value.x2, value.y2)
-  return `${p1}${p2 !== '' ? `:${p2}` : ''}`
+  return `${p1}${p2 !== "" ? `:${p2}` : ""}`
 }
 
 function isWhitespace(char: number): boolean {
@@ -163,7 +163,7 @@ function isLowercaseLetter(ch: number): boolean {
 function emitLetters(n: number): string {
   if (n < 0)
     throw new Error(`emitLetters: argument (${n}) should not be negative or zero`)
-  let result = ''
+  let result = ""
   while (n >= 0) {
     const r = n % 26
     n = Math.floor(n / 26) - 1
@@ -173,7 +173,7 @@ function emitLetters(n: number): string {
 }
 
 function emitCellPosition(x: number, y: number): string {
-  let result = ''
+  let result = ""
   if (x > 0 && y > 0)
     result = `${emitLetters(x - 1)}${y}`
   else if (x > 0 && y < 0)
@@ -183,6 +183,6 @@ function emitCellPosition(x: number, y: number): string {
   else if (x < 0 && y < 0)
     result = `(${emitLetters(-x - 1)}${-y})`
   else
-    result = ''
+    result = ""
   return result
 }

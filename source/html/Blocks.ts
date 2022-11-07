@@ -5,8 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Block, Render, BlockOptions, LayoutKind } from '../core/api'
-import { HtmlDriver } from './HtmlDriver'
+import { Block, Render, BlockOptions, LayoutKind } from "../core/api"
+import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
 // called basic block and grid block; and on two special
@@ -43,7 +43,7 @@ export function text<M = unknown>(markdown: string,
   name?: string):
   Block<HTMLElement, M, void> {
   const render = (e: HTMLElement): void => { e.innerText = markdown }
-  return Block.claim(name ?? '', options, render, VerstakTags.text)
+  return Block.claim(name ?? "", options, render, VerstakTags.text)
 }
 
 // Grid Block
@@ -58,7 +58,7 @@ export function grid<M = unknown, R = void>(name: string,
 // Separator
 
 export function sep(spacing?: boolean): Block<HTMLElement> {
-  return Block.claim('', undefined, NOP, VerstakTags.part)
+  return Block.claim("", undefined, NOP, VerstakTags.part)
 }
 
 // Group
@@ -88,14 +88,14 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 // VerstakTags
 
-const CUSTOM_TAG = '' // v-{block.name}
+const CUSTOM_TAG = "" // v-{block.name}
 
 const VerstakTags = {
   // display: flex, flex-direction: column
   block: new VerstakDriver<HTMLElement>(CUSTOM_TAG, LayoutKind.Block),
 
   // display: block
-  text: new VerstakDriver<HTMLElement>('article', LayoutKind.Text),
+  text: new VerstakDriver<HTMLElement>("article", LayoutKind.Text),
 
   // display: grid
   grid: new VerstakDriver<HTMLElement>(CUSTOM_TAG, LayoutKind.Grid),
@@ -103,7 +103,7 @@ const VerstakTags = {
   // display:
   //   - flex (row) if parent is regular block
   //   - contents if parent is grid
-  part: new VerstakDriver<HTMLElement>('div', LayoutKind.Part),
+  part: new VerstakDriver<HTMLElement>("div", LayoutKind.Part),
 
   // display: contents
   group: new VerstakDriver<HTMLElement>(CUSTOM_TAG, LayoutKind.Group),

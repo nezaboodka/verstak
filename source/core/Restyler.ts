@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { cached, Transaction } from 'reactronic'
+import { cached, Transaction } from "reactronic"
 
 export function restyler<T>(restyle: () => T): ObservablesStyles<T> {
   return Transaction.run(null, () => new ObservablesStyles<T>(restyle))

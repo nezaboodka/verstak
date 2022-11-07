@@ -5,15 +5,15 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Item, Rx } from 'reactronic'
-import { Block, AbstractDriver, Priority } from '../core/api'
+import { Item, Rx } from "reactronic"
+import { Block, AbstractDriver, Priority } from "../core/api"
 
 export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T> {
 
   initialize(block: Block<T>, element: T | undefined): void {
     element = this.createElement(block)
     if (Rx.isLogging && isDigit(block.name.charCodeAt(0)))
-      element.setAttribute('sn', block.name)
+      element.setAttribute("sn", block.name)
     super.initialize(block, element)
   }
 
@@ -104,7 +104,7 @@ export class HtmlDriver<T extends HTMLElement> extends BaseHtmlDriver<T> {
 
 export class SvgDriver<T extends SVGElement> extends BaseHtmlDriver<T> {
   protected createElement(block: Block<T>): T {
-    return document.createElementNS('http://www.w3.org/2000/svg', block.driver.name) as T
+    return document.createElementNS("http://www.w3.org/2000/svg", block.driver.name) as T
   }
 }
 

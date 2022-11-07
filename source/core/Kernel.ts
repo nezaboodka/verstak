@@ -5,8 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from 'reactronic'
-import { Box, Place, equalPlaces, Allocator } from './Allocator'
+import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from "reactronic"
+import { Box, Place, equalPlaces, Allocator } from "./Allocator"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
@@ -135,7 +135,7 @@ export enum LayoutKind {
 const createDefaultAllocator = (): Allocator => new Allocator()
 
 export class AbstractDriver<T> {
-  public static readonly group = new AbstractDriver<any>('group', LayoutKind.Group)
+  public static readonly group = new AbstractDriver<any>("group", LayoutKind.Group)
 
   readonly name: string
   readonly layout: LayoutKind
@@ -432,7 +432,7 @@ function runRender(item: Item<VBlock>): void {
         if (result instanceof Promise)
           result.then(
             v => { runRenderNestedTreesThenDo(undefined, NOP); return v },
-            e => { console.log(e); runRenderNestedTreesThenDo(e ?? new Error('unknown error'), NOP) })
+            e => { console.log(e); runRenderNestedTreesThenDo(e ?? new Error("unknown error"), NOP) })
         else
           runRenderNestedTreesThenDo(undefined, NOP)
       }
@@ -460,7 +460,7 @@ function runFinalize(item: Item<VBlock>, isLeader: boolean): void {
       else
         gFirstToDispose = gLastToDispose = item
       if (gFirstToDispose === item)
-        Transaction.run({ separation: 'disposal', hint: `runDisposalLoop(initiator=${item.instance.name})` }, () => {
+        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${item.instance.name})` }, () => {
           void runDisposalLoop().then(NOP, error => console.log(error))
         })
     }
@@ -577,12 +577,12 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const NOP = (): void => { /* nop */ }
 
-const gSysRoot = Collection.createItem<VBlock>(new VBlock<null, void>('SYSTEM',
-  new StaticDriver<null>(null, 'SYSTEM', LayoutKind.Group),
+const gSysRoot = Collection.createItem<VBlock>(new VBlock<null, void>("SYSTEM",
+  new StaticDriver<null>(null, "SYSTEM", LayoutKind.Group),
   { level: 0 } as VBlock, { rx: true }, NOP)) // fake owner/host (overwritten below)
 gSysRoot.instance.item = gSysRoot
 
-Object.defineProperty(gSysRoot, 'host', {
+Object.defineProperty(gSysRoot, "host", {
   value: gSysRoot,
   writable: false,
   configurable: false,

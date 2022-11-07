@@ -5,12 +5,12 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reactive, Reentrance, transactional, raw, Transaction, LoggingLevel } from 'reactronic'
-import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from './BasePointerSensor'
-import { findTargetElementData, SymDataForSensor } from './DataForSensor'
-import { FocusSensor } from './FocusSensor'
-import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
-import { WindowSensor } from './WindowSensor'
+import { options, reactive, Reentrance, transactional, raw, Transaction, LoggingLevel } from "reactronic"
+import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from "./BasePointerSensor"
+import { findTargetElementData, SymDataForSensor } from "./DataForSensor"
+import { FocusSensor } from "./FocusSensor"
+import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor"
+import { WindowSensor } from "./WindowSensor"
 
 export class PointerSensor extends BasePointerSensor {
   pointerButton: PointerButton
@@ -93,19 +93,19 @@ export class PointerSensor extends BasePointerSensor {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
-        existing.removeEventListener('pointerdown', this.onPointerDown.bind(this), { capture: true })
-        existing.removeEventListener('pointermove', this.onPointerMove.bind(this), { capture: true })
-        existing.removeEventListener('pointerup', this.onPointerUp.bind(this), { capture: true })
-        existing.removeEventListener('lostpointercapture', this.onLostPointerCapture.bind(this), { capture: true })
-        existing.removeEventListener('keydown', this.onKeyDown.bind(this), { capture: true })
+        existing.removeEventListener("pointerdown", this.onPointerDown.bind(this), { capture: true })
+        existing.removeEventListener("pointermove", this.onPointerMove.bind(this), { capture: true })
+        existing.removeEventListener("pointerup", this.onPointerUp.bind(this), { capture: true })
+        existing.removeEventListener("lostpointercapture", this.onLostPointerCapture.bind(this), { capture: true })
+        existing.removeEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('pointerdown', this.onPointerDown.bind(this), { capture: true })
-        element.addEventListener('pointermove', this.onPointerMove.bind(this), { capture: true })
-        element.addEventListener('pointerup', this.onPointerUp.bind(this), { capture: true })
-        element.addEventListener('lostpointercapture', this.onLostPointerCapture.bind(this), { capture: true })
-        element.addEventListener('keydown', this.onKeyDown.bind(this), { capture: true })
+        element.addEventListener("pointerdown", this.onPointerDown.bind(this), { capture: true })
+        element.addEventListener("pointermove", this.onPointerMove.bind(this), { capture: true })
+        element.addEventListener("pointerup", this.onPointerUp.bind(this), { capture: true })
+        element.addEventListener("lostpointercapture", this.onLostPointerCapture.bind(this), { capture: true })
+        element.addEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
       }
     }
   }
@@ -170,7 +170,7 @@ export class PointerSensor extends BasePointerSensor {
   }
 
   protected onKeyDown(e: KeyboardEvent): void {
-    if (e.key === 'Escape' && (this.dragStarted || this.clickable)) {
+    if (e.key === "Escape" && (this.dragStarted || this.clickable)) {
       this.cancelDragging()
       this.reset()
     }
@@ -188,7 +188,7 @@ export class PointerSensor extends BasePointerSensor {
     this.stopPropagation = false
     const targetPath = e.composedPath()
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['click', 'draggable'])
+    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ["click", "draggable"])
     const clickable = data?.click
     const draggable = data?.draggable
     if (clickable || draggable) {
@@ -196,7 +196,7 @@ export class PointerSensor extends BasePointerSensor {
       this.clicking = clickable
       this.draggableData = draggable
       this.tryingDragging = draggable !== undefined
-      this.dragSource = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['drag'], true).data?.drag
+      this.dragSource = findTargetElementData(targetPath, underPointer, SymDataForSensor, ["drag"], true).data?.drag
       this.pointerButton = extractPointerButton(e)
       this.startX = e.clientX
       this.startY = e.clientY
@@ -208,7 +208,7 @@ export class PointerSensor extends BasePointerSensor {
       this.dragTargetWindow = undefined
       this.previousDragTarget = undefined
       Transaction.separate(() => {
-        this.windowSensor?.setActiveWindow(window, 'pointer')
+        this.windowSensor?.setActiveWindow(window, "pointer")
       })
     }
     this.revision++
@@ -312,7 +312,7 @@ export class PointerSensor extends BasePointerSensor {
   protected updateClicking(e: PointerEvent): boolean {
     const targetPath = e.composedPath()
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
-    const clickable = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['click']).data?.click
+    const clickable = findTargetElementData(targetPath, underPointer, SymDataForSensor, ["click"]).data?.click
     const isSameClickable = this.clickable === clickable
     if (isSameClickable)
       this.clicking = clickable
@@ -325,7 +325,7 @@ export class PointerSensor extends BasePointerSensor {
   protected updateDragTarget(e: PointerEvent): void {
     const targetPath = e.composedPath()
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
-    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['drag'])
+    const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ["drag"])
     const dragTarget = data?.drag
     if (dragTarget !== this.dragTarget) {
       this.previousDragTarget = this.dragTarget

@@ -2,6 +2,7 @@
 {
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
+  "typescript.preferences.quoteStyle": "double",
   "files.exclude": {
     "**/node_modules/": true,
     "**/build/": true,

@@ -5,10 +5,10 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, transactional, LoggingLevel } from 'reactronic'
-import { findTargetElementData, SymDataForSensor } from './DataForSensor'
-import { extractModifierKeys, KeyboardModifiers } from './KeyboardSensor'
-import { BasePointerSensor } from './BasePointerSensor'
+import { options, Reentrance, transactional, LoggingLevel } from "reactronic"
+import { findTargetElementData, SymDataForSensor } from "./DataForSensor"
+import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor"
+import { BasePointerSensor } from "./BasePointerSensor"
 
 export class WheelSensor extends BasePointerSensor {
   target: unknown = undefined
@@ -27,11 +27,11 @@ export class WheelSensor extends BasePointerSensor {
     const existing = this.sourceElement
     if (element !== existing) {
       if (existing) {
-        existing.removeEventListener('wheel', this.onWheel.bind(this), { capture: true })
+        existing.removeEventListener("wheel", this.onWheel.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
-        element.addEventListener('wheel', this.onWheel.bind(this), { capture: true, passive: true })
+        element.addEventListener("wheel", this.onWheel.bind(this), { capture: true, passive: true })
       }
     }
   }
@@ -67,7 +67,7 @@ export class WheelSensor extends BasePointerSensor {
     this.stopPropagation = false
     const targetPath = e.composedPath()
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
-    this.target = findTargetElementData(targetPath, underPointer, SymDataForSensor, ['wheel']).data?.wheel
+    this.target = findTargetElementData(targetPath, underPointer, SymDataForSensor, ["wheel"]).data?.wheel
     this.modifiers = extractModifierKeys(e)
     this.positionX = e.clientX
     this.positionY = e.clientY

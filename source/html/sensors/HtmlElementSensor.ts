@@ -5,11 +5,11 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { raw } from 'reactronic'
-import { DataForSensor, SymDataForSensor } from './DataForSensor'
+import { raw } from "reactronic"
+import { DataForSensor, SymDataForSensor } from "./DataForSensor"
 // import { FocusSensor } from './FocusSensor'
-import { Sensor } from './Sensor'
-import { WindowSensor } from './WindowSensor'
+import { Sensor } from "./Sensor"
+import { WindowSensor } from "./WindowSensor"
 
 export class HtmlElementSensor extends Sensor {
   @raw readonly focusSensor?: any
