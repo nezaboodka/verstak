@@ -38,12 +38,13 @@ export function block<M = unknown, R = void>(name: string,
 
 // Text (formatted or plain)
 
-export function text<M = unknown>(markdown: string,
+export function text<M = unknown>(
+  content: string | Render<HTMLElement, M, void>,
   options?: BlockOptions<HTMLElement, M, void>,
-  name?: string):
-  Block<HTMLElement, M, void> {
-  const render = (e: HTMLElement): void => { e.innerText = markdown }
-  return Block.claim(name ?? "", options, render, VerstakTags.text)
+  name?: string): Block<HTMLElement, M, void> {
+  return content instanceof Function ?
+    Block.claim(name ?? "", options, content, VerstakTags.text) :
+    Block.claim(name ?? "", options, e => { e.innerText = content }, VerstakTags.text)
 }
 
 // Grid Block
