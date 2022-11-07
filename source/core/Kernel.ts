@@ -45,6 +45,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   abstract readonly item: Item<Block> | undefined
   abstract readonly stamp: number
   abstract readonly native: T | undefined
+  abstract readonly place: Readonly<Place> | undefined
 
   render(): R {
     return this.renderer(this.native!, this)
@@ -142,6 +143,7 @@ export class AbstractDriver<T> {
   readonly createAllocator: () => Allocator
   get isSequential(): boolean { return (this.layout & 1) === 0 } // Block, Text, Part
   get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Grid, Group
+  get isBlock(): boolean { return this.layout === LayoutKind.Block }
   get isPart(): boolean { return this.layout === LayoutKind.Part }
 
   constructor(name: string, layout: LayoutKind, createAllocator?: () => Allocator) {
@@ -165,9 +167,9 @@ export class AbstractDriver<T> {
     // nothing to do by default
   }
 
-  place(block: Block<T>): boolean {
-    // const b = block as VBlock<T>
-    return false
+  position(block: Block<T>, place: Place | undefined): void {
+    const b = block as VBlock<T>
+    b.place = place
   }
 
   render(block: Block<T>): void | Promise<void> {
@@ -249,7 +251,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     triggeringArgs: true,
     noSideEffects: false,
   })
-  autorender(_triggers: unknown): void {
+  rerender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by owner
     runRender(this.item!)
   }
@@ -285,7 +287,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const opt = block.options
           const place = allocator.allocate(opt?.box)
           const host = driver.isPart ? owner : part
-          adjustPlaceIfNecessary(block, place)
+          driver.position(block, place)
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
@@ -308,13 +310,6 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
       if (!promised)
         action(error)
     }
-  }
-}
-
-function adjustPlaceIfNecessary(block: VBlock, place: Place | undefined): void {
-  if (!equalPlaces(block.place, place)) {
-    block.place = place
-    block.driver.place(block)
   }
 }
 
@@ -386,7 +381,7 @@ function prepareAndRunRender(item: Item<VBlock>,
   if (block.stamp >= 0) {
     prepareRender(item, redeploy, sequential)
     if (block.options?.rx)
-      nonreactive(block.autorender, block.options?.triggers) // reactive auto-rendering
+      nonreactive(block.rerender, block.options?.triggers) // reactive auto-rendering
     else
       runRender(item)
   }
@@ -403,7 +398,7 @@ function prepareRender(item: Item<VBlock>,
       Transaction.outside(() => {
         if (Rx.isLogging)
           Rx.setLoggingHint(block, block.name)
-        Rx.getController(block.autorender).configure({
+        Rx.getController(block.rerender).configure({
           order: block.level,
           monitor: block.options?.monitor,
           throttling: block.options?.throttling,
@@ -413,7 +408,7 @@ function prepareRender(item: Item<VBlock>,
     }
     driver.initialize(block, undefined)
     driver.deploy(block, sequential)
-    driver.place(block)
+    driver.position(block, block.place)
   }
   else if (redeploy)
     driver.deploy(block, sequential) // , console.log(`redeployed: ${block.name}`)

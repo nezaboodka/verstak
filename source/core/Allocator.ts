@@ -32,28 +32,35 @@ export interface TrackSize extends ElasticSize {
 }
 
 export interface Box {
-  // Sizing
-  bounds?: string                // ""
-  width?: ElasticSize           // cells=1, min/max=min-content
-  height?: ElasticSize          // cells=1, min/max=min-content
-  widthOverlapped?: boolean     // false
-  heightOverlapped?: boolean    // false
+  bounds?: string           // ""
+  // Width
+  wSpan?: number            // 1 (grid layout only)
+  wMin?: string             // min-content
+  wMax?: string             // min-content
+  wGrow?: number          // 0
+  wOverlap?: boolean     // false
+  // Height
+  hSpan?: number            // 1 (grid layout only)
+  hMin?: string             // min-content
+  hMax?: string             // min-content
+  hGrow?: number          // 0
+  hOverlap?: boolean     // false
   // Alignment
-  alignment?: Alignment         // MiddleLeft
-  boxAlignment?: Alignment      // Fit
+  alignment?: Alignment     // MiddleLeft
+  boxAlignment?: Alignment  // Fit
   // Flow
-  lineBegin?: boolean           // false
-  wrap?: boolean                // false
+  lineBegin?: boolean       // false
+  wrap?: boolean            // false
 }
 
 export interface Place {
   bounds: CellRange | undefined
-  widthMin: string
-  widthMax: string
-  widthGrow: number
-  heightMin: string
-  heightMax: string
-  heightGrow: number
+  wMin: string
+  wMax: string
+  wGrow: number
+  hMin: string
+  hMax: string
+  hGrow: number
   alignment: Alignment
   boxAlignment: Alignment
 }
@@ -66,8 +73,8 @@ export class Allocator {
   allocate(box: Box | undefined): Place | undefined {
     return !box ? undefined : {
       bounds: undefined,
-      widthMin: "", widthMax: "", widthGrow: 0,
-      heightMin: "", heightMax: "", heightGrow: 0,
+      wMin: "", wMax: "", wGrow: box.wGrow ?? 0,
+      hMin: "", hMax: "", hGrow: box.hGrow ?? 0,
       alignment: box.alignment ?? Alignment.TopLeft,
       boxAlignment: box.boxAlignment ?? Alignment.Fit,
     }
@@ -96,8 +103,8 @@ export class GridBasedAllocator implements Allocator {
   allocate(box: Box | undefined): Place | undefined {
     const result: Place = {
       bounds: undefined,
-      widthMin: "", widthMax: "", widthGrow: 0,
-      heightMin: "", heightMax: "", heightGrow: 0,
+      wMin: "", wMax: "", wGrow: 0,
+      hMin: "", hMax: "", hGrow: 0,
       alignment: Alignment.TopLeft, boxAlignment: Alignment.Fit,
     }
     const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
@@ -115,13 +122,13 @@ export class GridBasedAllocator implements Allocator {
         this.rowCursor = this.newRowCursor
       }
       // Horizontal
-      let w = box?.width?.cells ?? 1
+      let w = box?.wSpan ?? 1
       if (w === 0)
         w = maxColumnCount
       if (w >= 0) {
         cr.x1 = this.columnCursor + 1
         cr.x2 = absolutizePosition(cr.x1 + w, 0, maxColumnCount)
-        if (!box?.widthOverlapped)
+        if (!box?.wOverlap)
           this.columnCursor = cr.x2
       }
       else {
@@ -129,13 +136,13 @@ export class GridBasedAllocator implements Allocator {
         cr.x2 = this.columnCursor
       }
       // Vertical
-      let h = box?.height?.cells ?? 1
+      let h = box?.hSpan ?? 1
       if (h === 0)
         h = maxRowCount
       if (h >= 0) {
         cr.y1 = this.rowCursor + 1
         cr.y2 = absolutizePosition(cr.y1 + h, 0, maxRowCount)
-        if (!box?.heightOverlapped && cr.y2 > this.newRowCursor)
+        if (!box?.hOverlap && cr.y2 > this.newRowCursor)
           this.newRowCursor = cr.y2
       }
       else {
@@ -179,5 +186,17 @@ function absolutizePosition(pos: number, cursor: number, max: number): number {
 }
 
 export function equalPlaces(a: Place | undefined, b: Place | undefined): boolean {
-  return true // not implemented
+  let result: boolean
+  if (a) {
+    if (b) {
+      result = a.wGrow == b.wGrow
+    }
+    else
+      result = false
+  }
+  else if (b)
+    result = false
+  else
+    result = true
+  return result
 }

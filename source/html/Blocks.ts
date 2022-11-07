@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Block, Render, BlockOptions, LayoutKind } from "../core/api"
+import { Block, Render, BlockOptions, LayoutKind, Place } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -78,9 +78,20 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
     return document.createElement(tag) as T
   }
 
+  position(block: Block<T>, place: Place | undefined): void {
+    if (block.native) {
+      const grow = block.place?.wGrow
+      if (grow !== undefined && grow > 0)
+        block.native.style.flexGrow = `${grow}`
+      else
+        block.native.style.flexGrow = ""
+    }
+    super.position(block, place)
+  }
+
   render(block: Block<T>): void | Promise<void> {
     // Create initial part inside basic block automatically
-    if (block.driver.layout === LayoutKind.Block)
+    if (block.driver.isBlock)
       sep() // Block.claim('', undefined, NOP, VerstakTags.part)
     return super.render(block)
   }
