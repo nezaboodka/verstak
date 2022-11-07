@@ -57,8 +57,8 @@ export function grid<M = unknown, R = void>(name: string,
 
 // Separator
 
-export function sep(spacing?: boolean): Block<HTMLElement> {
-  return Block.claim("", undefined, NOP, VerstakTags.part)
+export function begin(options?: BlockOptions<HTMLElement, void, void>, noCoalescing?: boolean): Block<HTMLElement> {
+  return Block.claim("", options, NOP, VerstakTags.part)
 }
 
 // Group
@@ -73,18 +73,41 @@ export function group<M = unknown, R = void>(name: string,
 // VerstakDriver
 
 export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
+  readonly custom: boolean
+
+  constructor(name: string, custom: boolean, layout: LayoutKind) {
+    super(name, layout)
+    this.custom = custom
+  }
+
   protected createElement(block: Block<T>): T {
-    const tag = this.name || `v-${block.name}`
-    return document.createElement(tag) as T
+    const custom = this.custom
+    const tag = custom ? `v-${block.name}` : this.name
+    const result = document.createElement(tag) as T
+    if (custom)
+      result.setAttribute(this.name, "")
+    return result
   }
 
   position(block: Block<T>, place: Place | undefined): void {
     if (block.native) {
-      const grow = block.place?.wGrow
-      if (grow !== undefined && grow > 0)
-        block.native.style.flexGrow = `${grow}`
-      else
-        block.native.style.flexGrow = ""
+      const existing = block.stamp > 1 ? block.place : undefined
+      if (place !== existing) {
+        const wGrow = place?.wGrow ?? 0
+        if (wGrow !== (existing?.wGrow ?? 0)) {
+          if (wGrow > 0)
+            block.native.style.flexGrow = `${wGrow}`
+          else
+            block.native.style.flexGrow = ""
+        }
+        const hGrow = place?.hGrow ?? 0
+        if (hGrow !== (existing?.hGrow ?? 0)) {
+          if (hGrow > 0)
+            block.native.style.flexGrow = `${hGrow}`
+          else
+            block.native.style.flexGrow = ""
+        }
+      }
     }
     super.position(block, place)
   }
@@ -92,32 +115,30 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: Block<T>): void | Promise<void> {
     // Create initial part inside basic block automatically
     if (block.driver.isBlock)
-      sep() // Block.claim('', undefined, NOP, VerstakTags.part)
+      begin() // Block.claim('', undefined, NOP, VerstakTags.part)
     return super.render(block)
   }
 }
 
 // VerstakTags
 
-const CUSTOM_TAG = "" // v-{block.name}
-
 const VerstakTags = {
   // display: flex, flex-direction: column
-  block: new VerstakDriver<HTMLElement>(CUSTOM_TAG, LayoutKind.Block),
+  block: new VerstakDriver<HTMLElement>("block", true, LayoutKind.Block),
 
   // display: block
-  text: new VerstakDriver<HTMLElement>("article", LayoutKind.Text),
+  text: new VerstakDriver<HTMLElement>("article", false, LayoutKind.Text),
 
   // display: grid
-  grid: new VerstakDriver<HTMLElement>(CUSTOM_TAG, LayoutKind.Grid),
+  grid: new VerstakDriver<HTMLElement>("grid", true, LayoutKind.Grid),
 
   // display:
   //   - flex (row) if parent is regular block
   //   - contents if parent is grid
-  part: new VerstakDriver<HTMLElement>("div", LayoutKind.Part),
+  part: new VerstakDriver<HTMLElement>("div", false, LayoutKind.Part),
 
   // display: contents
-  group: new VerstakDriver<HTMLElement>(CUSTOM_TAG, LayoutKind.Group),
+  group: new VerstakDriver<HTMLElement>("group", true, LayoutKind.Group),
 }
 
 const NOP = (): void => { /* nop */ }

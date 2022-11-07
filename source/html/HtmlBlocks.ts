@@ -8,7 +8,7 @@
 import { Block, Render, StaticDriver, BlockOptions, LayoutKind } from "../core/api"
 import { HtmlDriver, SvgDriver } from "./HtmlDriver"
 
-export function ReactiveHtmlBody(name: string, triggers: unknown, renderer: Render<HTMLElement>): Block<HTMLElement> {
+export function HtmlBody(name: string, renderer: Render<HTMLElement>): Block<HTMLElement> {
   const driver = new StaticDriver(global.document.body, name, LayoutKind.Block)
   return Block.claim(name, { rx: true }, renderer, driver)
 }
