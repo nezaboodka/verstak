@@ -5,15 +5,15 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Rx, Item } from 'reactronic'
+import { Item, Rx } from 'reactronic'
 import { Block, AbstractDriver, Priority } from '../core/api'
 
 export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T> {
 
   initialize(block: Block<T>, element: T | undefined): void {
     element = this.createElement(block)
-    if (Rx.isLogging)
-      element.id = block.name
+    if (Rx.isLogging && isDigit(block.name.charCodeAt(0)))
+      element.setAttribute('sn', block.name)
     super.initialize(block, element)
   }
 
@@ -39,7 +39,7 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
             if (nativeParent !== e.parentNode || !e.previousSibling)
               nativeParent.prepend(e)
           }
-          else if (after.instance.host.native === nativeParent) {
+          else { // if (after.instance.host.native === nativeParent) {
             const nativeAfter = after.instance.native
             if (nativeAfter instanceof Element) {
               if (nativeAfter.nextSibling !== e)
@@ -116,6 +116,10 @@ function blink(e: Element | undefined, priority: Priority, revision: number): vo
     e.classList.toggle(`${effect}-${priority}-${n1}`, true)
     e.classList.toggle(`${effect}-${priority}-${n2}`, false)
   }
+}
+
+function isDigit(code: number): boolean {
+  return 48 <= code && code <= 57
 }
 
 let gBlinkingEffect: string | undefined = undefined
