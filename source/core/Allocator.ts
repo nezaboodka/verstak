@@ -34,17 +34,17 @@ export interface TrackSize extends ElasticSize {
 export interface Box {
   bounds?: string           // ""
   // Width
-  wSpan?: number            // 1 (grid layout only)
-  wMin?: string             // min-content
-  wMax?: string             // min-content
-  wGrow?: number          // 0
-  wOverlap?: boolean     // false
+  widthSpan?: number        // 1 (grid layout only)
+  widthMin?: string         // min-content
+  widthMax?: string         // min-content
+  widthGrow?: number        // 0
+  widthOverlap?: boolean    // false
   // Height
-  hSpan?: number            // 1 (grid layout only)
-  hMin?: string             // min-content
-  hMax?: string             // min-content
-  hGrow?: number          // 0
-  hOverlap?: boolean     // false
+  heightSpan?: number       // 1 (grid layout only)
+  heightMin?: string        // min-content
+  heightMax?: string        // min-content
+  heightGrow?: number       // 0
+  heightOverlap?: boolean   // false
   // Alignment
   alignment?: Alignment     // MiddleLeft
   boxAlignment?: Alignment  // Fit
@@ -73,8 +73,8 @@ export class Allocator {
   allocate(box: Box | undefined): Place | undefined {
     return !box ? undefined : {
       bounds: undefined,
-      wMin: "", wMax: "", wGrow: box.wGrow ?? 0,
-      hMin: "", hMax: "", hGrow: box.hGrow ?? 0,
+      wMin: "", wMax: "", wGrow: box.widthGrow ?? 0,
+      hMin: "", hMax: "", hGrow: box.heightGrow ?? 0,
       alignment: box.alignment ?? Alignment.TopLeft,
       boxAlignment: box.boxAlignment ?? Alignment.Fit,
     }
@@ -122,13 +122,13 @@ export class GridBasedAllocator implements Allocator {
         this.rowCursor = this.newRowCursor
       }
       // Horizontal
-      let w = box?.wSpan ?? 1
+      let w = box?.widthSpan ?? 1
       if (w === 0)
         w = maxColumnCount
       if (w >= 0) {
         cr.x1 = this.columnCursor + 1
         cr.x2 = absolutizePosition(cr.x1 + w, 0, maxColumnCount)
-        if (!box?.wOverlap)
+        if (!box?.widthOverlap)
           this.columnCursor = cr.x2
       }
       else {
@@ -136,13 +136,13 @@ export class GridBasedAllocator implements Allocator {
         cr.x2 = this.columnCursor
       }
       // Vertical
-      let h = box?.hSpan ?? 1
+      let h = box?.heightSpan ?? 1
       if (h === 0)
         h = maxRowCount
       if (h >= 0) {
         cr.y1 = this.rowCursor + 1
         cr.y2 = absolutizePosition(cr.y1 + h, 0, maxRowCount)
-        if (!box?.hOverlap && cr.y2 > this.newRowCursor)
+        if (!box?.heightOverlap && cr.y2 > this.newRowCursor)
           this.newRowCursor = cr.y2
       }
       else {
