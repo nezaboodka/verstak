@@ -10,7 +10,7 @@ import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
 // called basic block and grid block; and on two special
-// non-visual elements called separator and group.
+// non-visual elements called break and group.
 
 // Basic block is a layout structure, which children are
 // layed out naturally: rightwards-downwards.
@@ -21,7 +21,7 @@ import { HtmlDriver } from "./HtmlDriver"
 // Grid block is layout structure, which children are
 // layed out over grid cells.
 
-// Separator is a special non-visual element, which
+// Break is a special non-visual element, which
 // begins new line inside block or grid block.
 
 // Group is a special non-visual element for logical
@@ -55,9 +55,9 @@ export function grid<M = unknown, R = void>(name: string,
   return Block.claim(name, options, renderer, VerstakTags.grid)
 }
 
-// Separator
+// Break
 
-export function begin(options?: BlockOptions<HTMLElement, void, void>, noCoalescing?: boolean): Block<HTMLElement> {
+export function br(options?: BlockOptions<HTMLElement, void, void>, noCoalescing?: boolean): Block<HTMLElement> {
   return Block.claim("", options, NOP, VerstakTags.part)
 }
 
@@ -89,33 +89,34 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
     return result
   }
 
-  position(block: Block<T>, place: Place | undefined): void {
+  arrange(block: Block<T>, place: Place | undefined, hGrow: number | undefined): void {
     if (block.native) {
-      const existing = block.stamp > 1 ? block.place : undefined
-      if (place !== existing) {
-        const wGrow = place?.wGrow ?? 0
-        if (wGrow !== (existing?.wGrow ?? 0)) {
-          if (wGrow > 0)
-            block.native.style.flexGrow = `${wGrow}`
-          else
-            block.native.style.flexGrow = ""
-        }
-        const hGrow = place?.hGrow ?? 0
-        if (hGrow !== (existing?.hGrow ?? 0)) {
-          if (hGrow > 0)
-            block.native.style.flexGrow = `${hGrow}`
-          else
-            block.native.style.flexGrow = ""
+      if (hGrow === undefined) {
+        const existing = block.stamp > 1 ? block.place : undefined
+        if (place !== existing) {
+          const wGrow = place?.wGrow ?? 0
+          if (wGrow !== (existing?.wGrow ?? 0)) {
+            if (wGrow > 0)
+              block.native.style.flexGrow = `${wGrow}`
+            else
+              block.native.style.flexGrow = ""
+          }
         }
       }
+      else {
+        if (hGrow > 0)
+          block.native.style.flexGrow = `${hGrow}`
+        else
+          block.native.style.flexGrow = ""
+      }
     }
-    super.position(block, place)
+    super.arrange(block, place, hGrow)
   }
 
   render(block: Block<T>): void | Promise<void> {
     // Create initial part inside basic block automatically
     if (block.driver.isBlock)
-      begin() // Block.claim('', undefined, NOP, VerstakTags.part)
+      br() // Block.claim('', undefined, NOP, VerstakTags.part)
     return super.render(block)
   }
 }

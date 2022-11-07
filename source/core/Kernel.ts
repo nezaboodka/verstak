@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from "reactronic"
-import { Box, Place, Allocator } from "./Allocator"
+import { Box, Place, Allocator, Alignment } from "./Allocator"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
@@ -167,9 +167,30 @@ export class AbstractDriver<T> {
     // nothing to do by default
   }
 
-  position(block: Block<T>, place: Place | undefined): void {
+  arrange(block: Block<T>, place: Place | undefined, hGrow: number | undefined): void {
     const b = block as VBlock<T>
-    b.place = place
+    if (hGrow === undefined) {
+      b.place = place
+      // Bump host height growth if necessary
+      const host = b.host
+      if (host.driver.isPart) {
+        const hGrow = place?.hGrow ?? 0
+        if (hGrow > 0 && (host.place?.hGrow ?? 0) < hGrow)
+          host.driver.arrange(host, undefined, hGrow)
+      }
+    }
+    else if (hGrow > 0) {
+      if (b.place === undefined)
+        b.place = {
+          bounds: undefined,
+          wMin: "", wMax: "", wGrow: 0,
+          hMin: "", hMax: "", hGrow,
+          alignment: Alignment.TopLeft,
+          boxAlignment: Alignment.Fit,
+        }
+      else
+        b.place.hGrow = hGrow
+    }
   }
 
   render(block: Block<T>): void | Promise<void> {
@@ -287,7 +308,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const opt = block.options
           const place = allocator.allocate(opt?.box)
           const host = driver.isPart ? owner : part
-          driver.position(block, place)
+          driver.arrange(block, place, undefined)
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
@@ -408,7 +429,7 @@ function prepareRender(item: Item<VBlock>,
     }
     driver.initialize(block, undefined)
     driver.deploy(block, sequential)
-    driver.position(block, block.place)
+    driver.arrange(block, block.place, undefined)
   }
   else if (redeploy)
     driver.deploy(block, sequential) // , console.log(`redeployed: ${block.name}`)
@@ -572,13 +593,13 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const NOP = (): void => { /* nop */ }
 
+const gSysDriver = new StaticDriver<null>(null, "SYSTEM", LayoutKind.Group)
 const gSysRoot = Collection.createItem<VBlock>(new VBlock<null, void>("SYSTEM",
-  new StaticDriver<null>(null, "SYSTEM", LayoutKind.Group),
-  { level: 0 } as VBlock, { rx: true }, NOP)) // fake owner/host (overwritten below)
+  gSysDriver, { level: 0 } as VBlock, { rx: true }, NOP)) // fake owner/host (overwritten below)
 gSysRoot.instance.item = gSysRoot
 
-Object.defineProperty(gSysRoot, "host", {
-  value: gSysRoot,
+Object.defineProperty(gSysRoot.instance, "host", {
+  value: gSysRoot.instance,
   writable: false,
   configurable: false,
   enumerable: true,
