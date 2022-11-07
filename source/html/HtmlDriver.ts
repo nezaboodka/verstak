@@ -118,8 +118,4 @@ function blink(e: Element | undefined, priority: Priority, revision: number): vo
   }
 }
 
-function isDigit(code: number): boolean {
-  return 48 <= code && code <= 57
-}
-
 let gBlinkingEffect: string | undefined = undefined
