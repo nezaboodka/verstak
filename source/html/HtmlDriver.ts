@@ -12,8 +12,8 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
 
   initialize(block: Block<T>, element: T | undefined): void {
     element = this.createElement(block)
-    if (Rx.isLogging && isDigit(block.name.charCodeAt(0)))
-      element.setAttribute("sn", block.name)
+    if (Rx.isLogging && this.name)
+      element.setAttribute("data-name", block.name)
     super.initialize(block, element)
   }
 
