@@ -32,7 +32,7 @@ export interface TrackSize extends ElasticSize {
 }
 
 export interface Bounds {
-  exact?: string            // ""
+  place?: string            // ""
   // Width
   widthSpan?: number        // 1 (grid layout only)
   widthMin?: string         // min-content
@@ -109,8 +109,8 @@ export class GridBasedAllocator implements Allocator {
     }
     const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
     const maxRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
-    if (bounds?.exact) { // absolute positioning
-      result.exact = parseCellRange(bounds.exact, { x1: 0, y1: 0, x2: 0, y2: 0 })
+    if (bounds?.place) { // absolute positioning
+      result.exact = parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 })
       absolutizeCellRange(result.exact,
         this.columnCursor + 1, this.rowCursor + 1,
         maxColumnCount, maxRowCount, result.exact)

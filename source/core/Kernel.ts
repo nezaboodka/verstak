@@ -15,7 +15,7 @@ export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export interface BlockOptions<T = unknown, M = unknown, R = void> extends Bounds {
   observer?: boolean
-  mixins?: Array<Render<T, M, R>>
+  use?: Array<Render<T, M, R>>
   triggers?: unknown
   priority?: Priority,
   monitor?: Monitor
@@ -33,13 +33,13 @@ export function presetsToOptions<T, M, R>(p1: BlockPreset<T, M, R>, p2: BlockPre
   if (p1) {
     if (p2)
       result = Object.assign(
-        Array.isArray(p1) ? { mixins: p1 } : p1,
-        Array.isArray(p2) ? { mixins: p2 } : p2)
+        Array.isArray(p1) ? { use: p1 } : p1,
+        Array.isArray(p2) ? { use: p2 } : p2)
     else
-      result = Array.isArray(p1) ? { mixins: p1 } : p1
+      result = Array.isArray(p1) ? { use: p1 } : p1
   }
   else
-    result = Array.isArray(p2) ? { mixins: p2 } : p2
+    result = Array.isArray(p2) ? { use: p2 } : p2
   return result
 }
 
@@ -66,10 +66,10 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly place: Readonly<Place> | undefined
 
   render(): R {
-    const mixins = this.options?.mixins
-    if (mixins)
-      for (const mixin of mixins)
-        mixin(this.native!, this)
+    const use = this.options?.use
+    if (use)
+      for (const render of use)
+        render(this.native!, this)
     return this.renderer(this.native!, this)
   }
 
