@@ -31,8 +31,8 @@ export interface TrackSize extends ElasticSize {
   track?: string | number       // <current>
 }
 
-export interface Box {
-  bounds?: string           // ""
+export interface Bounds {
+  exact?: string            // ""
   // Width
   widthSpan?: number        // 1 (grid layout only)
   widthMin?: string         // min-content
@@ -54,7 +54,7 @@ export interface Box {
 }
 
 export interface Place {
-  bounds: CellRange | undefined
+  exact: CellRange | undefined
   wMin: string
   wMax: string
   wGrow: number
@@ -70,13 +70,13 @@ export class Allocator {
     // do nothing
   }
 
-  allocate(box: Box | undefined): Place | undefined {
-    return !box ? undefined : {
-      bounds: undefined,
-      wMin: "", wMax: "", wGrow: box.widthGrow ?? 0,
-      hMin: "", hMax: "", hGrow: box.heightGrow ?? 0,
-      alignment: box.alignment ?? Alignment.TopLeft,
-      boxAlignment: box.boxAlignment ?? Alignment.Fit,
+  allocate(bounds: Bounds | undefined): Place | undefined {
+    return !bounds ? undefined : {
+      exact: undefined,
+      wMin: "", wMax: "", wGrow: bounds.widthGrow ?? 0,
+      hMin: "", hMax: "", hGrow: bounds.heightGrow ?? 0,
+      alignment: bounds.alignment ?? Alignment.TopLeft,
+      boxAlignment: bounds.boxAlignment ?? Alignment.Fit,
     }
   }
 }
@@ -100,35 +100,35 @@ export class GridBasedAllocator implements Allocator {
     this.newRowCursor = 0
   }
 
-  allocate(box: Box | undefined): Place | undefined {
+  allocate(bounds: Bounds | undefined): Place | undefined {
     const result: Place = {
-      bounds: undefined,
+      exact: undefined,
       wMin: "", wMax: "", wGrow: 0,
       hMin: "", hMax: "", hGrow: 0,
       alignment: Alignment.TopLeft, boxAlignment: Alignment.Fit,
     }
     const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
     const maxRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
-    if (box?.bounds) { // absolute positioning
-      result.bounds = parseCellRange(box.bounds, { x1: 0, y1: 0, x2: 0, y2: 0 })
-      absolutizeCellRange(result.bounds,
+    if (bounds?.exact) { // absolute positioning
+      result.exact = parseCellRange(bounds.exact, { x1: 0, y1: 0, x2: 0, y2: 0 })
+      absolutizeCellRange(result.exact,
         this.columnCursor + 1, this.rowCursor + 1,
-        maxColumnCount, maxRowCount, result.bounds)
+        maxColumnCount, maxRowCount, result.exact)
     }
     else { // relative positioning
-      const cr = result.bounds = { x1: 0, y1: 0, x2: 0, y2: 0 }
-      if (box?.lineBegin) {
+      const cr = result.exact = { x1: 0, y1: 0, x2: 0, y2: 0 }
+      if (bounds?.lineBegin) {
         this.columnCursor = 0
         this.rowCursor = this.newRowCursor
       }
       // Horizontal
-      let w = box?.widthSpan ?? 1
+      let w = bounds?.widthSpan ?? 1
       if (w === 0)
         w = maxColumnCount
       if (w >= 0) {
         cr.x1 = this.columnCursor + 1
         cr.x2 = absolutizePosition(cr.x1 + w, 0, maxColumnCount)
-        if (!box?.widthOverlap)
+        if (!bounds?.widthOverlap)
           this.columnCursor = cr.x2
       }
       else {
@@ -136,13 +136,13 @@ export class GridBasedAllocator implements Allocator {
         cr.x2 = this.columnCursor
       }
       // Vertical
-      let h = box?.heightSpan ?? 1
+      let h = bounds?.heightSpan ?? 1
       if (h === 0)
         h = maxRowCount
       if (h >= 0) {
         cr.y1 = this.rowCursor + 1
         cr.y2 = absolutizePosition(cr.y1 + h, 0, maxRowCount)
-        if (!box?.heightOverlap && cr.y2 > this.newRowCursor)
+        if (!bounds?.heightOverlap && cr.y2 > this.newRowCursor)
           this.newRowCursor = cr.y2
       }
       else {

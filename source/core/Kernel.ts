@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from "reactronic"
-import { Box, Place, Allocator, Alignment } from "./Allocator"
+import { Bounds, Place, Allocator, Alignment } from "./Allocator"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>) => R
@@ -15,7 +15,7 @@ export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export interface BlockOptions<T = unknown, M = unknown, R = void> {
   rx?: boolean
-  box?: Box
+  bounds?: Bounds
   triggers?: unknown
   priority?: Priority,
   monitor?: Monitor
@@ -51,9 +51,9 @@ export function $rx(value: boolean | undefined): void {
     gOptions.rx = value
 }
 
-export function $bounds(value: Box | undefined): void {
+export function $bounds(value: Bounds | undefined): void {
   if (value !== undefined)
-    (gOptions ??= {}).box = value
+    (gOptions ??= {}).bounds = value
   else if (gOptions)
     gOptions.rx = value
 }
@@ -263,7 +263,7 @@ export class AbstractDriver<T> {
     else if (hGrow > 0) {
       if (b.place === undefined)
         b.place = {
-          bounds: undefined,
+          exact: undefined,
           wMin: "", wMax: "", wGrow: 0,
           hMin: "", hMax: "", hGrow,
           alignment: Alignment.TopLeft,
@@ -387,7 +387,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const block = item.instance
           const driver = block.driver
           const opt = block.options
-          const place = allocator.allocate(opt?.box)
+          const place = allocator.allocate(opt?.bounds)
           const host = driver.isPart ? owner : part
           driver.arrange(block, place, undefined)
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
