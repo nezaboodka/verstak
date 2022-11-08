@@ -5,7 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Block, Render, BlockOptions, LayoutKind, Place } from "../core/api"
+import { LoggingOptions, Monitor } from "reactronic"
+import { Block, Render, BlockOptions, LayoutKind, Place, Box, Priority } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -33,7 +34,9 @@ export function block<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
-  return Block.claim(name, options, renderer, VerstakTags.block)
+  const result = Block.claim(name, options, renderer, VerstakTags.block)
+  gOptions = undefined
+  return result
 }
 
 // Text (formatted or plain)
@@ -42,9 +45,11 @@ export function text<M = unknown>(
   content: string | Render<HTMLElement, M, void>,
   options?: BlockOptions<HTMLElement, M, void>,
   name?: string): Block<HTMLElement, M, void> {
-  return content instanceof Function ?
+  const result = content instanceof Function ?
     Block.claim(name ?? "", options, content, VerstakTags.text) :
     Block.claim(name ?? "", options, e => { e.innerText = content }, VerstakTags.text)
+  gOptions = undefined
+  return result
 }
 
 // Grid Block
@@ -53,13 +58,17 @@ export function grid<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
-  return Block.claim(name, options, renderer, VerstakTags.grid)
+  const result = Block.claim(name, options, renderer, VerstakTags.grid)
+  gOptions = undefined
+  return result
 }
 
 // Break
 
 export function br(options?: BlockOptions<HTMLElement, void, void>, noCoalescing?: boolean): Block<HTMLElement> {
-  return Block.claim("", options, NOP, VerstakTags.part)
+  const result = Block.claim("", options, NOP, VerstakTags.part)
+  gOptions = undefined
+  return result
 }
 
 // Group
@@ -68,8 +77,56 @@ export function group<M = unknown, R = void>(name: string,
   options: BlockOptions<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
-  return Block.claim(name, options, renderer, VerstakTags.group)
+  const result = Block.claim(name, options, renderer, VerstakTags.group)
+  gOptions = undefined
+  return result
 }
+
+// Options
+
+export function $rx(value: boolean | undefined): void {
+  // ...
+}
+
+export function $box(value: Box | undefined): void {
+  // ...
+}
+
+export function $triggers(value: unknown | undefined): void {
+  // ...
+}
+
+export function $priority(value: Priority | undefined): void {
+  // ...
+}
+
+export function $monitor(value: Monitor | undefined): void {
+  // ...
+}
+
+export function $throttling(value: number | undefined): void {
+  // ...
+}
+
+export function $logging(value: Partial<LoggingOptions> | undefined): void {
+  // ...
+}
+
+export function $shuffle(value: boolean | undefined): void {
+  // ...
+}
+
+// export function $as(value: Array<Render<T, M, R>>): void {
+//   // ...
+// }
+
+// export function $wrapper(value: Render<T, M, R> | undefined): void {
+//   // ...
+// }
+
+// export function $super(value: BlockOptions<T, M, R>): void {
+//   // ...
+// }
 
 // VerstakDriver
 
@@ -144,3 +201,6 @@ const VerstakTags = {
 }
 
 const NOP = (): void => { /* nop */ }
+
+let gOptions: BlockOptions<any, any, any> | undefined = undefined
+console.log(gOptions) // TODO: to remove
