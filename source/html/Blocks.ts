@@ -41,7 +41,7 @@ export function $(strings: TemplateStringsArray, ...args: any[]): VBlock<HTMLEle
   return VBlock.claim("", { render(e) { e.innerText = content } }, VerstakTags.text)
 }
 
-export function $$(strings: TemplateStringsArray, ...args: any[]): VBlock<HTMLElement, void, void> {
+export function $html(strings: TemplateStringsArray, ...args: any[]): VBlock<HTMLElement, void, void> {
   const content = String.raw(strings, ...args)
   return VBlock.claim("", { render(e) { e.innerHTML = content } }, VerstakTags.text)
 }
@@ -55,14 +55,14 @@ export function Grid<M = unknown, R = void>(name: string,
 
 // Row
 
-export function row<T = void>(claim: (x: void) => T): VBlock<HTMLElement> {
+export function $row<T = void>(claim: (x: void) => T): VBlock<HTMLElement> {
   const result = VBlock.claim("", EMPTY_RENDER, VerstakTags.row)
   claim()
   VBlock.claim("", EMPTY_RENDER, VerstakTags.row)
   return result
 }
 
-export function rowBegin(args?: BlockArgs<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
+export function $rowBegin(args?: BlockArgs<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
   return VBlock.claim("", args ?? EMPTY_RENDER, VerstakTags.row)
 }
 
