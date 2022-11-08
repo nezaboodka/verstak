@@ -24,6 +24,7 @@ export interface BlockOptions<T = unknown, M = unknown, R = void> {
   shuffle?: boolean
   as?: Array<Render<T, M, R>>
   wrapper?: Render<T, M, R>
+  super?: BlockOptions<T, M, R>
 }
 
 // Block
