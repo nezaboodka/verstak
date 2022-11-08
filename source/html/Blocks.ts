@@ -37,7 +37,7 @@ export function Block<M = unknown, R = void>(name: string,
 
 // Text (formatted or plain)
 
-export function Txt<M = unknown>(
+export function $<M = unknown>(
   content: string | Render<HTMLElement, M, void>,
   preset?: BlockPreset<HTMLElement, M, void>,
   name?: string): VBlock<HTMLElement, M, void> {
