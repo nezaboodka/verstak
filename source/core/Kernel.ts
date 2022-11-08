@@ -14,7 +14,7 @@ export type AsyncRender<T = unknown, M = unknown> = (native: T, block: VBlock<T,
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export interface BlockOptions<T = unknown, M = unknown, R = void> extends Bounds {
-  rx?: boolean
+  observer?: boolean
   mixins?: Array<Render<T, M, R>>
   triggers?: unknown
   priority?: Priority,
@@ -130,7 +130,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       result = new VBlockImpl<T, M, R>(name, driver, owner, options, renderer)
       result.item = children.add(result)
       VBlockImpl.grandCount++
-      if (options?.rx)
+      if (options?.observer)
         VBlockImpl.disposableCount++
     }
     return result
@@ -425,7 +425,7 @@ function prepareAndRunRender(item: Item<VBlockImpl>,
   const block = item.instance
   if (block.stamp >= 0) {
     prepareRender(item, redeploy, sequential)
-    if (block.options?.rx)
+    if (block.options?.observer)
       nonreactive(block.rerender, block.options?.triggers) // reactive auto-rendering
     else
       runRender(item)
@@ -439,7 +439,7 @@ function prepareRender(item: Item<VBlockImpl>,
   // Initialize, deploy, and move (if needed)
   if (block.stamp === 0) {
     block.stamp = 1
-    if (block.options?.rx) {
+    if (block.options?.observer) {
       Transaction.outside(() => {
         if (Rx.isLogging)
           Rx.setLoggingHint(block, block.name)
@@ -491,7 +491,7 @@ function runFinalize(item: Item<VBlockImpl>, isLeader: boolean): void {
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
     const childrenAreLeaders = block.driver.finalize(block, isLeader)
-    if (block.options?.rx) {
+    if (block.options?.observer) {
       // Defer disposal if block is reactive
       item.aux = undefined
       const last = gLastToDispose
@@ -619,7 +619,7 @@ const NOP = (): void => { /* nop */ }
 
 const gSysDriver = new StaticDriver<null>(null, "SYSTEM", LayoutKind.Group)
 const gSysRoot = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>("SYSTEM",
-  gSysDriver, { level: 0 } as VBlockImpl, { rx: true }, NOP)) // fake owner/host (overwritten below)
+  gSysDriver, { level: 0 } as VBlockImpl, { observer: true }, NOP)) // fake owner/host (overwritten below)
 gSysRoot.instance.item = gSysRoot
 
 Object.defineProperty(gSysRoot.instance, "host", {
