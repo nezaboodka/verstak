@@ -5,12 +5,12 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, Render, BlockOptions, LayoutKind, Place, BlockPreset } from "../core/api"
+import { VBlock, Render, LayoutKind, Place, BlockPreset } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
 // called basic block and grid block; and on two special
-// non-visual elements called line break and group.
+// non-visual elements called row and group.
 
 // Basic block is a layout structure, which children are
 // layed out naturally: rightwards-downwards.
@@ -21,8 +21,8 @@ import { HtmlDriver } from "./HtmlDriver"
 // Grid block is layout structure, which children are
 // layed out over grid cells.
 
-// Line Break is a special non-visual element, which
-// begins new line inside block or grid block.
+// Row is a special non-visual element, which begins new
+// line inside block or grid block.
 
 // Group is a special non-visual element for logical
 // grouping of basic blocks, grid blocks and other groups.
@@ -46,6 +46,11 @@ export function text<M = unknown>(
     VBlock.claim(name ?? "", preset, e => { e.innerText = content }, VerstakTags.text)
 }
 
+export function $(strings: TemplateStringsArray, ...args: any[]): VBlock<HTMLElement, void, void> {
+  const content = String.raw(strings, ...args)
+  return VBlock.claim("", undefined, e => { e.innerText = content }, VerstakTags.text)
+}
+
 // Grid Block
 
 export function Grid<M = unknown, R = void>(name: string,
@@ -54,10 +59,16 @@ export function Grid<M = unknown, R = void>(name: string,
   return VBlock.claim(name, preset, renderer, VerstakTags.grid)
 }
 
-// Line Break
+// Row
 
-export function lbr(preset?: BlockOptions<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
-  return VBlock.claim("", preset, NOP, VerstakTags.part)
+export function row<T = void>(claim: () => T): void {
+  VBlock.claim("", undefined, NOP, VerstakTags.row)
+  claim()
+  VBlock.claim("", undefined, NOP, VerstakTags.row)
+}
+
+export function rowBegin(preset?: BlockPreset<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
+  return VBlock.claim("", preset, NOP, VerstakTags.row)
 }
 
 // Group
@@ -114,7 +125,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: VBlock<T>): void | Promise<void> {
     // Create initial part inside basic block automatically
     if (block.driver.isBlock)
-      lbr() // VBlock.claim('', undefined, NOP, VerstakTags.part)
+      VBlock.claim("", undefined, NOP, VerstakTags.row)
     return super.render(block)
   }
 }
@@ -134,7 +145,7 @@ const VerstakTags = {
   // display:
   //   - flex (row) if parent is regular block
   //   - contents if parent is grid
-  part: new VerstakDriver<HTMLElement>("div", false, LayoutKind.Part),
+  row: new VerstakDriver<HTMLElement>("div", false, LayoutKind.Row),
 
   // display: contents
   group: new VerstakDriver<HTMLElement>("group", true, LayoutKind.Group),

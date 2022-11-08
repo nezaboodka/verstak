@@ -13,16 +13,15 @@ export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlo
 export type AsyncRender<T = unknown, M = unknown> = (native: T, block: VBlock<T, M, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
-export interface BlockOptions<T = unknown, M = unknown, R = void> {
+export interface BlockOptions<T = unknown, M = unknown, R = void> extends Bounds {
   rx?: boolean
-  bounds?: Bounds
+  mixins?: Array<Render<T, M, R>>
   triggers?: unknown
   priority?: Priority,
   monitor?: Monitor
   throttling?: number,
   logging?: Partial<LoggingOptions>
   shuffle?: boolean
-  mixins?: Array<Render<T, M, R>>
   wrapper?: Render<T, M, R>
   super?: BlockOptions<T, M, R>
 }
@@ -42,62 +41,6 @@ export function presetsToOptions<T, M, R>(p1: BlockPreset<T, M, R>, p2: BlockPre
   else
     result = Array.isArray(p2) ? { mixins: p2 } : p2
   return result
-}
-
-export function useRx(value: boolean | undefined): void {
-  if (value !== undefined)
-    (gOptions ??= {}).rx = value
-  else if (gOptions)
-    gOptions.rx = value
-}
-
-export function useBounds(value: Bounds | undefined): void {
-  if (value !== undefined)
-    (gOptions ??= {}).bounds = value
-  else if (gOptions)
-    gOptions.rx = value
-}
-
-export function useTriggers(value: unknown | undefined): void {
-  if (value !== undefined)
-    (gOptions ??= {}).triggers = value
-  else if (gOptions)
-    gOptions.rx = value
-}
-
-export function usePriority(value: Priority | undefined): void {
-  if (value !== undefined)
-    (gOptions ??= {}).priority = value
-  else if (gOptions)
-    gOptions.rx = value
-}
-
-export function useMonitor(value: Monitor | undefined): void {
-  if (value !== undefined)
-    (gOptions ??= {}).monitor = value
-  else if (gOptions)
-    gOptions.rx = value
-}
-
-export function useThrottling(value: number | undefined): void {
-  if (value !== undefined)
-    (gOptions ??= {}).throttling = value
-  else if (gOptions)
-    gOptions.rx = value
-}
-
-export function useLogging(value: Partial<LoggingOptions> | undefined): void {
-  if (value !== undefined)
-    (gOptions ??= {}).logging = value
-  else if (gOptions)
-    gOptions.rx = value
-}
-
-export function useShuffle(value: boolean | undefined): void {
-  if (value !== undefined)
-    (gOptions ??= {}).shuffle = value
-  else if (gOptions)
-    gOptions.rx = value
 }
 
 // VBlock
@@ -162,7 +105,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     // Check for coalescing separators or lookup for existing block
     driver ??= AbstractDriver.group
     name ||= `${++owner.numerator}`
-    if (driver.isPart) {
+    if (driver.isRow) {
       const last = children.lastClaimedItem()
       if (last?.instance?.driver === driver)
         existing = last
@@ -207,7 +150,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 export enum LayoutKind {
   Block = 0, // 000
   Grid = 1,  // 001
-  Part = 2,  // 010
+  Row = 2,   // 010
   Group = 3, // 011
   Text = 4,  // 100
 }
@@ -222,10 +165,10 @@ export class AbstractDriver<T> {
   readonly name: string
   readonly layout: LayoutKind
   readonly createAllocator: () => Allocator
-  get isSequential(): boolean { return (this.layout & 1) === 0 } // Block, Text, Part
+  get isSequential(): boolean { return (this.layout & 1) === 0 } // Block, Text, Section
   get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Grid, Group
   get isBlock(): boolean { return this.layout === LayoutKind.Block }
-  get isPart(): boolean { return this.layout === LayoutKind.Part }
+  get isRow(): boolean { return this.layout === LayoutKind.Row }
 
   constructor(name: string, layout: LayoutKind, createAllocator?: () => Allocator) {
     this.name = name
@@ -254,7 +197,7 @@ export class AbstractDriver<T> {
       b.place = place
       // Bump host height growth if necessary
       const host = b.host
-      if (host.driver.isPart) {
+      if (host.driver.isRow) {
         const hGrow = place?.hGrow ?? 0
         if (hGrow > 0 && (host.place?.hGrow ?? 0) < hGrow)
           host.driver.arrange(host, undefined, hGrow)
@@ -387,8 +330,8 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const block = item.instance
           const driver = block.driver
           const opt = block.options
-          const place = allocator.allocate(opt?.bounds)
-          const host = driver.isPart ? owner : part
+          const place = allocator.allocate(opt)
+          const host = driver.isRow ? owner : part
           driver.arrange(block, place, undefined)
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
@@ -398,7 +341,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (driver.isPart)
+          if (driver.isRow)
             part = block
         }
         // Render incremental children (if any)
