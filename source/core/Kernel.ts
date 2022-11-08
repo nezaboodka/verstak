@@ -86,7 +86,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     // Check for coalescing separators or lookup for existing block
     driver ??= AbstractDriver.group
     name ||= `${++owner.numerator}`
-    if (driver.isSection) {
+    if (driver.isRowHost) {
       const last = children.lastClaimedItem()
       if (last?.instance?.driver === driver)
         existing = last
@@ -128,11 +128,11 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 // LayoutKind
 
 export enum LayoutKind {
-  Block = 0,    // 000
-  Grid = 1,     // 001
-  Section = 2,  // 010
-  Group = 3,    // 011
-  Text = 4,     // 100
+  Block = 0,  // 000
+  Grid = 1,   // 001
+  Row = 2,    // 010
+  Group = 3,  // 011
+  Text = 4,   // 100
 }
 
 // AbstractDriver
@@ -145,10 +145,10 @@ export class AbstractDriver<T> {
   readonly name: string
   readonly layout: LayoutKind
   readonly createAllocator: () => Allocator
-  get isSequential(): boolean { return (this.layout & 1) === 0 } // Block, Text, Section
+  get isSequential(): boolean { return (this.layout & 1) === 0 } // Block, Text, Row
   get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Grid, Group
   get isBlock(): boolean { return this.layout === LayoutKind.Block }
-  get isSection(): boolean { return this.layout === LayoutKind.Section }
+  get isRowHost(): boolean { return this.layout === LayoutKind.Row }
 
   constructor(name: string, layout: LayoutKind, createAllocator?: () => Allocator) {
     this.name = name
@@ -171,29 +171,29 @@ export class AbstractDriver<T> {
     // nothing to do by default
   }
 
-  arrange(block: VBlock<T>, place: Place | undefined, hGrow: number | undefined): void {
+  arrange(block: VBlock<T>, place: Place | undefined, heightGrow: number | undefined): void {
     const b = block as VBlockImpl<T>
-    if (hGrow === undefined) {
+    if (heightGrow === undefined) {
       b.place = place
       // Bump host height growth if necessary
       const host = b.host
-      if (host.driver.isSection) {
+      if (host.driver.isRowHost) {
         const hGrow = place?.heightGrow ?? 0
         if (hGrow > 0 && (host.place?.heightGrow ?? 0) < hGrow)
           host.driver.arrange(host, undefined, hGrow)
       }
     }
-    else if (hGrow > 0) {
+    else if (heightGrow > 0) {
       if (b.place === undefined)
         b.place = {
           exact: undefined,
           widthMin: "", widthMax: "", widthGrow: 0,
-          heightMin: "", heightMax: "", heightGrow: hGrow,
+          heightMin: "", heightMax: "", heightGrow,
           align: Align.MiddleLeft,
           boxAlign: Align.Fit,
         }
       else
-        b.place.heightGrow = hGrow
+        b.place.heightGrow = heightGrow
     }
   }
 
@@ -311,7 +311,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         let p1: Array<Item<VBlockImpl>> | undefined = undefined
         let p2: Array<Item<VBlockImpl>> | undefined = undefined
         let redeploy = false
-        let part = owner
+        let row = owner
         for (const item of children.items()) {
           if (Transaction.isCanceled)
             break
@@ -319,7 +319,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const driver = block.driver
           const opt = block.options
           const place = allocator.allocate(opt)
-          const host = driver.isSection ? owner : part
+          const host = driver.isRowHost ? owner : row
           driver.arrange(block, place, undefined)
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
@@ -329,8 +329,8 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (driver.isSection)
-            part = block
+          if (driver.isRowHost)
+            row = block
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))

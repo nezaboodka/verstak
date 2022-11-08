@@ -55,7 +55,7 @@ export interface Bounds {
   align?: Align     // MiddleLeft
   boxAlign?: Align  // Fit
   // Flow
-  lineBegin?: boolean       // false
+  rowBegin?: boolean        // false
   wrap?: boolean            // false
 }
 
@@ -128,7 +128,7 @@ export class GridBasedAllocator implements Allocator {
     }
     else { // relative positioning
       const cr = result.exact = { x1: 0, y1: 0, x2: 0, y2: 0 }
-      if (bounds?.lineBegin) {
+      if (bounds?.rowBegin) {
         this.columnCursor = 0
         this.rowCursor = this.newRowCursor
       }
