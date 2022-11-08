@@ -9,8 +9,8 @@ import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, L
 import { Box, Place, Allocator, Alignment } from "./Allocator"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
-export type Render<T = unknown, M = unknown, R = void> = (native: T, block: Block<T, M, R>) => R
-export type AsyncRender<T = unknown, M = unknown> = (native: T, block: Block<T, M, Promise<void>>) => Promise<void>
+export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>) => R
+export type AsyncRender<T = unknown, M = unknown> = (native: T, block: VBlock<T, M, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export interface BlockOptions<T = unknown, M = unknown, R = void> {
@@ -85,13 +85,13 @@ export function $shuffle(value: boolean | undefined): void {
     gOptions.rx = value
 }
 
-// Block
+// VBlock
 
-export abstract class Block<T = unknown, M = unknown, R = void> {
+export abstract class VBlock<T = unknown, M = unknown, R = void> {
   static readonly shortFrameDuration = 16 // ms
   static readonly longFrameDuration = 300 // ms
   static currentRenderingPriority = Priority.SyncP0
-  static frameDuration = Block.longFrameDuration
+  static frameDuration = VBlock.longFrameDuration
   // User-defined properties
   abstract readonly name: string
   abstract readonly driver: AbstractDriver<T>
@@ -100,9 +100,9 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
-  abstract readonly host: Block // (!) may differ from owner
-  abstract readonly children: CollectionReader<Block>
-  abstract readonly item: Item<Block> | undefined
+  abstract readonly host: VBlock // (!) may differ from owner
+  abstract readonly children: CollectionReader<VBlock>
+  abstract readonly item: Item<VBlock> | undefined
   abstract readonly stamp: number
   abstract readonly native: T | undefined
   abstract readonly place: Readonly<Place> | undefined
@@ -124,7 +124,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
     prepareAndRunRender(gSysRoot, false, false)
   }
 
-  static get current(): Block {
+  static get current(): VBlock {
     return gContext.instance
   }
 
@@ -138,12 +138,12 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
 
   static claim<T = undefined, M = unknown, R = void>(
     name: string, preset: BlockPreset<T, M, R>,
-    renderer: Render<T, M, R>, driver?: AbstractDriver<T>): Block<T, M, R> {
+    renderer: Render<T, M, R>, driver?: AbstractDriver<T>): VBlock<T, M, R> {
     // Emit block either by reusing existing one or by creating a new one
-    let result: VBlock<T, M, R>
+    let result: VBlockImpl<T, M, R>
     const owner = gContext.instance
     const children = owner.children
-    let existing: Item<VBlock<any, any, any>> | undefined = undefined
+    let existing: Item<VBlockImpl<any, any, any>> | undefined = undefined
     // Check for coalescing separators or lookup for existing block
     driver ??= AbstractDriver.group
     name ||= `${++owner.numerator}`
@@ -172,21 +172,21 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
       result.renderer = renderer
     }
     else { // create new
-      result = new VBlock<T, M, R>(name, driver, owner, options, renderer)
+      result = new VBlockImpl<T, M, R>(name, driver, owner, options, renderer)
       result.item = children.add(result)
-      VBlock.grandCount++
+      VBlockImpl.grandCount++
       if (options?.rx)
-        VBlock.disposableCount++
+        VBlockImpl.disposableCount++
     }
     return result
   }
 
   static getDefaultLoggingOptions(): LoggingOptions | undefined {
-    return VBlock.logging
+    return VBlockImpl.logging
   }
 
   static setDefaultLoggingOptions(logging?: LoggingOptions): void {
-    VBlock.logging = logging
+    VBlockImpl.logging = logging
   }
 }
 
@@ -221,23 +221,23 @@ export class AbstractDriver<T> {
     this.createAllocator = createAllocator ?? createDefaultAllocator
   }
 
-  initialize(block: Block<T>, native: T | undefined): void {
-    const b = block as VBlock<T>
+  initialize(block: VBlock<T>, native: T | undefined): void {
+    const b = block as VBlockImpl<T>
     b.native = native
   }
 
-  finalize(block: Block<T>, isLeader: boolean): boolean {
-    const b = block as VBlock<T>
+  finalize(block: VBlock<T>, isLeader: boolean): boolean {
+    const b = block as VBlockImpl<T>
     b.native = undefined
     return isLeader // treat children as finalization leaders as well
   }
 
-  deploy(block: Block<T>, sequential: boolean): void {
+  deploy(block: VBlock<T>, sequential: boolean): void {
     // nothing to do by default
   }
 
-  arrange(block: Block<T>, place: Place | undefined, hGrow: number | undefined): void {
-    const b = block as VBlock<T>
+  arrange(block: VBlock<T>, place: Place | undefined, hGrow: number | undefined): void {
+    const b = block as VBlockImpl<T>
     if (hGrow === undefined) {
       b.place = place
       // Bump host height growth if necessary
@@ -262,7 +262,7 @@ export class AbstractDriver<T> {
     }
   }
 
-  render(block: Block<T>): void | Promise<void> {
+  render(block: VBlock<T>): void | Promise<void> {
     let result: void | Promise<void>
     const wrapper = block.options?.wrapper
     if (wrapper)
@@ -281,18 +281,18 @@ export class StaticDriver<T> extends AbstractDriver<T> {
     this.element = element
   }
 
-  initialize(block: Block<T>, element: T | undefined): void {
+  initialize(block: VBlock<T>, element: T | undefined): void {
     super.initialize(block, this.element)
   }
 }
 
-// VBlock
+// VBlockImpl
 
-function getBlockName(block: VBlock): string | undefined {
+function getBlockName(block: VBlockImpl): string | undefined {
   return block.stamp >= 0 ? block.name : undefined
 }
 
-class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
+class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   static grandCount: number = 0
   static disposableCount: number = 0
   static logging: LoggingOptions | undefined = undefined
@@ -305,16 +305,16 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
   model: M | undefined
   // System-managed properties
   readonly level: number
-  host: VBlock
-  children: Collection<VBlock>
+  host: VBlockImpl
+  children: Collection<VBlockImpl>
   numerator: number
-  item: Item<VBlock> | undefined
+  item: Item<VBlockImpl> | undefined
   stamp: number
   native: T | undefined
   place: Place | undefined
   allocator: Allocator
 
-  constructor(name: string, driver: AbstractDriver<T>, owner: VBlock,
+  constructor(name: string, driver: AbstractDriver<T>, owner: VBlockImpl,
     options: BlockOptions<T, M, R> | undefined, renderer: Render<T, M, R>) {
     super()
     // User-defined properties
@@ -326,7 +326,7 @@ class VBlock<T = any, M = any, R = any> extends Block<T, M, R> {
     // System-managed properties
     this.level = owner.level + 1
     this.host = owner // owner is default host, but can be changed
-    this.children = new Collection<VBlock>(driver.isSequential, getBlockName)
+    this.children = new Collection<VBlockImpl>(driver.isSequential, getBlockName)
     this.numerator = 0
     this.item = undefined
     this.stamp = 0
@@ -365,8 +365,8 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         const sequential = children.strict
         const allocator = owner.allocator
         allocator.reset()
-        let p1: Array<Item<VBlock>> | undefined = undefined
-        let p2: Array<Item<VBlock>> | undefined = undefined
+        let p1: Array<Item<VBlockImpl>> | undefined = undefined
+        let p2: Array<Item<VBlockImpl>> | undefined = undefined
         let redeploy = false
         let part = owner
         for (const item of children.items()) {
@@ -403,8 +403,8 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
   }
 }
 
-function markToRedeployIfNecessary(redeploy: boolean, host: VBlock,
-  item: Item<VBlock>, children: Collection<VBlock>, sequential: boolean): boolean {
+function markToRedeployIfNecessary(redeploy: boolean, host: VBlockImpl,
+  item: Item<VBlockImpl>, children: Collection<VBlockImpl>, sequential: boolean): boolean {
   // Detects element redeployment when abstract blocks
   // exist among regular blocks with HTML elements
   const block = item.instance
@@ -421,10 +421,10 @@ function markToRedeployIfNecessary(redeploy: boolean, host: VBlock,
 }
 
 async function startIncrementalRendering(
-  owner: Item<VBlock>,
-  allChildren: Collection<VBlock>,
-  priority1?: Array<Item<VBlock>>,
-  priority2?: Array<Item<VBlock>>): Promise<void> {
+  owner: Item<VBlockImpl>,
+  allChildren: Collection<VBlockImpl>,
+  priority1?: Array<Item<VBlockImpl>>,
+  priority2?: Array<Item<VBlockImpl>>): Promise<void> {
   const stamp = owner.instance.stamp
   if (priority1)
     await renderIncrementally(owner, stamp, allChildren, priority1, Priority.AsyncP1)
@@ -432,40 +432,40 @@ async function startIncrementalRendering(
     await renderIncrementally(owner, stamp, allChildren, priority2, Priority.AsyncP2)
 }
 
-async function renderIncrementally(owner: Item<VBlock>, stamp: number,
-  allChildren: Collection<VBlock>, items: Array<Item<VBlock>>,
+async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
+  allChildren: Collection<VBlockImpl>, items: Array<Item<VBlockImpl>>,
   priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
   const block = owner.instance
-  if (!Transaction.isCanceled || !Transaction.isFrameOver(1, Block.shortFrameDuration / 3)) {
-    let outerPriority = Block.currentRenderingPriority
-    Block.currentRenderingPriority = priority
+  if (!Transaction.isCanceled || !Transaction.isFrameOver(1, VBlock.shortFrameDuration / 3)) {
+    let outerPriority = VBlock.currentRenderingPriority
+    VBlock.currentRenderingPriority = priority
     try {
       const sequential = block.children.strict
       if (block.options?.shuffle)
         shuffle(items)
-      const frameDurationLimit = priority === Priority.AsyncP2 ? Block.shortFrameDuration : Infinity
-      let frameDuration = Math.min(frameDurationLimit, Math.max(Block.frameDuration / 4, Block.shortFrameDuration))
+      const frameDurationLimit = priority === Priority.AsyncP2 ? VBlock.shortFrameDuration : Infinity
+      let frameDuration = Math.min(frameDurationLimit, Math.max(VBlock.frameDuration / 4, VBlock.shortFrameDuration))
       for (const child of items) {
         prepareAndRunRender(child, allChildren.isMoved(child), sequential)
         if (Transaction.isFrameOver(1, frameDuration)) {
-          Block.currentRenderingPriority = outerPriority
+          VBlock.currentRenderingPriority = outerPriority
           await Transaction.requestNextFrame(0)
-          outerPriority = Block.currentRenderingPriority
-          Block.currentRenderingPriority = priority
-          frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, Block.frameDuration))
+          outerPriority = VBlock.currentRenderingPriority
+          VBlock.currentRenderingPriority = priority
+          frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, VBlock.frameDuration))
         }
-        if (Transaction.isCanceled && Transaction.isFrameOver(1, Block.shortFrameDuration / 3))
+        if (Transaction.isCanceled && Transaction.isFrameOver(1, VBlock.shortFrameDuration / 3))
           break
       }
     }
     finally {
-      Block.currentRenderingPriority = outerPriority
+      VBlock.currentRenderingPriority = outerPriority
     }
   }
 }
 
-function prepareAndRunRender(item: Item<VBlock>,
+function prepareAndRunRender(item: Item<VBlockImpl>,
   redeploy: boolean, sequential: boolean): void {
   const block = item.instance
   if (block.stamp >= 0) {
@@ -477,7 +477,7 @@ function prepareAndRunRender(item: Item<VBlock>,
   }
 }
 
-function prepareRender(item: Item<VBlock>,
+function prepareRender(item: Item<VBlockImpl>,
   redeploy: boolean, sequential: boolean): void {
   const block = item.instance
   const driver = block.driver
@@ -504,7 +504,7 @@ function prepareRender(item: Item<VBlock>,
     driver.deploy(block, sequential) // , console.log(`redeployed: ${block.name}`)
 }
 
-function runRender(item: Item<VBlock>): void {
+function runRender(item: Item<VBlockImpl>): void {
   const block = item.instance
   if (block.stamp >= 0) { // if block is alive
     runUnder(item, () => {
@@ -530,7 +530,7 @@ function runRender(item: Item<VBlock>): void {
   }
 }
 
-function runFinalize(item: Item<VBlock>, isLeader: boolean): void {
+function runFinalize(item: Item<VBlockImpl>, isLeader: boolean): void {
   const block = item.instance
   if (block.stamp >= 0) {
     block.stamp = ~block.stamp
@@ -552,7 +552,7 @@ function runFinalize(item: Item<VBlock>, isLeader: boolean): void {
     // Finalize children if any
     for (const item of block.children.items())
       runFinalize(item, childrenAreLeaders)
-    VBlock.grandCount--
+    VBlockImpl.grandCount--
   }
 }
 
@@ -564,13 +564,13 @@ async function runDisposalLoop(): Promise<void> {
       await Transaction.requestNextFrame()
     Rx.dispose(item.instance)
     item = item.aux
-    VBlock.disposableCount--
+    VBlockImpl.disposableCount--
   }
   // console.log(`Block count: ${VBlock.grandCount} totally (${VBlock.disposableCount} disposable)`)
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
-function forEachChildRecursively(item: Item<VBlock>, action: (e: any) => void): void {
+function forEachChildRecursively(item: Item<VBlockImpl>, action: (e: any) => void): void {
   const block = item.instance
   const native = block.native
   native && action(native)
@@ -586,7 +586,7 @@ function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
   return wrappedRunUnder
 }
 
-function runUnder<T>(item: Item<VBlock>, func: (...args: any[]) => T, ...args: any[]): T {
+function runUnder<T>(item: Item<VBlockImpl>, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gContext
   try {
     gContext = item
@@ -663,8 +663,8 @@ Promise.prototype.then = reactronicDomHookedThen
 const NOP = (): void => { /* nop */ }
 
 const gSysDriver = new StaticDriver<null>(null, "SYSTEM", LayoutKind.Group)
-const gSysRoot = Collection.createItem<VBlock>(new VBlock<null, void>("SYSTEM",
-  gSysDriver, { level: 0 } as VBlock, { rx: true }, NOP)) // fake owner/host (overwritten below)
+const gSysRoot = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>("SYSTEM",
+  gSysDriver, { level: 0 } as VBlockImpl, { rx: true }, NOP)) // fake owner/host (overwritten below)
 gSysRoot.instance.item = gSysRoot
 
 Object.defineProperty(gSysRoot.instance, "host", {
@@ -675,6 +675,6 @@ Object.defineProperty(gSysRoot.instance, "host", {
 })
 
 let gOptions: BlockOptions<any, any, any> | undefined = undefined
-let gContext: Item<VBlock> = gSysRoot
-let gFirstToDispose: Item<VBlock> | undefined = undefined
-let gLastToDispose: Item<VBlock> | undefined = undefined
+let gContext: Item<VBlockImpl> = gSysRoot
+let gFirstToDispose: Item<VBlockImpl> | undefined = undefined
+let gLastToDispose: Item<VBlockImpl> | undefined = undefined

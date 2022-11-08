@@ -6,18 +6,18 @@
 // automatically licensed under the license referred above.
 
 import { Item, Rx } from "reactronic"
-import { Block, AbstractDriver, Priority } from "../core/api"
+import { VBlock, AbstractDriver, Priority } from "../core/api"
 
 export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T> {
 
-  initialize(block: Block<T>, element: T | undefined): void {
+  initialize(block: VBlock<T>, element: T | undefined): void {
     element = this.createElement(block)
     if (Rx.isLogging && this.name)
       element.setAttribute("data-n", block.name)
     super.initialize(block, element)
   }
 
-  finalize(block: Block<T>, isLeader: boolean): boolean {
+  finalize(block: VBlock<T>, isLeader: boolean): boolean {
     const e = block.native
     if (e) {
       e.resizeObserver?.unobserve(e) // is it really needed or browser does this automatically?
@@ -28,7 +28,7 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
     return false // children of HTML blocks are not treated as leaders
   }
 
-  deploy(block: Block<T>, sequential: boolean): void {
+  deploy(block: VBlock<T>, sequential: boolean): void {
     const e = block.native
     if (e) {
       const nativeParent = BaseHtmlDriver.findNearestParentHtmlBlock(block).native
@@ -53,14 +53,14 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
     }
   }
 
-  relocate(block: Block<T>): void {
+  relocate(block: VBlock<T>): void {
     // nothing to do by default
   }
 
-  render(block: Block<T>): void | Promise<void> {
+  render(block: VBlock<T>): void | Promise<void> {
     const result = super.render(block)
     if (gBlinkingEffect)
-      blink(block.native, Block.currentRenderingPriority, block.stamp)
+      blink(block.native, VBlock.currentRenderingPriority, block.stamp)
     return result
   }
 
@@ -71,7 +71,7 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
   static set blinkingEffect(value: string | undefined) {
     if (value === undefined) {
       const effect = gBlinkingEffect
-      Block.runForAllBlocks((e: any) => {
+      VBlock.runForAllBlocks((e: any) => {
         if (e instanceof HTMLElement)
           e.classList.remove(`${effect}-0`, `${effect}-1`)
       })
@@ -79,31 +79,31 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
     gBlinkingEffect = value
   }
 
-  static findNearestParentHtmlBlock(block: Block<any>): Block<Element> {
+  static findNearestParentHtmlBlock(block: VBlock<any>): VBlock<Element> {
     let p = block.host
     while (p.native instanceof Element === false && p !== block)
       p = p.host
-    return p as Block<Element>
+    return p as VBlock<Element>
   }
 
-  static findPrevSiblingHtmlBlock(item: Item<Block<any>>): Item<Block<Element>> | undefined {
+  static findPrevSiblingHtmlBlock(item: Item<VBlock<any>>): Item<VBlock<Element>> | undefined {
     let p = item.prev
     while (p && !(p.instance.native instanceof Element))
       p = p.prev
     return p
   }
 
-  protected abstract createElement(block: Block<T>): T
+  protected abstract createElement(block: VBlock<T>): T
 }
 
 export class HtmlDriver<T extends HTMLElement> extends BaseHtmlDriver<T> {
-  protected createElement(block: Block<T>): T {
+  protected createElement(block: VBlock<T>): T {
     return document.createElement(block.driver.name) as T
   }
 }
 
 export class SvgDriver<T extends SVGElement> extends BaseHtmlDriver<T> {
-  protected createElement(block: Block<T>): T {
+  protected createElement(block: VBlock<T>): T {
     return document.createElementNS("http://www.w3.org/2000/svg", block.driver.name) as T
   }
 }

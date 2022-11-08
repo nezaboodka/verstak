@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Block, Render, BlockOptions, LayoutKind, Place, BlockPreset } from "../core/api"
+import { VBlock, Render, BlockOptions, LayoutKind, Place, BlockPreset } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -29,46 +29,43 @@ import { HtmlDriver } from "./HtmlDriver"
 
 // Basic Block
 
-export function block<M = unknown, R = void>(name: string,
+export function Block<M = unknown, R = void>(name: string,
   preset: BlockPreset<HTMLElement, M, R> | undefined,
-  renderer: Render<HTMLElement, M, R>):
-  Block<HTMLElement, M, R> {
-  return Block.claim(name, preset, renderer, VerstakTags.block)
+  renderer: Render<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(name, preset, renderer, VerstakTags.block)
 }
 
 // Text (formatted or plain)
 
-export function text<M = unknown>(
+export function $<M = unknown>(
   content: string | Render<HTMLElement, M, void>,
   preset?: BlockPreset<HTMLElement, M, void>,
-  name?: string): Block<HTMLElement, M, void> {
+  name?: string): VBlock<HTMLElement, M, void> {
   return content instanceof Function ?
-    Block.claim(name ?? "", preset, content, VerstakTags.text) :
-    Block.claim(name ?? "", preset, e => { e.innerText = content }, VerstakTags.text)
+    VBlock.claim(name ?? "", preset, content, VerstakTags.text) :
+    VBlock.claim(name ?? "", preset, e => { e.innerText = content }, VerstakTags.text)
 }
 
 // Grid Block
 
-export function grid<M = unknown, R = void>(name: string,
+export function Grid<M = unknown, R = void>(name: string,
   preset: BlockPreset<HTMLElement, M, R> | undefined,
-  renderer: Render<HTMLElement, M, R>):
-  Block<HTMLElement, M, R> {
-  return Block.claim(name, preset, renderer, VerstakTags.grid)
+  renderer: Render<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(name, preset, renderer, VerstakTags.grid)
 }
 
 // Break
 
-export function br(preset?: BlockOptions<HTMLElement, void, void>, noCoalescing?: boolean): Block<HTMLElement> {
-  return Block.claim("", preset, NOP, VerstakTags.part)
+export function br(preset?: BlockOptions<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
+  return VBlock.claim("", preset, NOP, VerstakTags.part)
 }
 
 // Group
 
-export function group<M = unknown, R = void>(name: string,
+export function Group<M = unknown, R = void>(name: string,
   preset: BlockPreset<HTMLElement, M, R> | undefined,
-  renderer: Render<HTMLElement, M, R>):
-  Block<HTMLElement, M, R> {
-  return Block.claim(name, preset, renderer, VerstakTags.group)
+  renderer: Render<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(name, preset, renderer, VerstakTags.group)
 }
 
 // VerstakDriver
@@ -81,7 +78,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
     this.custom = custom
   }
 
-  protected createElement(block: Block<T>): T {
+  protected createElement(block: VBlock<T>): T {
     const custom = this.custom
     const tag = custom ? `v-${block.name}` : this.name
     const result = document.createElement(tag) as T
@@ -90,7 +87,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
     return result
   }
 
-  arrange(block: Block<T>, place: Place | undefined, hGrow: number | undefined): void {
+  arrange(block: VBlock<T>, place: Place | undefined, hGrow: number | undefined): void {
     if (block.native) {
       if (hGrow === undefined) {
         const existing = block.stamp > 1 ? block.place : undefined
@@ -114,10 +111,10 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
     super.arrange(block, place, hGrow)
   }
 
-  render(block: Block<T>): void | Promise<void> {
+  render(block: VBlock<T>): void | Promise<void> {
     // Create initial part inside basic block automatically
     if (block.driver.isBlock)
-      br() // Block.claim('', undefined, NOP, VerstakTags.part)
+      br() // VBlock.claim('', undefined, NOP, VerstakTags.part)
     return super.render(block)
   }
 }
