@@ -22,7 +22,7 @@ export interface BlockOptions<T = unknown, M = unknown, R = void> {
   throttling?: number,
   logging?: Partial<LoggingOptions>
   shuffle?: boolean
-  as?: Array<Render<T, M, R>>
+  mixins?: Array<Render<T, M, R>>
   wrapper?: Render<T, M, R>
   super?: BlockOptions<T, M, R>
 }
@@ -34,13 +34,13 @@ export function presetsToOptions<T, M, R>(p1: BlockPreset<T, M, R>, p2: BlockPre
   if (p1) {
     if (p2)
       result = Object.assign(
-        Array.isArray(p1) ? { as: p1 } : p1,
-        Array.isArray(p2) ? { as: p2 } : p2)
+        Array.isArray(p1) ? { mixins: p1 } : p1,
+        Array.isArray(p2) ? { mixins: p2 } : p2)
     else
-      result = Array.isArray(p1) ? { as: p1 } : p1
+      result = Array.isArray(p1) ? { mixins: p1 } : p1
   }
   else
-    result = Array.isArray(p2) ? { as: p2 } : p2
+    result = Array.isArray(p2) ? { mixins: p2 } : p2
   return result
 }
 
@@ -123,10 +123,10 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly place: Readonly<Place> | undefined
 
   render(): R {
-    const as = this.options?.as
-    if (as)
-      for (const a of as)
-        a(this.native!, this)
+    const mixins = this.options?.mixins
+    if (mixins)
+      for (const mixin of mixins)
+        mixin(this.native!, this)
     return this.renderer(this.native!, this)
   }
 
