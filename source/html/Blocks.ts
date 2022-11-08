@@ -5,8 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { LoggingOptions, Monitor } from "reactronic"
-import { Block, Render, BlockOptions, LayoutKind, Place, Box, Priority } from "../core/api"
+import { Block, Render, BlockOptions, LayoutKind, Place, BlockPreset } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -31,102 +30,46 @@ import { HtmlDriver } from "./HtmlDriver"
 // Basic Block
 
 export function block<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLElement, M, R> | undefined,
+  preset: BlockPreset<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
-  const result = Block.claim(name, options, renderer, VerstakTags.block)
-  gOptions = undefined
-  return result
+  return Block.claim(name, preset, renderer, VerstakTags.block)
 }
 
 // Text (formatted or plain)
 
 export function text<M = unknown>(
   content: string | Render<HTMLElement, M, void>,
-  options?: BlockOptions<HTMLElement, M, void>,
+  preset?: BlockPreset<HTMLElement, M, void>,
   name?: string): Block<HTMLElement, M, void> {
-  const result = content instanceof Function ?
-    Block.claim(name ?? "", options, content, VerstakTags.text) :
-    Block.claim(name ?? "", options, e => { e.innerText = content }, VerstakTags.text)
-  gOptions = undefined
-  return result
+  return content instanceof Function ?
+    Block.claim(name ?? "", preset, content, VerstakTags.text) :
+    Block.claim(name ?? "", preset, e => { e.innerText = content }, VerstakTags.text)
 }
 
 // Grid Block
 
 export function grid<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLElement, M, R> | undefined,
+  preset: BlockPreset<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
-  const result = Block.claim(name, options, renderer, VerstakTags.grid)
-  gOptions = undefined
-  return result
+  return Block.claim(name, preset, renderer, VerstakTags.grid)
 }
 
 // Break
 
-export function br(options?: BlockOptions<HTMLElement, void, void>, noCoalescing?: boolean): Block<HTMLElement> {
-  const result = Block.claim("", options, NOP, VerstakTags.part)
-  gOptions = undefined
-  return result
+export function br(preset?: BlockOptions<HTMLElement, void, void>, noCoalescing?: boolean): Block<HTMLElement> {
+  return Block.claim("", preset, NOP, VerstakTags.part)
 }
 
 // Group
 
 export function group<M = unknown, R = void>(name: string,
-  options: BlockOptions<HTMLElement, M, R> | undefined,
+  preset: BlockPreset<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>):
   Block<HTMLElement, M, R> {
-  const result = Block.claim(name, options, renderer, VerstakTags.group)
-  gOptions = undefined
-  return result
+  return Block.claim(name, preset, renderer, VerstakTags.group)
 }
-
-// Options
-
-export function $rx(value: boolean | undefined): void {
-  // ...
-}
-
-export function $box(value: Box | undefined): void {
-  // ...
-}
-
-export function $triggers(value: unknown | undefined): void {
-  // ...
-}
-
-export function $priority(value: Priority | undefined): void {
-  // ...
-}
-
-export function $monitor(value: Monitor | undefined): void {
-  // ...
-}
-
-export function $throttling(value: number | undefined): void {
-  // ...
-}
-
-export function $logging(value: Partial<LoggingOptions> | undefined): void {
-  // ...
-}
-
-export function $shuffle(value: boolean | undefined): void {
-  // ...
-}
-
-// export function $as(value: Array<Render<T, M, R>>): void {
-//   // ...
-// }
-
-// export function $wrapper(value: Render<T, M, R> | undefined): void {
-//   // ...
-// }
-
-// export function $super(value: BlockOptions<T, M, R>): void {
-//   // ...
-// }
 
 // VerstakDriver
 
@@ -201,6 +144,3 @@ const VerstakTags = {
 }
 
 const NOP = (): void => { /* nop */ }
-
-let gOptions: BlockOptions<any, any, any> | undefined = undefined
-console.log(gOptions) // TODO: to remove

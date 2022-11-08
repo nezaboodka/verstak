@@ -29,6 +29,62 @@ export interface BlockOptions<T = unknown, M = unknown, R = void> {
 
 export type BlockPreset<T, M, R> = BlockOptions<T, M, R> | Array<Render<T, M, R>> | undefined
 
+export function $rx(value: boolean | undefined): void {
+  if (value !== undefined)
+    (gOptions ??= {}).rx = value
+  else if (gOptions)
+    gOptions.rx = value
+}
+
+export function $bounds(value: Box | undefined): void {
+  if (value !== undefined)
+    (gOptions ??= {}).box = value
+  else if (gOptions)
+    gOptions.rx = value
+}
+
+export function $triggers(value: unknown | undefined): void {
+  if (value !== undefined)
+    (gOptions ??= {}).triggers = value
+  else if (gOptions)
+    gOptions.rx = value
+}
+
+export function $priority(value: Priority | undefined): void {
+  if (value !== undefined)
+    (gOptions ??= {}).priority = value
+  else if (gOptions)
+    gOptions.rx = value
+}
+
+export function $monitor(value: Monitor | undefined): void {
+  if (value !== undefined)
+    (gOptions ??= {}).monitor = value
+  else if (gOptions)
+    gOptions.rx = value
+}
+
+export function $throttling(value: number | undefined): void {
+  if (value !== undefined)
+    (gOptions ??= {}).throttling = value
+  else if (gOptions)
+    gOptions.rx = value
+}
+
+export function $logging(value: Partial<LoggingOptions> | undefined): void {
+  if (value !== undefined)
+    (gOptions ??= {}).logging = value
+  else if (gOptions)
+    gOptions.rx = value
+}
+
+export function $shuffle(value: boolean | undefined): void {
+  if (value !== undefined)
+    (gOptions ??= {}).shuffle = value
+  else if (gOptions)
+    gOptions.rx = value
+}
+
 // Block
 
 export abstract class Block<T = unknown, M = unknown, R = void> {
@@ -97,7 +153,11 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
         existing = last
     }
     existing ??= children.claim(name)
-    const options = preset && Array.isArray(preset) ? { as: preset } : preset
+    let options = preset && Array.isArray(preset) ? { as: preset } : preset
+    if (gOptions) {
+      options = Object.assign(gOptions, options)
+      gOptions = undefined
+    }
     // Reuse existing block or claim a new one
     if (existing) {
       result = existing.instance
@@ -614,6 +674,7 @@ Object.defineProperty(gSysRoot.instance, "host", {
   enumerable: true,
 })
 
+let gOptions: BlockOptions<any, any, any> | undefined = undefined
 let gContext: Item<VBlock> = gSysRoot
 let gFirstToDispose: Item<VBlock> | undefined = undefined
 let gLastToDispose: Item<VBlock> | undefined = undefined
