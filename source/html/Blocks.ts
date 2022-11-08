@@ -10,7 +10,7 @@ import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
 // called basic block and grid block; and on two special
-// non-visual elements called row and group.
+// non-visual elements called section and group.
 
 // Basic block is a layout structure, which children are
 // layed out naturally: rightwards-downwards.
@@ -21,8 +21,8 @@ import { HtmlDriver } from "./HtmlDriver"
 // Grid block is layout structure, which children are
 // layed out over grid cells.
 
-// Row is a special non-visual element, which begins new
-// line inside block or grid block.
+// Section is a special non-visual element, which begins
+// new layout row inside block or grid block.
 
 // Group is a special non-visual element for logical
 // grouping of basic blocks, grid blocks and other groups.
@@ -59,16 +59,16 @@ export function Grid<M = unknown, R = void>(name: string,
   return VBlock.claim(name, preset, renderer, VerstakTags.grid)
 }
 
-// Row
+// Section
 
-export function row<T = void>(claim: () => T): void {
-  VBlock.claim("", undefined, NOP, VerstakTags.row)
+export function section<T = void>(claim: () => T): void {
+  VBlock.claim("", undefined, NOP, VerstakTags.section)
   claim()
-  VBlock.claim("", undefined, NOP, VerstakTags.row)
+  VBlock.claim("", undefined, NOP, VerstakTags.section)
 }
 
-export function rowBegin(preset?: BlockPreset<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
-  return VBlock.claim("", preset, NOP, VerstakTags.row)
+export function sectionBegin(preset?: BlockPreset<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
+  return VBlock.claim("", preset, NOP, VerstakTags.section)
 }
 
 // Group
@@ -125,7 +125,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: VBlock<T>): void | Promise<void> {
     // Create initial part inside basic block automatically
     if (block.driver.isBlock)
-      VBlock.claim("", undefined, NOP, VerstakTags.row)
+      VBlock.claim("", undefined, NOP, VerstakTags.section)
     return super.render(block)
   }
 }
@@ -145,7 +145,7 @@ const VerstakTags = {
   // display:
   //   - flex (row) if parent is regular block
   //   - contents if parent is grid
-  row: new VerstakDriver<HTMLElement>("div", false, LayoutKind.Row),
+  section: new VerstakDriver<HTMLElement>("section", false, LayoutKind.Section),
 
   // display: contents
   group: new VerstakDriver<HTMLElement>("group", true, LayoutKind.Group),

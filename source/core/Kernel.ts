@@ -105,7 +105,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     // Check for coalescing separators or lookup for existing block
     driver ??= AbstractDriver.group
     name ||= `${++owner.numerator}`
-    if (driver.isRow) {
+    if (driver.isSection) {
       const last = children.lastClaimedItem()
       if (last?.instance?.driver === driver)
         existing = last
@@ -148,11 +148,11 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 // LayoutKind
 
 export enum LayoutKind {
-  Block = 0, // 000
-  Grid = 1,  // 001
-  Row = 2,   // 010
-  Group = 3, // 011
-  Text = 4,  // 100
+  Block = 0,    // 000
+  Grid = 1,     // 001
+  Section = 2,  // 010
+  Group = 3,    // 011
+  Text = 4,     // 100
 }
 
 // AbstractDriver
@@ -168,7 +168,7 @@ export class AbstractDriver<T> {
   get isSequential(): boolean { return (this.layout & 1) === 0 } // Block, Text, Section
   get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Grid, Group
   get isBlock(): boolean { return this.layout === LayoutKind.Block }
-  get isRow(): boolean { return this.layout === LayoutKind.Row }
+  get isSection(): boolean { return this.layout === LayoutKind.Section }
 
   constructor(name: string, layout: LayoutKind, createAllocator?: () => Allocator) {
     this.name = name
@@ -197,7 +197,7 @@ export class AbstractDriver<T> {
       b.place = place
       // Bump host height growth if necessary
       const host = b.host
-      if (host.driver.isRow) {
+      if (host.driver.isSection) {
         const hGrow = place?.hGrow ?? 0
         if (hGrow > 0 && (host.place?.hGrow ?? 0) < hGrow)
           host.driver.arrange(host, undefined, hGrow)
@@ -331,7 +331,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const driver = block.driver
           const opt = block.options
           const place = allocator.allocate(opt)
-          const host = driver.isRow ? owner : part
+          const host = driver.isSection ? owner : part
           driver.arrange(block, place, undefined)
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
@@ -341,7 +341,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (driver.isRow)
+          if (driver.isSection)
             part = block
         }
         // Render incremental children (if any)
