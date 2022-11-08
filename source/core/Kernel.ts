@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from "reactronic"
-import { Bounds, Place, Allocator, Alignment } from "./Allocator"
+import { Bounds, Place, Allocator, Align } from "./Allocator"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>) => R
@@ -15,7 +15,7 @@ export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export interface BlockOptions<T = unknown, M = unknown, R = void> extends Bounds {
   observer?: boolean
-  apply?: Array<Render<T, M, R>>
+  as?: Array<Render<T, M, R>>
   triggers?: unknown
   priority?: Priority,
   monitor?: Monitor
@@ -178,8 +178,8 @@ export class AbstractDriver<T> {
       // Bump host height growth if necessary
       const host = b.host
       if (host.driver.isSection) {
-        const hGrow = place?.hGrow ?? 0
-        if (hGrow > 0 && (host.place?.hGrow ?? 0) < hGrow)
+        const hGrow = place?.heightGrow ?? 0
+        if (hGrow > 0 && (host.place?.heightGrow ?? 0) < hGrow)
           host.driver.arrange(host, undefined, hGrow)
       }
     }
@@ -187,13 +187,13 @@ export class AbstractDriver<T> {
       if (b.place === undefined)
         b.place = {
           exact: undefined,
-          wMin: "", wMax: "", wGrow: 0,
-          hMin: "", hMax: "", hGrow,
-          alignment: Alignment.TopLeft,
-          boxAlignment: Alignment.Fit,
+          widthMin: "", widthMax: "", widthGrow: 0,
+          heightMin: "", heightMax: "", heightGrow: hGrow,
+          align: Align.MiddleLeft,
+          boxAlign: Align.Fit,
         }
       else
-        b.place.hGrow = hGrow
+        b.place.heightGrow = hGrow
     }
   }
 
@@ -209,7 +209,7 @@ export class AbstractDriver<T> {
 }
 
 function callRenderFunctions<R>(block: VBlock<any, any, R>): R {
-  const uses = block.options?.apply
+  const uses = block.options?.as
   if (uses)
     for (const use of uses)
       use(block.native!, block)
@@ -622,13 +622,13 @@ export function argsToOptions<T, M, R>(p1: BlockArgs<T, M, R>, p2: BlockArgs<T, 
   if (p1) {
     if (p2)
       result = Object.assign(
-        Array.isArray(p1) ? { apply: p1 } : p1,
-        Array.isArray(p2) ? { apply: p2 } : p2)
+        Array.isArray(p1) ? { as: p1 } : p1,
+        Array.isArray(p2) ? { as: p2 } : p2)
     else
-      result = Array.isArray(p1) ? { apply: p1 } : p1
+      result = Array.isArray(p1) ? { as: p1 } : p1
   }
   else
-    result = Array.isArray(p2) ? { apply: p2 } : p2
+    result = Array.isArray(p2) ? { as: p2 } : p2
   return result
 }
 

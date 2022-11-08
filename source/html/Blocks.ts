@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, Render, LayoutKind, Place, BlockArgs } from "../core/api"
+import { VBlock, Render, LayoutKind, Place, BlockArgs, Align } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -48,7 +48,7 @@ export function text<M = unknown>(
 
 export function $(strings: TemplateStringsArray, ...args: any[]): VBlock<HTMLElement, void, void> {
   const content = String.raw(strings, ...args)
-  return VBlock.claim("", undefined, e => { e.innerText = content }, VerstakTags.text)
+  return VBlock.claim("", undefined, e => { e.innerHTML = content }, VerstakTags.text)
 }
 
 // Grid Block
@@ -99,28 +99,60 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
     return result
   }
 
-  arrange(block: VBlock<T>, place: Place | undefined, hGrow: number | undefined): void {
+  arrange(block: VBlock<T>, place: Place | undefined, heightGrow: number | undefined): void {
     if (block.native) {
-      if (hGrow === undefined) {
+      if (heightGrow === undefined) {
         const existing = block.stamp > 1 ? block.place : undefined
         if (place !== existing) {
-          const wGrow = place?.wGrow ?? 0
-          if (wGrow !== (existing?.wGrow ?? 0)) {
-            if (wGrow > 0)
-              block.native.style.flexGrow = `${wGrow}`
+          const widthGrow = place?.widthGrow ?? 0
+          if (widthGrow !== (existing?.widthGrow ?? 0)) {
+            if (widthGrow > 0)
+              block.native.style.flexGrow = `${widthGrow}`
             else
               block.native.style.flexGrow = ""
+          }
+          // Width
+          const widthMin = place?.widthMin ?? ""
+          if (widthMin !== (existing?.widthMin ?? ""))
+            block.native.style.minWidth = `${widthMin}`
+          const widthMax = place?.widthMax ?? ""
+          if (widthMax !== (existing?.widthMax ?? ""))
+            block.native.style.maxWidth = `${widthMax}`
+          // Height
+          const heightMin = place?.heightMin ?? ""
+          if (heightMin !== (existing?.heightMin ?? ""))
+            block.native.style.minHeight = `${heightMin}`
+          const heightMax = place?.heightMax ?? ""
+          if (heightMax !== (existing?.heightMax ?? ""))
+            block.native.style.maxHeight = `${heightMax}`
+          // Alignment
+          const alignment = place?.align ?? Align.MiddleLeft
+          if (alignment !== (existing?.align ?? Align.MiddleLeft)) {
+            const v = AlignCss[(alignment >> 2) & 0b11]
+            const h = AlignCss[alignment & 0b11]
+            const t = TextAlignCss[alignment & 0b11]
+            block.native.style.justifyContent = v
+            block.native.style.alignItems = h
+            block.native.style.textAlign = t
+          }
+          // Box Alignment
+          const boxAlign = place?.boxAlign ?? Align.Fit
+          if (boxAlign !== (existing?.boxAlign ?? Align.Fit)) {
+            const v = AlignCss[(boxAlign >> 2) & 0b11]
+            const h = AlignCss[boxAlign & 0b11]
+            block.native.style.alignSelf = v
+            block.native.style.justifySelf = h
           }
         }
       }
       else {
-        if (hGrow > 0)
-          block.native.style.flexGrow = `${hGrow}`
+        if (heightGrow > 0)
+          block.native.style.flexGrow = `${heightGrow}`
         else
           block.native.style.flexGrow = ""
       }
     }
-    super.arrange(block, place, hGrow)
+    super.arrange(block, place, heightGrow)
   }
 
   render(block: VBlock<T>): void | Promise<void> {
@@ -153,3 +185,5 @@ const VerstakTags = {
 }
 
 const NOP = (): void => { /* nop */ }
+const AlignCss = ["" /* stretch */, "start", "center", "end"]
+const TextAlignCss = ["justify", "" /* left */, "center", "right"]
