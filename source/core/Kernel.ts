@@ -27,6 +27,8 @@ export interface BlockOptions<T = unknown, M = unknown, R = void> {
   super?: BlockOptions<T, M, R>
 }
 
+export type BlockPreset<T, M, R> = BlockOptions<T, M, R> | Array<Render<T, M, R>> | undefined
+
 // Block
 
 export abstract class Block<T = unknown, M = unknown, R = void> {
@@ -79,7 +81,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   }
 
   static claim<T = undefined, M = unknown, R = void>(
-    name: string, options: BlockOptions<T, M, R> | undefined,
+    name: string, preset: BlockPreset<T, M, R>,
     renderer: Render<T, M, R>, driver?: AbstractDriver<T>): Block<T, M, R> {
     // Emit block either by reusing existing one or by creating a new one
     let result: VBlock<T, M, R>
@@ -95,6 +97,7 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
         existing = last
     }
     existing ??= children.claim(name)
+    const options = preset && Array.isArray(preset) ? { as: preset } : preset
     // Reuse existing block or claim a new one
     if (existing) {
       result = existing.instance
