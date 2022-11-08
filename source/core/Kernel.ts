@@ -29,6 +29,21 @@ export interface BlockOptions<T = unknown, M = unknown, R = void> {
 
 export type BlockPreset<T, M, R> = BlockOptions<T, M, R> | Array<Render<T, M, R>> | undefined
 
+export function presetsToOptions<T, M, R>(p1: BlockPreset<T, M, R>, p2: BlockPreset<T, M, R>): BlockOptions<T, M, R> | undefined {
+  let result: BlockOptions<T, M, R> | undefined
+  if (p1) {
+    if (p2)
+      result = Object.assign(
+        Array.isArray(p1) ? { as: p1 } : p1,
+        Array.isArray(p2) ? { as: p2 } : p2)
+    else
+      result = Array.isArray(p1) ? { as: p1 } : p1
+  }
+  else
+    result = Array.isArray(p2) ? { as: p2 } : p2
+  return result
+}
+
 export function $rx(value: boolean | undefined): void {
   if (value !== undefined)
     (gOptions ??= {}).rx = value
@@ -108,10 +123,10 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly place: Readonly<Place> | undefined
 
   render(): R {
-    const presets = this.options?.as
-    if (presets)
-      for (const preset of presets)
-        preset(this.native!, this)
+    const as = this.options?.as
+    if (as)
+      for (const a of as)
+        a(this.native!, this)
     return this.renderer(this.native!, this)
   }
 
@@ -153,11 +168,8 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
         existing = last
     }
     existing ??= children.claim(name)
-    let options = preset && Array.isArray(preset) ? { as: preset } : preset
-    if (gOptions) {
-      options = Object.assign(gOptions, options)
-      gOptions = undefined
-    }
+    const options = presetsToOptions(gOptions, preset)
+    gOptions = undefined
     // Reuse existing block or claim a new one
     if (existing) {
       result = existing.instance
