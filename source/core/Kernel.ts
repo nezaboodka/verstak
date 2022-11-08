@@ -15,7 +15,7 @@ export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export interface BlockOptions<T = unknown, M = unknown, R = void> extends Bounds {
   observer?: boolean
-  use?: Array<Render<T, M, R>>
+  apply?: Array<Render<T, M, R>>
   triggers?: unknown
   priority?: Priority,
   monitor?: Monitor
@@ -209,7 +209,7 @@ export class AbstractDriver<T> {
 }
 
 function callRenderFunctions<R>(block: VBlock<any, any, R>): R {
-  const uses = block.options?.use
+  const uses = block.options?.apply
   if (uses)
     for (const use of uses)
       use(block.native!, block)
@@ -622,13 +622,13 @@ export function argsToOptions<T, M, R>(p1: BlockArgs<T, M, R>, p2: BlockArgs<T, 
   if (p1) {
     if (p2)
       result = Object.assign(
-        Array.isArray(p1) ? { use: p1 } : p1,
-        Array.isArray(p2) ? { use: p2 } : p2)
+        Array.isArray(p1) ? { apply: p1 } : p1,
+        Array.isArray(p2) ? { apply: p2 } : p2)
     else
-      result = Array.isArray(p1) ? { use: p1 } : p1
+      result = Array.isArray(p1) ? { apply: p1 } : p1
   }
   else
-    result = Array.isArray(p2) ? { use: p2 } : p2
+    result = Array.isArray(p2) ? { apply: p2 } : p2
   return result
 }
 
