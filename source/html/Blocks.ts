@@ -10,7 +10,7 @@ import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
 // called basic block and grid block; and on two special
-// non-visual elements called break and group.
+// non-visual elements called line break and group.
 
 // Basic block is a layout structure, which children are
 // layed out naturally: rightwards-downwards.
@@ -21,7 +21,7 @@ import { HtmlDriver } from "./HtmlDriver"
 // Grid block is layout structure, which children are
 // layed out over grid cells.
 
-// Break is a special non-visual element, which
+// Line Break is a special non-visual element, which
 // begins new line inside block or grid block.
 
 // Group is a special non-visual element for logical
@@ -37,7 +37,7 @@ export function Block<M = unknown, R = void>(name: string,
 
 // Text (formatted or plain)
 
-export function $<M = unknown>(
+export function text<M = unknown>(
   content: string | Render<HTMLElement, M, void>,
   preset?: BlockPreset<HTMLElement, M, void>,
   name?: string): VBlock<HTMLElement, M, void> {
@@ -54,9 +54,9 @@ export function Grid<M = unknown, R = void>(name: string,
   return VBlock.claim(name, preset, renderer, VerstakTags.grid)
 }
 
-// Break
+// Line Break
 
-export function $br(preset?: BlockOptions<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
+export function lbr(preset?: BlockOptions<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
   return VBlock.claim("", preset, NOP, VerstakTags.part)
 }
 
@@ -114,7 +114,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: VBlock<T>): void | Promise<void> {
     // Create initial part inside basic block automatically
     if (block.driver.isBlock)
-      $br() // VBlock.claim('', undefined, NOP, VerstakTags.part)
+      lbr() // VBlock.claim('', undefined, NOP, VerstakTags.part)
     return super.render(block)
   }
 }

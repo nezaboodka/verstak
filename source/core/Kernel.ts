@@ -44,56 +44,56 @@ export function presetsToOptions<T, M, R>(p1: BlockPreset<T, M, R>, p2: BlockPre
   return result
 }
 
-export function $rx(value: boolean | undefined): void {
+export function useRx(value: boolean | undefined): void {
   if (value !== undefined)
     (gOptions ??= {}).rx = value
   else if (gOptions)
     gOptions.rx = value
 }
 
-export function $bounds(value: Bounds | undefined): void {
+export function useBounds(value: Bounds | undefined): void {
   if (value !== undefined)
     (gOptions ??= {}).bounds = value
   else if (gOptions)
     gOptions.rx = value
 }
 
-export function $triggers(value: unknown | undefined): void {
+export function useTriggers(value: unknown | undefined): void {
   if (value !== undefined)
     (gOptions ??= {}).triggers = value
   else if (gOptions)
     gOptions.rx = value
 }
 
-export function $priority(value: Priority | undefined): void {
+export function usePriority(value: Priority | undefined): void {
   if (value !== undefined)
     (gOptions ??= {}).priority = value
   else if (gOptions)
     gOptions.rx = value
 }
 
-export function $monitor(value: Monitor | undefined): void {
+export function useMonitor(value: Monitor | undefined): void {
   if (value !== undefined)
     (gOptions ??= {}).monitor = value
   else if (gOptions)
     gOptions.rx = value
 }
 
-export function $throttling(value: number | undefined): void {
+export function useThrottling(value: number | undefined): void {
   if (value !== undefined)
     (gOptions ??= {}).throttling = value
   else if (gOptions)
     gOptions.rx = value
 }
 
-export function $logging(value: Partial<LoggingOptions> | undefined): void {
+export function useLogging(value: Partial<LoggingOptions> | undefined): void {
   if (value !== undefined)
     (gOptions ??= {}).logging = value
   else if (gOptions)
     gOptions.rx = value
 }
 
-export function $shuffle(value: boolean | undefined): void {
+export function useShuffle(value: boolean | undefined): void {
   if (value !== undefined)
     (gOptions ??= {}).shuffle = value
   else if (gOptions)
