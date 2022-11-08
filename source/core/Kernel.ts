@@ -28,21 +28,6 @@ export interface BlockOptions<T = unknown, M = unknown, R = void> extends Bounds
 
 export type BlockArgs<T, M, R> = BlockOptions<T, M, R> | Array<Render<T, M, R>> | undefined
 
-export function argsToOptions<T, M, R>(p1: BlockArgs<T, M, R>, p2: BlockArgs<T, M, R>): BlockOptions<T, M, R> | undefined {
-  let result: BlockOptions<T, M, R> | undefined
-  if (p1) {
-    if (p2)
-      result = Object.assign(
-        Array.isArray(p1) ? { use: p1 } : p1,
-        Array.isArray(p2) ? { use: p2 } : p2)
-    else
-      result = Array.isArray(p1) ? { use: p1 } : p1
-  }
-  else
-    result = Array.isArray(p2) ? { use: p2 } : p2
-  return result
-}
-
 // VBlock
 
 export abstract class VBlock<T = unknown, M = unknown, R = void> {
@@ -65,12 +50,8 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly native: T | undefined
   abstract readonly place: Readonly<Place> | undefined
 
-  render(): R {
-    const use = this.options?.use
-    if (use)
-      for (const render of use)
-        render(this.native!, this)
-    return this.renderer(this.native!, this)
+  baseRender(): R {
+    return callRenderFunctions(this)
   }
 
   get isInitialRendering(): boolean {
@@ -111,8 +92,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
         existing = last
     }
     existing ??= children.claim(name)
-    const options = argsToOptions(gOptions, args)
-    gOptions = undefined
+    const options = argsToOptions(undefined, args)
     // Reuse existing block or claim a new one
     if (existing) {
       result = existing.instance
@@ -223,9 +203,17 @@ export class AbstractDriver<T> {
     if (wrapper)
       result = wrapper(block.native!, block)
     else
-      result = block.render()
+      result = callRenderFunctions(block)
     return result
   }
+}
+
+function callRenderFunctions<R>(block: VBlock<any, any, R>): R {
+  const uses = block.options?.use
+  if (uses)
+    for (const use of uses)
+      use(block.native!, block)
+  return block.renderer(block.native!, block)
 }
 
 export class StaticDriver<T> extends AbstractDriver<T> {
@@ -629,7 +617,22 @@ Object.defineProperty(gSysRoot.instance, "host", {
   enumerable: true,
 })
 
-let gOptions: BlockOptions<any, any, any> | undefined = undefined
+export function argsToOptions<T, M, R>(p1: BlockArgs<T, M, R>, p2: BlockArgs<T, M, R>): BlockOptions<T, M, R> | undefined {
+  let result: BlockOptions<T, M, R> | undefined
+  if (p1) {
+    if (p2)
+      result = Object.assign(
+        Array.isArray(p1) ? { use: p1 } : p1,
+        Array.isArray(p2) ? { use: p2 } : p2)
+    else
+      result = Array.isArray(p1) ? { use: p1 } : p1
+  }
+  else
+    result = Array.isArray(p2) ? { use: p2 } : p2
+  return result
+}
+
+
 let gContext: Item<VBlockImpl> = gSysRoot
 let gFirstToDispose: Item<VBlockImpl> | undefined = undefined
 let gLastToDispose: Item<VBlockImpl> | undefined = undefined
