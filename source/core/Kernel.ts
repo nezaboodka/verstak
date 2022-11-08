@@ -22,6 +22,7 @@ export interface BlockOptions<T = unknown, M = unknown, R = void> {
   throttling?: number,
   logging?: Partial<LoggingOptions>
   shuffle?: boolean
+  as?: Array<Render<T, M, R>>
   wrapper?: Render<T, M, R>
 }
 
@@ -48,6 +49,10 @@ export abstract class Block<T = unknown, M = unknown, R = void> {
   abstract readonly place: Readonly<Place> | undefined
 
   render(): R {
+    const presets = this.options?.as
+    if (presets)
+      for (const preset of presets)
+        preset(this.native!, this)
     return this.renderer(this.native!, this)
   }
 
