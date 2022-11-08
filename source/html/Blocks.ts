@@ -61,10 +61,11 @@ export function Grid<M = unknown, R = void>(name: string,
 
 // Section
 
-export function section<T = void>(claim: () => T): void {
-  VBlock.claim("", undefined, NOP, VerstakTags.section)
+export function section<T = void>(claim: (x: void) => T): VBlock<HTMLElement> {
+  const result = VBlock.claim("", undefined, NOP, VerstakTags.section)
   claim()
   VBlock.claim("", undefined, NOP, VerstakTags.section)
+  return result
 }
 
 export function sectionBegin(preset?: BlockPreset<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
