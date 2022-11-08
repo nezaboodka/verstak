@@ -10,13 +10,18 @@ import { FocusModel } from "./sensors/FocusSensor"
 
 export function RxFocuser(name: string, target: HTMLElement, model: FocusModel,
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {
-  VBlock.claim(name, { observer: true, triggers: { target, model }, throttling: 0 }, () => {
-    if (switchEditMode !== undefined) {
-      switchEditMode(model)
-    }
-    else {
-      model.isEditMode ? target.focus() : target.blur()
-      // console.log(`${model.isEditMode ? '🟢' : '🔴'} RxFocuser [${name}]: ${model.isEditMode ? 'focus()' : 'blur()'}`)
-    }
+  VBlock.claim(name, {
+    reactor: true,
+    triggers: { target, model },
+    throttling: 0,
+    render() {
+      if (switchEditMode !== undefined) {
+        switchEditMode(model)
+      }
+      else {
+        model.isEditMode ? target.focus() : target.blur()
+        // console.log(`${model.isEditMode ? '🟢' : '🔴'} RxFocuser [${name}]: ${model.isEditMode ? 'focus()' : 'blur()'}`)
+      }
+    },
   })
 }

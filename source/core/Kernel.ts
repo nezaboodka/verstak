@@ -13,9 +13,9 @@ export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlo
 export type AsyncRender<T = unknown, M = unknown> = (native: T, block: VBlock<T, M, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
-export interface BlockOptions<T = unknown, M = unknown, R = void> extends Bounds {
-  observer?: boolean
-  as?: Array<Render<T, M, R>>
+export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
+  reactor?: boolean
+  reuse?: Array<Render<T, M, R>>
   triggers?: unknown
   priority?: Priority,
   monitor?: Monitor
@@ -23,10 +23,8 @@ export interface BlockOptions<T = unknown, M = unknown, R = void> extends Bounds
   logging?: Partial<LoggingOptions>
   shuffle?: boolean
   wrapper?: Render<T, M, R>
-  super?: BlockOptions<T, M, R>
+  render: Render<T, M, R>
 }
-
-export type BlockArgs<T, M, R> = BlockOptions<T, M, R> | Array<Render<T, M, R>> | undefined
 
 // VBlock
 
@@ -38,8 +36,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   // User-defined properties
   abstract readonly name: string
   abstract readonly driver: AbstractDriver<T>
-  abstract readonly renderer: Render<T, M, R>
-  abstract readonly options: Readonly<BlockOptions<T, M, R>> | undefined
+  abstract readonly args: Readonly<BlockArgs<T, M, R>>
   abstract model?: M
   // System-managed properties
   abstract readonly level: number
@@ -59,7 +56,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   }
 
   static root(render: () => void): void {
-    gSysRoot.instance.renderer = render
+    gSysRoot.instance.args.render = render
     prepareAndRunRender(gSysRoot, false, false)
   }
 
@@ -77,7 +74,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 
   static claim<T = undefined, M = unknown, R = void>(
     name: string, args: BlockArgs<T, M, R>,
-    renderer: Render<T, M, R>, driver?: AbstractDriver<T>): VBlock<T, M, R> {
+    driver?: AbstractDriver<T>): VBlock<T, M, R> {
     // Emit block either by reusing existing one or by creating a new one
     let result: VBlockImpl<T, M, R>
     const owner = gContext.instance
@@ -92,25 +89,21 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
         existing = last
     }
     existing ??= children.claim(name)
-    const options = argsToOptions(undefined, args)
     // Reuse existing block or claim a new one
     if (existing) {
       result = existing.instance
       if (result.driver !== driver && driver !== undefined)
         throw new Error(`changing block driver is not yet supported: "${result.driver.name}" -> "${driver?.name}"`)
-      if (options) {
-        const existingTriggers = result.options?.triggers
-        if (triggersAreEqual(options.triggers, existingTriggers))
-          options.triggers = existingTriggers // preserve triggers instance
-      }
-      result.options = options
-      result.renderer = renderer
+      const exTriggers = result.args?.triggers
+      if (triggersAreEqual(args.triggers, exTriggers))
+        args.triggers = exTriggers // preserve triggers instance
+      result.args = args
     }
     else { // create new
-      result = new VBlockImpl<T, M, R>(name, driver, owner, options, renderer)
+      result = new VBlockImpl<T, M, R>(name, driver, owner, args)
       result.item = children.add(result)
       VBlockImpl.grandCount++
-      if (options?.observer)
+      if (args.reactor)
         VBlockImpl.disposableCount++
     }
     return result
@@ -199,7 +192,7 @@ export class AbstractDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     let result: void | Promise<void>
-    const wrapper = block.options?.wrapper
+    const wrapper = block.args?.wrapper
     if (wrapper)
       result = wrapper(block.native!, block)
     else
@@ -209,11 +202,11 @@ export class AbstractDriver<T> {
 }
 
 function callRenderFunctions<R>(block: VBlock<any, any, R>): R {
-  const uses = block.options?.as
+  const uses = block.args?.reuse
   if (uses)
     for (const use of uses)
       use(block.native!, block)
-  return block.renderer(block.native!, block)
+  return block.args.render(block.native!, block)
 }
 
 export class StaticDriver<T> extends AbstractDriver<T> {
@@ -243,8 +236,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   // User-defined properties
   readonly name: string
   readonly driver: AbstractDriver<T>
-  renderer: Render<T, M, R>
-  options: BlockOptions<T, M, R> | undefined
+  args: BlockArgs<T, M, R>
   model: M | undefined
   // System-managed properties
   readonly level: number
@@ -257,14 +249,13 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   place: Place | undefined
   allocator: Allocator
 
-  constructor(name: string, driver: AbstractDriver<T>, owner: VBlockImpl,
-    options: BlockOptions<T, M, R> | undefined, renderer: Render<T, M, R>) {
+  constructor(name: string, driver: AbstractDriver<T>,
+    owner: VBlockImpl, options: BlockArgs<T, M, R>) {
     super()
     // User-defined properties
     this.name = name
     this.driver = driver
-    this.renderer = renderer
-    this.options = options
+    this.args = options
     this.model = undefined
     // System-managed properties
     this.level = owner.level + 1
@@ -317,7 +308,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             break
           const block = item.instance
           const driver = block.driver
-          const opt = block.options
+          const opt = block.args
           const place = allocator.allocate(opt)
           const host = driver.isRowHost ? owner : row
           driver.arrange(block, place, undefined)
@@ -385,7 +376,7 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
     VBlock.currentRenderingPriority = priority
     try {
       const sequential = block.children.strict
-      if (block.options?.shuffle)
+      if (block.args?.shuffle)
         shuffle(items)
       const frameDurationLimit = priority === Priority.AsyncP2 ? VBlock.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(VBlock.frameDuration / 4, VBlock.shortFrameDuration))
@@ -413,8 +404,8 @@ function prepareAndRunRender(item: Item<VBlockImpl>,
   const block = item.instance
   if (block.stamp >= 0) {
     prepareRender(item, redeploy, sequential)
-    if (block.options?.observer)
-      nonreactive(block.rerender, block.options?.triggers) // reactive auto-rendering
+    if (block.args?.reactor)
+      nonreactive(block.rerender, block.args?.triggers) // reactive auto-rendering
     else
       runRender(item)
   }
@@ -427,15 +418,15 @@ function prepareRender(item: Item<VBlockImpl>,
   // Initialize, deploy, and move (if needed)
   if (block.stamp === 0) {
     block.stamp = 1
-    if (block.options?.observer) {
+    if (block.args?.reactor) {
       Transaction.outside(() => {
         if (Rx.isLogging)
           Rx.setLoggingHint(block, block.name)
         Rx.getController(block.rerender).configure({
           order: block.level,
-          monitor: block.options?.monitor,
-          throttling: block.options?.throttling,
-          logging: block.options?.logging,
+          monitor: block.args?.monitor,
+          throttling: block.args?.throttling,
+          logging: block.args?.logging,
         })
       })
     }
@@ -479,7 +470,7 @@ function runFinalize(item: Item<VBlockImpl>, isLeader: boolean): void {
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
     const childrenAreLeaders = block.driver.finalize(block, isLeader)
-    if (block.options?.observer) {
+    if (block.args?.reactor) {
       // Defer disposal if block is reactive
       item.aux = undefined
       const last = gLastToDispose
@@ -607,7 +598,7 @@ const NOP = (): void => { /* nop */ }
 
 const gSysDriver = new StaticDriver<null>(null, "SYSTEM", LayoutKind.Group)
 const gSysRoot = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>("SYSTEM",
-  gSysDriver, { level: 0 } as VBlockImpl, { observer: true }, NOP)) // fake owner/host (overwritten below)
+  gSysDriver, { level: 0 } as VBlockImpl, { reactor: true, render: NOP })) // fake owner/host (overwritten below)
 gSysRoot.instance.item = gSysRoot
 
 Object.defineProperty(gSysRoot.instance, "host", {
@@ -617,21 +608,20 @@ Object.defineProperty(gSysRoot.instance, "host", {
   enumerable: true,
 })
 
-export function argsToOptions<T, M, R>(p1: BlockArgs<T, M, R>, p2: BlockArgs<T, M, R>): BlockOptions<T, M, R> | undefined {
-  let result: BlockOptions<T, M, R> | undefined
-  if (p1) {
-    if (p2)
-      result = Object.assign(
-        Array.isArray(p1) ? { as: p1 } : p1,
-        Array.isArray(p2) ? { as: p2 } : p2)
-    else
-      result = Array.isArray(p1) ? { as: p1 } : p1
-  }
-  else
-    result = Array.isArray(p2) ? { as: p2 } : p2
-  return result
-}
-
+// export function argsToOptions<T, M, R>(p1: BlockArgs<T, M, R>, p2: BlockArgs<T, M, R>): BlockOptions<T, M, R> | undefined {
+//   let result: BlockOptions<T, M, R> | undefined
+//   if (p1) {
+//     if (p2)
+//       result = Object.assign(
+//         Array.isArray(p1) ? { as: p1 } : p1,
+//         Array.isArray(p2) ? { as: p2 } : p2)
+//     else
+//       result = Array.isArray(p1) ? { as: p1 } : p1
+//   }
+//   else
+//     result = Array.isArray(p2) ? { as: p2 } : p2
+//   return result
+// }
 
 let gContext: Item<VBlockImpl> = gSysRoot
 let gFirstToDispose: Item<VBlockImpl> | undefined = undefined

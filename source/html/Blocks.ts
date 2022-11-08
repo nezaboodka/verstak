@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, Render, LayoutKind, Place, BlockArgs, Align } from "../core/api"
+import { VBlock, LayoutKind, Place, BlockArgs, Align } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -30,54 +30,47 @@ import { HtmlDriver } from "./HtmlDriver"
 // Basic Block
 
 export function Block<M = unknown, R = void>(name: string,
-  args: BlockArgs<HTMLElement, M, R> | undefined,
-  renderer: Render<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(name, args, renderer, VerstakTags.block)
+  args: BlockArgs<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(name, args, VerstakTags.block)
 }
 
-// Text (formatted or plain)
-
-export function text<M = unknown>(
-  content: string | Render<HTMLElement, M, void>,
-  args?: BlockArgs<HTMLElement, M, void>,
-  name?: string): VBlock<HTMLElement, M, void> {
-  return content instanceof Function ?
-    VBlock.claim(name ?? "", args, content, VerstakTags.text) :
-    VBlock.claim(name ?? "", args, e => { e.innerText = content }, VerstakTags.text)
-}
+// Text (either plain or formatted in form of markdown)
 
 export function $(strings: TemplateStringsArray, ...args: any[]): VBlock<HTMLElement, void, void> {
   const content = String.raw(strings, ...args)
-  return VBlock.claim("", undefined, e => { e.innerHTML = content }, VerstakTags.text)
+  return VBlock.claim("", { render(e) { e.innerText = content } }, VerstakTags.text)
+}
+
+export function $$(strings: TemplateStringsArray, ...args: any[]): VBlock<HTMLElement, void, void> {
+  const content = String.raw(strings, ...args)
+  return VBlock.claim("", { render(e) { e.innerHTML = content } }, VerstakTags.text)
 }
 
 // Grid Block
 
 export function Grid<M = unknown, R = void>(name: string,
-  args: BlockArgs<HTMLElement, M, R> | undefined,
-  renderer: Render<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(name, args, renderer, VerstakTags.grid)
+  args: BlockArgs<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(name, args, VerstakTags.grid)
 }
 
 // Row
 
 export function row<T = void>(claim: (x: void) => T): VBlock<HTMLElement> {
-  const result = VBlock.claim("", undefined, NOP, VerstakTags.row)
+  const result = VBlock.claim("", EMPTY_RENDER, VerstakTags.row)
   claim()
-  VBlock.claim("", undefined, NOP, VerstakTags.row)
+  VBlock.claim("", EMPTY_RENDER, VerstakTags.row)
   return result
 }
 
 export function rowBegin(args?: BlockArgs<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
-  return VBlock.claim("", args, NOP, VerstakTags.row)
+  return VBlock.claim("", args ?? EMPTY_RENDER, VerstakTags.row)
 }
 
 // Group
 
 export function Group<M = unknown, R = void>(name: string,
-  args: BlockArgs<HTMLElement, M, R> | undefined,
-  renderer: Render<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(name, args, renderer, VerstakTags.group)
+  args: BlockArgs<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(name, args, VerstakTags.group)
 }
 
 // VerstakDriver
@@ -158,7 +151,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: VBlock<T>): void | Promise<void> {
     // Create initial part inside basic block automatically
     if (block.driver.isBlock)
-      VBlock.claim("", undefined, NOP, VerstakTags.row)
+      VBlock.claim("", EMPTY_RENDER, VerstakTags.row)
     return super.render(block)
   }
 }
@@ -184,6 +177,6 @@ const VerstakTags = {
   group: new VerstakDriver<HTMLElement>("group", true, LayoutKind.Group),
 }
 
-const NOP = (): void => { /* nop */ }
+const EMPTY_RENDER: BlockArgs<any, any, any> = { render() { /* nop */ } }
 const AlignCss = ["" /* stretch */, "start", "center", "end"]
 const TextAlignCss = ["justify", "" /* left */, "center", "right"]
