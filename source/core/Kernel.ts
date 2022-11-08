@@ -26,9 +26,9 @@ export interface BlockOptions<T = unknown, M = unknown, R = void> extends Bounds
   super?: BlockOptions<T, M, R>
 }
 
-export type BlockPreset<T, M, R> = BlockOptions<T, M, R> | Array<Render<T, M, R>> | undefined
+export type BlockArgs<T, M, R> = BlockOptions<T, M, R> | Array<Render<T, M, R>> | undefined
 
-export function presetsToOptions<T, M, R>(p1: BlockPreset<T, M, R>, p2: BlockPreset<T, M, R>): BlockOptions<T, M, R> | undefined {
+export function argsToOptions<T, M, R>(p1: BlockArgs<T, M, R>, p2: BlockArgs<T, M, R>): BlockOptions<T, M, R> | undefined {
   let result: BlockOptions<T, M, R> | undefined
   if (p1) {
     if (p2)
@@ -95,7 +95,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   }
 
   static claim<T = undefined, M = unknown, R = void>(
-    name: string, preset: BlockPreset<T, M, R>,
+    name: string, args: BlockArgs<T, M, R>,
     renderer: Render<T, M, R>, driver?: AbstractDriver<T>): VBlock<T, M, R> {
     // Emit block either by reusing existing one or by creating a new one
     let result: VBlockImpl<T, M, R>
@@ -111,7 +111,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
         existing = last
     }
     existing ??= children.claim(name)
-    const options = presetsToOptions(gOptions, preset)
+    const options = argsToOptions(gOptions, args)
     gOptions = undefined
     // Reuse existing block or claim a new one
     if (existing) {

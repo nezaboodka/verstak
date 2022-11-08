@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, Render, LayoutKind, Place, BlockPreset } from "../core/api"
+import { VBlock, Render, LayoutKind, Place, BlockArgs } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -30,20 +30,20 @@ import { HtmlDriver } from "./HtmlDriver"
 // Basic Block
 
 export function Block<M = unknown, R = void>(name: string,
-  preset: BlockPreset<HTMLElement, M, R> | undefined,
+  args: BlockArgs<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(name, preset, renderer, VerstakTags.block)
+  return VBlock.claim(name, args, renderer, VerstakTags.block)
 }
 
 // Text (formatted or plain)
 
 export function text<M = unknown>(
   content: string | Render<HTMLElement, M, void>,
-  preset?: BlockPreset<HTMLElement, M, void>,
+  args?: BlockArgs<HTMLElement, M, void>,
   name?: string): VBlock<HTMLElement, M, void> {
   return content instanceof Function ?
-    VBlock.claim(name ?? "", preset, content, VerstakTags.text) :
-    VBlock.claim(name ?? "", preset, e => { e.innerText = content }, VerstakTags.text)
+    VBlock.claim(name ?? "", args, content, VerstakTags.text) :
+    VBlock.claim(name ?? "", args, e => { e.innerText = content }, VerstakTags.text)
 }
 
 export function $(strings: TemplateStringsArray, ...args: any[]): VBlock<HTMLElement, void, void> {
@@ -54,9 +54,9 @@ export function $(strings: TemplateStringsArray, ...args: any[]): VBlock<HTMLEle
 // Grid Block
 
 export function Grid<M = unknown, R = void>(name: string,
-  preset: BlockPreset<HTMLElement, M, R> | undefined,
+  args: BlockArgs<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(name, preset, renderer, VerstakTags.grid)
+  return VBlock.claim(name, args, renderer, VerstakTags.grid)
 }
 
 // Section
@@ -68,16 +68,16 @@ export function section<T = void>(claim: (x: void) => T): VBlock<HTMLElement> {
   return result
 }
 
-export function sectionBegin(preset?: BlockPreset<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
-  return VBlock.claim("", preset, NOP, VerstakTags.section)
+export function sectionBegin(args?: BlockArgs<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
+  return VBlock.claim("", args, NOP, VerstakTags.section)
 }
 
 // Group
 
 export function Group<M = unknown, R = void>(name: string,
-  preset: BlockPreset<HTMLElement, M, R> | undefined,
+  args: BlockArgs<HTMLElement, M, R> | undefined,
   renderer: Render<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(name, preset, renderer, VerstakTags.group)
+  return VBlock.claim(name, args, renderer, VerstakTags.group)
 }
 
 // VerstakDriver
