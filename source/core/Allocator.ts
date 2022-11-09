@@ -68,6 +68,10 @@ export class Allocator {
     // do nothing
   }
 
+  rowBegin(): void {
+    // do nothing
+  }
+
   allocate(bounds: Bounds | undefined): Place | undefined {
     return !bounds ? undefined : {
       exact: bounds.place ? parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 }) : undefined,
@@ -102,6 +106,11 @@ export class GridBasedAllocator implements Allocator {
     this.newRowCursor = 0
   }
 
+  rowBegin(): void {
+    this.columnCursor = 0
+    this.rowCursor = this.newRowCursor
+  }
+
   allocate(bounds: Bounds | undefined): Place | undefined {
     const result: Place = {
       exact: undefined,
@@ -110,27 +119,27 @@ export class GridBasedAllocator implements Allocator {
       align: Align.Default,
       blockAlign: Align.Fit,
     }
-    const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
-    const maxRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
     if (bounds?.place) { // absolute positioning
       result.exact = parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 })
       absolutizeCellRange(result.exact,
         this.columnCursor + 1, this.rowCursor + 1,
-        maxColumnCount, maxRowCount, result.exact)
+        this.maxColumnCount || Infinity,
+        this.maxRowCount || Infinity, result.exact)
     }
     else { // relative positioning
+      const totalColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
+      const totalRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
+
       const cr = result.exact = { x1: 0, y1: 0, x2: 0, y2: 0 }
-      if (bounds?.rowBegin) {
-        this.columnCursor = 0
-        this.rowCursor = this.newRowCursor
-      }
+      if (bounds?.rowBegin)
+        this.rowBegin()
       // Horizontal
       let w = bounds?.widthSpan ?? 1
       if (w === 0)
-        w = maxColumnCount
+        w = totalColumnCount || 1
       if (w >= 0) {
         cr.x1 = this.columnCursor + 1
-        cr.x2 = absolutizePosition(cr.x1 + w, 0, maxColumnCount)
+        cr.x2 = absolutizePosition(cr.x1 + w - 1, 0, this.maxColumnCount || Infinity)
         if (!bounds?.widthOverlap)
           this.columnCursor = cr.x2
       }
@@ -141,10 +150,10 @@ export class GridBasedAllocator implements Allocator {
       // Vertical
       let h = bounds?.heightSpan ?? 1
       if (h === 0)
-        h = maxRowCount
+        h = totalRowCount || 1
       if (h >= 0) {
         cr.y1 = this.rowCursor + 1
-        cr.y2 = absolutizePosition(cr.y1 + h, 0, maxRowCount)
+        cr.y2 = absolutizePosition(cr.y1 + h - 1, 0, this.maxRowCount || Infinity)
         if (!bounds?.heightOverlap && cr.y2 > this.newRowCursor)
           this.newRowCursor = cr.y2
       }

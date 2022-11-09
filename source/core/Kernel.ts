@@ -309,9 +309,13 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const block = item.instance
           const driver = block.driver
           const opt = block.args
-          const place = allocator.allocate(opt)
+          if (!driver.isRowHost) {
+            const place = allocator.allocate(opt)
+            driver.arrange(block, place, undefined)
+          }
+          else
+            allocator.rowBegin()
           const host = driver.isRowHost ? owner : row
-          driver.arrange(block, place, undefined)
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
