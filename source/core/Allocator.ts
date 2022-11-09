@@ -47,7 +47,7 @@ export interface Bounds {
   align?: Align     // MiddleLeft
   blockAlign?: Align  // Fit
   // Flow
-  fromNewLine?: boolean     // false
+  newRow?: boolean     // false
   wrap?: boolean            // false
 }
 
@@ -131,7 +131,7 @@ export class GridBasedAllocator implements Allocator {
       const totalRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
 
       const cr = result.exact = { x1: 0, y1: 0, x2: 0, y2: 0 }
-      if (bounds?.fromNewLine)
+      if (bounds?.newRow)
         this.lineFeed()
       // Horizontal
       let w = bounds?.widthSpan ?? 1

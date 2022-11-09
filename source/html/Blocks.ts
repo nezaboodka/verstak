@@ -5,12 +5,12 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, LayoutKind, Place, BlockArgs, Align, Allocator, GridBasedAllocator } from "../core/api"
+import { VBlock, LayoutKind, Place, BlockArgs, Align, GridBasedAllocator } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
 // called basic block and grid block; and on two special
-// non-visual elements called row and group.
+// non-visual elements called line and group.
 
 // Basic block is a layout structure, which children are
 // layed out naturally: rightwards-downwards.
@@ -21,8 +21,8 @@ import { HtmlDriver } from "./HtmlDriver"
 // Grid block is layout structure, which children are
 // layed out over grid cells.
 
-// Row is a special non-visual element, which begins
-// new layout row/section inside block or grid block.
+// Line is a special non-visual element, which begins new
+// layout line (row, section) inside block or grid block.
 
 // Group is a special non-visual element for logical
 // grouping of basic blocks, grid blocks and other groups.
@@ -55,17 +55,17 @@ export function Grid<M = unknown, R = void>(name: string,
   return VBlock.claim(name, args, VerstakTags.grid)
 }
 
-// Row
+// Line
 
-export function Row<T = void>(claim: (x: void) => T): VBlock<HTMLElement> {
-  const result = VBlock.claim("", EMPTY_RENDER, VerstakTags.section)
+export function Line<T = void>(claim: (x: void) => T): VBlock<HTMLElement> {
+  const result = VBlock.claim("", EMPTY_RENDER, VerstakTags.line)
   claim()
-  VBlock.claim("", EMPTY_RENDER, VerstakTags.section)
+  VBlock.claim("", EMPTY_RENDER, VerstakTags.line)
   return result
 }
 
 export function lineFeed(args?: BlockArgs<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
-  return VBlock.claim("", args ?? EMPTY_RENDER, VerstakTags.section)
+  return VBlock.claim("", args ?? EMPTY_RENDER, VerstakTags.line)
 }
 
 // Group
@@ -78,21 +78,6 @@ export function Group<M = unknown, R = void>(name: string,
 // VerstakDriver
 
 export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
-  readonly custom: boolean
-
-  constructor(name: string, custom: boolean, layout: LayoutKind, createAllocator?: () => Allocator) {
-    super(name, layout, createAllocator)
-    this.custom = custom
-  }
-
-  protected createElement(block: VBlock<T>): T {
-    const custom = this.custom
-    const tag = custom ? `v-${block.name}` : this.name
-    const result = document.createElement(tag) as T
-    if (custom)
-      result.setAttribute(this.name, "")
-    return result
-  }
 
   arrange(block: VBlock<T>, place: Place | undefined, heightGrow: number | undefined): void {
     if (block.native) {
@@ -169,8 +154,8 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     // Perform initial line feed automatically
-    if (!block.driver.isSection)
-      VBlock.claim("", EMPTY_RENDER, VerstakTags.section)
+    if (!block.driver.isLine)
+      VBlock.claim("", EMPTY_RENDER, VerstakTags.line)
     return super.render(block)
   }
 }
@@ -179,20 +164,20 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 const VerstakTags = {
   // display: flex, flex-direction: column
-  block: new VerstakDriver<HTMLElement>("block", true, LayoutKind.Block),
+  block: new VerstakDriver<HTMLElement>("v-block", LayoutKind.Block),
 
   // display: block
-  text: new VerstakDriver<HTMLElement>("article", false, LayoutKind.Text),
+  text: new VerstakDriver<HTMLElement>("v-text", LayoutKind.Text),
 
   // display: grid
-  grid: new VerstakDriver<HTMLElement>("grid", true, LayoutKind.Grid, () => new GridBasedAllocator()),
+  grid: new VerstakDriver<HTMLElement>("v-grid", LayoutKind.Grid, () => new GridBasedAllocator()),
 
   // display: contents
   // display: flex (row)
-  section: new VerstakDriver<HTMLElement>("section", false, LayoutKind.Section),
+  line: new VerstakDriver<HTMLElement>("v-line", LayoutKind.Line),
 
   // display: contents
-  group: new VerstakDriver<HTMLElement>("group", true, LayoutKind.Group),
+  group: new VerstakDriver<HTMLElement>("v-group", LayoutKind.Group),
 }
 
 const EMPTY_RENDER: BlockArgs<any, any, any> = { render() { /* nop */ } }

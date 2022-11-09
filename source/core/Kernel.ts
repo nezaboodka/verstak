@@ -83,7 +83,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     // Check for coalescing separators or lookup for existing block
     driver ??= AbstractDriver.group
     name ||= `${++owner.numerator}`
-    if (driver.isSection) {
+    if (driver.isLine) {
       const last = children.lastClaimedItem()
       if (last?.instance?.driver === driver)
         existing = last
@@ -123,7 +123,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 export enum LayoutKind {
   Block = 0,    // 000
   Grid = 1,     // 001
-  Section = 2,  // 010
+  Line = 2,  // 010
   Group = 3,    // 011
   Text = 4,     // 100
 }
@@ -138,11 +138,11 @@ export class AbstractDriver<T> {
   readonly name: string
   readonly layout: LayoutKind
   readonly createAllocator: () => Allocator
-  get isSequential(): boolean { return (this.layout & 1) === 0 } // Block, Text, Break
+  get isSequential(): boolean { return (this.layout & 1) === 0 } // Block, Text, Line
   get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Grid, Group
   get isBlock(): boolean { return this.layout === LayoutKind.Block }
   get isGrid(): boolean { return this.layout === LayoutKind.Grid }
-  get isSection(): boolean { return this.layout === LayoutKind.Section }
+  get isLine(): boolean { return this.layout === LayoutKind.Line }
 
   constructor(name: string, layout: LayoutKind, createAllocator?: () => Allocator) {
     this.name = name
@@ -171,7 +171,7 @@ export class AbstractDriver<T> {
       b.place = place
       // Bump host height growth if necessary
       const host = b.host
-      if (host.driver.isSection) {
+      if (host.driver.isLine) {
         const hGrow = place?.heightGrow ?? 0
         if (hGrow > 0 && (host.place?.heightGrow ?? 0) < hGrow)
           host.driver.arrange(host, undefined, hGrow)
@@ -304,20 +304,20 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         let p1: Array<Item<VBlockImpl>> | undefined = undefined
         let p2: Array<Item<VBlockImpl>> | undefined = undefined
         let redeploy = false
-        let section = owner
+        let lineHost = owner
         for (const item of children.items()) {
           if (Transaction.isCanceled)
             break
           const block = item.instance
           const driver = block.driver
           const opt = block.args
-          if (!driver.isSection) {
+          if (!driver.isLine) {
             const place = allocator.allocate(opt)
             driver.arrange(block, place, undefined)
           }
           else
             allocator.lineFeed()
-          const host = driver.isSection ? owner : section
+          const host = driver.isLine ? owner : lineHost
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
@@ -326,8 +326,8 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (isBlockOwner && driver.isSection)
-            section = block
+          if (isBlockOwner && driver.isLine)
+            lineHost = block
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
