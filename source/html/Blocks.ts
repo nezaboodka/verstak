@@ -36,7 +36,11 @@ export function Block<M = unknown, R = void>(name: string,
 
 // Text (either plain or formatted in form of markdown)
 
-export function $text(strings: TemplateStringsArray, ...args: any[]): VBlock<HTMLElement, void, void> {
+export function Txt(content: string): VBlock<HTMLElement, void, void> {
+  return VBlock.claim("", { render(e) { e.innerText = content } }, VerstakTags.text)
+}
+
+export function $txt(strings: TemplateStringsArray, ...args: any[]): VBlock<HTMLElement, void, void> {
   const content = String.raw(strings, ...args)
   return VBlock.claim("", { render(e) { e.innerText = content } }, VerstakTags.text)
 }
