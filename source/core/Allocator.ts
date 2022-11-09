@@ -16,35 +16,13 @@ export enum Align {
   CenterV = 0b1000,
   Bottom  = 0b1100,
   Default = Align.Left + Align.CenterV,
-
-  // TopLeft      = 0b0101,
-  // TopCenter    = 0b0110,
-  // TopRight     = 0b0111,
-  // MiddleLeft   = 0b1001,
-  // MiddleCenter = 0b1010,
-  // MiddleRight  = 0b1011,
-  // BottomLeft   = 0b1101,
-  // BottomCenter = 0b1110,
-  // BottomRight  = 0b1111,
-  // FitButLeft   = 0b0001,
-  // FitButCenter = 0b0010,
-  // FitButRight  = 0b0011,
-  // FitButTop    = 0b0100,
-  // FitButMiddle = 0b1000,
-  // FitButBottom = 0b1100,
-  // FitButLeft   = 0b0001,
-  // FitButCenter = 0b0010,
-  // FitButRight  = 0b0011,
-  // FitButTop    = 0b0100,
-  // FitButMiddle = 0b1000,
-  // FitButBottom = 0b1100,
 }
 
 export interface ElasticSize {
-  cells?: number                // 1 (grid layout only)
-  min?: string                  // min-content
-  max?: string                  // min-content
-  growth?: number               // 0
+  cells?: number            // 1 (grid layout only)
+  min?: string              // min-content
+  max?: string              // min-content
+  growth?: number           // 0
 }
 
 export interface TrackSize extends ElasticSize {
