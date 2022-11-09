@@ -15,7 +15,7 @@ export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
   reactor?: boolean
-  reuse?: Array<Render<T, M, R>>
+  mixins?: Array<Render<T, M, R>>
   triggers?: unknown
   priority?: Priority,
   monitor?: Monitor
@@ -202,7 +202,7 @@ export class AbstractDriver<T> {
 }
 
 function callRenderFunctions<R>(block: VBlock<any, any, R>): R {
-  const uses = block.args?.reuse
+  const uses = block.args?.mixins
   if (uses)
     for (const use of uses)
       use(block.native!, block)
