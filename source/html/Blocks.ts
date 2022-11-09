@@ -58,14 +58,14 @@ export function Grid<M = unknown, R = void>(name: string,
 // Row
 
 export function Row<T = void>(claim: (x: void) => T): VBlock<HTMLElement> {
-  const result = VBlock.claim("", EMPTY_RENDER, VerstakTags.row)
+  const result = VBlock.claim("", EMPTY_RENDER, VerstakTags.section)
   claim()
-  VBlock.claim("", EMPTY_RENDER, VerstakTags.row)
+  VBlock.claim("", EMPTY_RENDER, VerstakTags.section)
   return result
 }
 
 export function lineFeed(args?: BlockArgs<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
-  return VBlock.claim("", args ?? EMPTY_RENDER, VerstakTags.row)
+  return VBlock.claim("", args ?? EMPTY_RENDER, VerstakTags.section)
 }
 
 // Group
@@ -152,6 +152,8 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
             const h = AlignCss[blockAlign & 0b11]
             css.alignSelf = v
             css.justifySelf = h
+            // if (v !== "")
+            //   block.native.setAttribute("unfit", "")
           }
         }
       }
@@ -167,8 +169,8 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     // Perform initial line feed automatically
-    if (!block.driver.isRowHost)
-      VBlock.claim("", EMPTY_RENDER, VerstakTags.row)
+    if (!block.driver.isSection)
+      VBlock.claim("", EMPTY_RENDER, VerstakTags.section)
     return super.render(block)
   }
 }
@@ -185,10 +187,9 @@ const VerstakTags = {
   // display: grid
   grid: new VerstakDriver<HTMLElement>("grid", true, LayoutKind.Grid, () => new GridBasedAllocator()),
 
-  // display:
-  //   - flex (row) if parent is regular block
-  //   - contents if parent is grid
-  row: new VerstakDriver<HTMLElement>("div", false, LayoutKind.Row),
+  // display: contents
+  // display: flex (row)
+  section: new VerstakDriver<HTMLElement>("section", false, LayoutKind.Section),
 
   // display: contents
   group: new VerstakDriver<HTMLElement>("group", true, LayoutKind.Group),

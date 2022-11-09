@@ -47,7 +47,7 @@ export interface Bounds {
   align?: Align     // MiddleLeft
   blockAlign?: Align  // Fit
   // Flow
-  rowBegin?: boolean        // false
+  fromNewLine?: boolean     // false
   wrap?: boolean            // false
 }
 
@@ -68,7 +68,7 @@ export class Allocator {
     // do nothing
   }
 
-  rowBegin(): void {
+  lineFeed(): void {
     // do nothing
   }
 
@@ -106,7 +106,7 @@ export class GridBasedAllocator implements Allocator {
     this.newRowCursor = 0
   }
 
-  rowBegin(): void {
+  lineFeed(): void {
     this.columnCursor = 0
     this.rowCursor = this.newRowCursor
   }
@@ -116,8 +116,8 @@ export class GridBasedAllocator implements Allocator {
       exact: undefined,
       widthMin: "", widthMax: "", widthGrow: 0,
       heightMin: "", heightMax: "", heightGrow: 0,
-      align: Align.Default,
-      blockAlign: Align.Fit,
+      align: bounds?.align ?? Align.Default,
+      blockAlign: bounds?.blockAlign ?? Align.Fit,
     }
     if (bounds?.place) { // absolute positioning
       result.exact = parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 })
@@ -131,8 +131,8 @@ export class GridBasedAllocator implements Allocator {
       const totalRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
 
       const cr = result.exact = { x1: 0, y1: 0, x2: 0, y2: 0 }
-      if (bounds?.rowBegin)
-        this.rowBegin()
+      if (bounds?.fromNewLine)
+        this.lineFeed()
       // Horizontal
       let w = bounds?.widthSpan ?? 1
       if (w === 0)

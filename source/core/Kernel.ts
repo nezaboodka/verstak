@@ -83,7 +83,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     // Check for coalescing separators or lookup for existing block
     driver ??= AbstractDriver.group
     name ||= `${++owner.numerator}`
-    if (driver.isRowHost) {
+    if (driver.isSection) {
       const last = children.lastClaimedItem()
       if (last?.instance?.driver === driver)
         existing = last
@@ -121,11 +121,11 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 // LayoutKind
 
 export enum LayoutKind {
-  Block = 0,  // 000
-  Grid = 1,   // 001
-  Row = 2,    // 010
-  Group = 3,  // 011
-  Text = 4,   // 100
+  Block = 0,    // 000
+  Grid = 1,     // 001
+  Section = 2,  // 010
+  Group = 3,    // 011
+  Text = 4,     // 100
 }
 
 // AbstractDriver
@@ -138,10 +138,11 @@ export class AbstractDriver<T> {
   readonly name: string
   readonly layout: LayoutKind
   readonly createAllocator: () => Allocator
-  get isSequential(): boolean { return (this.layout & 1) === 0 } // Block, Text, Row
+  get isSequential(): boolean { return (this.layout & 1) === 0 } // Block, Text, Break
   get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Grid, Group
   get isBlock(): boolean { return this.layout === LayoutKind.Block }
-  get isRowHost(): boolean { return this.layout === LayoutKind.Row }
+  get isGrid(): boolean { return this.layout === LayoutKind.Grid }
+  get isSection(): boolean { return this.layout === LayoutKind.Section }
 
   constructor(name: string, layout: LayoutKind, createAllocator?: () => Allocator) {
     this.name = name
@@ -170,7 +171,7 @@ export class AbstractDriver<T> {
       b.place = place
       // Bump host height growth if necessary
       const host = b.host
-      if (host.driver.isRowHost) {
+      if (host.driver.isSection) {
         const hGrow = place?.heightGrow ?? 0
         if (hGrow > 0 && (host.place?.heightGrow ?? 0) < hGrow)
           host.driver.arrange(host, undefined, hGrow)
@@ -296,26 +297,27 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         runFinalize(item, true)
       if (!error) {
         // Lay out and render actual blocks
+        const isBlockOwner = owner.driver.isBlock
         const sequential = children.strict
         const allocator = owner.allocator
         allocator.reset()
         let p1: Array<Item<VBlockImpl>> | undefined = undefined
         let p2: Array<Item<VBlockImpl>> | undefined = undefined
         let redeploy = false
-        let row = owner
+        let section = owner
         for (const item of children.items()) {
           if (Transaction.isCanceled)
             break
           const block = item.instance
           const driver = block.driver
           const opt = block.args
-          if (!driver.isRowHost) {
+          if (!driver.isSection) {
             const place = allocator.allocate(opt)
             driver.arrange(block, place, undefined)
           }
           else
-            allocator.rowBegin()
-          const host = driver.isRowHost ? owner : row
+            allocator.lineFeed()
+          const host = driver.isSection ? owner : section
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
@@ -324,8 +326,8 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (driver.isRowHost)
-            row = block
+          if (isBlockOwner && driver.isSection)
+            section = block
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
