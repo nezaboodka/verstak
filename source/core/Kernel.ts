@@ -182,7 +182,7 @@ export class AbstractDriver<T> {
           exact: undefined,
           widthMin: "", widthMax: "", widthGrow: 0,
           heightMin: "", heightMax: "", heightGrow,
-          align: Align.MiddleLeft,
+          align: Align.Default,
           boxAlign: Align.Fit,
         }
       else

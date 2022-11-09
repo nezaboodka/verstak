@@ -123,8 +123,8 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
           if (heightMax !== (existing?.heightMax ?? ""))
             block.native.style.maxHeight = `${heightMax}`
           // Alignment
-          const alignment = place?.align ?? Align.MiddleLeft
-          if (alignment !== (existing?.align ?? Align.MiddleLeft)) {
+          const alignment = place?.align ?? Align.Default
+          if (alignment !== (existing?.align ?? Align.Default)) {
             const v = AlignCss[(alignment >> 2) & 0b11]
             const h = AlignCss[alignment & 0b11]
             const t = TextAlignCss[alignment & 0b11]

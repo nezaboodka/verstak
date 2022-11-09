@@ -8,22 +8,36 @@
 import { CellRange, parseCellRange } from "./CellRange"
 
 export enum Align {
-  Fit          = 0b0000, // VvHh
-  TopLeft      = 0b0101,
-  TopCenter    = 0b0110,
-  TopRight     = 0b0111,
-  MiddleLeft   = 0b1001,
-  MiddleCenter = 0b1010,
-  MiddleRight  = 0b1011,
-  BottomLeft   = 0b1101,
-  BottomCenter = 0b1110,
-  BottomRight  = 0b1111,
-  FitButLeft   = 0b0001,
-  FitButCenter = 0b0010,
-  FitButRight  = 0b0011,
-  FitButTop    = 0b0100,
-  FitButMiddle = 0b1000,
-  FitButBottom = 0b1100,
+  Fit     = 0b0000,
+  Left    = 0b0001,
+  Center  = 0b0010,
+  Right   = 0b0011,
+  Top     = 0b0100,
+  CenterV = 0b1000,
+  Bottom  = 0b1100,
+  Default = Align.Left + Align.CenterV,
+
+  // TopLeft      = 0b0101,
+  // TopCenter    = 0b0110,
+  // TopRight     = 0b0111,
+  // MiddleLeft   = 0b1001,
+  // MiddleCenter = 0b1010,
+  // MiddleRight  = 0b1011,
+  // BottomLeft   = 0b1101,
+  // BottomCenter = 0b1110,
+  // BottomRight  = 0b1111,
+  // FitButLeft   = 0b0001,
+  // FitButCenter = 0b0010,
+  // FitButRight  = 0b0011,
+  // FitButTop    = 0b0100,
+  // FitButMiddle = 0b1000,
+  // FitButBottom = 0b1100,
+  // FitButLeft   = 0b0001,
+  // FitButCenter = 0b0010,
+  // FitButRight  = 0b0011,
+  // FitButTop    = 0b0100,
+  // FitButMiddle = 0b1000,
+  // FitButBottom = 0b1100,
 }
 
 export interface ElasticSize {
@@ -85,7 +99,7 @@ export class Allocator {
       heightMin: bounds.heightMin ?? "",
       heightMax: bounds.heightMax ?? "",
       heightGrow: bounds.heightGrow ?? 0,
-      align: bounds.align ?? Align.MiddleLeft,
+      align: bounds.align ?? Align.Default,
       boxAlign: bounds.boxAlign ?? Align.Fit,
     }
   }
@@ -115,7 +129,7 @@ export class GridBasedAllocator implements Allocator {
       exact: undefined,
       widthMin: "", widthMax: "", widthGrow: 0,
       heightMin: "", heightMax: "", heightGrow: 0,
-      align: Align.MiddleLeft,
+      align: Align.Default,
       boxAlign: Align.Fit,
     }
     const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
