@@ -133,10 +133,10 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
             block.native.style.textAlign = t
           }
           // Box Alignment
-          const boxAlign = place?.boxAlign ?? Align.Fit
-          if (boxAlign !== (existing?.boxAlign ?? Align.Fit)) {
-            const v = AlignCss[(boxAlign >> 2) & 0b11]
-            const h = AlignCss[boxAlign & 0b11]
+          const blockAlign = place?.blockAlign ?? Align.Fit
+          if (blockAlign !== (existing?.blockAlign ?? Align.Fit)) {
+            const v = AlignCss[(blockAlign >> 2) & 0b11]
+            const h = AlignCss[blockAlign & 0b11]
             block.native.style.alignSelf = v
             block.native.style.justifySelf = h
           }

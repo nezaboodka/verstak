@@ -67,7 +67,7 @@ export interface Bounds {
   heightOverlap?: boolean   // false
   // Alignment
   align?: Align     // MiddleLeft
-  boxAlign?: Align  // Fit
+  blockAlign?: Align  // Fit
   // Flow
   rowBegin?: boolean        // false
   wrap?: boolean            // false
@@ -82,7 +82,7 @@ export interface Place {
   heightMax: string
   heightGrow: number
   align: Align
-  boxAlign: Align
+  blockAlign: Align
 }
 
 export class Allocator {
@@ -100,7 +100,7 @@ export class Allocator {
       heightMax: bounds.heightMax ?? "",
       heightGrow: bounds.heightGrow ?? 0,
       align: bounds.align ?? Align.Default,
-      boxAlign: bounds.boxAlign ?? Align.Fit,
+      blockAlign: bounds.blockAlign ?? Align.Fit,
     }
   }
 }
@@ -130,7 +130,7 @@ export class GridBasedAllocator implements Allocator {
       widthMin: "", widthMax: "", widthGrow: 0,
       heightMin: "", heightMax: "", heightGrow: 0,
       align: Align.Default,
-      boxAlign: Align.Fit,
+      blockAlign: Align.Fit,
     }
     const maxColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
     const maxRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
