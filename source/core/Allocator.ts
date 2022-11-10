@@ -35,13 +35,13 @@ export interface Bounds {
   widthSpan?: number        // 1 (grid layout only)
   widthMin?: string         // min-content
   widthMax?: string         // min-content
-  widthGrow?: number        // 0
+  widthGrow?: number    // 0
   widthOverlap?: boolean    // false
   // Height
   heightSpan?: number       // 1 (grid layout only)
   heightMin?: string        // min-content
   heightMax?: string        // min-content
-  heightGrow?: number       // 0
+  heightGrow?: number   // 0
   heightOverlap?: boolean   // false
   // Alignment
   align?: Align     // MiddleLeft
