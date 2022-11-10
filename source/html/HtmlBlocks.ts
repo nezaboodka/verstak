@@ -10,7 +10,7 @@ import { HtmlDriver, SvgDriver } from "./HtmlDriver"
 
 export function HtmlBody(name: string, render: Render<HTMLElement>): VBlock<HTMLElement> {
   const driver = new StaticDriver(global.document.body, name, LayoutKind.Block)
-  return VBlock.claim(name, { reactor: true, render }, driver)
+  return VBlock.claim(name, { reacting: true, render }, driver)
 }
 
 export function A<M = unknown, R = void>(name: string, args: BlockArgs<HTMLAnchorElement, M, R> | Render<HTMLAnchorElement, M, R>): VBlock<HTMLAnchorElement, M, R> { return VBlock.claim(name, args instanceof Function ? { render: args } : args, HtmlTags.a) }

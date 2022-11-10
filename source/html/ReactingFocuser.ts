@@ -8,10 +8,10 @@
 import { VBlock } from "../core/api"
 import { FocusModel } from "./sensors/FocusSensor"
 
-export function RxFocuser(name: string, target: HTMLElement, model: FocusModel,
+export function ReactingFocuser(name: string, target: HTMLElement, model: FocusModel,
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {
   VBlock.claim(name, {
-    reactor: true,
+    reacting: true,
     triggers: { target, model },
     throttling: 0,
     render() {
