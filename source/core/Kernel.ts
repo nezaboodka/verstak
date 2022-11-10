@@ -184,7 +184,7 @@ export class AbstractDriver<T> {
           widthMin: "", widthMax: "", widthGrab: 0,
           heightMin: "", heightMax: "", heightGrab,
           align: Align.Auto,
-          blockAlign: Align.Auto,
+          docking: Align.Auto,
         }
       else
         b.place.heightGrab = heightGrab

@@ -136,12 +136,12 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
           }
           // Box Alignment
           const heightGrab = place?.heightGrab ?? 0
-          const blockAlign = place?.blockAlign ?? Align.Auto
-          if (blockAlign !== (existing?.blockAlign ?? Align.Auto) ||
+          const docking = place?.docking ?? Align.Auto
+          if (docking !== (existing?.docking ?? Align.Auto) ||
             heightGrab !== (existing?.heightGrab ?? 0)) {
-            if ((blockAlign & Align.Auto) === 0) { // if not auto mode
-              const v = AlignCss[(blockAlign >> 2) & 0b11]
-              const h = AlignCss[blockAlign & 0b11]
+            if ((docking & Align.Auto) === 0) { // if not auto mode
+              const v = AlignCss[(docking >> 2) & 0b11]
+              const h = AlignCss[docking & 0b11]
               css.alignSelf = v
               css.justifySelf = h
             }
