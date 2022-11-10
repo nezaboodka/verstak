@@ -79,9 +79,9 @@ export function Group<M = unknown, R = void>(name: string,
 
 export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
-  arrange(block: VBlock<T>, place: Place | undefined, heightGrow: number | undefined): void {
+  arrange(block: VBlock<T>, place: Place | undefined, heightGrab: number | undefined): void {
     if (block.native) {
-      if (heightGrow === undefined) {
+      if (heightGrab === undefined) {
         const existing = block.stamp > 1 ? block.place : undefined
         if (place !== existing) {
           const css = block.native.style
@@ -98,11 +98,11 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
             else
               css.gridArea = ""
           }
-          // Width Grow
-          const widthGrow = place?.widthGrow ?? 0
-          if (widthGrow !== (existing?.widthGrow ?? 0)) {
-            if (widthGrow > 0)
-              css.flexGrow = `${widthGrow}`
+          // Width Grab
+          const widthGrab = place?.widthGrab ?? 0
+          if (widthGrab !== (existing?.widthGrab ?? 0)) {
+            if (widthGrab > 0)
+              css.flexGrow = `${widthGrab}`
             else
               css.flexGrow = ""
           }
@@ -121,35 +121,46 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
           if (heightMax !== (existing?.heightMax ?? ""))
             css.maxHeight = `${heightMax}`
           // Alignment
-          const alignment = place?.align ?? Align.Default
-          if (alignment !== (existing?.align ?? Align.Default)) {
-            const v = AlignCss[(alignment >> 2) & 0b11]
-            const h = AlignCss[alignment & 0b11]
-            const t = TextAlignCss[alignment & 0b11]
-            css.justifyContent = v
-            css.alignItems = h
-            css.textAlign = t
+          const align = place?.align ?? Align.Auto
+          if (align !== (existing?.align ?? Align.Auto)) {
+            if ((align & Align.Auto) === 0) { // if not auto mode
+              const v = AlignCss[(align >> 2) & 0b11]
+              const h = AlignCss[align & 0b11]
+              const t = TextAlignCss[align & 0b11]
+              css.justifyContent = v
+              css.alignItems = h
+              css.textAlign = t
+            }
+            else
+              css.justifyContent = css.alignItems = css.textAlign = ""
           }
           // Box Alignment
-          const blockAlign = place?.blockAlign ?? Align.Fit
-          if (blockAlign !== (existing?.blockAlign ?? Align.Fit)) {
-            const v = AlignCss[(blockAlign >> 2) & 0b11]
-            const h = AlignCss[blockAlign & 0b11]
-            css.alignSelf = v
-            css.justifySelf = h
-            // if (v !== "")
-            //   block.native.setAttribute("unfit", "")
+          const heightGrab = place?.heightGrab ?? 0
+          const blockAlign = place?.blockAlign ?? Align.Auto
+          if (blockAlign !== (existing?.blockAlign ?? Align.Auto) ||
+            heightGrab !== (existing?.heightGrab ?? 0)) {
+            if ((blockAlign & Align.Auto) === 0) { // if not auto mode
+              const v = AlignCss[(blockAlign >> 2) & 0b11]
+              const h = AlignCss[blockAlign & 0b11]
+              css.alignSelf = v
+              css.justifySelf = h
+            }
+            else if (heightGrab > 0) {
+              css.alignSelf = AlignCss[Align.Fit]
+            }
+            else
+              css.alignSelf = css.justifySelf = ""
           }
         }
       }
       else {
-        if (heightGrow > 0)
-          block.native.style.flexGrow = `${heightGrow}`
+        if (heightGrab > 0)
+          block.native.style.flexGrow = `${heightGrab}`
         else
           block.native.style.flexGrow = ""
       }
     }
-    super.arrange(block, place, heightGrow)
+    super.arrange(block, place, heightGrab)
   }
 
   render(block: VBlock<T>): void | Promise<void> {
@@ -181,5 +192,5 @@ const VerstakTags = {
 }
 
 const EMPTY_RENDER: BlockArgs<any, any, any> = { render() { /* nop */ } }
-const AlignCss = ["" /* stretch */, "start", "center", "end"]
+const AlignCss = ["stretch", "start", "center", "end"]
 const TextAlignCss = ["justify", "" /* left */, "center", "right"]

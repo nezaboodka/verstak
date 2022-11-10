@@ -8,14 +8,14 @@
 import { CellRange, parseCellRange } from "./CellRange"
 
 export enum Align {
-  Fit     = 0b0000,
-  Left    = 0b0001,
-  Center  = 0b0010,
-  Right   = 0b0011,
-  Top     = 0b0100,
-  CenterV = 0b1000,
-  Bottom  = 0b1100,
-  Default = Align.Left + Align.CenterV,
+  Fit     = 0b00000,
+  Left    = 0b00001,
+  Center  = 0b00010,
+  Right   = 0b00011,
+  Top     = 0b00100,
+  CenterV = 0b01000,
+  Bottom  = 0b01100,
+  Auto    = 0b10000,
 }
 
 export interface ElasticSize {
@@ -35,13 +35,13 @@ export interface Bounds {
   widthSpan?: number        // 1 (grid layout only)
   widthMin?: string         // min-content
   widthMax?: string         // min-content
-  widthGrow?: number    // 0
+  widthGrab?: number        // 0
   widthOverlap?: boolean    // false
   // Height
   heightSpan?: number       // 1 (grid layout only)
   heightMin?: string        // min-content
   heightMax?: string        // min-content
-  heightGrow?: number   // 0
+  heightGrab?: number       // 0
   heightOverlap?: boolean   // false
   // Alignment
   align?: Align     // MiddleLeft
@@ -55,10 +55,10 @@ export interface Place {
   exact: CellRange | undefined
   widthMin: string
   widthMax: string
-  widthGrow: number
+  widthGrab: number
   heightMin: string
   heightMax: string
-  heightGrow: number
+  heightGrab: number
   align: Align
   blockAlign: Align
 }
@@ -77,12 +77,12 @@ export class Allocator {
       exact: bounds.place ? parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 }) : undefined,
       widthMin: bounds.widthMin ?? "",
       widthMax: bounds.widthMax ?? "",
-      widthGrow: bounds.widthGrow ?? 0,
+      widthGrab: bounds.widthGrab ?? 0,
       heightMin: bounds.heightMin ?? "",
       heightMax: bounds.heightMax ?? "",
-      heightGrow: bounds.heightGrow ?? 0,
-      align: bounds.align ?? Align.Default,
-      blockAlign: bounds.blockAlign ?? Align.Fit,
+      heightGrab: bounds.heightGrab ?? 0,
+      align: bounds.align ?? Align.Auto,
+      blockAlign: bounds.blockAlign ?? Align.Auto,
     }
   }
 }
@@ -114,10 +114,10 @@ export class GridBasedAllocator implements Allocator {
   allocate(bounds: Bounds | undefined): Place | undefined {
     const result: Place = {
       exact: undefined,
-      widthMin: "", widthMax: "", widthGrow: 0,
-      heightMin: "", heightMax: "", heightGrow: 0,
-      align: bounds?.align ?? Align.Default,
-      blockAlign: bounds?.blockAlign ?? Align.Fit,
+      widthMin: "", widthMax: "", widthGrab: 0,
+      heightMin: "", heightMax: "", heightGrab: 0,
+      align: bounds?.align ?? Align.Auto,
+      blockAlign: bounds?.blockAlign ?? Align.Auto,
     }
     if (bounds?.place) { // absolute positioning
       result.exact = parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 })
@@ -201,7 +201,7 @@ export function equalPlaces(a: Place | undefined, b: Place | undefined): boolean
   let result: boolean
   if (a) {
     if (b) {
-      result = a.widthGrow == b.widthGrow
+      result = a.widthGrab == b.widthGrab
     }
     else
       result = false
