@@ -172,14 +172,14 @@ function absolutizeCellRange(area: CellRange,
   result: CellRange): CellRange {
   // X1, X2
   const x1 = absolutizePosition(area.x1, cursorX, maxWidth)
-  const x2 = absolutizePosition(area.x2, cursorX, maxWidth)
+  const x2 = absolutizePosition(area.x2, x1, maxWidth)
   if (x1 <= x2)
     result.x1 = x1, result.x2 = x2
   else
     result.x1 = x2, result.x2 = x1
   // Y1, Y2
   const y1 = absolutizePosition(area.y1, cursorY, maxHeight)
-  const y2 = absolutizePosition(area.y2, cursorY, maxHeight)
+  const y2 = absolutizePosition(area.y2, y1, maxHeight)
   if (y1 <= y2)
     result.y1 = y1, result.y2 = y2
   else
