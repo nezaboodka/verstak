@@ -8,7 +8,7 @@
 import { CellRange, parseCellRange } from "./CellRange"
 
 export enum Align {
-  Fit     = 0b00000,
+  Stretch = 0b00000,
   Left    = 0b00001,
   Center  = 0b00010,
   Right   = 0b00011,
@@ -44,8 +44,8 @@ export interface Bounds {
   heightGrab?: number       // 0
   heightOverlap?: boolean   // false
   // Alignment
-  align?: Align             // MiddleLeft
-  docking?: Align           // Fit
+  align?: Align             // Align.Auto
+  fit?: Align               // Align.Auto
   // Flow
   newLine?: boolean         // false
   wrap?: boolean            // false
@@ -60,7 +60,7 @@ export interface Place {
   heightMax: string
   heightGrab: number
   align: Align
-  docking: Align
+  fit: Align
 }
 
 export class Allocator {
@@ -82,7 +82,7 @@ export class Allocator {
       heightMax: bounds.heightMax ?? "",
       heightGrab: bounds.heightGrab ?? 0,
       align: bounds.align ?? Align.Auto,
-      docking: bounds.docking ?? Align.Auto,
+      fit: bounds.fit ?? Align.Auto,
     }
   }
 }
@@ -117,7 +117,7 @@ export class GridBasedAllocator implements Allocator {
       widthMin: "", widthMax: "", widthGrab: 0,
       heightMin: "", heightMax: "", heightGrab: 0,
       align: bounds?.align ?? Align.Auto,
-      docking: bounds?.docking ?? Align.Auto,
+      fit: bounds?.fit ?? Align.Auto,
     }
     if (bounds?.place) { // absolute positioning
       result.exact = parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 })
