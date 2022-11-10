@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, LayoutKind, Place, BlockArgs, Align, GridBasedAllocator } from "../core/api"
+import { VBlock, LayoutKind, Place, BlockArgs, To, GridBasedAllocator } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -121,9 +121,9 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
           if (heightMax !== (existing?.heightMax ?? ""))
             css.maxHeight = `${heightMax}`
           // Alignment
-          const align = place?.align ?? Align.Auto
-          if (align !== (existing?.align ?? Align.Auto)) {
-            if ((align & Align.Auto) === 0) { // if not auto mode
+          const align = place?.align ?? To.Default
+          if (align !== (existing?.align ?? To.Default)) {
+            if ((align & To.Default) === 0) { // if not auto mode
               const v = AlignCss[(align >> 2) & 0b11]
               const h = AlignCss[align & 0b11]
               const t = TextAlignCss[align & 0b11]
@@ -136,17 +136,17 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
           }
           // Box Alignment
           const heightGrab = place?.heightGrab ?? 0
-          const fit = place?.fit ?? Align.Auto
-          if (fit !== (existing?.fit ?? Align.Auto) ||
+          const dock = place?.dock ?? To.Default
+          if (dock !== (existing?.dock ?? To.Default) ||
             heightGrab !== (existing?.heightGrab ?? 0)) {
-            if ((fit & Align.Auto) === 0) { // if not auto mode
-              const v = AlignCss[(fit >> 2) & 0b11]
-              const h = AlignCss[fit & 0b11]
+            if ((dock & To.Default) === 0) { // if not auto mode
+              const v = AlignCss[(dock >> 2) & 0b11]
+              const h = AlignCss[dock & 0b11]
               css.alignSelf = v
               css.justifySelf = h
             }
             else if (heightGrab > 0) {
-              css.alignSelf = AlignCss[Align.Stretch]
+              css.alignSelf = AlignCss[To.Fit]
             }
             else
               css.alignSelf = css.justifySelf = ""

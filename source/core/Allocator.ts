@@ -7,15 +7,15 @@
 
 import { CellRange, parseCellRange } from "./CellRange"
 
-export enum Align {
-  Stretch = 0b00000,
+export enum To {
+  Fit     = 0b00000,
   Left    = 0b00001,
   Center  = 0b00010,
   Right   = 0b00011,
   Top     = 0b00100,
   CenterV = 0b01000,
   Bottom  = 0b01100,
-  Auto    = 0b10000,
+  Default = 0b10000,
 }
 
 export interface ElasticSize {
@@ -44,8 +44,8 @@ export interface Bounds {
   heightGrab?: number       // 0
   heightOverlap?: boolean   // false
   // Alignment
-  align?: Align             // Align.Auto
-  fit?: Align               // Align.Auto
+  align?: To                // To.Default
+  dock?: To                 // To.Default
   // Flow
   newLine?: boolean         // false
   wrap?: boolean            // false
@@ -59,8 +59,8 @@ export interface Place {
   heightMin: string
   heightMax: string
   heightGrab: number
-  align: Align
-  fit: Align
+  align: To
+  dock: To
 }
 
 export class Allocator {
@@ -81,8 +81,8 @@ export class Allocator {
       heightMin: bounds.heightMin ?? "",
       heightMax: bounds.heightMax ?? "",
       heightGrab: bounds.heightGrab ?? 0,
-      align: bounds.align ?? Align.Auto,
-      fit: bounds.fit ?? Align.Auto,
+      align: bounds.align ?? To.Default,
+      dock: bounds.dock ?? To.Default,
     }
   }
 }
@@ -116,8 +116,8 @@ export class GridBasedAllocator implements Allocator {
       exact: undefined,
       widthMin: "", widthMax: "", widthGrab: 0,
       heightMin: "", heightMax: "", heightGrab: 0,
-      align: bounds?.align ?? Align.Auto,
-      fit: bounds?.fit ?? Align.Auto,
+      align: bounds?.align ?? To.Default,
+      dock: bounds?.dock ?? To.Default,
     }
     if (bounds?.place) { // absolute positioning
       result.exact = parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 })

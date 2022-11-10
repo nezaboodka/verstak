@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from "reactronic"
-import { Bounds, Place, Allocator, Align } from "./Allocator"
+import { Bounds, Place, Allocator, To } from "./Allocator"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>) => R
@@ -183,8 +183,8 @@ export class AbstractDriver<T> {
           exact: undefined,
           widthMin: "", widthMax: "", widthGrab: 0,
           heightMin: "", heightMax: "", heightGrab,
-          align: Align.Auto,
-          fit: Align.Auto,
+          align: To.Default,
+          dock: To.Default,
         }
       else
         b.place.heightGrab = heightGrab
