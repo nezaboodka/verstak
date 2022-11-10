@@ -193,4 +193,4 @@ const VerstakTags = {
 
 const EMPTY_RENDER: BlockArgs<any, any, any> = { render() { /* nop */ } }
 const AlignCss = ["stretch", "start", "center", "end"]
-const TextAlignCss = ["justify", "" /* left */, "center", "right"]
+const TextAlignCss = ["justify", "left", "center", "right"]
