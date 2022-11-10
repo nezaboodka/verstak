@@ -46,9 +46,6 @@ export interface Bounds {
   // Alignment
   align?: To                // To.Default
   dock?: To                 // To.Default
-  // Flow
-  newLine?: boolean         // false
-  wrap?: boolean            // false
 }
 
 export interface Place {
@@ -129,10 +126,7 @@ export class GridBasedAllocator implements Allocator {
     else { // relative positioning
       const totalColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
       const totalRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
-
       const cr = result.exact = { x1: 0, y1: 0, x2: 0, y2: 0 }
-      if (bounds?.newLine)
-        this.lineFeed()
       // Horizontal
       let w = bounds?.widthSpan ?? 1
       if (w === 0)
