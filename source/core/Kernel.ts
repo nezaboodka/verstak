@@ -165,29 +165,29 @@ export class AbstractDriver<T> {
     // nothing to do by default
   }
 
-  arrange(block: VBlock<T>, place: Place | undefined, heightGrab: number | undefined): void {
+  arrange(block: VBlock<T>, place: Place | undefined, heightGrowth: number | undefined): void {
     const b = block as VBlockImpl<T>
-    if (heightGrab === undefined) {
+    if (heightGrowth === undefined) {
       b.place = place
       // Bump host height growth if necessary
       const host = b.host
       if (host.driver.isLine) {
-        const grab = place?.heightGrab ?? 0
-        if (grab > 0 && (host.place?.heightGrab ?? 0) < grab)
-          host.driver.arrange(host, undefined, grab)
+        const growth = place?.heightGrowth ?? 0
+        if (growth > 0 && (host.place?.heightGrowth ?? 0) < growth)
+          host.driver.arrange(host, undefined, growth)
       }
     }
-    else if (heightGrab > 0) {
+    else if (heightGrowth > 0) {
       if (b.place === undefined)
         b.place = {
           exact: undefined,
-          widthMin: "", widthMax: "", widthGrab: 0,
-          heightMin: "", heightMax: "", heightGrab,
+          widthMin: "", widthMax: "", widthGrowth: 0,
+          heightMin: "", heightMax: "", heightGrowth,
           align: To.Default,
           dock: To.Default,
         }
       else
-        b.place.heightGrab = heightGrab
+        b.place.heightGrowth = heightGrowth
     }
   }
 

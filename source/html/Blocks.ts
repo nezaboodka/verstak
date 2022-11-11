@@ -75,9 +75,9 @@ export function Group<M = unknown, R = void>(name: string,
 
 export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
-  arrange(block: VBlock<T>, place: Place | undefined, heightGrab: number | undefined): void {
+  arrange(block: VBlock<T>, place: Place | undefined, heightGrowth: number | undefined): void {
     if (block.native) {
-      if (heightGrab === undefined) {
+      if (heightGrowth === undefined) {
         const existing = block.stamp > 1 ? block.place : undefined
         if (place !== existing) {
           const css = block.native.style
@@ -94,11 +94,11 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
             else
               css.gridArea = ""
           }
-          // Width Grab
-          const widthGrab = place?.widthGrab ?? 0
-          if (widthGrab !== (existing?.widthGrab ?? 0)) {
-            if (widthGrab > 0)
-              css.flexGrow = `${widthGrab}`
+          // Width Growth
+          const widthGrowth = place?.widthGrowth ?? 0
+          if (widthGrowth !== (existing?.widthGrowth ?? 0)) {
+            if (widthGrowth > 0)
+              css.flexGrow = `${widthGrowth}`
             else
               css.flexGrow = ""
           }
@@ -131,17 +131,17 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
               css.justifyContent = css.alignItems = css.textAlign = ""
           }
           // Box Alignment
-          const heightGrab = place?.heightGrab ?? 0
+          const heightGrowth = place?.heightGrowth ?? 0
           const dock = place?.dock ?? To.Default
           if (dock !== (existing?.dock ?? To.Default) ||
-            heightGrab !== (existing?.heightGrab ?? 0)) {
+            heightGrowth !== (existing?.heightGrowth ?? 0)) {
             if ((dock & To.Default) === 0) { // if not auto mode
               const v = AlignCss[(dock >> 2) & 0b11]
               const h = AlignCss[dock & 0b11]
               css.alignSelf = v
               css.justifySelf = h
             }
-            else if (heightGrab > 0) {
+            else if (heightGrowth > 0) {
               css.alignSelf = AlignCss[To.Fit]
             }
             else
@@ -150,13 +150,13 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
         }
       }
       else {
-        if (heightGrab > 0)
-          block.native.style.flexGrow = `${heightGrab}`
+        if (heightGrowth > 0)
+          block.native.style.flexGrow = `${heightGrowth}`
         else
           block.native.style.flexGrow = ""
       }
     }
-    super.arrange(block, place, heightGrab)
+    super.arrange(block, place, heightGrowth)
   }
 
   render(block: VBlock<T>): void | Promise<void> {

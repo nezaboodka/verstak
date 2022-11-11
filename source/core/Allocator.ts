@@ -35,13 +35,13 @@ export interface Bounds {
   widthSpan?: number        // 1 (grid layout only)
   widthMin?: string         // min-content
   widthMax?: string         // min-content
-  widthGrab?: number        // 0
+  widthGrowth?: number      // 0 (no grow)
   widthOverlap?: boolean    // false
   // Height
   heightSpan?: number       // 1 (grid layout only)
   heightMin?: string        // min-content
   heightMax?: string        // min-content
-  heightGrab?: number       // 0
+  heightGrowth?: number     // 0 (no grow)
   heightOverlap?: boolean   // false
   // Alignment
   align?: To                // To.Default
@@ -52,10 +52,10 @@ export interface Place {
   exact: CellRange | undefined
   widthMin: string
   widthMax: string
-  widthGrab: number
+  widthGrowth: number
   heightMin: string
   heightMax: string
-  heightGrab: number
+  heightGrowth: number
   align: To
   dock: To
 }
@@ -74,10 +74,10 @@ export class Allocator {
       exact: bounds.place ? parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 }) : undefined,
       widthMin: bounds.widthMin ?? "",
       widthMax: bounds.widthMax ?? "",
-      widthGrab: bounds.widthGrab ?? 0,
+      widthGrowth: bounds.widthGrowth ?? 0,
       heightMin: bounds.heightMin ?? "",
       heightMax: bounds.heightMax ?? "",
-      heightGrab: bounds.heightGrab ?? 0,
+      heightGrowth: bounds.heightGrowth ?? 0,
       align: bounds.align ?? To.Default,
       dock: bounds.dock ?? To.Default,
     }
@@ -111,8 +111,8 @@ export class GridBasedAllocator implements Allocator {
   allocate(bounds: Bounds | undefined): Place | undefined {
     const result: Place = {
       exact: undefined,
-      widthMin: "", widthMax: "", widthGrab: 0,
-      heightMin: "", heightMax: "", heightGrab: 0,
+      widthMin: "", widthMax: "", widthGrowth: 0,
+      heightMin: "", heightMax: "", heightGrowth: 0,
       align: bounds?.align ?? To.Default,
       dock: bounds?.dock ?? To.Default,
     }
@@ -195,7 +195,7 @@ export function equalPlaces(a: Place | undefined, b: Place | undefined): boolean
   let result: boolean
   if (a) {
     if (b) {
-      result = a.widthGrab == b.widthGrab
+      result = a.widthGrowth == b.widthGrowth
     }
     else
       result = false
