@@ -15,7 +15,6 @@ export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 
 export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
   reacting?: boolean
-  mixins?: Array<Render<T, M, R>>
   triggers?: unknown
   priority?: Priority,
   monitor?: Monitor
@@ -48,7 +47,12 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly place: Readonly<Place> | undefined
 
   baseRender(): R {
-    return callRenderFunctions(this)
+    return invokeRenderFunction(this)
+  }
+
+  apply(...mixins: Array<Render<T, M, R>>): void {
+    for (const mixin of mixins)
+      mixin?.(this.native!, this)
   }
 
   get isInitialRendering(): boolean {
@@ -197,16 +201,12 @@ export class AbstractDriver<T> {
     if (wrapper)
       result = wrapper(block.native!, block)
     else
-      result = callRenderFunctions(block)
+      result = invokeRenderFunction(block)
     return result
   }
 }
 
-function callRenderFunctions<R>(block: VBlock<any, any, R>): R {
-  const uses = block.args?.mixins
-  if (uses)
-    for (const use of uses)
-      use(block.native!, block)
+function invokeRenderFunction<R>(block: VBlock<any, any, R>): R {
   return block.args.render(block.native!, block)
 }
 
