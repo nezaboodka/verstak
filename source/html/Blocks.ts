@@ -34,14 +34,10 @@ export function Block<M = unknown, R = void>(name: string,
   return VBlock.claim(name, args, VerstakTags.block)
 }
 
-// Text (either plain or formatted in form of markdown)
+// Text (either plain or html)
 
 export function PlainText(content: string): VBlock<HTMLElement, void, void> {
   return VBlock.claim("", { render(e) { e.innerText = content } }, VerstakTags.text)
-}
-
-export function MdText(content: string): VBlock<HTMLElement, void, void> {
-  return VBlock.claim("", { render(e) { e.innerHTML = content } }, VerstakTags.text)
 }
 
 export function HtmlText(content: string): VBlock<HTMLElement, void, void> {
