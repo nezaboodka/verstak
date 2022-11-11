@@ -206,8 +206,8 @@ export class AbstractDriver<T> {
           exact: undefined,
           widthMin: "", widthMax: "", widthGrowth: 0,
           heightMin: "", heightMax: "", heightGrowth,
-          align: To.Default,
-          dock: To.Default,
+          alignContent: To.Default,
+          alignFrame: To.Default,
         }
       else
         b.place.heightGrowth = heightGrowth

@@ -117,12 +117,12 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
           if (heightMax !== (existing?.heightMax ?? ""))
             css.maxHeight = `${heightMax}`
           // Alignment
-          const align = place?.align ?? To.Default
-          if (align !== (existing?.align ?? To.Default)) {
-            if ((align & To.Default) === 0) { // if not auto mode
-              const v = AlignCss[(align >> 2) & 0b11]
-              const h = AlignCss[align & 0b11]
-              const t = TextAlignCss[align & 0b11]
+          const alignContent = place?.alignContent ?? To.Default
+          if (alignContent !== (existing?.alignContent ?? To.Default)) {
+            if ((alignContent & To.Default) === 0) { // if not auto mode
+              const v = AlignToCss[(alignContent >> 2) & 0b11]
+              const h = AlignToCss[alignContent & 0b11]
+              const t = TextAlignCss[alignContent & 0b11]
               css.justifyContent = v
               css.alignItems = h
               css.textAlign = t
@@ -132,17 +132,17 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
           }
           // Box Alignment
           const heightGrowth = place?.heightGrowth ?? 0
-          const dock = place?.dock ?? To.Default
-          if (dock !== (existing?.dock ?? To.Default) ||
+          const alignFrame = place?.alignFrame ?? To.Default
+          if (alignFrame !== (existing?.alignFrame ?? To.Default) ||
             heightGrowth !== (existing?.heightGrowth ?? 0)) {
-            if ((dock & To.Default) === 0) { // if not auto mode
-              const v = AlignCss[(dock >> 2) & 0b11]
-              const h = AlignCss[dock & 0b11]
+            if ((alignFrame & To.Default) === 0) { // if not auto mode
+              const v = AlignToCss[(alignFrame >> 2) & 0b11]
+              const h = AlignToCss[alignFrame & 0b11]
               css.alignSelf = v
               css.justifySelf = h
             }
             else if (heightGrowth > 0) {
-              css.alignSelf = AlignCss[To.Fit]
+              css.alignSelf = AlignToCss[To.Fit]
             }
             else
               css.alignSelf = css.justifySelf = ""
@@ -188,5 +188,5 @@ const VerstakTags = {
 }
 
 const EMPTY_RENDER: BlockArgs<any, any, any> = { render() { /* nop */ } }
-const AlignCss = ["stretch", "start", "center", "end"]
+const AlignToCss = ["stretch", "start", "center", "end"]
 const TextAlignCss = ["justify", "left", "center", "right"]
