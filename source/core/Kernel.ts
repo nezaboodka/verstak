@@ -21,10 +21,10 @@ export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
   throttling?: number,
   logging?: Partial<LoggingOptions>
   shuffle?: boolean
-  wrapper?: Render<T, M, R>
-  initialize?: Render<T, M, R> | Array<Render<T, M, R>>
   render: Render<T, M, R>
+  initialize?: Render<T, M, R> | Array<Render<T, M, R>>
   finalize?: Render<T, M, R> | Array<Render<T, M, R>>
+  wrapper?: Render<T, M, R>
 }
 
 // VBlock
