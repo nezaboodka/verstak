@@ -22,7 +22,9 @@ export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
   logging?: Partial<LoggingOptions>
   shuffle?: boolean
   wrapper?: Render<T, M, R>
+  initialize?: Render<T, M, R> | Array<Render<T, M, R>>
   render: Render<T, M, R>
+  finalize?: Render<T, M, R> | Array<Render<T, M, R>>
 }
 
 // VBlock
@@ -50,10 +52,10 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     return invokeRenderFunction(this)
   }
 
-  apply(...mixins: Array<Render<T, M, R>>): void {
-    for (const mixin of mixins)
-      mixin?.(this.native!, this)
-  }
+  // apply(...mixins: Array<Render<T, M, R>>): void {
+  //   for (const mixin of mixins)
+  //     mixin?.(this.native!, this)
+  // }
 
   get isInitialRendering(): boolean {
     return this.stamp === 2
@@ -157,10 +159,27 @@ export class AbstractDriver<T> {
   initialize(block: VBlock<T>, native: T | undefined): void {
     const b = block as VBlockImpl<T>
     b.native = native
+    const initialize = block.args?.initialize
+    if (initialize) {
+      if (Array.isArray(initialize))
+        for (const init of initialize)
+          init(native!, block)
+      else
+        initialize(native!, block)
+    }
   }
 
   finalize(block: VBlock<T>, isLeader: boolean): boolean {
     const b = block as VBlockImpl<T>
+    const finalize = block.args?.finalize
+    if (finalize) {
+      const native = block.native
+      if (Array.isArray(finalize))
+        for (const fin of finalize)
+          fin(native!, block)
+      else
+        finalize(native!, block)
+    }
     b.native = undefined
     return isLeader // treat children as finalization leaders as well
   }
