@@ -25,6 +25,8 @@ export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
   initialize?: Render<T, M, R> | Array<Render<T, M, R>>
   finalize?: Render<T, M, R> | Array<Render<T, M, R>>
   wrapper?: Render<T, M, R>
+  context?: Object
+  contextualized?: Object
 }
 
 // VBlock
@@ -52,11 +54,6 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     return invokeRenderFunction(this)
   }
 
-  // apply(...mixins: Array<Render<T, M, R>>): void {
-  //   for (const mixin of mixins)
-  //     mixin?.(this.native!, this)
-  // }
-
   get isInitialRendering(): boolean {
     return this.stamp === 2
   }
@@ -67,7 +64,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   }
 
   static get current(): VBlock {
-    return gContext.instance
+    return gCurrent.instance
   }
 
   static renderNestedTreesThenDo(action: (error: unknown) => void): void {
@@ -78,31 +75,38 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     forEachChildRecursively(gSysRoot, action)
   }
 
-  static claim<T = undefined, M = unknown, R = void>(
+  static claim<T = undefined, M = unknown, R = void, C = void>(
     name: string, args: BlockArgs<T, M, R>,
     driver?: AbstractDriver<T>): VBlock<T, M, R> {
     // Emit block either by reusing existing one or by creating a new one
     let result: VBlockImpl<T, M, R>
-    const owner = gContext.instance
+    const owner = gCurrent.instance
     const children = owner.children
-    let existing: Item<VBlockImpl<any, any, any>> | undefined = undefined
+    let ex: Item<VBlockImpl<any, any, any>> | undefined = undefined
     // Check for coalescing separators or lookup for existing block
     driver ??= AbstractDriver.group
     name ||= `${++owner.numerator}`
     if (driver.isLine) {
       const last = children.lastClaimedItem()
       if (last?.instance?.driver === driver)
-        existing = last
+        ex = last
     }
-    existing ??= children.claim(name)
+    ex ??= children.claim(name)
     // Reuse existing block or claim a new one
-    if (existing) {
-      result = existing.instance
+    if (ex) {
+      result = ex.instance
       if (result.driver !== driver && driver !== undefined)
         throw new Error(`changing block driver is not yet supported: "${result.driver.name}" -> "${driver?.name}"`)
-      const exTriggers = result.args?.triggers
-      if (triggersAreEqual(args.triggers, exTriggers))
-        args.triggers = exTriggers // preserve triggers instance
+      const contextSwitching = args.context !== result.args?.context
+      if (contextSwitching) {
+        // handle context change
+        args.context!
+      }
+      else {
+        const exTriggers = result.args?.triggers
+        if (triggersAreEqual(args.triggers, exTriggers))
+          args.triggers = exTriggers // preserve triggers instance
+      }
       result.args = args
     }
     else { // create new
@@ -304,8 +308,8 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
 // Internal
 
 function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => void): void {
-  const context = gContext
-  const owner = context.instance
+  const current = gCurrent
+  const owner = current.instance
   const children = owner.children
   if (children.isMergeInProgress) {
     let promised: Promise<void> | undefined = undefined
@@ -350,7 +354,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
-          promised = startIncrementalRendering(context, children, p1, p2).then(
+          promised = startIncrementalRendering(current, children, p1, p2).then(
             () => action(error),
             e => action(e))
       }
@@ -538,21 +542,21 @@ function forEachChildRecursively(item: Item<VBlockImpl>, action: (e: any) => voi
 }
 
 function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
-  const ctx = gContext
+  const current = gCurrent
   const wrappedRunUnder = (...args: any[]): T => {
-    return runUnder(ctx, func, ...args)
+    return runUnder(current, func, ...args)
   }
   return wrappedRunUnder
 }
 
 function runUnder<T>(item: Item<VBlockImpl>, func: (...args: any[]) => T, ...args: any[]): T {
-  const outer = gContext
+  const outer = gCurrent
   try {
-    gContext = item
+    gCurrent = item
     return func(...args)
   }
   finally {
-    gContext = outer
+    gCurrent = outer
   }
 }
 
@@ -633,21 +637,6 @@ Object.defineProperty(gSysRoot.instance, "host", {
   enumerable: true,
 })
 
-// export function argsToOptions<T, M, R>(p1: BlockArgs<T, M, R>, p2: BlockArgs<T, M, R>): BlockOptions<T, M, R> | undefined {
-//   let result: BlockOptions<T, M, R> | undefined
-//   if (p1) {
-//     if (p2)
-//       result = Object.assign(
-//         Array.isArray(p1) ? { as: p1 } : p1,
-//         Array.isArray(p2) ? { as: p2 } : p2)
-//     else
-//       result = Array.isArray(p1) ? { as: p1 } : p1
-//   }
-//   else
-//     result = Array.isArray(p2) ? { as: p2 } : p2
-//   return result
-// }
-
-let gContext: Item<VBlockImpl> = gSysRoot
+let gCurrent: Item<VBlockImpl> = gSysRoot
 let gFirstToDispose: Item<VBlockImpl> | undefined = undefined
 let gLastToDispose: Item<VBlockImpl> | undefined = undefined

@@ -78,12 +78,12 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   arrange(block: VBlock<T>, place: Place | undefined, heightGrowth: number | undefined): void {
     if (block.native) {
       if (heightGrowth === undefined) {
-        const existing = block.stamp > 1 ? block.place : undefined
-        if (place !== existing) {
+        const ex = block.stamp > 1 ? block.place : undefined
+        if (place !== ex) {
           const css = block.native.style
           // Exact position
           const exact = place?.exact
-          if (exact !== existing?.exact) {
+          if (exact !== ex?.exact) {
             if (exact) {
               const x1 = exact.x1 || 1
               const y1 = exact.y1 || 1
@@ -96,7 +96,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
           }
           // Width Growth
           const widthGrowth = place?.widthGrowth ?? 0
-          if (widthGrowth !== (existing?.widthGrowth ?? 0)) {
+          if (widthGrowth !== (ex?.widthGrowth ?? 0)) {
             if (widthGrowth > 0)
               css.flexGrow = `${widthGrowth}`
             else
@@ -104,21 +104,21 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
           }
           // Width
           const widthMin = place?.widthMin ?? ""
-          if (widthMin !== (existing?.widthMin ?? ""))
+          if (widthMin !== (ex?.widthMin ?? ""))
             css.minWidth = `${widthMin}`
           const widthMax = place?.widthMax ?? ""
-          if (widthMax !== (existing?.widthMax ?? ""))
+          if (widthMax !== (ex?.widthMax ?? ""))
             css.maxWidth = `${widthMax}`
           // Height
           const heightMin = place?.heightMin ?? ""
-          if (heightMin !== (existing?.heightMin ?? ""))
+          if (heightMin !== (ex?.heightMin ?? ""))
             css.minHeight = `${heightMin}`
           const heightMax = place?.heightMax ?? ""
-          if (heightMax !== (existing?.heightMax ?? ""))
+          if (heightMax !== (ex?.heightMax ?? ""))
             css.maxHeight = `${heightMax}`
           // Alignment
           const alignContent = place?.alignContent ?? To.Default
-          if (alignContent !== (existing?.alignContent ?? To.Default)) {
+          if (alignContent !== (ex?.alignContent ?? To.Default)) {
             if ((alignContent & To.Default) === 0) { // if not auto mode
               const v = AlignToCss[(alignContent >> 2) & 0b11]
               const h = AlignToCss[alignContent & 0b11]
@@ -133,8 +133,8 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
           // Box Alignment
           const heightGrowth = place?.heightGrowth ?? 0
           const alignFrame = place?.alignFrame ?? To.Default
-          if (alignFrame !== (existing?.alignFrame ?? To.Default) ||
-            heightGrowth !== (existing?.heightGrowth ?? 0)) {
+          if (alignFrame !== (ex?.alignFrame ?? To.Default) ||
+            heightGrowth !== (ex?.heightGrowth ?? 0)) {
             if ((alignFrame & To.Default) === 0) { // if not auto mode
               const v = AlignToCss[(alignFrame >> 2) & 0b11]
               const h = AlignToCss[alignFrame & 0b11]
