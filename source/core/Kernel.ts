@@ -140,10 +140,13 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     const ownerCtx = ownerArgs.subTreeContext
     const ownerTriggers = ownerArgs.triggers as any
     const ctx = newArgs.subTreeContext // re-use owner context if necessary
-    const result = ctx !== block.args?.subTreeContext || ownerTriggers?.[CONTEXT_SWITCH]
+    const result = ctx !== block.args?.subTreeContext || ownerTriggers?.[CONTEXT_SWITCH] !== undefined
     if (ctx && ctx !== ownerCtx) {
       newArgs.subTreeContextType ??= ctx.constructor
-      block.context = owner.context
+      if (ownerCtx)
+        block.context = owner
+      else
+        block.context = owner.context
     }
     else if (ownerCtx)
       block.context = owner
