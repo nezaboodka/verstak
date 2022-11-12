@@ -72,8 +72,11 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
     if (value === undefined) {
       const effect = gBlinkingEffect
       VBlock.runForAllBlocks((e: any) => {
-        if (e instanceof HTMLElement)
-          e.classList.remove(`${effect}-0`, `${effect}-1`)
+        if (e instanceof HTMLElement) {
+          e.classList.remove(`${effect}-0-0`, `${effect}-0-1`)
+          e.classList.remove(`${effect}-1-0`, `${effect}-1-1`)
+          e.classList.remove(`${effect}-2-0`, `${effect}-2-1`)
+        }
       })
     }
     gBlinkingEffect = value

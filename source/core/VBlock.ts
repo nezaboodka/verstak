@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader } from "reactronic"
+import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw } from "reactronic"
 import { Bounds, Place, Allocator, To } from "./Allocator"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
@@ -21,16 +21,19 @@ export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
   throttling?: number,
   logging?: Partial<LoggingOptions>
   shuffle?: boolean
-  render: Render<T, M, R>
   initialize?: Render<T, M, R> | Array<Render<T, M, R>>
-  finalize?: Render<T, M, R> | Array<Render<T, M, R>>
   override?: Render<T, M, R>
-  nestedContext?: Object
-  nestedContextType?: Object
+  render: Render<T, M, R>
+  finalize?: Render<T, M, R> | Array<Render<T, M, R>>
 }
 
-export function useContext<T extends Object>(type: new (...args: any[]) => T): T {
-  return VBlockImpl.useContext(type)
+export function setContext<T extends Object>(
+  type: new (...args: any[]) => T, context: T): void {
+  return VBlockImpl.setContext(type, context)
+}
+
+export function use<T extends Object>(type: new (...args: any[]) => T): T {
+  return VBlockImpl.use(type)
 }
 
 // VBlock
@@ -101,18 +104,13 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       result = ex.instance
       if (result.driver !== driver && driver !== undefined)
         throw new Error(`changing block driver is not yet supported: "${result.driver.name}" -> "${driver?.name}"`)
-      if (!VBlockImpl.trySwitchContext(args, result, owner)) { // no context switching
-        const exTriggers = result.args?.triggers
-        if (triggersAreEqual(args.triggers, exTriggers))
-          args.triggers = exTriggers // preserve triggers instance
-      }
-      else
-        args.triggers ??= { [CONTEXT_SWITCH]: args.nestedContext } // mark for re-rendering
+      const exTriggers = result.args?.triggers
+      if (triggersAreEqual(args.triggers, exTriggers))
+        args.triggers = exTriggers // preserve triggers instance
       result.args = args
     }
     else { // create new
       result = new VBlockImpl<T, M, R>(name, driver, owner, args)
-      VBlockImpl.trySwitchContext(args, result, owner)
       result.item = children.add(result)
       VBlockImpl.grandCount++
       if (args.reacting)
@@ -142,7 +140,6 @@ export enum LayoutKind {
 
 // AbstractDriver
 
-const CONTEXT_SWITCH: unique symbol = Symbol("V-CONTEXT-SWITCH")
 const createDefaultAllocator = (): Allocator => new Allocator()
 
 export class AbstractDriver<T> {
@@ -255,6 +252,17 @@ function getBlockName(block: VBlockImpl): string | undefined {
   return block.stamp >= 0 ? block.name : undefined
 }
 
+class VBlockContext<T extends Object = Object> extends ObservableObject {
+  @raw type: new (...args: any[]) => T
+  instance: T
+
+  constructor(type: new (...args: any[]) => T, instance: T) {
+    super()
+    this.type = type
+    this.instance = instance
+  }
+}
+
 class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   static grandCount: number = 0
   static disposableCount: number = 0
@@ -276,6 +284,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   place: Place | undefined
   allocator: Allocator
   private senior: VBlockImpl
+  context: VBlockContext<any> | undefined
 
   constructor(name: string, driver: AbstractDriver<T>,
     owner: VBlockImpl, args: BlockArgs<T, M, R>) {
@@ -295,7 +304,8 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.native = undefined
     this.place = undefined
     this.allocator = driver.createAllocator()
-    this.senior = owner.senior
+    this.senior = owner.context ? owner : owner.senior
+    this.context = undefined
   }
 
   @reactive
@@ -309,34 +319,38 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     runRender(this.item!)
   }
 
-  static useContext<T extends Object>(type: new (...args: any[]) => T): T {
+  static use<T extends Object>(type: new (...args: any[]) => T): T {
     let b = gCurrent.instance
-    while (b.args.nestedContextType !== type && b.host !== b)
+    while (b.context?.type !== type && b.host !== b)
       b = b.senior
     if (b.host === b)
-      throw new Error(`context ${type.name} is not found`)
-    return b.args.nestedContext as any // TODO: to get rid of any
+      throw new Error(`${type.name} context doesn't exist`)
+    return b.context?.instance as any // TODO: to get rid of any
   }
 
-  static trySwitchContext(newArgs: BlockArgs<any, any, any>,
-    block: VBlockImpl, owner: VBlockImpl): boolean {
-    const ownerArgs = owner.args
-    const ownerCtx = ownerArgs.nestedContext
-    const ownerTriggers = ownerArgs.triggers as any
-    const ctx = newArgs.nestedContext // re-use owner context if necessary
-    const result = ctx !== block.args?.nestedContext || ownerTriggers?.[CONTEXT_SWITCH] !== undefined
-    if (ctx && ctx !== ownerCtx) {
-      newArgs.nestedContextType ??= ctx.constructor
-      if (ownerCtx)
-        block.senior = owner
+  static setContext<T>(type: new (...args: any[]) => T, context: T): void {
+    const block = gCurrent.instance
+    const host = block.host
+    const hostCtx = nonreactive(() => host.context?.instance)
+    if (context && context !== hostCtx) {
+      if (hostCtx)
+        block.senior = host
       else
-        block.senior = owner.senior
+        block.senior = host.senior
+      Transaction.run({ separation: true }, () => {
+        const ctx = block.context
+        if (ctx) {
+          ctx.type = type
+          ctx.instance = context // update context thus invalidate observers
+        }
+        else
+          block.context = new VBlockContext<any>(type, context)
+      })
     }
-    else if (ownerCtx)
-      block.senior = owner
+    else if (hostCtx)
+      block.senior = host
     else
-      block.senior = owner.senior
-    return result
+      block.senior = host.senior
   }
 }
 
@@ -467,13 +481,11 @@ function prepareAndRunRender(item: Item<VBlockImpl>,
   redeploy: boolean, sequential: boolean): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    runUnder(item, () => {
-      prepareRender(item, redeploy, sequential)
-      if (block.args?.reacting)
-        nonreactive(block.rerender, block.args?.triggers) // reactive auto-rendering
-      else
-        runRender(item)
-    })
+    prepareRender(item, redeploy, sequential)
+    if (block.args?.reacting)
+      nonreactive(block.rerender, block.args?.triggers) // reactive auto-rendering
+    else
+      runRender(item)
   }
 }
 
@@ -484,47 +496,53 @@ function prepareRender(item: Item<VBlockImpl>,
   // Initialize, deploy, and move (if needed)
   if (block.stamp === 0) {
     block.stamp = 1
-    if (block.args?.reacting) {
-      Transaction.outside(() => {
-        if (Rx.isLogging)
-          Rx.setLoggingHint(block, block.name)
-        Rx.getController(block.rerender).configure({
-          order: block.level,
-          monitor: block.args?.monitor,
-          throttling: block.args?.throttling,
-          logging: block.args?.logging,
+    runUnder(item, () => {
+      if (block.args?.reacting) {
+        Transaction.outside(() => {
+          if (Rx.isLogging)
+            Rx.setLoggingHint(block, block.name)
+          Rx.getController(block.rerender).configure({
+            order: block.level,
+            monitor: block.args?.monitor,
+            throttling: block.args?.throttling,
+            logging: block.args?.logging,
+          })
         })
-      })
-    }
-    driver.initialize(block, undefined)
-    driver.deploy(block, sequential)
-    driver.arrange(block, block.place, undefined)
+      }
+      driver.initialize(block, undefined)
+      driver.deploy(block, sequential)
+      driver.arrange(block, block.place, undefined)
+    })
   }
   else if (redeploy)
-    driver.deploy(block, sequential) // , console.log(`redeployed: ${block.name}`)
+    runUnder(item, () => {
+      driver.deploy(block, sequential) // , console.log(`redeployed: ${block.name}`)
+    })
 }
 
 function runRender(item: Item<VBlockImpl>): void {
   const block = item.instance
   if (block.stamp >= 0) { // if block is alive
     let result: unknown = undefined
-    try {
-      block.stamp++
-      block.numerator = 0
-      block.children.beginMerge()
-      result = block.driver.render(block)
-      if (result instanceof Promise)
-        result.then(
-          v => { runRenderNestedTreesThenDo(undefined, NOP); return v },
-          e => { console.log(e); runRenderNestedTreesThenDo(e ?? new Error("unknown error"), NOP) })
-      else
-        runRenderNestedTreesThenDo(undefined, NOP)
-    }
-    catch(e: unknown) {
-      runRenderNestedTreesThenDo(e, NOP)
-      console.log(`Rendering failed: ${block.name}`)
-      console.log(`${e}`)
-    }
+    runUnder(item, () => {
+      try {
+        block.stamp++
+        block.numerator = 0
+        block.children.beginMerge()
+        result = block.driver.render(block)
+        if (result instanceof Promise)
+          result.then(
+            v => { runRenderNestedTreesThenDo(undefined, NOP); return v },
+            e => { console.log(e); runRenderNestedTreesThenDo(e ?? new Error("unknown error"), NOP) })
+        else
+          runRenderNestedTreesThenDo(undefined, NOP)
+      }
+      catch(e: unknown) {
+        runRenderNestedTreesThenDo(e, NOP)
+        console.log(`Rendering failed: ${block.name}`)
+        console.log(`${e}`)
+      }
+    })
   }
 }
 
@@ -672,7 +690,7 @@ Object.defineProperty(gSysRoot.instance, "host", {
   enumerable: true,
 })
 
-Object.defineProperty(gSysRoot.instance, "context", {
+Object.defineProperty(gSysRoot.instance, "senior", {
   value: gSysRoot.instance,
   writable: false,
   configurable: false,
