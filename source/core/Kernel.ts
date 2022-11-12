@@ -25,11 +25,21 @@ export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
   initialize?: Render<T, M, R> | Array<Render<T, M, R>>
   finalize?: Render<T, M, R> | Array<Render<T, M, R>>
   wrapper?: Render<T, M, R>
-  context?: Object
-  contextualized?: Object
+  current?: Object
+  label?: Object
 }
 
 // VBlock
+
+export function current<T extends Object>(type: new (...args: any[]) => T): T {
+  const current = gCurrent
+  let block = current.instance
+  while (block.args.label !== type && block.host !== block)
+    block = block.context
+  if (block.host === block)
+    throw new Error(`context ${type.name} is not found`)
+  return block.args.current as any // TODO: to get rid of any
+}
 
 export abstract class VBlock<T = unknown, M = unknown, R = void> {
   static readonly shortFrameDuration = 16 // ms
@@ -97,20 +107,18 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       result = ex.instance
       if (result.driver !== driver && driver !== undefined)
         throw new Error(`changing block driver is not yet supported: "${result.driver.name}" -> "${driver?.name}"`)
-      const contextSwitching = args.context !== result.args?.context
-      if (contextSwitching) {
-        // handle context change
-        args.context!
-      }
-      else {
+      if (!VBlock.trySwitchContext(args, result, owner)) { // no context switching
         const exTriggers = result.args?.triggers
         if (triggersAreEqual(args.triggers, exTriggers))
           args.triggers = exTriggers // preserve triggers instance
       }
+      else
+        args.triggers ??= {} // mark for re-rendering
       result.args = args
     }
     else { // create new
       result = new VBlockImpl<T, M, R>(name, driver, owner, args)
+      VBlock.trySwitchContext(args, result, owner)
       result.item = children.add(result)
       VBlockImpl.grandCount++
       if (args.reacting)
@@ -125,6 +133,22 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 
   static setDefaultLoggingOptions(logging?: LoggingOptions): void {
     VBlockImpl.logging = logging
+  }
+
+  private static trySwitchContext(newArgs: BlockArgs<any, any, any>,
+    block: VBlockImpl, owner: VBlockImpl): boolean {
+    const ownerCurrent = owner.args.current
+    const current = newArgs.current // re-use owner context if necessary
+    const result = current !== block.args?.current
+    if (current && current !== ownerCurrent) {
+      newArgs.label ??= current.constructor
+      block.context = owner.context
+    }
+    else if (owner.args.label)
+      block.context = owner
+    else
+      block.context = owner.context
+    return result
   }
 }
 
@@ -272,14 +296,15 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   native: T | undefined
   place: Place | undefined
   allocator: Allocator
+  context: VBlockImpl
 
   constructor(name: string, driver: AbstractDriver<T>,
-    owner: VBlockImpl, options: BlockArgs<T, M, R>) {
+    owner: VBlockImpl, args: BlockArgs<T, M, R>) {
     super()
     // User-defined properties
     this.name = name
     this.driver = driver
-    this.args = options
+    this.args = args
     this.model = undefined
     // System-managed properties
     this.level = owner.level + 1
@@ -291,6 +316,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.native = undefined
     this.place = undefined
     this.allocator = driver.createAllocator()
+    this.context = owner.context
   }
 
   @reactive
@@ -631,6 +657,13 @@ const gSysRoot = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>("S
 gSysRoot.instance.item = gSysRoot
 
 Object.defineProperty(gSysRoot.instance, "host", {
+  value: gSysRoot.instance,
+  writable: false,
+  configurable: false,
+  enumerable: true,
+})
+
+Object.defineProperty(gSysRoot.instance, "context", {
   value: gSysRoot.instance,
   writable: false,
   configurable: false,
