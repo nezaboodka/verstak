@@ -29,8 +29,6 @@ export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
   label?: Object
 }
 
-// VBlock
-
 export function current<T extends Object>(type: new (...args: any[]) => T): T {
   const current = gCurrent
   let block = current.instance
@@ -40,6 +38,8 @@ export function current<T extends Object>(type: new (...args: any[]) => T): T {
     throw new Error(`context ${type.name} is not found`)
   return block.args.current as any // TODO: to get rid of any
 }
+
+// VBlock
 
 export abstract class VBlock<T = unknown, M = unknown, R = void> {
   static readonly shortFrameDuration = 16 // ms
@@ -113,7 +113,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
           args.triggers = exTriggers // preserve triggers instance
       }
       else
-        args.triggers ??= {} // mark for re-rendering
+        args.triggers ??= { [CURRENT]: args.current } // mark for re-rendering
       result.args = args
     }
     else { // create new
@@ -139,12 +139,14 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     block: VBlockImpl, owner: VBlockImpl): boolean {
     const ownerCurrent = owner.args.current
     const current = newArgs.current // re-use owner context if necessary
-    const result = current !== block.args?.current
+    const result = current !== block.args?.current || (
+      typeof(owner.args.triggers) === "object" &&
+      (owner.args.triggers as any)[CURRENT] !== undefined)
     if (current && current !== ownerCurrent) {
       newArgs.label ??= current.constructor
       block.context = owner.context
     }
-    else if (owner.args.label)
+    else if (owner.args.label !== undefined)
       block.context = owner
     else
       block.context = owner.context
@@ -164,6 +166,7 @@ export enum LayoutKind {
 
 // AbstractDriver
 
+const CURRENT: unique symbol = Symbol("V-CURRENT")
 const createDefaultAllocator = (): Allocator => new Allocator()
 
 export class AbstractDriver<T> {
