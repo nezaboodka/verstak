@@ -346,7 +346,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         runFinalize(item, true)
       if (!error) {
         // Lay out and render actual blocks
-        const isBlockOwner = owner.driver.isBlock
+        const ownerIsBlock = owner.driver.isBlock
         const sequential = children.strict
         const allocator = owner.allocator
         allocator.reset()
@@ -375,7 +375,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (isBlockOwner && driver.isLine)
+          if (ownerIsBlock && driver.isLine)
             lineHost = block
         }
         // Render incremental children (if any)
