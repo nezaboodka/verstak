@@ -24,7 +24,7 @@ export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
   render: Render<T, M, R>
   initialize?: Render<T, M, R> | Array<Render<T, M, R>>
   finalize?: Render<T, M, R> | Array<Render<T, M, R>>
-  wrap?: Render<T, M, R>
+  override?: Render<T, M, R>
   subTreeContext?: Object
   subTreeContextType?: Object
 }
@@ -246,9 +246,9 @@ export class AbstractDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     let result: void | Promise<void>
-    const wrapper = block.args?.wrap
-    if (wrapper)
-      result = wrapper(block.native!, block)
+    const override = block.args?.override
+    if (override)
+      result = override(block.native!, block)
     else
       result = invokeRenderFunction(block)
     return result
