@@ -24,7 +24,7 @@ export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
   render: Render<T, M, R>
   initialize?: Render<T, M, R> | Array<Render<T, M, R>>
   finalize?: Render<T, M, R> | Array<Render<T, M, R>>
-  wrapper?: Render<T, M, R>
+  wrap?: Render<T, M, R>
   subTreeContext?: Object
   subTreeContextType?: Object
 }
@@ -59,7 +59,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly native: T | undefined
   abstract readonly place: Readonly<Place> | undefined
 
-  baseRender(): R {
+  render(): R {
     return invokeRenderFunction(this)
   }
 
@@ -246,7 +246,7 @@ export class AbstractDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     let result: void | Promise<void>
-    const wrapper = block.args?.wrapper
+    const wrapper = block.args?.wrap
     if (wrapper)
       result = wrapper(block.native!, block)
     else
