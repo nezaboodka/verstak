@@ -25,18 +25,17 @@ export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
   initialize?: Render<T, M, R> | Array<Render<T, M, R>>
   finalize?: Render<T, M, R> | Array<Render<T, M, R>>
   wrapper?: Render<T, M, R>
-  current?: Object
-  label?: Object
+  subTreeContext?: Object
+  subTreeContextType?: Object
 }
 
-export function current<T extends Object>(type: new (...args: any[]) => T): T {
-  const current = gCurrent
-  let block = current.instance
-  while (block.args.label !== type && block.host !== block)
-    block = block.context
-  if (block.host === block)
+export function useContext<T extends Object>(type: new (...args: any[]) => T): T {
+  let b = gCurrent.instance
+  while (b.args.subTreeContextType !== type && b.host !== b)
+    b = b.context
+  if (b.host === b)
     throw new Error(`context ${type.name} is not found`)
-  return block.args.current as any // TODO: to get rid of any
+  return b.args.subTreeContext as any // TODO: to get rid of any
 }
 
 // VBlock
@@ -113,7 +112,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
           args.triggers = exTriggers // preserve triggers instance
       }
       else
-        args.triggers ??= { [CURRENT]: args.current } // mark for re-rendering
+        args.triggers ??= { [CONTEXT]: args.subTreeContext } // mark for re-rendering
       result.args = args
     }
     else { // create new
@@ -137,16 +136,17 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 
   private static trySwitchContext(newArgs: BlockArgs<any, any, any>,
     block: VBlockImpl, owner: VBlockImpl): boolean {
-    const ownerCurrent = owner.args.current
-    const current = newArgs.current // re-use owner context if necessary
-    const result = current !== block.args?.current || (
-      typeof(owner.args.triggers) === "object" &&
-      (owner.args.triggers as any)[CURRENT] !== undefined)
-    if (current && current !== ownerCurrent) {
-      newArgs.label ??= current.constructor
+    const ownerArgs = owner.args
+    const ownerSubTreeContext = ownerArgs.subTreeContext
+    const ctx = newArgs.subTreeContext // re-use owner context if necessary
+    const result = ctx !== block.args?.subTreeContext || (
+      typeof(ownerArgs.triggers) === "object" &&
+      (ownerArgs.triggers as any)[CONTEXT] !== undefined)
+    if (ctx && ctx !== ownerSubTreeContext) {
+      newArgs.subTreeContextType ??= ctx.constructor
       block.context = owner.context
     }
-    else if (owner.args.label !== undefined)
+    else if (ownerArgs.subTreeContext)
       block.context = owner
     else
       block.context = owner.context
@@ -166,7 +166,7 @@ export enum LayoutKind {
 
 // AbstractDriver
 
-const CURRENT: unique symbol = Symbol("V-CURRENT")
+const CONTEXT: unique symbol = Symbol("V-CONTEXT")
 const createDefaultAllocator = (): Allocator => new Allocator()
 
 export class AbstractDriver<T> {
