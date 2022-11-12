@@ -36,12 +36,12 @@ export function Block<M = unknown, R = void>(name: string,
 
 // Text (either plain or html)
 
-export function PlainText(content: string, wrapping?: boolean): VBlock<HTMLElement, void, void> {
-  return VBlock.claim("", { wrapping, render(e) { e.innerText = content } }, VerstakTags.text)
+export function PlainText(content: string, name?: string, args?: Partial<BlockArgs<HTMLElement, void, void>>): VBlock<HTMLElement, void, void> {
+  return VBlock.claim(name ?? "", { ...args, render(e) { e.innerText = content } }, VerstakTags.text)
 }
 
-export function HtmlText(content: string, wrapping?: boolean): VBlock<HTMLElement, void, void> {
-  return VBlock.claim("", { wrapping, render(e) { e.innerHTML = content } }, VerstakTags.text)
+export function HtmlText(content: string, name?: string, args?: Partial<BlockArgs<HTMLElement, void, void>>): VBlock<HTMLElement, void, void> {
+  return VBlock.claim(name ?? "", { ...args, render(e) { e.innerHTML = content } }, VerstakTags.text)
 }
 
 // Grid Block
@@ -156,7 +156,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
           const wrapping = place?.wrapping ?? false
           if (wrapping !== (ex?.wrapping ?? false)) {
             if (wrapping)
-              native.setAttribute("wrapping", "")
+              native.setAttribute("wrapping", "true")
             else
               native.removeAttribute("wrapping")
           }
