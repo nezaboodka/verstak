@@ -112,7 +112,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
           args.triggers = exTriggers // preserve triggers instance
       }
       else
-        args.triggers ??= { [CONTEXT]: args.subTreeContext } // mark for re-rendering
+        args.triggers ??= { [CONTEXT_SWITCH]: args.subTreeContext } // mark for re-rendering
       result.args = args
     }
     else { // create new
@@ -138,10 +138,9 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     block: VBlockImpl, owner: VBlockImpl): boolean {
     const ownerArgs = owner.args
     const ownerCtx = ownerArgs.subTreeContext
+    const ownerTriggers = ownerArgs.triggers as any
     const ctx = newArgs.subTreeContext // re-use owner context if necessary
-    const result = ctx !== block.args?.subTreeContext || (
-      typeof(ownerArgs.triggers) === "object" &&
-      (ownerArgs.triggers as any)[CONTEXT] !== undefined)
+    const result = ctx !== block.args?.subTreeContext || ownerTriggers?.[CONTEXT_SWITCH]
     if (ctx && ctx !== ownerCtx) {
       newArgs.subTreeContextType ??= ctx.constructor
       block.context = owner.context
@@ -166,7 +165,7 @@ export enum LayoutKind {
 
 // AbstractDriver
 
-const CONTEXT: unique symbol = Symbol("V-CONTEXT")
+const CONTEXT_SWITCH: unique symbol = Symbol("V-CONTEXT-SWITCH")
 const createDefaultAllocator = (): Allocator => new Allocator()
 
 export class AbstractDriver<T> {
