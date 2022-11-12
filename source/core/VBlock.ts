@@ -30,12 +30,7 @@ export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
 }
 
 export function useContext<T extends Object>(type: new (...args: any[]) => T): T {
-  let b = gCurrent.instance
-  while (b.args.nestedContextType !== type && b.host !== b)
-    b = b.senior
-  if (b.host === b)
-    throw new Error(`context ${type.name} is not found`)
-  return b.args.nestedContext as any // TODO: to get rid of any
+  return VBlockImpl.useContext(type)
 }
 
 // VBlock
@@ -106,7 +101,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       result = ex.instance
       if (result.driver !== driver && driver !== undefined)
         throw new Error(`changing block driver is not yet supported: "${result.driver.name}" -> "${driver?.name}"`)
-      if (!VBlock.trySwitchContext(args, result, owner)) { // no context switching
+      if (!VBlockImpl.trySwitchContext(args, result, owner)) { // no context switching
         const exTriggers = result.args?.triggers
         if (triggersAreEqual(args.triggers, exTriggers))
           args.triggers = exTriggers // preserve triggers instance
@@ -117,7 +112,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     }
     else { // create new
       result = new VBlockImpl<T, M, R>(name, driver, owner, args)
-      VBlock.trySwitchContext(args, result, owner)
+      VBlockImpl.trySwitchContext(args, result, owner)
       result.item = children.add(result)
       VBlockImpl.grandCount++
       if (args.reacting)
@@ -132,27 +127,6 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 
   static setDefaultLoggingOptions(logging?: LoggingOptions): void {
     VBlockImpl.logging = logging
-  }
-
-  private static trySwitchContext(newArgs: BlockArgs<any, any, any>,
-    block: VBlockImpl, owner: VBlockImpl): boolean {
-    const ownerArgs = owner.args
-    const ownerCtx = ownerArgs.nestedContext
-    const ownerTriggers = ownerArgs.triggers as any
-    const ctx = newArgs.nestedContext // re-use owner context if necessary
-    const result = ctx !== block.args?.nestedContext || ownerTriggers?.[CONTEXT_SWITCH] !== undefined
-    if (ctx && ctx !== ownerCtx) {
-      newArgs.nestedContextType ??= ctx.constructor
-      if (ownerCtx)
-        block.senior = owner
-      else
-        block.senior = owner.senior
-    }
-    else if (ownerCtx)
-      block.senior = owner
-    else
-      block.senior = owner.senior
-    return result
   }
 }
 
@@ -301,7 +275,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   native: T | undefined
   place: Place | undefined
   allocator: Allocator
-  senior: VBlockImpl
+  private senior: VBlockImpl
 
   constructor(name: string, driver: AbstractDriver<T>,
     owner: VBlockImpl, args: BlockArgs<T, M, R>) {
@@ -333,6 +307,36 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   rerender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by owner
     runRender(this.item!)
+  }
+
+  static useContext<T extends Object>(type: new (...args: any[]) => T): T {
+    let b = gCurrent.instance
+    while (b.args.nestedContextType !== type && b.host !== b)
+      b = b.senior
+    if (b.host === b)
+      throw new Error(`context ${type.name} is not found`)
+    return b.args.nestedContext as any // TODO: to get rid of any
+  }
+
+  static trySwitchContext(newArgs: BlockArgs<any, any, any>,
+    block: VBlockImpl, owner: VBlockImpl): boolean {
+    const ownerArgs = owner.args
+    const ownerCtx = ownerArgs.nestedContext
+    const ownerTriggers = ownerArgs.triggers as any
+    const ctx = newArgs.nestedContext // re-use owner context if necessary
+    const result = ctx !== block.args?.nestedContext || ownerTriggers?.[CONTEXT_SWITCH] !== undefined
+    if (ctx && ctx !== ownerCtx) {
+      newArgs.nestedContextType ??= ctx.constructor
+      if (ownerCtx)
+        block.senior = owner
+      else
+        block.senior = owner.senior
+    }
+    else if (ownerCtx)
+      block.senior = owner
+    else
+      block.senior = owner.senior
+    return result
   }
 }
 
