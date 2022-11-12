@@ -8,5 +8,5 @@
 export * from "./Utils"
 export * from "./CellRange"
 export * from "./Allocator"
-export * from "./Kernel"
 export * from "./Restyler"
+export * from "./VBlock"
