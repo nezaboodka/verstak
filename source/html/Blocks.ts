@@ -54,14 +54,14 @@ export function Grid<M = unknown, R = void>(name: string,
 // Line
 
 export function Line<T = void>(claim: (x: void) => T): VBlock<HTMLElement> {
-  const result = VBlock.claim("", EMPTY_RENDER, VerstakTags.line)
+  const result = VBlock.claim("", EMPTY_RENDER, VerstakTags.part)
   claim()
-  VBlock.claim("", EMPTY_RENDER, VerstakTags.line)
+  VBlock.claim("", EMPTY_RENDER, VerstakTags.part)
   return result
 }
 
 export function lineFeed(args?: BlockArgs<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
-  return VBlock.claim("", args ?? EMPTY_RENDER, VerstakTags.line)
+  return VBlock.claim("", args ?? EMPTY_RENDER, VerstakTags.part)
 }
 
 // Group
@@ -129,13 +129,13 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
               const h = AlignToCss[alignContent & 0b11]
               const t = TextAlignCss[alignContent & 0b11]
               css.justifyContent = v
-              css.alignItems = h
+              css.alignContent = h
               css.textAlign = t
             }
             else
-              css.justifyContent = css.alignItems = css.textAlign = ""
+              css.justifyContent = css.alignContent = css.textAlign = ""
           }
-          // Box Alignment
+          // Frame Alignment
           const heightGrowth = place?.heightGrowth ?? 0
           const alignFrame = place?.alignFrame ?? To.Default
           if (alignFrame !== (ex?.alignFrame ?? To.Default) ||
@@ -174,8 +174,8 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     // Perform initial line feed automatically
-    if (!block.driver.isLine)
-      VBlock.claim("", EMPTY_RENDER, VerstakTags.line)
+    if (!block.driver.isPart)
+      VBlock.claim("", EMPTY_RENDER, VerstakTags.part)
     return super.render(block)
   }
 }
@@ -194,7 +194,7 @@ const VerstakTags = {
 
   // display: contents
   // display: flex (row)
-  line: new VerstakDriver<HTMLElement>("v-line", LayoutKind.Line),
+  part: new VerstakDriver<HTMLElement>("v-part", LayoutKind.Part),
 
   // display: contents
   group: new VerstakDriver<HTMLElement>("v-group", LayoutKind.Group),
