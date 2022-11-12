@@ -137,16 +137,16 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   private static trySwitchContext(newArgs: BlockArgs<any, any, any>,
     block: VBlockImpl, owner: VBlockImpl): boolean {
     const ownerArgs = owner.args
-    const ownerSubTreeContext = ownerArgs.subTreeContext
+    const ownerCtx = ownerArgs.subTreeContext
     const ctx = newArgs.subTreeContext // re-use owner context if necessary
     const result = ctx !== block.args?.subTreeContext || (
       typeof(ownerArgs.triggers) === "object" &&
       (ownerArgs.triggers as any)[CONTEXT] !== undefined)
-    if (ctx && ctx !== ownerSubTreeContext) {
+    if (ctx && ctx !== ownerCtx) {
       newArgs.subTreeContextType ??= ctx.constructor
       block.context = owner.context
     }
-    else if (ownerArgs.subTreeContext)
+    else if (ownerCtx)
       block.context = owner
     else
       block.context = owner.context
