@@ -32,7 +32,7 @@ export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
 export function useContext<T extends Object>(type: new (...args: any[]) => T): T {
   let b = gCurrent.instance
   while (b.args.nestedContextType !== type && b.host !== b)
-    b = b.context
+    b = b.senior
   if (b.host === b)
     throw new Error(`context ${type.name} is not found`)
   return b.args.nestedContext as any // TODO: to get rid of any
@@ -144,14 +144,14 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     if (ctx && ctx !== ownerCtx) {
       newArgs.nestedContextType ??= ctx.constructor
       if (ownerCtx)
-        block.context = owner
+        block.senior = owner
       else
-        block.context = owner.context
+        block.senior = owner.senior
     }
     else if (ownerCtx)
-      block.context = owner
+      block.senior = owner
     else
-      block.context = owner.context
+      block.senior = owner.senior
     return result
   }
 }
@@ -301,7 +301,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   native: T | undefined
   place: Place | undefined
   allocator: Allocator
-  context: VBlockImpl
+  senior: VBlockImpl
 
   constructor(name: string, driver: AbstractDriver<T>,
     owner: VBlockImpl, args: BlockArgs<T, M, R>) {
@@ -321,7 +321,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.native = undefined
     this.place = undefined
     this.allocator = driver.createAllocator()
-    this.context = owner.context
+    this.senior = owner.senior
   }
 
   @reactive
