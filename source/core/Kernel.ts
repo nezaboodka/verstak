@@ -25,17 +25,17 @@ export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
   initialize?: Render<T, M, R> | Array<Render<T, M, R>>
   finalize?: Render<T, M, R> | Array<Render<T, M, R>>
   override?: Render<T, M, R>
-  subTreeContext?: Object
-  subTreeContextType?: Object
+  nestedContext?: Object
+  nestedContextType?: Object
 }
 
 export function useContext<T extends Object>(type: new (...args: any[]) => T): T {
   let b = gCurrent.instance
-  while (b.args.subTreeContextType !== type && b.host !== b)
+  while (b.args.nestedContextType !== type && b.host !== b)
     b = b.context
   if (b.host === b)
     throw new Error(`context ${type.name} is not found`)
-  return b.args.subTreeContext as any // TODO: to get rid of any
+  return b.args.nestedContext as any // TODO: to get rid of any
 }
 
 // VBlock
@@ -112,7 +112,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
           args.triggers = exTriggers // preserve triggers instance
       }
       else
-        args.triggers ??= { [CONTEXT_SWITCH]: args.subTreeContext } // mark for re-rendering
+        args.triggers ??= { [CONTEXT_SWITCH]: args.nestedContext } // mark for re-rendering
       result.args = args
     }
     else { // create new
@@ -137,12 +137,12 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   private static trySwitchContext(newArgs: BlockArgs<any, any, any>,
     block: VBlockImpl, owner: VBlockImpl): boolean {
     const ownerArgs = owner.args
-    const ownerCtx = ownerArgs.subTreeContext
+    const ownerCtx = ownerArgs.nestedContext
     const ownerTriggers = ownerArgs.triggers as any
-    const ctx = newArgs.subTreeContext // re-use owner context if necessary
-    const result = ctx !== block.args?.subTreeContext || ownerTriggers?.[CONTEXT_SWITCH] !== undefined
+    const ctx = newArgs.nestedContext // re-use owner context if necessary
+    const result = ctx !== block.args?.nestedContext || ownerTriggers?.[CONTEXT_SWITCH] !== undefined
     if (ctx && ctx !== ownerCtx) {
-      newArgs.subTreeContextType ??= ctx.constructor
+      newArgs.nestedContextType ??= ctx.constructor
       if (ownerCtx)
         block.context = owner
       else

@@ -8,9 +8,9 @@
 import { VBlock, Render, StaticDriver, LayoutKind, BlockArgs } from "../core/api"
 import { HtmlDriver, SvgDriver } from "./HtmlDriver"
 
-export function HtmlBody(name: string, subTreeContext: Object, render: Render<HTMLElement>): VBlock<HTMLElement> {
+export function HtmlBody(name: string, nestedContext: Object, render: Render<HTMLElement>): VBlock<HTMLElement> {
   const driver = new StaticDriver(global.document.body, name, LayoutKind.Block)
-  return VBlock.claim(name, { subTreeContext, reacting: true, render }, driver)
+  return VBlock.claim(name, { nestedContext, reacting: true, render }, driver)
 }
 
 export function A<M = unknown, R = void>(name: string, args: BlockArgs<HTMLAnchorElement, M, R> | Render<HTMLAnchorElement, M, R>): VBlock<HTMLAnchorElement, M, R> { return VBlock.claim(name, args instanceof Function ? { render: args } : args, HtmlTags.a) }
