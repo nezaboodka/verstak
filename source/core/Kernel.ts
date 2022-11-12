@@ -100,7 +100,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       if (last?.instance?.driver === driver)
         ex = last
     }
-    ex ??= children.claim(name)
+    ex ??= children.claim(name, undefined, "nested blocks can be declared inside render function only")
     // Reuse existing block or claim a new one
     if (ex) {
       result = ex.instance
@@ -463,11 +463,13 @@ function prepareAndRunRender(item: Item<VBlockImpl>,
   redeploy: boolean, sequential: boolean): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    prepareRender(item, redeploy, sequential)
-    if (block.args?.reacting)
-      nonreactive(block.rerender, block.args?.triggers) // reactive auto-rendering
-    else
-      runRender(item)
+    runUnder(item, () => {
+      prepareRender(item, redeploy, sequential)
+      if (block.args?.reacting)
+        nonreactive(block.rerender, block.args?.triggers) // reactive auto-rendering
+      else
+        runRender(item)
+    })
   }
 }
 
@@ -501,26 +503,24 @@ function prepareRender(item: Item<VBlockImpl>,
 function runRender(item: Item<VBlockImpl>): void {
   const block = item.instance
   if (block.stamp >= 0) { // if block is alive
-    runUnder(item, () => {
-      let result: unknown = undefined
-      try {
-        block.stamp++
-        block.numerator = 0
-        block.children.beginMerge()
-        result = block.driver.render(block)
-        if (result instanceof Promise)
-          result.then(
-            v => { runRenderNestedTreesThenDo(undefined, NOP); return v },
-            e => { console.log(e); runRenderNestedTreesThenDo(e ?? new Error("unknown error"), NOP) })
-        else
-          runRenderNestedTreesThenDo(undefined, NOP)
-      }
-      catch(e: unknown) {
-        runRenderNestedTreesThenDo(e, NOP)
-        console.log(`Rendering failed: ${block.name}`)
-        console.log(`${e}`)
-      }
-    })
+    let result: unknown = undefined
+    try {
+      block.stamp++
+      block.numerator = 0
+      block.children.beginMerge()
+      result = block.driver.render(block)
+      if (result instanceof Promise)
+        result.then(
+          v => { runRenderNestedTreesThenDo(undefined, NOP); return v },
+          e => { console.log(e); runRenderNestedTreesThenDo(e ?? new Error("unknown error"), NOP) })
+      else
+        runRenderNestedTreesThenDo(undefined, NOP)
+    }
+    catch(e: unknown) {
+      runRenderNestedTreesThenDo(e, NOP)
+      console.log(`Rendering failed: ${block.name}`)
+      console.log(`${e}`)
+    }
   }
 }
 
