@@ -47,7 +47,7 @@ export interface Bounds {
   alignContent?: To         // To.Default
   alignFrame?: To           // To.Default
   // Other
-  wrapping?: boolean        // false
+  flowWrap?: boolean    // false
 }
 
 export interface Place {
@@ -60,7 +60,7 @@ export interface Place {
   heightGrowth: number
   alignContent: To
   alignFrame: To
-  wrapping: boolean
+  flowWrap: boolean
 }
 
 export class Allocator {
@@ -83,7 +83,7 @@ export class Allocator {
       heightGrowth: bounds.heightGrowth ?? 0,
       alignContent: bounds.alignContent ?? To.Default,
       alignFrame: bounds.alignFrame ?? To.Default,
-      wrapping: bounds.wrapping ?? false,
+      flowWrap: bounds.flowWrap ?? false,
     }
   }
 }
@@ -119,7 +119,7 @@ export class GridBasedAllocator implements Allocator {
       heightMin: "", heightMax: "", heightGrowth: 0,
       alignContent: bounds?.alignContent ?? To.Default,
       alignFrame: bounds?.alignFrame ?? To.Default,
-      wrapping: bounds?.wrapping ?? false,
+      flowWrap: bounds?.flowWrap ?? false,
     }
     if (bounds?.place) { // absolute positioning
       result.exact = parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 })

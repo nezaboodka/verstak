@@ -153,9 +153,9 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
               css.alignSelf = css.justifySelf = ""
           }
           // Wrapping
-          const wrapping = place?.wrapping ?? false
-          if (wrapping !== (ex?.wrapping ?? false)) {
-            if (wrapping)
+          const flowWrap = place?.flowWrap ?? false
+          if (flowWrap !== (ex?.flowWrap ?? false)) {
+            if (flowWrap)
               native.setAttribute("wrapping", "true")
             else
               native.removeAttribute("wrapping")

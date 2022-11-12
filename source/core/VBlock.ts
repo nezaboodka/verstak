@@ -212,7 +212,7 @@ export class AbstractDriver<T> {
           heightMin: "", heightMax: "", heightGrowth,
           alignContent: To.Default,
           alignFrame: To.Default,
-          wrapping: false,
+          flowWrap: false,
         }
       else
         b.place.heightGrowth = heightGrowth
