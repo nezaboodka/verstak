@@ -36,12 +36,12 @@ export function Block<M = unknown, R = void>(name: string,
 
 // Text (either plain or html)
 
-export function PlainText(content: string): VBlock<HTMLElement, void, void> {
-  return VBlock.claim("", { render(e) { e.innerText = content } }, VerstakTags.text)
+export function PlainText(content: string, wrapping?: boolean): VBlock<HTMLElement, void, void> {
+  return VBlock.claim("", { wrapping, render(e) { e.innerText = content } }, VerstakTags.text)
 }
 
-export function HtmlText(content: string): VBlock<HTMLElement, void, void> {
-  return VBlock.claim("", { render(e) { e.innerHTML = content } }, VerstakTags.text)
+export function HtmlText(content: string, wrapping?: boolean): VBlock<HTMLElement, void, void> {
+  return VBlock.claim("", { wrapping, render(e) { e.innerHTML = content } }, VerstakTags.text)
 }
 
 // Grid Block
@@ -76,11 +76,12 @@ export function Group<M = unknown, R = void>(name: string,
 export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   arrange(block: VBlock<T>, place: Place | undefined, heightGrowth: number | undefined): void {
-    if (block.native) {
+    const native = block.native
+    if (native) {
       if (heightGrowth === undefined) {
         const ex = block.stamp > 1 ? block.place : undefined
         if (place !== ex) {
-          const css = block.native.style
+          const css = native.style
           // Exact position
           const exact = place?.exact
           if (exact !== ex?.exact) {
@@ -97,10 +98,14 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
           // Width Growth
           const widthGrowth = place?.widthGrowth ?? 0
           if (widthGrowth !== (ex?.widthGrowth ?? 0)) {
-            if (widthGrowth > 0)
+            if (widthGrowth > 0) {
               css.flexGrow = `${widthGrowth}`
-            else
+              css.flexBasis = "0"
+            }
+            else {
               css.flexGrow = ""
+              css.flexBasis = ""
+            }
           }
           // Width
           const widthMin = place?.widthMin ?? ""
@@ -146,6 +151,14 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
             }
             else
               css.alignSelf = css.justifySelf = ""
+          }
+          // Wrapping
+          const wrapping = place?.wrapping ?? false
+          if (wrapping !== (ex?.wrapping ?? false)) {
+            if (wrapping)
+              native.setAttribute("wrapping", "")
+            else
+              native.removeAttribute("wrapping")
           }
         }
       }

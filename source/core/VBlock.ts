@@ -47,7 +47,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly name: string
   abstract readonly driver: AbstractDriver<T>
   abstract readonly args: Readonly<BlockArgs<T, M, R>>
-  abstract model?: M
+  abstract model: M
   // System-managed properties
   abstract readonly level: number
   abstract readonly host: VBlock // (!) may differ from owner
@@ -212,6 +212,7 @@ export class AbstractDriver<T> {
           heightMin: "", heightMax: "", heightGrowth,
           alignContent: To.Default,
           alignFrame: To.Default,
+          wrapping: false,
         }
       else
         b.place.heightGrowth = heightGrowth
@@ -272,7 +273,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   readonly name: string
   readonly driver: AbstractDriver<T>
   args: BlockArgs<T, M, R>
-  model: M | undefined
+  model: M
   // System-managed properties
   readonly level: number
   host: VBlockImpl
@@ -293,7 +294,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.name = name
     this.driver = driver
     this.args = args
-    this.model = undefined
+    this.model = undefined as any
     // System-managed properties
     this.level = owner.level + 1
     this.host = owner // owner is default host, but can be changed
