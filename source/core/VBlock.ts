@@ -9,7 +9,7 @@ import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, L
 import { Bounds, Place, Allocator, To } from "./Allocator"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
-export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>, base?: Render<T, M, R>) => R
+export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>, base: () => R) => R
 export type AsyncRender<T = unknown, M = unknown> = (native: T, block: VBlock<T, M, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 export type Type<T> = new (...args: any[]) => T
@@ -42,7 +42,8 @@ export function asComponent<T, M, R>(
 }
 
 function via<T, M, R>(outer: Render<T, M, R> | undefined, base: Render<T, M, R> | undefined): Render<T, M, R> {
-  return outer ? (e, b) => outer(e, b, base) : base ?? NOP
+  const inherited = base ?? NOP
+  return outer ? (e, b) => outer(e, b, () => inherited(e, b)) : inherited
 }
 
 export function setContext<T extends Object>(
