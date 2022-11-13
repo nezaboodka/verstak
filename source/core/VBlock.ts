@@ -9,9 +9,10 @@ import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, L
 import { Bounds, Place, Allocator, To } from "./Allocator"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
-export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>) => R
+export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>, base?: Render<T, M, R>) => R
 export type AsyncRender<T = unknown, M = unknown> = (native: T, block: VBlock<T, M, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
+export type Type<T> = new (...args: any[]) => T
 
 export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
   reacting?: boolean
@@ -21,18 +22,35 @@ export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
   throttling?: number,
   logging?: Partial<LoggingOptions>
   shuffle?: boolean
-  initialize?: Render<T, M, R> | Array<Render<T, M, R>>
+  initialize?: Render<T, M, R>
   override?: Render<T, M, R>
-  render: Render<T, M, R>
-  finalize?: Render<T, M, R> | Array<Render<T, M, R>>
+  render?: Render<T, M, R>
+  finalize?: Render<T, M, R>
+}
+
+export function asComponent<T, M, R>(
+  outer: BlockArgs<T, M, R> | undefined,
+  base: BlockArgs<T, M, R>): BlockArgs<T, M, R> {
+  const result: BlockArgs<T, M, R> = {
+    ...base,
+    ...outer,
+    initialize: via(outer?.initialize, base.initialize),
+    render: via(outer?.render, base.render),
+    finalize: via(outer?.finalize, base.finalize),
+  }
+  return result
+}
+
+function via<T, M, R>(outer: Render<T, M, R> | undefined, base: Render<T, M, R> | undefined): Render<T, M, R> {
+  return outer ? (e, b) => outer(e, b, base) : base ?? NOP
 }
 
 export function setContext<T extends Object>(
-  type: new (...args: any[]) => T, context: T): void {
+  type: Type<T>, context: T): void {
   return VBlockImpl.setContext(type, context)
 }
 
-export function use<T extends Object>(type: new (...args: any[]) => T): T {
+export function use<T extends Object>(type: Type<T>): T {
   return VBlockImpl.use(type)
 }
 
@@ -82,9 +100,9 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     forEachChildRecursively(gSysRoot, action)
   }
 
-  static claim<T = undefined, M = unknown, R = void, C = void>(
-    name: string, args: BlockArgs<T, M, R>,
-    driver?: AbstractDriver<T>): VBlock<T, M, R> {
+  static claim<T = undefined, M = unknown, R = void>(
+    name: string, driver: AbstractDriver<T> | undefined,
+    args: BlockArgs<T, M, R>): VBlock<T, M, R> {
     // Emit block either by reusing existing one or by creating a new one
     let result: VBlockImpl<T, M, R>
     const owner = gCurrent.instance
@@ -167,9 +185,9 @@ export class AbstractDriver<T> {
     if (initialize) {
       if (Array.isArray(initialize))
         for (const init of initialize)
-          init(native!, block)
+          init(native!, block, NOP)
       else
-        initialize(native!, block)
+        initialize(native!, block, NOP)
     }
   }
 
@@ -180,9 +198,9 @@ export class AbstractDriver<T> {
       const native = block.native
       if (Array.isArray(finalize))
         for (const fin of finalize)
-          fin(native!, block)
+          fin(native!, block, NOP)
       else
-        finalize(native!, block)
+        finalize(native!, block, NOP)
     }
     b.native = undefined
     return isLeader // treat children as finalization leaders as well
@@ -223,7 +241,7 @@ export class AbstractDriver<T> {
     let result: void | Promise<void>
     const override = block.args?.override
     if (override)
-      result = override(block.native!, block)
+      result = override(block.native!, block, NOP)
     else
       result = invokeRenderFunction(block)
     return result
@@ -231,7 +249,8 @@ export class AbstractDriver<T> {
 }
 
 function invokeRenderFunction<R>(block: VBlock<any, any, R>): R {
-  return block.args.render(block.native!, block)
+  const r = block.args.render ?? NOP
+  return r(block.native!, block, NOP)
 }
 
 export class StaticDriver<T> extends AbstractDriver<T> {
@@ -254,10 +273,10 @@ function getBlockName(block: VBlockImpl): string | undefined {
 }
 
 class VBlockContext<T extends Object = Object> extends ObservableObject {
-  @raw type: new (...args: any[]) => T
+  @raw type: Type<T>
   instance: T
 
-  constructor(type: new (...args: any[]) => T, instance: T) {
+  constructor(type: Type<T>, instance: T) {
     super()
     this.type = type
     this.instance = instance
@@ -320,7 +339,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     runRender(this.item!)
   }
 
-  static use<T extends Object>(type: new (...args: any[]) => T): T {
+  static use<T extends Object>(type: Type<T>): T {
     let b = gCurrent.instance
     while (b.context?.type !== type && b.host !== b)
       b = b.senior
@@ -329,7 +348,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     return b.context?.instance as any // TODO: to get rid of any
   }
 
-  static setContext<T>(type: new (...args: any[]) => T, context: T): void {
+  static setContext<T>(type: Type<T>, context: T): void {
     const block = gCurrent.instance
     const host = block.host
     const hostCtx = nonreactive(() => host.context?.instance)
@@ -677,7 +696,7 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-const NOP = (): void => { /* nop */ }
+const NOP: any = (...args: any[]): void => { /* nop */ }
 
 const gSysDriver = new StaticDriver<null>(null, "SYSTEM", LayoutKind.Group)
 const gSysRoot = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>("SYSTEM",

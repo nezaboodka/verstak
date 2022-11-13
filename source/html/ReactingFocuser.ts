@@ -10,7 +10,7 @@ import { FocusModel } from "./sensors/FocusSensor"
 
 export function ReactingFocuser(name: string, target: HTMLElement, model: FocusModel,
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {
-  VBlock.claim(name, {
+  VBlock.claim(name, undefined, {
     reacting: true,
     triggers: { target, model },
     throttling: 0,

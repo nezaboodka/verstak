@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, LayoutKind, Place, BlockArgs, To, GridBasedAllocator } from "../core/api"
+import { VBlock, LayoutKind, Place, BlockArgs, To, GridBasedAllocator, asComponent } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -31,44 +31,54 @@ import { HtmlDriver } from "./HtmlDriver"
 
 export function Block<M = unknown, R = void>(name: string,
   args: BlockArgs<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(name, args, VerstakTags.block)
+  return VBlock.claim(name, VerstakTags.block, args)
 }
 
 // Text (either plain or html)
 
-export function PlainText(content: string, name?: string, args?: Partial<BlockArgs<HTMLElement, void, void>>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(name ?? "", { ...args, render(e) { e.innerText = content } }, VerstakTags.text)
+export function PlainText(content: string, name?: string, args?: BlockArgs<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+  return VBlock.claim(name ?? "", VerstakTags.text,
+    asComponent(args, {
+      render(e) {
+        e.innerText = content
+      },
+    }))
 }
 
-export function HtmlText(content: string, name?: string, args?: Partial<BlockArgs<HTMLElement, void, void>>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(name ?? "", { ...args, render(e) { e.innerHTML = content } }, VerstakTags.text)
+export function HtmlText(content: string, name?: string, args?: BlockArgs<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+  return VBlock.claim(name ?? "", VerstakTags.text,
+    asComponent(args, {
+      render(e) {
+        e.innerHTML = content
+      },
+    }))
 }
 
 // Grid Block
 
 export function Grid<M = unknown, R = void>(name: string,
   args: BlockArgs<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(name, args, VerstakTags.grid)
+  return VBlock.claim(name, VerstakTags.grid, args)
 }
 
 // Line
 
 export function Line<T = void>(claim: (x: void) => T): VBlock<HTMLElement> {
-  const result = VBlock.claim("", EMPTY_RENDER, VerstakTags.part)
+  const result = VBlock.claim("", VerstakTags.part, EMPTY_RENDER)
   claim()
-  VBlock.claim("", EMPTY_RENDER, VerstakTags.part)
+  VBlock.claim("", VerstakTags.part, EMPTY_RENDER)
   return result
 }
 
 export function lineFeed(args?: BlockArgs<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
-  return VBlock.claim("", args ?? EMPTY_RENDER, VerstakTags.part)
+  return VBlock.claim("", VerstakTags.part, args ?? EMPTY_RENDER)
 }
 
 // Group
 
 export function Group<M = unknown, R = void>(name: string,
   args: BlockArgs<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(name, args, VerstakTags.group)
+  return VBlock.claim(name, VerstakTags.group, args)
 }
 
 // VerstakDriver
@@ -175,7 +185,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: VBlock<T>): void | Promise<void> {
     // Perform initial line feed automatically
     if (!block.driver.isPart)
-      VBlock.claim("", EMPTY_RENDER, VerstakTags.part)
+      VBlock.claim("", VerstakTags.part, EMPTY_RENDER)
     return super.render(block)
   }
 }
