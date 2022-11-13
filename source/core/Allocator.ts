@@ -47,7 +47,8 @@ export interface Bounds {
   alignContent?: To         // To.Default
   alignFrame?: To           // To.Default
   // Other
-  flowWrap?: boolean    // false
+  flowWrap?: boolean        // false
+  popup?: boolean           // false
 }
 
 export interface Place {
