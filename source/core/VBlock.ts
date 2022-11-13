@@ -151,7 +151,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 export enum LayoutKind {
   Block = 0,  // 000
   Grid = 1,   // 001
-  Part = 2,   // 010
+  Row = 2,   // 010
   Group = 3,  // 011
   Text = 4,   // 100
 }
@@ -170,7 +170,7 @@ export class AbstractDriver<T> {
   get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Grid, Group
   get isBlock(): boolean { return this.layout === LayoutKind.Block }
   get isGrid(): boolean { return this.layout === LayoutKind.Grid }
-  get isPart(): boolean { return this.layout === LayoutKind.Part }
+  get isPart(): boolean { return this.layout === LayoutKind.Row }
 
   constructor(name: string, layout: LayoutKind, createAllocator?: () => Allocator) {
     this.name = name

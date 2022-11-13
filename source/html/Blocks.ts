@@ -64,14 +64,14 @@ export function Grid<M = unknown, R = void>(name: string,
 // Line
 
 export function Line<T = void>(claim: (x: void) => T): VBlock<HTMLElement> {
-  const result = VBlock.claim("", VerstakTags.part, EMPTY_RENDER)
+  const result = VBlock.claim("", VerstakTags.row, EMPTY_RENDER)
   claim()
-  VBlock.claim("", VerstakTags.part, EMPTY_RENDER)
+  VBlock.claim("", VerstakTags.row, EMPTY_RENDER)
   return result
 }
 
 export function lineFeed(args?: BlockArgs<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
-  return VBlock.claim("", VerstakTags.part, args ?? EMPTY_RENDER)
+  return VBlock.claim("", VerstakTags.row, args ?? EMPTY_RENDER)
 }
 
 // Group
@@ -185,7 +185,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: VBlock<T>): void | Promise<void> {
     // Perform initial line feed automatically
     if (!block.driver.isPart)
-      VBlock.claim("", VerstakTags.part, EMPTY_RENDER)
+      VBlock.claim("", VerstakTags.row, EMPTY_RENDER)
     return super.render(block)
   }
 }
@@ -204,7 +204,7 @@ const VerstakTags = {
 
   // display: contents
   // display: flex (row)
-  part: new VerstakDriver<HTMLElement>("v-part", LayoutKind.Part),
+  row: new VerstakDriver<HTMLElement>("v-row", LayoutKind.Row),
 
   // display: contents
   group: new VerstakDriver<HTMLElement>("v-group", LayoutKind.Group),
