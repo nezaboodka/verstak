@@ -139,7 +139,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
               const h = AlignToCss[alignContent & 0b11]
               const t = TextAlignCss[alignContent & 0b11]
               css.justifyContent = v
-              css.alignContent = h
+              css.alignItems = h
               css.textAlign = t
             }
             else
@@ -163,20 +163,20 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
               css.alignSelf = css.justifySelf = ""
           }
           // Wrapping
-          const flowWrap = place?.flowWrap ?? false
-          if (flowWrap !== (ex?.flowWrap ?? false)) {
-            if (flowWrap)
+          const wrapping = place?.wrapping ?? false
+          if (wrapping !== (ex?.wrapping ?? false)) {
+            if (wrapping)
               native.setAttribute("wrapping", "true")
             else
               native.removeAttribute("wrapping")
           }
-          // Popup
-          const popup = place?.popup ?? false
-          if (popup !== (ex?.popup ?? false)) {
-            if (popup)
-              native.setAttribute("popup", "true")
+          // Floating
+          const floating = place?.floating ?? false
+          if (floating !== (ex?.floating ?? false)) {
+            if (floating)
+              native.setAttribute("floating", "true")
             else
-              native.removeAttribute("popup")
+              native.removeAttribute("floating")
           }
         }
       }
