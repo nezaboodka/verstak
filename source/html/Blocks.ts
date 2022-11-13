@@ -157,7 +157,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
               css.justifySelf = h
             }
             else if (heightGrowth > 0) {
-              css.alignSelf = AlignToCss[Align.Fit]
+              css.alignSelf = AlignToCss[Align.Stretch]
             }
             else
               css.alignSelf = css.justifySelf = ""

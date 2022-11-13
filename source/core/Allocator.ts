@@ -8,7 +8,7 @@
 import { CellRange, parseCellRange } from "./CellRange"
 
 export enum Align {
-  Fit     = 0b00000,
+  Stretch = 0b00000,
   Left    = 0b00001,
   Center  = 0b00010,
   Right   = 0b00011,
