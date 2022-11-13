@@ -232,6 +232,7 @@ export class AbstractDriver<T> {
           alignContent: To.Default,
           alignFrame: To.Default,
           flowWrap: false,
+          popup: false,
         }
       else
         b.place.heightGrowth = heightGrowth

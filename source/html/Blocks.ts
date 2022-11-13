@@ -170,6 +170,14 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
             else
               native.removeAttribute("wrapping")
           }
+          // Popup
+          const popup = place?.popup ?? false
+          if (popup !== (ex?.popup ?? false)) {
+            if (popup)
+              native.setAttribute("popup", "true")
+            else
+              native.removeAttribute("popup")
+          }
         }
       }
       else {
@@ -184,8 +192,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
-    const l = block.driver.layout
-    if (l !== LayoutKind.Row && l !== LayoutKind.Text)
+    if (block.driver.layout < LayoutKind.Row)
       VBlock.claim("", VerstakTags.row, EMPTY_RENDER)
     return super.render(block)
   }
