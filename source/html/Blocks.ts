@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, LayoutKind, Place, BlockArgs, To, GridBasedAllocator, asComponent } from "../core/api"
+import { VBlock, LayoutKind, Place, BlockArgs, Align, GridBasedAllocator, asComponent } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -132,9 +132,9 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
           if (heightMax !== (ex?.heightMax ?? ""))
             css.maxHeight = `${heightMax}`
           // Alignment
-          const alignContent = place?.alignContent ?? To.Default
-          if (alignContent !== (ex?.alignContent ?? To.Default)) {
-            if ((alignContent & To.Default) === 0) { // if not auto mode
+          const alignContent = place?.alignContent ?? Align.Default
+          if (alignContent !== (ex?.alignContent ?? Align.Default)) {
+            if ((alignContent & Align.Default) === 0) { // if not auto mode
               const v = AlignToCss[(alignContent >> 2) & 0b11]
               const h = AlignToCss[alignContent & 0b11]
               const t = TextAlignCss[alignContent & 0b11]
@@ -147,17 +147,17 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
           }
           // Frame Alignment
           const heightGrowth = place?.heightGrowth ?? 0
-          const alignFrame = place?.alignFrame ?? To.Default
-          if (alignFrame !== (ex?.alignFrame ?? To.Default) ||
+          const alignFrame = place?.alignFrame ?? Align.Default
+          if (alignFrame !== (ex?.alignFrame ?? Align.Default) ||
             heightGrowth !== (ex?.heightGrowth ?? 0)) {
-            if ((alignFrame & To.Default) === 0) { // if not auto mode
+            if ((alignFrame & Align.Default) === 0) { // if not auto mode
               const v = AlignToCss[(alignFrame >> 2) & 0b11]
               const h = AlignToCss[alignFrame & 0b11]
               css.alignSelf = v
               css.justifySelf = h
             }
             else if (heightGrowth > 0) {
-              css.alignSelf = AlignToCss[To.Fit]
+              css.alignSelf = AlignToCss[Align.Fit]
             }
             else
               css.alignSelf = css.justifySelf = ""

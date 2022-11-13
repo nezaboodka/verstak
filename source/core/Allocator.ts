@@ -7,7 +7,7 @@
 
 import { CellRange, parseCellRange } from "./CellRange"
 
-export enum To {
+export enum Align {
   Fit     = 0b00000,
   Left    = 0b00001,
   Center  = 0b00010,
@@ -44,8 +44,8 @@ export interface Bounds {
   heightGrowth?: number     // 0 (no grow)
   heightOverlap?: boolean   // false
   // Alignment
-  alignContent?: To         // To.Default
-  alignFrame?: To           // To.Default
+  alignContent?: Align         // To.Default
+  alignFrame?: Align           // To.Default
   // Other
   wrapping?: boolean        // false
   floating?: boolean        // false
@@ -59,8 +59,8 @@ export interface Place {
   heightMin: string
   heightMax: string
   heightGrowth: number
-  alignContent: To
-  alignFrame: To
+  alignContent: Align
+  alignFrame: Align
   wrapping: boolean
   floating: boolean
 }
@@ -83,8 +83,8 @@ export class Allocator {
       heightMin: bounds.heightMin ?? "",
       heightMax: bounds.heightMax ?? "",
       heightGrowth: bounds.heightGrowth ?? 0,
-      alignContent: bounds.alignContent ?? To.Default,
-      alignFrame: bounds.alignFrame ?? To.Default,
+      alignContent: bounds.alignContent ?? Align.Default,
+      alignFrame: bounds.alignFrame ?? Align.Default,
       wrapping: bounds.wrapping ?? false,
       floating: bounds.floating ?? false,
     }
@@ -120,8 +120,8 @@ export class GridBasedAllocator implements Allocator {
       exact: undefined,
       widthMin: "", widthMax: "", widthGrowth: 0,
       heightMin: "", heightMax: "", heightGrowth: 0,
-      alignContent: bounds?.alignContent ?? To.Default,
-      alignFrame: bounds?.alignFrame ?? To.Default,
+      alignContent: bounds?.alignContent ?? Align.Default,
+      alignFrame: bounds?.alignFrame ?? Align.Default,
       wrapping: bounds?.wrapping ?? false,
       floating: bounds?.floating ?? false,
     }

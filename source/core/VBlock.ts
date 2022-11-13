@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw } from "reactronic"
-import { Bounds, Place, Allocator, To } from "./Allocator"
+import { Bounds, Place, Allocator, Align } from "./Allocator"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>, base: () => R) => R
@@ -229,8 +229,8 @@ export class AbstractDriver<T> {
           exact: undefined,
           widthMin: "", widthMax: "", widthGrowth: 0,
           heightMin: "", heightMax: "", heightGrowth,
-          alignContent: To.Default,
-          alignFrame: To.Default,
+          alignContent: Align.Default,
+          alignFrame: Align.Default,
           wrapping: false,
           floating: false,
         }
