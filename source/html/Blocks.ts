@@ -183,8 +183,9 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   render(block: VBlock<T>): void | Promise<void> {
-    // Perform initial line feed automatically
-    if (!block.driver.isPart)
+    // Add initial line feed automatically
+    const l = block.driver.layout
+    if (l !== LayoutKind.Row && l !== LayoutKind.Text)
       VBlock.claim("", VerstakTags.row, EMPTY_RENDER)
     return super.render(block)
   }

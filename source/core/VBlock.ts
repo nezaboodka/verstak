@@ -152,7 +152,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 export enum LayoutKind {
   Block = 0,  // 000
   Grid = 1,   // 001
-  Row = 2,   // 010
+  Row = 2,    // 010
   Group = 3,  // 011
   Text = 4,   // 100
 }
