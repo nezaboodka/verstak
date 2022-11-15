@@ -77,11 +77,15 @@ export class Cursor {
     // do nothing
   }
 
+  forwardEx(placement: Placement): CellRange {
+    return { x1: 0, y1: 0, x2: 0, y2: 0 }
+  }
+
   lineFeed(): void {
     // do nothing
   }
 
-  allocate(bounds: Bounds | undefined): Place | undefined {
+  forward(bounds: Bounds | undefined): Place | undefined {
     return !bounds ? undefined : {
       exact: bounds.place ? parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 }) : undefined,
       widthMin: bounds.widthMin ?? "",
@@ -117,12 +121,75 @@ export class GridCursor extends Cursor {
     this.newRowCursor = 0
   }
 
+  forwardEx(placement: Placement): CellRange {
+    let result: CellRange
+    if (typeof(placement) === "string") {
+      result = parseCellRange(placement, { x1: 0, y1: 0, x2: 0, y2: 0 })
+      absolutizeCellRange(result,
+        this.columnCursor + 1, this.rowCursor + 1,
+        this.maxColumnCount || Infinity,
+        this.maxRowCount || Infinity, result)
+    }
+    else {
+      // Unpack parameters
+      let columns: number
+      let rows: number
+      let columnsOverlap: boolean
+      let rowsOverlap: boolean
+      if (typeof(placement) === "number") {
+        columns = placement
+        rows = 1
+        columnsOverlap = rowsOverlap = false
+      }
+      else if (placement) {
+        columns = placement.columns ?? 1
+        rows = placement.rows ?? 1
+        columnsOverlap = placement.columnsOverlap ?? false
+        rowsOverlap = placement.rowsOverlap ?? false
+      }
+      else { // placement === undefined
+        columns = 1
+        rows = 1
+        columnsOverlap = rowsOverlap = false
+      }
+      // Arrange
+      const totalColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
+      const totalRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
+      result = { x1: 0, y1: 0, x2: 0, y2: 0 }
+      if (columns === 0)
+        columns = totalColumnCount || 1
+      if (columns >= 0) {
+        result.x1 = this.columnCursor + 1
+        result.x2 = absolutizePosition(result.x1 + columns - 1, 0, this.maxColumnCount || Infinity)
+        if (!columnsOverlap)
+          this.columnCursor = result.x2
+      }
+      else {
+        result.x1 = Math.max(this.columnCursor + columns, 1)
+        result.x2 = this.columnCursor
+      }
+      if (rows === 0)
+        rows = totalRowCount || 1
+      if (rows >= 0) {
+        result.y1 = this.rowCursor + 1
+        result.y2 = absolutizePosition(result.y1 + rows - 1, 0, this.maxRowCount || Infinity)
+        if (!rowsOverlap && result.y2 > this.newRowCursor)
+          this.newRowCursor = result.y2
+      }
+      else {
+        result.y1 = Math.max(this.rowCursor + rows, 1)
+        result.y2 = this.rowCursor
+      }
+    }
+    return result
+  }
+
   lineFeed(): void {
     this.columnCursor = 0
     this.rowCursor = this.newRowCursor
   }
 
-  allocate(bounds: Bounds | undefined): Place | undefined {
+  forward(bounds: Bounds | undefined): Place | undefined {
     const result: Place = {
       exact: undefined,
       widthMin: "", widthMax: "", widthGrowth: 0,
