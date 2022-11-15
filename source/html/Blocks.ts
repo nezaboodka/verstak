@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, LayoutKind, Place, BlockArgs, Align, GridCursor, asComponent } from "../core/api"
+import { VBlock, LayoutKind, Place, BlockArgs, Align, GridCursor, asComponent, CellRange } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -188,6 +188,91 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
       }
     }
     super.arrange(block, place, heightGrowth)
+  }
+
+  applyPlace(block: VBlock<T>, cellRange: CellRange | undefined): void {
+    const css = block.native!.style
+    if (cellRange) {
+      const x1 = cellRange.x1 || 1
+      const y1 = cellRange.y1 || 1
+      const x2 = cellRange.x2 || x1
+      const y2 = cellRange.y2 || y1
+      css.gridArea = `${y1} / ${x1} / span ${y2 - y1 + 1} / span ${x2 - x1 + 1}`
+    }
+    else
+      css.gridArea = ""
+    super.applyPlace(block, cellRange)
+  }
+
+  applyWidthGrowth(block: VBlock<T>, widthGrowth: number): void {
+    const css = block.native!.style
+    if (widthGrowth > 0) {
+      css.flexGrow = `${widthGrowth}`
+      css.flexBasis = "0"
+    }
+    else {
+      css.flexGrow = ""
+      css.flexBasis = ""
+    }
+  }
+
+  applyWidthMin(block: VBlock<T>, widthMin: string): void {
+    block.native!.style.minWidth = `${widthMin}`
+  }
+
+  applyWidthMax(block: VBlock<T>, widthMax: string): void {
+    block.native!.style.maxWidth = `${widthMax}`
+  }
+
+  applyHeightMin(block: VBlock<T>, heightMin: string): void {
+    block.native!.style.minHeight = `${heightMin}`
+  }
+
+  applyHeightMax(block: VBlock<T>, heightMax: string): void {
+    block.native!.style.maxHeight = `${heightMax}`
+  }
+
+  applyAlignContent(block: VBlock<T>, alignContent: Align): void {
+    const css = block.native!.style
+    if ((alignContent & Align.Default) === 0) { // if not auto mode
+      const v = AlignToCss[(alignContent >> 2) & 0b11]
+      const h = AlignToCss[alignContent & 0b11]
+      const t = TextAlignCss[alignContent & 0b11]
+      css.justifyContent = v
+      css.alignItems = h
+      css.textAlign = t
+    }
+    else
+      css.justifyContent = css.alignContent = css.textAlign = ""
+  }
+
+  applyAlignFrame(block: VBlock<T>, alignFrame: Align): void {
+    const css = block.native!.style
+    if ((alignFrame & Align.Default) === 0) { // if not auto mode
+      const v = AlignToCss[(alignFrame >> 2) & 0b11]
+      const h = AlignToCss[alignFrame & 0b11]
+      css.alignSelf = v
+      css.justifySelf = h
+    }
+    // else if (heightGrowth > 0) {
+    //   css.alignSelf = AlignToCss[Align.Stretch]
+    // }
+    else
+      css.alignSelf = css.justifySelf = ""
+  }
+
+  applyWrapping(block: VBlock<T>, wrapping: boolean): void {
+    if (wrapping)
+      block.native!.setAttribute("wrapping", "true")
+    else
+      block.native!.removeAttribute("wrapping")
+  }
+
+  applyFloating(block: VBlock<T>, floating: boolean): void {
+    if (floating)
+      block.native!.setAttribute("floating", "true")
+    else
+      block.native!.removeAttribute("floating")
   }
 
   render(block: VBlock<T>): void | Promise<void> {

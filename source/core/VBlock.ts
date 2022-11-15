@@ -6,6 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw } from "reactronic"
+import { CellRange } from "./CellRange"
 import { Bounds, Place, Cursor, Align, Placement } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
@@ -238,6 +239,46 @@ export class AbstractDriver<T> {
       else
         b.place.heightGrowth = heightGrowth
     }
+  }
+
+  applyPlace(block: VBlock<T>, cellRange: CellRange | undefined): void {
+    // do nothing
+  }
+
+  applyWidthGrowth(block: VBlock<T>, widthGrowth: number): void {
+    // do nothing
+  }
+
+  applyWidthMin(block: VBlock<T>, widthMin: string): void {
+    // do nothing
+  }
+
+  applyWidthMax(block: VBlock<T>, widthMax: string): void {
+    // do nothing
+  }
+
+  applyHeightMin(block: VBlock<T>, heightMin: string): void {
+    // do nothing
+  }
+
+  applyHeightMax(block: VBlock<T>, heightMax: string): void {
+    // do nothing
+  }
+
+  applyAlignContent(block: VBlock<T>, alignContent: Align): void {
+    // do nothing
+  }
+
+  applyAlignFrame(block: VBlock<T>, alignFrame: Align): void {
+    // do nothing
+  }
+
+  applyWrapping(block: VBlock<T>, wrapping: boolean): void {
+    // do nothing
+  }
+
+  applyFloating(block: VBlock<T>, floating: boolean): void {
+    // do nothing
   }
 
   render(block: VBlock<T>): void | Promise<void> {
