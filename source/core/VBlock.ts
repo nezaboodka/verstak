@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw } from "reactronic"
-import { Bounds, Place, Allocator, Align } from "./Allocator"
+import { Bounds, Place, Cursor, Align, Placement } from "./Allocator"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>, base: () => R) => R
@@ -67,6 +67,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly driver: AbstractDriver<T>
   abstract readonly args: Readonly<BlockArgs<T, M, R>>
   abstract model: M
+  abstract placement: Placement
   // System-managed properties
   abstract readonly level: number
   abstract readonly host: VBlock // (!) may differ from owner
@@ -159,24 +160,24 @@ export enum LayoutKind {
 
 // AbstractDriver
 
-const createDefaultAllocator = (): Allocator => new Allocator()
+const createDefaultCursor = (): Cursor => new Cursor()
 
 export class AbstractDriver<T> {
   public static readonly group = new AbstractDriver<any>("group", LayoutKind.Group)
 
   readonly name: string
   readonly layout: LayoutKind
-  readonly createAllocator: () => Allocator
+  readonly createCursor: () => Cursor
   get isSequential(): boolean { return (this.layout & 1) === 0 } // Block, Text, Line
   get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Grid, Group
   get isBlock(): boolean { return this.layout === LayoutKind.Block }
   get isGrid(): boolean { return this.layout === LayoutKind.Grid }
   get isPart(): boolean { return this.layout === LayoutKind.Row }
 
-  constructor(name: string, layout: LayoutKind, createAllocator?: () => Allocator) {
+  constructor(name: string, layout: LayoutKind, createCursor?: () => Cursor) {
     this.name = name
     this.layout = layout
-    this.createAllocator = createAllocator ?? createDefaultAllocator
+    this.createCursor = createCursor ?? createDefaultCursor
   }
 
   initialize(block: VBlock<T>, native: T | undefined): void {
@@ -258,8 +259,8 @@ function invokeRenderFunction<R>(block: VBlock<any, any, R>): R {
 export class StaticDriver<T> extends AbstractDriver<T> {
   readonly element: T
 
-  constructor(element: T, name: string, layout: LayoutKind, createAllocator?: () => Allocator) {
-    super(name, layout, createAllocator)
+  constructor(element: T, name: string, layout: LayoutKind, createCursor?: () => Cursor) {
+    super(name, layout, createCursor)
     this.element = element
   }
 
@@ -295,6 +296,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   readonly driver: AbstractDriver<T>
   args: BlockArgs<T, M, R>
   model: M
+  placement: Placement
   // System-managed properties
   readonly level: number
   host: VBlockImpl
@@ -304,7 +306,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   stamp: number
   native: T | undefined
   place: Place | undefined
-  allocator: Allocator
+  cursor: Cursor
   private senior: VBlockImpl
   context: VBlockContext<any> | undefined
 
@@ -316,6 +318,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.driver = driver
     this.args = args
     this.model = undefined as any
+    this.placement = undefined
     // System-managed properties
     this.level = owner.level + 1
     this.host = owner // owner is default host, but can be changed
@@ -325,7 +328,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.stamp = 0
     this.native = undefined
     this.place = undefined
-    this.allocator = driver.createAllocator()
+    this.cursor = driver.createCursor()
     this.senior = owner.context ? owner : owner.senior
     this.context = undefined
   }
@@ -393,8 +396,8 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         // Lay out and render actual blocks
         const ownerIsBlock = owner.driver.isBlock
         const sequential = children.strict
-        const allocator = owner.allocator
-        allocator.reset()
+        const cursor = owner.cursor
+        cursor.reset()
         let p1: Array<Item<VBlockImpl>> | undefined = undefined
         let p2: Array<Item<VBlockImpl>> | undefined = undefined
         let redeploy = false
@@ -406,11 +409,11 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const driver = block.driver
           const opt = block.args
           if (!driver.isPart) {
-            const place = allocator.allocate(opt)
+            const place = cursor.allocate(opt)
             driver.arrange(block, place, undefined)
           }
           else
-            allocator.lineFeed()
+            cursor.lineFeed()
           const host = driver.isPart ? owner : partHost
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0

@@ -29,6 +29,13 @@ export interface TrackSize extends ElasticSize {
   track?: string | number       // <current>
 }
 
+export type Placement = undefined | string | number | {
+  columns?: number          // 1 (grid layout only)
+  columnsOverlap?: boolean  // false
+  rows?: number             // 1 (grid layout only)
+  rowsOverlap?: boolean     // false
+}
+
 export interface Bounds {
   place?: string            // ""
   // Width
@@ -65,7 +72,7 @@ export interface Place {
   floating: boolean
 }
 
-export class Allocator {
+export class Cursor {
   reset(): void {
     // do nothing
   }
@@ -91,7 +98,7 @@ export class Allocator {
   }
 }
 
-export class GridBasedAllocator implements Allocator {
+export class GridCursor extends Cursor {
   private maxColumnCount: number = 0
   private maxRowCount: number = 0
   private actualColumnCount: number = 0

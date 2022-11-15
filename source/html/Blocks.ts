@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, LayoutKind, Place, BlockArgs, Align, GridBasedAllocator, asComponent } from "../core/api"
+import { VBlock, LayoutKind, Place, BlockArgs, Align, GridCursor, asComponent } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -208,7 +208,7 @@ const VerstakTags = {
   text: new VerstakDriver<HTMLElement>("v-text", LayoutKind.Text),
 
   // display: grid
-  grid: new VerstakDriver<HTMLElement>("v-grid", LayoutKind.Grid, () => new GridBasedAllocator()),
+  grid: new VerstakDriver<HTMLElement>("v-grid", LayoutKind.Grid, () => new GridCursor()),
 
   // display: contents
   // display: flex (row)
