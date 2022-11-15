@@ -77,7 +77,7 @@ export class Cursor {
     // do nothing
   }
 
-  forwardEx(placement: Placement): CellRange {
+  onwardsEx(placement: Placement): CellRange {
     return { x1: 0, y1: 0, x2: 0, y2: 0 }
   }
 
@@ -85,7 +85,7 @@ export class Cursor {
     // do nothing
   }
 
-  forward(bounds: Bounds | undefined): Place | undefined {
+  onwards(bounds: Bounds | undefined): Place | undefined {
     return !bounds ? undefined : {
       exact: bounds.place ? parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 }) : undefined,
       widthMin: bounds.widthMin ?? "",
@@ -121,7 +121,7 @@ export class GridCursor extends Cursor {
     this.newRowCursor = 0
   }
 
-  forwardEx(placement: Placement): CellRange {
+  onwardsEx(placement: Placement): CellRange {
     let result: CellRange
     if (typeof(placement) === "string") {
       result = parseCellRange(placement, { x1: 0, y1: 0, x2: 0, y2: 0 })
@@ -189,7 +189,7 @@ export class GridCursor extends Cursor {
     this.rowCursor = this.newRowCursor
   }
 
-  forward(bounds: Bounds | undefined): Place | undefined {
+  onwards(bounds: Bounds | undefined): Place | undefined {
     const result: Place = {
       exact: undefined,
       widthMin: "", widthMax: "", widthGrowth: 0,

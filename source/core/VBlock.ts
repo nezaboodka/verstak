@@ -409,7 +409,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const driver = block.driver
           const opt = block.args
           if (!driver.isPart) {
-            const place = cursor.forward(opt)
+            const place = cursor.onwards(opt)
             driver.arrange(block, place, undefined)
           }
           else
