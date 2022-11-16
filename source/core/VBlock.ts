@@ -376,12 +376,12 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   set cells(value: Cells) {
     if (this.assignedCells !== undefined)
       throw new Error("cells can be assigned only once during rendering")
-    const cellRange = this.host.cursor.onwardsNew(value)
+    const cellRange = this.host.cursor.onwards(value)
     if (!equalCellRanges(cellRange, this.appliedCellRange)) {
       this.driver.applyCellRange(this, cellRange)
       this.appliedCellRange = cellRange
-      this.assignedCells = value ?? { }
     }
+    this.assignedCells = value ?? { }
   }
   get widthGrowth(): number { return this.appliedWidthGrowth }
   set widthGrowth(value: number) {
@@ -518,12 +518,6 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const block = item.instance
           const driver = block.driver
           const opt = block.args
-          // if (!driver.isRow) {
-          //   const place = cursor.onwards(opt)
-          //   driver.arrange(block, place, undefined)
-          // }
-          // else
-          //   cursor.lineFeed()
           const host = driver.isRow ? owner : partHost
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0

@@ -60,19 +60,9 @@ export interface Bounds {
 
 export class Cursor {
   static readonly UndefinedCellRange = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
-
-
-  reset(): void {
-    // do nothing
-  }
-
-  onwardsNew(cells: Cells): CellRange {
-    return Cursor.UndefinedCellRange
-  }
-
-  lineFeed(): void {
-    // do nothing
-  }
+  reset(): void { /* do nothing */ }
+  onwards(cells: Cells): CellRange { return Cursor.UndefinedCellRange }
+  lineFeed(): void { /* do nothing */ }
 }
 
 export class GridCursor extends Cursor {
@@ -94,7 +84,7 @@ export class GridCursor extends Cursor {
     this.newRowCursor = 0
   }
 
-  onwardsNew(cells: Cells): CellRange {
+  onwards(cells: Cells): CellRange {
     let result: CellRange
     if (typeof(cells) === "string") {
       result = parseCellRange(cells, { x1: 0, y1: 0, x2: 0, y2: 0 })
