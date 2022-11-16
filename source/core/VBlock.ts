@@ -77,7 +77,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract alignContent: Align
   abstract alignFrame: Align
   abstract wrapping: boolean
-  abstract floating: boolean
+  abstract dangling: boolean
   // System-managed properties
   abstract readonly level: number
   abstract readonly host: VBlock // (!) may differ from owner
@@ -243,7 +243,7 @@ export class AbstractDriver<T> {
           alignContent: Align.Default,
           alignFrame: Align.Default,
           wrapping: false,
-          floating: false,
+          dangling: false,
         }
       else
         b.placeOld.heightGrowth = heightGrowth
@@ -286,7 +286,7 @@ export class AbstractDriver<T> {
     // do nothing
   }
 
-  applyFloating(block: VBlock<T, any, any>, floating: boolean): void {
+  applyDangling(block: VBlock<T, any, any>, dangling: boolean): void {
     // do nothing
   }
 
@@ -356,7 +356,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   private appliedAlignContent: Align
   private appliedAlignFrame: Align
   private appliedWrapping: boolean
-  private appliedFloating: boolean
+  private appliedDangling: boolean
   // System-managed properties
   readonly level: number
   host: VBlockImpl
@@ -388,7 +388,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.appliedAlignContent = Align.Default
     this.appliedAlignFrame = Align.Default
     this.appliedWrapping = false
-    this.appliedFloating = false
+    this.appliedDangling = false
     // System-managed properties
     this.level = owner.level + 1
     this.host = owner // owner is default host, but can be changed
@@ -479,11 +479,11 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
       this.appliedWrapping = value
     }
   }
-  get floating(): boolean { return this.appliedFloating }
-  set floating(value: boolean) {
-    if (value !== this.appliedFloating) {
-      this.driver.applyFloating(this, value)
-      this.appliedFloating = value
+  get dangling(): boolean { return this.appliedDangling }
+  set dangling(value: boolean) {
+    if (value !== this.appliedDangling) {
+      this.driver.applyDangling(this, value)
+      this.appliedDangling = value
     }
   }
 

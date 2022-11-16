@@ -55,7 +55,7 @@ export interface Bounds {
   alignFrame?: Align           // To.Default
   // Other
   wrapping?: boolean        // false
-  floating?: boolean        // false
+  dangling?: boolean        // false
 }
 
 export interface PlaceOld {
@@ -69,7 +69,7 @@ export interface PlaceOld {
   alignContent: Align
   alignFrame: Align
   wrapping: boolean
-  floating: boolean
+  dangling: boolean
 }
 
 export class Cursor {
@@ -97,7 +97,7 @@ export class Cursor {
       alignContent: bounds.alignContent ?? Align.Default,
       alignFrame: bounds.alignFrame ?? Align.Default,
       wrapping: bounds.wrapping ?? false,
-      floating: bounds.floating ?? false,
+      dangling: bounds.dangling ?? false,
     }
   }
 }
@@ -197,7 +197,7 @@ export class GridCursor extends Cursor {
       alignContent: bounds?.alignContent ?? Align.Default,
       alignFrame: bounds?.alignFrame ?? Align.Default,
       wrapping: bounds?.wrapping ?? false,
-      floating: bounds?.floating ?? false,
+      dangling: bounds?.dangling ?? false,
     }
     if (bounds?.place) { // absolute positioning
       result.exact = parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 })

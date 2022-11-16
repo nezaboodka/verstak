@@ -170,13 +170,13 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
             else
               native.removeAttribute("wrapping")
           }
-          // Floating
-          const floating = place?.floating ?? false
-          if (floating !== (ex?.floating ?? false)) {
-            if (floating)
-              native.setAttribute("floating", "true")
+          // Dangling
+          const dangling = place?.dangling ?? false
+          if (dangling !== (ex?.dangling ?? false)) {
+            if (dangling)
+              native.setAttribute("dangling", "true")
             else
-              native.removeAttribute("floating")
+              native.removeAttribute("dangling")
           }
         }
       }
@@ -268,11 +268,11 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
       block.native!.removeAttribute("wrapping")
   }
 
-  applyFloating(block: VBlock<T>, floating: boolean): void {
-    if (floating)
-      block.native!.setAttribute("floating", "true")
+  applyDangling(block: VBlock<T>, dangling: boolean): void {
+    if (dangling)
+      block.native!.setAttribute("dangling", "true")
     else
-      block.native!.removeAttribute("floating")
+      block.native!.removeAttribute("dangling")
   }
 
   render(block: VBlock<T>): void | Promise<void> {
