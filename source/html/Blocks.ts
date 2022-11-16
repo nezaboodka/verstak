@@ -111,12 +111,12 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
   }
 
-  applyWidthMin(block: VBlock<T>, widthMin: string): void {
-    block.native.style.minWidth = `${widthMin}`
+  applyMinWidth(block: VBlock<T>, minWidth: string): void {
+    block.native.style.minWidth = `${minWidth}`
   }
 
-  applyWidthMax(block: VBlock<T>, widthMax: string): void {
-    block.native.style.maxWidth = `${widthMax}`
+  applyMaxWidth(block: VBlock<T>, maxWidth: string): void {
+    block.native.style.maxWidth = `${maxWidth}`
   }
 
   applyHeightGrowth(block: VBlock<T>, heightGrowth: number): void {
@@ -128,25 +128,25 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
         css.flexGrow = ""
     }
     else if (block.host.driver.isRow) {
-      block.driver.applyAlignFrame(block, Align.Stretch)
+      block.driver.applyFrameAlignment(block, Align.Stretch)
       block.host.driver.applyHeightGrowth(block.host, heightGrowth)
     }
   }
 
-  applyHeightMin(block: VBlock<T>, heightMin: string): void {
-    block.native.style.minHeight = `${heightMin}`
+  applyMinHeight(block: VBlock<T>, minHeight: string): void {
+    block.native.style.minHeight = `${minHeight}`
   }
 
-  applyHeightMax(block: VBlock<T>, heightMax: string): void {
-    block.native.style.maxHeight = `${heightMax}`
+  applyMaxHeight(block: VBlock<T>, maxHeight: string): void {
+    block.native.style.maxHeight = `${maxHeight}`
   }
 
-  applyAlignContent(block: VBlock<T>, alignContent: Align): void {
+  applyContentAlignment(block: VBlock<T>, contentAlign: Align): void {
     const css = block.native.style
-    if ((alignContent & Align.Default) === 0) { // if not auto mode
-      const v = AlignToCss[(alignContent >> 2) & 0b11]
-      const h = AlignToCss[alignContent & 0b11]
-      const t = TextAlignCss[alignContent & 0b11]
+    if ((contentAlign & Align.Default) === 0) { // if not auto mode
+      const v = AlignToCss[(contentAlign >> 2) & 0b11]
+      const h = AlignToCss[contentAlign & 0b11]
+      const t = TextAlignCss[contentAlign & 0b11]
       css.justifyContent = v
       css.alignItems = h
       css.textAlign = t
@@ -155,11 +155,11 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
       css.justifyContent = css.alignContent = css.textAlign = ""
   }
 
-  applyAlignFrame(block: VBlock<T>, alignFrame: Align): void {
+  applyFrameAlignment(block: VBlock<T>, frameAlign: Align): void {
     const css = block.native.style
-    if ((alignFrame & Align.Default) === 0) { // if not auto mode
-      const v = AlignToCss[(alignFrame >> 2) & 0b11]
-      const h = AlignToCss[alignFrame & 0b11]
+    if ((frameAlign & Align.Default) === 0) { // if not auto mode
+      const v = AlignToCss[(frameAlign >> 2) & 0b11]
+      const h = AlignToCss[frameAlign & 0b11]
       css.alignSelf = v
       css.justifySelf = h
     }
@@ -170,8 +170,8 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
       css.alignSelf = css.justifySelf = ""
   }
 
-  applyWrapContent(block: VBlock<T>, wrapContent: boolean): void {
-    if (wrapContent)
+  applyContentWrapping(block: VBlock<T>, contentWrapping: boolean): void {
+    if (contentWrapping)
       block.native.setAttribute("wrapping", "true")
     else
       block.native.removeAttribute("wrapping")

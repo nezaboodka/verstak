@@ -70,16 +70,16 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract model: M
   abstract cells: Cells
   abstract widthGrowth: number
-  abstract widthMin: string
-  abstract widthMax: string
+  abstract minWidth: string
+  abstract maxWidth: string
   abstract heightGrowth: number
-  abstract heightMin: string
-  abstract heightMax: string
-  abstract alignContent: Align
-  abstract alignFrame: Align
-  abstract wrapContent: boolean
+  abstract minHeight: string
+  abstract maxHeight: string
+  abstract contentAlignment: Align
+  abstract frameAlignment: Align
+  abstract contentWrapping: boolean
   abstract floating: boolean
-  abstract shuffleChildren: boolean
+  abstract childrenShuffling: boolean
   abstract renderingPriority?: Priority
   // System-managed properties
   abstract readonly level: number
@@ -216,11 +216,11 @@ export class AbstractDriver<T> {
     // do nothing
   }
 
-  applyWidthMin(block: VBlock<T, any, any>, widthMin: string): void {
+  applyMinWidth(block: VBlock<T, any, any>, minWidth: string): void {
     // do nothing
   }
 
-  applyWidthMax(block: VBlock<T, any, any>, widthMax: string): void {
+  applyMaxWidth(block: VBlock<T, any, any>, maxWidth: string): void {
     // do nothing
   }
 
@@ -228,23 +228,23 @@ export class AbstractDriver<T> {
     // do nothing
   }
 
-  applyHeightMin(block: VBlock<T, any, any>, heightMin: string): void {
+  applyMinHeight(block: VBlock<T, any, any>, minHeight: string): void {
     // do nothing
   }
 
-  applyHeightMax(block: VBlock<T, any, any>, heightMax: string): void {
+  applyMaxHeight(block: VBlock<T, any, any>, maxHeight: string): void {
     // do nothing
   }
 
-  applyAlignContent(block: VBlock<T, any, any>, alignContent: Align): void {
+  applyContentAlignment(block: VBlock<T, any, any>, contentAlignment: Align): void {
     // do nothing
   }
 
-  applyAlignFrame(block: VBlock<T, any, any>, alignFrame: Align): void {
+  applyFrameAlignment(block: VBlock<T, any, any>, frameAlignment: Align): void {
     // do nothing
   }
 
-  applyWrapContent(block: VBlock<T, any, any>, wrapContent: boolean): void {
+  applyContentWrapping(block: VBlock<T, any, any>, contentWrapping: boolean): void {
     // do nothing
   }
 
@@ -311,16 +311,16 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   assignedCells: Cells
   appliedCellRange: CellRange
   appliedWidthGrowth: number
-  appliedWidthMin: string
-  appliedWidthMax: string
+  appliedMinWidth: string
+  appliedMaxWidth: string
   appliedHeightGrowth: number
-  appliedHeightMin: string
-  appliedHeightMax: string
-  appliedAlignContent: Align
-  appliedAlignFrame: Align
-  appliedWrapContent: boolean
+  appliedMinHeight: string
+  appliedMaxHeight: string
+  appliedContentAlignment: Align
+  appliedFrameAlignment: Align
+  appliedContentWrapping: boolean
   appliedFloating: boolean
-  shuffleChildren: boolean
+  childrenShuffling: boolean
   renderingPriority: Priority
   // System-managed properties
   readonly level: number
@@ -345,16 +345,16 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.assignedCells = undefined
     this.appliedCellRange = Cursor.UndefinedCellRange
     this.appliedWidthGrowth = 0
-    this.appliedWidthMin = ""
-    this.appliedWidthMax = ""
+    this.appliedMinWidth = ""
+    this.appliedMaxWidth = ""
     this.appliedHeightGrowth = 0
-    this.appliedHeightMin = ""
-    this.appliedHeightMax = ""
-    this.appliedAlignContent = Align.Default
-    this.appliedAlignFrame = Align.Default
-    this.appliedWrapContent = false
+    this.appliedMinHeight = ""
+    this.appliedMaxHeight = ""
+    this.appliedContentAlignment = Align.Default
+    this.appliedFrameAlignment = Align.Default
+    this.appliedContentWrapping = false
     this.appliedFloating = false
-    this.shuffleChildren = false
+    this.childrenShuffling = false
     this.renderingPriority = Priority.SyncP0
     // System-managed properties
     this.level = owner.level + 1
@@ -398,18 +398,18 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
       this.appliedWidthGrowth = value
     }
   }
-  get widthMin(): string { return this.appliedWidthMin }
-  set widthMin(value: string) {
-    if (value !== this.appliedWidthMin) {
-      this.driver.applyWidthMin(this, value)
-      this.appliedWidthMin = value
+  get minWidth(): string { return this.appliedMinWidth }
+  set minWidth(value: string) {
+    if (value !== this.appliedMinWidth) {
+      this.driver.applyMinWidth(this, value)
+      this.appliedMinWidth = value
     }
   }
-  get widthMax(): string { return this.appliedWidthMax }
-  set widthMax(value: string) {
-    if (value !== this.appliedWidthMax) {
-      this.driver.applyWidthMax(this, value)
-      this.appliedWidthMax = value
+  get maxWidth(): string { return this.appliedMaxWidth }
+  set maxWidth(value: string) {
+    if (value !== this.appliedMaxWidth) {
+      this.driver.applyMaxWidth(this, value)
+      this.appliedMaxWidth = value
     }
   }
   get heightGrowth(): number { return this.appliedHeightGrowth }
@@ -419,39 +419,39 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
       this.appliedHeightGrowth = value
     }
   }
-  get heightMin(): string { return this.appliedHeightMin }
-  set heightMin(value: string) {
-    if (value !== this.appliedWidthMin) {
-      this.driver.applyWidthMin(this, value)
-      this.appliedWidthMin = value
+  get minHeight(): string { return this.appliedMinHeight }
+  set minHeight(value: string) {
+    if (value !== this.appliedMinWidth) {
+      this.driver.applyMinWidth(this, value)
+      this.appliedMinWidth = value
     }
   }
-  get heightMax(): string { return this.appliedHeightMax }
-  set heightMax(value: string) {
-    if (value !== this.appliedWidthMax) {
-      this.driver.applyWidthMax(this, value)
-      this.appliedWidthMax = value
+  get maxHeight(): string { return this.appliedMaxHeight }
+  set maxHeight(value: string) {
+    if (value !== this.appliedMaxWidth) {
+      this.driver.applyMaxWidth(this, value)
+      this.appliedMaxWidth = value
     }
   }
-  get alignContent(): Align { return this.appliedAlignContent }
-  set alignContent(value: Align) {
-    if (value !== this.appliedAlignContent) {
-      this.driver.applyAlignContent(this, value)
-      this.appliedAlignContent = value
+  get contentAlignment(): Align { return this.appliedContentAlignment }
+  set contentAlignment(value: Align) {
+    if (value !== this.appliedContentAlignment) {
+      this.driver.applyContentAlignment(this, value)
+      this.appliedContentAlignment = value
     }
   }
-  get alignFrame(): Align { return this.appliedAlignFrame }
-  set alignFrame(value: Align) {
-    if (value !== this.appliedAlignFrame) {
-      this.driver.applyAlignFrame(this, value)
-      this.appliedAlignFrame = value
+  get frameAlignment(): Align { return this.appliedFrameAlignment }
+  set frameAlignment(value: Align) {
+    if (value !== this.appliedFrameAlignment) {
+      this.driver.applyFrameAlignment(this, value)
+      this.appliedFrameAlignment = value
     }
   }
-  get wrapContent(): boolean { return this.appliedWrapContent }
-  set wrapContent(value: boolean) {
-    if (value !== this.appliedWrapContent) {
-      this.driver.applyWrapContent(this, value)
-      this.appliedWrapContent = value
+  get contentWrapping(): boolean { return this.appliedContentWrapping }
+  set contentWrapping(value: boolean) {
+    if (value !== this.appliedContentWrapping) {
+      this.driver.applyContentWrapping(this, value)
+      this.appliedContentWrapping = value
     }
   }
   get floating(): boolean { return this.appliedFloating }
@@ -596,7 +596,7 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
     VBlock.currentRenderingPriority = priority
     try {
       const sequential = block.children.strict
-      if (block.shuffleChildren)
+      if (block.childrenShuffling)
         shuffle(items)
       const frameDurationLimit = priority === Priority.AsyncP2 ? VBlock.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(VBlock.frameDuration / 4, VBlock.shortFrameDuration))
