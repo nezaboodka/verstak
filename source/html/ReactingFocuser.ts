@@ -13,7 +13,9 @@ export function ReactingFocuser(name: string, target: HTMLElement, model: FocusM
   VBlock.claim(name, undefined, {
     reacting: true,
     triggers: { target, model },
-    throttling: 0,
+    initialize(e, b) {
+      b.configureReactronic({ throttling: 0 })
+    },
     render() {
       if (switchEditMode !== undefined) {
         switchEditMode(model)

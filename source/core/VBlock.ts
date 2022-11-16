@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw } from "reactronic"
+import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw, MemberOptions } from "reactronic"
 import { CellRange, equalCellRanges } from "./CellRange"
 import { Cursor, Align, Cells } from "./Cursor"
 
@@ -18,10 +18,6 @@ export type Type<T> = new (...args: any[]) => T
 export interface BlockVmt<T = unknown, M = unknown, R = void> {
   reacting?: boolean
   triggers?: unknown
-  priority?: Priority,
-  monitor?: Monitor
-  throttling?: number,
-  logging?: Partial<LoggingOptions>
   initialize?: Render<T, M, R>
   override?: Render<T, M, R>
   render?: Render<T, M, R>
@@ -79,6 +75,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract wrapContent: boolean
   abstract dangling: boolean
   abstract shuffleChildren: boolean
+  abstract renderingPriority?: Priority
   // System-managed properties
   abstract readonly level: number
   abstract readonly host: VBlock // (!) may differ from owner
@@ -90,6 +87,8 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   get isInitialRendering(): boolean {
     return this.stamp === 2
   }
+
+  abstract configureReactronic(options: Partial<MemberOptions>): MemberOptions
 
   static root(render: () => void): void {
     gSysRoot.instance.vmt.render = render
@@ -317,6 +316,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   appliedWrapContent: boolean
   appliedDangling: boolean
   shuffleChildren: boolean
+  renderingPriority: Priority
   // System-managed properties
   readonly level: number
   host: VBlockImpl
@@ -350,6 +350,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.appliedWrapContent = false
     this.appliedDangling = false
     this.shuffleChildren = false
+    this.renderingPriority = Priority.SyncP0
     // System-managed properties
     this.level = owner.level + 1
     this.host = owner // owner is default host, but can be changed
@@ -456,6 +457,12 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     }
   }
 
+  configureReactronic(options: Partial<MemberOptions>): MemberOptions {
+    if (this.stamp !== 1 || !this.vmt.reacting)
+      throw new Error("reactronic can be configured only for reacting blocks and only inside initialize")
+    return Rx.getController(this.rerender).configure(options)
+  }
+
   static use<T extends Object>(type: Type<T>): T {
     let b = gCurrent.instance
     while (b.context?.type !== type && b.host !== b)
@@ -519,13 +526,12 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             break
           const block = item.instance
           const driver = block.driver
-          const opt = block.vmt
           const host = driver.isRow ? owner : partHost
+          const p = block.renderingPriority ?? Priority.SyncP0
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
-          const priority = opt?.priority ?? Priority.SyncP0
-          if (priority === Priority.SyncP0)
+          if (p === Priority.SyncP0)
             prepareAndRunRender(item, children.isMoved(item), sequential) // render synchronously
-          else if (priority === Priority.AsyncP1)
+          else if (p === Priority.AsyncP1)
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
@@ -634,9 +640,6 @@ function prepareRender(item: Item<VBlockImpl>,
             Rx.setLoggingHint(block, block.name)
           Rx.getController(block.rerender).configure({
             order: block.level,
-            monitor: block.vmt?.monitor,
-            throttling: block.vmt?.throttling,
-            logging: block.vmt?.logging,
           })
         })
       }
