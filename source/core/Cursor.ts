@@ -58,20 +58,6 @@ export interface Bounds {
   dangling?: boolean        // false
 }
 
-export interface PlaceOld {
-  exact: CellRange | undefined
-  widthMin: string
-  widthMax: string
-  widthGrowth: number
-  heightMin: string
-  heightMax: string
-  heightGrowth: number
-  alignContent: Align
-  alignFrame: Align
-  wrapping: boolean
-  dangling: boolean
-}
-
 export class Cursor {
   static readonly UndefinedCellRange = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
 
@@ -86,22 +72,6 @@ export class Cursor {
 
   lineFeed(): void {
     // do nothing
-  }
-
-  onwards(bounds: Bounds | undefined): PlaceOld | undefined {
-    return !bounds ? undefined : {
-      exact: bounds.place ? parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 }) : undefined,
-      widthMin: bounds.widthMin ?? "",
-      widthMax: bounds.widthMax ?? "",
-      widthGrowth: bounds.widthGrowth ?? 0,
-      heightMin: bounds.heightMin ?? "",
-      heightMax: bounds.heightMax ?? "",
-      heightGrowth: bounds.heightGrowth ?? 0,
-      alignContent: bounds.alignContent ?? Align.Default,
-      alignFrame: bounds.alignFrame ?? Align.Default,
-      wrapping: bounds.wrapping ?? false,
-      dangling: bounds.dangling ?? false,
-    }
   }
 }
 
@@ -191,59 +161,6 @@ export class GridCursor extends Cursor {
     this.columnCursor = 0
     this.rowCursor = this.newRowCursor
   }
-
-  onwards(bounds: Bounds | undefined): PlaceOld | undefined {
-    const result: PlaceOld = {
-      exact: undefined,
-      widthMin: "", widthMax: "", widthGrowth: 0,
-      heightMin: "", heightMax: "", heightGrowth: 0,
-      alignContent: bounds?.alignContent ?? Align.Default,
-      alignFrame: bounds?.alignFrame ?? Align.Default,
-      wrapping: bounds?.wrapping ?? false,
-      dangling: bounds?.dangling ?? false,
-    }
-    if (bounds?.place) { // absolute positioning
-      result.exact = parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 })
-      absolutizeCellRange(result.exact,
-        this.columnCursor + 1, this.rowCursor + 1,
-        this.maxColumnCount || Infinity,
-        this.maxRowCount || Infinity, result.exact)
-    }
-    else { // relative positioning
-      const totalColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
-      const totalRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
-      const cr = result.exact = { x1: 0, y1: 0, x2: 0, y2: 0 }
-      // Horizontal
-      let w = bounds?.widthSpan ?? 1
-      if (w === 0)
-        w = totalColumnCount || 1
-      if (w >= 0) {
-        cr.x1 = this.columnCursor + 1
-        cr.x2 = absolutizePosition(cr.x1 + w - 1, 0, this.maxColumnCount || Infinity)
-        if (!bounds?.widthOverlap)
-          this.columnCursor = cr.x2
-      }
-      else {
-        cr.x1 = Math.max(this.columnCursor + w, 1)
-        cr.x2 = this.columnCursor
-      }
-      // Vertical
-      let h = bounds?.heightSpan ?? 1
-      if (h === 0)
-        h = totalRowCount || 1
-      if (h >= 0) {
-        cr.y1 = this.rowCursor + 1
-        cr.y2 = absolutizePosition(cr.y1 + h - 1, 0, this.maxRowCount || Infinity)
-        if (!bounds?.heightOverlap && cr.y2 > this.newRowCursor)
-          this.newRowCursor = cr.y2
-      }
-      else {
-        cr.y1 = Math.max(this.rowCursor + h, 1)
-        cr.y2 = this.rowCursor
-      }
-    }
-    return result
-  }
 }
 
 function absolutizeCellRange(area: CellRange,
@@ -275,20 +192,4 @@ function absolutizePosition(pos: number, cursor: number, max: number): number {
   else
     pos = Math.min(pos, max)
   return pos
-}
-
-export function equalPlaces(a: PlaceOld | undefined, b: PlaceOld | undefined): boolean {
-  let result: boolean
-  if (a) {
-    if (b) {
-      result = a.widthGrowth == b.widthGrowth
-    }
-    else
-      result = false
-  }
-  else if (b)
-    result = false
-  else
-    result = true
-  return result
 }

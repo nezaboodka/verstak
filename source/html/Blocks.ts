@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, LayoutKind, PlaceOld, BlockArgs, Align, GridCursor, asComponent, CellRange } from "../core/api"
+import { VBlock, LayoutKind, BlockArgs, Align, GridCursor, asComponent, CellRange } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -85,111 +85,6 @@ export function Group<M = unknown, R = void>(name: string,
 
 export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
-  arrange(block: VBlock<T>, place: PlaceOld | undefined, heightGrowth: number | undefined): void {
-    const native = block.native
-    if (native) {
-      if (heightGrowth === undefined) {
-        const ex = block.stamp > 1 ? block.placeOld : undefined
-        if (place !== ex) {
-          const css = native.style
-          // Exact position
-          const exact = place?.exact
-          if (exact !== ex?.exact) {
-            if (exact) {
-              const x1 = exact.x1 || 1
-              const y1 = exact.y1 || 1
-              const x2 = exact.x2 || x1
-              const y2 = exact.y2 || y1
-              css.gridArea = `${y1} / ${x1} / span ${y2 - y1 + 1} / span ${x2 - x1 + 1}`
-            }
-            else
-              css.gridArea = ""
-          }
-          // Width Growth
-          const widthGrowth = place?.widthGrowth ?? 0
-          if (widthGrowth !== (ex?.widthGrowth ?? 0)) {
-            if (widthGrowth > 0) {
-              css.flexGrow = `${widthGrowth}`
-              css.flexBasis = "0"
-            }
-            else {
-              css.flexGrow = ""
-              css.flexBasis = ""
-            }
-          }
-          // Width
-          const widthMin = place?.widthMin ?? ""
-          if (widthMin !== (ex?.widthMin ?? ""))
-            css.minWidth = `${widthMin}`
-          const widthMax = place?.widthMax ?? ""
-          if (widthMax !== (ex?.widthMax ?? ""))
-            css.maxWidth = `${widthMax}`
-          // Height
-          const heightMin = place?.heightMin ?? ""
-          if (heightMin !== (ex?.heightMin ?? ""))
-            css.minHeight = `${heightMin}`
-          const heightMax = place?.heightMax ?? ""
-          if (heightMax !== (ex?.heightMax ?? ""))
-            css.maxHeight = `${heightMax}`
-          // Alignment
-          const alignContent = place?.alignContent ?? Align.Default
-          if (alignContent !== (ex?.alignContent ?? Align.Default)) {
-            if ((alignContent & Align.Default) === 0) { // if not auto mode
-              const v = AlignToCss[(alignContent >> 2) & 0b11]
-              const h = AlignToCss[alignContent & 0b11]
-              const t = TextAlignCss[alignContent & 0b11]
-              css.justifyContent = v
-              css.alignItems = h
-              css.textAlign = t
-            }
-            else
-              css.justifyContent = css.alignContent = css.textAlign = ""
-          }
-          // Frame Alignment
-          const heightGrowth = place?.heightGrowth ?? 0
-          const alignFrame = place?.alignFrame ?? Align.Default
-          if (alignFrame !== (ex?.alignFrame ?? Align.Default) ||
-            heightGrowth !== (ex?.heightGrowth ?? 0)) {
-            if ((alignFrame & Align.Default) === 0) { // if not auto mode
-              const v = AlignToCss[(alignFrame >> 2) & 0b11]
-              const h = AlignToCss[alignFrame & 0b11]
-              css.alignSelf = v
-              css.justifySelf = h
-            }
-            else if (heightGrowth > 0) {
-              css.alignSelf = AlignToCss[Align.Stretch]
-            }
-            else
-              css.alignSelf = css.justifySelf = ""
-          }
-          // Wrapping
-          const wrapping = place?.wrapping ?? false
-          if (wrapping !== (ex?.wrapping ?? false)) {
-            if (wrapping)
-              native.setAttribute("wrapping", "true")
-            else
-              native.removeAttribute("wrapping")
-          }
-          // Dangling
-          const dangling = place?.dangling ?? false
-          if (dangling !== (ex?.dangling ?? false)) {
-            if (dangling)
-              native.setAttribute("dangling", "true")
-            else
-              native.removeAttribute("dangling")
-          }
-        }
-      }
-      else {
-        if (heightGrowth > 0)
-          block.native.style.flexGrow = `${heightGrowth}`
-        else
-          block.native.style.flexGrow = ""
-      }
-    }
-    super.arrange(block, place, heightGrowth)
-  }
-
   applyCellRange(block: VBlock<T>, cellRange: CellRange | undefined): void {
     const css = block.native!.style
     if (cellRange) {
@@ -222,6 +117,20 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   applyWidthMax(block: VBlock<T>, widthMax: string): void {
     block.native!.style.maxWidth = `${widthMax}`
+  }
+
+  applyHeightGrowth(block: VBlock<T>, heightGrowth: number): void {
+    if (block.driver.isRow) {
+      const css = block.native!.style
+      if (heightGrowth > 0)
+        css.flexGrow = `${heightGrowth}`
+      else
+        css.flexGrow = ""
+    }
+    else if (block.host.driver.isRow) {
+      block.driver.applyAlignFrame(block, Align.Stretch)
+      block.host.driver.applyHeightGrowth(block.host, heightGrowth)
+    }
   }
 
   applyHeightMin(block: VBlock<T>, heightMin: string): void {

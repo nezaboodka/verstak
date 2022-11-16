@@ -7,7 +7,7 @@
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw } from "reactronic"
 import { CellRange, equalCellRanges } from "./CellRange"
-import { Bounds, PlaceOld, Cursor, Align, Cells } from "./Cursor"
+import { Cursor, Align, Cells } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>, base: () => R) => R
@@ -15,7 +15,7 @@ export type AsyncRender<T = unknown, M = unknown> = (native: T, block: VBlock<T,
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 export type Type<T> = new (...args: any[]) => T
 
-export interface BlockArgs<T = unknown, M = unknown, R = void> extends Bounds {
+export interface BlockArgs<T = unknown, M = unknown, R = void> {
   reacting?: boolean
   triggers?: unknown
   priority?: Priority,
@@ -72,6 +72,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract widthGrowth: number
   abstract widthMin: string
   abstract widthMax: string
+  abstract heightGrowth: number
   abstract heightMin: string
   abstract heightMax: string
   abstract alignContent: Align
@@ -85,7 +86,6 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly item: Item<VBlock> | undefined
   abstract readonly stamp: number
   abstract readonly native: T | undefined
-  abstract readonly placeOld: Readonly<PlaceOld> | undefined
 
   get isInitialRendering(): boolean {
     return this.stamp === 2
@@ -204,34 +204,6 @@ export class AbstractDriver<T> {
     // nothing to do by default
   }
 
-  arrange(block: VBlock<T>, place: PlaceOld | undefined, heightGrowth: number | undefined): void {
-    const b = block as VBlockImpl<T>
-    if (heightGrowth === undefined) {
-      b.placeOld = place
-      // Bump host height growth if necessary
-      const host = b.host
-      if (host.driver.isRow) {
-        const growth = place?.heightGrowth ?? 0
-        if (growth > 0 && (host.placeOld?.heightGrowth ?? 0) < growth)
-          host.driver.arrange(host, undefined, growth)
-      }
-    }
-    else if (heightGrowth > 0) {
-      if (b.placeOld === undefined)
-        b.placeOld = {
-          exact: undefined,
-          widthMin: "", widthMax: "", widthGrowth: 0,
-          heightMin: "", heightMax: "", heightGrowth,
-          alignContent: Align.Default,
-          alignFrame: Align.Default,
-          wrapping: false,
-          dangling: false,
-        }
-      else
-        b.placeOld.heightGrowth = heightGrowth
-    }
-  }
-
   applyCellRange(block: VBlock<T, any, any>, cellRange: CellRange | undefined): void {
     // do nothing
   }
@@ -245,6 +217,10 @@ export class AbstractDriver<T> {
   }
 
   applyWidthMax(block: VBlock<T, any, any>, widthMax: string): void {
+    // do nothing
+  }
+
+  applyHeightGrowth(block: VBlock<T, any, any>, heightGrowth: number): void {
     // do nothing
   }
 
@@ -333,6 +309,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   appliedWidthGrowth: number
   appliedWidthMin: string
   appliedWidthMax: string
+  appliedHeightGrowth: number
   appliedHeightMin: string
   appliedHeightMax: string
   appliedAlignContent: Align
@@ -347,7 +324,6 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   item: Item<VBlockImpl> | undefined
   stamp: number
   native: T | undefined
-  placeOld: PlaceOld | undefined
   cursor: Cursor
   private senior: VBlockImpl
   context: VBlockContext<any> | undefined
@@ -365,6 +341,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.appliedWidthGrowth = 0
     this.appliedWidthMin = ""
     this.appliedWidthMax = ""
+    this.appliedHeightGrowth = 0
     this.appliedHeightMin = ""
     this.appliedHeightMax = ""
     this.appliedAlignContent = Align.Default
@@ -379,7 +356,6 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.item = undefined
     this.stamp = 0
     this.native = undefined
-    this.placeOld = undefined
     this.cursor = driver.createCursor()
     this.senior = owner.context ? owner : owner.senior
     this.context = undefined
@@ -400,7 +376,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   set cells(value: Cells) {
     if (this.assignedCells !== undefined)
       throw new Error("cells can be assigned only once during rendering")
-    const cellRange = this.cursor.onwardsNew(value)
+    const cellRange = this.host.cursor.onwardsNew(value)
     if (!equalCellRanges(cellRange, this.appliedCellRange)) {
       this.driver.applyCellRange(this, cellRange)
       this.appliedCellRange = cellRange
@@ -426,6 +402,13 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     if (value !== this.appliedWidthMax) {
       this.driver.applyWidthMax(this, value)
       this.appliedWidthMax = value
+    }
+  }
+  get heightGrowth(): number { return this.appliedHeightGrowth }
+  set heightGrowth(value: number) {
+    if (value !== this.appliedHeightGrowth) {
+      this.driver.applyHeightGrowth(this, value)
+      this.appliedHeightGrowth = value
     }
   }
   get heightMin(): string { return this.appliedHeightMin }
@@ -535,12 +518,12 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const block = item.instance
           const driver = block.driver
           const opt = block.args
-          if (!driver.isRow) {
-            const place = cursor.onwards(opt)
-            driver.arrange(block, place, undefined)
-          }
-          else
-            cursor.lineFeed()
+          // if (!driver.isRow) {
+          //   const place = cursor.onwards(opt)
+          //   driver.arrange(block, place, undefined)
+          // }
+          // else
+          //   cursor.lineFeed()
           const host = driver.isRow ? owner : partHost
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
@@ -663,7 +646,7 @@ function prepareRender(item: Item<VBlockImpl>,
       }
       driver.initialize(block, undefined)
       driver.deploy(block, sequential)
-      driver.arrange(block, block.placeOld, undefined)
+      // driver.arrange(block, block.placeOld, undefined)
     })
   }
   else if (redeploy)
@@ -683,7 +666,9 @@ function runRender(item: Item<VBlockImpl>): void {
         block.assignedCells = undefined // reset
         block.children.beginMerge()
         result = block.driver.render(block)
-        if (block.assignedCells === undefined)
+        if (block.driver.isRow)
+          block.host.cursor.lineFeed()
+        else if (block.assignedCells === undefined)
           block.cells = undefined // assign cells automatically
         if (result instanceof Promise)
           result.then(
