@@ -9,6 +9,8 @@ import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, L
 import { CellRange, equalCellRanges } from "./CellRange"
 import { Bounds, PlaceOld, Cursor, Align, Cells } from "./Cursor"
 
+const UNDEFINED_CELL_RANGE = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
+
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>, base: () => R) => R
 export type AsyncRender<T = unknown, M = unknown> = (native: T, block: VBlock<T, M, Promise<void>>) => Promise<void>
@@ -86,10 +88,6 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly stamp: number
   abstract readonly native: T | undefined
   abstract readonly placeOld: Readonly<PlaceOld> | undefined
-
-  render(): R {
-    return invokeRenderFunction(this)
-  }
 
   get isInitialRendering(): boolean {
     return this.stamp === 2
@@ -332,17 +330,17 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   readonly driver: AbstractDriver<T>
   args: BlockArgs<T, M, R>
   model: M
-  private appliedCells: Cells
-  private appliedCellRange: CellRange
-  private appliedWidthGrowth: number
-  private appliedWidthMin: string
-  private appliedWidthMax: string
-  private appliedHeightMin: string
-  private appliedHeightMax: string
-  private appliedAlignContent: Align
-  private appliedAlignFrame: Align
-  private appliedWrapping: boolean
-  private appliedDangling: boolean
+  assignedCells: Cells
+  appliedCellRange: CellRange
+  appliedWidthGrowth: number
+  appliedWidthMin: string
+  appliedWidthMax: string
+  appliedHeightMin: string
+  appliedHeightMax: string
+  appliedAlignContent: Align
+  appliedAlignFrame: Align
+  appliedWrapping: boolean
+  appliedDangling: boolean
   // System-managed properties
   readonly level: number
   host: VBlockImpl
@@ -364,8 +362,8 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.driver = driver
     this.args = args
     this.model = undefined as any
-    this.appliedCells = undefined
-    this.appliedCellRange = { x1: 0, y1: 0, x2: 0, y2: 0 }
+    this.assignedCells = undefined
+    this.appliedCellRange = UNDEFINED_CELL_RANGE
     this.appliedWidthGrowth = 0
     this.appliedWidthMin = ""
     this.appliedWidthMax = ""
@@ -400,13 +398,15 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     runRender(this.item!)
   }
 
-  get cells(): Cells { return this.appliedCells }
+  get cells(): Cells { return this.assignedCells }
   set cells(value: Cells) {
+    if (this.assignedCells !== undefined)
+      throw new Error("cells can be assigned only once during rendering")
     const cellRange = this.cursor.onwardsNew(value)
     if (!equalCellRanges(cellRange, this.appliedCellRange)) {
       this.driver.applyCellRange(this, cellRange)
       this.appliedCellRange = cellRange
-      this.appliedCells = value
+      this.assignedCells = value ?? { }
     }
   }
   get widthGrowth(): number { return this.appliedWidthGrowth }
@@ -526,11 +526,11 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         const ownerIsBlock = owner.driver.isBlock
         const sequential = children.strict
         const cursor = owner.cursor
-        cursor.reset()
         let p1: Array<Item<VBlockImpl>> | undefined = undefined
         let p2: Array<Item<VBlockImpl>> | undefined = undefined
         let redeploy = false
         let partHost = owner
+        cursor.reset()
         for (const item of children.items()) {
           if (Transaction.isCanceled)
             break
@@ -682,6 +682,7 @@ function runRender(item: Item<VBlockImpl>): void {
       try {
         block.stamp++
         block.numerator = 0
+        block.assignedCells = undefined // reset
         block.children.beginMerge()
         result = block.driver.render(block)
         if (result instanceof Promise)
