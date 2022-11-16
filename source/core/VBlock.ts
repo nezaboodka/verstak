@@ -115,15 +115,16 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   static claim<T = undefined, M = unknown, R = void>(
     name: string, driver: AbstractDriver<T> | undefined,
     body: BlockBody<T, M, R>): VBlock<T, M, R> {
-    if (body instanceof Function)
-      body = { render: body }
     let result: VBlockImpl<T, M, R>
     const owner = gCurrent.instance
     const children = owner.children
     let ex: Item<VBlockImpl<any, any, any>> | undefined = undefined
-    // Check for coalescing separators or lookup for existing block
-    driver ??= AbstractDriver.group
+    // Normalize parameters
     name ||= `${++owner.numerator}`
+    driver ??= AbstractDriver.group
+    if (body instanceof Function)
+      body = { render: body }
+    // Check for coalescing separators or lookup for existing block
     if (driver.isRow) {
       const last = children.lastClaimedItem()
       if (last?.instance?.driver === driver)
