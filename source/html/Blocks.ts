@@ -190,7 +190,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
     super.arrange(block, place, heightGrowth)
   }
 
-  applyPlace(block: VBlock<T>, cellRange: CellRange | undefined): void {
+  applyCellRange(block: VBlock<T>, cellRange: CellRange | undefined): void {
     const css = block.native!.style
     if (cellRange) {
       const x1 = cellRange.x1 || 1
@@ -201,7 +201,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
     else
       css.gridArea = ""
-    super.applyPlace(block, cellRange)
+    super.applyCellRange(block, cellRange)
   }
 
   applyWidthGrowth(block: VBlock<T>, widthGrowth: number): void {

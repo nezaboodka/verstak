@@ -250,7 +250,7 @@ export class AbstractDriver<T> {
     }
   }
 
-  applyPlace(block: VBlock<T, any, any>, cellRange: CellRange | undefined): void {
+  applyCellRange(block: VBlock<T, any, any>, cellRange: CellRange | undefined): void {
     // do nothing
   }
 
@@ -418,7 +418,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   set cells(value: Cells) {
     const cellRange = this.cursor.onwardsNew(value)
     if (!equalCellRanges(cellRange, this.appliedCellRange)) {
-      this.driver.applyPlace(this, cellRange)
+      this.driver.applyCellRange(this, cellRange)
       this.appliedCellRange = cellRange
       this.appliedCells = value
     }
