@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw } from "reactronic"
-import { CellRange } from "./CellRange"
-import { Bounds, Place, Cursor, Align, Placement } from "./Cursor"
+import { CellRange, equalCellRanges } from "./CellRange"
+import { Bounds, PlaceOld, Cursor, Align, Placement } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>, base: () => R) => R
@@ -69,6 +69,15 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly args: Readonly<BlockArgs<T, M, R>>
   abstract model: M
   abstract placement: Placement
+  abstract widthGrowth: number
+  abstract widthMin: string
+  abstract widthMax: string
+  abstract heightMin: string
+  abstract heightMax: string
+  abstract alignContent: Align
+  abstract alignFrame: Align
+  abstract wrapping: boolean
+  abstract floating: boolean
   // System-managed properties
   abstract readonly level: number
   abstract readonly host: VBlock // (!) may differ from owner
@@ -76,7 +85,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly item: Item<VBlock> | undefined
   abstract readonly stamp: number
   abstract readonly native: T | undefined
-  abstract readonly place: Readonly<Place> | undefined
+  abstract readonly placeOld: Readonly<PlaceOld> | undefined
 
   render(): R {
     return invokeRenderFunction(this)
@@ -213,21 +222,21 @@ export class AbstractDriver<T> {
     // nothing to do by default
   }
 
-  arrange(block: VBlock<T>, place: Place | undefined, heightGrowth: number | undefined): void {
+  arrange(block: VBlock<T>, place: PlaceOld | undefined, heightGrowth: number | undefined): void {
     const b = block as VBlockImpl<T>
     if (heightGrowth === undefined) {
-      b.place = place
+      b.placeOld = place
       // Bump host height growth if necessary
       const host = b.host
       if (host.driver.isPart) {
         const growth = place?.heightGrowth ?? 0
-        if (growth > 0 && (host.place?.heightGrowth ?? 0) < growth)
+        if (growth > 0 && (host.placeOld?.heightGrowth ?? 0) < growth)
           host.driver.arrange(host, undefined, growth)
       }
     }
     else if (heightGrowth > 0) {
-      if (b.place === undefined)
-        b.place = {
+      if (b.placeOld === undefined)
+        b.placeOld = {
           exact: undefined,
           widthMin: "", widthMax: "", widthGrowth: 0,
           heightMin: "", heightMax: "", heightGrowth,
@@ -237,47 +246,47 @@ export class AbstractDriver<T> {
           floating: false,
         }
       else
-        b.place.heightGrowth = heightGrowth
+        b.placeOld.heightGrowth = heightGrowth
     }
   }
 
-  applyPlace(block: VBlock<T>, cellRange: CellRange | undefined): void {
+  applyPlace(block: VBlock<T, any, any>, cellRange: CellRange | undefined): void {
     // do nothing
   }
 
-  applyWidthGrowth(block: VBlock<T>, widthGrowth: number): void {
+  applyWidthGrowth(block: VBlock<T, any, any>, widthGrowth: number): void {
     // do nothing
   }
 
-  applyWidthMin(block: VBlock<T>, widthMin: string): void {
+  applyWidthMin(block: VBlock<T, any, any>, widthMin: string): void {
     // do nothing
   }
 
-  applyWidthMax(block: VBlock<T>, widthMax: string): void {
+  applyWidthMax(block: VBlock<T, any, any>, widthMax: string): void {
     // do nothing
   }
 
-  applyHeightMin(block: VBlock<T>, heightMin: string): void {
+  applyHeightMin(block: VBlock<T, any, any>, heightMin: string): void {
     // do nothing
   }
 
-  applyHeightMax(block: VBlock<T>, heightMax: string): void {
+  applyHeightMax(block: VBlock<T, any, any>, heightMax: string): void {
     // do nothing
   }
 
-  applyAlignContent(block: VBlock<T>, alignContent: Align): void {
+  applyAlignContent(block: VBlock<T, any, any>, alignContent: Align): void {
     // do nothing
   }
 
-  applyAlignFrame(block: VBlock<T>, alignFrame: Align): void {
+  applyAlignFrame(block: VBlock<T, any, any>, alignFrame: Align): void {
     // do nothing
   }
 
-  applyWrapping(block: VBlock<T>, wrapping: boolean): void {
+  applyWrapping(block: VBlock<T, any, any>, wrapping: boolean): void {
     // do nothing
   }
 
-  applyFloating(block: VBlock<T>, floating: boolean): void {
+  applyFloating(block: VBlock<T, any, any>, floating: boolean): void {
     // do nothing
   }
 
@@ -337,7 +346,17 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   readonly driver: AbstractDriver<T>
   args: BlockArgs<T, M, R>
   model: M
-  placement: Placement
+  private appliedPlacement: Placement
+  private appliedCellRange: CellRange
+  private appliedWidthGrowth: number
+  private appliedWidthMin: string
+  private appliedWidthMax: string
+  private appliedHeightMin: string
+  private appliedHeightMax: string
+  private appliedAlignContent: Align
+  private appliedAlignFrame: Align
+  private appliedWrapping: boolean
+  private appliedFloating: boolean
   // System-managed properties
   readonly level: number
   host: VBlockImpl
@@ -346,7 +365,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   item: Item<VBlockImpl> | undefined
   stamp: number
   native: T | undefined
-  place: Place | undefined
+  placeOld: PlaceOld | undefined
   cursor: Cursor
   private senior: VBlockImpl
   context: VBlockContext<any> | undefined
@@ -359,7 +378,17 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.driver = driver
     this.args = args
     this.model = undefined as any
-    this.placement = undefined
+    this.appliedPlacement = undefined
+    this.appliedCellRange = { x1: 0, y1: 0, x2: 0, y2: 0 }
+    this.appliedWidthGrowth = 0
+    this.appliedWidthMin = ""
+    this.appliedWidthMax = ""
+    this.appliedHeightMin = ""
+    this.appliedHeightMax = ""
+    this.appliedAlignContent = Align.Default
+    this.appliedAlignFrame = Align.Default
+    this.appliedWrapping = false
+    this.appliedFloating = false
     // System-managed properties
     this.level = owner.level + 1
     this.host = owner // owner is default host, but can be changed
@@ -368,7 +397,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.item = undefined
     this.stamp = 0
     this.native = undefined
-    this.place = undefined
+    this.placeOld = undefined
     this.cursor = driver.createCursor()
     this.senior = owner.context ? owner : owner.senior
     this.context = undefined
@@ -383,6 +412,79 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   rerender(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by owner
     runRender(this.item!)
+  }
+
+  get placement(): Placement { return this.appliedPlacement }
+  set placement(value: Placement) {
+    const cellRange = this.cursor.onwardsEx(value)
+    if (!equalCellRanges(cellRange, this.appliedCellRange)) {
+      this.driver.applyPlace(this, cellRange)
+      this.appliedCellRange = cellRange
+      this.appliedPlacement = value
+    }
+  }
+  get widthGrowth(): number { return this.appliedWidthGrowth }
+  set widthGrowth(value: number) {
+    if (value !== this.appliedWidthGrowth) {
+      this.driver.applyWidthGrowth(this, value)
+      this.appliedWidthGrowth = value
+    }
+  }
+  get widthMin(): string { return this.appliedWidthMin }
+  set widthMin(value: string) {
+    if (value !== this.appliedWidthMin) {
+      this.driver.applyWidthMin(this, value)
+      this.appliedWidthMin = value
+    }
+  }
+  get widthMax(): string { return this.appliedWidthMax }
+  set widthMax(value: string) {
+    if (value !== this.appliedWidthMax) {
+      this.driver.applyWidthMax(this, value)
+      this.appliedWidthMax = value
+    }
+  }
+  get heightMin(): string { return this.appliedHeightMin }
+  set heightMin(value: string) {
+    if (value !== this.appliedWidthMin) {
+      this.driver.applyWidthMin(this, value)
+      this.appliedWidthMin = value
+    }
+  }
+  get heightMax(): string { return this.appliedHeightMax }
+  set heightMax(value: string) {
+    if (value !== this.appliedWidthMax) {
+      this.driver.applyWidthMax(this, value)
+      this.appliedWidthMax = value
+    }
+  }
+  get alignContent(): Align { return this.appliedAlignContent }
+  set alignContent(value: Align) {
+    if (value !== this.appliedAlignContent) {
+      this.driver.applyAlignContent(this, value)
+      this.appliedAlignContent = value
+    }
+  }
+  get alignFrame(): Align { return this.appliedAlignFrame }
+  set alignFrame(value: Align) {
+    if (value !== this.appliedAlignFrame) {
+      this.driver.applyAlignFrame(this, value)
+      this.appliedAlignFrame = value
+    }
+  }
+  get wrapping(): boolean { return this.appliedWrapping }
+  set wrapping(value: boolean) {
+    if (value !== this.appliedWrapping) {
+      this.driver.applyWrapping(this, value)
+      this.appliedWrapping = value
+    }
+  }
+  get floating(): boolean { return this.appliedFloating }
+  set floating(value: boolean) {
+    if (value !== this.appliedFloating) {
+      this.driver.applyFloating(this, value)
+      this.appliedFloating = value
+    }
   }
 
   static use<T extends Object>(type: Type<T>): T {
@@ -577,7 +679,7 @@ function prepareRender(item: Item<VBlockImpl>,
       }
       driver.initialize(block, undefined)
       driver.deploy(block, sequential)
-      driver.arrange(block, block.place, undefined)
+      driver.arrange(block, block.placeOld, undefined)
     })
   }
   else if (redeploy)

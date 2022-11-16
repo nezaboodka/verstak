@@ -58,7 +58,7 @@ export interface Bounds {
   floating?: boolean        // false
 }
 
-export interface Place {
+export interface PlaceOld {
   exact: CellRange | undefined
   widthMin: string
   widthMax: string
@@ -85,7 +85,7 @@ export class Cursor {
     // do nothing
   }
 
-  onwards(bounds: Bounds | undefined): Place | undefined {
+  onwards(bounds: Bounds | undefined): PlaceOld | undefined {
     return !bounds ? undefined : {
       exact: bounds.place ? parseCellRange(bounds.place, { x1: 0, y1: 0, x2: 0, y2: 0 }) : undefined,
       widthMin: bounds.widthMin ?? "",
@@ -189,8 +189,8 @@ export class GridCursor extends Cursor {
     this.rowCursor = this.newRowCursor
   }
 
-  onwards(bounds: Bounds | undefined): Place | undefined {
-    const result: Place = {
+  onwards(bounds: Bounds | undefined): PlaceOld | undefined {
+    const result: PlaceOld = {
       exact: undefined,
       widthMin: "", widthMax: "", widthGrowth: 0,
       heightMin: "", heightMax: "", heightGrowth: 0,
@@ -274,7 +274,7 @@ function absolutizePosition(pos: number, cursor: number, max: number): number {
   return pos
 }
 
-export function equalPlaces(a: Place | undefined, b: Place | undefined): boolean {
+export function equalPlaces(a: PlaceOld | undefined, b: PlaceOld | undefined): boolean {
   let result: boolean
   if (a) {
     if (b) {

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, LayoutKind, Place, BlockArgs, Align, GridCursor, asComponent, CellRange } from "../core/api"
+import { VBlock, LayoutKind, PlaceOld, BlockArgs, Align, GridCursor, asComponent, CellRange } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -85,11 +85,11 @@ export function Group<M = unknown, R = void>(name: string,
 
 export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
-  arrange(block: VBlock<T>, place: Place | undefined, heightGrowth: number | undefined): void {
+  arrange(block: VBlock<T>, place: PlaceOld | undefined, heightGrowth: number | undefined): void {
     const native = block.native
     if (native) {
       if (heightGrowth === undefined) {
-        const ex = block.stamp > 1 ? block.place : undefined
+        const ex = block.stamp > 1 ? block.placeOld : undefined
         if (place !== ex) {
           const css = native.style
           // Exact position

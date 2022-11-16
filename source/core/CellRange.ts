@@ -143,6 +143,10 @@ export function emitCellRange(value: CellRange): string {
   return `${p1}${p2 !== "" ? `:${p2}` : ""}`
 }
 
+export function equalCellRanges(a: CellRange, b: CellRange): boolean {
+  return a.x1 === b.x1 && a.y1 === b.y1 && a.x2 === b.x2 && a.y1 === b.y2
+}
+
 function isWhitespace(char: number): boolean {
   // only latin white spaces are supported
   return char === 32 || (char >= 9 && char <= 13) || char === 133 || char === 160
