@@ -25,7 +25,7 @@ export interface BlockVmt<T = unknown, M = unknown, R = void> {
   finalize?: Render<T, M, R>
 }
 
-export function asBaseFor<T, M, R>(
+export function baseFor<T, M, R>(
   outer: BlockBody<T, M, R> | undefined,
   base: BlockBody<T, M, R>): BlockVmt<T, M, R> {
   if (outer instanceof Function)
