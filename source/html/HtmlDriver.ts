@@ -18,7 +18,7 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
   }
 
   finalize(block: VBlock<T>, isLeader: boolean): boolean {
-    const e = block.native
+    const e = block.native as T | undefined
     if (e) {
       e.resizeObserver?.unobserve(e) // is it really needed or browser does this automatically?
       if (isLeader)
@@ -29,9 +29,9 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
   }
 
   deploy(block: VBlock<T>, sequential: boolean): void {
-    const e = block.native
+    const e = block.native as T | undefined
     if (e) {
-      const nativeParent = BaseHtmlDriver.findNearestParentHtmlBlock(block).native
+      const nativeParent = BaseHtmlDriver.findNearestParentHtmlBlock(block).native as Element | undefined
       if (nativeParent) {
         if (sequential) {
           const after = BaseHtmlDriver.findPrevSiblingHtmlBlock(block.item!)

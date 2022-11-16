@@ -39,8 +39,8 @@ export function Block<M = unknown, R = void>(name: string,
 export function PlainText(content: string, name?: string, args?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
   return VBlock.claim(name ?? "", VerstakTags.text,
     asComponent(args, {
-      render(e) {
-        e.innerText = content
+      render(b) {
+        b.native.innerText = content
       },
     }))
 }
@@ -48,8 +48,8 @@ export function PlainText(content: string, name?: string, args?: BlockBody<HTMLE
 export function HtmlText(content: string, name?: string, args?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
   return VBlock.claim(name ?? "", VerstakTags.text,
     asComponent(args, {
-      render(e) {
-        e.innerHTML = content
+      render(b) {
+        b.native.innerHTML = content
       },
     }))
 }
@@ -86,7 +86,7 @@ export function Group<M = unknown, R = void>(name: string,
 export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   applyCellRange(block: VBlock<T>, cellRange: CellRange | undefined): void {
-    const css = block.native!.style
+    const css = block.native.style
     if (cellRange) {
       const x1 = cellRange.x1 || 1
       const y1 = cellRange.y1 || 1
@@ -100,7 +100,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   applyWidthGrowth(block: VBlock<T>, widthGrowth: number): void {
-    const css = block.native!.style
+    const css = block.native.style
     if (widthGrowth > 0) {
       css.flexGrow = `${widthGrowth}`
       css.flexBasis = "0"
@@ -112,16 +112,16 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   applyWidthMin(block: VBlock<T>, widthMin: string): void {
-    block.native!.style.minWidth = `${widthMin}`
+    block.native.style.minWidth = `${widthMin}`
   }
 
   applyWidthMax(block: VBlock<T>, widthMax: string): void {
-    block.native!.style.maxWidth = `${widthMax}`
+    block.native.style.maxWidth = `${widthMax}`
   }
 
   applyHeightGrowth(block: VBlock<T>, heightGrowth: number): void {
     if (block.driver.isRow) {
-      const css = block.native!.style
+      const css = block.native.style
       if (heightGrowth > 0)
         css.flexGrow = `${heightGrowth}`
       else
@@ -134,15 +134,15 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   applyHeightMin(block: VBlock<T>, heightMin: string): void {
-    block.native!.style.minHeight = `${heightMin}`
+    block.native.style.minHeight = `${heightMin}`
   }
 
   applyHeightMax(block: VBlock<T>, heightMax: string): void {
-    block.native!.style.maxHeight = `${heightMax}`
+    block.native.style.maxHeight = `${heightMax}`
   }
 
   applyAlignContent(block: VBlock<T>, alignContent: Align): void {
-    const css = block.native!.style
+    const css = block.native.style
     if ((alignContent & Align.Default) === 0) { // if not auto mode
       const v = AlignToCss[(alignContent >> 2) & 0b11]
       const h = AlignToCss[alignContent & 0b11]
@@ -156,7 +156,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   applyAlignFrame(block: VBlock<T>, alignFrame: Align): void {
-    const css = block.native!.style
+    const css = block.native.style
     if ((alignFrame & Align.Default) === 0) { // if not auto mode
       const v = AlignToCss[(alignFrame >> 2) & 0b11]
       const h = AlignToCss[alignFrame & 0b11]
@@ -172,16 +172,16 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   applyWrapContent(block: VBlock<T>, wrapContent: boolean): void {
     if (wrapContent)
-      block.native!.setAttribute("wrapping", "true")
+      block.native.setAttribute("wrapping", "true")
     else
-      block.native!.removeAttribute("wrapping")
+      block.native.removeAttribute("wrapping")
   }
 
   applyDangling(block: VBlock<T>, dangling: boolean): void {
     if (dangling)
-      block.native!.setAttribute("dangling", "true")
+      block.native.setAttribute("dangling", "true")
     else
-      block.native!.removeAttribute("dangling")
+      block.native.removeAttribute("dangling")
   }
 
   render(block: VBlock<T>): void | Promise<void> {

@@ -13,7 +13,7 @@ export function ReactingFocuser(name: string, target: HTMLElement, model: FocusM
   VBlock.claim(name, undefined, {
     reacting: true,
     triggers: { target, model },
-    initialize(e, b) {
+    initialize(b) {
       b.configureReactronic({ throttling: 0 })
     },
     render() {

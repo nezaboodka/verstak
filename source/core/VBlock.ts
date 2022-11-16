@@ -10,8 +10,8 @@ import { CellRange, equalCellRanges } from "./CellRange"
 import { Cursor, Align, Cells } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
-export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>, base: () => R) => R
-export type AsyncRender<T = unknown, M = unknown> = (native: T, block: VBlock<T, M, Promise<void>>) => Promise<void>
+export type Render<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>, base: () => R) => R
+export type AsyncRender<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 export type Type<T> = new (...args: any[]) => T
 export type BlockBody<T = unknown, M = unknown, R = void> = Render<T, M, R> | BlockVmt<T, M, R>
@@ -44,7 +44,7 @@ export function asComponent<T, M, R>(
 
 function via<T, M, R>(outer: Render<T, M, R> | undefined, base: Render<T, M, R> | undefined): Render<T, M, R> {
   const inherited = base ?? NOP
-  return outer ? (e, b) => outer(e, b, () => inherited(e, b)) : inherited
+  return outer ? b => outer(b, () => inherited(b)) : inherited
 }
 
 export function setContext<T extends Object>(
@@ -87,7 +87,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly children: CollectionReader<VBlock>
   abstract readonly item: Item<VBlock> | undefined
   abstract readonly stamp: number
-  abstract readonly native: T | undefined
+  abstract readonly native: T
 
   get isInitialRendering(): boolean {
     return this.stamp === 2
@@ -191,17 +191,16 @@ export class AbstractDriver<T> {
     this.createCursor = createCursor ?? createDefaultCursor
   }
 
-  initialize(block: VBlock<T>, native: T | undefined): void {
+  initialize(block: VBlock<T>, native: T): void {
     const b = block as VBlockImpl<T>
     b.native = native
-    block.body.initialize?.(native!, block, NOP)
+    block.body.initialize?.(block, NOP)
   }
 
   finalize(block: VBlock<T>, isLeader: boolean): boolean {
     const b = block as VBlockImpl<T>
-    const native = block.native
-    block.body.finalize?.(native!, block, NOP)
-    b.native = undefined
+    block.body.finalize?.(block, NOP)
+    b.native = null as T // hack
     return isLeader // treat children as finalization leaders as well
   }
 
@@ -257,7 +256,7 @@ export class AbstractDriver<T> {
     let result: void | Promise<void>
     const override = block.body?.override
     if (override)
-      result = override(block.native!, block, NOP)
+      result = override(block, NOP)
     else
       result = invokeRenderFunction(block)
     return result
@@ -266,7 +265,7 @@ export class AbstractDriver<T> {
 
 function invokeRenderFunction<R>(block: VBlock<any, any, R>): R {
   const r = block.body.render ?? NOP
-  return r(block.native!, block, NOP)
+  return r(block, NOP)
 }
 
 export class StaticDriver<T> extends AbstractDriver<T> {
@@ -330,7 +329,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   numerator: number
   item: Item<VBlockImpl> | undefined
   stamp: number
-  native: T | undefined
+  native: T
   cursor: Cursor
   private senior: VBlockImpl
   context: VBlockContext<any> | undefined
@@ -364,7 +363,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.numerator = 0
     this.item = undefined
     this.stamp = 0
-    this.native = undefined
+    this.native = undefined as T // hack
     this.cursor = driver.createCursor()
     this.senior = owner.context ? owner : owner.senior
     this.context = undefined
@@ -733,8 +732,8 @@ async function runDisposalLoop(): Promise<void> {
 
 function forEachChildRecursively(item: Item<VBlockImpl>, action: (e: any) => void): void {
   const block = item.instance
-  const native = block.native
-  native && action(native)
+  const e = block.native
+  e && action(e)
   for (const item of block.children.items())
     forEachChildRecursively(item, action)
 }
