@@ -193,27 +193,13 @@ export class AbstractDriver<T> {
   initialize(block: VBlock<T>, native: T | undefined): void {
     const b = block as VBlockImpl<T>
     b.native = native
-    const initialize = block.args?.initialize
-    if (initialize) {
-      if (Array.isArray(initialize))
-        for (const init of initialize)
-          init(native!, block, NOP)
-      else
-        initialize(native!, block, NOP)
-    }
+    block.args.initialize?.(native!, block, NOP)
   }
 
   finalize(block: VBlock<T>, isLeader: boolean): boolean {
     const b = block as VBlockImpl<T>
-    const finalize = block.args?.finalize
-    if (finalize) {
-      const native = block.native
-      if (Array.isArray(finalize))
-        for (const fin of finalize)
-          fin(native!, block, NOP)
-      else
-        finalize(native!, block, NOP)
-    }
+    const native = block.native
+    block.args.finalize?.(native!, block, NOP)
     b.native = undefined
     return isLeader // treat children as finalization leaders as well
   }
