@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, LayoutKind, BlockBody, Align, GridCursor, asComponent, CellRange } from "../core/api"
+import { VBlock, LayoutKind, BlockBody, Align, GridCursor, asBaseFor, CellRange } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -30,24 +30,24 @@ import { HtmlDriver } from "./HtmlDriver"
 // Basic Block
 
 export function Block<M = unknown, R = void>(name: string,
-  args: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(name, VerstakTags.block, args)
+  body: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(name, VerstakTags.block, body)
 }
 
 // Text (either plain or html)
 
-export function PlainText(content: string, name?: string, args?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+export function PlainText(content: string, name?: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
   return VBlock.claim(name ?? "", VerstakTags.text,
-    asComponent(args, {
+    asBaseFor(body, {
       render(b) {
         b.native.innerText = content
       },
     }))
 }
 
-export function HtmlText(content: string, name?: string, args?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+export function HtmlText(content: string, name?: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
   return VBlock.claim(name ?? "", VerstakTags.text,
-    asComponent(args, {
+    asBaseFor(body, {
       render(b) {
         b.native.innerHTML = content
       },
