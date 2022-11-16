@@ -47,7 +47,7 @@ function via<T, M, R>(outer: Render<T, M, R> | undefined, base: Render<T, M, R> 
   return outer ? b => outer(b, () => inherited(b)) : inherited
 }
 
-export function setSubTreeContext<T extends Object>(
+export function defineSubTreeContext<T extends Object>(
   type: Type<T>, context: T): void {
   return VBlockImpl.setContext(type, context)
 }
