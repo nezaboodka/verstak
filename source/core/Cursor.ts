@@ -36,28 +36,6 @@ export type Cells = undefined | string | number | {
   verticalOverlap?: boolean    // false
 }
 
-export interface Bounds {
-  place?: string            // ""
-  // Width
-  widthSpan?: number        // 1 (grid layout only)
-  widthMin?: string         // min-content
-  widthMax?: string         // min-content
-  widthGrowth?: number      // 0 (no grow)
-  widthOverlap?: boolean    // false
-  // Height
-  heightSpan?: number       // 1 (grid layout only)
-  heightMin?: string        // min-content
-  heightMax?: string        // min-content
-  heightGrowth?: number     // 0 (no grow)
-  heightOverlap?: boolean   // false
-  // Alignment
-  alignContent?: Align         // To.Default
-  alignFrame?: Align           // To.Default
-  // Other
-  wrapping?: boolean        // false
-  dangling?: boolean        // false
-}
-
 export class Cursor {
   static readonly UndefinedCellRange = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
   reset(): void { /* do nothing */ }

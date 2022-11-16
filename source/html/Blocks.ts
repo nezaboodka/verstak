@@ -170,8 +170,8 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
       css.alignSelf = css.justifySelf = ""
   }
 
-  applyWrapping(block: VBlock<T>, wrapping: boolean): void {
-    if (wrapping)
+  applyWrapContent(block: VBlock<T>, wrapContent: boolean): void {
+    if (wrapContent)
       block.native!.setAttribute("wrapping", "true")
     else
       block.native!.removeAttribute("wrapping")

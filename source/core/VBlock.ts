@@ -77,7 +77,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract heightMax: string
   abstract alignContent: Align
   abstract alignFrame: Align
-  abstract wrapping: boolean
+  abstract wrapContent: boolean
   abstract dangling: boolean
   // System-managed properties
   abstract readonly level: number
@@ -240,7 +240,7 @@ export class AbstractDriver<T> {
     // do nothing
   }
 
-  applyWrapping(block: VBlock<T, any, any>, wrapping: boolean): void {
+  applyWrapContent(block: VBlock<T, any, any>, wrapContent: boolean): void {
     // do nothing
   }
 
@@ -314,7 +314,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   appliedHeightMax: string
   appliedAlignContent: Align
   appliedAlignFrame: Align
-  appliedWrapping: boolean
+  appliedWrapContent: boolean
   appliedDangling: boolean
   // System-managed properties
   readonly level: number
@@ -346,7 +346,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.appliedHeightMax = ""
     this.appliedAlignContent = Align.Default
     this.appliedAlignFrame = Align.Default
-    this.appliedWrapping = false
+    this.appliedWrapContent = false
     this.appliedDangling = false
     // System-managed properties
     this.level = owner.level + 1
@@ -439,11 +439,11 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
       this.appliedAlignFrame = value
     }
   }
-  get wrapping(): boolean { return this.appliedWrapping }
-  set wrapping(value: boolean) {
-    if (value !== this.appliedWrapping) {
-      this.driver.applyWrapping(this, value)
-      this.appliedWrapping = value
+  get wrapContent(): boolean { return this.appliedWrapContent }
+  set wrapContent(value: boolean) {
+    if (value !== this.appliedWrapContent) {
+      this.driver.applyWrapContent(this, value)
+      this.appliedWrapContent = value
     }
   }
   get dangling(): boolean { return this.appliedDangling }
