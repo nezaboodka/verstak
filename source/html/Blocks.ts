@@ -63,15 +63,14 @@ export function Grid<M = unknown, R = void>(name: string,
 
 // Line
 
-export function Line<T = void>(claim: (x: void) => T): VBlock<HTMLElement> {
-  const result = VBlock.claim("", VerstakTags.row, EMPTY_BLOCK_BODY)
-  claim()
-  VBlock.claim("", VerstakTags.row, EMPTY_BLOCK_BODY)
-  return result
+export function Line<T = void>(body: (block: void) => T): void {
+  lineFeed()
+  body()
+  lineFeed()
 }
 
-export function lineFeed(body?: BlockBody<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
-  return VBlock.claim("", VerstakTags.row, body ?? EMPTY_BLOCK_BODY)
+export function lineFeed(noCoalescing?: boolean): VBlock<HTMLElement> {
+  return VBlock.claim("", VerstakTags.row, EMPTY_BLOCK_BODY)
 }
 
 // Group
