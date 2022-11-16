@@ -47,9 +47,9 @@ function via<T, M, R>(outer: Render<T, M, R> | undefined, base: Render<T, M, R> 
   return outer ? b => outer(b, () => inherited(b)) : inherited
 }
 
-export function defineSubTreeContext<T extends Object>(
+export function setContext<T extends Object>(
   type: Type<T>, context: T): void {
-  return VBlockImpl.defineSubTreeContext(type, context)
+  return VBlockImpl.setContext(type, context)
 }
 
 export function use<T extends Object>(type: Type<T>): T {
@@ -478,7 +478,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     return b.context?.instance as any // TODO: to get rid of any
   }
 
-  static defineSubTreeContext<T>(type: Type<T>, context: T): void {
+  static setContext<T>(type: Type<T>, context: T): void {
     const block = gCurrent.instance
     const host = block.host
     const hostCtx = nonreactive(() => host.context?.instance)
