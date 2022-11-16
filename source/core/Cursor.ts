@@ -29,7 +29,7 @@ export interface TrackSize extends ElasticSize {
   track?: string | number       // <current>
 }
 
-export type Placement = undefined | string | number | {
+export type Place = undefined | string | number | {
   columns?: number          // 1 (grid layout only)
   columnsOverlap?: boolean  // false
   rows?: number             // 1 (grid layout only)
@@ -77,7 +77,7 @@ export class Cursor {
     // do nothing
   }
 
-  onwardsEx(placement: Placement): CellRange {
+  onwardsOld(place: Place): CellRange {
     return { x1: 0, y1: 0, x2: 0, y2: 0 }
   }
 
@@ -121,7 +121,7 @@ export class GridCursor extends Cursor {
     this.newRowCursor = 0
   }
 
-  onwardsEx(placement: Placement): CellRange {
+  onwardsOld(placement: Place): CellRange {
     let result: CellRange
     if (typeof(placement) === "string") {
       result = parseCellRange(placement, { x1: 0, y1: 0, x2: 0, y2: 0 })

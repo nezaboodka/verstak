@@ -7,7 +7,7 @@
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw } from "reactronic"
 import { CellRange, equalCellRanges } from "./CellRange"
-import { Bounds, PlaceOld, Cursor, Align, Placement } from "./Cursor"
+import { Bounds, PlaceOld, Cursor, Align, Place } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>, base: () => R) => R
@@ -68,7 +68,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly driver: AbstractDriver<T>
   abstract readonly args: Readonly<BlockArgs<T, M, R>>
   abstract model: M
-  abstract placement: Placement
+  abstract place: Place
   abstract widthGrowth: number
   abstract widthMin: string
   abstract widthMax: string
@@ -346,7 +346,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   readonly driver: AbstractDriver<T>
   args: BlockArgs<T, M, R>
   model: M
-  private appliedPlacement: Placement
+  private appliedPlace: Place
   private appliedCellRange: CellRange
   private appliedWidthGrowth: number
   private appliedWidthMin: string
@@ -378,7 +378,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.driver = driver
     this.args = args
     this.model = undefined as any
-    this.appliedPlacement = undefined
+    this.appliedPlace = undefined
     this.appliedCellRange = { x1: 0, y1: 0, x2: 0, y2: 0 }
     this.appliedWidthGrowth = 0
     this.appliedWidthMin = ""
@@ -414,13 +414,13 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     runRender(this.item!)
   }
 
-  get placement(): Placement { return this.appliedPlacement }
-  set placement(value: Placement) {
-    const cellRange = this.cursor.onwardsEx(value)
+  get place(): Place { return this.appliedPlace }
+  set place(value: Place) {
+    const cellRange = this.cursor.onwardsOld(value)
     if (!equalCellRanges(cellRange, this.appliedCellRange)) {
       this.driver.applyPlace(this, cellRange)
       this.appliedCellRange = cellRange
-      this.appliedPlacement = value
+      this.appliedPlace = value
     }
   }
   get widthGrowth(): number { return this.appliedWidthGrowth }
