@@ -22,7 +22,6 @@ export interface BlockVmt<T = unknown, M = unknown, R = void> {
   monitor?: Monitor
   throttling?: number,
   logging?: Partial<LoggingOptions>
-  shuffle?: boolean
   initialize?: Render<T, M, R>
   override?: Render<T, M, R>
   render?: Render<T, M, R>
@@ -79,6 +78,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract alignFrame: Align
   abstract wrapContent: boolean
   abstract dangling: boolean
+  abstract shuffleChildren: boolean
   // System-managed properties
   abstract readonly level: number
   abstract readonly host: VBlock // (!) may differ from owner
@@ -316,6 +316,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   appliedAlignFrame: Align
   appliedWrapContent: boolean
   appliedDangling: boolean
+  shuffleChildren: boolean
   // System-managed properties
   readonly level: number
   host: VBlockImpl
@@ -348,6 +349,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.appliedAlignFrame = Align.Default
     this.appliedWrapContent = false
     this.appliedDangling = false
+    this.shuffleChildren = false
     // System-managed properties
     this.level = owner.level + 1
     this.host = owner // owner is default host, but can be changed
@@ -583,7 +585,7 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
     VBlock.currentRenderingPriority = priority
     try {
       const sequential = block.children.strict
-      if (block.vmt?.shuffle)
+      if (block.shuffleChildren)
         shuffle(items)
       const frameDurationLimit = priority === Priority.AsyncP2 ? VBlock.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(VBlock.frameDuration / 4, VBlock.shortFrameDuration))
