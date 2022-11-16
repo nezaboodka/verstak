@@ -123,7 +123,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     // Check for coalescing separators or lookup for existing block
     driver ??= AbstractDriver.group
     name ||= `${++owner.numerator}`
-    if (driver.isPart) {
+    if (driver.isRow) {
       const last = children.lastClaimedItem()
       if (last?.instance?.driver === driver)
         ex = last
@@ -182,7 +182,7 @@ export class AbstractDriver<T> {
   get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Grid, Group
   get isBlock(): boolean { return this.layout === LayoutKind.Block }
   get isGrid(): boolean { return this.layout === LayoutKind.Grid }
-  get isPart(): boolean { return this.layout === LayoutKind.Row }
+  get isRow(): boolean { return this.layout === LayoutKind.Row }
 
   constructor(name: string, layout: LayoutKind, createCursor?: () => Cursor) {
     this.name = name
@@ -214,7 +214,7 @@ export class AbstractDriver<T> {
       b.placeOld = place
       // Bump host height growth if necessary
       const host = b.host
-      if (host.driver.isPart) {
+      if (host.driver.isRow) {
         const growth = place?.heightGrowth ?? 0
         if (growth > 0 && (host.placeOld?.heightGrowth ?? 0) < growth)
           host.driver.arrange(host, undefined, growth)
@@ -537,13 +537,13 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const block = item.instance
           const driver = block.driver
           const opt = block.args
-          if (!driver.isPart) {
+          if (!driver.isRow) {
             const place = cursor.onwards(opt)
             driver.arrange(block, place, undefined)
           }
           else
             cursor.lineFeed()
-          const host = driver.isPart ? owner : partHost
+          const host = driver.isRow ? owner : partHost
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           const priority = opt?.priority ?? Priority.SyncP0
           if (priority === Priority.SyncP0)
@@ -552,7 +552,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (ownerIsBlock && driver.isPart)
+          if (ownerIsBlock && driver.isRow)
             partHost = block
         }
         // Render incremental children (if any)
