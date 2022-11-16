@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, LayoutKind, BlockVmt, Align, GridCursor, asComponent, CellRange } from "../core/api"
+import { VBlock, LayoutKind, BlockBody, Align, GridCursor, asComponent, CellRange } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -30,24 +30,24 @@ import { HtmlDriver } from "./HtmlDriver"
 // Basic Block
 
 export function Block<M = unknown, R = void>(name: string,
-  vmt: BlockVmt<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(name, VerstakTags.block, vmt)
+  args: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(name, VerstakTags.block, args)
 }
 
 // Text (either plain or html)
 
-export function PlainText(content: string, name?: string, vmt?: BlockVmt<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+export function PlainText(content: string, name?: string, args?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
   return VBlock.claim(name ?? "", VerstakTags.text,
-    asComponent(vmt, {
+    asComponent(args, {
       render(e) {
         e.innerText = content
       },
     }))
 }
 
-export function HtmlText(content: string, name?: string, vmt?: BlockVmt<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+export function HtmlText(content: string, name?: string, args?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
   return VBlock.claim(name ?? "", VerstakTags.text,
-    asComponent(vmt, {
+    asComponent(args, {
       render(e) {
         e.innerHTML = content
       },
@@ -57,28 +57,28 @@ export function HtmlText(content: string, name?: string, vmt?: BlockVmt<HTMLElem
 // Grid Block
 
 export function Grid<M = unknown, R = void>(name: string,
-  vmt: BlockVmt<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(name, VerstakTags.grid, vmt)
+  body: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(name, VerstakTags.grid, body)
 }
 
 // Line
 
 export function Line<T = void>(claim: (x: void) => T): VBlock<HTMLElement> {
-  const result = VBlock.claim("", VerstakTags.row, EMPTY_RENDER)
+  const result = VBlock.claim("", VerstakTags.row, EMPTY_BLOCK_BODY)
   claim()
-  VBlock.claim("", VerstakTags.row, EMPTY_RENDER)
+  VBlock.claim("", VerstakTags.row, EMPTY_BLOCK_BODY)
   return result
 }
 
-export function lineFeed(vmt?: BlockVmt<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
-  return VBlock.claim("", VerstakTags.row, vmt ?? EMPTY_RENDER)
+export function lineFeed(body?: BlockBody<HTMLElement, void, void>, noCoalescing?: boolean): VBlock<HTMLElement> {
+  return VBlock.claim("", VerstakTags.row, body ?? EMPTY_BLOCK_BODY)
 }
 
 // Group
 
 export function Group<M = unknown, R = void>(name: string,
-  vmt: BlockVmt<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(name, VerstakTags.group, vmt)
+  body: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(name, VerstakTags.group, body)
 }
 
 // VerstakDriver
@@ -187,7 +187,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
     if (block.driver.layout < LayoutKind.Row)
-      VBlock.claim("", VerstakTags.row, EMPTY_RENDER)
+      VBlock.claim("", VerstakTags.row, EMPTY_BLOCK_BODY)
     return super.render(block)
   }
 }
@@ -212,6 +212,6 @@ const VerstakTags = {
   group: new VerstakDriver<HTMLElement>("v-group", LayoutKind.Group),
 }
 
-const EMPTY_RENDER: BlockVmt<any, any, any> = { render() { /* nop */ } }
+const EMPTY_BLOCK_BODY: BlockBody<any, any, any> = { render() { /* nop */ } }
 const AlignToCss = ["stretch", "start", "center", "end"]
 const TextAlignCss = ["justify", "left", "center", "right"]
