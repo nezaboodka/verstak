@@ -29,11 +29,11 @@ export interface TrackSize extends ElasticSize {
   track?: string | number       // <current>
 }
 
-export type Place = undefined | string | number | {
-  columns?: number          // 1 (grid layout only)
-  columnsOverlap?: boolean  // false
-  rows?: number             // 1 (grid layout only)
-  rowsOverlap?: boolean     // false
+export type Cells = undefined | string | number | {
+  right?: number               // 1 (grid layout only)
+  horizontalOverlap?: boolean  // false
+  down?: number                // 1 (grid layout only)
+  verticalOverlap?: boolean    // false
 }
 
 export interface Bounds {
@@ -77,7 +77,7 @@ export class Cursor {
     // do nothing
   }
 
-  onwardsOld(place: Place): CellRange {
+  onwardsNew(cells: Cells): CellRange {
     return { x1: 0, y1: 0, x2: 0, y2: 0 }
   }
 
@@ -121,10 +121,10 @@ export class GridCursor extends Cursor {
     this.newRowCursor = 0
   }
 
-  onwardsOld(placement: Place): CellRange {
+  onwardsNew(cells: Cells): CellRange {
     let result: CellRange
-    if (typeof(placement) === "string") {
-      result = parseCellRange(placement, { x1: 0, y1: 0, x2: 0, y2: 0 })
+    if (typeof(cells) === "string") {
+      result = parseCellRange(cells, { x1: 0, y1: 0, x2: 0, y2: 0 })
       absolutizeCellRange(result,
         this.columnCursor + 1, this.rowCursor + 1,
         this.maxColumnCount || Infinity,
@@ -136,16 +136,16 @@ export class GridCursor extends Cursor {
       let rows: number
       let columnsOverlap: boolean
       let rowsOverlap: boolean
-      if (typeof(placement) === "number") {
-        columns = placement
+      if (typeof(cells) === "number") {
+        columns = cells
         rows = 1
         columnsOverlap = rowsOverlap = false
       }
-      else if (placement) {
-        columns = placement.columns ?? 1
-        rows = placement.rows ?? 1
-        columnsOverlap = placement.columnsOverlap ?? false
-        rowsOverlap = placement.rowsOverlap ?? false
+      else if (cells) {
+        columns = cells.right ?? 1
+        rows = cells.down ?? 1
+        columnsOverlap = cells.horizontalOverlap ?? false
+        rowsOverlap = cells.verticalOverlap ?? false
       }
       else { // placement === undefined
         columns = 1
