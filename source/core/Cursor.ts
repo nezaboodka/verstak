@@ -73,12 +73,15 @@ export interface PlaceOld {
 }
 
 export class Cursor {
+  static readonly UndefinedCellRange = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
+
+
   reset(): void {
     // do nothing
   }
 
   onwardsNew(cells: Cells): CellRange {
-    return { x1: 0, y1: 0, x2: 0, y2: 0 }
+    return Cursor.UndefinedCellRange
   }
 
   lineFeed(): void {

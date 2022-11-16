@@ -9,8 +9,6 @@ import { reactive, nonreactive, Transaction, options, Reentrance, Rx, Monitor, L
 import { CellRange, equalCellRanges } from "./CellRange"
 import { Bounds, PlaceOld, Cursor, Align, Cells } from "./Cursor"
 
-const UNDEFINED_CELL_RANGE = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
-
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Render<T = unknown, M = unknown, R = void> = (native: T, block: VBlock<T, M, R>, base: () => R) => R
 export type AsyncRender<T = unknown, M = unknown> = (native: T, block: VBlock<T, M, Promise<void>>) => Promise<void>
@@ -363,7 +361,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.args = args
     this.model = undefined as any
     this.assignedCells = undefined
-    this.appliedCellRange = UNDEFINED_CELL_RANGE
+    this.appliedCellRange = Cursor.UndefinedCellRange
     this.appliedWidthGrowth = 0
     this.appliedWidthMin = ""
     this.appliedWidthMax = ""
@@ -685,6 +683,8 @@ function runRender(item: Item<VBlockImpl>): void {
         block.assignedCells = undefined // reset
         block.children.beginMerge()
         result = block.driver.render(block)
+        if (block.assignedCells === undefined)
+          block.cells = undefined // assign cells automatically
         if (result instanceof Promise)
           result.then(
             v => { runRenderNestedTreesThenDo(undefined, NOP); return v },
