@@ -276,7 +276,7 @@ export class StaticDriver<T> extends AbstractDriver<T> {
     this.element = element
   }
 
-  initialize(block: VBlock<T>, element: T | undefined): void {
+  initialize(block: VBlock<T>, element: T): void {
     super.initialize(block, this.element)
   }
 }

@@ -10,7 +10,7 @@ import { VBlock, AbstractDriver, Priority } from "../core/api"
 
 export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T> {
 
-  initialize(block: VBlock<T>, element: T | undefined): void {
+  initialize(block: VBlock<T>, element: T): void {
     element = this.createElement(block)
     if (Rx.isLogging && this.name)
       element.setAttribute("n", block.name)
@@ -18,7 +18,7 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
   }
 
   finalize(block: VBlock<T>, isLeader: boolean): boolean {
-    const e = block.native as T | undefined
+    const e = block.native as T | undefined // hack
     if (e) {
       e.resizeObserver?.unobserve(e) // is it really needed or browser does this automatically?
       if (isLeader)
@@ -29,9 +29,9 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
   }
 
   deploy(block: VBlock<T>, sequential: boolean): void {
-    const e = block.native as T | undefined
+    const e = block.native as T | undefined // hack
     if (e) {
-      const nativeParent = BaseHtmlDriver.findNearestParentHtmlBlock(block).native as Element | undefined
+      const nativeParent = BaseHtmlDriver.findNearestParentHtmlBlock(block).native as Element | undefined // hack
       if (nativeParent) {
         if (sequential) {
           const after = BaseHtmlDriver.findPrevSiblingHtmlBlock(block.item!)
