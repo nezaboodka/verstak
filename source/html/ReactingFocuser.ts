@@ -8,9 +8,9 @@
 import { VBlock } from "../core/api"
 import { FocusModel } from "./sensors/FocusSensor"
 
-export function ReactingFocuser(name: string, target: HTMLElement, model: FocusModel,
+export function ReactingFocuser(target: HTMLElement, model: FocusModel,
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {
-  VBlock.claim(name, undefined, {
+  VBlock.claim(undefined, {
     reacting: true,
     triggers: { target, model },
     initialize(b) {

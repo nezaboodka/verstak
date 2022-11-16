@@ -17,6 +17,7 @@ export type Type<T> = new (...args: any[]) => T
 export type BlockBody<T = unknown, M = unknown, R = void> = Render<T, M, R> | BlockVmt<T, M, R>
 
 export interface BlockVmt<T = unknown, M = unknown, R = void> {
+  key?: string
   reacting?: boolean
   triggers?: unknown
   initialize?: Render<T, M, R>
@@ -25,7 +26,7 @@ export interface BlockVmt<T = unknown, M = unknown, R = void> {
   finalize?: Render<T, M, R>
 }
 
-export function baseFor<T, M, R>(
+export function asBaseFor<T, M, R>(
   outer: BlockBody<T, M, R> | undefined,
   base: BlockBody<T, M, R>): BlockVmt<T, M, R> {
   if (outer instanceof Function)
@@ -64,7 +65,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   static currentRenderingPriority = Priority.SyncP0
   static frameDuration = VBlock.longFrameDuration
   // User-defined properties
-  abstract readonly name: string
+  abstract readonly key: string
   abstract readonly driver: AbstractDriver<T>
   abstract readonly body: Readonly<BlockVmt<T, M, R>>
   abstract model: M
@@ -113,24 +114,25 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   }
 
   static claim<T = undefined, M = unknown, R = void>(
-    name: string, driver: AbstractDriver<T> | undefined,
+    driver: AbstractDriver<T> | undefined,
     body: BlockBody<T, M, R>): VBlock<T, M, R> {
     let result: VBlockImpl<T, M, R>
     const owner = gCurrent.instance
     const children = owner.children
     let ex: Item<VBlockImpl<any, any, any>> | undefined = undefined
     // Normalize parameters
-    name ||= `${++owner.numerator}`
     driver ??= AbstractDriver.group
     if (body instanceof Function)
       body = { render: body }
+    let key = body.key
     // Check for coalescing separators or lookup for existing block
     if (driver.isRow) {
       const last = children.lastClaimedItem()
       if (last?.instance?.driver === driver)
         ex = last
     }
-    ex ??= children.claim(name, undefined, "nested blocks can be declared inside render function only")
+    ex ??= children.claim(key = key || `${++owner.numerator}!`, undefined,
+      "nested blocks can be declared inside render function only")
     // Reuse existing block or claim a new one
     if (ex) {
       result = ex.instance
@@ -142,7 +144,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       result.body = body
     }
     else { // create new
-      result = new VBlockImpl<T, M, R>(name, driver, owner, body)
+      result = new VBlockImpl<T, M, R>(key || `${++owner.numerator}!`, driver, owner, body)
       result.item = children.add(result)
       VBlockImpl.grandCount++
       if (body.reacting)
@@ -284,8 +286,8 @@ export class StaticDriver<T> extends AbstractDriver<T> {
 
 // VBlockImpl
 
-function getBlockName(block: VBlockImpl): string | undefined {
-  return block.stamp >= 0 ? block.name : undefined
+function getBlockKey(block: VBlockImpl): string | undefined {
+  return block.stamp >= 0 ? block.key : undefined
 }
 
 class VBlockContext<T extends Object = Object> extends ObservableObject {
@@ -305,7 +307,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   static logging: LoggingOptions | undefined = undefined
 
   // User-defined properties
-  readonly name: string
+  readonly key: string
   readonly driver: AbstractDriver<T>
   body: BlockVmt<T, M, R>
   model: M
@@ -335,11 +337,11 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   private senior: VBlockImpl
   context: VBlockContext<any> | undefined
 
-  constructor(name: string, driver: AbstractDriver<T>,
+  constructor(key: string, driver: AbstractDriver<T>,
     owner: VBlockImpl, body: BlockVmt<T, M, R>) {
     super()
     // User-defined properties
-    this.name = name
+    this.key = key
     this.driver = driver
     this.body = body
     this.model = undefined as any
@@ -360,7 +362,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     // System-managed properties
     this.level = owner.level + 1
     this.host = owner // owner is default host, but can be changed
-    this.children = new Collection<VBlockImpl>(driver.isSequential, getBlockName)
+    this.children = new Collection<VBlockImpl>(driver.isSequential, getBlockKey)
     this.numerator = 0
     this.item = undefined
     this.stamp = 0
@@ -515,8 +517,12 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
     try {
       children.endMerge(error)
       // Finalize removed blocks
-      for (const item of children.removedItems(true))
+      for (const item of children.removedItems(true)) {
+        const b = item.instance
+        if (b.key !== b.body.key)
+          console.warn(`every conditionally rendered block requires explicit key: ${b.key}, ${b.driver.name}`)
         runFinalize(item, true)
+      }
       if (!error) {
         // Lay out and render actual blocks
         const ownerIsBlock = owner.driver.isBlock
@@ -643,7 +649,7 @@ function prepareRender(item: Item<VBlockImpl>,
       if (block.body?.reacting) {
         Transaction.outside(() => {
           if (Rx.isLogging)
-            Rx.setLoggingHint(block, block.name)
+            Rx.setLoggingHint(block, block.key)
           Rx.getController(block.rerender).configure({
             order: block.level,
           })
@@ -656,7 +662,7 @@ function prepareRender(item: Item<VBlockImpl>,
   }
   else if (redeploy)
     runUnder(item, () => {
-      driver.deploy(block, sequential) // , console.log(`redeployed: ${block.name}`)
+      driver.deploy(block, sequential) // , console.log(`redeployed: ${block.key}`)
     })
 }
 
@@ -684,7 +690,7 @@ function runRender(item: Item<VBlockImpl>): void {
       }
       catch(e: unknown) {
         runRenderNestedTreesThenDo(e, NOP)
-        console.log(`Rendering failed: ${block.name}`)
+        console.log(`Rendering failed: ${block.key}`)
         console.log(`${e}`)
       }
     })
@@ -706,7 +712,7 @@ function runFinalize(item: Item<VBlockImpl>, isLeader: boolean): void {
       else
         gFirstToDispose = gLastToDispose = item
       if (gFirstToDispose === item)
-        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${item.instance.name})` }, () => {
+        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${item.instance.key})` }, () => {
           void runDisposalLoop().then(NOP, error => console.log(error))
         })
     }
@@ -824,8 +830,8 @@ Promise.prototype.then = reactronicDomHookedThen
 const NOP: any = (...args: any[]): void => { /* nop */ }
 
 const gSysDriver = new StaticDriver<null>(null, "SYSTEM", LayoutKind.Group)
-const gSysRoot = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>("SYSTEM",
-  gSysDriver, { level: 0 } as VBlockImpl, { reacting: true, render: NOP })) // fake owner/host (overwritten below)
+const gSysRoot = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>(
+  gSysDriver.name, gSysDriver, { level: 0 } as VBlockImpl, { reacting: true, render: NOP })) // fake owner/host (overwritten below)
 gSysRoot.instance.item = gSysRoot
 
 Object.defineProperty(gSysRoot.instance, "host", {
