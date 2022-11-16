@@ -177,11 +177,11 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
       block.native.removeAttribute("wrapping")
   }
 
-  applyDangling(block: VBlock<T>, dangling: boolean): void {
-    if (dangling)
-      block.native.setAttribute("dangling", "true")
+  applyFloating(block: VBlock<T>, floating: boolean): void {
+    if (floating)
+      block.native.setAttribute("floating", "true")
     else
-      block.native.removeAttribute("dangling")
+      block.native.removeAttribute("floating")
   }
 
   render(block: VBlock<T>): void | Promise<void> {

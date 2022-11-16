@@ -78,7 +78,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract alignContent: Align
   abstract alignFrame: Align
   abstract wrapContent: boolean
-  abstract dangling: boolean
+  abstract floating: boolean
   abstract shuffleChildren: boolean
   abstract renderingPriority?: Priority
   // System-managed properties
@@ -248,7 +248,7 @@ export class AbstractDriver<T> {
     // do nothing
   }
 
-  applyDangling(block: VBlock<T, any, any>, dangling: boolean): void {
+  applyFloating(block: VBlock<T, any, any>, floating: boolean): void {
     // do nothing
   }
 
@@ -319,7 +319,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   appliedAlignContent: Align
   appliedAlignFrame: Align
   appliedWrapContent: boolean
-  appliedDangling: boolean
+  appliedFloating: boolean
   shuffleChildren: boolean
   renderingPriority: Priority
   // System-managed properties
@@ -353,7 +353,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.appliedAlignContent = Align.Default
     this.appliedAlignFrame = Align.Default
     this.appliedWrapContent = false
-    this.appliedDangling = false
+    this.appliedFloating = false
     this.shuffleChildren = false
     this.renderingPriority = Priority.SyncP0
     // System-managed properties
@@ -454,11 +454,11 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
       this.appliedWrapContent = value
     }
   }
-  get dangling(): boolean { return this.appliedDangling }
-  set dangling(value: boolean) {
-    if (value !== this.appliedDangling) {
-      this.driver.applyDangling(this, value)
-      this.appliedDangling = value
+  get floating(): boolean { return this.appliedFloating }
+  set floating(value: boolean) {
+    if (value !== this.appliedFloating) {
+      this.driver.applyFloating(this, value)
+      this.appliedFloating = value
     }
   }
 
