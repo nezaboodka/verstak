@@ -63,14 +63,13 @@ export function Grid<M = unknown, R = void>(
 
 // Line
 
-export function Line<T = void>(body: (block: void) => T): void {
+export function line<T = void>(body: (block: void) => T): void {
   lineFeed()
   body()
-  lineFeed()
 }
 
 export function lineFeed(noCoalescing?: boolean, key?: string): VBlock<HTMLElement> {
-  return VBlock.claim(VerstakTags.row, { key })
+  return VBlock.claim(VerstakTags.line, { key })
 }
 
 // Group
@@ -119,14 +118,14 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   applyHeightGrowth(block: VBlock<T>, heightGrowth: number): void {
-    if (block.driver.isRow) {
+    if (block.driver.isLine) {
       const css = block.native.style
       if (heightGrowth > 0)
         css.flexGrow = `${heightGrowth}`
       else
         css.flexGrow = ""
     }
-    else if (block.host.driver.isRow) {
+    else if (block.host.driver.isLine) {
       block.driver.applyFrameAlignment(block, Align.Stretch)
       block.host.driver.applyHeightGrowth(block.host, heightGrowth)
     }
@@ -185,7 +184,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
-    if (block.driver.layout < LayoutKind.Row)
+    if (block.driver.layout < LayoutKind.Line)
       lineFeed()
     return super.render(block)
   }
@@ -205,7 +204,7 @@ const VerstakTags = {
 
   // display: contents
   // display: flex (row)
-  row: new VerstakDriver<HTMLElement>("v-row", LayoutKind.Row),
+  line: new VerstakDriver<HTMLElement>("v-line", LayoutKind.Line),
 
   // display: contents
   group: new VerstakDriver<HTMLElement>("v-group", LayoutKind.Group),

@@ -143,6 +143,33 @@ export function emitCellRange(value: CellRange): string {
   return `${p1}${p2 !== "" ? `:${p2}` : ""}`
 }
 
+export function emitLetters(n: number): string {
+  if (n < 0)
+    throw new Error(`emitLetters: argument (${n}) should not be negative or zero`)
+  let result = ""
+  while (n >= 0) {
+    const r = n % 26
+    n = Math.floor(n / 26) - 1
+    result = String.fromCharCode(65 + r) + result
+  }
+  return result
+}
+
+export function emitCellPosition(x: number, y: number): string {
+  let result = ""
+  if (x > 0 && y > 0)
+    result = `${emitLetters(x - 1)}${y}`
+  else if (x > 0 && y < 0)
+    result = `${emitLetters(x - 1)}(${-y})`
+  else if (x < 0 && y > 0)
+    result = `(${emitLetters(-x - 1)})${y}`
+  else if (x < 0 && y < 0)
+    result = `(${emitLetters(-x - 1)}${-y})`
+  else
+    result = ""
+  return result
+}
+
 export function equalCellRanges(a: CellRange, b: CellRange): boolean {
   return a.x1 === b.x1 && a.y1 === b.y1 && a.x2 === b.x2 && a.y1 === b.y2
 }
@@ -162,31 +189,4 @@ function isCapitalLetter(ch: number): boolean {
 
 function isLowercaseLetter(ch: number): boolean {
   return 97 <= ch && ch <= 122
-}
-
-function emitLetters(n: number): string {
-  if (n < 0)
-    throw new Error(`emitLetters: argument (${n}) should not be negative or zero`)
-  let result = ""
-  while (n >= 0) {
-    const r = n % 26
-    n = Math.floor(n / 26) - 1
-    result = String.fromCharCode(65 + r) + result
-  }
-  return result
-}
-
-function emitCellPosition(x: number, y: number): string {
-  let result = ""
-  if (x > 0 && y > 0)
-    result = `${emitLetters(x - 1)}${y}`
-  else if (x > 0 && y < 0)
-    result = `${emitLetters(x - 1)}(${-y})`
-  else if (x < 0 && y > 0)
-    result = `(${emitLetters(-x - 1)})${y}`
-  else if (x < 0 && y < 0)
-    result = `(${emitLetters(-x - 1)}${-y})`
-  else
-    result = ""
-  return result
 }

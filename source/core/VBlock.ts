@@ -7,7 +7,7 @@
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw, MemberOptions } from "reactronic"
 import { getCallerInfo } from "./Utils"
-import { CellRange, equalCellRanges } from "./CellRange"
+import { CellRange, emitLetters, equalCellRanges } from "./CellRange"
 import { Cursor, Align, Cells } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
@@ -127,7 +127,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       body = { render: body }
     let key = body.key
     // Check for coalescing separators or lookup for existing block
-    if (driver.isRow) {
+    if (driver.isLine) {
       const last = children.lastClaimedItem()
       if (last?.instance?.driver === driver)
         ex = last
@@ -156,11 +156,12 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 
   private static generateKey(owner: VBlockImpl): string {
     const n = owner.numerator++
+    const lettered = `[${emitLetters(n)}]`
     let result: string
     if (Rx.isLogging)
-      result = getCallerInfo(n.toString())
+      result = getCallerInfo(lettered)
     else
-      result = `#${n}`
+      result = lettered
     return result
   }
 
@@ -178,7 +179,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 export enum LayoutKind {
   Block = 0,  // 000
   Grid = 1,   // 001
-  Row = 2,    // 010
+  Line = 2,    // 010
   Group = 3,  // 011
   Text = 4,   // 100
 }
@@ -197,7 +198,7 @@ export class AbstractDriver<T> {
   get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Grid, Group
   get isBlock(): boolean { return this.layout === LayoutKind.Block }
   get isGrid(): boolean { return this.layout === LayoutKind.Grid }
-  get isRow(): boolean { return this.layout === LayoutKind.Row }
+  get isLine(): boolean { return this.layout === LayoutKind.Line }
 
   constructor(name: string, layout: LayoutKind, createCursor?: () => Cursor) {
     this.name = name
@@ -546,7 +547,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             break
           const block = item.instance
           const driver = block.driver
-          const host = driver.isRow ? owner : partHost
+          const host = driver.isLine ? owner : partHost
           const p = block.renderingPriority ?? Priority.SyncP0
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           if (p === Priority.SyncP0)
@@ -555,7 +556,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (ownerIsBlock && driver.isRow)
+          if (ownerIsBlock && driver.isLine)
             partHost = block
         }
         // Render incremental children (if any)
@@ -685,7 +686,7 @@ function runRender(item: Item<VBlockImpl>): void {
         block.assignedCells = undefined // reset
         block.children.beginMerge()
         result = block.driver.render(block)
-        if (block.driver.isRow)
+        if (block.driver.isLine)
           block.host.cursor.lineFeed()
         else if (block.assignedCells === undefined)
           block.cells = undefined // assign cells automatically
@@ -708,8 +709,8 @@ function runRender(item: Item<VBlockImpl>): void {
 function runFinalize(item: Item<VBlockImpl>, isLeader: boolean, individual: boolean): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    if (individual && block.key !== block.body.key && !block.driver.isRow)
-      console.log(`WARNING: every conditionally rendered block requires explicit key: ${block.key}`)
+    if (individual && block.key !== block.body.key && !block.driver.isLine)
+      console.log(`WARNING: please consider assigning explicit key to the conditionally rendered block to avoid unexpected side effects: ${block.key}`)
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
     const childrenAreLeaders = block.driver.finalize(block, isLeader)

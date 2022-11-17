@@ -9,7 +9,7 @@ export function objectHasMember<T>(obj: any, member: string): obj is T {
   return obj === Object(obj) && !Array.isArray(obj) && member in obj
 }
 
-export function getCallerInfo(seq: string): string {
+export function getCallerInfo(prefix: string): string {
   const restore = Error.stackTraceLimit = 20
   const error = new Error()
   const stack = error.stack || ""
@@ -31,12 +31,12 @@ export function getCallerInfo(seq: string): string {
     }
     location = extractFunctionAndLocation(lines[i + 1])
   }
-  const result = `${caller.func} @ ${location.file} #${seq}`
+  const result = `${prefix} ${caller.func} @ ${location.file}`
   return result
 }
 
 function extractFunctionAndLocation(s: string): { func: string, file: string } {
-  const match = s.match(/(?:\s*at\s+)?(?:(\S+)\s\()?(?:.*?)([^\/\(\)]+)(?:\)?)$/)
+  const match = s.match(/(?:\s*at\s+)?(?:(\S+)\s\()?(?:.*?)([^\/\(\):]+)(?:(:|\d)*\)?)$/)
   return {
     func: match?.[1] || "",
     file: match?.[2] || "",
