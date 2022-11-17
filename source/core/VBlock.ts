@@ -436,16 +436,16 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   }
   get minHeight(): string { return this.appliedMinHeight }
   set minHeight(value: string) {
-    if (value !== this.appliedMinWidth) {
-      this.driver.applyMinWidth(this, value)
-      this.appliedMinWidth = value
+    if (value !== this.appliedMinHeight) {
+      this.driver.applyMinHeight(this, value)
+      this.appliedMinHeight = value
     }
   }
   get maxHeight(): string { return this.appliedMaxHeight }
   set maxHeight(value: string) {
-    if (value !== this.appliedMaxWidth) {
-      this.driver.applyMaxWidth(this, value)
-      this.appliedMaxWidth = value
+    if (value !== this.appliedMaxHeight) {
+      this.driver.applyMaxHeight(this, value)
+      this.appliedMaxHeight = value
     }
   }
   get contentAlignment(): Align { return this.appliedContentAlignment }
