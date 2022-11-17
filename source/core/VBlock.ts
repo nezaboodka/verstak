@@ -710,7 +710,7 @@ function runFinalize(item: Item<VBlockImpl>, isLeader: boolean, individual: bool
   const block = item.instance
   if (block.stamp >= 0) {
     if (individual && block.key !== block.body.key && !block.driver.isLine)
-      console.log(`WARNING: please consider assigning explicit key to the conditionally rendered block to avoid unexpected side effects: ${block.key}`)
+      console.log(`WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: ${block.key}`)
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
     const childrenAreLeaders = block.driver.finalize(block, isLeader)
