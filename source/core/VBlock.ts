@@ -156,12 +156,12 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 
   private static generateKey(owner: VBlockImpl): string {
     const n = owner.numerator++
-    const lettered = `[${emitLetters(n)}]`
+    const lettered = emitLetters(n)
     let result: string
     if (Rx.isLogging)
-      result = getCallerInfo(lettered)
+      result = `[${getCallerInfo(lettered)}]`
     else
-      result = lettered
+      result = `[${lettered}]`
     return result
   }
 

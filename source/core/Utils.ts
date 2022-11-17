@@ -31,7 +31,7 @@ export function getCallerInfo(prefix: string): string {
     }
     location = extractFunctionAndLocation(lines[i + 1])
   }
-  const result = `${prefix} ${caller.func} @ ${location.file}`
+  const result = `${prefix}:${caller.func}@${location.file}`
   return result
 }
 
