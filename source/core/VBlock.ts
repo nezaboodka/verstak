@@ -6,6 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw, MemberOptions } from "reactronic"
+import { getCallerInfo } from "./Utils"
 import { CellRange, equalCellRanges } from "./CellRange"
 import { Cursor, Align, Cells } from "./Cursor"
 
@@ -131,7 +132,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       if (last?.instance?.driver === driver)
         ex = last
     }
-    ex ??= children.claim(key = key || `${++owner.numerator}!`, undefined,
+    ex ??= children.claim(key = key || VBlock.generateKey(owner), undefined,
       "nested blocks can be declared inside render function only")
     // Reuse existing block or claim a new one
     if (ex) {
@@ -144,12 +145,22 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       result.body = body
     }
     else { // create new
-      result = new VBlockImpl<T, M, R>(key || `${++owner.numerator}!`, driver, owner, body)
+      result = new VBlockImpl<T, M, R>(key || VBlock.generateKey(owner), driver, owner, body)
       result.item = children.add(result)
       VBlockImpl.grandCount++
       if (body.reacting)
         VBlockImpl.disposableCount++
     }
+    return result
+  }
+
+  private static generateKey(owner: VBlockImpl): string {
+    const n = owner.numerator++
+    let result: string
+    if (Rx.isLogging)
+      result = getCallerInfo(n.toString())
+    else
+      result = `#${n}`
     return result
   }
 
@@ -698,7 +709,7 @@ function runFinalize(item: Item<VBlockImpl>, isLeader: boolean, individual: bool
   const block = item.instance
   if (block.stamp >= 0) {
     if (individual && block.key !== block.body.key && !block.driver.isRow)
-      console.warn(`every conditionally rendered block requires explicit key: ${block.key}, ${block.driver.name}`)
+      console.log(`WARNING: every conditionally rendered block requires explicit key: ${block.key}`)
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
     const childrenAreLeaders = block.driver.finalize(block, isLeader)

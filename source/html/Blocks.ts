@@ -186,7 +186,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
     if (block.driver.layout < LayoutKind.Row)
-      VBlock.claim(VerstakTags.row, { })
+      lineFeed()
     return super.render(block)
   }
 }
