@@ -33,9 +33,9 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
     if (e) {
       const nativeParent = BaseHtmlDriver.findNearestParentHtmlBlock(block).native as Element | undefined // hack
       if (nativeParent) {
-        if (sequential) {
+        if (sequential && !block.driver.isLine) {
           const after = BaseHtmlDriver.findPrevSiblingHtmlBlock(block.item!)
-          if (after === undefined) {
+          if (after === undefined || after.instance.driver.isLine) {
             if (nativeParent !== e.parentNode || !e.previousSibling)
               nativeParent.prepend(e)
           }
