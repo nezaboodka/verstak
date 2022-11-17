@@ -49,12 +49,12 @@ function via<T, M, R>(outer: Render<T, M, R> | undefined, base: Render<T, M, R> 
   return outer ? b => outer(b, () => inherited(b)) : inherited
 }
 
-export function setContext<T extends Object>(
+export function nestedContext<T extends Object>(
   type: Type<T>, context: T): void {
   return VBlockImpl.setContext(type, context)
 }
 
-export function use<T extends Object>(type: Type<T>): T {
+export function useContext<T extends Object>(type: Type<T>): T {
   return VBlockImpl.use(type)
 }
 
