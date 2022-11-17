@@ -518,10 +518,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
       children.endMerge(error)
       // Finalize removed blocks
       for (const item of children.removedItems(true)) {
-        const b = item.instance
-        if (b.key !== b.body.key)
-          console.warn(`every conditionally rendered block requires explicit key: ${b.key}, ${b.driver.name}`)
-        runFinalize(item, true)
+        runFinalize(item, true, true)
       }
       if (!error) {
         // Lay out and render actual blocks
@@ -697,9 +694,11 @@ function runRender(item: Item<VBlockImpl>): void {
   }
 }
 
-function runFinalize(item: Item<VBlockImpl>, isLeader: boolean): void {
+function runFinalize(item: Item<VBlockImpl>, isLeader: boolean, individual: boolean): void {
   const block = item.instance
   if (block.stamp >= 0) {
+    if (individual && block.key !== block.body.key && !block.driver.isRow)
+      console.warn(`every conditionally rendered block requires explicit key: ${block.key}, ${block.driver.name}`)
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
     const childrenAreLeaders = block.driver.finalize(block, isLeader)
@@ -718,7 +717,7 @@ function runFinalize(item: Item<VBlockImpl>, isLeader: boolean): void {
     }
     // Finalize children if any
     for (const item of block.children.items())
-      runFinalize(item, childrenAreLeaders)
+      runFinalize(item, childrenAreLeaders, false)
     VBlockImpl.grandCount--
   }
 }
