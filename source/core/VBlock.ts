@@ -139,7 +139,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       result = ex.instance
       if (result.driver !== driver && driver !== undefined)
         throw new Error(`changing block driver is not yet supported: "${result.driver.name}" -> "${driver?.name}"`)
-      const exTriggers = result.body?.triggers
+      const exTriggers = result.body.triggers
       if (triggersAreEqual(body.triggers, exTriggers))
         body.triggers = exTriggers // preserve triggers instance
       result.body = body
@@ -269,7 +269,7 @@ export class AbstractDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     let result: void | Promise<void>
-    const override = block.body?.override
+    const override = block.body.override
     if (override)
       result = override(block, NOP)
     else
@@ -644,8 +644,8 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
 function triggerRendering(item: Item<VBlockImpl>): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    if (block.body?.autonomous)
-      nonreactive(block.render, block.body?.triggers) // reactive auto-rendering
+    if (block.body.autonomous)
+      nonreactive(block.render, block.body.triggers) // reactive auto-rendering
     else
       renderNow(item)
   }
@@ -656,7 +656,7 @@ function redeployIfNecessary(block: VBlockImpl): void {
   // Initialize or redeploy (if necessary)
   if (block.stamp === 0) {
     block.stamp = 1
-    if (block.body?.autonomous) {
+    if (block.body.autonomous) {
       Transaction.outside(() => {
         if (Rx.isLogging)
           Rx.setLoggingHint(block, block.key)
@@ -712,7 +712,7 @@ function triggerFinalization(item: Item<VBlockImpl>, isLeader: boolean, individu
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
     const childrenAreLeaders = block.driver.finalize(block, isLeader)
-    if (block.body?.autonomous) {
+    if (block.body.autonomous) {
       // Defer disposal if block is reactive
       item.aux = undefined
       const last = gLastToDispose
