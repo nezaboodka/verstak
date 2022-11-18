@@ -99,7 +99,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 
   static root(render: () => void): void {
     gSysRoot.instance.body.render = render
-    prepareAndRunRender(gSysRoot)
+    triggerRender(gSysRoot)
   }
 
   static get current(): VBlock {
@@ -399,7 +399,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   })
   render(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by owner
-    runRender(this.item!)
+    renderNow(this.item!)
   }
 
   get cells(): Cells { return this.assignedCells }
@@ -537,7 +537,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
       children.endMerge(error)
       // Finalize removed blocks
       for (const item of children.removedItems(true)) {
-        runFinalize(item, true, true)
+        triggerFinalize(item, true, true)
       }
       if (!error) {
         // Lay out and render actual blocks
@@ -558,7 +558,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const p = block.renderingPriority ?? Priority.SyncP0
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           if (p === Priority.SyncP0)
-            prepareAndRunRender(item) // render synchronously
+            triggerRender(item) // render synchronously
           else if (p === Priority.AsyncP1)
             p1 = push(item, p1) // defer for P1 async rendering
           else
@@ -623,7 +623,7 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
       const frameDurationLimit = priority === Priority.AsyncP2 ? VBlock.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(VBlock.frameDuration / 4, VBlock.shortFrameDuration))
       for (const child of items) {
-        prepareAndRunRender(child)
+        triggerRender(child)
         if (Transaction.isFrameOver(1, frameDuration)) {
           VBlock.currentRenderingPriority = outerPriority
           await Transaction.requestNextFrame(0)
@@ -641,50 +641,44 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
   }
 }
 
-function prepareAndRunRender(item: Item<VBlockImpl>): void {
+function triggerRender(item: Item<VBlockImpl>): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    prepareRender(item)
     if (block.body?.reacting)
       nonreactive(block.render, block.body?.triggers) // reactive auto-rendering
     else
-      runRender(item)
+      renderNow(item)
   }
 }
 
-function prepareRender(item: Item<VBlockImpl>): void {
-  const block = item.instance
+function redeployIfNecessary(block: VBlockImpl): void {
   const driver = block.driver
-  // Initialize, deploy, and move (if needed)
+  // Initialize or redeploy (if necessary)
   if (block.stamp === 0) {
     block.stamp = 1
-    runUnder(item, () => {
-      if (block.body?.reacting) {
-        Transaction.outside(() => {
-          if (Rx.isLogging)
-            Rx.setLoggingHint(block, block.key)
-          Rx.getController(block.render).configure({
-            order: block.level,
-          })
+    if (block.body?.reacting) {
+      Transaction.outside(() => {
+        if (Rx.isLogging)
+          Rx.setLoggingHint(block, block.key)
+        Rx.getController(block.render).configure({
+          order: block.level,
         })
-      }
-      driver.initialize(block, undefined)
-      driver.deploy(block)
-      // driver.arrange(block, block.placeOld, undefined)
-    })
+      })
+    }
+    driver.initialize(block, undefined)
+    driver.deploy(block)
   }
   else if (block.isMoved)
-    runUnder(item, () => {
-      driver.deploy(block) // , console.log(`redeployed: ${block.key}`)
-    })
+    driver.deploy(block)
 }
 
-function runRender(item: Item<VBlockImpl>): void {
+function renderNow(item: Item<VBlockImpl>): void {
   const block = item.instance
   if (block.stamp >= 0) { // if block is alive
     let result: unknown = undefined
     runUnder(item, () => {
       try {
+        redeployIfNecessary(block)
         block.stamp++
         block.numerator = 0
         block.assignedCells = undefined // reset
@@ -710,7 +704,7 @@ function runRender(item: Item<VBlockImpl>): void {
   }
 }
 
-function runFinalize(item: Item<VBlockImpl>, isLeader: boolean, individual: boolean): void {
+function triggerFinalize(item: Item<VBlockImpl>, isLeader: boolean, individual: boolean): void {
   const block = item.instance
   if (block.stamp >= 0) {
     if (individual && block.key !== block.body.key && !block.driver.isLine)
@@ -733,7 +727,7 @@ function runFinalize(item: Item<VBlockImpl>, isLeader: boolean, individual: bool
     }
     // Finalize children if any
     for (const item of block.children.items())
-      runFinalize(item, childrenAreLeaders, false)
+      triggerFinalize(item, childrenAreLeaders, false)
     VBlockImpl.grandCount--
   }
 }
