@@ -99,7 +99,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 
   static root(render: () => void): void {
     gSysRoot.instance.body.render = render
-    prepareAndRunRender(gSysRoot, false)
+    prepareAndRunRender(gSysRoot)
   }
 
   static get current(): VBlock {
@@ -384,6 +384,13 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.context = undefined
   }
 
+  get isMoved(): boolean {
+    let owner = this.host
+    if (owner.driver.isLine)
+      owner = owner.host
+    return owner.children.isMoved(this.item!)
+  }
+
   @reactive
   @options({
     reentrance: Reentrance.CancelPrevious,
@@ -551,7 +558,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const p = block.renderingPriority ?? Priority.SyncP0
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           if (p === Priority.SyncP0)
-            prepareAndRunRender(item, children.isMoved(item)) // render synchronously
+            prepareAndRunRender(item) // render synchronously
           else if (p === Priority.AsyncP1)
             p1 = push(item, p1) // defer for P1 async rendering
           else
@@ -616,7 +623,7 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
       const frameDurationLimit = priority === Priority.AsyncP2 ? VBlock.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(VBlock.frameDuration / 4, VBlock.shortFrameDuration))
       for (const child of items) {
-        prepareAndRunRender(child, allChildren.isMoved(child))
+        prepareAndRunRender(child)
         if (Transaction.isFrameOver(1, frameDuration)) {
           VBlock.currentRenderingPriority = outerPriority
           await Transaction.requestNextFrame(0)
@@ -634,10 +641,10 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
   }
 }
 
-function prepareAndRunRender(item: Item<VBlockImpl>, redeploy: boolean): void {
+function prepareAndRunRender(item: Item<VBlockImpl>): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    prepareRender(item, redeploy)
+    prepareRender(item)
     if (block.body?.reacting)
       nonreactive(block.render, block.body?.triggers) // reactive auto-rendering
     else
@@ -645,7 +652,7 @@ function prepareAndRunRender(item: Item<VBlockImpl>, redeploy: boolean): void {
   }
 }
 
-function prepareRender(item: Item<VBlockImpl>, redeploy: boolean): void {
+function prepareRender(item: Item<VBlockImpl>): void {
   const block = item.instance
   const driver = block.driver
   // Initialize, deploy, and move (if needed)
@@ -666,7 +673,7 @@ function prepareRender(item: Item<VBlockImpl>, redeploy: boolean): void {
       // driver.arrange(block, block.placeOld, undefined)
     })
   }
-  else if (redeploy)
+  else if (block.isMoved)
     runUnder(item, () => {
       driver.deploy(block) // , console.log(`redeployed: ${block.key}`)
     })
