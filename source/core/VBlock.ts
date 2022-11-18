@@ -19,7 +19,7 @@ export type BlockBody<T = unknown, M = unknown, R = void> = Render<T, M, R> | Bl
 
 export interface BlockVmt<T = unknown, M = unknown, R = void> {
   key?: string
-  reacting?: boolean
+  autonomous?: boolean
   triggers?: unknown
   initialize?: Render<T, M, R>
   override?: Render<T, M, R>
@@ -148,7 +148,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       result = new VBlockImpl<T, M, R>(key || VBlock.generateKey(owner), driver, owner, body)
       result.item = children.add(result)
       VBlockImpl.grandCount++
-      if (body.reacting)
+      if (body.autonomous)
         VBlockImpl.disposableCount++
     }
     return result
@@ -485,7 +485,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.stamp !== 1 || !this.body.reacting)
+    if (this.stamp !== 1 || !this.body.autonomous)
       throw new Error("reactronic can be configured only for reacting blocks and only inside initialize")
     return Rx.getController(this.render).configure(options)
   }
@@ -644,7 +644,7 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
 function triggerRender(item: Item<VBlockImpl>): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    if (block.body?.reacting)
+    if (block.body?.autonomous)
       nonreactive(block.render, block.body?.triggers) // reactive auto-rendering
     else
       renderNow(item)
@@ -656,7 +656,7 @@ function redeployIfNecessary(block: VBlockImpl): void {
   // Initialize or redeploy (if necessary)
   if (block.stamp === 0) {
     block.stamp = 1
-    if (block.body?.reacting) {
+    if (block.body?.autonomous) {
       Transaction.outside(() => {
         if (Rx.isLogging)
           Rx.setLoggingHint(block, block.key)
@@ -712,7 +712,7 @@ function triggerFinalize(item: Item<VBlockImpl>, isLeader: boolean, individual: 
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
     const childrenAreLeaders = block.driver.finalize(block, isLeader)
-    if (block.body?.reacting) {
+    if (block.body?.autonomous) {
       // Defer disposal if block is reactive
       item.aux = undefined
       const last = gLastToDispose
@@ -840,7 +840,7 @@ const NOP: any = (...args: any[]): void => { /* nop */ }
 
 const gSysDriver = new StaticDriver<null>(null, "SYSTEM", LayoutKind.Group)
 const gSysRoot = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>(
-  gSysDriver.name, gSysDriver, { level: 0 } as VBlockImpl, { reacting: true, render: NOP })) // fake owner/host (overwritten below)
+  gSysDriver.name, gSysDriver, { level: 0 } as VBlockImpl, { autonomous: true, render: NOP })) // fake owner/host (overwritten below)
 gSysRoot.instance.item = gSysRoot
 
 Object.defineProperty(gSysRoot.instance, "host", {
