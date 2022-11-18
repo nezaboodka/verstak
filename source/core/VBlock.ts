@@ -663,7 +663,6 @@ function triggerRendering(item: Item<VBlockImpl>): void {
 
 function redeployIfNecessary(block: VBlockImpl): void {
   const driver = block.driver
-  // Initialize or redeploy (if necessary)
   if (block.stamp === 0) {
     block.stamp = 1
     driver.initialize(block, undefined)
