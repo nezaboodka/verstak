@@ -28,9 +28,10 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
     return false // children of HTML blocks are not treated as leaders
   }
 
-  deploy(block: VBlock<T>, sequential: boolean): void {
+  deploy(block: VBlock<T>): void {
     const e = block.native as T | undefined // hack
     if (e) {
+      const sequential = block.host.children.strict
       const nativeParent = BaseHtmlDriver.findNearestParentHtmlBlock(block).native as Element | undefined // hack
       if (nativeParent) {
         if (sequential && !block.driver.isLine) {

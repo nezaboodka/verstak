@@ -99,7 +99,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 
   static root(render: () => void): void {
     gSysRoot.instance.body.render = render
-    prepareAndRunRender(gSysRoot, false, false)
+    prepareAndRunRender(gSysRoot, false)
   }
 
   static get current(): VBlock {
@@ -219,7 +219,7 @@ export class AbstractDriver<T> {
     return isLeader // treat children as finalization leaders as well
   }
 
-  deploy(block: VBlock<T>, sequential: boolean): void {
+  deploy(block: VBlock<T>): void {
     // nothing to do by default
   }
 
@@ -390,7 +390,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     triggeringArgs: true,
     noSideEffects: false,
   })
-  rerender(_triggers: unknown): void {
+  render(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by owner
     runRender(this.item!)
   }
@@ -480,7 +480,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
     if (this.stamp !== 1 || !this.body.reacting)
       throw new Error("reactronic can be configured only for reacting blocks and only inside initialize")
-    return Rx.getController(this.rerender).configure(options)
+    return Rx.getController(this.render).configure(options)
   }
 
   static use<T extends Object>(type: Type<T>): T {
@@ -551,7 +551,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const p = block.renderingPriority ?? Priority.SyncP0
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           if (p === Priority.SyncP0)
-            prepareAndRunRender(item, children.isMoved(item), sequential) // render synchronously
+            prepareAndRunRender(item, children.isMoved(item)) // render synchronously
           else if (p === Priority.AsyncP1)
             p1 = push(item, p1) // defer for P1 async rendering
           else
@@ -611,13 +611,12 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
     let outerPriority = VBlock.currentRenderingPriority
     VBlock.currentRenderingPriority = priority
     try {
-      const sequential = block.children.strict
       if (block.childrenShuffling)
         shuffle(items)
       const frameDurationLimit = priority === Priority.AsyncP2 ? VBlock.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(VBlock.frameDuration / 4, VBlock.shortFrameDuration))
       for (const child of items) {
-        prepareAndRunRender(child, allChildren.isMoved(child), sequential)
+        prepareAndRunRender(child, allChildren.isMoved(child))
         if (Transaction.isFrameOver(1, frameDuration)) {
           VBlock.currentRenderingPriority = outerPriority
           await Transaction.requestNextFrame(0)
@@ -635,20 +634,18 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
   }
 }
 
-function prepareAndRunRender(item: Item<VBlockImpl>,
-  redeploy: boolean, sequential: boolean): void {
+function prepareAndRunRender(item: Item<VBlockImpl>, redeploy: boolean): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    prepareRender(item, redeploy, sequential)
+    prepareRender(item, redeploy)
     if (block.body?.reacting)
-      nonreactive(block.rerender, block.body?.triggers) // reactive auto-rendering
+      nonreactive(block.render, block.body?.triggers) // reactive auto-rendering
     else
       runRender(item)
   }
 }
 
-function prepareRender(item: Item<VBlockImpl>,
-  redeploy: boolean, sequential: boolean): void {
+function prepareRender(item: Item<VBlockImpl>, redeploy: boolean): void {
   const block = item.instance
   const driver = block.driver
   // Initialize, deploy, and move (if needed)
@@ -659,19 +656,19 @@ function prepareRender(item: Item<VBlockImpl>,
         Transaction.outside(() => {
           if (Rx.isLogging)
             Rx.setLoggingHint(block, block.key)
-          Rx.getController(block.rerender).configure({
+          Rx.getController(block.render).configure({
             order: block.level,
           })
         })
       }
       driver.initialize(block, undefined)
-      driver.deploy(block, sequential)
+      driver.deploy(block)
       // driver.arrange(block, block.placeOld, undefined)
     })
   }
   else if (redeploy)
     runUnder(item, () => {
-      driver.deploy(block, sequential) // , console.log(`redeployed: ${block.key}`)
+      driver.deploy(block) // , console.log(`redeployed: ${block.key}`)
     })
 }
 
