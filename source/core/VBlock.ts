@@ -644,8 +644,18 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
 function triggerRendering(item: Item<VBlockImpl>): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    if (block.body.autonomous)
+    if (block.body.autonomous) {
+      if (block.stamp === 0) {
+        Transaction.outside(() => {
+          if (Rx.isLogging)
+            Rx.setLoggingHint(block, block.key)
+          Rx.getController(block.render).configure({
+            order: block.level,
+          })
+        })
+      }
       nonreactive(block.render, block.body.triggers) // reactive auto-rendering
+    }
     else
       renderNow(item)
   }
@@ -656,15 +666,6 @@ function redeployIfNecessary(block: VBlockImpl): void {
   // Initialize or redeploy (if necessary)
   if (block.stamp === 0) {
     block.stamp = 1
-    if (block.body.autonomous) {
-      Transaction.outside(() => {
-        if (Rx.isLogging)
-          Rx.setLoggingHint(block, block.key)
-        Rx.getController(block.render).configure({
-          order: block.level,
-        })
-      })
-    }
     driver.initialize(block, undefined)
     driver.deploy(block)
   }
