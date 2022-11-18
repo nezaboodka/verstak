@@ -99,7 +99,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 
   static root(render: () => void): void {
     gSysRoot.instance.body.render = render
-    triggerRender(gSysRoot)
+    triggerRendering(gSysRoot)
   }
 
   static get current(): VBlock {
@@ -537,7 +537,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
       children.endMerge(error)
       // Finalize removed blocks
       for (const item of children.removedItems(true)) {
-        triggerFinalize(item, true, true)
+        triggerFinalization(item, true, true)
       }
       if (!error) {
         // Lay out and render actual blocks
@@ -558,7 +558,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const p = block.renderingPriority ?? Priority.SyncP0
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           if (p === Priority.SyncP0)
-            triggerRender(item) // render synchronously
+            triggerRendering(item) // render synchronously
           else if (p === Priority.AsyncP1)
             p1 = push(item, p1) // defer for P1 async rendering
           else
@@ -623,7 +623,7 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
       const frameDurationLimit = priority === Priority.AsyncP2 ? VBlock.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(VBlock.frameDuration / 4, VBlock.shortFrameDuration))
       for (const child of items) {
-        triggerRender(child)
+        triggerRendering(child)
         if (Transaction.isFrameOver(1, frameDuration)) {
           VBlock.currentRenderingPriority = outerPriority
           await Transaction.requestNextFrame(0)
@@ -641,7 +641,7 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
   }
 }
 
-function triggerRender(item: Item<VBlockImpl>): void {
+function triggerRendering(item: Item<VBlockImpl>): void {
   const block = item.instance
   if (block.stamp >= 0) {
     if (block.body?.autonomous)
@@ -704,7 +704,7 @@ function renderNow(item: Item<VBlockImpl>): void {
   }
 }
 
-function triggerFinalize(item: Item<VBlockImpl>, isLeader: boolean, individual: boolean): void {
+function triggerFinalization(item: Item<VBlockImpl>, isLeader: boolean, individual: boolean): void {
   const block = item.instance
   if (block.stamp >= 0) {
     if (individual && block.key !== block.body.key && !block.driver.isLine)
@@ -727,7 +727,7 @@ function triggerFinalize(item: Item<VBlockImpl>, isLeader: boolean, individual: 
     }
     // Finalize children if any
     for (const item of block.children.items())
-      triggerFinalize(item, childrenAreLeaders, false)
+      triggerFinalization(item, childrenAreLeaders, false)
     VBlockImpl.grandCount--
   }
 }
