@@ -173,11 +173,11 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
       block.native.removeAttribute("wrapping")
   }
 
-  applyFloating(block: VBlock<T>, floating: boolean): void {
-    if (floating)
-      block.native.setAttribute("floating", "true")
+  applyOverlay(block: VBlock<T>, overlay: boolean): void {
+    if (overlay)
+      block.native.setAttribute("overlay", "true")
     else
-      block.native.removeAttribute("floating")
+      block.native.removeAttribute("overlay")
   }
 
   render(block: VBlock<T>): void | Promise<void> {
