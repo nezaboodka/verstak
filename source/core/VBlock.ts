@@ -11,22 +11,22 @@ import { CellRange, emitLetters, equalCellRanges } from "./CellRange"
 import { Cursor, Align, Cells } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
-export type Render<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>, base: () => R) => R
-export type AsyncRender<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
+export type Operation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>, base: () => R) => R
+export type AsyncOperation<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
 export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 export type Type<T> = new (...args: any[]) => T
-export type BlockBody<T = unknown, M = unknown, R = void> = Render<T, M, R> | BlockVmt<T, M, R>
+export type BlockBody<T = unknown, M = unknown, R = void> = Operation<T, M, R> | BlockVmt<T, M, R>
 
 export interface BlockVmt<T = unknown, M = unknown, R = void> {
   key?: string
   autonomous?: boolean
   triggers?: unknown
-  initialize?: Render<T, M, R>
-  render?: Render<T, M, R>
-  finalize?: Render<T, M, R>
-  redefinedInitialize?: Render<T, M, R>
-  redefinedRender?: Render<T, M, R>
-  redefinedFinalize?: Render<T, M, R>
+  initialize?: Operation<T, M, R>
+  render?: Operation<T, M, R>
+  finalize?: Operation<T, M, R>
+  redefinedInitialize?: Operation<T, M, R>
+  redefinedRender?: Operation<T, M, R>
+  redefinedFinalize?: Operation<T, M, R>
 }
 
 export function asBaseFor<T, M, R>(
@@ -39,14 +39,14 @@ export function asBaseFor<T, M, R>(
   const result: BlockVmt<T, M, R> = {
     ...base,
     ...outer,
-    initialize: via(outer?.initialize, base.initialize),
-    render: via(outer?.render, base.render),
-    finalize: via(outer?.finalize, base.finalize),
+    initialize: redefine(outer?.initialize, base.initialize),
+    render: redefine(outer?.render, base.render),
+    finalize: redefine(outer?.finalize, base.finalize),
   }
   return result
 }
 
-function via<T, M, R>(outer: Render<T, M, R> | undefined, base: Render<T, M, R> | undefined): Render<T, M, R> {
+function redefine<T, M, R>(outer: Operation<T, M, R> | undefined, base: Operation<T, M, R> | undefined): Operation<T, M, R> {
   const inherited = base ?? NOP
   return outer ? b => outer(b, () => inherited(b)) : inherited
 }
