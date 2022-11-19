@@ -22,9 +22,11 @@ export interface BlockVmt<T = unknown, M = unknown, R = void> {
   autonomous?: boolean
   triggers?: unknown
   initialize?: Render<T, M, R>
-  override?: Render<T, M, R>
   render?: Render<T, M, R>
   finalize?: Render<T, M, R>
+  redefinedInitialize?: Render<T, M, R>
+  redefinedRender?: Render<T, M, R>
+  redefinedFinalize?: Render<T, M, R>
 }
 
 export function asBaseFor<T, M, R>(
@@ -268,19 +270,9 @@ export class AbstractDriver<T> {
   }
 
   render(block: VBlock<T>): void | Promise<void> {
-    let result: void | Promise<void>
-    const override = block.body.override
-    if (override)
-      result = override(block, NOP)
-    else
-      result = invokeRenderFunction(block)
-    return result
+    const r = block.body.render ?? NOP
+    return r(block, NOP)
   }
-}
-
-function invokeRenderFunction<R>(block: VBlock<any, any, R>): R {
-  const r = block.body.render ?? NOP
-  return r(block, NOP)
 }
 
 export class StaticDriver<T> extends AbstractDriver<T> {
