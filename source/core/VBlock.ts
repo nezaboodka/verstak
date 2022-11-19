@@ -12,6 +12,7 @@ import { Cursor, Align, Cells } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Operation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>, base: () => R) => R
+export type VirtualOperation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>, base: () => R) => R
 export type AsyncOperation<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
 export type Type<T> = new (...args: any[]) => T
 export type BlockBody<T = unknown, M = unknown, R = void> = Operation<T, M, R> | BlockVmt<T, M, R>
@@ -24,9 +25,9 @@ export interface BlockVmt<T = unknown, M = unknown, R = void> {
   initialize?: Operation<T, M, R>
   render?: Operation<T, M, R>
   finalize?: Operation<T, M, R>
-  redefinedInitialize?: Operation<T, M, R>
-  redefinedRender?: Operation<T, M, R>
-  redefinedFinalize?: Operation<T, M, R>
+  redefinedInitialize?: VirtualOperation<T, M, R>
+  redefinedRender?: VirtualOperation<T, M, R>
+  redefinedFinalize?: VirtualOperation<T, M, R>
 }
 
 export function asBaseFor<T, M, R>(
