@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, LayoutKind, BlockBody, Align, GridCursor, asBaseFor, CellRange } from "../core/api"
+import { VBlock, LayoutKind, BlockBody, Align, GridCursor, CellRange, vmt } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -37,21 +37,19 @@ export function Block<M = unknown, R = void>(
 // Text (either plain or html)
 
 export function PlainText(content: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(VerstakTags.text,
-    asBaseFor(body, {
-      render(b) {
-        b.native.innerText = content
-      },
-    }))
+  return VBlock.claim(VerstakTags.text, { ...vmt(body), base: {
+    render(b) {
+      b.native.innerText = content
+    }},
+  })
 }
 
 export function HtmlText(content: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(VerstakTags.text,
-    asBaseFor(body, {
-      render(b) {
-        b.native.innerHTML = content
-      },
-    }))
+  return VBlock.claim(VerstakTags.text, { ...vmt(body), base: {
+    render(b) {
+      b.native.innerHTML = content
+    }},
+  })
 }
 
 // Grid Block

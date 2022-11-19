@@ -11,7 +11,7 @@ import { CellRange, emitLetters, equalCellRanges } from "./CellRange"
 import { Cursor, Align, Cells } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
-export type Operation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>, base: () => R) => R
+export type Operation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>) => R
 export type VirtualOperation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>, base: () => R) => R
 export type AsyncOperation<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
 export type Type<T> = new (...args: any[]) => T
@@ -19,6 +19,7 @@ export type BlockBody<T = unknown, M = unknown, R = void> = Operation<T, M, R> |
 export const enum Priority { Realtime = 0, Normal = 1, Background = 2 }
 
 export interface BlockVmt<T = unknown, M = unknown, R = void> {
+  base?: BlockVmt<T, M, R>
   key?: string
   autonomous?: boolean
   triggers?: unknown
@@ -30,26 +31,10 @@ export interface BlockVmt<T = unknown, M = unknown, R = void> {
   redefinedFinalize?: VirtualOperation<T, M, R>
 }
 
-export function asBaseFor<T, M, R>(
-  outer: BlockBody<T, M, R> | undefined,
-  base: BlockBody<T, M, R>): BlockVmt<T, M, R> {
-  if (outer instanceof Function)
-    outer = { render: outer }
-  if (base instanceof Function)
-    base = { render: base }
-  const result: BlockVmt<T, M, R> = {
-    ...base,
-    ...outer,
-    initialize: redefine(outer?.initialize, base.initialize),
-    render: redefine(outer?.render, base.render),
-    finalize: redefine(outer?.finalize, base.finalize),
-  }
-  return result
-}
-
-function redefine<T, M, R>(outer: Operation<T, M, R> | undefined, base: Operation<T, M, R> | undefined): Operation<T, M, R> {
-  const inherited = base ?? NOP
-  return outer ? b => outer(b, () => inherited(b)) : inherited
+export function vmt<T, M, R>(body: BlockBody<T, M, R> | undefined): BlockVmt<T, M, R> | undefined {
+  if (body instanceof Function)
+    body = { render: body }
+  return body
 }
 
 export function nestedContext<T extends Object>(
@@ -212,18 +197,22 @@ export class AbstractDriver<T> {
   initialize(block: VBlock<T>, native: T): void {
     const b = block as VBlockImpl<T>
     b.native = native
-    block.body.initialize?.(block, NOP)
-  }
-
-  finalize(block: VBlock<T>, isLeader: boolean): boolean {
-    const b = block as VBlockImpl<T>
-    block.body.finalize?.(block, NOP)
-    b.native = null as T // hack
-    return isLeader // treat children as finalization leaders as well
+    invokeInitializeChain(b, b.body)
   }
 
   deploy(block: VBlock<T>): void {
     // nothing to do by default
+  }
+
+  render(block: VBlock<T>): void | Promise<void> {
+    invokeRenderChain(block, block.body)
+  }
+
+  finalize(block: VBlock<T>, isLeader: boolean): boolean {
+    const b = block as VBlockImpl<T>
+    invokeFinalizeChain(b, b.body)
+    b.native = null as T // hack
+    return isLeader // treat children as finalization leaders as well
   }
 
   applyCellRange(block: VBlock<T, any, any>, cellRange: CellRange | undefined): void {
@@ -269,11 +258,42 @@ export class AbstractDriver<T> {
   applyFloating(block: VBlock<T, any, any>, floating: boolean): void {
     // do nothing
   }
+}
 
-  render(block: VBlock<T>): void | Promise<void> {
-    const r = block.body.render ?? NOP
-    return r(block, NOP)
+function invokeInitializeChain(block: VBlock, vmt: BlockVmt): void {
+  const redefined = vmt.redefinedInitialize
+  const base = vmt.base
+  if (!redefined) {
+    vmt.initialize?.(block)
+    if (base)
+      invokeInitializeChain(block, base)
   }
+  else
+    redefined(block, base ? () => invokeInitializeChain(block, base) : NOP)
+}
+
+function invokeRenderChain(block: VBlock, vmt: BlockVmt): void {
+  const redefined = vmt.redefinedRender
+  const base = vmt.base
+  if (!redefined) {
+    if (base)
+      invokeRenderChain(block, base)
+    vmt.render?.(block)
+  }
+  else
+    redefined(block, base ? () => invokeRenderChain(block, base) : NOP)
+}
+
+function invokeFinalizeChain(block: VBlock, vmt: BlockVmt): void {
+  const redefined = vmt.redefinedFinalize
+  const base = vmt.base
+  if (!redefined) {
+    vmt.finalize?.(block)
+    if (base)
+      invokeFinalizeChain(block, base)
+  }
+  else
+    redefined(block, base ? () => invokeFinalizeChain(block, base) : NOP)
 }
 
 export class StaticDriver<T> extends AbstractDriver<T> {
