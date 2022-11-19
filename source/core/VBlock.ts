@@ -68,7 +68,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract contentAlignment: Align
   abstract frameAlignment: Align
   abstract contentWrapping: boolean
-  abstract overlayVisible: boolean
+  abstract overlayVisible: boolean | undefined
   abstract childrenShuffling: boolean
   abstract renderingPriority?: Priority
   // System-managed properties
@@ -255,7 +255,7 @@ export class AbstractDriver<T> {
     // do nothing
   }
 
-  applyOverlayVisible(block: VBlock<T, any, any>, overlayVisible: boolean): void {
+  applyOverlayVisible(block: VBlock<T, any, any>, overlayVisible: boolean | undefined): void {
     // do nothing
   }
 }
@@ -347,7 +347,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   appliedContentAlignment: Align
   appliedFrameAlignment: Align
   appliedContentWrapping: boolean
-  appliedOverlayVisible: boolean
+  appliedOverlayVisible: boolean | undefined
   childrenShuffling: boolean
   renderingPriority: Priority
   // System-managed properties
@@ -381,7 +381,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.appliedContentAlignment = Align.Default
     this.appliedFrameAlignment = Align.Default
     this.appliedContentWrapping = false
-    this.appliedOverlayVisible = false
+    this.appliedOverlayVisible = undefined
     this.childrenShuffling = false
     this.renderingPriority = Priority.Realtime
     // System-managed properties
@@ -489,8 +489,8 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
       this.appliedContentWrapping = value
     }
   }
-  get overlayVisible(): boolean { return this.appliedOverlayVisible }
-  set overlayVisible(value: boolean) {
+  get overlayVisible(): boolean | undefined { return this.appliedOverlayVisible }
+  set overlayVisible(value: boolean | undefined) {
     if (value !== this.appliedOverlayVisible) {
       this.driver.applyOverlayVisible(this, value)
       this.appliedOverlayVisible = value
