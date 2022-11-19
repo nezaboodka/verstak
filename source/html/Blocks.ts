@@ -173,14 +173,14 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
       block.native.removeAttribute("wrapping")
   }
 
-  applyOverlay(block: VBlock<T>, overlay: boolean): void {
+  applyOverlayVisible(block: VBlock<T>, overlayVisible: boolean): void {
     const e = block.native
     const css = e.style
-    const pe = HtmlDriver.findNearestParentHtmlBlock(block).native
-    if (overlay) {
+    const parent = HtmlDriver.findNearestParentHtmlBlock(block).native
+    if (overlayVisible) {
       e.setAttribute("overlay", "true")
-      pe.setAttribute("stacking", "true")
-      const anchor = pe.getBoundingClientRect()
+      parent.setAttribute("stacking", "true")
+      const anchor = parent.getBoundingClientRect()
       if (document.body.offsetWidth - anchor.left > anchor.right)
         css.left = "0"
       else
@@ -192,7 +192,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
     else {
       css.left = css.right = css.top = css.bottom = ""
-      pe.removeAttribute("stacking")
+      parent.removeAttribute("stacking")
       e.removeAttribute("overlay")
     }
   }
