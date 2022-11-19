@@ -12,7 +12,7 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
 
   initialize(block: VBlock<T>, element: T): void {
     element = this.createElement(block)
-    if (Rx.isLogging && !block.driver.isLine && this.name)
+    if (Rx.isLogging && !block.driver.isLine)
       element.setAttribute("key", block.key)
     super.initialize(block, element)
   }

@@ -19,7 +19,7 @@ export function getCallerInfo(prefix: string): string {
   i = i >= 0 ? i + 2 : 5
   let caller = extractFunctionAndLocation(lines[i])
   let location = caller
-  if (caller.func === "VerstakDriver.render" || caller.func === "render") {
+  if (caller.func.endsWith(".render")) {
     i = i - 1
     caller = extractFunctionAndLocation(lines[i])
     location = extractFunctionAndLocation(lines[i + 1])
