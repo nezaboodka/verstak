@@ -161,9 +161,9 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     const lettered = emitLetters(n)
     let result: string
     if (Rx.isLogging)
-      result = `[${getCallerInfo(lettered)}]`
+      result = `${getCallerInfo(lettered)}!`
     else
-      result = `[${lettered}]`
+      result = `${lettered}!`
     return result
   }
 
