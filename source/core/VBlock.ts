@@ -13,9 +13,9 @@ import { Cursor, Align, Cells } from "./Cursor"
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Operation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>, base: () => R) => R
 export type AsyncOperation<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
-export const enum Priority { SyncP0 = 0, AsyncP1 = 1, AsyncP2 = 2 }
 export type Type<T> = new (...args: any[]) => T
 export type BlockBody<T = unknown, M = unknown, R = void> = Operation<T, M, R> | BlockVmt<T, M, R>
+export const enum Priority { Realtime = 0, Normal = 1, Background = 2 }
 
 export interface BlockVmt<T = unknown, M = unknown, R = void> {
   key?: string
@@ -65,7 +65,7 @@ export function useContext<T extends Object>(type: Type<T>): T {
 export abstract class VBlock<T = unknown, M = unknown, R = void> {
   static readonly shortFrameDuration = 16 // ms
   static readonly longFrameDuration = 300 // ms
-  static currentRenderingPriority = Priority.SyncP0
+  static currentRenderingPriority = Priority.Realtime
   static frameDuration = VBlock.longFrameDuration
   // User-defined properties
   abstract readonly key: string
@@ -362,7 +362,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.appliedContentWrapping = false
     this.appliedFloating = false
     this.childrenShuffling = false
-    this.renderingPriority = Priority.SyncP0
+    this.renderingPriority = Priority.Realtime
     // System-managed properties
     this.level = owner.level + 1
     this.host = owner // owner is default host, but can be changed
@@ -547,11 +547,11 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const block = item.instance
           const driver = block.driver
           const host = driver.isLine ? owner : partHost
-          const p = block.renderingPriority ?? Priority.SyncP0
+          const p = block.renderingPriority ?? Priority.Realtime
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
-          if (p === Priority.SyncP0)
+          if (p === Priority.Realtime)
             triggerRendering(item) // render synchronously
-          else if (p === Priority.AsyncP1)
+          else if (p === Priority.Normal)
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
@@ -596,9 +596,9 @@ async function startIncrementalRendering(
   priority2?: Array<Item<VBlockImpl>>): Promise<void> {
   const stamp = owner.instance.stamp
   if (priority1)
-    await renderIncrementally(owner, stamp, allChildren, priority1, Priority.AsyncP1)
+    await renderIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
   if (priority2)
-    await renderIncrementally(owner, stamp, allChildren, priority2, Priority.AsyncP2)
+    await renderIncrementally(owner, stamp, allChildren, priority2, Priority.Background)
 }
 
 async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
@@ -612,7 +612,7 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
     try {
       if (block.childrenShuffling)
         shuffle(items)
-      const frameDurationLimit = priority === Priority.AsyncP2 ? VBlock.shortFrameDuration : Infinity
+      const frameDurationLimit = priority === Priority.Background ? VBlock.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(VBlock.frameDuration / 4, VBlock.shortFrameDuration))
       for (const child of items) {
         triggerRendering(child)
