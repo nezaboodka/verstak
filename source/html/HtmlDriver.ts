@@ -83,16 +83,16 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
     gBlinkingEffect = value
   }
 
-  static findNearestParentHtmlBlock(block: VBlock<any>): VBlock<Element> {
+  static findNearestParentHtmlBlock(block: VBlock<any>): VBlock<HTMLElement> {
     let p = block.host
-    while (p.native instanceof Element === false && p !== block)
+    while (p.native instanceof HTMLElement === false && p !== block)
       p = p.host
-    return p as VBlock<Element>
+    return p as VBlock<HTMLElement>
   }
 
-  static findPrevSiblingHtmlBlock(item: Item<VBlock<any>>): Item<VBlock<Element>> | undefined {
+  static findPrevSiblingHtmlBlock(item: Item<VBlock<any>>): Item<VBlock<HTMLElement>> | undefined {
     let p = item.prev
-    while (p && !(p.instance.native instanceof Element))
+    while (p && !(p.instance.native instanceof HTMLElement))
       p = p.prev
     return p
   }
