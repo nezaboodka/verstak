@@ -264,7 +264,7 @@ export class AbstractDriver<T> {
     // do nothing
   }
 
-  applyStyling(block: VBlock<T, any, any>, styleName: string, enabled?: boolean): void {
+  applyStyling(block: VBlock<T, any, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
     // do nothing
   }
 }
@@ -346,6 +346,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   body: BlockVmt<T, M, R>
   model: M
   assignedCells: Cells
+  assignedStyle: boolean
   appliedCellRange: CellRange
   appliedWidthGrowth: number
   appliedMinWidth: string
@@ -380,6 +381,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.body = body
     this.model = undefined as any
     this.assignedCells = undefined
+    this.assignedStyle = false
     this.appliedCellRange = Cursor.UndefinedCellRange
     this.appliedWidthGrowth = 0
     this.appliedMinWidth = ""
@@ -507,7 +509,8 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   }
 
   style(styleName: string, enabled?: boolean): void {
-    this.driver.applyStyling(this, styleName, enabled)
+    this.driver.applyStyling(this, this.assignedStyle, styleName, enabled)
+    this.assignedStyle = true
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
@@ -713,6 +716,7 @@ function renderNow(item: Item<VBlockImpl>): void {
         block.stamp++
         block.numerator = 0
         block.assignedCells = undefined // reset
+        block.assignedStyle = false // reset
         block.children.beginMerge()
         result = block.driver.render(block)
         if (block.driver.isLine)

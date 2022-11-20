@@ -193,8 +193,13 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
   }
 
-  applyStyling(block: VBlock<T, any, any>, styleName: string, enabled?: boolean): void {
-    block.native.classList.toggle(styleName, enabled ?? true)
+  applyStyling(block: VBlock<T, any, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
+    const e = block.native
+    enabled ??= true
+    if (secondary)
+      e.classList.toggle(styleName, enabled)
+    else
+      e.className = enabled ? styleName : ""
   }
 
   render(block: VBlock<T>): void | Promise<void> {
