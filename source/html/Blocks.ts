@@ -193,6 +193,10 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
   }
 
+  applyStyling(block: VBlock<T, any, any>, styleName: string, enabled?: boolean): void {
+    block.native.classList.toggle(styleName, enabled ?? true)
+  }
+
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
     if (block.driver.layout < LayoutKind.Line)

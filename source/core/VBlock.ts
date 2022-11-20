@@ -42,6 +42,10 @@ export function nestedContext<T extends Object>(
   return VBlockImpl.setContext(type, context)
 }
 
+export function tryUseContext<T extends Object>(type: Type<T>): T | undefined {
+  return VBlockImpl.tryUse(type)
+}
+
 export function useContext<T extends Object>(type: Type<T>): T {
   return VBlockImpl.use(type)
 }
@@ -71,6 +75,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract overlayVisible: boolean | undefined
   abstract childrenShuffling: boolean
   abstract renderingPriority?: Priority
+  abstract style(styleName: string, enabled?: boolean): void
   // System-managed properties
   abstract readonly level: number
   abstract readonly host: VBlock // (!) may differ from owner
@@ -256,6 +261,10 @@ export class AbstractDriver<T> {
   }
 
   applyOverlayVisible(block: VBlock<T, any, any>, overlayVisible: boolean | undefined): void {
+    // do nothing
+  }
+
+  applyStyling(block: VBlock<T, any, any>, styleName: string, enabled?: boolean): void {
     // do nothing
   }
 }
@@ -497,19 +506,28 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     }
   }
 
+  style(styleName: string, enabled?: boolean): void {
+    this.driver.applyStyling(this, styleName, enabled)
+  }
+
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
     if (this.stamp !== 1 || !this.body.autonomous)
       throw new Error("reactronic can be configured only for reacting blocks and only inside initialize")
     return Rx.getController(this.render).configure(options)
   }
 
-  static use<T extends Object>(type: Type<T>): T {
+  static tryUse<T extends Object>(type: Type<T>): T | undefined {
     let b = gCurrent.instance
     while (b.context?.type !== type && b.host !== b)
       b = b.senior
-    if (b.host === b)
-      throw new Error(`${type.name} context doesn't exist`)
     return b.context?.instance as any // TODO: to get rid of any
+  }
+
+  static use<T extends Object>(type: Type<T>): T {
+    const result = VBlockImpl.tryUse(type)
+    if (!result)
+      throw new Error(`${type.name} context doesn't exist`)
+    return result
   }
 
   static setContext<T>(type: Type<T>, context: T): void {
