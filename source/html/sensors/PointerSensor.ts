@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reactive, Reentrance, transactional, raw, Transaction, LoggingLevel } from "reactronic"
+import { options, reactive, Reentrance, transactional, raw, Transaction, LoggingLevel, sensitive } from "reactronic"
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from "./BasePointerSensor"
 import { findTargetElementData, SymDataForSensor } from "./DataForSensor"
 import { FocusSensor } from "./FocusSensor"
@@ -17,6 +17,7 @@ export class PointerSensor extends BasePointerSensor {
   @raw private clickable: unknown
   hotPositionX: number
   hotPositionY: number
+  context: unknown
   clicking: unknown
   clicked: unknown
   clickX: number // position relative to browser's viewport
@@ -52,6 +53,7 @@ export class PointerSensor extends BasePointerSensor {
     this.hotPositionY = Infinity
     this.pointerButton = PointerButton.None
     this.tryingDragging = false
+    this.context = undefined
     this.clickable = undefined
     this.clicking = undefined
     this.clicked = undefined
@@ -88,6 +90,10 @@ export class PointerSensor extends BasePointerSensor {
     this.draggingData = value
   }
 
+  clearContext(): void {
+    this.context = undefined
+  }
+
   @transactional
   listen(element: HTMLElement | undefined, enabled: boolean = true): void {
     const existing = this.sourceElement
@@ -98,6 +104,7 @@ export class PointerSensor extends BasePointerSensor {
         existing.removeEventListener("pointerup", this.onPointerUp.bind(this), { capture: true })
         existing.removeEventListener("lostpointercapture", this.onLostPointerCapture.bind(this), { capture: true })
         existing.removeEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
+        existing.removeEventListener("contextmenu", this.onContextMenu.bind(this), { capture: true })
       }
       this.sourceElement = element
       if (element && enabled) {
@@ -106,6 +113,7 @@ export class PointerSensor extends BasePointerSensor {
         element.addEventListener("pointerup", this.onPointerUp.bind(this), { capture: true })
         element.addEventListener("lostpointercapture", this.onLostPointerCapture.bind(this), { capture: true })
         element.addEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
+        element.addEventListener("contextmenu", this.onContextMenu.bind(this), { capture: true })
       }
     }
   }
@@ -170,10 +178,16 @@ export class PointerSensor extends BasePointerSensor {
   }
 
   protected onKeyDown(e: KeyboardEvent): void {
-    if (e.key === "Escape" && (this.dragStarted || this.clickable)) {
+    if (e.key === "Escape" && (this.dragStarted || this.clickable || this.context)) {
       this.cancelDragging()
+      this.clearContext()
       this.reset()
     }
+  }
+
+  protected onContextMenu(e: MouseEvent): void {
+    e.preventDefault()
+    this.doContextMenu(e)
   }
 
   @transactional @options({ logging: LoggingLevel.Off })
@@ -211,6 +225,17 @@ export class PointerSensor extends BasePointerSensor {
         this.windowSensor?.setActiveWindow(window, "pointer")
       })
     }
+    this.revision++
+  }
+
+  @transactional @options({ logging: LoggingLevel.Off })
+  protected doContextMenu(e: MouseEvent): void {
+    this.preventDefault = false
+    this.stopPropagation = false
+    sensitive(true, () => this.context = this.focusSensor?.contextElementDataList[0])
+    this.modifiers = extractModifierKeys(e)
+    this.positionX = e.clientX
+    this.positionY = e.clientY
     this.revision++
   }
 
