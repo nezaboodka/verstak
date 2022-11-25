@@ -37,8 +37,7 @@ export function vmt<T, M, R>(body: BlockBody<T, M, R> | undefined): BlockVmt<T, 
   return body
 }
 
-export function setContext<T extends Object>(
-  key: Type<T>, context: T): void {
+export function setContext<T extends Object>(key: Type<T>, context: T): void {
   return VBlockImpl.setContext(key, context)
 }
 
