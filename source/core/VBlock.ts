@@ -43,11 +43,11 @@ export function subContext<T extends Object>(
 }
 
 export function tryUseContext<T extends Object>(type: Type<T>): T | undefined {
-  return VBlockImpl.tryUse(type)
+  return VBlockImpl.tryUseContext(type)
 }
 
 export function useContext<T extends Object>(type: Type<T>): T {
-  return VBlockImpl.use(type)
+  return VBlockImpl.useContext(type)
 }
 
 // VBlock
@@ -519,15 +519,15 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     return Rx.getController(this.render).configure(options)
   }
 
-  static tryUse<T extends Object>(type: Type<T>): T | undefined {
+  static tryUseContext<T extends Object>(type: Type<T>): T | undefined {
     let b = gCurrent.instance
     while (b.context?.type !== type && b.host !== b)
       b = b.senior
     return b.context?.instance as any // TODO: to get rid of any
   }
 
-  static use<T extends Object>(type: Type<T>): T {
-    const result = VBlockImpl.tryUse(type)
+  static useContext<T extends Object>(type: Type<T>): T {
+    const result = VBlockImpl.tryUseContext(type)
     if (!result)
       throw new Error(`${type.name} context doesn't exist`)
     return result
