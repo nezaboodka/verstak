@@ -37,17 +37,17 @@ export function vmt<T, M, R>(body: BlockBody<T, M, R> | undefined): BlockVmt<T, 
   return body
 }
 
-export function subContext<T extends Object>(
-  type: Type<T>, context: T): void {
-  return VBlockImpl.setContext(type, context)
+export function setContext<T extends Object>(
+  key: Type<T>, context: T): void {
+  return VBlockImpl.setContext(key, context)
 }
 
-export function tryUseContext<T extends Object>(type: Type<T>): T | undefined {
-  return VBlockImpl.tryUseContext(type)
+export function tryUseContext<T extends Object>(key: Type<T>): T | undefined {
+  return VBlockImpl.tryUseContext(key)
 }
 
-export function useContext<T extends Object>(type: Type<T>): T {
-  return VBlockImpl.useContext(type)
+export function useContext<T extends Object>(key: Type<T>): T {
+  return VBlockImpl.useContext(key)
 }
 
 // VBlock
@@ -325,12 +325,14 @@ function getBlockKey(block: VBlockImpl): string | undefined {
 }
 
 class VBlockContext<T extends Object = Object> extends ObservableObject {
-  @raw type: Type<T>
+  @raw next: VBlockContext<object> | undefined
+  @raw key: Type<T>
   instance: T
 
-  constructor(type: Type<T>, instance: T) {
+  constructor(key: Type<T>, instance: T) {
     super()
-    this.type = type
+    this.next = undefined
+    this.key = key
     this.instance = instance
   }
 }
@@ -519,21 +521,21 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     return Rx.getController(this.render).configure(options)
   }
 
-  static tryUseContext<T extends Object>(type: Type<T>): T | undefined {
+  static tryUseContext<T extends Object>(key: Type<T>): T | undefined {
     let b = gCurrent.instance
-    while (b.context?.type !== type && b.host !== b)
+    while (b.context?.key !== key && b.host !== b)
       b = b.senior
     return b.context?.instance as any // TODO: to get rid of any
   }
 
-  static useContext<T extends Object>(type: Type<T>): T {
-    const result = VBlockImpl.tryUseContext(type)
+  static useContext<T extends Object>(key: Type<T>): T {
+    const result = VBlockImpl.tryUseContext(key)
     if (!result)
-      throw new Error(`${type.name} context doesn't exist`)
+      throw new Error(`${key.name} context doesn't exist`)
     return result
   }
 
-  static setContext<T>(type: Type<T>, context: T): void {
+  static setContext<T>(key: Type<T>, context: T): void {
     const block = gCurrent.instance
     const host = block.host
     const hostCtx = nonreactive(() => host.context?.instance)
@@ -545,11 +547,11 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
       Transaction.run({ separation: true }, () => {
         const ctx = block.context
         if (ctx) {
-          ctx.type = type
+          ctx.key = key
           ctx.instance = context // update context thus invalidate observers
         }
         else
-          block.context = new VBlockContext<any>(type, context)
+          block.context = new VBlockContext<any>(key, context)
       })
     }
     else if (hostCtx)
