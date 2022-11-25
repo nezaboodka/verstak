@@ -14,7 +14,7 @@ export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Operation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>) => R
 export type VirtualOperation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>, base: () => R) => R
 export type AsyncOperation<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
-export type Type<T> = new (...args: any[]) => T
+export type Type<T> = abstract new (...args: any[]) => T
 export type BlockBody<T = unknown, M = unknown, R = void> = Operation<T, M, R> | BlockVmt<T, M, R>
 export const enum Priority { Realtime = 0, Normal = 1, Background = 2 }
 
