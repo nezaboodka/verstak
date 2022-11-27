@@ -379,7 +379,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   stamp: number
   native: T
   cursor: Cursor
-  private senior: VBlockImpl
+  private outer: VBlockImpl
   context: VBlockContext<any> | undefined
 
   constructor(key: string, driver: AbstractDriver<T>,
@@ -414,7 +414,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.stamp = 0
     this.native = undefined as T // hack
     this.cursor = driver.createCursor()
-    this.senior = owner.context ? owner : owner.senior
+    this.outer = owner.context ? owner : owner.outer
     this.context = undefined
   }
 
@@ -532,7 +532,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   static tryUseContext<T extends Object>(key: Context<T>): T | undefined {
     let b = gCurrent.instance
     while (b.context?.key !== key && b.host !== b)
-      b = b.senior
+      b = b.outer
     return b.context?.instance as any // TODO: to get rid of any
   }
 
@@ -549,9 +549,9 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     const hostCtx = nonreactive(() => host.context?.instance)
     if (context && context !== hostCtx) {
       if (hostCtx)
-        block.senior = host
+        block.outer = host
       else
-        block.senior = host.senior
+        block.outer = host.outer
       Transaction.run({ separation: true }, () => {
         const ctx = block.context
         if (ctx) {
@@ -563,9 +563,9 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
       })
     }
     else if (hostCtx)
-      block.senior = host
+      block.outer = host
     else
-      block.senior = host.senior
+      block.outer = host.outer
   }
 }
 
