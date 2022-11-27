@@ -14,7 +14,6 @@ export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Operation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>) => R
 export type VirtualOperation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>, base: () => R) => R
 export type AsyncOperation<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
-export type Type<T> = abstract new (...args: any[]) => T
 export type BlockBody<T = unknown, M = unknown, R = void> = Operation<T, M, R> | BlockVmt<T, M, R>
 export const enum Priority { Realtime = 0, Normal = 1, Background = 2 }
 
@@ -35,18 +34,6 @@ export function vmt<T, M, R>(body: BlockBody<T, M, R> | undefined): BlockVmt<T, 
   if (body instanceof Function)
     body = { render: body }
   return body
-}
-
-export function setContext<T extends Object>(key: Type<T>, context: T): void {
-  return VBlockImpl.setContext(key, context)
-}
-
-export function tryUseContext<T extends Object>(key: Type<T>): T | undefined {
-  return VBlockImpl.tryUseContext(key)
-}
-
-export function useContext<T extends Object>(key: Type<T>): T {
-  return VBlockImpl.useContext(key)
 }
 
 // VBlock
@@ -317,6 +304,28 @@ export class StaticDriver<T> extends AbstractDriver<T> {
   }
 }
 
+// Context
+
+export class Context<T extends Object = Object> {
+  readonly defaultValue: T | undefined
+
+  constructor(defaultValue?: T) {
+    this.defaultValue = defaultValue
+  }
+
+  set instance(value: T) {
+    VBlockImpl.setContext(this, value)
+  }
+
+  get instance(): T {
+    return VBlockImpl.useContext(this)
+  }
+
+  get instanceOrUndefined(): T | undefined {
+    return VBlockImpl.tryUseContext(this)
+  }
+}
+
 // VBlockImpl
 
 function getBlockKey(block: VBlockImpl): string | undefined {
@@ -325,10 +334,10 @@ function getBlockKey(block: VBlockImpl): string | undefined {
 
 class VBlockContext<T extends Object = Object> extends ObservableObject {
   @raw next: VBlockContext<object> | undefined
-  @raw key: Type<T>
+  @raw key: Context<T>
   instance: T
 
-  constructor(key: Type<T>, instance: T) {
+  constructor(key: Context<T>, instance: T) {
     super()
     this.next = undefined
     this.key = key
@@ -520,21 +529,21 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     return Rx.getController(this.render).configure(options)
   }
 
-  static tryUseContext<T extends Object>(key: Type<T>): T | undefined {
+  static tryUseContext<T extends Object>(key: Context<T>): T | undefined {
     let b = gCurrent.instance
     while (b.context?.key !== key && b.host !== b)
       b = b.senior
     return b.context?.instance as any // TODO: to get rid of any
   }
 
-  static useContext<T extends Object>(key: Type<T>): T {
-    const result = VBlockImpl.tryUseContext(key)
+  static useContext<T extends Object>(key: Context<T>): T {
+    const result = VBlockImpl.tryUseContext(key) ?? key.defaultValue
     if (!result)
-      throw new Error(`${key.name} context doesn't exist`)
+      throw new Error("context doesn't exist")
     return result
   }
 
-  static setContext<T>(key: Type<T>, context: T): void {
+  static setContext<T extends Object>(key: Context<T>, context: T | undefined): void {
     const block = gCurrent.instance
     const host = block.host
     const hostCtx = nonreactive(() => host.context?.instance)
