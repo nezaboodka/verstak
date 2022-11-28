@@ -304,9 +304,9 @@ export class StaticDriver<T> extends AbstractDriver<T> {
   }
 }
 
-// Context
+// ContextVariable
 
-export class Context<T extends Object = Object> {
+export class ContextVariable<T extends Object = Object> {
   readonly defaultValue: T | undefined
 
   constructor(defaultValue?: T) {
@@ -314,15 +314,15 @@ export class Context<T extends Object = Object> {
   }
 
   set current(value: T) {
-    VBlockImpl.setContext(this, value)
+    VBlockImpl.setContextVariable(this, value)
   }
 
   get current(): T {
-    return VBlockImpl.useContext(this)
+    return VBlockImpl.useContextVariable(this)
   }
 
   get instanceOrUndefined(): T | undefined {
-    return VBlockImpl.tryUseContext(this)
+    return VBlockImpl.tryUseContextVariable(this)
   }
 }
 
@@ -334,13 +334,13 @@ function getBlockKey(block: VBlockImpl): string | undefined {
 
 class VBlockContext<T extends Object = Object> extends ObservableObject {
   @raw next: VBlockContext<object> | undefined
-  @raw key: Context<T>
+  @raw variable: ContextVariable<T>
   instance: T
 
-  constructor(key: Context<T>, instance: T) {
+  constructor(variable: ContextVariable<T>, instance: T) {
     super()
     this.next = undefined
-    this.key = key
+    this.variable = variable
     this.instance = instance
   }
 }
@@ -529,21 +529,21 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     return Rx.getController(this.render).configure(options)
   }
 
-  static tryUseContext<T extends Object>(key: Context<T>): T | undefined {
+  static tryUseContextVariable<T extends Object>(variable: ContextVariable<T>): T | undefined {
     let b = gCurrent.instance
-    while (b.context?.key !== key && b.host !== b)
+    while (b.context?.variable !== variable && b.host !== b)
       b = b.outer
     return b.context?.instance as any // TODO: to get rid of any
   }
 
-  static useContext<T extends Object>(key: Context<T>): T {
-    const result = VBlockImpl.tryUseContext(key) ?? key.defaultValue
+  static useContextVariable<T extends Object>(variable: ContextVariable<T>): T {
+    const result = VBlockImpl.tryUseContextVariable(variable) ?? variable.defaultValue
     if (!result)
       throw new Error("context doesn't exist")
     return result
   }
 
-  static setContext<T extends Object>(key: Context<T>, context: T | undefined): void {
+  static setContextVariable<T extends Object>(variable: ContextVariable<T>, context: T | undefined): void {
     const block = gCurrent.instance
     const host = block.host
     const hostCtx = nonreactive(() => host.context?.instance)
@@ -555,11 +555,11 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
       Transaction.run({ separation: true }, () => {
         const ctx = block.context
         if (ctx) {
-          ctx.key = key
+          ctx.variable = variable
           ctx.instance = context // update context thus invalidate observers
         }
         else
-          block.context = new VBlockContext<any>(key, context)
+          block.context = new VBlockContext<any>(variable, context)
       })
     }
     else if (hostCtx)
