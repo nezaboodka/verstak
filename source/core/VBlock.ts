@@ -313,11 +313,11 @@ export class ContextVariable<T extends Object = Object> {
     this.defaultValue = defaultValue
   }
 
-  set current(value: T) {
+  set instance(value: T) {
     VBlockImpl.setContextVariable(this, value)
   }
 
-  get current(): T {
+  get instance(): T {
     return VBlockImpl.useContextVariable(this)
   }
 
