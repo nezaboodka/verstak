@@ -313,15 +313,15 @@ export class ContextVariable<T extends Object = Object> {
     this.defaultValue = defaultValue
   }
 
-  set instance(value: T) {
-    VBlockImpl.setContextVariable(this, value)
+  set value(value: T) {
+    VBlockImpl.setContextVariableValue(this, value)
   }
 
-  get instance(): T {
-    return VBlockImpl.useContextVariable(this)
+  get value(): T {
+    return VBlockImpl.useContextVariableValue(this)
   }
 
-  get instanceOrUndefined(): T | undefined {
+  get valueOrUndefined(): T | undefined {
     return VBlockImpl.tryUseContextVariable(this)
   }
 }
@@ -335,13 +335,13 @@ function getBlockKey(block: VBlockImpl): string | undefined {
 class VBlockContext<T extends Object = Object> extends ObservableObject {
   @raw next: VBlockContext<object> | undefined
   @raw variable: ContextVariable<T>
-  instance: T
+  value: T
 
-  constructor(variable: ContextVariable<T>, instance: T) {
+  constructor(variable: ContextVariable<T>, value: T) {
     super()
     this.next = undefined
     this.variable = variable
-    this.instance = instance
+    this.value = value
   }
 }
 
@@ -533,21 +533,21 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     let b = gCurrent.instance
     while (b.context?.variable !== variable && b.host !== b)
       b = b.outer
-    return b.context?.instance as any // TODO: to get rid of any
+    return b.context?.value as any // TODO: to get rid of any
   }
 
-  static useContextVariable<T extends Object>(variable: ContextVariable<T>): T {
+  static useContextVariableValue<T extends Object>(variable: ContextVariable<T>): T {
     const result = VBlockImpl.tryUseContextVariable(variable) ?? variable.defaultValue
     if (!result)
       throw new Error("context doesn't exist")
     return result
   }
 
-  static setContextVariable<T extends Object>(variable: ContextVariable<T>, context: T | undefined): void {
+  static setContextVariableValue<T extends Object>(variable: ContextVariable<T>, value: T | undefined): void {
     const block = gCurrent.instance
     const host = block.host
-    const hostCtx = nonreactive(() => host.context?.instance)
-    if (context && context !== hostCtx) {
+    const hostCtx = nonreactive(() => host.context?.value)
+    if (value && value !== hostCtx) {
       if (hostCtx)
         block.outer = host
       else
@@ -556,10 +556,10 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
         const ctx = block.context
         if (ctx) {
           ctx.variable = variable
-          ctx.instance = context // update context thus invalidate observers
+          ctx.value = value // update context thus invalidate observers
         }
         else
-          block.context = new VBlockContext<any>(variable, context)
+          block.context = new VBlockContext<any>(variable, value)
       })
     }
     else if (hostCtx)
