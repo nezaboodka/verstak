@@ -1,6 +1,6 @@
 {
   "name": "verstak",
-  "version": "0.22.516",
+  "version": "0.23.100",
   "description": "Verstak - Front-End Library",
   "publisher": "Nezaboodka Software",
   "license": "Apache-2.0",
@@ -31,18 +31,18 @@
   },
   "homepage": "https://github.com/nezaboodka/verstak/blob/master/README.md#readme",
   "dependencies": {
-    "reactronic": "^0.22.510"
+    "reactronic": "^0.23.100"
   },
   "devDependencies": {
-    "@types/node": "18.11.9",
-    "@typescript-eslint/eslint-plugin": "5.42.1",
-    "@typescript-eslint/parser": "5.42.1",
+    "@types/node": "18.11.18",
+    "@typescript-eslint/eslint-plugin": "5.47.1",
+    "@typescript-eslint/parser": "5.47.1",
     "ava": "4.3.3",
     "c8": "7.12.0",
-    "eslint": "8.27.0",
+    "eslint": "8.30.0",
     "ts-node": "10.9.1",
-    "tsconfig-paths": "4.1.0",
-    "typescript": "4.8.4"
+    "tsconfig-paths": "4.1.1",
+    "typescript": "4.9.4"
   },
   "scripts": {
     "build": "eslint source/**/*.ts test/**/*.ts && tsc",
