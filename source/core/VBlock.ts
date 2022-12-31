@@ -11,29 +11,18 @@ import { CellRange, emitLetters, equalCellRanges } from "./CellRange"
 import { Cursor, Align, Cells } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
-export type Operation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>) => R
-export type VirtualOperation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>, base: () => R) => R
+export type Operation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>, base: () => R) => R
 export type AsyncOperation<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
-export type BlockBody<T = unknown, M = unknown, R = void> = Operation<T, M, R> | BlockVmt<T, M, R>
 export const enum Priority { Realtime = 0, Normal = 1, Background = 2 }
 
-export interface BlockVmt<T = unknown, M = unknown, R = void> {
-  base?: BlockVmt<T, M, R>
+export interface BlockBody<T = unknown, M = unknown, R = void> {
+  base?: BlockBody<T, M, R>
   key?: string
-  autonomous?: boolean
+  reaction?: boolean
   triggers?: unknown
   initialize?: Operation<T, M, R>
   render?: Operation<T, M, R>
   finalize?: Operation<T, M, R>
-  redefinedInitialize?: VirtualOperation<T, M, R>
-  redefinedRender?: VirtualOperation<T, M, R>
-  redefinedFinalize?: VirtualOperation<T, M, R>
-}
-
-export function vmt<T, M, R>(body: BlockBody<T, M, R> | undefined): BlockVmt<T, M, R> | undefined {
-  if (body instanceof Function)
-    body = { render: body }
-  return body
 }
 
 // VBlock
@@ -46,7 +35,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   // User-defined properties
   abstract readonly key: string
   abstract readonly driver: AbstractDriver<T>
-  abstract readonly body: Readonly<BlockVmt<T, M, R>>
+  abstract readonly body: Readonly<BlockBody<T, M, R>>
   abstract model: M
   abstract cells: Cells
   abstract widthGrowth: number
@@ -95,15 +84,18 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 
   static claim<T = undefined, M = unknown, R = void>(
     driver: AbstractDriver<T> | undefined,
-    body: BlockBody<T, M, R>): VBlock<T, M, R> {
+    body?: BlockBody<T, M, R>,
+    base?: BlockBody<T, M, R>): VBlock<T, M, R> {
     let result: VBlockImpl<T, M, R>
     const owner = gCurrent.instance
     const children = owner.children
     let ex: Item<VBlockImpl<any, any, any>> | undefined = undefined
     // Normalize parameters
+    if (body)
+      body.base = base
+    else
+      body = base ?? {}
     driver ??= AbstractDriver.group
-    if (body instanceof Function)
-      body = { render: body }
     let key = body.key
     // Check for coalescing separators or lookup for existing block
     if (driver.isLine) {
@@ -127,7 +119,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       result = new VBlockImpl<T, M, R>(key || VBlock.generateKey(owner), driver, owner, body)
       result.item = children.add(result)
       VBlockImpl.grandCount++
-      if (body.autonomous)
+      if (isReaction(body))
         VBlockImpl.disposableCount++
     }
     return result
@@ -138,9 +130,9 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     const lettered = emitLetters(n)
     let result: string
     if (Rx.isLogging)
-      result = `${getCallerInfo(lettered)}!`
+      result = `·${getCallerInfo(lettered)}`
     else
-      result = `${lettered}!`
+      result = `·${lettered}`
     return result
   }
 
@@ -156,11 +148,11 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 // LayoutKind
 
 export enum LayoutKind {
-  Block = 0,  // 000
-  Grid = 1,   // 001
-  Line = 2,    // 010
-  Group = 3,  // 011
-  Text = 4,   // 100
+  Block = 0,     // 000
+  Grid = 1,      // 001
+  Line = 2,      // 010
+  Fragment = 3,  // 011
+  Text = 4,      // 100
 }
 
 // AbstractDriver
@@ -168,7 +160,7 @@ export enum LayoutKind {
 const createDefaultCursor = (): Cursor => new Cursor()
 
 export class AbstractDriver<T> {
-  public static readonly group = new AbstractDriver<any>("group", LayoutKind.Group)
+  public static readonly group = new AbstractDriver<any>("group", LayoutKind.Fragment)
 
   readonly name: string
   readonly layout: LayoutKind
@@ -255,40 +247,35 @@ export class AbstractDriver<T> {
   }
 }
 
-function invokeInitializeChain(block: VBlock, vmt: BlockVmt): void {
-  const redefined = vmt.redefinedInitialize
-  const base = vmt.base
-  if (!redefined) {
-    vmt.initialize?.(block)
-    if (base)
-      invokeInitializeChain(block, base)
-  }
-  else
-    redefined(block, base ? () => invokeInitializeChain(block, base) : NOP)
+function isReaction(body?: BlockBody<any, any, any>): boolean {
+  return body?.reaction ?? (body?.base ? isReaction(body?.base) : false)
 }
 
-function invokeRenderChain(block: VBlock, vmt: BlockVmt): void {
-  const redefined = vmt.redefinedRender
-  const base = vmt.base
-  if (!redefined) {
-    if (base)
-      invokeRenderChain(block, base)
-    vmt.render?.(block)
-  }
-  else
-    redefined(block, base ? () => invokeRenderChain(block, base) : NOP)
+function invokeInitializeChain(block: VBlock, body: BlockBody): void {
+  const initialize = body.initialize
+  const base = body.base
+  if (initialize)
+    initialize(block, base ? () => invokeInitializeChain(block, base) : NOP)
+  else if (base)
+    invokeInitializeChain(block, base)
 }
 
-function invokeFinalizeChain(block: VBlock, vmt: BlockVmt): void {
-  const redefined = vmt.redefinedFinalize
-  const base = vmt.base
-  if (!redefined) {
-    vmt.finalize?.(block)
-    if (base)
-      invokeFinalizeChain(block, base)
-  }
-  else
-    redefined(block, base ? () => invokeFinalizeChain(block, base) : NOP)
+function invokeRenderChain(block: VBlock, body: BlockBody): void {
+  const render = body.render
+  const base = body.base
+  if (render)
+    render(block, base ? () => invokeRenderChain(block, base) : NOP)
+  else if (base)
+    invokeRenderChain(block, base)
+}
+
+function invokeFinalizeChain(block: VBlock, body: BlockBody): void {
+  const finalize = body.finalize
+  const base = body.base
+  if (finalize)
+    finalize(block, base ? () => invokeFinalizeChain(block, base) : NOP)
+  else if (base)
+    invokeFinalizeChain(block, base)
 }
 
 export class StaticDriver<T> extends AbstractDriver<T> {
@@ -353,7 +340,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   // User-defined properties
   readonly key: string
   readonly driver: AbstractDriver<T>
-  body: BlockVmt<T, M, R>
+  body: BlockBody<T, M, R>
   model: M
   assignedCells: Cells
   assignedStyle: boolean
@@ -383,7 +370,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   context: VBlockContext<any> | undefined
 
   constructor(key: string, driver: AbstractDriver<T>,
-    owner: VBlockImpl, body: BlockVmt<T, M, R>) {
+    owner: VBlockImpl, body: BlockBody<T, M, R>) {
     super()
     // User-defined properties
     this.key = key
@@ -524,7 +511,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.stamp !== 1 || !this.body.autonomous)
+    if (this.stamp !== 1 || !isReaction(this.body))
       throw new Error("reactronic can be configured only for reacting blocks and only inside initialize")
     return Rx.getController(this.render).configure(options)
   }
@@ -688,7 +675,7 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
 function triggerRendering(item: Item<VBlockImpl>): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    if (block.body.autonomous) {
+    if (isReaction(block.body)) {
       if (block.stamp === 0) {
         Transaction.outside(() => {
           if (Rx.isLogging)
@@ -757,7 +744,7 @@ function triggerFinalization(item: Item<VBlockImpl>, isLeader: boolean, individu
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
     const childrenAreLeaders = block.driver.finalize(block, isLeader)
-    if (block.body.autonomous) {
+    if (isReaction(block.body)) {
       // Defer disposal if block is reactive
       item.aux = undefined
       const last = gLastToDispose
@@ -883,9 +870,9 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const NOP: any = (...args: any[]): void => { /* nop */ }
 
-const gSysDriver = new StaticDriver<null>(null, "SYSTEM", LayoutKind.Group)
+const gSysDriver = new StaticDriver<null>(null, "SYSTEM", LayoutKind.Fragment)
 const gSysRoot = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>(
-  gSysDriver.name, gSysDriver, { level: 0 } as VBlockImpl, { autonomous: true, render: NOP })) // fake owner/host (overwritten below)
+  gSysDriver.name, gSysDriver, { level: 0 } as VBlockImpl, { reaction: true, render: NOP })) // fake owner/host (overwritten below)
 gSysRoot.instance.item = gSysRoot
 
 Object.defineProperty(gSysRoot.instance, "host", {

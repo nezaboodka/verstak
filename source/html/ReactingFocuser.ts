@@ -5,13 +5,13 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock } from "../core/api"
+import { Fragment } from "./Blocks"
 import { FocusModel } from "./sensors/FocusSensor"
 
 export function ReactingFocuser(target: HTMLElement, model: FocusModel,
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {
-  VBlock.claim(undefined, {
-    autonomous: true,
+  Fragment({
+    reaction: true,
     triggers: { target, model },
     initialize(b) {
       b.configureReactronic({ throttling: 0 })

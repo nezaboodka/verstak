@@ -5,12 +5,12 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, LayoutKind, BlockBody, Align, GridCursor, CellRange, vmt } from "../core/api"
+import { VBlock, LayoutKind, BlockBody, Align, GridCursor, CellRange } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
 // called basic block and grid block; and on two special
-// non-visual elements called line and group.
+// non-visual elements called line and fragment.
 
 // Basic block is a layout structure, which children are
 // layed out naturally: rightwards-downwards.
@@ -24,39 +24,41 @@ import { HtmlDriver } from "./HtmlDriver"
 // Line is a special non-visual element, which begins new
 // layout line (row, section) inside block or grid block.
 
-// Group is a special non-visual element for logical
-// grouping of basic blocks, grid blocks and other groups.
+// Fragment is a special non-visual element for logical
+// grouping of basic blocks, grid blocks and other fragments.
 
 // Basic Block
 
 export function Block<M = unknown, R = void>(
-  body: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(VerstakTags.block, body)
+  body?: BlockBody<HTMLElement, M, R>,
+  base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(VerstakTags.block, body, base)
 }
 
 // Text (either plain or html)
 
 export function PlainText(content: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(VerstakTags.text, { ...vmt(body), base: {
+  return VBlock.claim(VerstakTags.text, body, {
     render(b) {
       b.native.innerText = content
     }},
-  })
+  )
 }
 
 export function HtmlText(content: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(VerstakTags.text, { ...vmt(body), base: {
+  return VBlock.claim(VerstakTags.text, body, {
     render(b) {
       b.native.innerHTML = content
     }},
-  })
+  )
 }
 
 // Grid Block
 
 export function Grid<M = unknown, R = void>(
-  body: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(VerstakTags.grid, body)
+  body?: BlockBody<HTMLElement, M, R>,
+  base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(VerstakTags.grid, body, base)
 }
 
 // Line
@@ -70,11 +72,11 @@ export function lineFeed(noCoalescing?: boolean, key?: string): VBlock<HTMLEleme
   return VBlock.claim(VerstakTags.line, { key })
 }
 
-// Group
+// Fragment
 
-export function Group<M = unknown, R = void>(
+export function Fragment<M = unknown, R = void>(
   body: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(VerstakTags.group, body)
+  return VBlock.claim(VerstakTags.fragment, body)
 }
 
 // VerstakDriver
@@ -227,7 +229,7 @@ const VerstakTags = {
   line: new VerstakDriver<HTMLElement>("v-line", LayoutKind.Line),
 
   // display: contents
-  group: new VerstakDriver<HTMLElement>("v-group", LayoutKind.Group),
+  fragment: new VerstakDriver<HTMLElement>("v-fragment", LayoutKind.Fragment),
 }
 
 const AlignToCss = ["stretch", "start", "center", "end"]
