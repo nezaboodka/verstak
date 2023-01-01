@@ -8,9 +8,10 @@
 import { Fragment } from "./Blocks"
 import { FocusModel } from "./sensors/FocusSensor"
 
-export function ReactingFocuser(target: HTMLElement, model: FocusModel,
+export function ReactingFocuser(key: string, target: HTMLElement, model: FocusModel,
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {
   Fragment({
+    key,
     reaction: true,
     triggers: { target, model },
     initialize(b) {
