@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Fragment } from "./Blocks"
+import { Fragment } from "../core/api"
 import { FocusModel } from "./sensors/FocusSensor"
 
 export function ReactingFocuser(key: string, target: HTMLElement, model: FocusModel,

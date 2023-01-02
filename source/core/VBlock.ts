@@ -25,6 +25,14 @@ export interface BlockBody<T = unknown, M = unknown, R = void> {
   finalize?: Operation<T, M, R>
 }
 
+// Fragment
+
+export function Fragment<M = unknown, R = void>(
+  body?: BlockBody<void, M, R>,
+  base?: BlockBody<void, M, R>): VBlock<void, M, R> {
+  return VBlock.claim(AbstractDriver.fragment, body, base)
+}
+
 // VBlock
 
 export abstract class VBlock<T = unknown, M = unknown, R = void> {
@@ -83,7 +91,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   }
 
   static claim<T = undefined, M = unknown, R = void>(
-    driver: AbstractDriver<T> | undefined,
+    driver: AbstractDriver<T>,
     body?: BlockBody<T, M, R>,
     base?: BlockBody<T, M, R>): VBlock<T, M, R> {
     let result: VBlockImpl<T, M, R>
@@ -95,7 +103,6 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       body.base = base
     else
       body = base ?? {}
-    driver ??= AbstractDriver.group
     let key = body.key
     // Check for coalescing separators or lookup for existing block
     if (driver.isLine) {
@@ -160,7 +167,7 @@ export enum LayoutKind {
 const createDefaultCursor = (): Cursor => new Cursor()
 
 export class AbstractDriver<T> {
-  public static readonly group = new AbstractDriver<any>("group", LayoutKind.Fragment)
+  public static readonly fragment = new AbstractDriver<any>("fragment", LayoutKind.Fragment)
 
   readonly name: string
   readonly layout: LayoutKind

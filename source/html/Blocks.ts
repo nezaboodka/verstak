@@ -10,7 +10,7 @@ import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
 // called basic block and grid block; and on two special
-// non-visual elements called line and fragment.
+// non-visual elements called line and group.
 
 // Basic block is a layout structure, which children are
 // layed out naturally: rightwards-downwards.
@@ -24,8 +24,8 @@ import { HtmlDriver } from "./HtmlDriver"
 // Line is a special non-visual element, which begins new
 // layout line (row, section) inside block or grid block.
 
-// Fragment is a special non-visual element for logical
-// grouping of basic blocks, grid blocks and other fragments.
+// Group is a special non-visual element for logical
+// grouping of basic blocks, grid blocks and other groups.
 
 // Basic Block
 
@@ -72,11 +72,12 @@ export function lineFeed(noCoalescing?: boolean, key?: string): VBlock<HTMLEleme
   return VBlock.claim(VerstakTags.line, { key })
 }
 
-// Fragment
+// Group
 
-export function Fragment<M = unknown, R = void>(
-  body: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(VerstakTags.fragment, body)
+export function Group<M = unknown, R = void>(
+  body?: BlockBody<HTMLElement, M, R>,
+  base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(VerstakTags.group, body, base)
 }
 
 // VerstakDriver
@@ -229,7 +230,7 @@ const VerstakTags = {
   line: new VerstakDriver<HTMLElement>("v-line", LayoutKind.Line),
 
   // display: contents
-  fragment: new VerstakDriver<HTMLElement>("v-fragment", LayoutKind.Fragment),
+  group: new VerstakDriver<HTMLElement>("v-group", LayoutKind.Fragment),
 }
 
 const AlignToCss = ["stretch", "start", "center", "end"]
