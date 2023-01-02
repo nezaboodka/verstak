@@ -194,7 +194,7 @@ export class AbstractDriver<T> {
   finalize(block: VBlock<T>, isLeader: boolean): boolean {
     const b = block as VBlockImpl<T>
     invokeFinalizeChain(b, b.body)
-    b.native = null as T // hack
+    b.native = null as any as T // hack
     return isLeader // treat children as finalization leaders as well
   }
 
@@ -399,7 +399,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.numerator = 0
     this.item = undefined
     this.stamp = 0
-    this.native = undefined as T // hack
+    this.native = undefined as any as T // hack
     this.cursor = driver.createCursor()
     this.outer = owner.context ? owner : owner.outer
     this.context = undefined
