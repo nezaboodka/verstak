@@ -25,7 +25,7 @@ export function getCallerInfo(prefix: string): string {
     location = extractFunctionAndLocation(lines[i + 1])
   }
   else {
-    while (!caller.func) {
+    while (!caller.func && i > 0) {
       i = i - 1
       caller = extractFunctionAndLocation(lines[i])
     }
@@ -36,6 +36,7 @@ export function getCallerInfo(prefix: string): string {
 }
 
 function extractFunctionAndLocation(s: string): { func: string, file: string } {
+  // const match = s.match(/(?:\s*at\s+)?(?:\S+\s\(|@)?(?:.*?)([^\/\(\):]+)(?:(:|\d)*\)?)$/)
   const match = s.match(/(?:\s*at\s+)?(?:(\S+)\s\()?(?:.*?)([^\/\(\):]+)(?:(:|\d)*\)?)$/)
   return {
     func: match?.[1] || "",
