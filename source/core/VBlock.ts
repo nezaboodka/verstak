@@ -187,7 +187,7 @@ export class AbstractDriver<T> {
   initialize(block: VBlock<T>, native: T): void {
     const b = block as VBlockImpl<T>
     b.native = native
-    nonreactive(() => invokeInitializeChain(b, b.body))
+    invokeInitializeChain(b, b.body)
   }
 
   deploy(block: VBlock<T>): void {
@@ -574,9 +574,8 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
     try {
       children.endMerge(error)
       // Finalize removed blocks
-      for (const item of children.removedItems(true)) {
+      for (const item of children.removedItems(true))
         triggerFinalization(item, true, true)
-      }
       if (!error) {
         // Lay out and render actual blocks
         const ownerIsBlock = owner.driver.isBlock
@@ -703,11 +702,13 @@ function redeployIfNecessary(block: VBlockImpl): void {
   const driver = block.driver
   if (block.stamp === 0) {
     block.stamp = 1
-    driver.initialize(block, undefined)
-    driver.deploy(block)
+    nonreactive(() => {
+      driver.initialize(block, undefined)
+      driver.deploy(block)
+    })
   }
   else if (block.isMoved)
-    driver.deploy(block)
+    nonreactive(() => driver.deploy(block))
 }
 
 function renderNow(item: Item<VBlockImpl>): void {
@@ -750,7 +751,7 @@ function triggerFinalization(item: Item<VBlockImpl>, isLeader: boolean, individu
       console.log(`WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: ${block.key}`)
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
-    const childrenAreLeaders = block.driver.finalize(block, isLeader)
+    const childrenAreLeaders = nonreactive(() => block.driver.finalize(block, isLeader))
     if (isReaction(block.body)) {
       // Defer disposal if block is reactive
       item.aux = undefined
