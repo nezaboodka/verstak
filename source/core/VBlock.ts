@@ -187,7 +187,7 @@ export class AbstractDriver<T> {
   initialize(block: VBlock<T>, native: T): void {
     const b = block as VBlockImpl<T>
     b.native = native
-    invokeInitializeChain(b, b.body)
+    nonreactive(() => invokeInitializeChain(b, b.body))
   }
 
   deploy(block: VBlock<T>): void {
