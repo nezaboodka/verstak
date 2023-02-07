@@ -30,9 +30,9 @@ export interface TrackSize extends ElasticSize {
 }
 
 export type Cells = undefined | string | number | {
-  right?: number               // 1 (grid layout only)
+  widthCl?: number             // 1 (grid layout only)
+  heightCl?: number            // 1 (grid layout only)
   horizontalOverlap?: boolean  // false
-  down?: number                // 1 (grid layout only)
   verticalOverlap?: boolean    // false
 }
 
@@ -83,8 +83,8 @@ export class GridCursor extends Cursor {
         columnsOverlap = rowsOverlap = false
       }
       else if (cells) {
-        columns = cells.right ?? 1
-        rows = cells.down ?? 1
+        columns = cells.widthCl ?? 1
+        rows = cells.heightCl ?? 1
         columnsOverlap = cells.horizontalOverlap ?? false
         rowsOverlap = cells.verticalOverlap ?? false
       }
