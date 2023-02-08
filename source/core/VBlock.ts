@@ -8,7 +8,7 @@
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw, MemberOptions } from "reactronic"
 import { getCallerInfo } from "./Utils"
 import { CellRange, emitLetters, equalCellRanges } from "./CellRange"
-import { Cursor, Align, Cells } from "./Cursor"
+import { Cursor, Align, Bounds } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Operation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>, base: () => R) => R
@@ -45,7 +45,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly driver: AbstractDriver<T>
   abstract readonly body: Readonly<BlockBody<T, M, R>>
   abstract model: M
-  abstract cells: Cells
+  abstract bounds: Bounds
   abstract widthGrowth: number
   abstract minWidth: string
   abstract maxWidth: string
@@ -349,7 +349,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   readonly driver: AbstractDriver<T>
   body: BlockBody<T, M, R>
   model: M
-  assignedCells: Cells
+  assignedBounds: Bounds
   assignedStyle: boolean
   appliedCellRange: CellRange
   appliedWidthGrowth: number
@@ -384,7 +384,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.driver = driver
     this.body = body
     this.model = undefined as any
-    this.assignedCells = undefined
+    this.assignedBounds = undefined
     this.assignedStyle = false
     this.appliedCellRange = Cursor.UndefinedCellRange
     this.appliedWidthGrowth = 0
@@ -430,16 +430,16 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     renderNow(this.item!)
   }
 
-  get cells(): Cells { return this.assignedCells }
-  set cells(value: Cells) {
-    if (this.assignedCells !== undefined)
+  get bounds(): Bounds { return this.assignedBounds }
+  set bounds(value: Bounds) {
+    if (this.assignedBounds !== undefined)
       throw new Error("cells can be assigned only once during rendering")
     const cellRange = this.host.cursor.onwards(value)
     if (!equalCellRanges(cellRange, this.appliedCellRange)) {
       this.driver.applyCellRange(this, cellRange)
       this.appliedCellRange = cellRange
     }
-    this.assignedCells = value ?? { }
+    this.assignedBounds = value ?? { }
   }
   get widthGrowth(): number { return this.appliedWidthGrowth }
   set widthGrowth(value: number) {
@@ -720,14 +720,14 @@ function renderNow(item: Item<VBlockImpl>): void {
         redeployIfNecessary(block)
         block.stamp++
         block.numerator = 0
-        block.assignedCells = undefined // reset
+        block.assignedBounds = undefined // reset
         block.assignedStyle = false // reset
         block.children.beginMerge()
         result = block.driver.render(block)
         if (block.driver.isLine)
           block.host.cursor.lineFeed()
-        else if (block.assignedCells === undefined)
-          block.cells = undefined // assign cells automatically
+        else if (block.assignedBounds === undefined)
+          block.bounds = undefined // assign cells automatically
         if (result instanceof Promise)
           result.then(
             v => { runRenderNestedTreesThenDo(undefined, NOP); return v },

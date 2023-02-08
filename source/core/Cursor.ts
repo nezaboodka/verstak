@@ -26,20 +26,20 @@ export interface ElasticSize {
 }
 
 export interface TrackSize extends ElasticSize {
-  track?: string | number       // <current>
+  track?: string | number   // <current>
 }
 
-export type Cells = undefined | string | number | {
-  widthInCells?: number             // 1 (grid layout only)
-  heightInCells?: number            // 1 (grid layout only)
-  horizontalOverlap?: boolean  // false
-  verticalOverlap?: boolean    // false
+export type Bounds = undefined | string | number | {
+  widthInCells?: number     // 1 (grid layout only)
+  heightInCells?: number    // 1 (grid layout only)
+  widthOverlap?: boolean    // false
+  heightOverlap?: boolean   // false
 }
 
 export class Cursor {
   static readonly UndefinedCellRange = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
   reset(): void { /* do nothing */ }
-  onwards(cells: Cells): CellRange { return Cursor.UndefinedCellRange }
+  onwards(bounds: Bounds): CellRange { return Cursor.UndefinedCellRange }
   lineFeed(): void { /* do nothing */ }
 }
 
@@ -62,10 +62,10 @@ export class GridCursor extends Cursor {
     this.newRowCursor = 0
   }
 
-  onwards(cells: Cells): CellRange {
+  onwards(bounds: Bounds): CellRange {
     let result: CellRange
-    if (typeof(cells) === "string") {
-      result = parseCellRange(cells, { x1: 0, y1: 0, x2: 0, y2: 0 })
+    if (typeof(bounds) === "string") {
+      result = parseCellRange(bounds, { x1: 0, y1: 0, x2: 0, y2: 0 })
       absolutizeCellRange(result,
         this.columnCursor + 1, this.rowCursor + 1,
         this.maxColumnCount || Infinity,
@@ -75,23 +75,23 @@ export class GridCursor extends Cursor {
       // Unpack parameters
       let w: number
       let h: number
-      let columnsOverlap: boolean
-      let rowsOverlap: boolean
-      if (typeof(cells) === "number") {
-        w = cells
+      let wOverlap: boolean
+      let hOverlap: boolean
+      if (typeof(bounds) === "number") {
+        w = bounds
         h = 1
-        columnsOverlap = rowsOverlap = false
+        wOverlap = hOverlap = false
       }
-      else if (cells) {
-        w = cells.widthInCells ?? 1
-        h = cells.heightInCells ?? 1
-        columnsOverlap = cells.horizontalOverlap ?? false
-        rowsOverlap = cells.verticalOverlap ?? false
+      else if (bounds) {
+        w = bounds.widthInCells ?? 1
+        h = bounds.heightInCells ?? 1
+        wOverlap = bounds.widthOverlap ?? false
+        hOverlap = bounds.heightOverlap ?? false
       }
       else { // placement === undefined
         w = 1
         h = 1
-        columnsOverlap = rowsOverlap = false
+        wOverlap = hOverlap = false
       }
       // Arrange
       const totalColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
@@ -102,7 +102,7 @@ export class GridCursor extends Cursor {
       if (w >= 0) {
         result.x1 = this.columnCursor + 1
         result.x2 = absolutizePosition(result.x1 + w - 1, 0, this.maxColumnCount || Infinity)
-        if (!columnsOverlap)
+        if (!wOverlap)
           this.columnCursor = result.x2
       }
       else {
@@ -114,7 +114,7 @@ export class GridCursor extends Cursor {
       if (h >= 0) {
         result.y1 = this.rowCursor + 1
         result.y2 = absolutizePosition(result.y1 + h - 1, 0, this.maxRowCount || Infinity)
-        if (!rowsOverlap && result.y2 > this.newRowCursor)
+        if (!hOverlap && result.y2 > this.newRowCursor)
           this.newRowCursor = result.y2
       }
       else {
