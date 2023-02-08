@@ -30,8 +30,8 @@ export interface TrackSize extends ElasticSize {
 }
 
 export type Cells = undefined | string | number | {
-  widthCl?: number             // 1 (grid layout only)
-  heightCl?: number            // 1 (grid layout only)
+  widthInCells?: number             // 1 (grid layout only)
+  heightInCells?: number            // 1 (grid layout only)
   horizontalOverlap?: boolean  // false
   verticalOverlap?: boolean    // false
 }
@@ -73,52 +73,52 @@ export class GridCursor extends Cursor {
     }
     else {
       // Unpack parameters
-      let columns: number
-      let rows: number
+      let w: number
+      let h: number
       let columnsOverlap: boolean
       let rowsOverlap: boolean
       if (typeof(cells) === "number") {
-        columns = cells
-        rows = 1
+        w = cells
+        h = 1
         columnsOverlap = rowsOverlap = false
       }
       else if (cells) {
-        columns = cells.widthCl ?? 1
-        rows = cells.heightCl ?? 1
+        w = cells.widthInCells ?? 1
+        h = cells.heightInCells ?? 1
         columnsOverlap = cells.horizontalOverlap ?? false
         rowsOverlap = cells.verticalOverlap ?? false
       }
       else { // placement === undefined
-        columns = 1
-        rows = 1
+        w = 1
+        h = 1
         columnsOverlap = rowsOverlap = false
       }
       // Arrange
       const totalColumnCount = this.maxColumnCount !== 0 ? this.maxColumnCount : this.actualColumnCount
       const totalRowCount = this.maxRowCount !== 0 ? this.maxRowCount : this.actualRowCount
       result = { x1: 0, y1: 0, x2: 0, y2: 0 }
-      if (columns === 0)
-        columns = totalColumnCount || 1
-      if (columns >= 0) {
+      if (w === 0)
+        w = totalColumnCount || 1
+      if (w >= 0) {
         result.x1 = this.columnCursor + 1
-        result.x2 = absolutizePosition(result.x1 + columns - 1, 0, this.maxColumnCount || Infinity)
+        result.x2 = absolutizePosition(result.x1 + w - 1, 0, this.maxColumnCount || Infinity)
         if (!columnsOverlap)
           this.columnCursor = result.x2
       }
       else {
-        result.x1 = Math.max(this.columnCursor + columns, 1)
+        result.x1 = Math.max(this.columnCursor + w, 1)
         result.x2 = this.columnCursor
       }
-      if (rows === 0)
-        rows = totalRowCount || 1
-      if (rows >= 0) {
+      if (h === 0)
+        h = totalRowCount || 1
+      if (h >= 0) {
         result.y1 = this.rowCursor + 1
-        result.y2 = absolutizePosition(result.y1 + rows - 1, 0, this.maxRowCount || Infinity)
+        result.y2 = absolutizePosition(result.y1 + h - 1, 0, this.maxRowCount || Infinity)
         if (!rowsOverlap && result.y2 > this.newRowCursor)
           this.newRowCursor = result.y2
       }
       else {
-        result.y1 = Math.max(this.rowCursor + rows, 1)
+        result.y1 = Math.max(this.rowCursor + h, 1)
         result.y2 = this.rowCursor
       }
     }
