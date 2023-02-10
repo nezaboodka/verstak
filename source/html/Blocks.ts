@@ -9,17 +9,14 @@ import { VBlock, LayoutKind, BlockBody, Align, GridCursor, CellRange } from "../
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
-// called basic block and grid block; and on two special
-// non-visual elements called line and group.
+// called ribbon and table; and on two special non-visual
+// elements called line and group.
 
-// Basic block is a layout structure, which children are
-// layed out naturally: rightwards-downwards.
+// Ribbon is a layout structure, which children are layed
+// out naturally: rightwards-downwards.
 
-// Text is either plain or markdown-formatted text
-// supporting syntax highlighting for code blocks.
-
-// Grid block is layout structure, which children are
-// layed out over grid cells.
+// Table is layout structure, which children are layed out
+// over table cells.
 
 // Line is a special non-visual element, which begins new
 // layout line (row, section) inside block or grid block.
@@ -27,35 +24,20 @@ import { HtmlDriver } from "./HtmlDriver"
 // Group is a special non-visual element for logical
 // grouping of basic blocks, grid blocks and other groups.
 
-// Basic Block
+// Note is either plain or markdown-formatted text
+// supporting syntax highlighting for code blocks.
 
-export function Block<M = unknown, R = void>(
+// Ribbon
+
+export function Ribbon<M = unknown, R = void>(
   body?: BlockBody<HTMLElement, M, R>,
   base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
   return VBlock.claim(VerstakTags.block, body, base)
 }
 
-// Text (either plain or html)
+// Table
 
-export function PlainText(content: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(VerstakTags.text, body, {
-    render(b) {
-      b.native.innerText = content
-    }},
-  )
-}
-
-export function HtmlText(content: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(VerstakTags.text, body, {
-    render(b) {
-      b.native.innerHTML = content
-    }},
-  )
-}
-
-// Grid Block
-
-export function Grid<M = unknown, R = void>(
+export function Table<M = unknown, R = void>(
   body?: BlockBody<HTMLElement, M, R>,
   base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
   return VBlock.claim(VerstakTags.grid, body, base)
@@ -70,6 +52,24 @@ export function line<T = void>(body: (block: void) => T): void {
 
 export function lineFeed(noCoalescing?: boolean, key?: string): VBlock<HTMLElement> {
   return VBlock.claim(VerstakTags.line, { key })
+}
+
+// Note (either plain or html)
+
+export function Note(content: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+  return VBlock.claim(VerstakTags.text, body, {
+    render(b) {
+      b.native.innerText = content
+    }},
+  )
+}
+
+export function HtmlNote(content: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+  return VBlock.claim(VerstakTags.text, body, {
+    render(b) {
+      b.native.innerHTML = content
+    }},
+  )
 }
 
 // Group
