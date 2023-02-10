@@ -32,7 +32,7 @@ import { HtmlDriver } from "./HtmlDriver"
 export function Ribbon<M = unknown, R = void>(
   body?: BlockBody<HTMLElement, M, R>,
   base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(VerstakTags.block, body, base)
+  return VBlock.claim(VerstakTags.ribbon, body, base)
 }
 
 // Table
@@ -217,7 +217,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 const VerstakTags = {
   // display: flex, flex-direction: column
-  block: new VerstakDriver<HTMLElement>("v-ribbon", LayoutKind.Ribbon),
+  ribbon: new VerstakDriver<HTMLElement>("v-ribbon", LayoutKind.Ribbon),
 
   // display: block
   note: new VerstakDriver<HTMLElement>("v-note", LayoutKind.Note),
@@ -230,7 +230,7 @@ const VerstakTags = {
   line: new VerstakDriver<HTMLElement>("v-line", LayoutKind.Line),
 
   // display: contents
-  group: new VerstakDriver<HTMLElement>("v-group", LayoutKind.Fragment),
+  group: new VerstakDriver<HTMLElement>("v-group", LayoutKind.Group),
 }
 
 const AlignToCss = ["stretch", "start", "center", "end"]

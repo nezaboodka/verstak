@@ -155,11 +155,11 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 // LayoutKind
 
 export enum LayoutKind {
-  Ribbon = 0,    // 000
-  Table = 1,     // 001
-  Line = 2,      // 010
-  Fragment = 3,  // 011
-  Note = 4,      // 100
+  Ribbon = 0,  // 000
+  Table = 1,   // 001
+  Line = 2,    // 010
+  Group = 3,   // 011
+  Note = 4,    // 100
 }
 
 // AbstractDriver
@@ -167,7 +167,7 @@ export enum LayoutKind {
 const createDefaultCursor = (): Cursor => new Cursor()
 
 export class AbstractDriver<T> {
-  public static readonly fragment = new AbstractDriver<any>("fragment", LayoutKind.Fragment)
+  public static readonly fragment = new AbstractDriver<any>("fragment", LayoutKind.Group)
 
   readonly name: string
   readonly layout: LayoutKind
@@ -878,7 +878,7 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const NOP: any = (...args: any[]): void => { /* nop */ }
 
-const gSysDriver = new StaticDriver<null>(null, "SYSTEM", LayoutKind.Fragment)
+const gSysDriver = new StaticDriver<null>(null, "SYSTEM", LayoutKind.Group)
 const gSysRoot = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>(
   gSysDriver.name, gSysDriver, { level: 0 } as VBlockImpl, { reaction: true, render: NOP })) // fake owner/host (overwritten below)
 gSysRoot.instance.item = gSysRoot
