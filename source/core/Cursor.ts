@@ -8,14 +8,15 @@
 import { CellRange, parseCellRange } from "./CellRange"
 
 export enum Align {
-  Stretch = 0b00000,
-  Left    = 0b00001,
-  Center  = 0b00010,
-  Right   = 0b00011,
-  Top     = 0b00100,
-  CenterV = 0b01000,
-  Bottom  = 0b01100,
-  Default = 0b10000,
+  Stretch        = 0b00000,
+  Left           = 0b00001,
+  CenterOfWidth  = 0b00010,
+  Right          = 0b00011,
+  Top            = 0b00100,
+  CenterOfHeight = 0b01000,
+  Bottom         = 0b01100,
+  Default        = 0b10000,
+  Center         = CenterOfWidth + CenterOfHeight,
 }
 
 export interface ElasticSize {
