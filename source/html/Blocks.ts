@@ -127,7 +127,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
         css.flexGrow = ""
     }
     else if (block.host.driver.isLine) {
-      block.driver.applyFrameAlignment(block, Align.Stretch)
+      block.driver.applyBlockAlignment(block, Align.Stretch)
       block.host.driver.applyHeightGrowth(block.host, heightGrowth)
     }
   }
@@ -154,11 +154,11 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
       css.justifyContent = css.alignContent = css.textAlign = ""
   }
 
-  applyFrameAlignment(block: VBlock<T>, frameAlign: Align): void {
+  applyBlockAlignment(block: VBlock<T>, blockAlign: Align): void {
     const css = block.native.style
-    if ((frameAlign & Align.Default) === 0) { // if not auto mode
-      const v = AlignToCss[(frameAlign >> 2) & 0b11]
-      const h = AlignToCss[frameAlign & 0b11]
+    if ((blockAlign & Align.Default) === 0) { // if not auto mode
+      const v = AlignToCss[(blockAlign >> 2) & 0b11]
+      const h = AlignToCss[blockAlign & 0b11]
       css.alignSelf = v
       css.justifySelf = h
     }

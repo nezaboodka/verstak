@@ -53,7 +53,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract minHeight: string
   abstract maxHeight: string
   abstract contentAlignment: Align
-  abstract frameAlignment: Align
+  abstract blockAlignment: Align
   abstract contentWrapping: boolean
   abstract overlayVisible: boolean | undefined
   abstract childrenShuffling: boolean
@@ -237,7 +237,7 @@ export class AbstractDriver<T> {
     // do nothing
   }
 
-  applyFrameAlignment(block: VBlock<T, any, any>, frameAlignment: Align): void {
+  applyBlockAlignment(block: VBlock<T, any, any>, blockAlignment: Align): void {
     // do nothing
   }
 
@@ -359,7 +359,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   appliedMinHeight: string
   appliedMaxHeight: string
   appliedContentAlignment: Align
-  appliedFrameAlignment: Align
+  appliedBlockAlignment: Align
   appliedContentWrapping: boolean
   appliedOverlayVisible: boolean | undefined
   childrenShuffling: boolean
@@ -394,7 +394,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.appliedMinHeight = ""
     this.appliedMaxHeight = ""
     this.appliedContentAlignment = Align.Default
-    this.appliedFrameAlignment = Align.Default
+    this.appliedBlockAlignment = Align.Default
     this.appliedContentWrapping = false
     this.appliedOverlayVisible = undefined
     this.childrenShuffling = false
@@ -490,11 +490,11 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
       this.appliedContentAlignment = value
     }
   }
-  get frameAlignment(): Align { return this.appliedFrameAlignment }
-  set frameAlignment(value: Align) {
-    if (value !== this.appliedFrameAlignment) {
-      this.driver.applyFrameAlignment(this, value)
-      this.appliedFrameAlignment = value
+  get blockAlignment(): Align { return this.appliedBlockAlignment }
+  set blockAlignment(value: Align) {
+    if (value !== this.appliedBlockAlignment) {
+      this.driver.applyBlockAlignment(this, value)
+      this.appliedBlockAlignment = value
     }
   }
   get contentWrapping(): boolean { return this.appliedContentWrapping }
