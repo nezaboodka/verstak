@@ -172,7 +172,7 @@ export class AbstractDriver<T> {
   readonly name: string
   readonly layout: LayoutKind
   readonly createCursor: () => Cursor
-  get isSequential(): boolean { return (this.layout & 1) === 0 } // Ribbon, Note, Line
+  get isSequential(): boolean { return (this.layout & 1) === 0 } // Ribbon, Line, Note
   get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Table, Group
   get isRibbon(): boolean { return this.layout === LayoutKind.Ribbon }
   get isTable(): boolean { return this.layout === LayoutKind.Table }
