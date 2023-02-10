@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, LayoutKind, BlockBody, Align, GridCursor, CellRange } from "../core/api"
+import { VBlock, LayoutKind, BlockBody, Align, TableCursor, CellRange } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -19,10 +19,10 @@ import { HtmlDriver } from "./HtmlDriver"
 // over table cells.
 
 // Line is a special non-visual element, which begins new
-// layout line (row, section) inside block or grid block.
+// layout line (row, section) inside ribbon or table.
 
 // Group is a special non-visual element for logical
-// grouping of basic blocks, grid blocks and other groups.
+// grouping of ribbons, tables and other groups.
 
 // Note is either plain or markdown-formatted text
 // supporting syntax highlighting for code blocks.
@@ -40,7 +40,7 @@ export function Ribbon<M = unknown, R = void>(
 export function Table<M = unknown, R = void>(
   body?: BlockBody<HTMLElement, M, R>,
   base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(VerstakTags.grid, body, base)
+  return VBlock.claim(VerstakTags.table, body, base)
 }
 
 // Line
@@ -57,7 +57,7 @@ export function lineFeed(noCoalescing?: boolean, key?: string): VBlock<HTMLEleme
 // Note (either plain or html)
 
 export function Note(content: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(VerstakTags.text, body, {
+  return VBlock.claim(VerstakTags.note, body, {
     render(b) {
       b.native.innerText = content
     }},
@@ -65,7 +65,7 @@ export function Note(content: string, body?: BlockBody<HTMLElement, void, void>)
 }
 
 export function HtmlNote(content: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(VerstakTags.text, body, {
+  return VBlock.claim(VerstakTags.note, body, {
     render(b) {
       b.native.innerHTML = content
     }},
@@ -217,13 +217,13 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 const VerstakTags = {
   // display: flex, flex-direction: column
-  block: new VerstakDriver<HTMLElement>("v-block", LayoutKind.Block),
+  block: new VerstakDriver<HTMLElement>("v-ribbon", LayoutKind.Ribbon),
 
   // display: block
-  text: new VerstakDriver<HTMLElement>("v-text", LayoutKind.Text),
+  note: new VerstakDriver<HTMLElement>("v-note", LayoutKind.Note),
 
   // display: grid
-  grid: new VerstakDriver<HTMLElement>("v-grid", LayoutKind.Grid, () => new GridCursor()),
+  table: new VerstakDriver<HTMLElement>("v-table", LayoutKind.Table, () => new TableCursor()),
 
   // display: contents
   // display: flex (row)

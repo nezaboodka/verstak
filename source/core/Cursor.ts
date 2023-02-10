@@ -19,7 +19,7 @@ export enum Align {
 }
 
 export interface ElasticSize {
-  cells?: number            // 1 (grid layout only)
+  cells?: number            // 1 (table layout only)
   min?: string              // min-content
   max?: string              // min-content
   growth?: number           // 0
@@ -30,8 +30,8 @@ export interface TrackSize extends ElasticSize {
 }
 
 export type Bounds = undefined | string | number | {
-  widthInCells?: number     // 1 (grid layout only)
-  heightInCells?: number    // 1 (grid layout only)
+  widthInCells?: number     // 1 (table layout only)
+  heightInCells?: number    // 1 (table layout only)
   widthOverlap?: boolean    // false
   heightOverlap?: boolean   // false
 }
@@ -43,7 +43,7 @@ export class Cursor {
   lineFeed(): void { /* do nothing */ }
 }
 
-export class GridCursor extends Cursor {
+export class TableCursor extends Cursor {
   private maxColumnCount: number = 0
   private maxRowCount: number = 0
   private actualColumnCount: number = 0

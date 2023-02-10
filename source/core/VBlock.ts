@@ -155,11 +155,11 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 // LayoutKind
 
 export enum LayoutKind {
-  Block = 0,     // 000
-  Grid = 1,      // 001
+  Ribbon = 0,    // 000
+  Table = 1,     // 001
   Line = 2,      // 010
   Fragment = 3,  // 011
-  Text = 4,      // 100
+  Note = 4,      // 100
 }
 
 // AbstractDriver
@@ -172,10 +172,10 @@ export class AbstractDriver<T> {
   readonly name: string
   readonly layout: LayoutKind
   readonly createCursor: () => Cursor
-  get isSequential(): boolean { return (this.layout & 1) === 0 } // Block, Text, Line
-  get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Grid, Group
-  get isBlock(): boolean { return this.layout === LayoutKind.Block }
-  get isGrid(): boolean { return this.layout === LayoutKind.Grid }
+  get isSequential(): boolean { return (this.layout & 1) === 0 } // Ribbon, Note, Line
+  get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Table, Group
+  get isRibbon(): boolean { return this.layout === LayoutKind.Ribbon }
+  get isTable(): boolean { return this.layout === LayoutKind.Table }
   get isLine(): boolean { return this.layout === LayoutKind.Line }
 
   constructor(name: string, layout: LayoutKind, createCursor?: () => Cursor) {
@@ -578,7 +578,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         triggerFinalization(item, true, true)
       if (!error) {
         // Lay out and render actual blocks
-        const ownerIsBlock = owner.driver.isBlock
+        const ownerIsBlock = owner.driver.isRibbon
         const sequential = children.strict
         const cursor = owner.cursor
         let p1: Array<Item<VBlockImpl>> | undefined = undefined
