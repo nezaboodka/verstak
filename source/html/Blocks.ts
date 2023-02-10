@@ -21,11 +21,11 @@ import { HtmlDriver } from "./HtmlDriver"
 // Line is a special non-visual element, which begins new
 // layout line (row, section) inside ribbon or table.
 
-// Group is a special non-visual element for logical
-// grouping of ribbons, tables and other groups.
-
 // Note is either plain or markdown-formatted text
 // supporting syntax highlighting for code blocks.
+
+// Group is a special non-visual element for logical
+// grouping of ribbons, tables and other groups.
 
 // Ribbon
 
@@ -219,15 +219,15 @@ const VerstakTags = {
   // display: flex, flex-direction: column
   ribbon: new VerstakDriver<HTMLElement>("v-ribbon", LayoutKind.Ribbon),
 
-  // display: block
-  note: new VerstakDriver<HTMLElement>("v-note", LayoutKind.Note),
-
   // display: grid
   table: new VerstakDriver<HTMLElement>("v-table", LayoutKind.Table, () => new TableCursor()),
 
   // display: contents
   // display: flex (row)
   line: new VerstakDriver<HTMLElement>("v-line", LayoutKind.Line),
+
+  // display: block
+  note: new VerstakDriver<HTMLElement>("v-note", LayoutKind.Note),
 
   // display: contents
   group: new VerstakDriver<HTMLElement>("v-group", LayoutKind.Group),
