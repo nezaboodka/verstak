@@ -578,7 +578,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         triggerFinalization(item, true, true)
       if (!error) {
         // Lay out and render actual blocks
-        const ownerIsBlock = owner.driver.isChain
+        const ownerIsChain = owner.driver.isChain
         const sequential = children.isStrict
         const cursor = owner.cursor
         let p1: Array<Item<VBlockImpl>> | undefined = undefined
@@ -600,7 +600,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (ownerIsBlock && driver.isLine)
+          if (ownerIsChain && driver.isLine)
             partHost = block
         }
         // Render incremental children (if any)
