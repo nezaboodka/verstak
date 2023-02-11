@@ -84,6 +84,14 @@ export function Group<M = unknown, R = void>(
 
 export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
+  protected createElement(block: VBlock<T>): T {
+    const element = super.createElement(block)
+    const layout = LayoutKindNames[this.layout]
+    if (layout)
+      element.setAttribute("layout", layout)
+    return element
+  }
+
   applyCellRange(block: VBlock<T>, cellRange: CellRange | undefined): void {
     const css = block.native.style
     if (cellRange) {
@@ -217,21 +225,22 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 const VerstakTags = {
   // display: flex, flex-direction: column
-  chain: new VerstakDriver<HTMLElement>("v-chain", LayoutKind.Chain),
+  chain: new VerstakDriver<HTMLElement>("v-block", LayoutKind.Chain),
 
   // display: grid
-  table: new VerstakDriver<HTMLElement>("v-table", LayoutKind.Table, () => new TableCursor()),
+  table: new VerstakDriver<HTMLElement>("v-block", LayoutKind.Table, () => new TableCursor()),
 
   // display: contents
   // display: flex (row)
   line: new VerstakDriver<HTMLElement>("v-line", LayoutKind.Line),
 
   // display: block
-  note: new VerstakDriver<HTMLElement>("v-note", LayoutKind.Note),
+  note: new VerstakDriver<HTMLElement>("v-block", LayoutKind.Note),
 
   // display: contents
-  group: new VerstakDriver<HTMLElement>("v-group", LayoutKind.Group),
+  group: new VerstakDriver<HTMLElement>("v-block", LayoutKind.Group),
 }
 
 const AlignToCss = ["stretch", "start", "center", "end"]
 const TextAlignCss = ["justify", "left", "center", "right"]
+const LayoutKindNames = ["chain", "table", "" /* line */, "group", "note"]

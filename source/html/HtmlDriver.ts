@@ -10,11 +10,11 @@ import { VBlock, AbstractDriver, Priority } from "../core/api"
 
 export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T> {
 
-  initialize(block: VBlock<T>, element: T): void {
+  initialize(block: VBlock<T>, element: T): T {
     element = this.createElement(block)
     if (Rx.isLogging && !block.driver.isLine)
       element.setAttribute("key", block.key)
-    super.initialize(block, element)
+    return super.initialize(block, element)
   }
 
   finalize(block: VBlock<T>, isLeader: boolean): boolean {

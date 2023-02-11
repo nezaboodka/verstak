@@ -184,10 +184,11 @@ export class AbstractDriver<T> {
     this.createCursor = createCursor ?? createDefaultCursor
   }
 
-  initialize(block: VBlock<T>, native: T): void {
+  initialize(block: VBlock<T>, native: T): T {
     const b = block as VBlockImpl<T>
     b.native = native
     invokeInitializeChain(b, b.body)
+    return native
   }
 
   deploy(block: VBlock<T>): void {
@@ -293,8 +294,8 @@ export class StaticDriver<T> extends AbstractDriver<T> {
     this.element = element
   }
 
-  initialize(block: VBlock<T>, element: T): void {
-    super.initialize(block, this.element)
+  initialize(block: VBlock<T>, element: T): T {
+    return super.initialize(block, this.element)
   }
 }
 
