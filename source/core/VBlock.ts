@@ -402,7 +402,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     // System-managed properties
     this.level = owner.level + 1
     this.host = owner // owner is default host, but can be changed
-    this.children = new Collection<VBlockImpl>(driver.isSequential, getBlockKey)
+    this.children = new Collection<VBlockImpl>(getBlockKey, driver.isSequential)
     this.numerator = 0
     this.item = undefined
     this.stamp = 0
@@ -579,7 +579,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
       if (!error) {
         // Lay out and render actual blocks
         const ownerIsBlock = owner.driver.isChain
-        const sequential = children.strict
+        const sequential = children.isStrict
         const cursor = owner.cursor
         let p1: Array<Item<VBlockImpl>> | undefined = undefined
         let p2: Array<Item<VBlockImpl>> | undefined = undefined

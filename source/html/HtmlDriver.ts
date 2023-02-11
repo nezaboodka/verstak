@@ -31,7 +31,7 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
   deploy(block: VBlock<T>): void {
     const e = block.native as T | undefined // hack
     if (e) {
-      const sequential = block.host.children.strict
+      const sequential = block.host.children.isStrict
       const nativeParent = BaseHtmlDriver.findNearestParentHtmlBlock(block).native as Element | undefined // hack
       if (nativeParent) {
         if (sequential && !block.driver.isLine) {
