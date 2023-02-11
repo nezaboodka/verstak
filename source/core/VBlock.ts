@@ -105,7 +105,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       body = base ?? {}
     let key = body.key
     // Check for coalescing separators or lookup for existing block
-    if (driver.isLine) {
+    if (driver.isSection) {
       const last = children.lastClaimedItem()
       if (last?.instance?.driver === driver)
         ex = last
@@ -155,11 +155,11 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 // LayoutKind
 
 export enum LayoutKind {
-  Chain = 0,  // 000
-  Table = 1,  // 001
-  Line = 2,   // 010
-  Group = 3,  // 011
-  Note = 4,   // 100
+  Chain = 0,   // 000
+  Table = 1,   // 001
+  Section = 2, // 010
+  Group = 3,   // 011
+  Note = 4,    // 100
 }
 
 // AbstractDriver
@@ -176,7 +176,7 @@ export class AbstractDriver<T> {
   get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Table, Group
   get isChain(): boolean { return this.layout === LayoutKind.Chain }
   get isTable(): boolean { return this.layout === LayoutKind.Table }
-  get isLine(): boolean { return this.layout === LayoutKind.Line }
+  get isSection(): boolean { return this.layout === LayoutKind.Section }
 
   constructor(name: string, layout: LayoutKind, createCursor?: () => Cursor) {
     this.name = name
@@ -415,7 +415,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
 
   get isMoved(): boolean {
     let owner = this.host
-    if (owner.driver.isLine)
+    if (owner.driver.isSection)
       owner = owner.host
     return owner.children.isMoved(this.item!)
   }
@@ -592,7 +592,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             break
           const block = item.instance
           const driver = block.driver
-          const host = driver.isLine ? owner : partHost
+          const host = driver.isSection ? owner : partHost
           const p = block.renderingPriority ?? Priority.Realtime
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           if (p === Priority.Realtime)
@@ -601,7 +601,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (ownerIsChain && driver.isLine)
+          if (ownerIsChain && driver.isSection)
             partHost = block
         }
         // Render incremental children (if any)
@@ -725,7 +725,7 @@ function renderNow(item: Item<VBlockImpl>): void {
         block.assignedStyle = false // reset
         block.children.beginMerge()
         result = block.driver.render(block)
-        if (block.driver.isLine)
+        if (block.driver.isSection)
           block.host.cursor.lineFeed()
         else if (block.assignedBounds === undefined)
           block.bounds = undefined // assign cells automatically
@@ -748,7 +748,7 @@ function renderNow(item: Item<VBlockImpl>): void {
 function triggerFinalization(item: Item<VBlockImpl>, isLeader: boolean, individual: boolean): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    if (individual && block.key !== block.body.key && !block.driver.isLine)
+    if (individual && block.key !== block.body.key && !block.driver.isSection)
       console.log(`WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: ${block.key}`)
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection

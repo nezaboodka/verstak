@@ -12,7 +12,7 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
 
   initialize(block: VBlock<T>, element: T): T {
     element = this.createElement(block)
-    if (Rx.isLogging && !block.driver.isLine)
+    if (Rx.isLogging && !block.driver.isSection)
       element.setAttribute("key", block.key)
     return super.initialize(block, element)
   }
@@ -34,9 +34,9 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
       const sequential = block.host.children.isStrict
       const nativeParent = BaseHtmlDriver.findNearestParentHtmlBlock(block).native as Element | undefined // hack
       if (nativeParent) {
-        if (sequential && !block.driver.isLine) {
+        if (sequential && !block.driver.isSection) {
           const after = BaseHtmlDriver.findPrevSiblingHtmlBlock(block.item!)
-          if (after === undefined || after.instance.driver.isLine) {
+          if (after === undefined || after.instance.driver.isSection) {
             if (nativeParent !== e.parentNode || !e.previousSibling)
               nativeParent.prepend(e)
           }

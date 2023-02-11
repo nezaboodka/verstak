@@ -51,7 +51,7 @@ export function line<T = void>(body: (block: void) => T): void {
 }
 
 export function lineFeed(noCoalescing?: boolean, key?: string): VBlock<HTMLElement> {
-  return VBlock.claim(VerstakTags.line, { key })
+  return VBlock.claim(VerstakTags.section, { key })
 }
 
 // Note (either plain or html)
@@ -127,14 +127,14 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   applyHeightGrowth(block: VBlock<T>, heightGrowth: number): void {
-    if (block.driver.isLine) {
+    if (block.driver.isSection) {
       const css = block.native.style
       if (heightGrowth > 0)
         css.flexGrow = `${heightGrowth}`
       else
         css.flexGrow = ""
     }
-    else if (block.host.driver.isLine) {
+    else if (block.host.driver.isSection) {
       block.driver.applyBlockAlignment(block, Align.Stretch)
       block.host.driver.applyHeightGrowth(block.host, heightGrowth)
     }
@@ -215,7 +215,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
-    if (block.driver.layout < LayoutKind.Line)
+    if (block.driver.layout < LayoutKind.Section)
       lineFeed()
     return super.render(block)
   }
@@ -232,7 +232,7 @@ const VerstakTags = {
 
   // display: contents
   // display: flex (row)
-  line: new VerstakDriver<HTMLElement>("v-line", LayoutKind.Line),
+  section: new VerstakDriver<HTMLElement>("v-section", LayoutKind.Section),
 
   // display: block
   note: new VerstakDriver<HTMLElement>("v-block", LayoutKind.Note),
