@@ -224,14 +224,14 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 // V
 
 const V = {
-  blockTag: "блок-х",
-  fromNewLine: "с-новой-строки",
-  layoutTypes: ["цепочка", "таблица", "" /* с-новой-строки */, "группа", "заметка"],
-  attribute: "тип",
-  // blockTag: "block-x",
-  // fromNewLine: "from-new-line",
-  // layoutTypes: ["chain", "table", "" /* from-new-line */, "group", "note"],
-  // attribute: "type",
+  // blockTag: "блок",
+  // fromNewLine: "с-новой-строки",
+  // layoutTypes: ["цепочка", "таблица", "" /* с-новой-строки */, "группа", "заметка"],
+  // attribute: "тип",
+  blockTag: "block",
+  fromNewLine: "from-new-line",
+  layoutTypes: ["chain", "table", "" /* from-new-line */, "group", "note"],
+  attribute: "type",
 }
 
 const VerstakTags = {
