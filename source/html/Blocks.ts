@@ -43,14 +43,14 @@ export function Table<M = unknown, R = void>(
   return VBlock.claim(VerstakTags.table, body, base)
 }
 
-// Lane
+// Line
 
-export function lane<T = void>(body: (block: void) => T): void {
-  newLane()
+export function fromNewLine<T = void>(body: (block: void) => T): void {
+  lineFeed()
   body()
 }
 
-export function newLane(noCoalescing?: boolean, key?: string): VBlock<HTMLElement> {
+export function lineFeed(noCoalescing?: boolean, key?: string): VBlock<HTMLElement> {
   return VBlock.claim(VerstakTags.lane, { key })
 }
 
@@ -216,7 +216,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
     if (block.driver.layout < LayoutKind.Lane)
-      newLane()
+      lineFeed()
     return super.render(block)
   }
 }
@@ -225,11 +225,11 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 const V = {
   blockTag: "блок-х",
-  laneTag: "полоса-х",
+  laneTag: "с-новой-строки",
   layoutTypes: ["цепочка", "таблица", "" /* полоса */, "группа", "заметка"],
   attribute: "тип",
   // blockTag: "block-x",
-  // laneTag: "lane-x",
+  // laneTag: "from-new-line",
   // layoutTypes: ["chain", "table", "" /* lane */, "group", "note"],
   // attribute: "type",
 }
