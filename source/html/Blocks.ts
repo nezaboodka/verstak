@@ -10,7 +10,7 @@ import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
 // called chain and table; and on two special non-visual
-// elements called line and group.
+// elements called lane and group.
 
 // Chain is a layout structure, which children are layed
 // out naturally: rightwards-downwards.
@@ -18,8 +18,8 @@ import { HtmlDriver } from "./HtmlDriver"
 // Table is layout structure, which children are layed out
 // over table cells.
 
-// Line is a special non-visual element, which begins new
-// layout line (row, section) inside chain or table.
+// Lane is a special non-visual element, which begins new
+// layout lane (row, section) inside chain or table.
 
 // Note is either plain or markdown-formatted text
 // supporting syntax highlighting for code blocks.
@@ -43,15 +43,15 @@ export function Table<M = unknown, R = void>(
   return VBlock.claim(VerstakTags.table, body, base)
 }
 
-// Line
+// Lane
 
-export function line<T = void>(body: (block: void) => T): void {
-  lineFeed()
+export function lane<T = void>(body: (block: void) => T): void {
+  newLane()
   body()
 }
 
-export function lineFeed(noCoalescing?: boolean, key?: string): VBlock<HTMLElement> {
-  return VBlock.claim(VerstakTags.section, { key })
+export function newLane(noCoalescing?: boolean, key?: string): VBlock<HTMLElement> {
+  return VBlock.claim(VerstakTags.lane, { key })
 }
 
 // Note (either plain or html)
@@ -86,9 +86,9 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   protected createElement(block: VBlock<T>): T {
     const element = super.createElement(block)
-    const layout = LayoutKindNames[this.layout]
-    if (layout)
-      element.setAttribute("layout", layout)
+    const t = V.layoutTypes[this.layout]
+    if (t)
+      element.setAttribute(V.attribute, t)
     return element
   }
 
@@ -127,14 +127,14 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   applyHeightGrowth(block: VBlock<T>, heightGrowth: number): void {
-    if (block.driver.isSection) {
+    if (block.driver.isLane) {
       const css = block.native.style
       if (heightGrowth > 0)
         css.flexGrow = `${heightGrowth}`
       else
         css.flexGrow = ""
     }
-    else if (block.host.driver.isSection) {
+    else if (block.host.driver.isLane) {
       block.driver.applyBlockAlignment(block, Align.Stretch)
       block.host.driver.applyHeightGrowth(block.host, heightGrowth)
     }
@@ -215,32 +215,42 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
-    if (block.driver.layout < LayoutKind.Section)
-      lineFeed()
+    if (block.driver.layout < LayoutKind.Lane)
+      newLane()
     return super.render(block)
   }
 }
 
-// VerstakTags
+// V
+
+const V = {
+  blockTag: "блок-х",
+  laneTag: "полоса-х",
+  layoutTypes: ["цепочка", "таблица", "" /* полоса */, "группа", "заметка"],
+  attribute: "тип",
+  // blockTag: "block-x",
+  // laneTag: "lane-x",
+  // layoutTypes: ["chain", "table", "" /* lane */, "group", "note"],
+  // attribute: "type",
+}
 
 const VerstakTags = {
   // display: flex, flex-direction: column
-  chain: new VerstakDriver<HTMLElement>("v-block", LayoutKind.Chain),
+  chain: new VerstakDriver<HTMLElement>(V.blockTag, LayoutKind.Chain),
 
   // display: grid
-  table: new VerstakDriver<HTMLElement>("v-block", LayoutKind.Table, () => new TableCursor()),
+  table: new VerstakDriver<HTMLElement>(V.blockTag, LayoutKind.Table, () => new TableCursor()),
 
   // display: contents
   // display: flex (row)
-  section: new VerstakDriver<HTMLElement>("v-section", LayoutKind.Section),
+  lane: new VerstakDriver<HTMLElement>(V.laneTag, LayoutKind.Lane),
 
   // display: block
-  note: new VerstakDriver<HTMLElement>("v-block", LayoutKind.Note),
+  note: new VerstakDriver<HTMLElement>(V.blockTag, LayoutKind.Note),
 
   // display: contents
-  group: new VerstakDriver<HTMLElement>("v-block", LayoutKind.Group),
+  group: new VerstakDriver<HTMLElement>(V.blockTag, LayoutKind.Group),
 }
 
 const AlignToCss = ["stretch", "start", "center", "end"]
 const TextAlignCss = ["justify", "left", "center", "right"]
-const LayoutKindNames = ["chain", "table", "" /* line */, "group", "note"]
