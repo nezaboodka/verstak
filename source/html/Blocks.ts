@@ -45,13 +45,9 @@ export function Table<M = unknown, R = void>(
 
 // Line
 
-export function fromNewLine<T = void>(body: (block: void) => T): void {
-  lineFeed()
-  body()
-}
-
-export function lineFeed(noCoalescing?: boolean, key?: string): VBlock<HTMLElement> {
-  return VBlock.claim(VerstakTags.fromNewLine, { key })
+export function fromNewLine<T = void>(body?: (block: void) => T, key?: string): void {
+  VBlock.claim(VerstakTags.fromNewLine, { key })
+  body?.()
 }
 
 // Note (either plain or html)
@@ -216,7 +212,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
     if (block.driver.layout < LayoutKind.FromNewLine)
-      lineFeed()
+      fromNewLine()
     return super.render(block)
   }
 }
