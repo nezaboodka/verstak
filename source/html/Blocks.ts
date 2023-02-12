@@ -10,7 +10,7 @@ import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
 // called chain and table; and on two special non-visual
-// elements called lane and group.
+// elements called new-line and group.
 
 // Chain is a layout structure, which children are layed
 // out naturally: rightwards-downwards.
@@ -18,8 +18,8 @@ import { HtmlDriver } from "./HtmlDriver"
 // Table is layout structure, which children are layed out
 // over table cells.
 
-// Lane is a special non-visual element, which begins new
-// layout lane (row, section) inside chain or table.
+// New-Line is a special non-visual element, which begins
+// new layout line (row, lane, section) inside chain or table.
 
 // Note is either plain or markdown-formatted text
 // supporting syntax highlighting for code blocks.
@@ -51,7 +51,7 @@ export function fromNewLine<T = void>(body: (block: void) => T): void {
 }
 
 export function lineFeed(noCoalescing?: boolean, key?: string): VBlock<HTMLElement> {
-  return VBlock.claim(VerstakTags.lane, { key })
+  return VBlock.claim(VerstakTags.fromNewLine, { key })
 }
 
 // Note (either plain or html)
@@ -127,14 +127,14 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   applyHeightGrowth(block: VBlock<T>, heightGrowth: number): void {
-    if (block.driver.isLane) {
+    if (block.driver.isFromNewLine) {
       const css = block.native.style
       if (heightGrowth > 0)
         css.flexGrow = `${heightGrowth}`
       else
         css.flexGrow = ""
     }
-    else if (block.host.driver.isLane) {
+    else if (block.host.driver.isFromNewLine) {
       block.driver.applyBlockAlignment(block, Align.Stretch)
       block.host.driver.applyHeightGrowth(block.host, heightGrowth)
     }
@@ -215,7 +215,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
-    if (block.driver.layout < LayoutKind.Lane)
+    if (block.driver.layout < LayoutKind.FromNewLine)
       lineFeed()
     return super.render(block)
   }
@@ -225,12 +225,12 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 const V = {
   blockTag: "блок-х",
-  laneTag: "с-новой-строки",
-  layoutTypes: ["цепочка", "таблица", "" /* полоса */, "группа", "заметка"],
+  fromNewLine: "с-новой-строки",
+  layoutTypes: ["цепочка", "таблица", "" /* с-новой-строки */, "группа", "заметка"],
   attribute: "тип",
   // blockTag: "block-x",
-  // laneTag: "from-new-line",
-  // layoutTypes: ["chain", "table", "" /* lane */, "group", "note"],
+  // fromNewLine: "from-new-line",
+  // layoutTypes: ["chain", "table", "" /* from-new-line */, "group", "note"],
   // attribute: "type",
 }
 
@@ -243,7 +243,7 @@ const VerstakTags = {
 
   // display: contents
   // display: flex (row)
-  lane: new VerstakDriver<HTMLElement>(V.laneTag, LayoutKind.Lane),
+  fromNewLine: new VerstakDriver<HTMLElement>(V.fromNewLine, LayoutKind.FromNewLine),
 
   // display: block
   note: new VerstakDriver<HTMLElement>(V.blockTag, LayoutKind.Note),
