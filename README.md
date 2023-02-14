@@ -6,7 +6,7 @@
 # **Verstak** - Experimental Front-End Library
 
 Verstak is an experimental JavaScript library that provides
-table-based and chain-based layouts with
+table-based and band-based layouts with
 [transactional reactive](https://blog.nezaboodka.com/post/2019/593-modern-database-should-natively-support-transactionally-reactive-programming)
 facilities for building front-end applications.
 

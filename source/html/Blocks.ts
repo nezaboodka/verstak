@@ -9,30 +9,30 @@ import { VBlock, LayoutKind, BlockBody, Align, TableCursor, CellRange } from "..
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
-// called chain and table; and on two special non-visual
+// called band and table; and on two special non-visual
 // elements called new-line and group.
 
-// Chain is a layout structure, which children are layed
+// Band is a layout structure, which children are layed
 // out naturally: rightwards-downwards.
 
 // Table is layout structure, which children are layed out
 // over table cells.
 
 // New-Line is a special non-visual element, which begins
-// new layout line (row, lane, section) inside chain or table.
+// new layout line (row, lane, section) inside band or table.
 
 // Note is either plain or markdown-formatted text
 // supporting syntax highlighting for code blocks.
 
 // Group is a special non-visual element for logical
-// grouping of chains, tables and other groups.
+// grouping of bands, tables and other groups.
 
-// Chain
+// Band
 
-export function Chain<M = unknown, R = void>(
+export function Band<M = unknown, R = void>(
   body?: BlockBody<HTMLElement, M, R>,
   base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(VerstakTags.chain, body, base)
+  return VBlock.claim(VerstakTags.band, body, base)
 }
 
 // Table
@@ -222,17 +222,17 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 const V = {
   // blockTag: "блок",
   // fromNewLine: "с-новой-строки",
-  // layoutTypes: ["цепочка", "таблица", "" /* с-новой-строки */, "группа", "заметка"],
+  // layoutTypes: ["лента", "таблица", "" /* с-новой-строки */, "группа", "заметка"],
   // attribute: "тип",
   blockTag: "block",
   fromNewLine: "from-new-line",
-  layoutTypes: ["chain", "table", "" /* from-new-line */, "group", "note"],
+  layoutTypes: ["band", "table", "" /* from-new-line */, "group", "note"],
   attribute: "type",
 }
 
 const VerstakTags = {
   // display: flex, flex-direction: column
-  chain: new VerstakDriver<HTMLElement>(V.blockTag, LayoutKind.Chain),
+  band: new VerstakDriver<HTMLElement>(V.blockTag, LayoutKind.Band),
 
   // display: grid
   table: new VerstakDriver<HTMLElement>(V.blockTag, LayoutKind.Table, () => new TableCursor()),

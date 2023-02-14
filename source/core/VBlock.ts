@@ -155,7 +155,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 // LayoutKind
 
 export enum LayoutKind {
-  Chain = 0,        // 000
+  Band = 0,         // 000
   Table = 1,        // 001
   FromNewLine = 2,  // 010
   Group = 3,        // 011
@@ -172,9 +172,9 @@ export class AbstractDriver<T> {
   readonly name: string
   readonly layout: LayoutKind
   readonly createCursor: () => Cursor
-  get isSequential(): boolean { return (this.layout & 1) === 0 } // Chain, Line, Note
+  get isSequential(): boolean { return (this.layout & 1) === 0 } // Band, FromNewLine, Note
   get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Table, Group
-  get isChain(): boolean { return this.layout === LayoutKind.Chain }
+  get isBand(): boolean { return this.layout === LayoutKind.Band }
   get isTable(): boolean { return this.layout === LayoutKind.Table }
   get isFromNewLine(): boolean { return this.layout === LayoutKind.FromNewLine }
 
@@ -579,7 +579,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         triggerFinalization(item, true, true)
       if (!error) {
         // Lay out and render actual blocks
-        const ownerIsChain = owner.driver.isChain
+        const ownerIsBand = owner.driver.isBand
         const sequential = children.isStrict
         const cursor = owner.cursor
         let p1: Array<Item<VBlockImpl>> | undefined = undefined
@@ -601,7 +601,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (ownerIsChain && driver.isFromNewLine)
+          if (ownerIsBand && driver.isFromNewLine)
             partHost = block
         }
         // Render incremental children (if any)
