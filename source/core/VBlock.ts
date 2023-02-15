@@ -105,7 +105,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       body = base ?? {}
     let key = body.key
     // Check for coalescing separators or lookup for existing block
-    if (driver.isFromNewLine) {
+    if (driver.isRow) {
       const last = children.lastClaimedItem()
       if (last?.instance?.driver === driver)
         ex = last
@@ -155,11 +155,11 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 // LayoutKind
 
 export enum LayoutKind {
-  Band = 0,         // 000
-  Table = 1,        // 001
-  FromNewLine = 2,  // 010
-  Group = 3,        // 011
-  Note = 4,         // 100
+  Bar = 0,    // 000
+  Table = 1,  // 001
+  Row = 2,    // 010
+  Group = 3,  // 011
+  Note = 4,   // 100
 }
 
 // AbstractDriver
@@ -172,11 +172,11 @@ export class AbstractDriver<T> {
   readonly name: string
   readonly layout: LayoutKind
   readonly createCursor: () => Cursor
-  get isSequential(): boolean { return (this.layout & 1) === 0 } // Band, FromNewLine, Note
+  get isSequential(): boolean { return (this.layout & 1) === 0 } // Bar, Row, Note
   get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Table, Group
-  get isBand(): boolean { return this.layout === LayoutKind.Band }
+  get isBar(): boolean { return this.layout === LayoutKind.Bar }
   get isTable(): boolean { return this.layout === LayoutKind.Table }
-  get isFromNewLine(): boolean { return this.layout === LayoutKind.FromNewLine }
+  get isRow(): boolean { return this.layout === LayoutKind.Row }
 
   constructor(name: string, layout: LayoutKind, createCursor?: () => Cursor) {
     this.name = name
@@ -415,7 +415,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
 
   get isMoved(): boolean {
     let owner = this.host
-    if (owner.driver.isFromNewLine)
+    if (owner.driver.isRow)
       owner = owner.host
     return owner.children.isMoved(this.item!)
   }
@@ -579,7 +579,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         triggerFinalization(item, true, true)
       if (!error) {
         // Lay out and render actual blocks
-        const ownerIsBand = owner.driver.isBand
+        const ownerIsBar = owner.driver.isBar
         const sequential = children.isStrict
         const cursor = owner.cursor
         let p1: Array<Item<VBlockImpl>> | undefined = undefined
@@ -592,7 +592,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             break
           const block = item.instance
           const driver = block.driver
-          const host = driver.isFromNewLine ? owner : partHost
+          const host = driver.isRow ? owner : partHost
           const p = block.renderingPriority ?? Priority.Realtime
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           if (p === Priority.Realtime)
@@ -601,7 +601,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (ownerIsBand && driver.isFromNewLine)
+          if (ownerIsBar && driver.isRow)
             partHost = block
         }
         // Render incremental children (if any)
@@ -725,7 +725,7 @@ function renderNow(item: Item<VBlockImpl>): void {
         block.assignedStyle = false // reset
         block.children.beginMerge()
         result = block.driver.render(block)
-        if (block.driver.isFromNewLine)
+        if (block.driver.isRow)
           block.host.cursor.lineFeed()
         else if (block.assignedBounds === undefined)
           block.bounds = undefined // assign cells automatically
@@ -748,7 +748,7 @@ function renderNow(item: Item<VBlockImpl>): void {
 function triggerFinalization(item: Item<VBlockImpl>, isLeader: boolean, individual: boolean): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    if (individual && block.key !== block.body.key && !block.driver.isFromNewLine)
+    if (individual && block.key !== block.body.key && !block.driver.isRow)
       console.log(`WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: ${block.key}`)
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection

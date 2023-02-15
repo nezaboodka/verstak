@@ -9,30 +9,30 @@ import { VBlock, LayoutKind, BlockBody, Align, TableCursor, CellRange } from "..
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
-// called band and table; and on two special non-visual
-// elements called new-line and group.
+// called bar and table; and on two special non-visual
+// elements called row and group.
 
-// Band is a layout structure, which children are layed
+// Bar is a layout structure, which children are layed
 // out naturally: rightwards-downwards.
 
 // Table is layout structure, which children are layed out
 // over table cells.
 
-// New-Line is a special non-visual element, which begins
-// new layout line (row, lane, section) inside band or table.
+// Row is a special non-visual element, which begins
+// new layout row inside bar or table.
 
 // Note is either plain or markdown-formatted text
 // supporting syntax highlighting for code blocks.
 
 // Group is a special non-visual element for logical
-// grouping of bands, tables and other groups.
+// grouping of bars, tables and other groups.
 
-// Band
+// Bar
 
-export function Band<M = unknown, R = void>(
+export function Bar<M = unknown, R = void>(
   body?: BlockBody<HTMLElement, M, R>,
   base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(VerstakTags.band, body, base)
+  return VBlock.claim(VerstakTags.bar, body, base)
 }
 
 // Table
@@ -45,9 +45,13 @@ export function Table<M = unknown, R = void>(
 
 // Line
 
-export function fromNewLine<T = void>(body?: (block: void) => T, key?: string): void {
-  VBlock.claim(VerstakTags.fromNewLine, { key })
+export function row<T = void>(body?: (block: void) => T, key?: string): void {
+  fromNewRow(key)
   body?.()
+}
+
+export function fromNewRow(key?: string): void {
+  VBlock.claim(VerstakTags.row, { key })
 }
 
 // Note (either plain or html)
@@ -123,14 +127,14 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   applyHeightGrowth(block: VBlock<T>, heightGrowth: number): void {
-    if (block.driver.isFromNewLine) {
+    if (block.driver.isRow) {
       const css = block.native.style
       if (heightGrowth > 0)
         css.flexGrow = `${heightGrowth}`
       else
         css.flexGrow = ""
     }
-    else if (block.host.driver.isFromNewLine) {
+    else if (block.host.driver.isRow) {
       block.driver.applyBlockAlignment(block, Align.Stretch)
       block.host.driver.applyHeightGrowth(block.host, heightGrowth)
     }
@@ -211,8 +215,8 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
-    if (block.driver.layout < LayoutKind.FromNewLine)
-      fromNewLine()
+    if (block.driver.layout < LayoutKind.Row)
+      fromNewRow()
     return super.render(block)
   }
 }
@@ -221,25 +225,25 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 const V = {
   // blockTag: "блок",
-  // fromNewLine: "с-новой-строки",
-  // layoutTypes: ["лента", "таблица", "" /* с-новой-строки */, "группа", "заметка"],
+  // rowTag: "строка",
+  // layoutTypes: ["лента", "таблица", "" /* строка */, "группа", "заметка"],
   // attribute: "тип",
   blockTag: "block",
-  fromNewLine: "from-new-line",
-  layoutTypes: ["band", "table", "" /* from-new-line */, "group", "note"],
+  rowTag: "row",
+  layoutTypes: ["bar", "table", "" /* row */, "group", "note"],
   attribute: "type",
 }
 
 const VerstakTags = {
   // display: flex, flex-direction: column
-  band: new VerstakDriver<HTMLElement>(V.blockTag, LayoutKind.Band),
+  bar: new VerstakDriver<HTMLElement>(V.blockTag, LayoutKind.Bar),
 
   // display: grid
   table: new VerstakDriver<HTMLElement>(V.blockTag, LayoutKind.Table, () => new TableCursor()),
 
   // display: contents
   // display: flex (row)
-  fromNewLine: new VerstakDriver<HTMLElement>(V.fromNewLine, LayoutKind.FromNewLine),
+  row: new VerstakDriver<HTMLElement>(V.rowTag, LayoutKind.Row),
 
   // display: block
   note: new VerstakDriver<HTMLElement>(V.blockTag, LayoutKind.Note),
