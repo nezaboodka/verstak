@@ -226,11 +226,11 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 const V = {
   // blockTag: "блок",
   // rowTag: "строка",
-  // blockKinds: ["лента", "таблица", "" /* строка */, "группа", "заметка"],
+  // blockKinds: ["цепочка", "таблица", "" /* строка */, "группа", "заметка"],
   // attribute: "вид",
   blockTag: "block",
   rowTag: "row",
-  blockKinds: ["bar", "table", "" /* row */, "group", "note"],
+  blockKinds: ["chain", "table", "" /* row */, "group", "note"],
   attribute: "kind",
 }
 
