@@ -155,7 +155,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
 // BlockKind
 
 export enum BlockKind {
-  Bar = 0,    // 000
+  Chain = 0,  // 000
   Table = 1,  // 001
   Row = 2,    // 010
   Group = 3,  // 011
@@ -172,9 +172,9 @@ export class AbstractDriver<T> {
   readonly name: string
   readonly kind: BlockKind
   readonly createCursor: () => Cursor
-  get isSequential(): boolean { return (this.kind & 1) === 0 } // Bar, Row, Note
+  get isSequential(): boolean { return (this.kind & 1) === 0 } // Chain, Row, Note
   get isAuxiliary(): boolean { return (this.kind & 2) === 2 } // Table, Group
-  get isBar(): boolean { return this.kind === BlockKind.Bar }
+  get isChain(): boolean { return this.kind === BlockKind.Chain }
   get isTable(): boolean { return this.kind === BlockKind.Table }
   get isRow(): boolean { return this.kind === BlockKind.Row }
 
@@ -579,7 +579,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         triggerFinalization(item, true, true)
       if (!error) {
         // Lay out and render actual blocks
-        const ownerIsBar = owner.driver.isBar
+        const ownerIsChain = owner.driver.isChain
         const sequential = children.isStrict
         const cursor = owner.cursor
         let p1: Array<Item<VBlockImpl>> | undefined = undefined
@@ -601,7 +601,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (ownerIsBar && driver.isRow)
+          if (ownerIsChain && driver.isRow)
             partHost = block
         }
         // Render incremental children (if any)

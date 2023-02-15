@@ -9,30 +9,30 @@ import { VBlock, BlockKind, BlockBody, Align, TableCursor, CellRange } from "../
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
-// called bar and table; and on two special non-visual
+// called chain and table; and on two special non-visual
 // elements called row and group.
 
-// Bar is a layout structure, which children are layed
+// Chain is a layout structure, which children are layed
 // out naturally: rightwards-downwards.
 
 // Table is layout structure, which children are layed out
 // over table cells.
 
 // Row is a special non-visual element, which begins
-// new layout row inside bar or table.
+// new layout row inside chain or table.
 
 // Note is either plain or markdown-formatted text
 // supporting syntax highlighting for code blocks.
 
 // Group is a special non-visual element for logical
-// grouping of bars, tables and other groups.
+// grouping of chains, tables and other groups.
 
-// Bar
+// Chain
 
-export function Bar<M = unknown, R = void>(
+export function Chain<M = unknown, R = void>(
   body?: BlockBody<HTMLElement, M, R>,
   base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(VerstakTags.bar, body, base)
+  return VBlock.claim(VerstakTags.chain, body, base)
 }
 
 // Table
@@ -236,7 +236,7 @@ const V = {
 
 const VerstakTags = {
   // display: flex, flex-direction: column
-  bar: new VerstakDriver<HTMLElement>(V.blockTag, BlockKind.Bar),
+  chain: new VerstakDriver<HTMLElement>(V.blockTag, BlockKind.Chain),
 
   // display: grid
   table: new VerstakDriver<HTMLElement>(V.blockTag, BlockKind.Table, () => new TableCursor()),
