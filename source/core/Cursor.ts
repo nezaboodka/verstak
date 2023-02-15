@@ -20,7 +20,7 @@ export enum Align {
 }
 
 export interface ElasticSize {
-  cells?: number            // 1 (table layout only)
+  cells?: number            // 1 (table only)
   min?: string              // min-content
   max?: string              // min-content
   growth?: number           // 0
@@ -31,8 +31,8 @@ export interface TrackSize extends ElasticSize {
 }
 
 export type Bounds = undefined | string | number | {
-  widthInCells?: number     // 1 (table layout only)
-  heightInCells?: number    // 1 (table layout only)
+  widthInCells?: number     // 1 (table only)
+  heightInCells?: number    // 1 (table only)
   widthOverlap?: boolean    // false
   heightOverlap?: boolean   // false
 }
