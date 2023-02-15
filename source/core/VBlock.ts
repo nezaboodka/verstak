@@ -726,7 +726,7 @@ function renderNow(item: Item<VBlockImpl>): void {
         block.children.beginMerge()
         result = block.driver.render(block)
         if (block.driver.isRow)
-          block.host.cursor.lineFeed()
+          block.host.cursor.rowBreak()
         else if (block.assignedBounds === undefined)
           block.bounds = undefined // assign cells automatically
         if (result instanceof Promise)

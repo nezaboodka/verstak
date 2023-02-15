@@ -43,7 +43,7 @@ export function Table<M = unknown, R = void>(
   return VBlock.claim(VerstakTags.table, body, base)
 }
 
-// Line
+// Row
 
 export function row<T = void>(body?: (block: void) => T, key?: string): void {
   fromNewRow(key)

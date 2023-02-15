@@ -41,7 +41,7 @@ export class Cursor {
   static readonly UndefinedCellRange = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
   reset(): void { /* do nothing */ }
   onwards(bounds: Bounds): CellRange { return Cursor.UndefinedCellRange }
-  lineFeed(): void { /* do nothing */ }
+  rowBreak(): void { /* do nothing */ }
 }
 
 export class TableCursor extends Cursor {
@@ -126,7 +126,7 @@ export class TableCursor extends Cursor {
     return result
   }
 
-  lineFeed(): void {
+  rowBreak(): void {
     this.columnCursor = 0
     this.rowCursor = this.newRowCursor
   }
