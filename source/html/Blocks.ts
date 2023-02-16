@@ -186,21 +186,31 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   applyOverlayVisible(block: VBlock<T>, overlayVisible: boolean | undefined): void {
     const e = block.native
+    const css = e.style
     const parent = HtmlDriver.findNearestParentHtmlBlock(block).native
     if (overlayVisible === true) {
       const doc = document.body
       const rect = parent.getBoundingClientRect()
-      const h = doc.offsetWidth - rect.left > rect.right ? "rightward" : "leftward"
-      const v = doc.clientHeight - rect.top > rect.bottom ? "downward" : "upward"
-      e.setAttribute("overlay", `${h}-${v}`)
+      if (doc.offsetWidth - rect.left > rect.right) // rightward
+        css.left = "0", css.right = ""
+      else // leftward
+        css.left = "", css.right = "0"
+      if (doc.clientHeight - rect.top > rect.bottom) // downward
+        css.top = "100%", css.bottom = ""
+      else // upward
+        css.top = "", css.bottom = "100%"
+      css.display = ""
+      css.position = "absolute"
+      css.minWidth = "100%"
+      css.boxSizing = "border-box"
       parent.setAttribute("stacking", "true")
     }
     else {
       parent.removeAttribute("stacking")
       if (overlayVisible === false)
-        e.setAttribute("overlay", "hidden")
+        css.display = "none"
       else // overlayVisible === undefined
-        e.removeAttribute("overlay")
+        css.position = css.display = css.left = css.right = css.top = css.bottom = "" // clear
     }
   }
 
