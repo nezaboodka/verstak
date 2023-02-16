@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, BlockKind, BlockBody, Align, TableCursor, CellRange } from "../core/api"
+import { VBlock, LayoutKind, BlockBody, Align, TableCursor, CellRange } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -86,9 +86,9 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   protected createElement(block: VBlock<T>): T {
     const element = super.createElement(block)
-    const kind = V.blockKinds[this.kind]
-    if (kind)
-      element.setAttribute(V.attribute, kind)
+    const layout = V.layouts[this.layout]
+    if (layout)
+      element.setAttribute(V.attribute, layout)
     return element
   }
 
@@ -225,7 +225,7 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
-    if (block.driver.kind < BlockKind.Row)
+    if (block.driver.layout < LayoutKind.Row)
       fromNewRow()
     return super.render(block)
   }
@@ -234,32 +234,32 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 // V
 
 const V = {
-  // blockTag: "блок",
-  // rowTag: "строка",
-  // blockKinds: ["цепочка", "таблица", "" /* строка */, "группа", "заметка"],
+  // block: "блок",
+  // row: "строка",
+  // layouts: ["цепочка", "таблица", "" /* строка */, "группа", "заметка"],
   // attribute: "вид",
-  blockTag: "block",
-  rowTag: "row",
-  blockKinds: ["chain", "table", "" /* row */, "group", "note"],
+  block: "block",
+  row: "row",
+  layouts: ["chain", "table", "" /* row */, "group", "note"],
   attribute: "kind",
 }
 
 const VerstakTags = {
   // display: flex, flex-direction: column
-  chain: new VerstakDriver<HTMLElement>(V.blockTag, BlockKind.Chain),
+  chain: new VerstakDriver<HTMLElement>(V.block, LayoutKind.Chain),
 
   // display: grid
-  table: new VerstakDriver<HTMLElement>(V.blockTag, BlockKind.Table, () => new TableCursor()),
+  table: new VerstakDriver<HTMLElement>(V.block, LayoutKind.Table, () => new TableCursor()),
 
   // display: contents
   // display: flex (row)
-  row: new VerstakDriver<HTMLElement>(V.rowTag, BlockKind.Row),
+  row: new VerstakDriver<HTMLElement>(V.row, LayoutKind.Row),
 
   // display: block
-  note: new VerstakDriver<HTMLElement>(V.blockTag, BlockKind.Note),
+  note: new VerstakDriver<HTMLElement>(V.block, LayoutKind.Note),
 
   // display: contents
-  group: new VerstakDriver<HTMLElement>(V.blockTag, BlockKind.Group),
+  group: new VerstakDriver<HTMLElement>(V.block, LayoutKind.Group),
 }
 
 const AlignToCss = ["stretch", "start", "center", "end"]

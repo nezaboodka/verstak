@@ -152,9 +152,9 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   }
 }
 
-// BlockKind
+// LayoutKind
 
-export enum BlockKind {
+export enum LayoutKind {
   Chain = 0,  // 000
   Table = 1,  // 001
   Row = 2,    // 010
@@ -167,20 +167,20 @@ export enum BlockKind {
 const createDefaultCursor = (): Cursor => new Cursor()
 
 export class AbstractDriver<T> {
-  public static readonly fragment = new AbstractDriver<any>("fragment", BlockKind.Group)
+  public static readonly fragment = new AbstractDriver<any>("fragment", LayoutKind.Group)
 
   readonly name: string
-  readonly kind: BlockKind
+  readonly layout: LayoutKind
   readonly createCursor: () => Cursor
-  get isSequential(): boolean { return (this.kind & 1) === 0 } // Chain, Row, Note
-  get isAuxiliary(): boolean { return (this.kind & 2) === 2 } // Table, Group
-  get isChain(): boolean { return this.kind === BlockKind.Chain }
-  get isTable(): boolean { return this.kind === BlockKind.Table }
-  get isRow(): boolean { return this.kind === BlockKind.Row }
+  get isSequential(): boolean { return (this.layout & 1) === 0 } // Chain, Row, Note
+  get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Table, Group
+  get isChain(): boolean { return this.layout === LayoutKind.Chain }
+  get isTable(): boolean { return this.layout === LayoutKind.Table }
+  get isRow(): boolean { return this.layout === LayoutKind.Row }
 
-  constructor(name: string, kind: BlockKind, createCursor?: () => Cursor) {
+  constructor(name: string, layout: LayoutKind, createCursor?: () => Cursor) {
     this.name = name
-    this.kind = kind
+    this.layout = layout
     this.createCursor = createCursor ?? createDefaultCursor
   }
 
@@ -289,8 +289,8 @@ function invokeFinalizeChain(block: VBlock, body: BlockBody): void {
 export class StaticDriver<T> extends AbstractDriver<T> {
   readonly element: T
 
-  constructor(element: T, name: string, kind: BlockKind, createCursor?: () => Cursor) {
-    super(name, kind, createCursor)
+  constructor(element: T, name: string, layout: LayoutKind, createCursor?: () => Cursor) {
+    super(name, layout, createCursor)
     this.element = element
   }
 
@@ -879,7 +879,7 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const NOP: any = (...args: any[]): void => { /* nop */ }
 
-const gSysDriver = new StaticDriver<null>(null, "SYSTEM", BlockKind.Group)
+const gSysDriver = new StaticDriver<null>(null, "SYSTEM", LayoutKind.Group)
 const gSysRoot = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>(
   gSysDriver.name, gSysDriver, { level: 0 } as VBlockImpl, { reaction: true, render: NOP })) // fake owner/host (overwritten below)
 gSysRoot.instance.item = gSysRoot
