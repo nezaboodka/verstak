@@ -203,10 +203,10 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
       css.position = "absolute"
       css.minWidth = "100%"
       css.boxSizing = "border-box"
-      parent.setAttribute("stacking", "true")
+      parent.style.position = "relative"
     }
     else {
-      parent.removeAttribute("stacking")
+      parent.style.position = ""
       if (overlayVisible === false)
         css.display = "none"
       else // overlayVisible === undefined
