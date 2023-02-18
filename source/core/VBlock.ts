@@ -8,11 +8,12 @@
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw, MemberOptions } from "reactronic"
 import { getCallerInfo } from "./Utils"
 import { CellRange, emitLetters, equalCellRanges } from "./CellRange"
-import { Cursor, Align, Bounds } from "./Cursor"
+import { Cursor, Align, Bounds, TableCursor } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Operation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>, base: () => R) => R
 export type AsyncOperation<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
+export type SimpleOperation<T = unknown> = (block: VBlock<T, any, any>) => void
 export const enum Priority { Realtime = 0, Normal = 1, Background = 2 }
 
 export interface BlockBody<T = unknown, M = unknown, R = void> {
@@ -45,6 +46,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly driver: AbstractDriver<T>
   abstract readonly body: Readonly<BlockBody<T, M, R>>
   abstract model: M
+  abstract layout: Layout
   abstract bounds: Bounds
   abstract widthGrowth: number
   abstract minWidth: string
@@ -152,9 +154,9 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   }
 }
 
-// LayoutKind
+// Layout
 
-export enum LayoutKind {
+export enum Layout {
   Chain = 0,  // 000
   Table = 1,  // 001
   Row = 2,    // 010
@@ -164,29 +166,20 @@ export enum LayoutKind {
 
 // AbstractDriver
 
-const createDefaultCursor = (): Cursor => new Cursor()
-
 export class AbstractDriver<T> {
-  public static readonly fragment = new AbstractDriver<any>("fragment", LayoutKind.Group)
+  public static readonly fragment = new AbstractDriver<any>("fragment", false,
+    b => b.layout = Layout.Group)
 
-  readonly name: string
-  readonly layout: LayoutKind
-  readonly createCursor: () => Cursor
-  get isSequential(): boolean { return (this.layout & 1) === 0 } // Chain, Row, Note
-  get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Table, Group
-  get isChain(): boolean { return this.layout === LayoutKind.Chain }
-  get isTable(): boolean { return this.layout === LayoutKind.Table }
-  get isRow(): boolean { return this.layout === LayoutKind.Row }
-
-  constructor(name: string, layout: LayoutKind, createCursor?: () => Cursor) {
-    this.name = name
-    this.layout = layout
-    this.createCursor = createCursor ?? createDefaultCursor
+  constructor(
+    readonly name: string,
+    readonly isRow: boolean,
+    readonly preset?: SimpleOperation<T>) {
   }
 
   initialize(block: VBlock<T>, native: T): T {
     const b = block as VBlockImpl<T>
     b.native = native
+    this.preset?.(b)
     invokeInitializeChain(b, b.body)
     return native
   }
@@ -204,6 +197,14 @@ export class AbstractDriver<T> {
     invokeFinalizeChain(b, b.body)
     b.native = null as any as T // hack
     return isLeader // treat children as finalization leaders as well
+  }
+
+  applyLayout(block: VBlock<T, any, any>, layout: Layout): void {
+    const b = block as VBlockImpl<T>
+    if (layout === Layout.Table)
+      b.cursor = new TableCursor()
+    else
+      b.cursor = new Cursor()
   }
 
   applyCellRange(block: VBlock<T, any, any>, cellRange: CellRange | undefined): void {
@@ -289,8 +290,8 @@ function invokeFinalizeChain(block: VBlock, body: BlockBody): void {
 export class StaticDriver<T> extends AbstractDriver<T> {
   readonly element: T
 
-  constructor(element: T, name: string, layout: LayoutKind, createCursor?: () => Cursor) {
-    super(name, layout, createCursor)
+  constructor(element: T, name: string, isRow: boolean, preset?: SimpleOperation<T>) {
+    super(name, isRow, preset)
     this.element = element
   }
 
@@ -350,6 +351,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   readonly driver: AbstractDriver<T>
   body: BlockBody<T, M, R>
   model: M
+  assignedLayout: Layout
   assignedBounds: Bounds
   assignedStyle: boolean
   appliedCellRange: CellRange
@@ -385,6 +387,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.driver = driver
     this.body = body
     this.model = undefined as any
+    this.assignedLayout = Layout.Row
     this.assignedBounds = undefined
     this.assignedStyle = false
     this.appliedCellRange = Cursor.UndefinedCellRange
@@ -403,21 +406,14 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     // System-managed properties
     this.level = owner.level + 1
     this.host = owner // owner is default host, but can be changed
-    this.children = new Collection<VBlockImpl>(getBlockKey, driver.isSequential)
+    this.children = new Collection<VBlockImpl>(getBlockKey, this.isSequential)
     this.numerator = 0
     this.item = undefined
     this.stamp = 0
     this.native = undefined as any as T // hack
-    this.cursor = driver.createCursor()
+    this.cursor = new Cursor()
     this.outer = owner.context ? owner : owner.outer
     this.context = undefined
-  }
-
-  get isMoved(): boolean {
-    let owner = this.host
-    if (owner.driver.isRow)
-      owner = owner.host
-    return owner.children.isMoved(this.item!)
   }
 
   @reactive
@@ -429,6 +425,26 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   render(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by owner
     renderNow(this.item!)
+  }
+
+  get isSequential(): boolean { return (this.layout & 1) === 0 } // Chain, Row, Note
+  get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Row, Group
+  get isChain(): boolean { return this.layout === Layout.Chain }
+  get isTable(): boolean { return this.layout === Layout.Table }
+
+  get isMoved(): boolean {
+    let owner = this.host
+    if (owner.driver.isRow)
+      owner = owner.host
+    return owner.children.isMoved(this.item!)
+  }
+
+  get layout(): Layout { return this.assignedLayout }
+  set layout(value: Layout) {
+    if (value !== this.assignedLayout || this.stamp < 2) {
+      this.driver.applyLayout(this, value)
+      this.assignedLayout = value
+    }
   }
 
   get bounds(): Bounds { return this.assignedBounds }
@@ -579,20 +595,20 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         triggerFinalization(item, true, true)
       if (!error) {
         // Lay out and render actual blocks
-        const ownerIsChain = owner.driver.isChain
+        const ownerIsChain = owner.isChain
         const sequential = children.isStrict
         const cursor = owner.cursor
         let p1: Array<Item<VBlockImpl>> | undefined = undefined
         let p2: Array<Item<VBlockImpl>> | undefined = undefined
         let redeploy = false
-        let partHost = owner
+        let hostingRow = owner
         cursor.reset()
         for (const item of children.items()) {
           if (Transaction.isCanceled)
             break
           const block = item.instance
-          const driver = block.driver
-          const host = driver.isRow ? owner : partHost
+          const isRow = block.driver.isRow
+          const host = isRow ? owner : hostingRow
           const p = block.renderingPriority ?? Priority.Realtime
           redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
           if (p === Priority.Realtime)
@@ -601,8 +617,8 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (ownerIsChain && driver.isRow)
-            partHost = block
+          if (ownerIsChain && isRow)
+            hostingRow = block
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
@@ -724,8 +740,9 @@ function renderNow(item: Item<VBlockImpl>): void {
         block.assignedBounds = undefined // reset
         block.assignedStyle = false // reset
         block.children.beginMerge()
-        result = block.driver.render(block)
-        if (block.driver.isRow)
+        const driver = block.driver
+        result = driver.render(block)
+        if (driver.isRow)
           block.host.cursor.rowBreak()
         else if (block.assignedBounds === undefined)
           block.bounds = undefined // assign cells automatically
@@ -748,11 +765,12 @@ function renderNow(item: Item<VBlockImpl>): void {
 function triggerFinalization(item: Item<VBlockImpl>, isLeader: boolean, individual: boolean): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    if (individual && block.key !== block.body.key && !block.driver.isRow)
+    const driver = block.driver
+    if (individual && block.key !== block.body.key && !driver.isRow)
       console.log(`WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: ${block.key}`)
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
-    const childrenAreLeaders = nonreactive(() => block.driver.finalize(block, isLeader))
+    const childrenAreLeaders = nonreactive(() => driver.finalize(block, isLeader))
     if (isReaction(block.body)) {
       // Defer disposal if block is reactive
       item.aux = undefined
@@ -879,7 +897,8 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const NOP: any = (...args: any[]): void => { /* nop */ }
 
-const gSysDriver = new StaticDriver<null>(null, "SYSTEM", LayoutKind.Group)
+const gSysDriver = new StaticDriver<null>(
+  null, "SYSTEM", false, b => b.layout = Layout.Group)
 const gSysRoot = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>(
   gSysDriver.name, gSysDriver, { level: 0 } as VBlockImpl, { reaction: true, render: NOP })) // fake owner/host (overwritten below)
 gSysRoot.instance.item = gSysRoot

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, LayoutKind, BlockBody, Align, TableCursor, CellRange } from "../core/api"
+import { VBlock, Layout, BlockBody, Align, CellRange, SimpleOperation } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -32,7 +32,7 @@ import { HtmlDriver } from "./HtmlDriver"
 export function Chain<M = unknown, R = void>(
   body?: BlockBody<HTMLElement, M, R>,
   base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(VerstakTags.chain, body, base)
+  return VBlock.claim(Drivers.chain, body, base)
 }
 
 // Table
@@ -40,7 +40,7 @@ export function Chain<M = unknown, R = void>(
 export function Table<M = unknown, R = void>(
   body?: BlockBody<HTMLElement, M, R>,
   base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(VerstakTags.table, body, base)
+  return VBlock.claim(Drivers.table, body, base)
 }
 
 // Row
@@ -51,13 +51,13 @@ export function row<T = void>(body?: (block: void) => T, key?: string): void {
 }
 
 export function fromNewRow(key?: string): void {
-  VBlock.claim(VerstakTags.row, { key })
+  VBlock.claim(Drivers.row, { key })
 }
 
 // Note (either plain or html)
 
 export function Note(content: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(VerstakTags.note, body, {
+  return VBlock.claim(Drivers.note, body, {
     render(b) {
       b.native.innerText = content
     }},
@@ -65,7 +65,7 @@ export function Note(content: string, body?: BlockBody<HTMLElement, void, void>)
 }
 
 export function HtmlNote(content: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(VerstakTags.note, body, {
+  return VBlock.claim(Drivers.note, body, {
     render(b) {
       b.native.innerHTML = content
     }},
@@ -77,19 +77,18 @@ export function HtmlNote(content: string, body?: BlockBody<HTMLElement, void, vo
 export function Group<M = unknown, R = void>(
   body?: BlockBody<HTMLElement, M, R>,
   base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(VerstakTags.group, body, base)
+  return VBlock.claim(Drivers.group, body, base)
 }
 
 // VerstakDriver
 
 export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
-  protected createElement(block: VBlock<T>): T {
-    const element = super.createElement(block)
-    const layout = V.layouts[this.layout]
-    if (layout)
-      element.setAttribute(V.attribute, layout)
-    return element
+  applyLayout(block: VBlock<T, any, any>, layout: Layout): void {
+    const kind = Constants.layouts[layout]
+    kind && block.native.setAttribute(Constants.attribute, kind)
+    VerstakDriversByLayout[layout](block)
+    super.applyLayout(block, layout)
   }
 
   applyCellRange(block: VBlock<T>, cellRange: CellRange | undefined): void {
@@ -178,10 +177,19 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   applyContentWrapping(block: VBlock<T>, contentWrapping: boolean): void {
-    if (contentWrapping)
-      block.native.setAttribute("wrapping", "true")
-    else
-      block.native.removeAttribute("wrapping")
+    const css = block.native.style
+    if (contentWrapping) {
+      css.flexFlow = "wrap"
+      css.overflow = ""
+      css.textOverflow = ""
+      css.whiteSpace = ""
+    }
+    else {
+      css.flexFlow = ""
+      css.overflow = "hidden"
+      css.textOverflow = "ellipsis"
+      css.whiteSpace = "nowrap"
+    }
   }
 
   applyOverlayVisible(block: VBlock<T>, overlayVisible: boolean | undefined): void {
@@ -225,15 +233,15 @@ export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
-    if (block.driver.layout < LayoutKind.Row)
+    if (block.layout < Layout.Row)
       fromNewRow()
     return super.render(block)
   }
 }
 
-// V
+// Constants
 
-const V = {
+const Constants = {
   // block: "блок",
   // row: "строка",
   // layouts: ["цепочка", "таблица", "" /* строка */, "группа", "заметка"],
@@ -244,23 +252,69 @@ const V = {
   attribute: "kind",
 }
 
-const VerstakTags = {
+const Drivers = {
   // display: flex, flex-direction: column
-  chain: new VerstakDriver<HTMLElement>(V.block, LayoutKind.Chain),
+  chain: new VerstakDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Chain),
 
   // display: grid
-  table: new VerstakDriver<HTMLElement>(V.block, LayoutKind.Table, () => new TableCursor()),
+  table: new VerstakDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Table),
 
   // display: contents
   // display: flex (row)
-  row: new VerstakDriver<HTMLElement>(V.row, LayoutKind.Row),
-
-  // display: block
-  note: new VerstakDriver<HTMLElement>(V.block, LayoutKind.Note),
+  row: new VerstakDriver<HTMLElement>(Constants.row, true, b => b.layout = Layout.Row),
 
   // display: contents
-  group: new VerstakDriver<HTMLElement>(V.block, LayoutKind.Group),
+  group: new VerstakDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Group),
+
+  // display: block
+  note: new VerstakDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Note),
 }
+
+const VerstakDriversByLayout: Array<SimpleOperation<HTMLElement>> = [
+  b => { // chain
+    const css = b.native.style
+    css.alignSelf = "center"
+    css.display = "flex"
+    css.flexDirection = "column"
+    css.justifyContent = "center"
+    css.textAlign = "initial"
+    css.flexShrink = "1"
+    css.minWidth = "0"
+  },
+  b => { // table
+    const css = b.native.style
+    css.alignSelf = "center"
+    css.display = "grid"
+    css.flexBasis = "0"
+    css.gridAutoRows = "minmax(min-content, 1fr)"
+    css.gridAutoColumns = "minmax(min-content, 1fr)"
+    css.textAlign = "initial"
+  },
+  b => { // row
+    const css = b.native.style
+    css.display = "flex"
+    css.flexDirection = "row"
+  },
+  b => { // group
+    const css = b.native.style
+    css.alignSelf = "center"
+    css.display = "contents"
+  },
+  b => { // note
+    const css = b.native.style
+    css.alignSelf = "center"
+    css.display = "inline-block"
+    css.flexShrink = "1"
+    // Wrapping=false
+    // css.overflow = "hidden"
+    // css.textOverflow = "ellipsis"
+    // css.whiteSpace = "nowrap"
+    // Wrapping=true
+    css.overflow = ""
+    css.textOverflow = ""
+    css.whiteSpace = ""
+  },
+]
 
 const AlignToCss = ["stretch", "start", "center", "end"]
 const TextAlignCss = ["justify", "left", "center", "right"]
