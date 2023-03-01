@@ -26,18 +26,19 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
       throw new Error("element must be initialized before rendering")
     if (inst.buffer)
       throw new Error("rendering re-entrance is not supported yet")
+    const native = inst.native as E
     inst.buffer = []
     let result: any
     if (node.superRender)
       result = node.superRender(options => {
-        const res = node.render(inst.native!, options)
+        const res = node.render(native, options)
         if (res instanceof Promise)
           return res.then() // causes wrapping of then/catch to execute within current creator and host
         else
           return options
-      }, inst.native!)
+      }, native)
     else
-      result = node.render(inst.native!, args as O)
+      result = node.render(native, args as O)
     if (result instanceof Promise)
       result = result.then( // causes wrapping of then/catch to execute within current creator and host
         value => { RxDom.renderChildrenThenDo(NOP); return value }, // ignored if rendered already
