@@ -11,19 +11,19 @@ import { CellRange, emitLetters, equalCellRanges } from "./CellRange"
 import { Cursor, Align, Bounds, TableCursor } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
-export type Operation<T = unknown, M = unknown, R = void> = (block: VBlock<T, M, R>, base: () => R) => R
+export type Operation<T = unknown, M = unknown, C = void, R = void> = (block: VBlock<T, M, C, R>, base: () => R) => R
 export type AsyncOperation<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
-export type SimpleOperation<T = unknown> = (block: VBlock<T, any, any>) => void
+export type SimpleOperation<T = unknown> = (block: VBlock<T, any, any, any>) => void
 export const enum Priority { Realtime = 0, Normal = 1, Background = 2 }
 
-export interface BlockBody<T = unknown, M = unknown, R = void> {
-  base?: BlockBody<T, M, R>
+export interface BlockBody<T = unknown, M = unknown, C = void, R = void> {
+  base?: BlockBody<T, M, C, R>
   key?: string
   reaction?: boolean
   triggers?: unknown
-  initialize?: Operation<T, M, R>
-  render?: Operation<T, M, R>
-  finalize?: Operation<T, M, R>
+  initialize?: Operation<T, M, C, R>
+  render?: Operation<T, M, C, R>
+  finalize?: Operation<T, M, C, R>
 }
 
 // Fragment
@@ -36,7 +36,7 @@ export function Fragment<M = unknown, R = void>(
 
 // VBlock
 
-export abstract class VBlock<T = unknown, M = unknown, R = void> {
+export abstract class VBlock<T = unknown, M = unknown, C = void, R = void> {
   static readonly shortFrameDuration = 16 // ms
   static readonly longFrameDuration = 300 // ms
   static currentRenderingPriority = Priority.Realtime
@@ -44,7 +44,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   // User-defined properties
   abstract readonly key: string
   abstract readonly driver: AbstractDriver<T>
-  abstract readonly body: Readonly<BlockBody<T, M, R>>
+  abstract readonly body: Readonly<BlockBody<T, M, C, R>>
   abstract model: M
   abstract layout: Layout
   abstract bounds: Bounds
@@ -68,6 +68,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
   abstract readonly item: Item<VBlock> | undefined
   abstract readonly stamp: number
   abstract readonly native: T
+  abstract readonly controller: C
 
   get isInitialRendering(): boolean {
     return this.stamp === 2
@@ -92,14 +93,14 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
     forEachChildRecursively(gSysRoot, action)
   }
 
-  static claim<T = undefined, M = unknown, R = void>(
+  static claim<T = undefined, M = unknown, C = void, R = void>(
     driver: AbstractDriver<T>,
-    body?: BlockBody<T, M, R>,
-    base?: BlockBody<T, M, R>): VBlock<T, M, R> {
-    let result: VBlockImpl<T, M, R>
+    body?: BlockBody<T, M, C, R>,
+    base?: BlockBody<T, M, C, R>): VBlock<T, M, C, R> {
+    let result: VBlockImpl<T, M, C, R>
     const owner = gCurrent.instance
     const children = owner.children
-    let ex: Item<VBlockImpl<any, any, any>> | undefined = undefined
+    let ex: Item<VBlockImpl<any, any, any, any>> | undefined = undefined
     // Normalize parameters
     if (body)
       body.base = base
@@ -125,7 +126,7 @@ export abstract class VBlock<T = unknown, M = unknown, R = void> {
       result.body = body
     }
     else { // create new
-      result = new VBlockImpl<T, M, R>(key || VBlock.generateKey(owner), driver, owner, body)
+      result = new VBlockImpl<T, M, C, R>(key || VBlock.generateKey(owner), driver, owner, body)
       result.item = children.add(result)
       VBlockImpl.grandCount++
       if (isReaction(body))
@@ -199,7 +200,7 @@ export class AbstractDriver<T> {
     return isLeader // treat children as finalization leaders as well
   }
 
-  applyLayout(block: VBlock<T, any, any>, layout: Layout): void {
+  applyLayout(block: VBlock<T, any, any, any>, layout: Layout): void {
     const b = block as VBlockImpl<T>
     if (layout === Layout.Table)
       b.cursor = new TableCursor()
@@ -207,56 +208,56 @@ export class AbstractDriver<T> {
       b.cursor = new Cursor()
   }
 
-  applyCellRange(block: VBlock<T, any, any>, cellRange: CellRange | undefined): void {
+  applyCellRange(block: VBlock<T, any, any, any>, cellRange: CellRange | undefined): void {
     // do nothing
   }
 
-  applyWidthGrowth(block: VBlock<T, any, any>, widthGrowth: number): void {
+  applyWidthGrowth(block: VBlock<T, any, any, any>, widthGrowth: number): void {
     // do nothing
   }
 
-  applyMinWidth(block: VBlock<T, any, any>, minWidth: string): void {
+  applyMinWidth(block: VBlock<T, any, any, any>, minWidth: string): void {
     // do nothing
   }
 
-  applyMaxWidth(block: VBlock<T, any, any>, maxWidth: string): void {
+  applyMaxWidth(block: VBlock<T, any, any, any>, maxWidth: string): void {
     // do nothing
   }
 
-  applyHeightGrowth(block: VBlock<T, any, any>, heightGrowth: number): void {
+  applyHeightGrowth(block: VBlock<T, any, any, any>, heightGrowth: number): void {
     // do nothing
   }
 
-  applyMinHeight(block: VBlock<T, any, any>, minHeight: string): void {
+  applyMinHeight(block: VBlock<T, any, any, any>, minHeight: string): void {
     // do nothing
   }
 
-  applyMaxHeight(block: VBlock<T, any, any>, maxHeight: string): void {
+  applyMaxHeight(block: VBlock<T, any, any, any>, maxHeight: string): void {
     // do nothing
   }
 
-  applyContentAlignment(block: VBlock<T, any, any>, contentAlignment: Align): void {
+  applyContentAlignment(block: VBlock<T, any, any, any>, contentAlignment: Align): void {
     // do nothing
   }
 
-  applyBlockAlignment(block: VBlock<T, any, any>, blockAlignment: Align): void {
+  applyBlockAlignment(block: VBlock<T, any, any, any>, blockAlignment: Align): void {
     // do nothing
   }
 
-  applyContentWrapping(block: VBlock<T, any, any>, contentWrapping: boolean): void {
+  applyContentWrapping(block: VBlock<T, any, any, any>, contentWrapping: boolean): void {
     // do nothing
   }
 
-  applyOverlayVisible(block: VBlock<T, any, any>, overlayVisible: boolean | undefined): void {
+  applyOverlayVisible(block: VBlock<T, any, any, any>, overlayVisible: boolean | undefined): void {
     // do nothing
   }
 
-  applyStyling(block: VBlock<T, any, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
+  applyStyling(block: VBlock<T, any, any, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
     // do nothing
   }
 }
 
-function isReaction(body?: BlockBody<any, any, any>): boolean {
+function isReaction(body?: BlockBody<any, any, any, any>): boolean {
   return body?.reaction ?? (body?.base ? isReaction(body?.base) : false)
 }
 
@@ -341,7 +342,7 @@ class VBlockContext<T extends Object = Object> extends ObservableObject {
   }
 }
 
-class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
+class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
   static grandCount: number = 0
   static disposableCount: number = 0
   static logging: LoggingOptions | undefined = undefined
@@ -349,7 +350,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   // User-defined properties
   readonly key: string
   readonly driver: AbstractDriver<T>
-  body: BlockBody<T, M, R>
+  body: BlockBody<T, M, C, R>
   model: M
   assignedLayout: Layout
   assignedBounds: Bounds
@@ -375,12 +376,13 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
   item: Item<VBlockImpl> | undefined
   stamp: number
   native: T
+  controller: C
   cursor: Cursor
   private outer: VBlockImpl
   context: VBlockContext<any> | undefined
 
   constructor(key: string, driver: AbstractDriver<T>,
-    owner: VBlockImpl, body: BlockBody<T, M, R>) {
+    owner: VBlockImpl, body: BlockBody<T, M, C, R>) {
     super()
     // User-defined properties
     this.key = key
@@ -411,6 +413,7 @@ class VBlockImpl<T = any, M = any, R = any> extends VBlock<T, M, R> {
     this.item = undefined
     this.stamp = 0
     this.native = undefined as any as T // hack
+    this.controller = undefined as any as C // hack
     this.cursor = new Cursor()
     this.outer = owner.context ? owner : owner.outer
     this.context = undefined
