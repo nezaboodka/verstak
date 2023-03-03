@@ -8,16 +8,18 @@
 import { Item, Rx } from "reactronic"
 import { VBlock, AbstractDriver, Priority } from "../core/api"
 
-export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T> {
+export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends AbstractDriver<T, C> {
 
-  initialize(block: VBlock<T>, element: T): T {
-    element = this.createElement(block)
+  initialize(block: VBlock<T, unknown, C>, element: T, controller?: C): T {
+    const native = this.createNative(block)
+    element = element ?? native.element
+    controller = controller ?? native.controller
     if (Rx.isLogging && !block.driver.isRow)
       element.setAttribute("key", block.key)
-    return super.initialize(block, element)
+    return super.initialize(block, element, controller)
   }
 
-  finalize(block: VBlock<T>, isLeader: boolean): boolean {
+  finalize(block: VBlock<T, unknown, C>, isLeader: boolean): boolean {
     const e = block.native as T | undefined // hack
     if (e) {
       e.resizeObserver?.unobserve(e) // is it really needed or browser does this automatically?
@@ -28,7 +30,7 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
     return false // children of HTML blocks are not treated as leaders
   }
 
-  deploy(block: VBlock<T>): void {
+  deploy(block: VBlock<T, unknown, C>): void {
     const e = block.native as T | undefined // hack
     if (e) {
       const sequential = block.host.children.isStrict
@@ -54,11 +56,11 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
     }
   }
 
-  relocate(block: VBlock<T>): void {
+  relocate(block: VBlock<T, unknown, C>): void {
     // nothing to do by default
   }
 
-  render(block: VBlock<T>): void | Promise<void> {
+  render(block: VBlock<T, unknown, C>): void | Promise<void> {
     const result = super.render(block)
     if (gBlinkingEffect)
       blink(block.native, VBlock.currentRenderingPriority, block.stamp)
@@ -97,18 +99,18 @@ export abstract class BaseHtmlDriver<T extends Element> extends AbstractDriver<T
     return p
   }
 
-  protected abstract createElement(block: VBlock<T>): T
+  protected abstract createNative(block: VBlock<T, unknown, C>): { element: T, controller?: C }
 }
 
-export class HtmlDriver<T extends HTMLElement> extends BaseHtmlDriver<T> {
-  protected createElement(block: VBlock<T>): T {
-    return document.createElement(block.driver.name) as T
+export class HtmlDriver<T extends HTMLElement, C = unknown> extends BaseHtmlDriver<T, C> {
+  protected createNative(block: VBlock<T, unknown, C>): { element: T, controller?: C } {
+    return { element: document.createElement(block.driver.name) as T }
   }
 }
 
-export class SvgDriver<T extends SVGElement> extends BaseHtmlDriver<T> {
-  protected createElement(block: VBlock<T>): T {
-    return document.createElementNS("http://www.w3.org/2000/svg", block.driver.name) as T
+export class SvgDriver<T extends SVGElement, C = unknown> extends BaseHtmlDriver<T, C> {
+  protected createNative(block: VBlock<T, unknown, C>): { element: T, controller?: C } {
+    return { element: document.createElementNS("http://www.w3.org/2000/svg", block.driver.name) as T }
   }
 }
 

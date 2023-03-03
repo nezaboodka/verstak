@@ -11,12 +11,12 @@ import { CellRange, emitLetters, equalCellRanges } from "./CellRange"
 import { Cursor, Align, Bounds, TableCursor } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
-export type Operation<T = unknown, M = unknown, C = void, R = void> = (block: VBlock<T, M, C, R>, base: () => R) => R
+export type Operation<T = unknown, M = unknown, C = unknown, R = void> = (block: VBlock<T, M, C, R>, base: () => R) => R
 export type AsyncOperation<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
 export type SimpleOperation<T = unknown> = (block: VBlock<T, any, any, any>) => void
 export const enum Priority { Realtime = 0, Normal = 1, Background = 2 }
 
-export interface BlockBody<T = unknown, M = unknown, C = void, R = void> {
+export interface BlockBody<T = unknown, M = unknown, C = unknown, R = void> {
   base?: BlockBody<T, M, C, R>
   key?: string
   reaction?: boolean
@@ -36,7 +36,7 @@ export function Fragment<M = unknown, R = void>(
 
 // VBlock
 
-export abstract class VBlock<T = unknown, M = unknown, C = void, R = void> {
+export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   static readonly shortFrameDuration = 16 // ms
   static readonly longFrameDuration = 300 // ms
   static currentRenderingPriority = Priority.Realtime
@@ -93,7 +93,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = void, R = void> {
     forEachChildRecursively(gSysRoot, action)
   }
 
-  static claim<T = undefined, M = unknown, C = void, R = void>(
+  static claim<T = undefined, M = unknown, C = unknown, R = void>(
     driver: AbstractDriver<T>,
     body?: BlockBody<T, M, C, R>,
     base?: BlockBody<T, M, C, R>): VBlock<T, M, C, R> {
@@ -167,7 +167,7 @@ export enum Layout {
 
 // AbstractDriver
 
-export class AbstractDriver<T> {
+export class AbstractDriver<T, C = unknown> {
   public static readonly fragment = new AbstractDriver<any>("fragment", false,
     b => b.layout = Layout.Group)
 
@@ -177,82 +177,84 @@ export class AbstractDriver<T> {
     readonly preset?: SimpleOperation<T>) {
   }
 
-  initialize(block: VBlock<T>, native: T): T {
-    const b = block as VBlockImpl<T>
+  initialize(block: VBlock<T, unknown, C>, native: T, controller?: C): T {
+    const b = block as VBlockImpl<T, unknown, C>
     b.native = native
+    b.controller = controller!
     this.preset?.(b)
     invokeInitializeChain(b, b.body)
     return native
   }
 
-  deploy(block: VBlock<T>): void {
+  deploy(block: VBlock<T, unknown, C>): void {
     // nothing to do by default
   }
 
-  render(block: VBlock<T>): void | Promise<void> {
+  render(block: VBlock<T, unknown, C>): void | Promise<void> {
     invokeRenderChain(block, block.body)
   }
 
-  finalize(block: VBlock<T>, isLeader: boolean): boolean {
-    const b = block as VBlockImpl<T>
+  finalize(block: VBlock<T, unknown, C>, isLeader: boolean): boolean {
+    const b = block as VBlockImpl<T, unknown, C>
     invokeFinalizeChain(b, b.body)
-    b.native = null as any as T // hack
+    b.native = null!
+    b.controller = null!
     return isLeader // treat children as finalization leaders as well
   }
 
-  applyLayout(block: VBlock<T, any, any, any>, layout: Layout): void {
-    const b = block as VBlockImpl<T>
+  applyLayout(block: VBlock<T, any, C, any>, layout: Layout): void {
+    const b = block as VBlockImpl<T, unknown, C>
     if (layout === Layout.Table)
       b.cursor = new TableCursor()
     else
       b.cursor = new Cursor()
   }
 
-  applyCellRange(block: VBlock<T, any, any, any>, cellRange: CellRange | undefined): void {
+  applyCellRange(block: VBlock<T, any, C, any>, cellRange: CellRange | undefined): void {
     // do nothing
   }
 
-  applyWidthGrowth(block: VBlock<T, any, any, any>, widthGrowth: number): void {
+  applyWidthGrowth(block: VBlock<T, any, C, any>, widthGrowth: number): void {
     // do nothing
   }
 
-  applyMinWidth(block: VBlock<T, any, any, any>, minWidth: string): void {
+  applyMinWidth(block: VBlock<T, any, C, any>, minWidth: string): void {
     // do nothing
   }
 
-  applyMaxWidth(block: VBlock<T, any, any, any>, maxWidth: string): void {
+  applyMaxWidth(block: VBlock<T, any, C, any>, maxWidth: string): void {
     // do nothing
   }
 
-  applyHeightGrowth(block: VBlock<T, any, any, any>, heightGrowth: number): void {
+  applyHeightGrowth(block: VBlock<T, any, C, any>, heightGrowth: number): void {
     // do nothing
   }
 
-  applyMinHeight(block: VBlock<T, any, any, any>, minHeight: string): void {
+  applyMinHeight(block: VBlock<T, any, C, any>, minHeight: string): void {
     // do nothing
   }
 
-  applyMaxHeight(block: VBlock<T, any, any, any>, maxHeight: string): void {
+  applyMaxHeight(block: VBlock<T, any, C, any>, maxHeight: string): void {
     // do nothing
   }
 
-  applyContentAlignment(block: VBlock<T, any, any, any>, contentAlignment: Align): void {
+  applyContentAlignment(block: VBlock<T, any, C, any>, contentAlignment: Align): void {
     // do nothing
   }
 
-  applyBlockAlignment(block: VBlock<T, any, any, any>, blockAlignment: Align): void {
+  applyBlockAlignment(block: VBlock<T, any, C, any>, blockAlignment: Align): void {
     // do nothing
   }
 
-  applyContentWrapping(block: VBlock<T, any, any, any>, contentWrapping: boolean): void {
+  applyContentWrapping(block: VBlock<T, any, C, any>, contentWrapping: boolean): void {
     // do nothing
   }
 
-  applyOverlayVisible(block: VBlock<T, any, any, any>, overlayVisible: boolean | undefined): void {
+  applyOverlayVisible(block: VBlock<T, any, C, any>, overlayVisible: boolean | undefined): void {
     // do nothing
   }
 
-  applyStyling(block: VBlock<T, any, any, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
+  applyStyling(block: VBlock<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
     // do nothing
   }
 }
