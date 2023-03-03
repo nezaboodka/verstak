@@ -182,7 +182,7 @@ export class AbstractDriver<T, C = unknown> {
     b.native = native
     b.controller = controller!
     this.preset?.(b)
-    invokeInitializeChain(b, b.body)
+    invokeInitialize(b, b.body)
     return native
   }
 
@@ -191,12 +191,12 @@ export class AbstractDriver<T, C = unknown> {
   }
 
   render(block: VBlock<T, unknown, C>): void | Promise<void> {
-    invokeRenderChain(block, block.body)
+    invokeRender(block, block.body)
   }
 
   finalize(block: VBlock<T, unknown, C>, isLeader: boolean): boolean {
     const b = block as VBlockImpl<T, unknown, C>
-    invokeFinalizeChain(b, b.body)
+    invokeFinalize(b, b.body)
     b.native = null!
     b.controller = null!
     return isLeader // treat children as finalization leaders as well
@@ -263,31 +263,31 @@ function isReaction(body?: BlockBody<any, any, any, any>): boolean {
   return body?.reaction ?? (body?.base ? isReaction(body?.base) : false)
 }
 
-function invokeInitializeChain(block: VBlock, body: BlockBody): void {
+function invokeInitialize(block: VBlock, body: BlockBody): void {
   const initialize = body.initialize
   const base = body.base
   if (initialize)
-    initialize(block, base ? () => invokeInitializeChain(block, base) : NOP)
+    initialize(block, base ? () => invokeInitialize(block, base) : NOP)
   else if (base)
-    invokeInitializeChain(block, base)
+    invokeInitialize(block, base)
 }
 
-function invokeRenderChain(block: VBlock, body: BlockBody): void {
+function invokeRender(block: VBlock, body: BlockBody): void {
   const render = body.render
   const base = body.base
   if (render)
-    render(block, base ? () => invokeRenderChain(block, base) : NOP)
+    render(block, base ? () => invokeRender(block, base) : NOP)
   else if (base)
-    invokeRenderChain(block, base)
+    invokeRender(block, base)
 }
 
-function invokeFinalizeChain(block: VBlock, body: BlockBody): void {
+function invokeFinalize(block: VBlock, body: BlockBody): void {
   const finalize = body.finalize
   const base = body.base
   if (finalize)
-    finalize(block, base ? () => invokeFinalizeChain(block, base) : NOP)
+    finalize(block, base ? () => invokeFinalize(block, base) : NOP)
   else if (base)
-    invokeFinalizeChain(block, base)
+    invokeFinalize(block, base)
 }
 
 export class StaticDriver<T> extends AbstractDriver<T> {
