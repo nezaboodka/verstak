@@ -10,13 +10,10 @@ import { VBlock, Driver, Priority } from "../core/api"
 
 export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Driver<T, C> {
 
-  initialize(block: VBlock<T, unknown, C>, element: T, controller?: C): T {
-    const native = this.createNative(block)
-    element = element ?? native.element
-    controller = controller ?? native.controller
+  create(block: VBlock<T, unknown, C, void>, b: { native?: T; controller?: C }): void {
     if (Rx.isLogging && !block.driver.isRow)
-      element.setAttribute("key", block.key)
-    return super.initialize(block, element, controller)
+      block.native.setAttribute("key", block.key)
+    super.create(block, b)
   }
 
   finalize(block: VBlock<T, unknown, C>, isLeader: boolean): boolean {
@@ -98,19 +95,19 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Dri
       p = p.prev
     return p
   }
-
-  protected abstract createNative(block: VBlock<T, unknown, C>): { element: T, controller?: C }
 }
 
 export class HtmlDriver<T extends HTMLElement, C = unknown> extends BaseHtmlDriver<T, C> {
-  protected createNative(block: VBlock<T, unknown, C>): { element: T, controller?: C } {
-    return { element: document.createElement(block.driver.name) as T }
+  create(block: VBlock<T, unknown, C, void>, b: { native?: T | undefined; controller?: C | undefined }): void {
+    b.native = document.createElement(block.driver.name) as T
+    super.create(block, b)
   }
 }
 
 export class SvgDriver<T extends SVGElement, C = unknown> extends BaseHtmlDriver<T, C> {
-  protected createNative(block: VBlock<T, unknown, C>): { element: T, controller?: C } {
-    return { element: document.createElementNS("http://www.w3.org/2000/svg", block.driver.name) as T }
+  create(block: VBlock<T, unknown, C, void>, b: { native?: T | undefined; controller?: C | undefined }): void {
+    b.native = document.createElementNS("http://www.w3.org/2000/svg", block.driver.name) as T
+    super.create(block, b)
   }
 }
 

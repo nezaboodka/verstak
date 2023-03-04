@@ -177,13 +177,14 @@ export class Driver<T, C = unknown> {
     readonly preset?: SimpleOperation<T>) {
   }
 
-  initialize(block: VBlock<T, unknown, C>, native: T, controller?: C): T {
+  create(block: VBlock<T, unknown, C>, b: { native?: T, controller?: C }): void {
+    // do nothing
+  }
+
+  initialize(block: VBlock<T, unknown, C>): void {
     const b = block as VBlockImpl<T, unknown, C>
-    b.native = native
-    b.controller = controller!
     this.preset?.(b)
     invokeInitialize(b, b.body)
-    return native
   }
 
   deploy(block: VBlock<T, unknown, C>): void {
@@ -197,8 +198,6 @@ export class Driver<T, C = unknown> {
   finalize(block: VBlock<T, unknown, C>, isLeader: boolean): boolean {
     const b = block as VBlockImpl<T, unknown, C>
     invokeFinalize(b, b.body)
-    b.native = null!
-    b.controller = null!
     return isLeader // treat children as finalization leaders as well
   }
 
@@ -298,8 +297,8 @@ export class StaticDriver<T> extends Driver<T> {
     this.element = element
   }
 
-  initialize(block: VBlock<T>, element: T): T {
-    return super.initialize(block, this.element)
+  create(block: VBlock<T, unknown, unknown, void>, b: { native?: T; controller?: unknown }): void {
+    b.native = this.element
   }
 }
 
@@ -725,7 +724,8 @@ function redeployIfNecessary(block: VBlockImpl): void {
   if (block.stamp === 0) {
     block.stamp = 1
     nonreactive(() => {
-      driver.initialize(block, undefined)
+      driver.create(block, block)
+      driver.initialize(block)
       driver.deploy(block)
     })
   }
@@ -776,6 +776,8 @@ function triggerFinalization(item: Item<VBlockImpl>, isLeader: boolean, individu
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
     const childrenAreLeaders = nonreactive(() => driver.finalize(block, isLeader))
+    block.native = null
+    block.controller = null
     if (isReaction(block.body)) {
       // Defer disposal if block is reactive
       item.aux = undefined
