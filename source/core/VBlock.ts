@@ -168,8 +168,8 @@ export enum Layout {
 // Driver
 
 export class Driver<T, C = unknown> {
-  public static readonly fragment = new Driver<any>("fragment", false,
-    b => b.layout = Layout.Group)
+  public static readonly fragment =
+    new Driver<any>("fragment", false, b => b.layout = Layout.Group)
 
   constructor(
     readonly name: string,
