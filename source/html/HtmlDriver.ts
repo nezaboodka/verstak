@@ -6,9 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { Item, Rx } from "reactronic"
-import { VBlock, AbstractDriver, Priority } from "../core/api"
+import { VBlock, Driver, Priority } from "../core/api"
 
-export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends AbstractDriver<T, C> {
+export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Driver<T, C> {
 
   initialize(block: VBlock<T, unknown, C>, element: T, controller?: C): T {
     const native = this.createNative(block)

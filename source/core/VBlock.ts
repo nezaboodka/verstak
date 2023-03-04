@@ -31,7 +31,7 @@ export interface BlockBody<T = unknown, M = unknown, C = unknown, R = void> {
 export function Fragment<M = unknown, R = void>(
   body?: BlockBody<void, M, R>,
   base?: BlockBody<void, M, R>): VBlock<void, M, R> {
-  return VBlock.claim(AbstractDriver.fragment, body, base)
+  return VBlock.claim(Driver.fragment, body, base)
 }
 
 // VBlock
@@ -43,7 +43,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   static frameDuration = VBlock.longFrameDuration
   // User-defined properties
   abstract readonly key: string
-  abstract readonly driver: AbstractDriver<T>
+  abstract readonly driver: Driver<T>
   abstract readonly body: Readonly<BlockBody<T, M, C, R>>
   abstract model: M
   abstract layout: Layout
@@ -94,7 +94,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   }
 
   static claim<T = undefined, M = unknown, C = unknown, R = void>(
-    driver: AbstractDriver<T>,
+    driver: Driver<T>,
     body?: BlockBody<T, M, C, R>,
     base?: BlockBody<T, M, C, R>): VBlock<T, M, C, R> {
     let result: VBlockImpl<T, M, C, R>
@@ -165,10 +165,10 @@ export enum Layout {
   Note = 4,   // 100
 }
 
-// AbstractDriver
+// Driver
 
-export class AbstractDriver<T, C = unknown> {
-  public static readonly fragment = new AbstractDriver<any>("fragment", false,
+export class Driver<T, C = unknown> {
+  public static readonly fragment = new Driver<any>("fragment", false,
     b => b.layout = Layout.Group)
 
   constructor(
@@ -290,7 +290,7 @@ function invokeFinalize(block: VBlock, body: BlockBody): void {
     invokeFinalize(block, base)
 }
 
-export class StaticDriver<T> extends AbstractDriver<T> {
+export class StaticDriver<T> extends Driver<T> {
   readonly element: T
 
   constructor(element: T, name: string, isRow: boolean, preset?: SimpleOperation<T>) {
@@ -351,7 +351,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
 
   // User-defined properties
   readonly key: string
-  readonly driver: AbstractDriver<T>
+  readonly driver: Driver<T>
   body: BlockBody<T, M, C, R>
   model: M
   assignedLayout: Layout
@@ -383,7 +383,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   private outer: VBlockImpl
   context: VBlockContext<any> | undefined
 
-  constructor(key: string, driver: AbstractDriver<T>,
+  constructor(key: string, driver: Driver<T>,
     owner: VBlockImpl, body: BlockBody<T, M, C, R>) {
     super()
     // User-defined properties
