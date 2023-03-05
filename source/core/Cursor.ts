@@ -30,7 +30,7 @@ export interface TrackSize extends ElasticSize {
   track?: string | number   // <current>
 }
 
-export type Bounds = undefined | string | {
+export type Placement = undefined | string | {
   widthInCells?: number     // 1 (table only)
   heightInCells?: number    // 1 (table only)
   widthOverlap?: boolean    // false
@@ -40,7 +40,7 @@ export type Bounds = undefined | string | {
 export class Cursor {
   static readonly UndefinedCellRange = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
   reset(): void { /* do nothing */ }
-  onwards(bounds: Bounds): CellRange { return Cursor.UndefinedCellRange }
+  onwards(placement: Placement): CellRange { return Cursor.UndefinedCellRange }
   rowBreak(): void { /* do nothing */ }
 }
 
@@ -63,10 +63,10 @@ export class TableCursor extends Cursor {
     this.newRowCursor = 0
   }
 
-  onwards(bounds: Bounds): CellRange {
+  onwards(placement: Placement): CellRange {
     let result: CellRange
-    if (typeof(bounds) === "string") {
-      result = parseCellRange(bounds, { x1: 0, y1: 0, x2: 0, y2: 0 })
+    if (typeof(placement) === "string") {
+      result = parseCellRange(placement, { x1: 0, y1: 0, x2: 0, y2: 0 })
       absolutizeCellRange(result,
         this.columnCursor + 1, this.rowCursor + 1,
         this.maxColumnCount || Infinity,
@@ -78,11 +78,11 @@ export class TableCursor extends Cursor {
       let h: number
       let wOverlap: boolean
       let hOverlap: boolean
-      if (bounds) {
-        w = bounds.widthInCells ?? 1
-        h = bounds.heightInCells ?? 1
-        wOverlap = bounds.widthOverlap ?? false
-        hOverlap = bounds.heightOverlap ?? false
+      if (placement) {
+        w = placement.widthInCells ?? 1
+        h = placement.heightInCells ?? 1
+        wOverlap = placement.widthOverlap ?? false
+        hOverlap = placement.heightOverlap ?? false
       }
       else { // placement === undefined
         w = 1

@@ -8,7 +8,7 @@
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw, MemberOptions } from "reactronic"
 import { getCallerInfo } from "./Utils"
 import { CellRange, emitLetters, equalCellRanges } from "./CellRange"
-import { Cursor, Align, Bounds, TableCursor } from "./Cursor"
+import { Cursor, Align, Placement, TableCursor } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Operation<T = unknown, M = unknown, C = unknown, R = void> = (block: VBlock<T, M, C, R>, base: () => R) => R
@@ -21,7 +21,7 @@ export interface BlockBody<T = unknown, M = unknown, C = unknown, R = void> {
   key?: string
   reaction?: boolean
   triggers?: unknown
-  bounds?: Bounds
+  placement?: Placement
   initialize?: Operation<T, M, C, R>
   render?: Operation<T, M, C, R>
   finalize?: Operation<T, M, C, R>
@@ -48,7 +48,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   abstract readonly body: Readonly<BlockBody<T, M, C, R>>
   abstract model: M
   abstract layout: Layout
-  abstract bounds: Bounds
+  abstract bounds: Placement
   abstract widthGrowth: number
   abstract minWidth: string
   abstract maxWidth: string
@@ -355,7 +355,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   body: BlockBody<T, M, C, R>
   model: M
   assignedLayout: Layout
-  assignedBounds: Bounds
+  assignedBounds: Placement
   assignedStyle: boolean
   appliedCellRange: CellRange
   appliedWidthGrowth: number
@@ -452,8 +452,8 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     }
   }
 
-  get bounds(): Bounds { return this.assignedBounds }
-  set bounds(value: Bounds) {
+  get bounds(): Placement { return this.assignedBounds }
+  set bounds(value: Placement) {
     if (this.assignedBounds !== undefined)
       throw new Error("cells can be assigned only once during rendering")
     const cellRange = this.host.cursor.onwards(value)
