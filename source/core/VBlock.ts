@@ -21,6 +21,7 @@ export interface BlockBody<T = unknown, M = unknown, C = unknown, R = void> {
   key?: string
   reaction?: boolean
   triggers?: unknown
+  bounds?: Bounds
   initialize?: Operation<T, M, C, R>
   render?: Operation<T, M, C, R>
   finalize?: Operation<T, M, C, R>

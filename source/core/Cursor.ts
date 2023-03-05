@@ -30,7 +30,7 @@ export interface TrackSize extends ElasticSize {
   track?: string | number   // <current>
 }
 
-export type Bounds = undefined | string | number | {
+export type Bounds = undefined | string | {
   widthInCells?: number     // 1 (table only)
   heightInCells?: number    // 1 (table only)
   widthOverlap?: boolean    // false
@@ -78,12 +78,7 @@ export class TableCursor extends Cursor {
       let h: number
       let wOverlap: boolean
       let hOverlap: boolean
-      if (typeof(bounds) === "number") {
-        w = bounds
-        h = 1
-        wOverlap = hOverlap = false
-      }
-      else if (bounds) {
+      if (bounds) {
         w = bounds.widthInCells ?? 1
         h = bounds.heightInCells ?? 1
         wOverlap = bounds.widthOverlap ?? false
