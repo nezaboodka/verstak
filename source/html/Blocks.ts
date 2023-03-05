@@ -84,31 +84,31 @@ export function Group<M = unknown, R = void>(
 
 export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
-  applyLayout(block: VBlock<T, any, any>, layout: Layout): void {
-    const kind = Constants.layouts[layout]
+  applyChildrenLayout(block: VBlock<T, any, any>, value: Layout): void {
+    const kind = Constants.layouts[value]
     kind && block.native.setAttribute(Constants.attribute, kind)
-    VerstakDriversByLayout[layout](block)
-    super.applyLayout(block, layout)
+    VerstakDriversByLayout[value](block)
+    super.applyChildrenLayout(block, value)
   }
 
-  applyCellRange(block: VBlock<T>, cellRange: CellRange | undefined): void {
+  applyCellRange(block: VBlock<T>, value: CellRange | undefined): void {
     const css = block.native.style
-    if (cellRange) {
-      const x1 = cellRange.x1 || 1
-      const y1 = cellRange.y1 || 1
-      const x2 = cellRange.x2 || x1
-      const y2 = cellRange.y2 || y1
+    if (value) {
+      const x1 = value.x1 || 1
+      const y1 = value.y1 || 1
+      const x2 = value.x2 || x1
+      const y2 = value.y2 || y1
       css.gridArea = `${y1} / ${x1} / span ${y2 - y1 + 1} / span ${x2 - x1 + 1}`
     }
     else
       css.gridArea = ""
-    super.applyCellRange(block, cellRange)
+    super.applyCellRange(block, value)
   }
 
-  applyWidthGrowth(block: VBlock<T>, widthGrowth: number): void {
+  applyWidthGrowth(block: VBlock<T>, value: number): void {
     const css = block.native.style
-    if (widthGrowth > 0) {
-      css.flexGrow = `${widthGrowth}`
+    if (value > 0) {
+      css.flexGrow = `${value}`
       css.flexBasis = "0"
     }
     else {
@@ -117,42 +117,42 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
   }
 
-  applyMinWidth(block: VBlock<T>, minWidth: string): void {
-    block.native.style.minWidth = `${minWidth}`
+  applyMinWidth(block: VBlock<T>, value: string): void {
+    block.native.style.minWidth = `${value}`
   }
 
-  applyMaxWidth(block: VBlock<T>, maxWidth: string): void {
-    block.native.style.maxWidth = `${maxWidth}`
+  applyMaxWidth(block: VBlock<T>, value: string): void {
+    block.native.style.maxWidth = `${value}`
   }
 
-  applyHeightGrowth(block: VBlock<T>, heightGrowth: number): void {
+  applyHeightGrowth(block: VBlock<T>, value: number): void {
     if (block.driver.isRow) {
       const css = block.native.style
-      if (heightGrowth > 0)
-        css.flexGrow = `${heightGrowth}`
+      if (value > 0)
+        css.flexGrow = `${value}`
       else
         css.flexGrow = ""
     }
     else if (block.host.driver.isRow) {
       block.driver.applyBlockAlignment(block, Align.Stretch)
-      block.host.driver.applyHeightGrowth(block.host, heightGrowth)
+      block.host.driver.applyHeightGrowth(block.host, value)
     }
   }
 
-  applyMinHeight(block: VBlock<T>, minHeight: string): void {
-    block.native.style.minHeight = `${minHeight}`
+  applyMinHeight(block: VBlock<T>, value: string): void {
+    block.native.style.minHeight = `${value}`
   }
 
-  applyMaxHeight(block: VBlock<T>, maxHeight: string): void {
-    block.native.style.maxHeight = `${maxHeight}`
+  applyMaxHeight(block: VBlock<T>, value: string): void {
+    block.native.style.maxHeight = `${value}`
   }
 
-  applyContentAlignment(block: VBlock<T>, contentAlign: Align): void {
+  applyContentAlignment(block: VBlock<T>, value: Align): void {
     const css = block.native.style
-    if ((contentAlign & Align.Default) === 0) { // if not auto mode
-      const v = AlignToCss[(contentAlign >> 2) & 0b11]
-      const h = AlignToCss[contentAlign & 0b11]
-      const t = TextAlignCss[contentAlign & 0b11]
+    if ((value & Align.Default) === 0) { // if not auto mode
+      const v = AlignToCss[(value >> 2) & 0b11]
+      const h = AlignToCss[value & 0b11]
+      const t = TextAlignCss[value & 0b11]
       css.justifyContent = v
       css.alignItems = h
       css.textAlign = t
@@ -161,11 +161,11 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
       css.justifyContent = css.alignContent = css.textAlign = ""
   }
 
-  applyBlockAlignment(block: VBlock<T>, blockAlign: Align): void {
+  applyBlockAlignment(block: VBlock<T>, value: Align): void {
     const css = block.native.style
-    if ((blockAlign & Align.Default) === 0) { // if not auto mode
-      const v = AlignToCss[(blockAlign >> 2) & 0b11]
-      const h = AlignToCss[blockAlign & 0b11]
+    if ((value & Align.Default) === 0) { // if not auto mode
+      const v = AlignToCss[(value >> 2) & 0b11]
+      const h = AlignToCss[value & 0b11]
       css.alignSelf = v
       css.justifySelf = h
     }
@@ -176,9 +176,9 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
       css.alignSelf = css.justifySelf = ""
   }
 
-  applyContentWrapping(block: VBlock<T>, contentWrapping: boolean): void {
+  applyContentWrapping(block: VBlock<T>, value: boolean): void {
     const css = block.native.style
-    if (contentWrapping) {
+    if (value) {
       css.flexFlow = "wrap"
       css.overflow = ""
       css.textOverflow = ""
@@ -192,11 +192,11 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
   }
 
-  applyOverlayVisible(block: VBlock<T>, overlayVisible: boolean | undefined): void {
+  applyOverlayVisible(block: VBlock<T>, value: boolean | undefined): void {
     const e = block.native
     const css = e.style
     const parent = HtmlDriver.findNearestParentHtmlBlock(block).native
-    if (overlayVisible === true) {
+    if (value === true) {
       const doc = document.body
       const rect = parent.getBoundingClientRect()
       if (doc.offsetWidth - rect.left > rect.right) // rightward
@@ -215,7 +215,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
     else {
       parent.style.position = ""
-      if (overlayVisible === false)
+      if (value === false)
         css.display = "none"
       else // overlayVisible === undefined
         css.position = css.display = css.left = css.right = css.top = css.bottom = "" // clear
@@ -233,7 +233,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
-    if (block.layout < Layout.Row)
+    if (block.childrenLayout < Layout.Row)
       fromNewRow()
     return super.render(block)
   }
@@ -254,20 +254,20 @@ const Constants = {
 
 const Drivers = {
   // display: flex, flex-direction: column
-  chain: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Chain),
+  chain: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Chain),
 
   // display: grid
-  table: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Table),
+  table: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Table),
 
   // display: contents
   // display: flex (row)
-  row: new VerstakHtmlDriver<HTMLElement>(Constants.row, true, b => b.layout = Layout.Row),
+  row: new VerstakHtmlDriver<HTMLElement>(Constants.row, true, b => b.childrenLayout = Layout.Row),
 
   // display: contents
-  group: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Group),
+  group: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Group),
 
   // display: block
-  note: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Note),
+  note: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Note),
 }
 
 const VerstakDriversByLayout: Array<SimpleOperation<HTMLElement>> = [

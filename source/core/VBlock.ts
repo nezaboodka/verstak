@@ -47,8 +47,8 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   abstract readonly driver: Driver<T>
   abstract readonly body: Readonly<BlockBody<T, M, C, R>>
   abstract model: M
-  abstract layout: Layout
-  abstract bounds: Placement
+  abstract childrenLayout: Layout
+  abstract placement: Placement
   abstract widthGrowth: number
   abstract minWidth: string
   abstract maxWidth: string
@@ -170,7 +170,7 @@ export enum Layout {
 
 export class Driver<T, C = unknown> {
   public static readonly fragment =
-    new Driver<any>("fragment", false, b => b.layout = Layout.Group)
+    new Driver<any>("fragment", false, b => b.childrenLayout = Layout.Group)
 
   constructor(
     readonly name: string,
@@ -202,55 +202,55 @@ export class Driver<T, C = unknown> {
     return isLeader // treat children as finalization leaders as well
   }
 
-  applyLayout(block: VBlock<T, any, C, any>, layout: Layout): void {
+  applyChildrenLayout(block: VBlock<T, any, C, any>, value: Layout): void {
     const b = block as VBlockImpl<T, unknown, C>
-    if (layout === Layout.Table)
+    if (value === Layout.Table)
       b.cursor = new TableCursor()
     else
       b.cursor = new Cursor()
   }
 
-  applyCellRange(block: VBlock<T, any, C, any>, cellRange: CellRange | undefined): void {
+  applyCellRange(block: VBlock<T, any, C, any>, value: CellRange | undefined): void {
     // do nothing
   }
 
-  applyWidthGrowth(block: VBlock<T, any, C, any>, widthGrowth: number): void {
+  applyWidthGrowth(block: VBlock<T, any, C, any>, value: number): void {
     // do nothing
   }
 
-  applyMinWidth(block: VBlock<T, any, C, any>, minWidth: string): void {
+  applyMinWidth(block: VBlock<T, any, C, any>, value: string): void {
     // do nothing
   }
 
-  applyMaxWidth(block: VBlock<T, any, C, any>, maxWidth: string): void {
+  applyMaxWidth(block: VBlock<T, any, C, any>, value: string): void {
     // do nothing
   }
 
-  applyHeightGrowth(block: VBlock<T, any, C, any>, heightGrowth: number): void {
+  applyHeightGrowth(block: VBlock<T, any, C, any>, value: number): void {
     // do nothing
   }
 
-  applyMinHeight(block: VBlock<T, any, C, any>, minHeight: string): void {
+  applyMinHeight(block: VBlock<T, any, C, any>, value: string): void {
     // do nothing
   }
 
-  applyMaxHeight(block: VBlock<T, any, C, any>, maxHeight: string): void {
+  applyMaxHeight(block: VBlock<T, any, C, any>, value: string): void {
     // do nothing
   }
 
-  applyContentAlignment(block: VBlock<T, any, C, any>, contentAlignment: Align): void {
+  applyContentAlignment(block: VBlock<T, any, C, any>, value: Align): void {
     // do nothing
   }
 
-  applyBlockAlignment(block: VBlock<T, any, C, any>, blockAlignment: Align): void {
+  applyBlockAlignment(block: VBlock<T, any, C, any>, value: Align): void {
     // do nothing
   }
 
-  applyContentWrapping(block: VBlock<T, any, C, any>, contentWrapping: boolean): void {
+  applyContentWrapping(block: VBlock<T, any, C, any>, value: boolean): void {
     // do nothing
   }
 
-  applyOverlayVisible(block: VBlock<T, any, C, any>, overlayVisible: boolean | undefined): void {
+  applyOverlayVisible(block: VBlock<T, any, C, any>, value: boolean | undefined): void {
     // do nothing
   }
 
@@ -354,8 +354,8 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   readonly driver: Driver<T>
   body: BlockBody<T, M, C, R>
   model: M
-  assignedLayout: Layout
-  assignedBounds: Placement
+  assignedChildrenLayout: Layout
+  assignedPlacement: Placement
   assignedStyle: boolean
   appliedCellRange: CellRange
   appliedWidthGrowth: number
@@ -391,8 +391,8 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     this.driver = driver
     this.body = body
     this.model = undefined as any
-    this.assignedLayout = Layout.Row
-    this.assignedBounds = undefined
+    this.assignedChildrenLayout = Layout.Row
+    this.assignedPlacement = undefined
     this.assignedStyle = false
     this.appliedCellRange = Cursor.UndefinedCellRange
     this.appliedWidthGrowth = 0
@@ -432,10 +432,10 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     renderNow(this.item!)
   }
 
-  get isSequential(): boolean { return (this.layout & 1) === 0 } // Chain, Row, Note
-  get isAuxiliary(): boolean { return (this.layout & 2) === 2 } // Row, Group
-  get isChain(): boolean { return this.layout === Layout.Chain }
-  get isTable(): boolean { return this.layout === Layout.Table }
+  get isSequential(): boolean { return (this.childrenLayout & 1) === 0 } // Chain, Row, Note
+  get isAuxiliary(): boolean { return (this.childrenLayout & 2) === 2 } // Row, Group
+  get isChain(): boolean { return this.childrenLayout === Layout.Chain }
+  get isTable(): boolean { return this.childrenLayout === Layout.Table }
 
   get isMoved(): boolean {
     let owner = this.host
@@ -444,25 +444,26 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     return owner.children.isMoved(this.item!)
   }
 
-  get layout(): Layout { return this.assignedLayout }
-  set layout(value: Layout) {
-    if (value !== this.assignedLayout || this.stamp < 2) {
-      this.driver.applyLayout(this, value)
-      this.assignedLayout = value
+  get childrenLayout(): Layout { return this.assignedChildrenLayout }
+  set childrenLayout(value: Layout) {
+    if (value !== this.assignedChildrenLayout || this.stamp < 2) {
+      this.driver.applyChildrenLayout(this, value)
+      this.assignedChildrenLayout = value
     }
   }
 
-  get bounds(): Placement { return this.assignedBounds }
-  set bounds(value: Placement) {
-    if (this.assignedBounds !== undefined)
+  get placement(): Placement { return this.assignedPlacement }
+  set placement(value: Placement) {
+    if (this.assignedPlacement !== undefined)
       throw new Error("cells can be assigned only once during rendering")
     const cellRange = this.host.cursor.onwards(value)
     if (!equalCellRanges(cellRange, this.appliedCellRange)) {
       this.driver.applyCellRange(this, cellRange)
       this.appliedCellRange = cellRange
     }
-    this.assignedBounds = value ?? { }
+    this.assignedPlacement = value ?? { }
   }
+
   get widthGrowth(): number { return this.appliedWidthGrowth }
   set widthGrowth(value: number) {
     if (value !== this.appliedWidthGrowth) {
@@ -470,6 +471,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
       this.appliedWidthGrowth = value
     }
   }
+
   get minWidth(): string { return this.appliedMinWidth }
   set minWidth(value: string) {
     if (value !== this.appliedMinWidth) {
@@ -477,6 +479,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
       this.appliedMinWidth = value
     }
   }
+
   get maxWidth(): string { return this.appliedMaxWidth }
   set maxWidth(value: string) {
     if (value !== this.appliedMaxWidth) {
@@ -484,6 +487,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
       this.appliedMaxWidth = value
     }
   }
+
   get heightGrowth(): number { return this.appliedHeightGrowth }
   set heightGrowth(value: number) {
     if (value !== this.appliedHeightGrowth) {
@@ -491,6 +495,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
       this.appliedHeightGrowth = value
     }
   }
+
   get minHeight(): string { return this.appliedMinHeight }
   set minHeight(value: string) {
     if (value !== this.appliedMinHeight) {
@@ -498,6 +503,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
       this.appliedMinHeight = value
     }
   }
+
   get maxHeight(): string { return this.appliedMaxHeight }
   set maxHeight(value: string) {
     if (value !== this.appliedMaxHeight) {
@@ -505,6 +511,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
       this.appliedMaxHeight = value
     }
   }
+
   get contentAlignment(): Align { return this.appliedContentAlignment }
   set contentAlignment(value: Align) {
     if (value !== this.appliedContentAlignment) {
@@ -512,6 +519,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
       this.appliedContentAlignment = value
     }
   }
+
   get blockAlignment(): Align { return this.appliedBlockAlignment }
   set blockAlignment(value: Align) {
     if (value !== this.appliedBlockAlignment) {
@@ -519,6 +527,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
       this.appliedBlockAlignment = value
     }
   }
+
   get contentWrapping(): boolean { return this.appliedContentWrapping }
   set contentWrapping(value: boolean) {
     if (value !== this.appliedContentWrapping) {
@@ -526,6 +535,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
       this.appliedContentWrapping = value
     }
   }
+
   get overlayVisible(): boolean | undefined { return this.appliedOverlayVisible }
   set overlayVisible(value: boolean | undefined) {
     if (value !== this.appliedOverlayVisible) {
@@ -743,15 +753,15 @@ function renderNow(item: Item<VBlockImpl>): void {
         redeployIfNecessary(block)
         block.stamp++
         block.numerator = 0
-        block.assignedBounds = undefined // reset
+        block.assignedPlacement = undefined // reset
         block.assignedStyle = false // reset
         block.children.beginMerge()
         const driver = block.driver
         result = driver.render(block)
         if (driver.isRow)
           block.host.cursor.rowBreak()
-        else if (block.assignedBounds === undefined)
-          block.bounds = undefined // assign cells automatically
+        else if (block.assignedPlacement === undefined)
+          block.placement = undefined // assign cells automatically
         if (result instanceof Promise)
           result.then(
             v => { runRenderNestedTreesThenDo(undefined, NOP); return v },
@@ -906,7 +916,7 @@ Promise.prototype.then = reactronicDomHookedThen
 const NOP: any = (...args: any[]): void => { /* nop */ }
 
 const gSysDriver = new StaticDriver<null>(
-  null, "SYSTEM", false, b => b.layout = Layout.Group)
+  null, "SYSTEM", false, b => b.childrenLayout = Layout.Group)
 const gSysRoot = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>(
   gSysDriver.name, gSysDriver, { level: 0 } as VBlockImpl, { reaction: true, render: NOP })) // fake owner/host (overwritten below)
 gSysRoot.instance.item = gSysRoot
