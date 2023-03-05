@@ -80,9 +80,9 @@ export function Group<M = unknown, R = void>(
   return VBlock.claim(Drivers.group, body, base)
 }
 
-// VerstakDriver
+// VerstakHtmlDriver
 
-export class VerstakDriver<T extends HTMLElement> extends HtmlDriver<T> {
+export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   applyLayout(block: VBlock<T, any, any>, layout: Layout): void {
     const kind = Constants.layouts[layout]
@@ -254,20 +254,20 @@ const Constants = {
 
 const Drivers = {
   // display: flex, flex-direction: column
-  chain: new VerstakDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Chain),
+  chain: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Chain),
 
   // display: grid
-  table: new VerstakDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Table),
+  table: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Table),
 
   // display: contents
   // display: flex (row)
-  row: new VerstakDriver<HTMLElement>(Constants.row, true, b => b.layout = Layout.Row),
+  row: new VerstakHtmlDriver<HTMLElement>(Constants.row, true, b => b.layout = Layout.Row),
 
   // display: contents
-  group: new VerstakDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Group),
+  group: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Group),
 
   // display: block
-  note: new VerstakDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Note),
+  note: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.layout = Layout.Note),
 }
 
 const VerstakDriversByLayout: Array<SimpleOperation<HTMLElement>> = [
