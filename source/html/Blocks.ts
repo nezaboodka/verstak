@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, Layout, BlockBody, Align, CellRange, SimpleOperation } from "../core/api"
+import { VBlock, Layout, BlockBuilder, Align, CellRange, SimpleOperation } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -30,24 +30,24 @@ import { HtmlDriver } from "./HtmlDriver"
 // Chain
 
 export function Chain<M = unknown, R = void>(
-  body?: BlockBody<HTMLElement, M, R>,
-  base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(Drivers.chain, body, base)
+  builder?: BlockBuilder<HTMLElement, M, R>,
+  base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(Drivers.chain, builder, base)
 }
 
 // Table
 
 export function Table<M = unknown, R = void>(
-  body?: BlockBody<HTMLElement, M, R>,
-  base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(Drivers.table, body, base)
+  builder?: BlockBuilder<HTMLElement, M, R>,
+  base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(Drivers.table, builder, base)
 }
 
 // Row
 
-export function row<T = void>(body?: (block: void) => T, key?: string): void {
+export function row<T = void>(builder?: (block: void) => T, key?: string): void {
   fromNewRow(key)
-  body?.()
+  builder?.()
 }
 
 export function fromNewRow(key?: string): void {
@@ -56,16 +56,16 @@ export function fromNewRow(key?: string): void {
 
 // Note (either plain or html)
 
-export function Note(content: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(Drivers.note, body, {
+export function Note(content: string, builder?: BlockBuilder<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+  return VBlock.claim(Drivers.note, builder, {
     render(b) {
       b.native.innerText = content
     }},
   )
 }
 
-export function HtmlNote(content: string, body?: BlockBody<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(Drivers.note, body, {
+export function HtmlNote(content: string, builder?: BlockBuilder<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+  return VBlock.claim(Drivers.note, builder, {
     render(b) {
       b.native.innerHTML = content
     }},
@@ -75,9 +75,9 @@ export function HtmlNote(content: string, body?: BlockBody<HTMLElement, void, vo
 // Group
 
 export function Group<M = unknown, R = void>(
-  body?: BlockBody<HTMLElement, M, R>,
-  base?: BlockBody<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(Drivers.group, body, base)
+  builder?: BlockBuilder<HTMLElement, M, R>,
+  base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  return VBlock.claim(Drivers.group, builder, base)
 }
 
 // VerstakHtmlDriver

@@ -16,8 +16,8 @@ export type AsyncOperation<T = unknown, M = unknown> = (block: VBlock<T, M, Prom
 export type SimpleOperation<T = unknown> = (block: VBlock<T, any, any, any>) => void
 export const enum Priority { Realtime = 0, Normal = 1, Background = 2 }
 
-export interface BlockBody<T = unknown, M = unknown, C = unknown, R = void> {
-  base?: BlockBody<T, M, C, R>
+export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
+  base?: BlockBuilder<T, M, C, R>
   key?: string
   reaction?: boolean
   triggers?: unknown
@@ -30,9 +30,9 @@ export interface BlockBody<T = unknown, M = unknown, C = unknown, R = void> {
 // Fragment
 
 export function Fragment<M = unknown, R = void>(
-  body?: BlockBody<void, M, R>,
-  base?: BlockBody<void, M, R>): VBlock<void, M, R> {
-  return VBlock.claim(Driver.fragment, body, base)
+  builder?: BlockBuilder<void, M, R>,
+  base?: BlockBuilder<void, M, R>): VBlock<void, M, R> {
+  return VBlock.claim(Driver.fragment, builder, base)
 }
 
 // VBlock
@@ -45,7 +45,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   // User-defined properties
   abstract readonly key: string
   abstract readonly driver: Driver<T>
-  abstract readonly body: Readonly<BlockBody<T, M, C, R>>
+  abstract readonly builder: Readonly<BlockBuilder<T, M, C, R>>
   abstract model: M
   abstract childrenLayout: Layout
   abstract placement: Placement
@@ -78,7 +78,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   abstract configureReactronic(options: Partial<MemberOptions>): MemberOptions
 
   static root(render: () => void): void {
-    gSysRoot.instance.body.render = render
+    gSysRoot.instance.builder.render = render
     triggerRendering(gSysRoot)
   }
 
@@ -96,18 +96,18 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
 
   static claim<T = undefined, M = unknown, C = unknown, R = void>(
     driver: Driver<T>,
-    body?: BlockBody<T, M, C, R>,
-    base?: BlockBody<T, M, C, R>): VBlock<T, M, C, R> {
+    builder?: BlockBuilder<T, M, C, R>,
+    base?: BlockBuilder<T, M, C, R>): VBlock<T, M, C, R> {
     let result: VBlockImpl<T, M, C, R>
     const owner = gCurrent.instance
     const children = owner.children
     let ex: Item<VBlockImpl<any, any, any, any>> | undefined = undefined
     // Normalize parameters
-    if (body)
-      body.base = base
+    if (builder)
+      builder.base = base
     else
-      body = base ?? {}
-    let key = body.key
+      builder = base ?? {}
+    let key = builder.key
     // Check for coalescing separators or lookup for existing block
     if (driver.isRow) {
       const last = children.lastClaimedItem()
@@ -121,16 +121,16 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
       result = ex.instance
       if (result.driver !== driver && driver !== undefined)
         throw new Error(`changing block driver is not yet supported: "${result.driver.name}" -> "${driver?.name}"`)
-      const exTriggers = result.body.triggers
-      if (triggersAreEqual(body.triggers, exTriggers))
-        body.triggers = exTriggers // preserve triggers instance
-      result.body = body
+      const exTriggers = result.builder.triggers
+      if (triggersAreEqual(builder.triggers, exTriggers))
+        builder.triggers = exTriggers // preserve triggers instance
+      result.builder = builder
     }
     else { // create new
-      result = new VBlockImpl<T, M, C, R>(key || VBlock.generateKey(owner), driver, owner, body)
+      result = new VBlockImpl<T, M, C, R>(key || VBlock.generateKey(owner), driver, owner, builder)
       result.item = children.add(result)
       VBlockImpl.grandCount++
-      if (isReaction(body))
+      if (isReaction(builder))
         VBlockImpl.disposableCount++
     }
     return result
@@ -185,7 +185,7 @@ export class Driver<T, C = unknown> {
   initialize(block: VBlock<T, unknown, C>): void {
     const b = block as VBlockImpl<T, unknown, C>
     this.preset?.(b)
-    invokeInitialize(b, b.body)
+    invokeInitialize(b, b.builder)
   }
 
   deploy(block: VBlock<T, unknown, C>): void {
@@ -193,12 +193,12 @@ export class Driver<T, C = unknown> {
   }
 
   render(block: VBlock<T, unknown, C>): void | Promise<void> {
-    invokeRender(block, block.body)
+    invokeRender(block, block.builder)
   }
 
   finalize(block: VBlock<T, unknown, C>, isLeader: boolean): boolean {
     const b = block as VBlockImpl<T, unknown, C>
-    invokeFinalize(b, b.body)
+    invokeFinalize(b, b.builder)
     return isLeader // treat children as finalization leaders as well
   }
 
@@ -259,31 +259,31 @@ export class Driver<T, C = unknown> {
   }
 }
 
-function isReaction(body?: BlockBody<any, any, any, any>): boolean {
-  return body?.reaction ?? (body?.base ? isReaction(body?.base) : false)
+function isReaction(builder?: BlockBuilder<any, any, any, any>): boolean {
+  return builder?.reaction ?? (builder?.base ? isReaction(builder?.base) : false)
 }
 
-function invokeInitialize(block: VBlock, body: BlockBody): void {
-  const initialize = body.initialize
-  const base = body.base
+function invokeInitialize(block: VBlock, builder: BlockBuilder): void {
+  const initialize = builder.initialize
+  const base = builder.base
   if (initialize)
     initialize(block, base ? () => invokeInitialize(block, base) : NOP)
   else if (base)
     invokeInitialize(block, base)
 }
 
-function invokeRender(block: VBlock, body: BlockBody): void {
-  const render = body.render
-  const base = body.base
+function invokeRender(block: VBlock, builder: BlockBuilder): void {
+  const render = builder.render
+  const base = builder.base
   if (render)
     render(block, base ? () => invokeRender(block, base) : NOP)
   else if (base)
     invokeRender(block, base)
 }
 
-function invokeFinalize(block: VBlock, body: BlockBody): void {
-  const finalize = body.finalize
-  const base = body.base
+function invokeFinalize(block: VBlock, builder: BlockBuilder): void {
+  const finalize = builder.finalize
+  const base = builder.base
   if (finalize)
     finalize(block, base ? () => invokeFinalize(block, base) : NOP)
   else if (base)
@@ -352,7 +352,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   // User-defined properties
   readonly key: string
   readonly driver: Driver<T>
-  body: BlockBody<T, M, C, R>
+  builder: BlockBuilder<T, M, C, R>
   model: M
   assignedChildrenLayout: Layout
   assignedPlacement: Placement
@@ -384,12 +384,12 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   context: VBlockContext<any> | undefined
 
   constructor(key: string, driver: Driver<T>,
-    owner: VBlockImpl, body: BlockBody<T, M, C, R>) {
+    owner: VBlockImpl, builder: BlockBuilder<T, M, C, R>) {
     super()
     // User-defined properties
     this.key = key
     this.driver = driver
-    this.body = body
+    this.builder = builder
     this.model = undefined as any
     this.assignedChildrenLayout = Layout.Row
     this.assignedPlacement = undefined
@@ -550,7 +550,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.stamp !== 1 || !isReaction(this.body))
+    if (this.stamp !== 1 || !isReaction(this.builder))
       throw new Error("reactronic can be configured only for reacting blocks and only inside initialize")
     return Rx.getController(this.render).configure(options)
   }
@@ -713,7 +713,7 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
 function triggerRendering(item: Item<VBlockImpl>): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    if (isReaction(block.body)) {
+    if (isReaction(block.builder)) {
       if (block.stamp === 0) {
         Transaction.outside(() => {
           if (Rx.isLogging)
@@ -723,7 +723,7 @@ function triggerRendering(item: Item<VBlockImpl>): void {
           })
         })
       }
-      nonreactive(block.render, block.body.triggers) // reactive auto-rendering
+      nonreactive(block.render, block.builder.triggers) // reactive auto-rendering
     }
     else
       renderNow(item)
@@ -782,14 +782,14 @@ function triggerFinalization(item: Item<VBlockImpl>, isLeader: boolean, individu
   const block = item.instance
   if (block.stamp >= 0) {
     const driver = block.driver
-    if (individual && block.key !== block.body.key && !driver.isRow)
+    if (individual && block.key !== block.builder.key && !driver.isRow)
       console.log(`WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: ${block.key}`)
     block.stamp = ~block.stamp
     // Finalize block itself and remove it from collection
     const childrenAreLeaders = nonreactive(() => driver.finalize(block, isLeader))
     block.native = null
     block.controller = null
-    if (isReaction(block.body)) {
+    if (isReaction(block.builder)) {
       // Defer disposal if block is reactive
       item.aux = undefined
       const last = gLastToDispose
