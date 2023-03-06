@@ -354,8 +354,8 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   readonly driver: Driver<T>
   builder: BlockBuilder<T, M, C, R>
   model: M
-  assignedChildrenLayout: Layout
-  assignedPlacement: Placement
+  appliedChildrenLayout: Layout
+  appliedPlacement: Placement
   appliedCellRange: CellRange
   appliedWidthGrowth: number
   appliedMinWidth: string
@@ -391,8 +391,8 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     this.driver = driver
     this.builder = builder
     this.model = undefined as any
-    this.assignedChildrenLayout = Layout.Row
-    this.assignedPlacement = undefined
+    this.appliedChildrenLayout = Layout.Row
+    this.appliedPlacement = undefined
     this.appliedCellRange = Cursor.UndefinedCellRange
     this.appliedWidthGrowth = 0
     this.appliedMinWidth = ""
@@ -444,24 +444,24 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     return owner.children.isMoved(this.item!)
   }
 
-  get childrenLayout(): Layout { return this.assignedChildrenLayout }
+  get childrenLayout(): Layout { return this.appliedChildrenLayout }
   set childrenLayout(value: Layout) {
-    if (value !== this.assignedChildrenLayout || this.stamp < 2) {
+    if (value !== this.appliedChildrenLayout || this.stamp < 2) {
       this.driver.applyChildrenLayout(this, value)
-      this.assignedChildrenLayout = value
+      this.appliedChildrenLayout = value
     }
   }
 
-  get placement(): Placement { return this.assignedPlacement }
+  get placement(): Placement { return this.appliedPlacement }
   set placement(value: Placement) {
-    if (this.assignedPlacement !== undefined)
+    if (this.appliedPlacement !== undefined)
       throw new Error("cells can be assigned only once during rendering")
     const cellRange = this.host.cursor.onwards(value)
     if (!equalCellRanges(cellRange, this.appliedCellRange)) {
       this.driver.applyCellRange(this, cellRange)
       this.appliedCellRange = cellRange
     }
-    this.assignedPlacement = value ?? { }
+    this.appliedPlacement = value ?? { }
   }
 
   get widthGrowth(): number { return this.appliedWidthGrowth }
@@ -753,14 +753,14 @@ function renderNow(item: Item<VBlockImpl>): void {
         redeployIfNecessary(block)
         block.stamp++
         block.numerator = 0
-        block.assignedPlacement = undefined // reset
+        block.appliedPlacement = undefined // reset
         block.wasStyleApplied = false // reset
         block.children.beginMerge()
         const driver = block.driver
         result = driver.render(block)
         if (driver.isRow)
           block.host.cursor.rowBreak()
-        else if (block.assignedPlacement === undefined)
+        else if (block.appliedPlacement === undefined)
           block.placement = undefined // assign cells automatically
         if (result instanceof Promise)
           result.then(
