@@ -21,7 +21,7 @@ export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
   key?: string
   reaction?: boolean
   triggers?: unknown
-  placement?: Placement
+  claim?: Operation<T, M, C, R>
   initialize?: Operation<T, M, C, R>
   render?: Operation<T, M, C, R>
   finalize?: Operation<T, M, C, R>
@@ -182,6 +182,11 @@ export class Driver<T, C = unknown> {
     // do nothing
   }
 
+  claim(block: VBlock<T, unknown, C>): void {
+    const b = block as VBlockImpl<T, unknown, C>
+    invokeClaim(b, b.builder)
+  }
+
   initialize(block: VBlock<T, unknown, C>): void {
     const b = block as VBlockImpl<T, unknown, C>
     this.preset?.(b)
@@ -261,6 +266,15 @@ export class Driver<T, C = unknown> {
 
 function isReaction(builder?: BlockBuilder<any, any, any, any>): boolean {
   return builder?.reaction ?? (builder?.base ? isReaction(builder?.base) : false)
+}
+
+function invokeClaim(block: VBlock, builder: BlockBuilder): void {
+  const claim = builder.claim
+  const base = builder.base
+  if (claim)
+    claim(block, base ? () => invokeClaim(block, base) : NOP)
+  else if (base)
+    invokeClaim(block, base)
 }
 
 function invokeInitialize(block: VBlock, builder: BlockBuilder): void {
