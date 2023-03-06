@@ -254,7 +254,7 @@ export class Driver<T, C = unknown> {
     // do nothing
   }
 
-  applyStyling(block: VBlock<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
+  applyStyle(block: VBlock<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
     // do nothing
   }
 }
@@ -356,7 +356,6 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   model: M
   assignedChildrenLayout: Layout
   assignedPlacement: Placement
-  assignedStyle: boolean
   appliedCellRange: CellRange
   appliedWidthGrowth: number
   appliedMinWidth: string
@@ -368,6 +367,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   appliedBlockAlignment: Align
   appliedContentWrapping: boolean
   appliedOverlayVisible: boolean | undefined
+  wasStyleApplied: boolean
   childrenShuffling: boolean
   renderingPriority: Priority
   // System-managed properties
@@ -393,7 +393,6 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     this.model = undefined as any
     this.assignedChildrenLayout = Layout.Row
     this.assignedPlacement = undefined
-    this.assignedStyle = false
     this.appliedCellRange = Cursor.UndefinedCellRange
     this.appliedWidthGrowth = 0
     this.appliedMinWidth = ""
@@ -405,6 +404,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     this.appliedBlockAlignment = Align.Default
     this.appliedContentWrapping = false
     this.appliedOverlayVisible = undefined
+    this.wasStyleApplied = false
     this.childrenShuffling = false
     this.renderingPriority = Priority.Realtime
     // System-managed properties
@@ -545,8 +545,8 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   }
 
   style(styleName: string, enabled?: boolean): void {
-    this.driver.applyStyling(this, this.assignedStyle, styleName, enabled)
-    this.assignedStyle = true
+    this.driver.applyStyle(this, this.wasStyleApplied, styleName, enabled)
+    this.wasStyleApplied = true
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
@@ -754,7 +754,7 @@ function renderNow(item: Item<VBlockImpl>): void {
         block.stamp++
         block.numerator = 0
         block.assignedPlacement = undefined // reset
-        block.assignedStyle = false // reset
+        block.wasStyleApplied = false // reset
         block.children.beginMerge()
         const driver = block.driver
         result = driver.render(block)
@@ -889,7 +889,7 @@ function shuffle<T>(array: Array<T>): Array<T> {
   return array
 }
 
-// Seamless support for asynchronous programing
+// Seamless support for asynchronous programming
 
 const ORIGINAL_PROMISE_THEN = Promise.prototype.then
 

@@ -222,7 +222,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
   }
 
-  applyStyling(block: VBlock<T, any, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
+  applyStyle(block: VBlock<T, any, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
     const e = block.native
     enabled ??= true
     if (secondary)
