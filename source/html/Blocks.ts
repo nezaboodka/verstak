@@ -9,35 +9,35 @@ import { VBlock, Layout, BlockBuilder, Align, CellRange, SimpleOperation } from 
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
-// called chain and table; and on two special non-visual
+// called section and table; and on two special non-visual
 // elements called row and group.
 
-// Chain is a layout structure, which children are layed
+// Section is a layout structure, which children are layed
 // out naturally: rightwards-downwards.
 
 // Table is layout structure, which children are layed out
 // over table cells.
 
 // Row is a special non-visual element, which begins
-// new layout row inside chain or table.
+// new layout row inside section or table.
 
 // Note is either plain or markdown-formatted text
 // supporting syntax highlighting for code blocks.
 
 // Group is a special non-visual element for logical
-// grouping of chains, tables and other groups.
+// grouping of sections, tables and other groups.
 
-// Chain
+// Section
 
-export function Chain<M = unknown, R = void>(
+export function VSection<M = unknown, R = void>(
   builder?: BlockBuilder<HTMLElement, M, R>,
   base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(Drivers.chain, builder, base)
+  return VBlock.claim(Drivers.section, builder, base)
 }
 
 // Table
 
-export function Table<M = unknown, R = void>(
+export function VTable<M = unknown, R = void>(
   builder?: BlockBuilder<HTMLElement, M, R>,
   base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
   return VBlock.claim(Drivers.table, builder, base)
@@ -56,7 +56,7 @@ export function fromNewRow(key?: string): void {
 
 // Note (either plain or html)
 
-export function Note(content: string, builder?: BlockBuilder<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+export function VNote(content: string, builder?: BlockBuilder<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
   return VBlock.claim(Drivers.note, builder, {
     render(b) {
       b.native.innerText = content
@@ -64,7 +64,7 @@ export function Note(content: string, builder?: BlockBuilder<HTMLElement, void, 
   )
 }
 
-export function HtmlNote(content: string, builder?: BlockBuilder<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+export function VHtmlNote(content: string, builder?: BlockBuilder<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
   return VBlock.claim(Drivers.note, builder, {
     render(b) {
       b.native.innerHTML = content
@@ -74,7 +74,7 @@ export function HtmlNote(content: string, builder?: BlockBuilder<HTMLElement, vo
 
 // Group
 
-export function Group<M = unknown, R = void>(
+export function VGroup<M = unknown, R = void>(
   builder?: BlockBuilder<HTMLElement, M, R>,
   base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
   return VBlock.claim(Drivers.group, builder, base)
@@ -248,13 +248,13 @@ const Constants = {
   // attribute: "вид",
   block: "block",
   row: "row",
-  layouts: ["chain", "table", "" /* row */, "group", "note"],
+  layouts: ["section", "table", "" /* row */, "group", "note"],
   attribute: "kind",
 }
 
 const Drivers = {
   // display: flex, flex-direction: column
-  chain: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Chain),
+  section: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Section),
 
   // display: grid
   table: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Table),
@@ -271,7 +271,7 @@ const Drivers = {
 }
 
 const VerstakDriversByLayout: Array<SimpleOperation<HTMLElement>> = [
-  b => { // chain
+  b => { // section
     const css = b.native.style
     css.alignSelf = "center"
     css.display = "flex"

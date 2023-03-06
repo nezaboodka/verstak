@@ -159,11 +159,11 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
 // Layout
 
 export enum Layout {
-  Chain = 0,  // 000
-  Table = 1,  // 001
-  Row = 2,    // 010
-  Group = 3,  // 011
-  Note = 4,   // 100
+  Section = 0,  // 000
+  Table = 1,    // 001
+  Row = 2,      // 010
+  Group = 3,    // 011
+  Note = 4,     // 100
 }
 
 // Driver
@@ -446,9 +446,9 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     renderNow(this.item!)
   }
 
-  get isSequential(): boolean { return (this.childrenLayout & 1) === 0 } // Chain, Row, Note
+  get isSequential(): boolean { return (this.childrenLayout & 1) === 0 } // Section, Row, Note
   get isAuxiliary(): boolean { return (this.childrenLayout & 2) === 2 } // Row, Group
-  get isChain(): boolean { return this.childrenLayout === Layout.Chain }
+  get isSection(): boolean { return this.childrenLayout === Layout.Section }
   get isTable(): boolean { return this.childrenLayout === Layout.Table }
 
   get isMoved(): boolean {
@@ -624,7 +624,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         triggerFinalization(item, true, true)
       if (!error) {
         // Lay out and render actual blocks
-        const ownerIsChain = owner.isChain
+        const ownerIsSection = owner.isSection
         const sequential = children.isStrict
         const cursor = owner.cursor
         let p1: Array<Item<VBlockImpl>> | undefined = undefined
@@ -646,7 +646,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (ownerIsChain && isRow)
+          if (ownerIsSection && isRow)
             hostingRow = block
         }
         // Render incremental children (if any)
