@@ -22,6 +22,7 @@ export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
   reaction?: boolean
   triggers?: unknown
   claim?: Operation<T, M, C, R>
+  create?: Operation<T, M, C, R>
   initialize?: Operation<T, M, C, R>
   render?: Operation<T, M, C, R>
   finalize?: Operation<T, M, C, R>
@@ -47,6 +48,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   abstract readonly driver: Driver<T>
   abstract readonly builder: Readonly<BlockBuilder<T, M, C, R>>
   abstract model: M
+  abstract controller: C
   abstract childrenLayout: Layout
   abstract placement: Placement
   abstract widthGrowth: number
@@ -69,7 +71,6 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   abstract readonly item: Item<VBlock> | undefined
   abstract readonly stamp: number
   abstract readonly native: T
-  abstract readonly controller: C
 
   get isInitialRendering(): boolean {
     return this.stamp === 2
@@ -178,13 +179,13 @@ export class Driver<T, C = unknown> {
     readonly preset?: SimpleOperation<T>) {
   }
 
-  create(block: VBlock<T, unknown, C>, b: { native?: T, controller?: C }): void {
-    // do nothing
-  }
-
   claim(block: VBlock<T, unknown, C>): void {
     const b = block as VBlockImpl<T, unknown, C>
     invokeClaim(b, b.builder)
+  }
+
+  create(block: VBlock<T, unknown, C>, b: { native?: T, controller?: C }): void {
+    invokeCreate(block, block.builder)
   }
 
   initialize(block: VBlock<T, unknown, C>): void {
@@ -275,6 +276,15 @@ function invokeClaim(block: VBlock, builder: BlockBuilder): void {
     claim(block, base ? () => invokeClaim(block, base) : NOP)
   else if (base)
     invokeClaim(block, base)
+}
+
+function invokeCreate(block: VBlock, builder: BlockBuilder): void {
+  const create = builder.create
+  const base = builder.base
+  if (create)
+    create(block, base ? () => invokeCreate(block, base) : NOP)
+  else if (base)
+    invokeCreate(block, base)
 }
 
 function invokeInitialize(block: VBlock, builder: BlockBuilder): void {
@@ -368,6 +378,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   readonly driver: Driver<T>
   builder: BlockBuilder<T, M, C, R>
   model: M
+  controller: C
   appliedChildrenLayout: Layout
   appliedPlacement: Placement
   appliedCellRange: CellRange
@@ -392,7 +403,6 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   item: Item<VBlockImpl> | undefined
   stamp: number
   native: T
-  controller: C
   cursor: Cursor
   private outer: VBlockImpl
   context: VBlockContext<any> | undefined

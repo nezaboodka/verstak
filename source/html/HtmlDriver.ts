@@ -11,9 +11,13 @@ import { VBlock, Driver, Priority } from "../core/api"
 export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Driver<T, C> {
 
   create(block: VBlock<T, unknown, C, void>, b: { native?: T; controller?: C }): void {
+    super.create(block, b)
+  }
+
+  initialize(block: VBlock<T, unknown, C, void>): void {
     if (Rx.isLogging && !block.driver.isRow)
       block.native.setAttribute("key", block.key)
-    super.create(block, b)
+    super.initialize(block)
   }
 
   finalize(block: VBlock<T, unknown, C>, isLeader: boolean): boolean {
