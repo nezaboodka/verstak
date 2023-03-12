@@ -194,7 +194,7 @@ export class Driver<T, C = unknown> {
     invokeInitialize(b, b.builder)
   }
 
-  deploy(block: VBlock<T, unknown, C>): void {
+  mount(block: VBlock<T, unknown, C>): void {
     // nothing to do by default
   }
 
@@ -639,7 +639,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         const cursor = owner.cursor
         let p1: Array<Item<VBlockImpl>> | undefined = undefined
         let p2: Array<Item<VBlockImpl>> | undefined = undefined
-        let redeploy = false
+        let mounting = false
         let hostingRow = owner
         cursor.reset()
         for (const item of children.items()) {
@@ -649,7 +649,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const isRow = block.driver.isRow
           const host = isRow ? owner : hostingRow
           const p = block.renderingPriority ?? Priority.Realtime
-          redeploy = markToRedeployIfNecessary(redeploy, host, item, children, sequential)
+          mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
           if (p === Priority.Realtime)
             triggerRendering(item) // render synchronously
           else if (p === Priority.Normal)
@@ -673,21 +673,21 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
   }
 }
 
-function markToRedeployIfNecessary(redeploy: boolean, host: VBlockImpl,
+function markToMountIfNecessary(mounting: boolean, host: VBlockImpl,
   item: Item<VBlockImpl>, children: Collection<VBlockImpl>, sequential: boolean): boolean {
-  // Detects element redeployment when abstract blocks
+  // Detects element mounting when abstract blocks
   // exist among regular blocks with HTML elements
   const block = item.instance
   if (block.native) {
-    if (redeploy || block.host !== host) {
+    if (mounting || block.host !== host) {
       children.markAsMoved(item)
-      redeploy = false
+      mounting = false
     }
   }
   else if (sequential && children.isMoved(item))
-    redeploy = true // apply to the first block with an element
+    mounting = true // apply to the first block with an element
   block.host = host
-  return redeploy
+  return mounting
 }
 
 async function startIncrementalRendering(
@@ -754,18 +754,18 @@ function triggerRendering(item: Item<VBlockImpl>): void {
   }
 }
 
-function redeployIfNecessary(block: VBlockImpl): void {
+function mountIfNecessary(block: VBlockImpl): void {
   const driver = block.driver
   if (block.stamp === 0) {
     block.stamp = 1
     nonreactive(() => {
       driver.create(block, block)
       driver.initialize(block)
-      driver.deploy(block)
+      driver.mount(block)
     })
   }
   else if (block.isMoved)
-    nonreactive(() => driver.deploy(block))
+    nonreactive(() => driver.mount(block))
 }
 
 function renderNow(item: Item<VBlockImpl>): void {
@@ -774,7 +774,7 @@ function renderNow(item: Item<VBlockImpl>): void {
     let result: unknown = undefined
     runUnder(item, () => {
       try {
-        redeployIfNecessary(block)
+        mountIfNecessary(block)
         block.stamp++
         block.numerator = 0
         block.appliedPlacement = undefined // reset
