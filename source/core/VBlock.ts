@@ -79,8 +79,8 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   abstract configureReactronic(options: Partial<MemberOptions>): MemberOptions
 
   static root(render: () => void): void {
-    gSysRoot.instance.builder.render = render
-    triggerRendering(gSysRoot)
+    gVoid.instance.builder.render = render
+    triggerRendering(gVoid)
   }
 
   static get current(): VBlock {
@@ -92,7 +92,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   }
 
   static runForAllBlocks<T>(action: (e: T) => void): void {
-    forEachChildRecursively(gSysRoot, action)
+    forEachChildRecursively(gVoid, action)
   }
 
   static claim<T = undefined, M = unknown, C = unknown, R = void>(
@@ -939,26 +939,26 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const NOP: any = (...args: any[]): void => { /* nop */ }
 
-const gSysDriver = new StaticDriver<null>(
+const gVoidDriver = new StaticDriver<null>(
   null, "SYSTEM", false, b => b.childrenLayout = Layout.Group)
-const gSysRoot = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>(
-  gSysDriver.name, gSysDriver, { level: 0 } as VBlockImpl, { reaction: true, render: NOP })) // fake owner/host (overwritten below)
-gSysRoot.instance.item = gSysRoot
+const gVoid = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>(
+  gVoidDriver.name, gVoidDriver, { level: 0 } as VBlockImpl, { reaction: true, render: NOP })) // fake owner/host (overwritten below)
+gVoid.instance.item = gVoid
 
-Object.defineProperty(gSysRoot.instance, "owner", {
-  value: gSysRoot.instance,
+Object.defineProperty(gVoid.instance, "owner", {
+  value: gVoid.instance,
   writable: false,
   configurable: false,
   enumerable: true,
 })
 
-Object.defineProperty(gSysRoot.instance, "senior", {
-  value: gSysRoot.instance,
+Object.defineProperty(gVoid.instance, "senior", {
+  value: gVoid.instance,
   writable: false,
   configurable: false,
   enumerable: true,
 })
 
-let gCurrent: Item<VBlockImpl> = gSysRoot
+let gCurrent: Item<VBlockImpl> = gVoid
 let gFirstToDispose: Item<VBlockImpl> | undefined = undefined
 let gLastToDispose: Item<VBlockImpl> | undefined = undefined
