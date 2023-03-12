@@ -772,7 +772,7 @@ function renderNow(item: Item<VBlockImpl>): void {
   const block = item.instance
   if (block.stamp >= 0) { // if block is alive
     let result: unknown = undefined
-    runUnder(item, () => {
+    runInside(item, () => {
       try {
         mountIfNecessary(block)
         block.stamp++
@@ -855,15 +855,15 @@ function forEachChildRecursively(item: Item<VBlockImpl>, action: (e: any) => voi
     forEachChildRecursively(item, action)
 }
 
-function wrap<T>(func: (...args: any[]) => T): (...args: any[]) => T {
+function wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T {
   const current = gCurrent
-  const wrappedRunUnder = (...args: any[]): T => {
-    return runUnder(current, func, ...args)
+  const wrappedToRunInside = (...args: any[]): T => {
+    return runInside(current, func, ...args)
   }
-  return wrappedRunUnder
+  return wrappedToRunInside
 }
 
-function runUnder<T>(item: Item<VBlockImpl>, func: (...args: any[]) => T, ...args: any[]): T {
+function runInside<T>(item: Item<VBlockImpl>, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gCurrent
   try {
     gCurrent = item
@@ -920,8 +920,8 @@ const ORIGINAL_PROMISE_THEN = Promise.prototype.then
 function reactronicDomHookedThen(this: any,
   resolve?: ((value: any) => any | PromiseLike<any>) | undefined | null,
   reject?: ((reason: any) => never | PromiseLike<never>) | undefined | null): Promise<any | never> {
-  resolve = resolve ? wrap(resolve) : defaultResolve
-  reject = reject ? wrap(reject) : defaultReject
+  resolve = resolve ? wrapToRunInside(resolve) : defaultResolve
+  reject = reject ? wrapToRunInside(reject) : defaultReject
   return ORIGINAL_PROMISE_THEN.call(this, resolve, reject)
 }
 
