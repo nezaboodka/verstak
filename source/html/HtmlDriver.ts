@@ -63,27 +63,17 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Dri
 
   render(block: VBlock<T, unknown, C>): void | Promise<void> {
     const result = super.render(block)
-    if (gBlinkingEffect)
+    if (gBlinkingEffectMarker)
       blink(block.native, VBlock.currentRenderingPriority, block.stamp)
     return result
   }
 
-  static get blinkingEffect(): string | undefined {
-    return gBlinkingEffect
+  static get blinkingEffectMarker(): string | undefined {
+    return gBlinkingEffectMarker
   }
 
-  static set blinkingEffect(value: string | undefined) {
-    if (value === undefined) {
-      const effect = gBlinkingEffect
-      VBlock.runForAllBlocks((e: any) => {
-        if (e instanceof HTMLElement) {
-          e.classList.remove(`${effect}-0-0`, `${effect}-0-1`)
-          e.classList.remove(`${effect}-1-0`, `${effect}-1-1`)
-          e.classList.remove(`${effect}-2-0`, `${effect}-2-1`)
-        }
-      })
-    }
-    gBlinkingEffect = value
+  static set blinkingEffectMarker(value: string | undefined) {
+    gBlinkingEffectMarker = value
   }
 
   static findNearestParentHtmlBlock(block: VBlock<any>): VBlock<HTMLElement> {
@@ -119,10 +109,10 @@ function blink(e: Element | undefined, priority: Priority, revision: number): vo
   if (e !== undefined) {
     const n1 = revision % 2
     const n2 = 1 >> n1
-    const effect = gBlinkingEffect
-    e.classList.toggle(`${effect}-${priority}-${n1}`, true)
-    e.classList.toggle(`${effect}-${priority}-${n2}`, false)
+    const bem = gBlinkingEffectMarker
+    e.classList.toggle(`${bem}${priority}${n1}`, true)
+    e.classList.toggle(`${bem}${priority}${n2}`, false)
   }
 }
 
-let gBlinkingEffect: string | undefined = undefined
+let gBlinkingEffectMarker: string | undefined = undefined

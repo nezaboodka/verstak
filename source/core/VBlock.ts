@@ -91,10 +91,6 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
     runRenderNestedTreesThenDo(undefined, action)
   }
 
-  static runForAllBlocks<T>(action: (e: T) => void): void {
-    forEachChildRecursively(gVoid, action)
-  }
-
   static claim<T = undefined, M = unknown, C = unknown, R = void>(
     driver: Driver<T>,
     builder?: BlockBuilder<T, M, C, R>,
