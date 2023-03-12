@@ -843,13 +843,13 @@ async function runDisposalLoop(): Promise<void> {
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
-function forEachChildRecursively(item: Item<VBlockImpl>, action: (e: any) => void): void {
-  const block = item.instance
-  const e = block.native
-  e && action(e)
-  for (const item of block.children.items())
-    forEachChildRecursively(item, action)
-}
+// function forEachChildRecursively(item: Item<VBlockImpl>, action: (e: any) => void): void {
+//   const block = item.instance
+//   const e = block.native
+//   e && action(e)
+//   for (const item of block.children.items())
+//     forEachChildRecursively(item, action)
+// }
 
 function wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T {
   const current = gCurrent
