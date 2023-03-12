@@ -945,7 +945,7 @@ const gSysRoot = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>(
   gSysDriver.name, gSysDriver, { level: 0 } as VBlockImpl, { reaction: true, render: NOP })) // fake owner/host (overwritten below)
 gSysRoot.instance.item = gSysRoot
 
-Object.defineProperty(gSysRoot.instance, "host", {
+Object.defineProperty(gSysRoot.instance, "owner", {
   value: gSysRoot.instance,
   writable: false,
   configurable: false,
