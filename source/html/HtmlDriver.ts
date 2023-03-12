@@ -34,7 +34,7 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Dri
   mount(block: VBlock<T, unknown, C>): void {
     const e = block.native as T | undefined // hack
     if (e) {
-      const sequential = block.host.children.isStrict
+      const sequential = block.owner.children.isStrict
       const nativeParent = BaseHtmlDriver.findNearestParentHtmlBlock(block).native as Element | undefined // hack
       if (nativeParent) {
         if (sequential && !block.driver.isRow) {
@@ -87,9 +87,9 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Dri
   }
 
   static findNearestParentHtmlBlock(block: VBlock<any>): VBlock<HTMLElement> {
-    let p = block.host
+    let p = block.owner
     while (p.native instanceof HTMLElement === false && p !== block)
-      p = p.host
+      p = p.owner
     return p as VBlock<HTMLElement>
   }
 

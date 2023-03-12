@@ -133,9 +133,9 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
       else
         css.flexGrow = ""
     }
-    else if (block.host.driver.isRow) {
+    else if (block.owner.driver.isRow) {
       block.driver.applyBlockAlignment(block, Align.Stretch)
-      block.host.driver.applyHeightGrowth(block.host, value)
+      block.owner.driver.applyHeightGrowth(block.owner, value)
     }
   }
 

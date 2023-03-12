@@ -66,7 +66,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   abstract style(styleName: string, enabled?: boolean): void
   // System-managed properties
   abstract readonly level: number
-  abstract readonly host: VBlock // (!) may differ from owner
+  abstract readonly owner: VBlock // (!) may differ from owner
   abstract readonly children: CollectionReader<VBlock>
   abstract readonly item: Item<VBlock> | undefined
   abstract readonly stamp: number
@@ -397,7 +397,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   renderingPriority: Priority
   // System-managed properties
   readonly level: number
-  host: VBlockImpl
+  owner: VBlockImpl
   children: Collection<VBlockImpl>
   numerator: number
   item: Item<VBlockImpl> | undefined
@@ -433,7 +433,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     this.renderingPriority = Priority.Realtime
     // System-managed properties
     this.level = owner.level + 1
-    this.host = owner // owner is default host, but can be changed
+    this.owner = owner // owner is default host, but can be changed
     this.children = new Collection<VBlockImpl>(getBlockKey, this.isSequential)
     this.numerator = 0
     this.item = undefined
@@ -462,9 +462,9 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   get isTable(): boolean { return this.childrenLayout === Layout.Table }
 
   get isMoved(): boolean {
-    let owner = this.host
+    let owner = this.owner
     if (owner.driver.isRow)
-      owner = owner.host
+      owner = owner.owner
     return owner.children.isMoved(this.item!)
   }
 
@@ -480,7 +480,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   set placement(value: Placement) {
     if (this.appliedPlacement !== undefined)
       throw new Error("cells can be assigned only once during rendering")
-    const cellRange = this.host.cursor.onwards(value)
+    const cellRange = this.owner.cursor.onwards(value)
     if (!equalCellRanges(cellRange, this.appliedCellRange)) {
       this.driver.applyCellRange(this, cellRange)
       this.appliedCellRange = cellRange
@@ -581,7 +581,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
 
   static tryUseContextVariable<T extends Object>(variable: ContextVariable<T>): T | undefined {
     let b = gCurrent.instance
-    while (b.context?.variable !== variable && b.host !== b)
+    while (b.context?.variable !== variable && b.owner !== b)
       b = b.outer
     return b.context?.value as any // TODO: to get rid of any
   }
@@ -595,7 +595,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
 
   static setContextVariableValue<T extends Object>(variable: ContextVariable<T>, value: T | undefined): void {
     const block = gCurrent.instance
-    const host = block.host
+    const host = block.owner
     const hostCtx = nonreactive(() => host.context?.value)
     if (value && value !== hostCtx) {
       if (hostCtx)
@@ -679,14 +679,14 @@ function markToMountIfNecessary(mounting: boolean, host: VBlockImpl,
   // exist among regular blocks with HTML elements
   const block = item.instance
   if (block.native) {
-    if (mounting || block.host !== host) {
+    if (mounting || block.owner !== host) {
       children.markAsMoved(item)
       mounting = false
     }
   }
   else if (sequential && children.isMoved(item))
     mounting = true // apply to the first block with an element
-  block.host = host
+  block.owner = host
   return mounting
 }
 
@@ -783,7 +783,7 @@ function renderNow(item: Item<VBlockImpl>): void {
         const driver = block.driver
         result = driver.render(block)
         if (driver.isRow)
-          block.host.cursor.rowBreak()
+          block.owner.cursor.rowBreak()
         else if (block.appliedPlacement === undefined)
           block.placement = undefined // assign cells automatically
         if (result instanceof Promise)
