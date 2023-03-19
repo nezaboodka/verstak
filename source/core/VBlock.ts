@@ -16,10 +16,16 @@ export type AsyncOperation<T = unknown, M = unknown> = (block: VBlock<T, M, Prom
 export type SimpleOperation<T = unknown> = (block: VBlock<T, any, any, any>) => void
 export const enum Priority { Realtime = 0, Normal = 1, Background = 2 }
 
+export enum Mode {
+  Default = 0,
+  SelfReactive = 1,
+  ManualMount = 2,
+}
+
 export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
   base?: BlockBuilder<T, M, C, R>
   key?: string
-  reaction?: boolean
+  modes?: Mode
   triggers?: unknown
   claim?: Operation<T, M, C, R>
   create?: Operation<T, M, C, R>
@@ -127,7 +133,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
       result = new VBlockImpl<T, M, C, R>(key || VBlock.generateKey(owner), driver, owner, builder)
       result.item = children.add(result)
       VBlockImpl.grandCount++
-      if (isReaction(builder))
+      if (result.has(Mode.SelfReactive))
         VBlockImpl.disposableCount++
     }
     return result
@@ -177,17 +183,17 @@ export class Driver<T, C = unknown> {
 
   claim(block: VBlock<T, unknown, C>): void {
     const b = block as VBlockImpl<T, unknown, C>
-    invokeClaim(b, b.builder)
+    chainedClaim(b, b.builder)
   }
 
   create(block: VBlock<T, unknown, C>, b: { native?: T, controller?: C }): void {
-    invokeCreate(block, block.builder)
+    chainedCreate(block, block.builder)
   }
 
   initialize(block: VBlock<T, unknown, C>): void {
     const b = block as VBlockImpl<T, unknown, C>
     this.preset?.(b)
-    invokeInitialize(b, b.builder)
+    chainedInitialize(b, b.builder)
   }
 
   mount(block: VBlock<T, unknown, C>): void {
@@ -195,12 +201,12 @@ export class Driver<T, C = unknown> {
   }
 
   render(block: VBlock<T, unknown, C>): void | Promise<void> {
-    invokeRender(block, block.builder)
+    chainedRender(block, block.builder)
   }
 
   finalize(block: VBlock<T, unknown, C>, isLeader: boolean): boolean {
     const b = block as VBlockImpl<T, unknown, C>
-    invokeFinalize(b, b.builder)
+    chainedFinalize(b, b.builder)
     return isLeader // treat children as finalization leaders as well
   }
 
@@ -261,53 +267,53 @@ export class Driver<T, C = unknown> {
   }
 }
 
-function isReaction(builder?: BlockBuilder<any, any, any, any>): boolean {
-  return builder?.reaction ?? (builder?.base ? isReaction(builder?.base) : false)
+function chainedMode(builder?: BlockBuilder<any, any, any, any>): Mode {
+  return builder?.modes ?? (builder?.base ? chainedMode(builder?.base) : Mode.Default)
 }
 
-function invokeClaim(block: VBlock, builder: BlockBuilder): void {
+function chainedClaim(block: VBlock, builder: BlockBuilder): void {
   const claim = builder.claim
   const base = builder.base
   if (claim)
-    claim(block, base ? () => invokeClaim(block, base) : NOP)
+    claim(block, base ? () => chainedClaim(block, base) : NOP)
   else if (base)
-    invokeClaim(block, base)
+    chainedClaim(block, base)
 }
 
-function invokeCreate(block: VBlock, builder: BlockBuilder): void {
+function chainedCreate(block: VBlock, builder: BlockBuilder): void {
   const create = builder.create
   const base = builder.base
   if (create)
-    create(block, base ? () => invokeCreate(block, base) : NOP)
+    create(block, base ? () => chainedCreate(block, base) : NOP)
   else if (base)
-    invokeCreate(block, base)
+    chainedCreate(block, base)
 }
 
-function invokeInitialize(block: VBlock, builder: BlockBuilder): void {
+function chainedInitialize(block: VBlock, builder: BlockBuilder): void {
   const initialize = builder.initialize
   const base = builder.base
   if (initialize)
-    initialize(block, base ? () => invokeInitialize(block, base) : NOP)
+    initialize(block, base ? () => chainedInitialize(block, base) : NOP)
   else if (base)
-    invokeInitialize(block, base)
+    chainedInitialize(block, base)
 }
 
-function invokeRender(block: VBlock, builder: BlockBuilder): void {
+function chainedRender(block: VBlock, builder: BlockBuilder): void {
   const render = builder.render
   const base = builder.base
   if (render)
-    render(block, base ? () => invokeRender(block, base) : NOP)
+    render(block, base ? () => chainedRender(block, base) : NOP)
   else if (base)
-    invokeRender(block, base)
+    chainedRender(block, base)
 }
 
-function invokeFinalize(block: VBlock, builder: BlockBuilder): void {
+function chainedFinalize(block: VBlock, builder: BlockBuilder): void {
   const finalize = builder.finalize
   const base = builder.base
   if (finalize)
-    finalize(block, base ? () => invokeFinalize(block, base) : NOP)
+    finalize(block, base ? () => chainedFinalize(block, base) : NOP)
   else if (base)
-    invokeFinalize(block, base)
+    chainedFinalize(block, base)
 }
 
 export class StaticDriver<T> extends Driver<T> {
@@ -452,6 +458,8 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     renderNow(this.item!)
   }
 
+  has(mode: Mode): boolean { return (chainedMode(this.builder) & mode) === mode }
+
   get isSequential(): boolean { return (this.childrenLayout & 1) === 0 } // Section, Row, Note
   get isAuxiliary(): boolean { return (this.childrenLayout & 2) === 2 } // Row, Group
   get isSection(): boolean { return this.childrenLayout === Layout.Section }
@@ -570,7 +578,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.stamp !== 1 || !isReaction(this.builder))
+    if (this.stamp !== 1 || !this.has(Mode.SelfReactive))
       throw new Error("reactronic can be configured only for reacting blocks and only inside initialize")
     return Rx.getController(this.render).configure(options)
   }
@@ -674,7 +682,7 @@ function markToMountIfNecessary(mounting: boolean, host: VBlockImpl,
   // Detects element mounting when abstract blocks
   // exist among regular blocks with HTML elements
   const block = item.instance
-  if (block.native) {
+  if (block.native && !block.has(Mode.ManualMount)) {
     if (mounting || block.owner !== host) {
       children.markAsMoved(item)
       mounting = false
@@ -733,7 +741,7 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
 function triggerRendering(item: Item<VBlockImpl>): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    if (isReaction(block.builder)) {
+    if (block.has(Mode.SelfReactive)) {
       if (block.stamp === 0) {
         Transaction.outside(() => {
           if (Rx.isLogging)
@@ -757,10 +765,11 @@ function mountIfNecessary(block: VBlockImpl): void {
     nonreactive(() => {
       driver.create(block, block)
       driver.initialize(block)
-      driver.mount(block)
+      if (!block.has(Mode.ManualMount))
+        driver.mount(block)
     })
   }
-  else if (block.isMoved)
+  else if (block.isMoved && !block.has(Mode.ManualMount))
     nonreactive(() => driver.mount(block))
 }
 
@@ -809,7 +818,7 @@ function triggerFinalization(item: Item<VBlockImpl>, isLeader: boolean, individu
     const childrenAreLeaders = nonreactive(() => driver.finalize(block, isLeader))
     block.native = null
     block.controller = null
-    if (isReaction(block.builder)) {
+    if (block.has(Mode.SelfReactive)) {
       // Defer disposal if block is reactive
       item.aux = undefined
       const last = gLastToDispose
@@ -938,7 +947,8 @@ const NOP: any = (...args: any[]): void => { /* nop */ }
 const gVoidDriver = new StaticDriver<null>(
   null, "SYSTEM", false, b => b.childrenLayout = Layout.Group)
 const gVoid = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>(
-  gVoidDriver.name, gVoidDriver, { level: 0 } as VBlockImpl, { reaction: true, render: NOP })) // fake owner/host (overwritten below)
+  gVoidDriver.name, gVoidDriver, { level: 0 } as VBlockImpl, {
+    modes: Mode.SelfReactive, render: NOP })) // fake owner/host (overwritten below)
 gVoid.instance.item = gVoid
 
 Object.defineProperty(gVoid.instance, "owner", {
