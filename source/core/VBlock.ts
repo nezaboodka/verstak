@@ -196,7 +196,7 @@ export class Driver<T, C = unknown> {
     chainedInitialize(b, b.builder)
   }
 
-  mount(block: VBlock<T, unknown, C>): void {
+  mount(block: VBlock<T, unknown, C>, host: VBlock): void {
     // nothing to do by default
   }
 
@@ -758,7 +758,7 @@ function triggerRendering(item: Item<VBlockImpl>): void {
   }
 }
 
-function mountIfNecessary(block: VBlockImpl): void {
+function mountIfNecessary(block: VBlockImpl, host: VBlockImpl): void {
   const driver = block.driver
   if (block.stamp === 0) {
     block.stamp = 1
@@ -766,11 +766,11 @@ function mountIfNecessary(block: VBlockImpl): void {
       driver.create(block, block)
       driver.initialize(block)
       if (!block.has(Mode.ManualMount))
-        driver.mount(block)
+        driver.mount(block, host)
     })
   }
   else if (block.isMoved && !block.has(Mode.ManualMount))
-    nonreactive(() => driver.mount(block))
+    nonreactive(() => driver.mount(block, host))
 }
 
 function renderNow(item: Item<VBlockImpl>): void {
@@ -779,7 +779,7 @@ function renderNow(item: Item<VBlockImpl>): void {
     let result: unknown = undefined
     runInside(item, () => {
       try {
-        mountIfNecessary(block)
+        mountIfNecessary(block, block.owner)
         block.stamp++
         block.numerator = 0
         block.appliedPlacement = undefined // reset
