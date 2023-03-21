@@ -438,7 +438,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     // System-managed properties
     this.level = owner.level + 1
     this.owner = owner
-    this.host = owner // owner is default host, but may differ
+    this.host = this // block is unmounted
     this.children = new Collection<VBlockImpl>(getBlockKey, this.isSequential)
     this.numerator = 0
     this.item = undefined
