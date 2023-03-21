@@ -12,7 +12,7 @@ export function FocuserReaction(key: string, target: HTMLElement, model: FocusMo
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {
   Fragment({
     key,
-    modes: Mode.SelfReactive,
+    modes: Mode.SeparateReaction,
     triggers: { target, model },
     initialize(b) {
       b.configureReactronic({ throttling: 0 })

@@ -18,7 +18,7 @@ export const enum Priority { Realtime = 0, Normal = 1, Background = 2 }
 
 export enum Mode {
   Default = 0,
-  SelfReactive = 1,
+  SeparateReaction = 1,
   ManualMount = 2,
 }
 
@@ -134,7 +134,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
       result = new VBlockImpl<T, M, C, R>(key || VBlock.generateKey(owner), driver, owner, builder)
       result.item = children.add(result)
       VBlockImpl.grandCount++
-      if (result.has(Mode.SelfReactive))
+      if (result.has(Mode.SeparateReaction))
         VBlockImpl.disposableCount++
     }
     return result
@@ -577,8 +577,8 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.stamp !== 1 || !this.has(Mode.SelfReactive))
-      throw new Error("reactronic can be configured only for reacting blocks and only inside initialize")
+    if (this.stamp !== 1 || !this.has(Mode.SeparateReaction))
+      throw new Error("reactronic can be configured only for blocks with separate reaction mode and only inside initialize")
     return Rx.getController(this.render).configure(options)
   }
 
@@ -740,7 +740,7 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
 function triggerRendering(item: Item<VBlockImpl>): void {
   const block = item.instance
   if (block.stamp >= 0) {
-    if (block.has(Mode.SelfReactive)) {
+    if (block.has(Mode.SeparateReaction)) {
       if (block.stamp === 0) {
         Transaction.outside(() => {
           if (Rx.isLogging)
@@ -817,7 +817,7 @@ function triggerFinalization(item: Item<VBlockImpl>, isLeader: boolean, individu
     const childrenAreLeaders = nonreactive(() => driver.finalize(block, isLeader))
     block.native = null
     block.controller = null
-    if (block.has(Mode.SelfReactive)) {
+    if (block.has(Mode.SeparateReaction)) {
       // Defer disposal if block is reactive
       item.aux = undefined
       const last = gLastToDispose
@@ -947,7 +947,7 @@ const gVoidDriver = new StaticDriver<null>(
   null, "SYSTEM", false, b => b.childrenLayout = Layout.Group)
 const gVoid = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>(
   gVoidDriver.name, gVoidDriver, { level: 0 } as VBlockImpl, {
-    modes: Mode.SelfReactive, render: NOP })) // fake owner/host (overwritten below)
+    modes: Mode.SeparateReaction, render: NOP })) // fake owner/host (overwritten below)
 gVoid.instance.item = gVoid
 
 Object.defineProperty(gVoid.instance, "owner", {
