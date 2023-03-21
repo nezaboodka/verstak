@@ -31,7 +31,7 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Dri
     return false // children of HTML blocks are not treated as leaders
   }
 
-  mount(block: VBlock<T, unknown, C>, host: VBlock): void {
+  mount(block: VBlock<T, unknown, C>): void {
     const e = block.native as T | undefined // hack
     if (e) {
       const sequential = block.owner.children.isStrict

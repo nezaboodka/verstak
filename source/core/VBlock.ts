@@ -196,7 +196,7 @@ export class Driver<T, C = unknown> {
     chainedInitialize(b, b.builder)
   }
 
-  mount(block: VBlock<T, unknown, C>, host: VBlock): void {
+  mount(block: VBlock<T, unknown, C>): void {
     // nothing to do by default
   }
 
@@ -400,6 +400,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   // System-managed properties
   readonly level: number
   owner: VBlockImpl
+  host: VBlockImpl
   children: Collection<VBlockImpl>
   numerator: number
   item: Item<VBlockImpl> | undefined
@@ -435,7 +436,8 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     this.renderingPriority = Priority.Realtime
     // System-managed properties
     this.level = owner.level + 1
-    this.owner = owner // owner is default host, but can be changed
+    this.owner = owner
+    this.host = owner // owner is default host, but may differ
     this.children = new Collection<VBlockImpl>(getBlockKey, this.isSequential)
     this.numerator = 0
     this.item = undefined
@@ -758,7 +760,7 @@ function triggerRendering(item: Item<VBlockImpl>): void {
   }
 }
 
-function mountIfNecessary(block: VBlockImpl, host: VBlockImpl): void {
+function mountIfNecessary(block: VBlockImpl): void {
   const driver = block.driver
   if (block.stamp === 0) {
     block.stamp = 1
@@ -766,11 +768,11 @@ function mountIfNecessary(block: VBlockImpl, host: VBlockImpl): void {
       driver.create(block, block)
       driver.initialize(block)
       if (!block.has(Mode.ManualMount))
-        driver.mount(block, host)
+        driver.mount(block)
     })
   }
   else if (block.isMoved && !block.has(Mode.ManualMount))
-    nonreactive(() => driver.mount(block, host))
+    nonreactive(() => driver.mount(block))
 }
 
 function renderNow(item: Item<VBlockImpl>): void {
@@ -779,7 +781,7 @@ function renderNow(item: Item<VBlockImpl>): void {
     let result: unknown = undefined
     runInside(item, () => {
       try {
-        mountIfNecessary(block, block.owner)
+        mountIfNecessary(block)
         block.stamp++
         block.numerator = 0
         block.appliedPlacement = undefined // reset
@@ -958,7 +960,7 @@ Object.defineProperty(gVoid.instance, "owner", {
   enumerable: true,
 })
 
-Object.defineProperty(gVoid.instance, "senior", {
+Object.defineProperty(gVoid.instance, "outer", {
   value: gVoid.instance,
   writable: false,
   configurable: false,

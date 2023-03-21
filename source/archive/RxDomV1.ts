@@ -584,7 +584,7 @@ function shuffle<T>(array: Array<T>): Array<T> {
   return array
 }
 
-// Support asynchronous programing automatically
+// Support asynchronous programming automatically
 
 const ORIGINAL_PROMISE_THEN = Promise.prototype.then
 
