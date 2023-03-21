@@ -472,6 +472,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     return this.owner.children.isMoved(this.item!)
   }
 
+  get isAutoMountEnabled(): boolean { return !this.has(Mode.ManualMount) && this.host !== this }
   get childrenLayout(): Layout { return this.appliedChildrenLayout }
   set childrenLayout(value: Layout) {
     if (value !== this.appliedChildrenLayout || this.stamp < 2) {
@@ -765,11 +766,11 @@ function mountIfNecessary(block: VBlockImpl): void {
     nonreactive(() => {
       driver.create(block, block)
       driver.initialize(block)
-      if (!block.has(Mode.ManualMount))
+      if (block.isAutoMountEnabled)
         driver.mount(block)
     })
   }
-  else if (block.isMoved && !block.has(Mode.ManualMount))
+  else if (block.isMoved && block.isAutoMountEnabled)
     nonreactive(() => driver.mount(block))
 }
 
