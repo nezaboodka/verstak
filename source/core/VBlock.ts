@@ -85,12 +85,9 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
 
   abstract configureReactronic(options: Partial<MemberOptions>): MemberOptions
 
-  static root(render: () => void): void {
-    gVoid.instance.builder.render = render
-    triggerRendering(gVoid)
-  }
-
   static get current(): VBlock {
+    if (gCurrent === undefined)
+      throw new Error("current block is undefined")
     return gCurrent.instance
   }
 
@@ -102,40 +99,48 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
     driver: Driver<T>,
     builder?: BlockBuilder<T, M, C, R>,
     base?: BlockBuilder<T, M, C, R>): VBlock<T, M, C, R> {
+    let result: VBlockImpl<T, M, C, R>
     // Normalize parameters
     if (builder)
       builder.base = base
     else
       builder = base ?? {}
-    let owner = gCurrent.instance
-    const children = owner.children
-    let ex: Item<VBlockImpl<any, any, any, any>> | undefined = undefined
-    // Check for coalescing separators or lookup for existing block
-    if (driver.isRow) {
-      const last = children.lastClaimedItem()
-      if (last?.instance?.driver === driver)
-        ex = last
-    }
     let key = builder.key
-    ex ??= children.claim(key = key || VBlock.generateKey(owner), undefined,
-      "nested blocks can be declared inside render function only")
-    // Reuse existing block or claim a new one
-    let result: VBlockImpl<T, M, C, R>
-    if (ex) {
-      result = ex.instance
-      if (result.driver !== driver && driver !== undefined)
-        throw new Error(`changing block driver is not yet supported: "${result.driver.name}" -> "${driver?.name}"`)
-      const exTriggers = result.builder.triggers
-      if (triggersAreEqual(builder.triggers, exTriggers))
-        builder.triggers = exTriggers // preserve triggers instance
-      result.builder = builder
+    let owner = gCurrent?.instance
+    if (owner) {
+      // Check for coalescing separators or lookup for existing block
+      let ex: Item<VBlockImpl<any, any, any, any>> | undefined = undefined
+      const children = owner.children
+      if (driver.isRow) {
+        const last = children.lastClaimedItem()
+        if (last?.instance?.driver === driver)
+          ex = last
+      }
+      ex ??= children.claim(
+        key = key || VBlock.generateKey(owner), undefined,
+        "nested blocks can be declared inside render function only")
+      // Reuse existing block or claim a new one
+      if (ex) {
+        // Reuse existing block
+        result = ex.instance
+        if (result.driver !== driver && driver !== undefined)
+          throw new Error(`changing block driver is not yet supported: "${result.driver.name}" -> "${driver?.name}"`)
+        const exTriggers = result.builder.triggers
+        if (triggersAreEqual(builder.triggers, exTriggers))
+          builder.triggers = exTriggers // preserve triggers instance
+        result.builder = builder
+      }
+      else {
+        // Create new block
+        result = new VBlockImpl<T, M, C, R>(key || VBlock.generateKey(owner), driver, owner, builder)
+        result.item = children.add(result)
+      }
     }
-    else { // create new
-      result = new VBlockImpl<T, M, C, R>(key || VBlock.generateKey(owner), driver, owner, builder)
-      result.item = children.add(result)
-      VBlockImpl.grandCount++
-      if (result.has(Mode.SeparateReaction))
-        VBlockImpl.disposableCount++
+    else {
+      // Create new root block
+      result = new VBlockImpl<T, M, C, R>(key || "", driver, owner, builder)
+      result.item = Collection.createItem(result)
+      triggerRendering(result.item)
     }
     return result
   }
@@ -454,6 +459,9 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     this.cursor = new Cursor()
     this.outer = owner.context ? owner : owner.outer
     this.context = undefined
+    VBlockImpl.grandCount++
+    if (this.has(Mode.SeparateReaction))
+      VBlockImpl.disposableCount++
   }
 
   @reactive
@@ -588,8 +596,14 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     return Rx.getController(this.render).configure(options)
   }
 
+  static get curr(): Item<VBlockImpl> {
+    if (!gCurrent)
+      throw new Error("current block is undefined")
+    return gCurrent
+  }
+
   static tryUseContextVariable<T extends Object>(variable: ContextVariable<T>): T | undefined {
-    let b = gCurrent.instance
+    let b = VBlockImpl.curr.instance
     while (b.context?.variable !== variable && b.owner !== b)
       b = b.outer
     return b.context?.value as any // TODO: to get rid of any
@@ -603,7 +617,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   }
 
   static setContextVariableValue<T extends Object>(variable: ContextVariable<T>, value: T | undefined): void {
-    const block = gCurrent.instance
+    const block = VBlockImpl.curr.instance
     const owner = block.owner
     const hostCtx = nonreactive(() => owner.context?.value)
     if (value && value !== hostCtx) {
@@ -631,8 +645,8 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
 // Internal
 
 function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => void): void {
-  const current = gCurrent
-  const owner = current.instance
+  const curr = VBlockImpl.curr
+  const owner = curr.instance
   const children = owner.children
   if (children.isMergeInProgress) {
     let promised: Promise<void> | undefined = undefined
@@ -670,7 +684,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         }
         // Render incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
-          promised = startIncrementalRendering(current, children, p1, p2).then(
+          promised = startIncrementalRendering(curr, children, p1, p2).then(
             () => action(error),
             e => action(e))
       }
@@ -866,10 +880,14 @@ async function runDisposalLoop(): Promise<void> {
 // }
 
 function wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T {
+  let wrappedToRunInside: (...args: any[]) => T
   const current = gCurrent
-  const wrappedToRunInside = (...args: any[]): T => {
-    return runInside(current, func, ...args)
-  }
+  if (current)
+    wrappedToRunInside = (...args: any[]): T => {
+      return runInside(current, func, ...args)
+    }
+  else
+    wrappedToRunInside = func
   return wrappedToRunInside
 }
 
@@ -949,27 +967,6 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const NOP: any = (...args: any[]): void => { /* nop */ }
 
-const gVoidDriver = new StaticDriver<null>(
-  null, "SYSTEM", false, b => b.childrenLayout = Layout.Group)
-const gVoid = Collection.createItem<VBlockImpl>(new VBlockImpl<null, void>(
-  gVoidDriver.name, gVoidDriver, { level: 0 } as VBlockImpl, {
-    modes: Mode.SeparateReaction, render: NOP })) // fake owner/host (overwritten below)
-gVoid.instance.item = gVoid
-
-Object.defineProperty(gVoid.instance, "owner", {
-  value: gVoid.instance,
-  writable: false,
-  configurable: false,
-  enumerable: true,
-})
-
-Object.defineProperty(gVoid.instance, "outer", {
-  value: gVoid.instance,
-  writable: false,
-  configurable: false,
-  enumerable: true,
-})
-
-let gCurrent: Item<VBlockImpl> = gVoid
+let gCurrent: Item<VBlockImpl> | undefined = undefined
 let gFirstToDispose: Item<VBlockImpl> | undefined = undefined
 let gLastToDispose: Item<VBlockImpl> | undefined = undefined
