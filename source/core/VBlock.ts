@@ -467,8 +467,9 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   get isAuxiliary(): boolean { return (this.childrenLayout & 2) === 2 } // Row, Group
   get isSection(): boolean { return this.childrenLayout === Layout.Section }
   get isTable(): boolean { return this.childrenLayout === Layout.Table }
-  get isMoved(): boolean { return this.owner.children.isMoved(this.item!) }
+
   get isAutoMountEnabled(): boolean { return !this.has(Mode.ManualMount) && this.host !== this }
+  get isMoved(): boolean { return this.owner.children.isMoved(this.item!) }
 
   get childrenLayout(): Layout { return this.appliedChildrenLayout }
   set childrenLayout(value: Layout) {
