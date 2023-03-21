@@ -102,25 +102,25 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
     driver: Driver<T>,
     builder?: BlockBuilder<T, M, C, R>,
     base?: BlockBuilder<T, M, C, R>): VBlock<T, M, C, R> {
-    let result: VBlockImpl<T, M, C, R>
-    const owner = gCurrent.instance
-    const children = owner.children
-    let ex: Item<VBlockImpl<any, any, any, any>> | undefined = undefined
     // Normalize parameters
     if (builder)
       builder.base = base
     else
       builder = base ?? {}
-    let key = builder.key
+    let owner = gCurrent.instance
+    const children = owner.children
+    let ex: Item<VBlockImpl<any, any, any, any>> | undefined = undefined
     // Check for coalescing separators or lookup for existing block
     if (driver.isRow) {
       const last = children.lastClaimedItem()
       if (last?.instance?.driver === driver)
         ex = last
     }
+    let key = builder.key
     ex ??= children.claim(key = key || VBlock.generateKey(owner), undefined,
       "nested blocks can be declared inside render function only")
     // Reuse existing block or claim a new one
+    let result: VBlockImpl<T, M, C, R>
     if (ex) {
       result = ex.instance
       if (result.driver !== driver && driver !== undefined)
