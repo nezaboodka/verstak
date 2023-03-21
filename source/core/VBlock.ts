@@ -412,7 +412,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   context: VBlockContext<any> | undefined
 
   constructor(key: string, driver: Driver<T>,
-    owner: VBlockImpl, builder: BlockBuilder<T, M, C, R>) {
+    owner: VBlockImpl | undefined, builder: BlockBuilder<T, M, C, R>) {
     super()
     // User-defined properties
     this.key = key
@@ -436,8 +436,14 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     this.childrenShuffling = false
     this.renderingPriority = Priority.Realtime
     // System-managed properties
-    this.level = owner.level + 1
-    this.owner = owner
+    if (owner) {
+      this.level = owner.level + 1
+      this.owner = owner
+    }
+    else {
+      this.level = 1
+      this.owner = owner = this
+    }
     this.host = this // block is unmounted
     this.children = new Collection<VBlockImpl>(getBlockKey, this.isSequential)
     this.numerator = 0
