@@ -72,7 +72,8 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   abstract style(styleName: string, enabled?: boolean): void
   // System-managed properties
   abstract readonly level: number
-  abstract readonly owner: VBlock // (!) may differ from owner
+  abstract readonly owner: VBlock
+  abstract readonly host: VBlock
   abstract readonly children: CollectionReader<VBlock>
   abstract readonly item: Item<VBlock> | undefined
   abstract readonly stamp: number
@@ -468,10 +469,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   get isTable(): boolean { return this.childrenLayout === Layout.Table }
 
   get isMoved(): boolean {
-    let owner = this.owner
-    if (owner.driver.isRow)
-      owner = owner.owner
-    return owner.children.isMoved(this.item!)
+    return this.owner.children.isMoved(this.item!)
   }
 
   get childrenLayout(): Layout { return this.appliedChildrenLayout }
@@ -601,13 +599,13 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
 
   static setContextVariableValue<T extends Object>(variable: ContextVariable<T>, value: T | undefined): void {
     const block = gCurrent.instance
-    const host = block.owner
-    const hostCtx = nonreactive(() => host.context?.value)
+    const owner = block.owner
+    const hostCtx = nonreactive(() => owner.context?.value)
     if (value && value !== hostCtx) {
       if (hostCtx)
-        block.outer = host
+        block.outer = owner
       else
-        block.outer = host.outer
+        block.outer = owner.outer
       Transaction.run({ separation: true }, () => {
         const ctx = block.context
         if (ctx) {
@@ -619,9 +617,9 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
       })
     }
     else if (hostCtx)
-      block.outer = host
+      block.outer = owner
     else
-      block.outer = host.outer
+      block.outer = owner.outer
   }
 }
 
@@ -685,14 +683,14 @@ function markToMountIfNecessary(mounting: boolean, host: VBlockImpl,
   // exist among regular blocks with HTML elements
   const block = item.instance
   if (block.native && !block.has(Mode.ManualMount)) {
-    if (mounting || block.owner !== host) {
+    if (mounting || block.host !== host) {
       children.markAsMoved(item)
       mounting = false
     }
   }
   else if (sequential && children.isMoved(item))
     mounting = true // apply to the first block with an element
-  block.owner = host
+  block.host = host
   return mounting
 }
 

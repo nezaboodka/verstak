@@ -35,7 +35,7 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Dri
     const e = block.native as T | undefined // hack
     if (e) {
       const sequential = block.owner.children.isStrict
-      const nativeParent = BaseHtmlDriver.findNearestParentHtmlBlock(block).native as Element | undefined // hack
+      const nativeParent = BaseHtmlDriver.findEffectiveHtmlBlockHost(block).native as Element | undefined // hack
       if (nativeParent) {
         if (sequential && !block.driver.isRow) {
           const after = BaseHtmlDriver.findPrevSiblingHtmlBlock(block.item!)
@@ -76,10 +76,10 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Dri
     gBlinkingEffectMarker = value
   }
 
-  static findNearestParentHtmlBlock(block: VBlock<any>): VBlock<HTMLElement> {
-    let p = block.owner
+  static findEffectiveHtmlBlockHost(block: VBlock<any>): VBlock<HTMLElement> {
+    let p = block.host
     while (p.native instanceof HTMLElement === false && p !== block)
-      p = p.owner
+      p = p.host
     return p as VBlock<HTMLElement>
   }
 

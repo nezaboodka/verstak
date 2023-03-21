@@ -126,16 +126,20 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   applyHeightGrowth(block: VBlock<T>, value: number): void {
-    if (block.driver.isRow) {
+    const driver = block.driver
+    if (driver.isRow) {
       const css = block.native.style
       if (value > 0)
         css.flexGrow = `${value}`
       else
         css.flexGrow = ""
     }
-    else if (block.owner.driver.isRow) {
-      block.driver.applyBlockAlignment(block, Align.Stretch)
-      block.owner.driver.applyHeightGrowth(block.owner, value)
+    else {
+      const hostDriver = block.host.driver
+      if (hostDriver.isRow) {
+        driver.applyBlockAlignment(block, Align.Stretch)
+        hostDriver.applyHeightGrowth(block.host, value)
+      }
     }
   }
 
@@ -195,10 +199,10 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
   applyOverlayVisible(block: VBlock<T>, value: boolean | undefined): void {
     const e = block.native
     const css = e.style
-    const parent = HtmlDriver.findNearestParentHtmlBlock(block).native
+    const host = HtmlDriver.findEffectiveHtmlBlockHost(block).native
     if (value === true) {
       const doc = document.body
-      const rect = parent.getBoundingClientRect()
+      const rect = host.getBoundingClientRect()
       if (doc.offsetWidth - rect.left > rect.right) // rightward
         css.left = "0", css.right = ""
       else // leftward
@@ -211,10 +215,10 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
       css.position = "absolute"
       css.minWidth = "100%"
       css.boxSizing = "border-box"
-      parent.style.position = "relative"
+      host.style.position = "relative"
     }
     else {
-      parent.style.position = ""
+      host.style.position = ""
       if (value === false)
         css.display = "none"
       else // overlayVisible === undefined
