@@ -126,7 +126,8 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   applyHeightGrowth(block: VBlock<T>, value: number): void {
-    const driver = block.driver
+    const bNode = block.descriptor
+    const driver = bNode.driver
     if (driver.isRow) {
       const css = block.native.style
       if (value > 0)
@@ -135,10 +136,10 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
         css.flexGrow = ""
     }
     else {
-      const hostDriver = block.host.driver
+      const hostDriver = bNode.host.descriptor.driver
       if (hostDriver.isRow) {
         driver.applyBlockAlignment(block, Align.Stretch)
-        hostDriver.applyHeightGrowth(block.host, value)
+        hostDriver.applyHeightGrowth(bNode.host, value)
       }
     }
   }

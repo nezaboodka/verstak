@@ -37,6 +37,26 @@ export type Placement = undefined | string | {
   heightOverlap?: boolean   // false
 }
 
+export class TableLayoutParentData {
+  maxColumnCount: number = 0
+  maxRowCount: number = 0
+}
+
+export class TableLayoutChildData {
+  cursorPositionInCellsX: number = 0
+  cursorPositionInCellsY: number = 0
+  runningWidthInCells: number = 0
+  runningHeightInCells: number = 0
+  flags: TableLayoutChildFlags = TableLayoutChildFlags.None
+}
+
+export enum TableLayoutChildFlags {
+  None = 0,
+  NextHasOwnCursorPosition = 1,
+  NextDependsOnRunningWidth = 2,
+  NextDependsOnRunningHeight = 4,
+}
+
 export class Cursor {
   static readonly UndefinedCellRange = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
   reset(): void { /* do nothing */ }

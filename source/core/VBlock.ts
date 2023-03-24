@@ -44,15 +44,26 @@ export function Fragment<M = unknown, R = void>(
 
 // VBlock
 
+export abstract class VBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> {
+  abstract readonly key: string
+  abstract readonly driver: Driver<T>
+  abstract readonly builder: Readonly<BlockBuilder<T, M, C, R>>
+  abstract readonly level: number
+  abstract readonly owner: VBlock
+  abstract readonly host: VBlock
+  abstract readonly children: CollectionReader<VBlock>
+  abstract readonly item: Item<VBlock> | undefined
+  abstract readonly stamp: number
+  abstract readonly outer: VBlock
+  abstract readonly context: VBlockContext | undefined
+}
+
 export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   static readonly shortFrameDuration = 16 // ms
   static readonly longFrameDuration = 300 // ms
   static currentRenderingPriority = Priority.Realtime
   static frameDuration = VBlock.longFrameDuration
   // User-defined properties
-  abstract readonly key: string
-  abstract readonly driver: Driver<T>
-  abstract readonly builder: Readonly<BlockBuilder<T, M, C, R>>
   abstract model: M
   abstract controller: C
   abstract childrenLayout: Layout
@@ -71,16 +82,11 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   abstract renderingPriority?: Priority
   abstract style(styleName: string, enabled?: boolean): void
   // System-managed properties
-  abstract readonly level: number
-  abstract readonly owner: VBlock
-  abstract readonly host: VBlock
-  abstract readonly children: CollectionReader<VBlock>
-  abstract readonly item: Item<VBlock> | undefined
-  abstract readonly stamp: number
+  abstract readonly descriptor: VBlockDescriptor<T, M, C, R>
   abstract readonly native: T
 
   get isInitialRendering(): boolean {
-    return this.stamp === 2
+    return this.descriptor.stamp === 2
   }
 
   abstract configureReactronic(options: Partial<MemberOptions>): MemberOptions
@@ -110,10 +116,10 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
     if (owner) {
       // Check for coalescing separators or lookup for existing block
       let ex: Item<VBlockImpl<any, any, any, any>> | undefined = undefined
-      const children = owner.children
+      const children = owner.descriptor.children
       if (driver.isRow) {
         const last = children.lastClaimedItem()
-        if (last?.instance?.driver === driver)
+        if (last?.instance?.descriptor.driver === driver)
           ex = last
       }
       ex ??= children.claim(
@@ -123,30 +129,31 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
       if (ex) {
         // Reuse existing block
         result = ex.instance
-        if (result.driver !== driver && driver !== undefined)
-          throw new Error(`changing block driver is not yet supported: "${result.driver.name}" -> "${driver?.name}"`)
-        const exTriggers = result.builder.triggers
+        const d = result.descriptor
+        if (d.driver !== driver && driver !== undefined)
+          throw new Error(`changing block driver is not yet supported: "${result.descriptor.driver.name}" -> "${driver?.name}"`)
+        const exTriggers = d.builder.triggers
         if (triggersAreEqual(builder.triggers, exTriggers))
           builder.triggers = exTriggers // preserve triggers instance
-        result.builder = builder
+        d.builder = builder
       }
       else {
         // Create new block
         result = new VBlockImpl<T, M, C, R>(key || VBlock.generateKey(owner), driver, owner, builder)
-        result.item = children.add(result)
+        result.descriptor.item = children.add(result)
       }
     }
     else {
       // Create new root block
       result = new VBlockImpl<T, M, C, R>(key || "", driver, owner, builder)
-      result.item = Collection.createItem(result)
-      triggerRendering(result.item)
+      result.descriptor.item = Collection.createItem(result)
+      triggerRendering(result.descriptor.item)
     }
     return result
   }
 
   private static generateKey(owner: VBlockImpl): string {
-    const n = owner.numerator++
+    const n = owner.descriptor.numerator++
     const lettered = emitLetters(n)
     let result: string
     if (Rx.isLogging)
@@ -189,17 +196,17 @@ export class Driver<T, C = unknown> {
 
   claim(block: VBlock<T, unknown, C>): void {
     const b = block as VBlockImpl<T, unknown, C>
-    chainedClaim(b, b.builder)
+    chainedClaim(b, b.descriptor.builder)
   }
 
   create(block: VBlock<T, unknown, C>, b: { native?: T, controller?: C }): void {
-    chainedCreate(block, block.builder)
+    chainedCreate(block, block.descriptor.builder)
   }
 
   initialize(block: VBlock<T, unknown, C>): void {
     const b = block as VBlockImpl<T, unknown, C>
     this.preset?.(b)
-    chainedInitialize(b, b.builder)
+    chainedInitialize(b, b.descriptor.builder)
   }
 
   mount(block: VBlock<T, unknown, C>): void {
@@ -207,12 +214,12 @@ export class Driver<T, C = unknown> {
   }
 
   render(block: VBlock<T, unknown, C>): void | Promise<void> {
-    chainedRender(block, block.builder)
+    chainedRender(block, block.descriptor.builder)
   }
 
   finalize(block: VBlock<T, unknown, C>, isLeader: boolean): boolean {
     const b = block as VBlockImpl<T, unknown, C>
-    chainedFinalize(b, b.builder)
+    chainedFinalize(b, b.descriptor.builder)
     return isLeader // treat children as finalization leaders as well
   }
 
@@ -360,7 +367,8 @@ export class ContextVariable<T extends Object = Object> {
 // VBlockImpl
 
 function getBlockKey(block: VBlockImpl): string | undefined {
-  return block.stamp >= 0 ? block.key : undefined
+  const d = block.descriptor
+  return d.stamp >= 0 ? d.key : undefined
 }
 
 class VBlockContext<T extends Object = Object> extends ObservableObject {
@@ -376,15 +384,56 @@ class VBlockContext<T extends Object = Object> extends ObservableObject {
   }
 }
 
+export class VBlockDescriptorImpl<T = unknown, M = unknown, C = unknown, R = void> extends VBlockDescriptor<T, M, C, R> {
+  readonly key: string
+  readonly driver: Driver<T>
+  builder: BlockBuilder<T, M, C, R>
+  readonly level: number
+  readonly owner: VBlockImpl
+  host: VBlockImpl
+  readonly children: Collection<VBlockImpl>
+  item: Item<VBlockImpl> | undefined
+  stamp: number
+  outer: VBlockImpl
+  context: VBlockContext<any> | undefined
+  numerator: number
+
+  constructor(key: string, driver: Driver<T>,
+    builder: Readonly<BlockBuilder<T, M, C, R>>,
+    self: VBlockImpl<T, M, C, R>, owner: VBlockImpl | undefined) {
+    super()
+    this.key = key
+    this.driver = driver
+    this.builder = builder
+    if (owner) {
+      this.level = owner.descriptor.level + 1
+      this.owner = owner
+      this.outer = owner.descriptor.context ? owner : owner.descriptor.outer
+    }
+    else {
+      this.level = 1
+      this.owner = owner = self
+      this.outer = self
+    }
+    this.host = self // block is unmounted
+    this.children = new Collection<VBlockImpl>(getBlockKey, self.isSequential)
+    this.item = undefined
+    this.stamp = 0
+    this.context = undefined
+    this.numerator = 0
+  }
+}
+
 class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
   static grandCount: number = 0
   static disposableCount: number = 0
   static logging: LoggingOptions | undefined = undefined
 
+  // System-managed properties
+  readonly descriptor: VBlockDescriptorImpl<T, M, C, R>
+  native: T
+  cursor: Cursor
   // User-defined properties
-  readonly key: string
-  readonly driver: Driver<T>
-  builder: BlockBuilder<T, M, C, R>
   model: M
   controller: C
   appliedChildrenLayout: Layout
@@ -403,26 +452,16 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   wasStyleApplied: boolean
   childrenShuffling: boolean
   renderingPriority: Priority
-  // System-managed properties
-  readonly level: number
-  owner: VBlockImpl
-  host: VBlockImpl
-  children: Collection<VBlockImpl>
-  numerator: number
-  item: Item<VBlockImpl> | undefined
-  stamp: number
-  native: T
-  cursor: Cursor
-  private outer: VBlockImpl
-  context: VBlockContext<any> | undefined
 
   constructor(key: string, driver: Driver<T>,
     owner: VBlockImpl | undefined, builder: BlockBuilder<T, M, C, R>) {
     super()
+    // System-managed properties
+    this.descriptor = new VBlockDescriptorImpl(key, driver, builder, this, owner)
+    this.native = undefined as any as T // hack
+    this.controller = undefined as any as C // hack
+    this.cursor = new Cursor()
     // User-defined properties
-    this.key = key
-    this.driver = driver
-    this.builder = builder
     this.model = undefined as any
     this.appliedChildrenLayout = Layout.Row
     this.appliedPlacement = undefined
@@ -440,25 +479,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     this.wasStyleApplied = false
     this.childrenShuffling = false
     this.renderingPriority = Priority.Realtime
-    // System-managed properties
-    if (owner) {
-      this.level = owner.level + 1
-      this.owner = owner
-    }
-    else {
-      this.level = 1
-      this.owner = owner = this
-    }
-    this.host = this // block is unmounted
-    this.children = new Collection<VBlockImpl>(getBlockKey, this.isSequential)
-    this.numerator = 0
-    this.item = undefined
-    this.stamp = 0
-    this.native = undefined as any as T // hack
-    this.controller = undefined as any as C // hack
-    this.cursor = new Cursor()
-    this.outer = owner.context ? owner : owner.outer
-    this.context = undefined
+    // Monitoring
     VBlockImpl.grandCount++
     if (this.has(Mode.SeparateReaction))
       VBlockImpl.disposableCount++
@@ -472,23 +493,23 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   })
   render(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by owner
-    renderNow(this.item!)
+    renderNow(this.descriptor.item!)
   }
 
-  has(mode: Mode): boolean { return (chainedMode(this.builder) & mode) === mode }
+  has(mode: Mode): boolean { return (chainedMode(this.descriptor.builder) & mode) === mode }
 
   get isSequential(): boolean { return (this.childrenLayout & 1) === 0 } // Section, Row, Note
   get isAuxiliary(): boolean { return (this.childrenLayout & 2) === 2 } // Row, Group
   get isSection(): boolean { return this.childrenLayout === Layout.Section }
   get isTable(): boolean { return this.childrenLayout === Layout.Table }
 
-  get isAutoMountEnabled(): boolean { return !this.has(Mode.ManualMount) && this.host !== this }
-  get isMoved(): boolean { return this.owner.children.isMoved(this.item!) }
+  get isAutoMountEnabled(): boolean { return !this.has(Mode.ManualMount) && this.descriptor.host !== this }
+  get isMoved(): boolean { return this.descriptor.owner.descriptor.children.isMoved(this.descriptor.item!) }
 
   get childrenLayout(): Layout { return this.appliedChildrenLayout }
   set childrenLayout(value: Layout) {
-    if (value !== this.appliedChildrenLayout || this.stamp < 2) {
-      this.driver.applyChildrenLayout(this, value)
+    if (value !== this.appliedChildrenLayout || this.descriptor.stamp < 2) {
+      this.descriptor.driver.applyChildrenLayout(this, value)
       this.appliedChildrenLayout = value
     }
   }
@@ -497,9 +518,9 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   set placement(value: Placement) {
     if (this.appliedPlacement !== undefined)
       throw new Error("cells can be assigned only once during rendering")
-    const cellRange = this.owner.cursor.onwards(value)
+    const cellRange = this.descriptor.owner.cursor.onwards(value)
     if (!equalCellRanges(cellRange, this.appliedCellRange)) {
-      this.driver.applyCellRange(this, cellRange)
+      this.descriptor.driver.applyCellRange(this, cellRange)
       this.appliedCellRange = cellRange
     }
     this.appliedPlacement = value ?? { }
@@ -508,7 +529,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   get widthGrowth(): number { return this.appliedWidthGrowth }
   set widthGrowth(value: number) {
     if (value !== this.appliedWidthGrowth) {
-      this.driver.applyWidthGrowth(this, value)
+      this.descriptor.driver.applyWidthGrowth(this, value)
       this.appliedWidthGrowth = value
     }
   }
@@ -516,7 +537,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   get minWidth(): string { return this.appliedMinWidth }
   set minWidth(value: string) {
     if (value !== this.appliedMinWidth) {
-      this.driver.applyMinWidth(this, value)
+      this.descriptor.driver.applyMinWidth(this, value)
       this.appliedMinWidth = value
     }
   }
@@ -524,7 +545,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   get maxWidth(): string { return this.appliedMaxWidth }
   set maxWidth(value: string) {
     if (value !== this.appliedMaxWidth) {
-      this.driver.applyMaxWidth(this, value)
+      this.descriptor.driver.applyMaxWidth(this, value)
       this.appliedMaxWidth = value
     }
   }
@@ -532,7 +553,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   get heightGrowth(): number { return this.appliedHeightGrowth }
   set heightGrowth(value: number) {
     if (value !== this.appliedHeightGrowth) {
-      this.driver.applyHeightGrowth(this, value)
+      this.descriptor.driver.applyHeightGrowth(this, value)
       this.appliedHeightGrowth = value
     }
   }
@@ -540,7 +561,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   get minHeight(): string { return this.appliedMinHeight }
   set minHeight(value: string) {
     if (value !== this.appliedMinHeight) {
-      this.driver.applyMinHeight(this, value)
+      this.descriptor.driver.applyMinHeight(this, value)
       this.appliedMinHeight = value
     }
   }
@@ -548,7 +569,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   get maxHeight(): string { return this.appliedMaxHeight }
   set maxHeight(value: string) {
     if (value !== this.appliedMaxHeight) {
-      this.driver.applyMaxHeight(this, value)
+      this.descriptor.driver.applyMaxHeight(this, value)
       this.appliedMaxHeight = value
     }
   }
@@ -556,7 +577,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   get contentAlignment(): Align { return this.appliedContentAlignment }
   set contentAlignment(value: Align) {
     if (value !== this.appliedContentAlignment) {
-      this.driver.applyContentAlignment(this, value)
+      this.descriptor.driver.applyContentAlignment(this, value)
       this.appliedContentAlignment = value
     }
   }
@@ -564,7 +585,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   get blockAlignment(): Align { return this.appliedBlockAlignment }
   set blockAlignment(value: Align) {
     if (value !== this.appliedBlockAlignment) {
-      this.driver.applyBlockAlignment(this, value)
+      this.descriptor.driver.applyBlockAlignment(this, value)
       this.appliedBlockAlignment = value
     }
   }
@@ -572,7 +593,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   get contentWrapping(): boolean { return this.appliedContentWrapping }
   set contentWrapping(value: boolean) {
     if (value !== this.appliedContentWrapping) {
-      this.driver.applyContentWrapping(this, value)
+      this.descriptor.driver.applyContentWrapping(this, value)
       this.appliedContentWrapping = value
     }
   }
@@ -580,18 +601,18 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   get overlayVisible(): boolean | undefined { return this.appliedOverlayVisible }
   set overlayVisible(value: boolean | undefined) {
     if (value !== this.appliedOverlayVisible) {
-      this.driver.applyOverlayVisible(this, value)
+      this.descriptor.driver.applyOverlayVisible(this, value)
       this.appliedOverlayVisible = value
     }
   }
 
   style(styleName: string, enabled?: boolean): void {
-    this.driver.applyStyle(this, this.wasStyleApplied, styleName, enabled)
+    this.descriptor.driver.applyStyle(this, this.wasStyleApplied, styleName, enabled)
     this.wasStyleApplied = true
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.stamp !== 1 || !this.has(Mode.SeparateReaction))
+    if (this.descriptor.stamp !== 1 || !this.has(Mode.SeparateReaction))
       throw new Error("reactronic can be configured only for blocks with separate reaction mode and only inside initialize")
     return Rx.getController(this.render).configure(options)
   }
@@ -604,9 +625,9 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
 
   static tryUseContextVariable<T extends Object>(variable: ContextVariable<T>): T | undefined {
     let b = VBlockImpl.curr.instance
-    while (b.context?.variable !== variable && b.owner !== b)
-      b = b.outer
-    return b.context?.value as any // TODO: to get rid of any
+    while (b.descriptor.context?.variable !== variable && b.descriptor.owner !== b)
+      b = b.descriptor.outer
+    return b.descriptor.context?.value as any // TODO: to get rid of any
   }
 
   static useContextVariableValue<T extends Object>(variable: ContextVariable<T>): T {
@@ -617,28 +638,29 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   }
 
   static setContextVariableValue<T extends Object>(variable: ContextVariable<T>, value: T | undefined): void {
-    const block = VBlockImpl.curr.instance
-    const owner = block.owner
-    const hostCtx = nonreactive(() => owner.context?.value)
+    const b = VBlockImpl.curr.instance
+    const d = b.descriptor
+    const owner = d.owner
+    const hostCtx = nonreactive(() => owner.descriptor.context?.value)
     if (value && value !== hostCtx) {
       if (hostCtx)
-        block.outer = owner
+        d.outer = owner
       else
-        block.outer = owner.outer
+        d.outer = owner.descriptor.outer
       Transaction.run({ separation: true }, () => {
-        const ctx = block.context
+        const ctx = d.context
         if (ctx) {
           ctx.variable = variable
           ctx.value = value // update context thus invalidate observers
         }
         else
-          block.context = new VBlockContext<any>(variable, value)
+          d.context = new VBlockContext<any>(variable, value)
       })
     }
     else if (hostCtx)
-      block.outer = owner
+      d.outer = owner
     else
-      block.outer = owner.outer
+      d.outer = owner.descriptor.outer
   }
 }
 
@@ -647,7 +669,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
 function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => void): void {
   const curr = VBlockImpl.curr
   const owner = curr.instance
-  const children = owner.children
+  const children = owner.descriptor.children
   if (children.isMergeInProgress) {
     let promised: Promise<void> | undefined = undefined
     try {
@@ -669,7 +691,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           if (Transaction.isCanceled)
             break
           const block = item.instance
-          const isRow = block.driver.isRow
+          const isRow = block.descriptor.driver.isRow
           const host = isRow ? owner : hostingRow
           const p = block.renderingPriority ?? Priority.Realtime
           mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
@@ -700,16 +722,17 @@ function markToMountIfNecessary(mounting: boolean, host: VBlockImpl,
   item: Item<VBlockImpl>, children: Collection<VBlockImpl>, sequential: boolean): boolean {
   // Detects element mounting when abstract blocks
   // exist among regular blocks with HTML elements
-  const block = item.instance
-  if (block.native && !block.has(Mode.ManualMount)) {
-    if (mounting || block.host !== host) {
+  const b = item.instance
+  const d = b.descriptor
+  if (b.native && !b.has(Mode.ManualMount)) {
+    if (mounting || d.host !== host) {
       children.markAsMoved(item)
       mounting = false
     }
   }
   else if (sequential && children.isMoved(item))
     mounting = true // apply to the first block with an element
-  block.host = host
+  d.host = host
   return mounting
 }
 
@@ -718,7 +741,7 @@ async function startIncrementalRendering(
   allChildren: Collection<VBlockImpl>,
   priority1?: Array<Item<VBlockImpl>>,
   priority2?: Array<Item<VBlockImpl>>): Promise<void> {
-  const stamp = owner.instance.stamp
+  const stamp = owner.instance.descriptor.stamp
   if (priority1)
     await renderIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
   if (priority2)
@@ -758,19 +781,20 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
 }
 
 function triggerRendering(item: Item<VBlockImpl>): void {
-  const block = item.instance
-  if (block.stamp >= 0) {
-    if (block.has(Mode.SeparateReaction)) {
-      if (block.stamp === 0) {
+  const b = item.instance
+  const d = b.descriptor
+  if (d.stamp >= 0) {
+    if (b.has(Mode.SeparateReaction)) {
+      if (d.stamp === 0) {
         Transaction.outside(() => {
           if (Rx.isLogging)
-            Rx.setLoggingHint(block, block.key)
-          Rx.getController(block.render).configure({
-            order: block.level,
+            Rx.setLoggingHint(b, d.key)
+          Rx.getController(b.render).configure({
+            order: d.level,
           })
         })
       }
-      nonreactive(block.render, block.builder.triggers) // reactive auto-rendering
+      nonreactive(b.render, d.builder.triggers) // reactive auto-rendering
     }
     else
       renderNow(item)
@@ -778,9 +802,10 @@ function triggerRendering(item: Item<VBlockImpl>): void {
 }
 
 function mountIfNecessary(block: VBlockImpl): void {
-  const driver = block.driver
-  if (block.stamp === 0) {
-    block.stamp = 1
+  const d = block.descriptor
+  const driver = d.driver
+  if (d.stamp === 0) {
+    d.stamp = 1
     nonreactive(() => {
       driver.create(block, block)
       driver.initialize(block)
@@ -793,23 +818,24 @@ function mountIfNecessary(block: VBlockImpl): void {
 }
 
 function renderNow(item: Item<VBlockImpl>): void {
-  const block = item.instance
-  if (block.stamp >= 0) { // if block is alive
+  const b = item.instance
+  const d = b.descriptor
+  if (d.stamp >= 0) { // if block is alive
     let result: unknown = undefined
     runInside(item, () => {
       try {
-        mountIfNecessary(block)
-        block.stamp++
-        block.numerator = 0
-        block.appliedPlacement = undefined // reset
-        block.wasStyleApplied = false // reset
-        block.children.beginMerge()
-        const driver = block.driver
-        result = driver.render(block)
+        mountIfNecessary(b)
+        d.stamp++
+        d.numerator = 0
+        b.appliedPlacement = undefined // reset
+        b.wasStyleApplied = false // reset
+        d.children.beginMerge()
+        const driver = d.driver
+        result = driver.render(b)
         if (driver.isRow)
-          block.owner.cursor.rowBreak()
-        else if (block.appliedPlacement === undefined)
-          block.placement = undefined // assign cells automatically
+          d.owner.cursor.rowBreak()
+        else if (b.appliedPlacement === undefined)
+          b.placement = undefined // assign cells automatically
         if (result instanceof Promise)
           result.then(
             v => { runRenderNestedTreesThenDo(undefined, NOP); return v },
@@ -819,7 +845,7 @@ function renderNow(item: Item<VBlockImpl>): void {
       }
       catch(e: unknown) {
         runRenderNestedTreesThenDo(e, NOP)
-        console.log(`Rendering failed: ${block.key}`)
+        console.log(`Rendering failed: ${d.key}`)
         console.log(`${e}`)
       }
     })
@@ -827,17 +853,18 @@ function renderNow(item: Item<VBlockImpl>): void {
 }
 
 function triggerFinalization(item: Item<VBlockImpl>, isLeader: boolean, individual: boolean): void {
-  const block = item.instance
-  if (block.stamp >= 0) {
-    const driver = block.driver
-    if (individual && block.key !== block.builder.key && !driver.isRow)
-      console.log(`WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: ${block.key}`)
-    block.stamp = ~block.stamp
+  const b = item.instance
+  const d = b.descriptor
+  if (d.stamp >= 0) {
+    const driver = d.driver
+    if (individual && d.key !== d.builder.key && !driver.isRow)
+      console.log(`WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: ${d.key}`)
+    d.stamp = ~d.stamp
     // Finalize block itself and remove it from collection
-    const childrenAreLeaders = nonreactive(() => driver.finalize(block, isLeader))
-    block.native = null
-    block.controller = null
-    if (block.has(Mode.SeparateReaction)) {
+    const childrenAreLeaders = nonreactive(() => driver.finalize(b, isLeader))
+    b.native = null
+    b.controller = null
+    if (b.has(Mode.SeparateReaction)) {
       // Defer disposal if block is reactive
       item.aux = undefined
       const last = gLastToDispose
@@ -846,12 +873,12 @@ function triggerFinalization(item: Item<VBlockImpl>, isLeader: boolean, individu
       else
         gFirstToDispose = gLastToDispose = item
       if (gFirstToDispose === item)
-        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${item.instance.key})` }, () => {
+        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${item.instance.descriptor.key})` }, () => {
           void runDisposalLoop().then(NOP, error => console.log(error))
         })
     }
     // Finalize children if any
-    for (const item of block.children.items())
+    for (const item of d.children.items())
       triggerFinalization(item, childrenAreLeaders, false)
     VBlockImpl.grandCount--
   }

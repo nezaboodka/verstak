@@ -15,8 +15,8 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Dri
   }
 
   initialize(block: VBlock<T, unknown, C, void>): void {
-    if (Rx.isLogging && !block.driver.isRow)
-      block.native.setAttribute("key", block.key)
+    if (Rx.isLogging && !block.descriptor.driver.isRow)
+      block.native.setAttribute("key", block.descriptor.key)
     super.initialize(block)
   }
 
@@ -34,12 +34,13 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Dri
   mount(block: VBlock<T, unknown, C>): void {
     const e = block.native as T | undefined // hack
     if (e) {
-      const sequential = block.owner.children.isStrict
+      const bNode = block.descriptor
+      const sequential = bNode.owner.descriptor.children.isStrict
       const nativeParent = BaseHtmlDriver.findEffectiveHtmlBlockHost(block).native as Element | undefined // hack
       if (nativeParent) {
-        if (sequential && !block.driver.isRow) {
-          const after = BaseHtmlDriver.findPrevSiblingHtmlBlock(block.item!)
-          if (after === undefined || after.instance.driver.isRow) {
+        if (sequential && !bNode.driver.isRow) {
+          const after = BaseHtmlDriver.findPrevSiblingHtmlBlock(block.descriptor.item!)
+          if (after === undefined || after.instance.descriptor.driver.isRow) {
             if (nativeParent !== e.parentNode || !e.previousSibling)
               nativeParent.prepend(e)
           }
@@ -64,7 +65,7 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Dri
   render(block: VBlock<T, unknown, C>): void | Promise<void> {
     const result = super.render(block)
     if (gBlinkingEffectMarker)
-      blink(block.native, VBlock.currentRenderingPriority, block.stamp)
+      blink(block.native, VBlock.currentRenderingPriority, block.descriptor.stamp)
     return result
   }
 
@@ -77,9 +78,9 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Dri
   }
 
   static findEffectiveHtmlBlockHost(block: VBlock<any>): VBlock<HTMLElement> {
-    let p = block.host
+    let p = block.descriptor.host
     while (p.native instanceof HTMLElement === false && p !== block)
-      p = p.host
+      p = p.descriptor.host
     return p as VBlock<HTMLElement>
   }
 
@@ -93,14 +94,14 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Dri
 
 export class HtmlDriver<T extends HTMLElement, C = unknown> extends BaseHtmlDriver<T, C> {
   create(block: VBlock<T, unknown, C, void>, b: { native?: T | undefined; controller?: C | undefined }): void {
-    b.native = document.createElement(block.driver.name) as T
+    b.native = document.createElement(block.descriptor.driver.name) as T
     super.create(block, b)
   }
 }
 
 export class SvgDriver<T extends SVGElement, C = unknown> extends BaseHtmlDriver<T, C> {
   create(block: VBlock<T, unknown, C, void>, b: { native?: T | undefined; controller?: C | undefined }): void {
-    b.native = document.createElementNS("http://www.w3.org/2000/svg", block.driver.name) as T
+    b.native = document.createElementNS("http://www.w3.org/2000/svg", block.descriptor.driver.name) as T
     super.create(block, b)
   }
 }
