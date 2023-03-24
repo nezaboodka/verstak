@@ -59,10 +59,12 @@ export abstract class VBlockDescriptor<T = unknown, M = unknown, C = unknown, R 
 }
 
 export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
+  // Static properties
   static readonly shortFrameDuration = 16 // ms
   static readonly longFrameDuration = 300 // ms
   static currentRenderingPriority = Priority.Realtime
   static frameDuration = VBlock.longFrameDuration
+
   // User-defined properties
   abstract model: M
   abstract controller: C
@@ -81,6 +83,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   abstract childrenShuffling: boolean
   abstract renderingPriority?: Priority
   abstract style(styleName: string, enabled?: boolean): void
+
   // System-managed properties
   abstract readonly descriptor: VBlockDescriptor<T, M, C, R>
   abstract readonly native: T
@@ -425,6 +428,7 @@ export class VBlockDescriptorImpl<T = unknown, M = unknown, C = unknown, R = voi
 }
 
 class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
+  // Static properties
   static grandCount: number = 0
   static disposableCount: number = 0
   static logging: LoggingOptions | undefined = undefined
@@ -433,6 +437,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   readonly descriptor: VBlockDescriptorImpl<T, M, C, R>
   native: T
   cursor: Cursor
+
   // User-defined properties
   model: M
   controller: C
