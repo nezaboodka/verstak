@@ -366,9 +366,9 @@ class Cursor {
 
 enum CursorFlags {
   None = 0,
-  NextHasOwnCursorPosition = 1,
-  NextDependsOnRunningWidth = 2,
-  NextDependsOnRunningHeight = 4,
+  OwnCursorPosition = 1,
+  UsesRunningColumnCount = 2,
+  UsesRunningRowCount = 4,
 }
 
 const UndefinedCellRange = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
@@ -692,7 +692,7 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
         const cursor = d.cursor = new Cursor(prevCursor)
         cursor.column = result.x2
         cursor.row = result.y1
-        cursor.flags = CursorFlags.NextHasOwnCursorPosition
+        cursor.flags = CursorFlags.OwnCursorPosition
       }
     }
     else if (isStrict) {
@@ -717,8 +717,10 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
       const columnCount = maxColumnCount !== 0 ? maxColumnCount : prevCursor.runningColumnCount
       const rowCount = maxRowCount !== 0 ? maxRowCount : prevCursor.runningRowCount
       result = { x1: 0, y1: 0, x2: 0, y2: 0 }
-      if (w === 0)
+      if (w === 0) {
         w = columnCount || 1
+        cursor.flags = CursorFlags.UsesRunningColumnCount
+      }
       if (w >= 0) {
         result.x1 = prevCursor.column + 1
         result.x2 = absolutizePosition(result.x1 + w - 1, 0, maxColumnCount || Infinity)
@@ -729,8 +731,10 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
         result.x1 = Math.max(prevCursor.column + w, 1)
         result.x2 = prevCursor.column
       }
-      if (h === 0)
+      if (h === 0) {
         h = rowCount || 1
+        cursor.flags |= CursorFlags.UsesRunningRowCount
+      }
       if (h >= 0) {
         result.y1 = prevCursor.row + 1
         result.y2 = absolutizePosition(result.y1 + h - 1, 0, maxRowCount || Infinity)
