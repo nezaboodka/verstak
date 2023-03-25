@@ -7,6 +7,6 @@
 
 export * from "./Utils"
 export * from "./CellRange"
-export * from "./Cursor"
+export * from "./Common"
 export * from "./Restyler"
 export * from "./VBlock"

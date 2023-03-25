@@ -8,13 +8,18 @@
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw, MemberOptions } from "reactronic"
 import { getCallerInfo } from "./Utils"
 import { CellRange, emitLetters, equalCellRanges, parseCellRange } from "./CellRange"
-import { Align, Placement } from "./Cursor"
+import { Align, Placement } from "./Common"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Operation<T = unknown, M = unknown, C = unknown, R = void> = (block: VBlock<T, M, C, R>, base: () => R) => R
 export type AsyncOperation<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
 export type SimpleOperation<T = unknown> = (block: VBlock<T, any, any, any>) => void
-export const enum Priority { Realtime = 0, Normal = 1, Background = 2 }
+
+export const enum Priority {
+  Realtime = 0,
+  Normal = 1,
+  Background = 2
+}
 
 export enum Mode {
   Default = 0,
