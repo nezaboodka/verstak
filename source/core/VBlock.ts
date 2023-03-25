@@ -369,11 +369,6 @@ export class ContextVariable<T extends Object = Object> {
 
 // XBlock
 
-function getBlockKey(block: XBlock): string | undefined {
-  const d = block.descriptor
-  return d.stamp >= 0 ? d.key : undefined
-}
-
 class XBlockCtx<T extends Object = Object> extends ObservableObject {
   @raw next: XBlockCtx<object> | undefined
   @raw variable: ContextVariable<T>
@@ -670,6 +665,11 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
 }
 
 // Internal
+
+function getBlockKey(block: XBlock): string | undefined {
+  const d = block.descriptor
+  return d.stamp >= 0 ? d.key : undefined
+}
 
 function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => void): void {
   const curr = XBlock.curr
