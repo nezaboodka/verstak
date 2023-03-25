@@ -7,8 +7,8 @@
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw, MemberOptions } from "reactronic"
 import { getCallerInfo } from "./Utils"
-import { CellRange, emitLetters, equalCellRanges } from "./CellRange"
-import { Cursor, Align, Placement, TableCursor } from "./Cursor"
+import { CellRange, emitLetters, equalCellRanges, parseCellRange } from "./CellRange"
+import { Align, Placement } from "./Cursor"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Operation<T = unknown, M = unknown, C = unknown, R = void> = (block: VBlock<T, M, C, R>, base: () => R) => R
@@ -227,11 +227,7 @@ export class Driver<T, C = unknown> {
   }
 
   applyChildrenLayout(block: VBlock<T, any, C, any>, value: Layout): void {
-    const b = block as XBlock<T, unknown, C>
-    if (value === Layout.Table)
-      b.cursor = new TableCursor()
-    else
-      b.cursor = new Cursor()
+    // do nothing
   }
 
   applyCellRange(block: VBlock<T, any, C, any>, value: CellRange | undefined): void {
@@ -369,6 +365,32 @@ export class ContextVariable<T extends Object = Object> {
 
 // XBlock
 
+class Cursor {
+  column: number
+  row: number
+  runningColumnCount: number
+  runningRowCount: number
+  flags: CursorFlags
+
+  constructor(prev: Cursor) {
+    this.column = prev.column
+    this.row = prev.row
+    this.runningColumnCount = prev.runningColumnCount
+    this.runningRowCount = prev.runningRowCount
+    this.flags = CursorFlags.None
+  }
+}
+
+enum CursorFlags {
+  None = 0,
+  NextHasOwnCursorPosition = 1,
+  NextDependsOnRunningWidth = 2,
+  NextDependsOnRunningHeight = 4,
+}
+
+const UndefinedCellRange = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
+const ZeroCursor: Cursor = Object.freeze(new Cursor({ column: 0, row: 0, runningColumnCount: 0, runningRowCount: 0, flags: CursorFlags.None }))
+
 class XBlockCtx<T extends Object = Object> extends ObservableObject {
   @raw next: XBlockCtx<object> | undefined
   @raw variable: ContextVariable<T>
@@ -395,6 +417,9 @@ export class XBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> e
   outer: XBlock
   context: XBlockCtx<any> | undefined
   numerator: number
+  maxColumnCount: number = 0
+  maxRowCount: number = 0
+  cursor?: Cursor
 
   constructor(key: string, driver: Driver<T>,
     builder: Readonly<BlockBuilder<T, M, C, R>>,
@@ -419,6 +444,9 @@ export class XBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> e
     this.stamp = 0
     this.context = undefined
     this.numerator = 0
+    this.maxColumnCount = 0
+    this.maxRowCount = 0
+    this.cursor = undefined
   }
 }
 
@@ -431,7 +459,6 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
   // System-managed properties
   readonly descriptor: XBlockDescriptor<T, M, C, R>
   native: T
-  cursor: Cursor
 
   // User-defined properties
   model: M
@@ -449,7 +476,7 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
   private _blockAlignment: Align
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
-  wasStyleApplied: boolean
+  hasStyles: boolean
   childrenShuffling: boolean
   renderingPriority: Priority
 
@@ -459,13 +486,12 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
     // System-managed properties
     this.descriptor = new XBlockDescriptor(key, driver, builder, this, owner)
     this.native = undefined as any as T // hack
-    this.cursor = new Cursor()
     // User-defined properties
     this.model = undefined as any
     this.controller = undefined as any as C // hack
     this._childrenLayout = Layout.Row
     this._placement = undefined
-    this._cellRange = Cursor.UndefinedCellRange
+    this._cellRange = UndefinedCellRange
     this._widthGrowth = 0
     this._minWidth = ""
     this._maxWidth = ""
@@ -476,7 +502,7 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
     this._blockAlignment = Align.Default
     this._contentWrapping = false
     this._overlayVisible = undefined
-    this.wasStyleApplied = false
+    this.hasStyles = false
     this.childrenShuffling = false
     this.renderingPriority = Priority.Realtime
     // Monitoring
@@ -516,14 +542,17 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
 
   get placement(): Placement { return this._placement }
   set placement(value: Placement) {
-    if (this._placement !== undefined)
-      throw new Error("cells can be assigned only once during rendering")
-    const cellRange = this.descriptor.owner.cursor.onwards(value)
-    if (!equalCellRanges(cellRange, this._cellRange)) {
-      this.descriptor.driver.applyCellRange(this, cellRange)
-      this._cellRange = cellRange
+    const driver = this.descriptor.driver
+    if (!driver.isRow) {
+      const cellRange = this.composeCellRange(value)
+      if (!equalCellRanges(cellRange, this._cellRange)) {
+        driver.applyCellRange(this, cellRange)
+        this._cellRange = cellRange
+      }
+      this._placement = value ?? { }
     }
-    this._placement = value ?? { }
+    else
+      this.rowBreak()
   }
 
   get widthGrowth(): number { return this._widthGrowth }
@@ -607,8 +636,8 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
   }
 
   style(styleName: string, enabled?: boolean): void {
-    this.descriptor.driver.applyStyle(this, this.wasStyleApplied, styleName, enabled)
-    this.wasStyleApplied = true
+    this.descriptor.driver.applyStyle(this, this.hasStyles, styleName, enabled)
+    this.hasStyles = true
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
@@ -662,6 +691,76 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
     else
       d.outer = owner.descriptor.outer
   }
+
+  composeCellRange(placement: Placement): CellRange {
+    let result: CellRange
+    const d = this.descriptor
+    const owner = d.owner.descriptor
+    const maxColumnCount = owner.maxColumnCount
+    const maxRowCount = owner.maxRowCount
+    const prevCursor = d.item!.prev?.instance.descriptor.cursor ?? ZeroCursor
+    const cursor = d.cursor ??= new Cursor(prevCursor)
+    if (typeof(placement) === "string") {
+      result = parseCellRange(placement, { x1: 0, y1: 0, x2: 0, y2: 0 })
+      absolutizeCellRange(result, prevCursor.column + 1, prevCursor.row + 1,
+        maxColumnCount || Infinity, maxRowCount || Infinity, result)
+    }
+    else {
+      // Unpack parameters
+      let w: number
+      let h: number
+      let wOverlap: boolean
+      let hOverlap: boolean
+      if (placement) {
+        w = placement.widthInCells ?? 1
+        h = placement.heightInCells ?? 1
+        wOverlap = placement.widthOverlap ?? false
+        hOverlap = placement.heightOverlap ?? false
+      }
+      else { // placement === undefined
+        w = 1
+        h = 1
+        wOverlap = hOverlap = false
+      }
+      // Arrange
+      const columnCount = maxColumnCount !== 0 ? maxColumnCount : prevCursor.runningColumnCount
+      const rowCount = maxRowCount !== 0 ? maxRowCount : prevCursor.runningRowCount
+      result = { x1: 0, y1: 0, x2: 0, y2: 0 }
+      if (w === 0)
+        w = columnCount || 1
+      if (w >= 0) {
+        result.x1 = prevCursor.column + 1
+        result.x2 = absolutizePosition(result.x1 + w - 1, 0, maxColumnCount || Infinity)
+        if (!wOverlap)
+          cursor.column = result.x2
+      }
+      else {
+        result.x1 = Math.max(prevCursor.column + w, 1)
+        result.x2 = prevCursor.column
+      }
+      if (h === 0)
+        h = rowCount || 1
+      if (h >= 0) {
+        result.y1 = prevCursor.row + 1
+        result.y2 = absolutizePosition(result.y1 + h - 1, 0, maxRowCount || Infinity)
+        if (!hOverlap && result.y2 > cursor.runningRowCount)
+          cursor.runningRowCount = result.y2
+      }
+      else {
+        result.y1 = Math.max(prevCursor.row + h, 1)
+        result.y2 = prevCursor.row
+      }
+    }
+    return result
+  }
+
+  rowBreak(): void {
+    const cursor = this.descriptor.cursor
+    if (cursor) {
+      cursor.column = 0
+      cursor.row = cursor.runningRowCount
+    }
+  }
 }
 
 // Internal
@@ -686,12 +785,10 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         // Lay out and render actual blocks
         const ownerIsSection = owner.isSection
         const sequential = children.isStrict
-        const cursor = owner.cursor
         let p1: Array<Item<XBlock>> | undefined = undefined
         let p2: Array<Item<XBlock>> | undefined = undefined
         let mounting = false
         let hostingRow = owner
-        cursor.reset()
         for (const item of children.items()) {
           if (Transaction.isCanceled)
             break
@@ -833,14 +930,12 @@ function renderNow(item: Item<XBlock>): void {
         d.stamp++
         d.numerator = 0
         b._placement = undefined // reset
-        b.wasStyleApplied = false // reset
+        b.hasStyles = false // reset
         d.children.beginMerge()
         const driver = d.driver
         result = driver.render(b)
-        if (driver.isRow)
-          d.owner.cursor.rowBreak()
-        else if (b._placement === undefined)
-          b.placement = undefined // assign cells automatically
+        if (b._placement === undefined && d.owner.isTable)
+          b.placement = undefined // auto placement
         if (result instanceof Promise)
           result.then(
             v => { runRenderNestedTreesThenDo(undefined, NOP); return v },
@@ -951,6 +1046,37 @@ function triggersAreEqual(a1: any, a2: any): boolean {
     }
   }
   return result
+}
+
+function absolutizeCellRange(area: CellRange,
+  cursorX: number, cursorY: number,
+  maxWidth: number, maxHeight: number,
+  result: CellRange): CellRange {
+  // X1, X2
+  const x1 = absolutizePosition(area.x1, cursorX, maxWidth)
+  const x2 = absolutizePosition(area.x2, x1, maxWidth)
+  if (x1 <= x2)
+    result.x1 = x1, result.x2 = x2
+  else
+    result.x1 = x2, result.x2 = x1
+  // Y1, Y2
+  const y1 = absolutizePosition(area.y1, cursorY, maxHeight)
+  const y2 = absolutizePosition(area.y2, y1, maxHeight)
+  if (y1 <= y2)
+    result.y1 = y1, result.y2 = y2
+  else
+    result.y1 = y2, result.y2 = y1
+  return result
+}
+
+function absolutizePosition(pos: number, cursor: number, max: number): number {
+  if (pos === 0)
+    pos = cursor
+  else if (pos < 0)
+    pos = Math.max(max + pos, 1)
+  else
+    pos = Math.min(pos, max)
+  return pos
 }
 
 function push<T>(item: T, array: Array<T> | undefined): Array<T> {
