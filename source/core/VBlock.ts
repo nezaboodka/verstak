@@ -55,7 +55,7 @@ export abstract class VBlockDescriptor<T = unknown, M = unknown, C = unknown, R 
   abstract readonly item: Item<VBlock> | undefined
   abstract readonly stamp: number
   abstract readonly outer: VBlock
-  abstract readonly context: VBlockContext | undefined
+  abstract readonly context: XBlockCtx | undefined
 }
 
 export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
@@ -108,7 +108,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
     driver: Driver<T>,
     builder?: BlockBuilder<T, M, C, R>,
     base?: BlockBuilder<T, M, C, R>): VBlock<T, M, C, R> {
-    let result: VBlockImpl<T, M, C, R>
+    let result: XBlock<T, M, C, R>
     // Normalize parameters
     if (builder)
       builder.base = base
@@ -118,7 +118,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
     let owner = gCurrent?.instance
     if (owner) {
       // Check for coalescing separators or lookup for existing block
-      let ex: Item<VBlockImpl<any, any, any, any>> | undefined = undefined
+      let ex: Item<XBlock<any, any, any, any>> | undefined = undefined
       const children = owner.descriptor.children
       if (driver.isRow) {
         const last = children.lastClaimedItem()
@@ -142,20 +142,20 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
       }
       else {
         // Create new block
-        result = new VBlockImpl<T, M, C, R>(key || VBlock.generateKey(owner), driver, owner, builder)
+        result = new XBlock<T, M, C, R>(key || VBlock.generateKey(owner), driver, owner, builder)
         result.descriptor.item = children.add(result)
       }
     }
     else {
       // Create new root block
-      result = new VBlockImpl<T, M, C, R>(key || "", driver, owner, builder)
+      result = new XBlock<T, M, C, R>(key || "", driver, owner, builder)
       result.descriptor.item = Collection.createItem(result)
       triggerRendering(result.descriptor.item)
     }
     return result
   }
 
-  private static generateKey(owner: VBlockImpl): string {
+  private static generateKey(owner: XBlock): string {
     const n = owner.descriptor.numerator++
     const lettered = emitLetters(n)
     let result: string
@@ -167,11 +167,11 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   }
 
   static getDefaultLoggingOptions(): LoggingOptions | undefined {
-    return VBlockImpl.logging
+    return XBlock.logging
   }
 
   static setDefaultLoggingOptions(logging?: LoggingOptions): void {
-    VBlockImpl.logging = logging
+    XBlock.logging = logging
   }
 }
 
@@ -198,7 +198,7 @@ export class Driver<T, C = unknown> {
   }
 
   claim(block: VBlock<T, unknown, C>): void {
-    const b = block as VBlockImpl<T, unknown, C>
+    const b = block as XBlock<T, unknown, C>
     chainedClaim(b, b.descriptor.builder)
   }
 
@@ -207,7 +207,7 @@ export class Driver<T, C = unknown> {
   }
 
   initialize(block: VBlock<T, unknown, C>): void {
-    const b = block as VBlockImpl<T, unknown, C>
+    const b = block as XBlock<T, unknown, C>
     this.preset?.(b)
     chainedInitialize(b, b.descriptor.builder)
   }
@@ -221,13 +221,13 @@ export class Driver<T, C = unknown> {
   }
 
   finalize(block: VBlock<T, unknown, C>, isLeader: boolean): boolean {
-    const b = block as VBlockImpl<T, unknown, C>
+    const b = block as XBlock<T, unknown, C>
     chainedFinalize(b, b.descriptor.builder)
     return isLeader // treat children as finalization leaders as well
   }
 
   applyChildrenLayout(block: VBlock<T, any, C, any>, value: Layout): void {
-    const b = block as VBlockImpl<T, unknown, C>
+    const b = block as XBlock<T, unknown, C>
     if (value === Layout.Table)
       b.cursor = new TableCursor()
     else
@@ -355,27 +355,27 @@ export class ContextVariable<T extends Object = Object> {
   }
 
   set value(value: T) {
-    VBlockImpl.setContextVariableValue(this, value)
+    XBlock.setContextVariableValue(this, value)
   }
 
   get value(): T {
-    return VBlockImpl.useContextVariableValue(this)
+    return XBlock.useContextVariableValue(this)
   }
 
   get valueOrUndefined(): T | undefined {
-    return VBlockImpl.tryUseContextVariable(this)
+    return XBlock.tryUseContextVariable(this)
   }
 }
 
-// VBlockImpl
+// XBlock
 
-function getBlockKey(block: VBlockImpl): string | undefined {
+function getBlockKey(block: XBlock): string | undefined {
   const d = block.descriptor
   return d.stamp >= 0 ? d.key : undefined
 }
 
-class VBlockContext<T extends Object = Object> extends ObservableObject {
-  @raw next: VBlockContext<object> | undefined
+class XBlockCtx<T extends Object = Object> extends ObservableObject {
+  @raw next: XBlockCtx<object> | undefined
   @raw variable: ContextVariable<T>
   value: T
 
@@ -387,23 +387,23 @@ class VBlockContext<T extends Object = Object> extends ObservableObject {
   }
 }
 
-export class VBlockDescriptorImpl<T = unknown, M = unknown, C = unknown, R = void> extends VBlockDescriptor<T, M, C, R> {
+export class XBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> extends VBlockDescriptor<T, M, C, R> {
   readonly key: string
   readonly driver: Driver<T>
   builder: BlockBuilder<T, M, C, R>
   readonly level: number
-  readonly owner: VBlockImpl
-  host: VBlockImpl
-  readonly children: Collection<VBlockImpl>
-  item: Item<VBlockImpl> | undefined
+  readonly owner: XBlock
+  host: XBlock
+  readonly children: Collection<XBlock>
+  item: Item<XBlock> | undefined
   stamp: number
-  outer: VBlockImpl
-  context: VBlockContext<any> | undefined
+  outer: XBlock
+  context: XBlockCtx<any> | undefined
   numerator: number
 
   constructor(key: string, driver: Driver<T>,
     builder: Readonly<BlockBuilder<T, M, C, R>>,
-    self: VBlockImpl<T, M, C, R>, owner: VBlockImpl | undefined) {
+    self: XBlock<T, M, C, R>, owner: XBlock | undefined) {
     super()
     this.key = key
     this.driver = driver
@@ -419,7 +419,7 @@ export class VBlockDescriptorImpl<T = unknown, M = unknown, C = unknown, R = voi
       this.outer = self
     }
     this.host = self // block is unmounted
-    this.children = new Collection<VBlockImpl>(getBlockKey, self.isSequential)
+    this.children = new Collection<XBlock>(getBlockKey, self.isSequential)
     this.item = undefined
     this.stamp = 0
     this.context = undefined
@@ -427,14 +427,14 @@ export class VBlockDescriptorImpl<T = unknown, M = unknown, C = unknown, R = voi
   }
 }
 
-class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
+class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
   // Static properties
   static grandCount: number = 0
   static disposableCount: number = 0
   static logging: LoggingOptions | undefined = undefined
 
   // System-managed properties
-  readonly descriptor: VBlockDescriptorImpl<T, M, C, R>
+  readonly descriptor: XBlockDescriptor<T, M, C, R>
   native: T
   cursor: Cursor
 
@@ -459,10 +459,10 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   renderingPriority: Priority
 
   constructor(key: string, driver: Driver<T>,
-    owner: VBlockImpl | undefined, builder: BlockBuilder<T, M, C, R>) {
+    owner: XBlock | undefined, builder: BlockBuilder<T, M, C, R>) {
     super()
     // System-managed properties
-    this.descriptor = new VBlockDescriptorImpl(key, driver, builder, this, owner)
+    this.descriptor = new XBlockDescriptor(key, driver, builder, this, owner)
     this.native = undefined as any as T // hack
     this.cursor = new Cursor()
     // User-defined properties
@@ -485,9 +485,9 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     this.childrenShuffling = false
     this.renderingPriority = Priority.Realtime
     // Monitoring
-    VBlockImpl.grandCount++
+    XBlock.grandCount++
     if (this.has(Mode.SeparateReaction))
-      VBlockImpl.disposableCount++
+      XBlock.disposableCount++
   }
 
   @reactive
@@ -622,28 +622,28 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     return Rx.getController(this.render).configure(options)
   }
 
-  static get curr(): Item<VBlockImpl> {
+  static get curr(): Item<XBlock> {
     if (!gCurrent)
       throw new Error("current block is undefined")
     return gCurrent
   }
 
   static tryUseContextVariable<T extends Object>(variable: ContextVariable<T>): T | undefined {
-    let b = VBlockImpl.curr.instance
+    let b = XBlock.curr.instance
     while (b.descriptor.context?.variable !== variable && b.descriptor.owner !== b)
       b = b.descriptor.outer
     return b.descriptor.context?.value as any // TODO: to get rid of any
   }
 
   static useContextVariableValue<T extends Object>(variable: ContextVariable<T>): T {
-    const result = VBlockImpl.tryUseContextVariable(variable) ?? variable.defaultValue
+    const result = XBlock.tryUseContextVariable(variable) ?? variable.defaultValue
     if (!result)
       throw new Error("context doesn't exist")
     return result
   }
 
   static setContextVariableValue<T extends Object>(variable: ContextVariable<T>, value: T | undefined): void {
-    const b = VBlockImpl.curr.instance
+    const b = XBlock.curr.instance
     const d = b.descriptor
     const owner = d.owner
     const hostCtx = nonreactive(() => owner.descriptor.context?.value)
@@ -659,7 +659,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
           ctx.value = value // update context thus invalidate observers
         }
         else
-          d.context = new VBlockContext<any>(variable, value)
+          d.context = new XBlockCtx<any>(variable, value)
       })
     }
     else if (hostCtx)
@@ -672,7 +672,7 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
 // Internal
 
 function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => void): void {
-  const curr = VBlockImpl.curr
+  const curr = XBlock.curr
   const owner = curr.instance
   const children = owner.descriptor.children
   if (children.isMergeInProgress) {
@@ -687,8 +687,8 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         const ownerIsSection = owner.isSection
         const sequential = children.isStrict
         const cursor = owner.cursor
-        let p1: Array<Item<VBlockImpl>> | undefined = undefined
-        let p2: Array<Item<VBlockImpl>> | undefined = undefined
+        let p1: Array<Item<XBlock>> | undefined = undefined
+        let p2: Array<Item<XBlock>> | undefined = undefined
         let mounting = false
         let hostingRow = owner
         cursor.reset()
@@ -723,8 +723,8 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
   }
 }
 
-function markToMountIfNecessary(mounting: boolean, host: VBlockImpl,
-  item: Item<VBlockImpl>, children: Collection<VBlockImpl>, sequential: boolean): boolean {
+function markToMountIfNecessary(mounting: boolean, host: XBlock,
+  item: Item<XBlock>, children: Collection<XBlock>, sequential: boolean): boolean {
   // Detects element mounting when abstract blocks
   // exist among regular blocks with HTML elements
   const b = item.instance
@@ -742,10 +742,10 @@ function markToMountIfNecessary(mounting: boolean, host: VBlockImpl,
 }
 
 async function startIncrementalRendering(
-  owner: Item<VBlockImpl>,
-  allChildren: Collection<VBlockImpl>,
-  priority1?: Array<Item<VBlockImpl>>,
-  priority2?: Array<Item<VBlockImpl>>): Promise<void> {
+  owner: Item<XBlock>,
+  allChildren: Collection<XBlock>,
+  priority1?: Array<Item<XBlock>>,
+  priority2?: Array<Item<XBlock>>): Promise<void> {
   const stamp = owner.instance.descriptor.stamp
   if (priority1)
     await renderIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
@@ -753,8 +753,8 @@ async function startIncrementalRendering(
     await renderIncrementally(owner, stamp, allChildren, priority2, Priority.Background)
 }
 
-async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
-  allChildren: Collection<VBlockImpl>, items: Array<Item<VBlockImpl>>,
+async function renderIncrementally(owner: Item<XBlock>, stamp: number,
+  allChildren: Collection<XBlock>, items: Array<Item<XBlock>>,
   priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
   const block = owner.instance
@@ -785,7 +785,7 @@ async function renderIncrementally(owner: Item<VBlockImpl>, stamp: number,
   }
 }
 
-function triggerRendering(item: Item<VBlockImpl>): void {
+function triggerRendering(item: Item<XBlock>): void {
   const b = item.instance
   const d = b.descriptor
   if (d.stamp >= 0) {
@@ -806,7 +806,7 @@ function triggerRendering(item: Item<VBlockImpl>): void {
   }
 }
 
-function mountIfNecessary(block: VBlockImpl): void {
+function mountIfNecessary(block: XBlock): void {
   const d = block.descriptor
   const driver = d.driver
   if (d.stamp === 0) {
@@ -822,7 +822,7 @@ function mountIfNecessary(block: VBlockImpl): void {
     nonreactive(() => driver.mount(block))
 }
 
-function renderNow(item: Item<VBlockImpl>): void {
+function renderNow(item: Item<XBlock>): void {
   const b = item.instance
   const d = b.descriptor
   if (d.stamp >= 0) { // if block is alive
@@ -857,7 +857,7 @@ function renderNow(item: Item<VBlockImpl>): void {
   }
 }
 
-function triggerFinalization(item: Item<VBlockImpl>, isLeader: boolean, individual: boolean): void {
+function triggerFinalization(item: Item<XBlock>, isLeader: boolean, individual: boolean): void {
   const b = item.instance
   const d = b.descriptor
   if (d.stamp >= 0) {
@@ -885,7 +885,7 @@ function triggerFinalization(item: Item<VBlockImpl>, isLeader: boolean, individu
     // Finalize children if any
     for (const item of d.children.items())
       triggerFinalization(item, childrenAreLeaders, false)
-    VBlockImpl.grandCount--
+    XBlock.grandCount--
   }
 }
 
@@ -897,13 +897,13 @@ async function runDisposalLoop(): Promise<void> {
       await Transaction.requestNextFrame()
     Rx.dispose(item.instance)
     item = item.aux
-    VBlockImpl.disposableCount--
+    XBlock.disposableCount--
   }
   // console.log(`Block count: ${VBlock.grandCount} totally (${VBlock.disposableCount} disposable)`)
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
-// function forEachChildRecursively(item: Item<VBlockImpl>, action: (e: any) => void): void {
+// function forEachChildRecursively(item: Item<XBlock>, action: (e: any) => void): void {
 //   const block = item.instance
 //   const e = block.native
 //   e && action(e)
@@ -923,7 +923,7 @@ function wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T 
   return wrappedToRunInside
 }
 
-function runInside<T>(item: Item<VBlockImpl>, func: (...args: any[]) => T, ...args: any[]): T {
+function runInside<T>(item: Item<XBlock>, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gCurrent
   try {
     gCurrent = item
@@ -999,6 +999,6 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const NOP: any = (...args: any[]): void => { /* nop */ }
 
-let gCurrent: Item<VBlockImpl> | undefined = undefined
-let gFirstToDispose: Item<VBlockImpl> | undefined = undefined
-let gLastToDispose: Item<VBlockImpl> | undefined = undefined
+let gCurrent: Item<XBlock> | undefined = undefined
+let gFirstToDispose: Item<XBlock> | undefined = undefined
+let gLastToDispose: Item<XBlock> | undefined = undefined
