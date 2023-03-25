@@ -65,6 +65,10 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   static currentRenderingPriority = Priority.Realtime
   static frameDuration = VBlock.longFrameDuration
 
+  // System-managed properties
+  abstract readonly descriptor: VBlockDescriptor<T, M, C, R>
+  abstract readonly native: T
+
   // User-defined properties
   abstract model: M
   abstract controller: C
@@ -83,10 +87,6 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   abstract childrenShuffling: boolean
   abstract renderingPriority?: Priority
   abstract style(styleName: string, enabled?: boolean): void
-
-  // System-managed properties
-  abstract readonly descriptor: VBlockDescriptor<T, M, C, R>
-  abstract readonly native: T
 
   get isInitialRendering(): boolean {
     return this.descriptor.stamp === 2
