@@ -464,10 +464,10 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     // System-managed properties
     this.descriptor = new VBlockDescriptorImpl(key, driver, builder, this, owner)
     this.native = undefined as any as T // hack
-    this.controller = undefined as any as C // hack
     this.cursor = new Cursor()
     // User-defined properties
     this.model = undefined as any
+    this.controller = undefined as any as C // hack
     this._childrenLayout = Layout.Row
     this._placement = undefined
     this._cellRange = Cursor.UndefinedCellRange
