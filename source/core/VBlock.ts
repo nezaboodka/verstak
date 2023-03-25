@@ -679,16 +679,23 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
     let result: CellRange
     const d = this.descriptor
     const owner = d.owner.descriptor
+    const isStrict = owner.children.isStrict
     const maxColumnCount = owner.maxColumnCount
     const maxRowCount = owner.maxRowCount
     const prevCursor = d.item!.prev?.instance.descriptor.cursor ?? ZeroCursor
-    const cursor = d.cursor ??= new Cursor(prevCursor)
     if (typeof(placement) === "string") {
       result = parseCellRange(placement, { x1: 0, y1: 0, x2: 0, y2: 0 })
       absolutizeCellRange(result, prevCursor.column + 1, prevCursor.row + 1,
         maxColumnCount || Infinity, maxRowCount || Infinity, result)
+      if (isStrict) {
+        const cursor = d.cursor = new Cursor(prevCursor)
+        cursor.column = result.x2
+        cursor.row = result.y1
+        cursor.flags = CursorFlags.NextHasOwnCursorPosition
+      }
     }
-    else {
+    else if (isStrict) {
+      const cursor = d.cursor = new Cursor(prevCursor)
       // Unpack parameters
       let w: number
       let h: number
@@ -734,6 +741,8 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
         result.y2 = prevCursor.row
       }
     }
+    else
+      throw new Error("relative layout requires sequential children")
     return result
   }
 
