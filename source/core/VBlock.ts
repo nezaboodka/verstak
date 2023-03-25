@@ -441,19 +441,19 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   // User-defined properties
   model: M
   controller: C
-  appliedChildrenLayout: Layout
-  appliedPlacement: Placement
-  appliedCellRange: CellRange
-  appliedWidthGrowth: number
-  appliedMinWidth: string
-  appliedMaxWidth: string
-  appliedHeightGrowth: number
-  appliedMinHeight: string
-  appliedMaxHeight: string
-  appliedContentAlignment: Align
-  appliedBlockAlignment: Align
-  appliedContentWrapping: boolean
-  appliedOverlayVisible: boolean | undefined
+  _childrenLayout: Layout
+  _placement: Placement
+  _cellRange: CellRange
+  _widthGrowth: number
+  _minWidth: string
+  _maxWidth: string
+  _heightGrowth: number
+  _minHeight: string
+  _maxHeight: string
+  _contentAlignment: Align
+  _blockAlignment: Align
+  _contentWrapping: boolean
+  _overlayVisible: boolean | undefined
   wasStyleApplied: boolean
   childrenShuffling: boolean
   renderingPriority: Priority
@@ -468,19 +468,19 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
     this.cursor = new Cursor()
     // User-defined properties
     this.model = undefined as any
-    this.appliedChildrenLayout = Layout.Row
-    this.appliedPlacement = undefined
-    this.appliedCellRange = Cursor.UndefinedCellRange
-    this.appliedWidthGrowth = 0
-    this.appliedMinWidth = ""
-    this.appliedMaxWidth = ""
-    this.appliedHeightGrowth = 0
-    this.appliedMinHeight = ""
-    this.appliedMaxHeight = ""
-    this.appliedContentAlignment = Align.Default
-    this.appliedBlockAlignment = Align.Default
-    this.appliedContentWrapping = false
-    this.appliedOverlayVisible = undefined
+    this._childrenLayout = Layout.Row
+    this._placement = undefined
+    this._cellRange = Cursor.UndefinedCellRange
+    this._widthGrowth = 0
+    this._minWidth = ""
+    this._maxWidth = ""
+    this._heightGrowth = 0
+    this._minHeight = ""
+    this._maxHeight = ""
+    this._contentAlignment = Align.Default
+    this._blockAlignment = Align.Default
+    this._contentWrapping = false
+    this._overlayVisible = undefined
     this.wasStyleApplied = false
     this.childrenShuffling = false
     this.renderingPriority = Priority.Realtime
@@ -511,103 +511,103 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   get isAutoMountEnabled(): boolean { return !this.has(Mode.ManualMount) && this.descriptor.host !== this }
   get isMoved(): boolean { return this.descriptor.owner.descriptor.children.isMoved(this.descriptor.item!) }
 
-  get childrenLayout(): Layout { return this.appliedChildrenLayout }
+  get childrenLayout(): Layout { return this._childrenLayout }
   set childrenLayout(value: Layout) {
-    if (value !== this.appliedChildrenLayout || this.descriptor.stamp < 2) {
+    if (value !== this._childrenLayout || this.descriptor.stamp < 2) {
       this.descriptor.driver.applyChildrenLayout(this, value)
-      this.appliedChildrenLayout = value
+      this._childrenLayout = value
     }
   }
 
-  get placement(): Placement { return this.appliedPlacement }
+  get placement(): Placement { return this._placement }
   set placement(value: Placement) {
-    if (this.appliedPlacement !== undefined)
+    if (this._placement !== undefined)
       throw new Error("cells can be assigned only once during rendering")
     const cellRange = this.descriptor.owner.cursor.onwards(value)
-    if (!equalCellRanges(cellRange, this.appliedCellRange)) {
+    if (!equalCellRanges(cellRange, this._cellRange)) {
       this.descriptor.driver.applyCellRange(this, cellRange)
-      this.appliedCellRange = cellRange
+      this._cellRange = cellRange
     }
-    this.appliedPlacement = value ?? { }
+    this._placement = value ?? { }
   }
 
-  get widthGrowth(): number { return this.appliedWidthGrowth }
+  get widthGrowth(): number { return this._widthGrowth }
   set widthGrowth(value: number) {
-    if (value !== this.appliedWidthGrowth) {
+    if (value !== this._widthGrowth) {
       this.descriptor.driver.applyWidthGrowth(this, value)
-      this.appliedWidthGrowth = value
+      this._widthGrowth = value
     }
   }
 
-  get minWidth(): string { return this.appliedMinWidth }
+  get minWidth(): string { return this._minWidth }
   set minWidth(value: string) {
-    if (value !== this.appliedMinWidth) {
+    if (value !== this._minWidth) {
       this.descriptor.driver.applyMinWidth(this, value)
-      this.appliedMinWidth = value
+      this._minWidth = value
     }
   }
 
-  get maxWidth(): string { return this.appliedMaxWidth }
+  get maxWidth(): string { return this._maxWidth }
   set maxWidth(value: string) {
-    if (value !== this.appliedMaxWidth) {
+    if (value !== this._maxWidth) {
       this.descriptor.driver.applyMaxWidth(this, value)
-      this.appliedMaxWidth = value
+      this._maxWidth = value
     }
   }
 
-  get heightGrowth(): number { return this.appliedHeightGrowth }
+  get heightGrowth(): number { return this._heightGrowth }
   set heightGrowth(value: number) {
-    if (value !== this.appliedHeightGrowth) {
+    if (value !== this._heightGrowth) {
       this.descriptor.driver.applyHeightGrowth(this, value)
-      this.appliedHeightGrowth = value
+      this._heightGrowth = value
     }
   }
 
-  get minHeight(): string { return this.appliedMinHeight }
+  get minHeight(): string { return this._minHeight }
   set minHeight(value: string) {
-    if (value !== this.appliedMinHeight) {
+    if (value !== this._minHeight) {
       this.descriptor.driver.applyMinHeight(this, value)
-      this.appliedMinHeight = value
+      this._minHeight = value
     }
   }
 
-  get maxHeight(): string { return this.appliedMaxHeight }
+  get maxHeight(): string { return this._maxHeight }
   set maxHeight(value: string) {
-    if (value !== this.appliedMaxHeight) {
+    if (value !== this._maxHeight) {
       this.descriptor.driver.applyMaxHeight(this, value)
-      this.appliedMaxHeight = value
+      this._maxHeight = value
     }
   }
 
-  get contentAlignment(): Align { return this.appliedContentAlignment }
+  get contentAlignment(): Align { return this._contentAlignment }
   set contentAlignment(value: Align) {
-    if (value !== this.appliedContentAlignment) {
+    if (value !== this._contentAlignment) {
       this.descriptor.driver.applyContentAlignment(this, value)
-      this.appliedContentAlignment = value
+      this._contentAlignment = value
     }
   }
 
-  get blockAlignment(): Align { return this.appliedBlockAlignment }
+  get blockAlignment(): Align { return this._blockAlignment }
   set blockAlignment(value: Align) {
-    if (value !== this.appliedBlockAlignment) {
+    if (value !== this._blockAlignment) {
       this.descriptor.driver.applyBlockAlignment(this, value)
-      this.appliedBlockAlignment = value
+      this._blockAlignment = value
     }
   }
 
-  get contentWrapping(): boolean { return this.appliedContentWrapping }
+  get contentWrapping(): boolean { return this._contentWrapping }
   set contentWrapping(value: boolean) {
-    if (value !== this.appliedContentWrapping) {
+    if (value !== this._contentWrapping) {
       this.descriptor.driver.applyContentWrapping(this, value)
-      this.appliedContentWrapping = value
+      this._contentWrapping = value
     }
   }
 
-  get overlayVisible(): boolean | undefined { return this.appliedOverlayVisible }
+  get overlayVisible(): boolean | undefined { return this._overlayVisible }
   set overlayVisible(value: boolean | undefined) {
-    if (value !== this.appliedOverlayVisible) {
+    if (value !== this._overlayVisible) {
       this.descriptor.driver.applyOverlayVisible(this, value)
-      this.appliedOverlayVisible = value
+      this._overlayVisible = value
     }
   }
 
@@ -832,14 +832,14 @@ function renderNow(item: Item<VBlockImpl>): void {
         mountIfNecessary(b)
         d.stamp++
         d.numerator = 0
-        b.appliedPlacement = undefined // reset
+        b._placement = undefined // reset
         b.wasStyleApplied = false // reset
         d.children.beginMerge()
         const driver = d.driver
         result = driver.render(b)
         if (driver.isRow)
           d.owner.cursor.rowBreak()
-        else if (b.appliedPlacement === undefined)
+        else if (b._placement === undefined)
           b.placement = undefined // assign cells automatically
         if (result instanceof Promise)
           result.then(
