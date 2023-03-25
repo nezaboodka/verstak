@@ -443,17 +443,17 @@ class VBlockImpl<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> 
   controller: C
   _childrenLayout: Layout
   _placement: Placement
-  _cellRange: CellRange
-  _widthGrowth: number
-  _minWidth: string
-  _maxWidth: string
-  _heightGrowth: number
-  _minHeight: string
-  _maxHeight: string
-  _contentAlignment: Align
-  _blockAlignment: Align
-  _contentWrapping: boolean
-  _overlayVisible: boolean | undefined
+  private _cellRange: CellRange
+  private _widthGrowth: number
+  private _minWidth: string
+  private _maxWidth: string
+  private _heightGrowth: number
+  private _minHeight: string
+  private _maxHeight: string
+  private _contentAlignment: Align
+  private _blockAlignment: Align
+  private _contentWrapping: boolean
+  private _overlayVisible: boolean | undefined
   wasStyleApplied: boolean
   childrenShuffling: boolean
   renderingPriority: Priority
