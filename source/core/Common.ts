@@ -5,6 +5,26 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
+export enum Layout {
+  Section = 0,  // 000
+  Table = 1,    // 001
+  Row = 2,      // 010
+  Group = 3,    // 011
+  Note = 4,     // 100
+}
+
+export const enum Priority {
+  Realtime = 0,
+  Normal = 1,
+  Background = 2
+}
+
+export enum Mode {
+  Default = 0,
+  SeparateReaction = 1,
+  ManualMount = 2,
+}
+
 export enum Align {
   Stretch = 0b00000,
   Left    = 0b00001,

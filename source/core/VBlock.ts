@@ -8,24 +8,12 @@
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw, MemberOptions } from "reactronic"
 import { getCallerInfo } from "./Utils"
 import { CellRange, emitLetters, equalCellRanges, parseCellRange } from "./CellRange"
-import { Align, Placement } from "./Common"
+import { Layout, Priority, Mode, Align, Placement } from "./Common"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Operation<T = unknown, M = unknown, C = unknown, R = void> = (block: VBlock<T, M, C, R>, base: () => R) => R
 export type AsyncOperation<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
 export type SimpleOperation<T = unknown> = (block: VBlock<T, any, any, any>) => void
-
-export const enum Priority {
-  Realtime = 0,
-  Normal = 1,
-  Background = 2
-}
-
-export enum Mode {
-  Default = 0,
-  SeparateReaction = 1,
-  ManualMount = 2,
-}
 
 export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
   base?: BlockBuilder<T, M, C, R>
@@ -178,16 +166,6 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   static setDefaultLoggingOptions(logging?: LoggingOptions): void {
     XBlock.logging = logging
   }
-}
-
-// Layout
-
-export enum Layout {
-  Section = 0,  // 000
-  Table = 1,    // 001
-  Row = 2,      // 010
-  Group = 3,    // 011
-  Note = 4,     // 100
 }
 
 // Driver
