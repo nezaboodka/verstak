@@ -684,6 +684,7 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
     const maxRowCount = owner.maxRowCount
     const prevCursor = d.item!.prev?.instance.descriptor.cursor ?? ZeroCursor
     if (typeof(placement) === "string") {
+      // Absolute positioning
       result = parseCellRange(placement, { x1: 0, y1: 0, x2: 0, y2: 0 })
       absolutizeCellRange(result, prevCursor.column + 1, prevCursor.row + 1,
         maxColumnCount || Infinity, maxRowCount || Infinity, result)
@@ -695,8 +696,8 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
       }
     }
     else if (isStrict) {
+      // Relative positioning
       const cursor = d.cursor = new Cursor(prevCursor)
-      // Unpack parameters
       let w: number
       let h: number
       let wOverlap: boolean
