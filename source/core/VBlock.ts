@@ -61,6 +61,8 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   // System-managed properties
   abstract readonly descriptor: VBlockDescriptor<T, M, C, R>
   abstract readonly native: T
+  abstract readonly isSection: boolean
+  abstract readonly isTable: boolean
 
   // User-defined properties
   abstract model: M
@@ -752,11 +754,11 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
   }
 
   private rowBreak(): void {
-    const cursor = this.descriptor.cursor
-    if (cursor) {
-      cursor.column = 0
-      cursor.row = cursor.runningRowCount
-    }
+    const d = this.descriptor
+    const prevCursor = d.item!.prev?.instance.descriptor.cursor ?? ZeroCursor
+    const cursor = this.descriptor.cursor = new Cursor(prevCursor)
+    cursor.column = 0
+    cursor.row = cursor.runningRowCount
   }
 }
 

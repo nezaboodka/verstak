@@ -278,17 +278,16 @@ const Drivers = {
 const VerstakDriversByLayout: Array<SimpleOperation<HTMLElement>> = [
   b => { // section
     const css = b.native.style
-    css.alignSelf = "center"
     css.display = "flex"
     css.flexDirection = "column"
-    css.justifyContent = "center"
+    css.alignSelf = b.descriptor.owner.isTable ? "stretch" : "center"
     css.textAlign = "initial"
     css.flexShrink = "1"
     css.minWidth = "0"
   },
   b => { // table
     const css = b.native.style
-    css.alignSelf = "center"
+    css.alignSelf = b.descriptor.owner.isTable ? "stretch" : "center"
     css.display = "grid"
     css.flexBasis = "0"
     css.gridAutoRows = "minmax(min-content, 1fr)"
@@ -297,17 +296,16 @@ const VerstakDriversByLayout: Array<SimpleOperation<HTMLElement>> = [
   },
   b => { // row
     const css = b.native.style
-    css.display = "flex"
+    css.display = b.descriptor.owner.isTable ? "none" : "flex"
     css.flexDirection = "row"
   },
   b => { // group
     const css = b.native.style
-    css.alignSelf = "center"
     css.display = "contents"
   },
   b => { // note
     const css = b.native.style
-    css.alignSelf = "center"
+    css.alignSelf = b.descriptor.owner.isTable ? "stretch" : "center"
     css.display = "inline-grid"
     css.flexShrink = "1"
     // Wrapping=false
