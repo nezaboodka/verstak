@@ -527,7 +527,7 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
   set placement(value: Placement) {
     const driver = this.descriptor.driver
     if (!driver.isRow) {
-      const cellRange = this.composeCellRange(value)
+      const cellRange = this.placementToCellRange(value)
       if (!equalCellRanges(cellRange, this._cellRange)) {
         driver.applyCellRange(this, cellRange)
         this._cellRange = cellRange
@@ -675,7 +675,7 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
       d.outer = owner.descriptor.outer
   }
 
-  composeCellRange(placement: Placement): CellRange {
+  private placementToCellRange(placement: Placement): CellRange {
     let result: CellRange
     const d = this.descriptor
     const owner = d.owner.descriptor
@@ -751,7 +751,7 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
     return result
   }
 
-  rowBreak(): void {
+  private rowBreak(): void {
     const cursor = this.descriptor.cursor
     if (cursor) {
       cursor.column = 0
