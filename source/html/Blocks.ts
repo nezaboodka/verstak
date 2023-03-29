@@ -9,30 +9,30 @@ import { VBlock, Layout, BlockBuilder, Align, CellRange, SimpleOperation } from 
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
-// called section and table; and on two special non-visual
+// called band and table; and on two special non-visual
 // elements called row and group.
 
-// Section is a layout structure, which children are layed
+// Band is a layout structure, which children are layed
 // out naturally: rightwards-downwards.
 
 // Table is layout structure, which children are layed out
 // over table cells.
 
 // Row is a special non-visual element, which begins
-// new layout row inside section or table.
+// new layout row inside band or table.
 
 // Note is either plain or markdown-formatted text
 // supporting syntax highlighting for code blocks.
 
 // Group is a special non-visual element for logical
-// grouping of sections, tables and other groups.
+// grouping of bands, tables and other groups.
 
-// Section
+// Band
 
-export function VSection<M = unknown, R = void>(
+export function VBand<M = unknown, R = void>(
   builder?: BlockBuilder<HTMLElement, M, R>,
   base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(Drivers.section, builder, base)
+  return VBlock.claim(Drivers.band, builder, base)
 }
 
 // Table
@@ -253,13 +253,13 @@ const Constants = {
   // attribute: "вид",
   block: "block",
   row: "row",
-  layouts: ["section", "table", "" /* row */, "group", "note"],
+  layouts: ["band", "table", "" /* row */, "group", "note"],
   attribute: "kind",
 }
 
 const Drivers = {
   // display: flex, flex-direction: column
-  section: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Section),
+  band: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Band),
 
   // display: grid
   table: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Table),
@@ -276,7 +276,7 @@ const Drivers = {
 }
 
 const VerstakDriversByLayout: Array<SimpleOperation<HTMLElement>> = [
-  b => { // section
+  b => { // band
     const css = b.native.style
     css.display = "flex"
     css.flexDirection = "column"

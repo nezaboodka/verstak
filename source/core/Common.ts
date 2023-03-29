@@ -6,11 +6,11 @@
 // automatically licensed under the license referred above.
 
 export enum Layout {
-  Section = 0,  // 000
-  Table = 1,    // 001
-  Row = 2,      // 010
-  Group = 3,    // 011
-  Note = 4,     // 100
+  Band = 0,   // 000
+  Table = 1,  // 001
+  Row = 2,    // 010
+  Group = 3,  // 011
+  Note = 4,   // 100
 }
 
 export const enum Priority {

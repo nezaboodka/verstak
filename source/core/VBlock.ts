@@ -61,7 +61,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   // System-managed properties
   abstract readonly descriptor: VBlockDescriptor<T, M, C, R>
   abstract readonly native: T
-  abstract readonly isSection: boolean
+  abstract readonly isBand: boolean
   abstract readonly isTable: boolean
 
   // User-defined properties
@@ -509,9 +509,9 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
 
   has(mode: Mode): boolean { return (chainedMode(this.descriptor.builder) & mode) === mode }
 
-  get isSequential(): boolean { return (this.childrenLayout & 1) === 0 } // Section, Row, Note
+  get isSequential(): boolean { return (this.childrenLayout & 1) === 0 } // Band, Row, Note
   get isAuxiliary(): boolean { return (this.childrenLayout & 2) === 2 } // Row, Group
-  get isSection(): boolean { return this.childrenLayout === Layout.Section }
+  get isBand(): boolean { return this.childrenLayout === Layout.Band }
   get isTable(): boolean { return this.childrenLayout === Layout.Table }
 
   get isAutoMountEnabled(): boolean { return !this.has(Mode.ManualMount) && this.descriptor.host !== this }
@@ -782,7 +782,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         triggerFinalization(item, true, true)
       if (!error) {
         // Lay out and render actual blocks
-        const ownerIsSection = owner.isSection
+        const ownerIsBand = owner.isBand
         const sequential = children.isStrict
         let p1: Array<Item<XBlock>> | undefined = undefined
         let p2: Array<Item<XBlock>> | undefined = undefined
@@ -802,7 +802,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (ownerIsSection && isRow)
+          if (ownerIsBand && isRow)
             hostingRow = block
         }
         // Render incremental children (if any)
