@@ -702,13 +702,18 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
       const cursor = d.cursor = new Cursor(prevCursor)
       let w: number
       let h: number
+      let wOverlap: boolean
+      let hOverlap: boolean
       if (placement) {
         w = placement.widthInCells ?? 1
         h = placement.heightInCells ?? 1
+        wOverlap = placement.widthOverlap ?? false
+        hOverlap = placement.heightOverlap ?? false
       }
       else { // placement === undefined
         w = 1
         h = 1
+        wOverlap = hOverlap = false
       }
       // Arrange
       const columnCount = maxColumnCount !== 0 ? maxColumnCount : prevCursor.runningColumnCount
@@ -721,7 +726,8 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
       if (w >= 0) {
         result.x1 = prevCursor.column + 1
         result.x2 = absolutizePosition(result.x1 + w - 1, 0, maxColumnCount || Infinity)
-        cursor.column = result.x2
+        if (!wOverlap)
+          cursor.column = result.x2
       }
       else {
         result.x1 = Math.max(prevCursor.column + w, 1)
@@ -734,7 +740,7 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
       if (h >= 0) {
         result.y1 = prevCursor.row + 1
         result.y2 = absolutizePosition(result.y1 + h - 1, 0, maxRowCount || Infinity)
-        if (result.y2 > cursor.runningRowCount)
+        if (!hOverlap && result.y2 > cursor.runningRowCount)
           cursor.runningRowCount = result.y2
       }
       else {
