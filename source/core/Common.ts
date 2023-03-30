@@ -51,6 +51,6 @@ export interface TrackSize extends ElasticSize {
 export type Placement = undefined | string | {
   widthInCells?: number     // 1 (table only)
   heightInCells?: number    // 1 (table only)
-  widthOverlap?: boolean    // false
-  heightOverlap?: boolean   // false
+  cursorWidth?: number      // = widthInCells
+  cursorHeight?: number     // = heightInCells
 }

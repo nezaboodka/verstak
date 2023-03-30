@@ -702,19 +702,16 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
       const cursor = d.cursor = new Cursor(prevCursor)
       let w: number
       let h: number
-      let wOverlap: boolean
-      let hOverlap: boolean
+      let cursorWidth: number
+      let cursorHeight: number
       if (placement) {
         w = placement.widthInCells ?? 1
         h = placement.heightInCells ?? 1
-        wOverlap = placement.widthOverlap ?? false
-        hOverlap = placement.heightOverlap ?? false
+        cursorWidth = placement.cursorWidth ?? w
+        cursorHeight = placement.cursorHeight ?? h
       }
-      else { // placement === undefined
-        w = 1
-        h = 1
-        wOverlap = hOverlap = false
-      }
+      else // placement === undefined
+        w = h = cursorWidth = cursorHeight = 1
       // Arrange
       const columnCount = maxColumnCount !== 0 ? maxColumnCount : prevCursor.runningColumnCount
       const rowCount = maxRowCount !== 0 ? maxRowCount : prevCursor.runningRowCount
@@ -726,8 +723,7 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
       if (w >= 0) {
         result.x1 = prevCursor.column + 1
         result.x2 = absolutizePosition(result.x1 + w - 1, 0, maxColumnCount || Infinity)
-        if (!wOverlap)
-          cursor.column = result.x2
+        cursor.column = absolutizePosition(result.x1 + cursorWidth - 1, 0, maxColumnCount || Infinity)
       }
       else {
         result.x1 = Math.max(prevCursor.column + w, 1)
@@ -740,8 +736,9 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
       if (h >= 0) {
         result.y1 = prevCursor.row + 1
         result.y2 = absolutizePosition(result.y1 + h - 1, 0, maxRowCount || Infinity)
-        if (!hOverlap && result.y2 > cursor.runningRowCount)
-          cursor.runningRowCount = result.y2
+        const runningRowCount = Math.min(result.y2, result.y1 + cursorHeight - 1)
+        if (runningRowCount > cursor.runningRowCount)
+          cursor.runningRowCount = runningRowCount
       }
       else {
         result.y1 = Math.max(prevCursor.row + h, 1)
