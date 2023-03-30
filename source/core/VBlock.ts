@@ -362,7 +362,7 @@ class Cursor {
     this.row = prev.row
     this.runningColumnCount = prev.runningColumnCount
     this.runningRowCount = prev.runningRowCount
-    this.flags = CursorFlags.None
+    this.flags = prev.flags & ~CursorFlags.OwnCursorPosition
   }
 }
 
@@ -529,7 +529,12 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
   set placement(value: Placement) {
     const driver = this.descriptor.driver
     if (!driver.isRow) {
-      const cellRange = this.placementToCellRange(value)
+      const d = this.descriptor
+      const owner = d.owner.descriptor
+      const prevCursor = d.item!.prev?.instance.descriptor.cursor ?? ZeroCursor
+      const cursor = d.cursor = owner.children.isStrict ? new Cursor(prevCursor) : undefined
+      const cellRange = placementToCellRange(value,
+        owner.maxColumnCount, owner.maxRowCount, prevCursor, cursor)
       if (!equalCellRanges(cellRange, this._cellRange)) {
         driver.applyCellRange(this, cellRange)
         this._cellRange = cellRange
@@ -677,79 +682,6 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
       d.outer = owner.descriptor.outer
   }
 
-  private placementToCellRange(placement: Placement): CellRange {
-    let result: CellRange
-    const d = this.descriptor
-    const owner = d.owner.descriptor
-    const isStrict = owner.children.isStrict
-    const maxColumnCount = owner.maxColumnCount
-    const maxRowCount = owner.maxRowCount
-    const prevCursor = d.item!.prev?.instance.descriptor.cursor ?? ZeroCursor
-    if (typeof(placement) === "string") {
-      // Absolute positioning
-      result = parseCellRange(placement, { x1: 0, y1: 0, x2: 0, y2: 0 })
-      absolutizeCellRange(result, prevCursor.column + 1, prevCursor.row + 1,
-        maxColumnCount || Infinity, maxRowCount || Infinity, result)
-      if (isStrict) {
-        const cursor = d.cursor = new Cursor(prevCursor)
-        cursor.column = result.x2
-        cursor.row = result.y1
-        cursor.flags = CursorFlags.OwnCursorPosition
-      }
-    }
-    else if (isStrict) {
-      // Relative positioning
-      const cursor = d.cursor = new Cursor(prevCursor)
-      let w: number
-      let h: number
-      let cursorWidth: number
-      let cursorHeight: number
-      if (placement) {
-        w = placement.widthInCells ?? 1
-        h = placement.heightInCells ?? 1
-        cursorWidth = placement.cursorWidth ?? w
-        cursorHeight = placement.cursorHeight ?? h
-      }
-      else // placement === undefined
-        w = h = cursorWidth = cursorHeight = 1
-      // Arrange
-      const columnCount = maxColumnCount !== 0 ? maxColumnCount : prevCursor.runningColumnCount
-      const rowCount = maxRowCount !== 0 ? maxRowCount : prevCursor.runningRowCount
-      result = { x1: 0, y1: 0, x2: 0, y2: 0 }
-      if (w === 0) {
-        w = columnCount || 1
-        cursor.flags = CursorFlags.UsesRunningColumnCount
-      }
-      if (w >= 0) {
-        result.x1 = prevCursor.column + 1
-        result.x2 = absolutizePosition(result.x1 + w - 1, 0, maxColumnCount || Infinity)
-        cursor.column = absolutizePosition(result.x1 + cursorWidth - 1, 0, maxColumnCount || Infinity)
-      }
-      else {
-        result.x1 = Math.max(prevCursor.column + w, 1)
-        result.x2 = prevCursor.column
-      }
-      if (h === 0) {
-        h = rowCount || 1
-        cursor.flags |= CursorFlags.UsesRunningRowCount
-      }
-      if (h >= 0) {
-        result.y1 = prevCursor.row + 1
-        result.y2 = absolutizePosition(result.y1 + h - 1, 0, maxRowCount || Infinity)
-        const runningRowCount = Math.min(result.y2, result.y1 + cursorHeight - 1)
-        if (runningRowCount > cursor.runningRowCount)
-          cursor.runningRowCount = runningRowCount
-      }
-      else {
-        result.y1 = Math.max(prevCursor.row + h, 1)
-        result.y2 = prevCursor.row
-      }
-    }
-    else
-      throw new Error("relative layout requires sequential children")
-    return result
-  }
-
   private rowBreak(): void {
     const d = this.descriptor
     const prevCursor = d.item!.prev?.instance.descriptor.cursor ?? ZeroCursor
@@ -785,14 +717,16 @@ export function placementToCellRange(placement: Placement,
     // Relative positioning
     let w: number
     let h: number
+    let cursorWidth: number
+    let cursorHeight: number
     if (placement) {
       w = placement.widthInCells ?? 1
       h = placement.heightInCells ?? 1
+      cursorWidth = placement.cursorWidth ?? w
+      cursorHeight = placement.cursorHeight ?? h
     }
-    else { // placement === undefined
-      w = 1
-      h = 1
-    }
+    else // placement === undefined
+      w = h = cursorWidth = cursorHeight = 1
     // Arrange
     const columnCount = maxColumnCount !== 0 ? maxColumnCount : prevCursor.runningColumnCount
     const rowCount = maxRowCount !== 0 ? maxRowCount : prevCursor.runningRowCount
@@ -804,7 +738,7 @@ export function placementToCellRange(placement: Placement,
     if (w >= 0) {
       result.x1 = prevCursor.column + 1
       result.x2 = absolutizePosition(result.x1 + w - 1, 0, maxColumnCount || Infinity)
-      cursor.column = result.x2
+      cursor.column = absolutizePosition(result.x1 + cursorWidth - 1, 0, maxColumnCount || Infinity)
     }
     else {
       result.x1 = Math.max(prevCursor.column + w, 1)
@@ -817,8 +751,9 @@ export function placementToCellRange(placement: Placement,
     if (h >= 0) {
       result.y1 = prevCursor.row + 1
       result.y2 = absolutizePosition(result.y1 + h - 1, 0, maxRowCount || Infinity)
-      if (result.y2 > cursor.runningRowCount)
-        cursor.runningRowCount = result.y2
+      const runningRowCount = Math.min(result.y2, result.y1 + cursorHeight - 1)
+      if (runningRowCount > cursor.runningRowCount)
+        cursor.runningRowCount = runningRowCount
     }
     else {
       result.y1 = Math.max(prevCursor.row + h, 1)
