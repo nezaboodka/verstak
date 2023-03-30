@@ -45,13 +45,13 @@ export function VTable<M = unknown, R = void>(
 
 // Row
 
-export function row<T = void>(builder?: (block: void) => T, key?: string): void {
-  fromNewRow(key)
+export function row<T = void>(builder?: (block: void) => T, shiftCursorDown?: number): void {
+  fromNewRow(shiftCursorDown)
   builder?.()
 }
 
-export function fromNewRow(key?: string): void {
-  VBlock.claim(Drivers.row, { key })
+export function fromNewRow(shiftCursorDown?: number): void {
+  VBlock.claim(Drivers.row)
 }
 
 // Note (either plain or html)

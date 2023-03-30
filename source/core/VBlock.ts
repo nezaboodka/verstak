@@ -110,7 +110,7 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
     else
       builder = base ?? {}
     let key = builder.key
-    let owner = gCurrent?.instance
+    const owner = gCurrent?.instance
     if (owner) {
       // Check for coalescing separators or lookup for existing block
       let ex: Item<XBlock<any, any, any, any>> | undefined = undefined
