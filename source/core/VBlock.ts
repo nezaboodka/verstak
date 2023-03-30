@@ -763,6 +763,75 @@ function getBlockKey(block: XBlock): string | undefined {
   return d.stamp >= 0 ? d.key : undefined
 }
 
+export function placementToCellRange(placement: Placement,
+  maxColumnCount: number, maxRowCount: number,
+  prevCursor: Cursor, cursor: Cursor | undefined): CellRange {
+  let result: CellRange
+  if (typeof(placement) === "string") {
+    // Absolute positioning
+    result = parseCellRange(placement, { x1: 0, y1: 0, x2: 0, y2: 0 })
+    absolutizeCellRange(result, prevCursor.column + 1, prevCursor.row + 1,
+      maxColumnCount || Infinity, maxRowCount || Infinity, result)
+    if (cursor) {
+      cursor.column = result.x2
+      cursor.row = result.y1
+      cursor.flags = CursorFlags.OwnCursorPosition
+    }
+  }
+  else if (cursor) {
+    // Relative positioning
+    let w: number
+    let h: number
+    if (placement) {
+      w = placement.widthInCells ?? 1
+      h = placement.heightInCells ?? 1
+    }
+    else { // placement === undefined
+      w = 1
+      h = 1
+    }
+    // Arrange
+    const columnCount = maxColumnCount !== 0 ? maxColumnCount : prevCursor.runningColumnCount
+    const rowCount = maxRowCount !== 0 ? maxRowCount : prevCursor.runningRowCount
+    result = { x1: 0, y1: 0, x2: 0, y2: 0 }
+    if (w === 0) {
+      w = columnCount || 1
+      cursor.flags = CursorFlags.UsesRunningColumnCount
+    }
+    if (w >= 0) {
+      result.x1 = prevCursor.column + 1
+      result.x2 = absolutizePosition(result.x1 + w - 1, 0, maxColumnCount || Infinity)
+      cursor.column = result.x2
+    }
+    else {
+      result.x1 = Math.max(prevCursor.column + w, 1)
+      result.x2 = prevCursor.column
+    }
+    if (h === 0) {
+      h = rowCount || 1
+      cursor.flags |= CursorFlags.UsesRunningRowCount
+    }
+    if (h >= 0) {
+      result.y1 = prevCursor.row + 1
+      result.y2 = absolutizePosition(result.y1 + h - 1, 0, maxRowCount || Infinity)
+      if (result.y2 > cursor.runningRowCount)
+        cursor.runningRowCount = result.y2
+    }
+    else {
+      result.y1 = Math.max(prevCursor.row + h, 1)
+      result.y2 = prevCursor.row
+    }
+  }
+  else
+    throw new Error("relative layout requires sequential children")
+  return result
+}
+
+export function rowBreak(cursor: Cursor): void {
+  cursor.column = 0
+  cursor.row = cursor.runningRowCount
+}
+
 function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => void): void {
   const curr = XBlock.curr
   const owner = curr.instance
