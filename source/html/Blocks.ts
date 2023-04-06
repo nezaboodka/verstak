@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, Layout, BlockBuilder, Align, CellRange, SimpleOperation } from "../core/api"
+import { VBlock, Layout, BlockBuilder, Align, CellRange, SimpleOperation, BlockArea, CursorCommandDriver } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -52,6 +52,14 @@ export function row<T = void>(builder?: (block: void) => T, shiftCursorDown?: nu
 
 export function fromNewRow(shiftCursorDown?: number): void {
   VBlock.claim(Drivers.row)
+}
+
+export function cursor(position: BlockArea): void {
+  VBlock.claim(Drivers.cursor, {
+    render(b) {
+      b.area = position
+    }
+  })
 }
 
 // Note (either plain or html)
@@ -238,7 +246,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
-    if (block.childrenLayout < Layout.Row)
+    if (block.childrenLayout <= Layout.Table)
       fromNewRow()
     return super.render(block)
   }
@@ -253,7 +261,7 @@ const Constants = {
   // attribute: "вид",
   block: "block",
   row: "row",
-  layouts: ["band", "table", "" /* row */, "group", "note"],
+  layouts: ["band", "table", "note", "group", "" /* row */, "" /* cursor */],
   attribute: "kind",
 }
 
@@ -264,15 +272,18 @@ const Drivers = {
   // display: grid
   table: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Table),
 
-  // display: contents
-  // display: flex (row)
-  row: new VerstakHtmlDriver<HTMLElement>(Constants.row, true, b => b.childrenLayout = Layout.Row),
+  // display: block
+  note: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Note),
 
   // display: contents
   group: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Group),
 
-  // display: block
-  note: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Note),
+  // display: contents
+  // display: flex (row)
+  row: new VerstakHtmlDriver<HTMLElement>(Constants.row, true, b => b.childrenLayout = Layout.Row),
+
+  // cursor control element
+  cursor: new CursorCommandDriver(),
 }
 
 const VerstakDriversByLayout: Array<SimpleOperation<HTMLElement>> = [
@@ -294,15 +305,6 @@ const VerstakDriversByLayout: Array<SimpleOperation<HTMLElement>> = [
     css.gridAutoColumns = "minmax(min-content, 1fr)"
     css.textAlign = "initial"
   },
-  b => { // row
-    const css = b.native.style
-    css.display = b.descriptor.owner.isTable ? "none" : "flex"
-    css.flexDirection = "row"
-  },
-  b => { // group
-    const css = b.native.style
-    css.display = "contents"
-  },
   b => { // note
     const css = b.native.style
     css.alignSelf = b.descriptor.owner.isTable ? "stretch" : "center"
@@ -317,6 +319,16 @@ const VerstakDriversByLayout: Array<SimpleOperation<HTMLElement>> = [
     css.textOverflow = ""
     css.whiteSpace = ""
   },
+  b => { // group
+    const css = b.native.style
+    css.display = "contents"
+  },
+  b => { // row
+    const css = b.native.style
+    css.display = b.descriptor.owner.isTable ? "none" : "flex"
+    css.flexDirection = "row"
+  },
+  // undefined // cursor
 ]
 
 const AlignToCss = ["stretch", "start", "center", "end"]

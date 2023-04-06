@@ -6,11 +6,12 @@
 // automatically licensed under the license referred above.
 
 export enum Layout {
-  Band = 0,   // 000
-  Table = 1,  // 001
-  Row = 2,    // 010
-  Group = 3,  // 011
-  Note = 4,   // 100
+  Band = 0,
+  Table = 1,
+  Note = 2,
+  Group = 3,
+  Row = 4,
+  Cursor = 5,
 }
 
 export const enum Priority {
@@ -48,9 +49,7 @@ export interface TrackSize extends ElasticSize {
   track?: string | number   // <current>
 }
 
-export type Placement = undefined | string | {
-  widthInCells?: number     // 1 (table only)
-  heightInCells?: number    // 1 (table only)
-  cursorWidth?: number      // = widthInCells
-  cursorHeight?: number     // = heightInCells
+export type BlockArea = undefined | string | {
+  cellsOverWidth?: number   // 1 (table only)
+  cellsOverHeight?: number  // 1 (table only)
 }
