@@ -723,15 +723,14 @@ function getBlockKey(block: XBlock): string | undefined {
 }
 
 export function blockAreaToCellRange(
-  isRegularBlock: boolean, area: BlockArea,
-  maxColumnCount: number, maxRowCount: number,
+  isRegularBlock: boolean, area: BlockArea, maxX: number, maxY: number,
   cursorPosition: CursorPosition, newCursorPosition?: CursorPosition): CellRange {
   let result: CellRange // this comment just prevents syntax highlighting in VS code
   if (typeof(area) === "string") {
     // Absolute positioning
     result = parseCellRange(area, { x1: 0, y1: 0, x2: 0, y2: 0 })
     absolutizeCellRange(result, cursorPosition.x, cursorPosition.y,
-      maxColumnCount || Infinity, maxRowCount || Infinity, result)
+      maxX || Infinity, maxY || Infinity, result)
     if (newCursorPosition) {
       newCursorPosition.x = isRegularBlock ? result.x2 + 1 : result.x1
       newCursorPosition.y = result.y1
@@ -749,17 +748,17 @@ export function blockAreaToCellRange(
     else // area === undefined
       dx = dy = 1
     // Arrange
-    const columnCount = maxColumnCount !== 0 ? maxColumnCount : cursorPosition.runningMaxX
-    const rowCount = maxRowCount !== 0 ? maxRowCount : cursorPosition.runningMaxY
+    const runningX = maxX !== 0 ? maxX : cursorPosition.runningMaxX
+    const runningY = maxY !== 0 ? maxY : cursorPosition.runningMaxY
     result = { x1: 0, y1: 0, x2: 0, y2: 0 }
-    if (dx === 0) {
-      dx = columnCount || 1
+    if (dx === 0 && isRegularBlock) {
+      dx = runningX || 1
       newCursorPosition.flags = CursorFlags.UsesRunningColumnCount
     }
     if (dx >= 0) {
       if (isRegularBlock) {
         result.x1 = cursorPosition.x
-        result.x2 = absolutizePosition(result.x1 + dx - 1, 0, maxColumnCount || Infinity)
+        result.x2 = absolutizePosition(result.x1 + dx - 1, 0, maxX || Infinity)
         newCursorPosition.x = result.x2 + 1
       }
       else {
@@ -779,13 +778,13 @@ export function blockAreaToCellRange(
       }
     }
     if (dy === 0 && isRegularBlock) {
-      dy = rowCount || 1
+      dy = runningY || 1
       newCursorPosition.flags |= CursorFlags.UsesRunningRowCount
     }
     if (dy >= 0) {
       if (isRegularBlock) {
         result.y1 = cursorPosition.y
-        result.y2 = absolutizePosition(result.y1 + dy - 1, 0, maxRowCount || Infinity)
+        result.y2 = absolutizePosition(result.y1 + dy - 1, 0, maxY || Infinity)
         if (result.y2 > newCursorPosition.runningMaxY)
           newCursorPosition.runningMaxY = result.y2
       }
