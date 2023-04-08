@@ -1,0 +1,1395 @@
+// Нижеследующая правовая преамбула должна быть
+// включена во все полные и частичные копии этого файла.
+// Все права защищены (C) 2019-2022 ООО "Незабудка Софтвер" <contact@nezaboodka.com>
+// Лицензия: https://raw.githubusercontent.com/nezaboodka/verstak/master/LICENSE
+// Внося изменения в данный файл, вы автоматчиески предоставляете лицензию
+// на вносимые вами изменения согласно лицензии, указанной выше.
+
+использовать артель
+
+// import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, CollectionReader, ObservableObject, raw, MemberOptions } from "reactronic"
+// import { getCallerInfo } from "./Utils"
+// import { CellRange, emitLetters, equalCellRanges, parseCellRange } from "./CellRange"
+// import { Layout, Priority, Mode, Align, BlockArea } from "./Common"
+
+тип Delegate<T = Значение, M = Значение, C = Значение, R = Ничего> =
+  операции(block: VBlock<T, M, C, R>, базис: операция(): R): R
+тип SimpleDelegate<T = Значение> =
+  операции(block: VBlock<T, Значение, Значение, Значение>)
+
+тип BlockBuilder<T = Значение, M = Значение, C = Значение, R = Ничего> = интерфейс
+{
+  базис: BlockBuilder<T, M, C, R>?
+  key: Текст?
+  modes: Режим?
+  triggers: Значение?
+  claim: Delegate<T, M, C, R>?
+  create: Delegate<T, M, C, R>?
+  initialize: Delegate<T, M, C, R>?
+  render: Delegate<T, M, C, R>?
+  finalize: Delegate<T, M, C, R>?
+}
+
+// Fragment
+
+операции Fragment<M = Значение, R = Ничего>(
+  builder: BlockBuilder<Ничего, M, R, Ничего>?,
+  basis: BlockBuilder<Ничего, M, R, Ничего>?): VBlock<Ничего, M, R, Ничего>
+{
+  возврат VBlock.claim(Driver.fragment, builder, basis)
+}
+
+// VBlock
+
+тип VBlockDescriptor<T = Значение, M = Значение, C = Значение, R = Ничего> = интерфейс
+{
+  охраняемо типом key: Текст
+  охраняемо типом driver: Driver<T>
+  охраняемо типом builder: Readonly<BlockBuilder<T, M, C, R>>
+  охраняемо типом level: number
+  охраняемо типом owner: VBlock
+  охраняемо типом host: VBlock
+  охраняемо типом children: CollectionReader<VBlock>
+  охраняемо типом item: Item<VBlock>?
+  охраняемо типом stamp: number
+  охраняемо типом outer: VBlock
+  охраняемо типом context: XBlockCtx?
+}
+
+тип VBlock<T = Значение, M = Значение, C = Значение, R = Ничего> = интерфейс
+{
+  // Static properties
+  общие постоянное shortFrameDuration = 16 // ms
+  общие постоянное longFrameDuration = 300 // ms
+  общие currentRenderingPriority = Priority.Realtime
+  общие frameDuration = VBlock.longFrameDuration
+
+  // System-managed properties
+  abstract readonly descriptor: VBlockDescriptor<T, M, C, R>
+  abstract readonly native: T
+  abstract readonly isBand: boolean
+  abstract readonly isTable: boolean
+
+  // User-defined properties
+  abstract model: M
+  abstract controller: C
+  abstract childrenLayout: Layout
+  abstract area: BlockArea
+  abstract widthGrowth: number
+  abstract minWidth: string
+  abstract maxWidth: string
+  abstract heightGrowth: number
+  abstract minHeight: string
+  abstract maxHeight: string
+  abstract contentAlignment: Align
+  abstract blockAlignment: Align
+  abstract contentWrapping: boolean
+  abstract overlayVisible: boolean | undefined
+  abstract childrenShuffling: boolean
+  abstract renderingPriority?: Priority
+  abstract isSequential: boolean
+  abstract style(styleName: string, enabled?: boolean)
+
+  get isInitialRendering(): boolean {
+    возврат descriptor.stamp == 2
+  }
+
+  подменяемая
+  операция configureReactronic(options: Partial<MemberOptions>): MemberOptions
+  {
+  }
+
+  общие get current(): VBlock {
+    if (gCurrent == undefined)
+      throw new Error("current block is undefined")
+    return gCurrent.instance
+  }
+
+  общие
+  операции renderNestedTreesThenDo(action: операции(err: unknown))
+  {
+    runRenderNestedTreesThenDo(undefined, action)
+  }
+
+  общие
+  операции claim<T = undefined, M = unknown, C = unknown, R = void>(
+    driver: Driver<T>,
+    builder: BlockBuilder<T, M, C, R>?,
+    базис: BlockBuilder<T, M, C, R>?): VBlock<T, M, C, R>
+  {
+    пусть результат: XBlock<T, M, C, R>
+    // Normalize parameters
+    если builder тогда
+      builder.базис = базис
+    иначе
+      builder = базис ?? {}
+    пусть key = builder.key
+    постоянно owner = gCurrent?.instance
+    если owner тогда
+    {
+      // Check for coalescing separators or lookup for existing block
+      пусть ex: Item<XBlock<any, any, any, any>>? = undefined
+      постоянно children = owner.descriptor.children
+      если driver.isRow тогда
+      {
+        постоянно last = children.lastClaimedItem()
+        если last?.instance?.descriptor.driver == driver тогда
+          ex = last
+      }
+      ex ??= children.claim(
+        key = key || VBlock.generateKey(owner), undefined,
+        "nested blocks can be declared inside render function only")
+      // Reuse existing block or claim a new one
+      если ex тогда
+      {
+        // Reuse existing block
+        результат = ex.instance
+        постоянно d = результат.descriptor
+        если d.driver != driver и driver != undefined тогда
+          ошибка "changing block driver is not yet supported: \"{ результат.descriptor.driver.name }\" -> \"{ driver?.name }\""
+        постоянно exTriggers = d.builder.triggers
+        если triggersAreEqual(builder.triggers, exTriggers) тогда
+          builder.triggers = exTriggers // preserve triggers instance
+        d.builder = builder
+      }
+      иначе
+      {
+        // Create new block
+        результат = XBlock<T, M, C, R>(key || VBlock.generateKey(owner), driver, owner, builder)
+        результат.descriptor.item = children.add(результат)
+      }
+    }
+    иначе
+    {
+      // Create new root block
+      результат = XBlock<T, M, C, R>(key || "", driver, owner, builder)
+      результат.descriptor.item = Collection.createItem(результат)
+      triggerRendering(результат.descriptor.item)
+    }
+    возврат результат
+  }
+
+  скрыто
+  общие
+  операции generateKey(owner: XBlock): string
+  {
+    owner.descriptor.numerator += 1
+    постоянно n = owner.descriptor.numerator
+    постоянно lettered = emitLetters(n)
+    если Rx.isLogging тогда
+      результат = "·{ getCallerInfo(lettered) }"
+    иначе
+      результат = "·{ lettered }"
+    возврат результат
+  }
+
+  общие
+  операции getDefaultLoggingOptions(): LoggingOptions?
+  {
+    возврат XBlock.logging
+  }
+
+  общие
+  операции setDefaultLoggingOptions(logging: LoggingOptions?)
+  {
+    XBlock.logging = logging
+  }
+}
+
+// Driver
+
+тип Driver<T, C = unknown> = ссылка на объект
+{
+  общие постоянно fragment = Driver<Нечто>(
+    "fragment", нет, { b.childrenLayout = Layout.Group })
+
+  постоянно имя: Текст
+  постоянно это-строка: Булево
+  постоянно преднастройка: SimpleDelegate<T>?
+
+  при создании(имя`: Текст, это-строка`: Булево, преднастройка`: SimpleDelegate<T>?)
+  {
+    имя = имя`
+    это-стройка = это-строка`
+    преднастройка = преднастройка`
+  }
+
+  подменяемая
+  операции claim(block: VBlock<T, unknown, C>)
+  {
+    постоянно b = block как XBlock<T, unknown, C>
+    chainedClaim(b, b.descriptor.builder)
+  }
+
+  подменяемая
+  операции create(block: VBlock<T, unknown, C>, b: объект { native: T?; controller: C? })
+  {
+    chainedCreate(block, block.descriptor.builder)
+  }
+
+  подменяемая
+  операции initialize(block: VBlock<T, unknown, C>)
+  {
+    постоянно b = block это XBlock<T, unknown, C>
+    preset?.(b)
+    chainedInitialize(b, b.descriptor.builder)
+  }
+
+  подменяемая
+  операции mount(block: VBlock<T, unknown, C>)
+  {
+    // nothing to do by default
+  }
+
+  подменяемая
+  операции render(block: VBlock<T, unknown, C>)
+  {
+    chainedRender(block, block.descriptor.builder)
+  }
+
+  подменяемая
+  операции finalize(block: VBlock<T, unknown, C>, isLeader: Булево): Булево
+  {
+    постоянно b = block как XBlock<T, unknown, C>
+    chainedFinalize(b, b.descriptor.builder)
+    возврат isLeader // treat children as finalization leaders as well
+  }
+
+  подменяемая
+  операции applyChildrenLayout(block: VBlock<T, any, C, any>, value: Layout)
+  {
+    // do nothing
+  }
+
+  подменяемая
+  операции applyCellRange(block: VBlock<T, any, C, any>, value: CellRange?)
+  {
+    // do nothing
+  }
+
+  подменяемая
+  операции applyWidthGrowth(block: VBlock<T, any, C, any>, value: number)
+  {
+    // do nothing
+  }
+
+  подменяемая
+  операции applyMinWidth(block: VBlock<T, any, C, any>, value: string)
+  {
+    // do nothing
+  }
+
+  подменяемая
+  операции applyMaxWidth(block: VBlock<T, any, C, any>, value: string)
+  {
+    // do nothing
+  }
+
+  подменяемая
+  операции applyHeightGrowth(block: VBlock<T, any, C, any>, value: number)
+  {
+    // do nothing
+  }
+
+  подменяемая
+  операции applyMinHeight(block: VBlock<T, any, C, any>, value: string)
+  {
+    // do nothing
+  }
+
+  подменяемая
+  операции applyMaxHeight(block: VBlock<T, any, C, any>, value: string)
+  {
+    // do nothing
+  }
+
+  подменяемая
+  операции applyContentAlignment(block: VBlock<T, any, C, any>, value: Align)
+  {
+    // do nothing
+  }
+
+  подменяемая
+  операции applyBlockAlignment(block: VBlock<T, any, C, any>, value: Align)
+  {
+    // do nothing
+  }
+
+  подменяемая
+  операции applyContentWrapping(block: VBlock<T, any, C, any>, value: boolean)
+  {
+    // do nothing
+  }
+
+  подменяемая
+  операции applyOverlayVisible(block: VBlock<T, any, C, any>, value: boolean | undefined)
+  {
+    // do nothing
+  }
+
+  подменяемая
+  операции applyStyle(block: VBlock<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean)
+  {
+    // do nothing
+  }
+}
+
+скрыто
+операции chainedMode(builder: BlockBuilder<any, any, any, any>?): Mode
+{
+  возврат builder?.modes ?? (builder?.базис ? chainedMode(builder?.базис) : Mode.Default)
+}
+
+скрыто
+операции chainedClaim(block: VBlock, builder: BlockBuilder)
+{
+  постоянно claim = builder.claim
+  постоянно базис = builder.базис
+  если claim тогда
+    claim(block, ? базис : { chainedClaim(block, базис) } | NOP)
+  иначе если базис тогда
+    chainedClaim(block, базис)
+}
+
+скрыто
+операции chainedCreate(block: VBlock, builder: BlockBuilder)
+{
+  постоянно create = builder.create
+  постоянно базис = builder.базис
+  если create тогда
+    create(block, ? базис : { chainedCreate(block, базис) } | NOP)
+  иначе если базис тогда
+    chainedCreate(block, базис)
+}
+
+скрыто
+операции chainedInitialize(block: VBlock, builder: BlockBuilder)
+{
+  постоянно initialize = builder.initialize
+  постоянно базис = builder.базис
+  если initialize тогда
+    initialize(block, ? базис : { chainedInitialize(block, базис) } | NOP)
+  иначе если базис тогда
+    chainedInitialize(block, базис)
+}
+
+скрыто
+операции chainedRender(block: VBlock, builder: BlockBuilder)
+{
+  постоянно render = builder.render
+  постоянно базис = builder.базис
+  если render тогда
+    render(block, ? базис : { chainedRender(block, базис) } | NOP)
+  иначе если базис тогда
+    chainedRender(block, базис)
+}
+
+скрыто
+операции chainedFinalize(block: VBlock, builder: BlockBuilder)
+{
+  постоянно finalize = builder.finalize
+  постоянно базис = builder.базис
+  если finalize тогда
+    finalize(block, ? базис : { chainedFinalize(block, базис) } | NOP)
+  иначе если базис тогда
+    chainedFinalize(block, базис)
+}
+
+тип StaticDriver<T> = ссылка на объект на основе Driver<T>
+{
+  постоянно element: T
+
+  при создании(element`: T, name: string, isRow: boolean, preset: SimpleDelegate<T>?)
+  {
+    super(name, isRow, preset)
+    element = element`
+  }
+
+  подмена
+  операции create(block: VBlock<T, unknown, unknown, void>, b: объект { native: T?; controller: unknown? })
+  {
+    b.native = element
+  }
+}
+
+// CursorCommandDriver
+
+тип CursorCommand = ссылка на объект
+{
+  absolute: Текст?
+  columnShift: Целое?
+  rowShift: Целое?
+}
+
+тип CursorCommandDriver = ссылка на объект
+на основе Driver<CursorCommand, void>
+{
+  при создании()
+  {
+    основа("cursor", нет, { b.childrenLayout = Layout.Cursor })
+  }
+
+  подмена
+  операции create(block: VBlock<CursorCommand, unknown, void, void>,
+    b: объект { native: CursorCommand?; controller: Пусто? })
+  {
+    b.native = CursorCommand()
+    основа(block, b)
+  }
+}
+
+// ContextVariable
+
+тип ContextVariable<T extends Object = Object> = ссылка на объект
+{
+  постоянно defaultValue: T?
+
+  при создании(defaultValue`: T?) {
+    defaultValue = defaultValue`
+  }
+
+  value: T
+    при чтении { возврат XBlock.useContextVariableValue(this) }
+    при записи { XBlock.setContextVariableValue(this, value) }
+
+  охраняемо типом valueOrUndefined: T?
+    при чтении { возврат XBlock.tryUseContextVariable(this) }
+}
+
+// XBlock
+
+тип CursorPosition = ссылка на объект
+{
+  x: number
+  y: number
+  runningMaxX: number
+  runningMaxY: number
+  flags: CursorFlags
+
+  при создании(prev: CursorPosition)
+  {
+    x = prev.x
+    y = prev.y
+    runningMaxX = prev.runningMaxX
+    runningMaxY = prev.runningMaxY
+    flags = prev.flags & ~CursorFlags.OwnCursorPosition
+  }
+}
+
+скрыто тип CursorFlags = вариант
+{
+  None = 0
+  OwnCursorPosition = 1
+  UsesRunningColumnCount = 2
+  UsesRunningRowCount = 4
+}
+
+постоянно UndefinedCellRange = Object.freeze([ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ])
+постоянно InitialCursorPosition: CursorPosition =
+  Object.freeze(CursorPosition([ x = 1, y = 1, runningMaxX = 0, runningMaxY = 0, flags = CursorFlags.None ]))
+
+тип XBlockCtx<T extends Object = Object> = ссылка на объект
+  на основе ObservableObject
+{
+  #raw next: XBlockCtx<Оbject>?
+  #raw variable: ContextVariable<T>
+  value: T
+
+  при создании(variable: ContextVariable<T>, value: T)
+  {
+    основа()
+    next = undefined
+    variable = variable
+    value = value
+  }
+}
+
+тип XBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> = ссылка на объект
+на основе VBlockDescriptor<T, M, C, R>
+{
+  постоянно key: string
+  постоянно driver: Driver<T>
+  builder: BlockBuilder<T, M, C, R>
+  охраняемо типом level: number
+  охраняемо типом owner: XBlock
+  host: XBlock
+  охраняемо типом children: Collection<XBlock>
+  item: Item<XBlock>?
+  stamp: number
+  outer: XBlock
+  context: XBlockCtx<any>?
+  numerator: number
+  maxColumnCount: number = 0
+  maxRowCount: number = 0
+  cursorPosition: CursorPosition?
+
+  при создании(key`: string, driver`: Driver<T>,
+    builder`: Readonly<BlockBuilder<T, M, C, R>>,
+    self: XBlock<T, M, C, R>, owner`: XBlock?)
+  {
+    основа()
+    key = key`
+    driver = driver`
+    builder = builder`
+    если (owner`) тогда
+    {
+      level = owner`.descriptor.level + 1
+      owner = owner`
+      outer = ? owner`.descriptor.context : owner` | owner`.descriptor.outer
+    }
+    иначе
+    {
+      level = 1
+      owner` = self
+      owner = owner`
+      outer = self
+    }
+    host = self // block is unmounted
+    children = Collection<XBlock>(getBlockKey, да)
+    item = пусто
+    stamp = 0
+    context = пусто
+    numerator = 0
+    maxColumnCount = 0
+    maxRowCount = 0
+    cursorPosition = пусто
+  }
+}
+
+тип XBlock<T = any, M = any, C = any, R = any> = ссылка на объект
+на основе VBlock<T, M, C, R>
+{
+  // Static properties
+  общие grandCount: number = 0
+  общие disposableCount: number = 0
+  общие logging: LoggingOptions? = пусто
+
+  // System-managed properties
+  охраняемо типом descriptor: XBlockDescriptor<T, M, C, R>
+  native: T
+
+  // User-defined properties
+  model: M
+  controller: C
+  _childrenLayout: Layout
+  _area: BlockArea
+  скрыто _cellRange: CellRange
+  скрыто _widthGrowth: number
+  скрыто _minWidth: string
+  скрыто _maxWidth: string
+  скрыто _heightGrowth: number
+  скрыто _minHeight: string
+  скрыто _maxHeight: string
+  скрыто _contentAlignment: Align
+  скрыто _blockAlignment: Align
+  скрыто _contentWrapping: Булево
+  скрыто _overlayVisible: Булево?
+  hasStyles: Булево
+  childrenShuffling: Булево
+  renderingPriority: Priority
+
+  при создании(key: string, driver: Driver<T>,
+    owner: XBlock?, builder: BlockBuilder<T, M, C, R>)
+  {
+    основа()
+    // System-managed properties
+    descriptor = XBlockDescriptor(key, driver, builder, this, owner)
+    native = undefined как any как T // hack
+    // User-defined properties
+    model = undefined как any
+    controller = undefined как any как C // hack
+    _childrenLayout = Layout.Row
+    _area = пусто
+    _cellRange = UndefinedCellRange
+    _widthGrowth = 0
+    _minWidth = ""
+    _maxWidth = ""
+    _heightGrowth = 0
+    _minHeight = ""
+    _maxHeight = ""
+    _contentAlignment = Align.Default
+    _blockAlignment = Align.Default
+    _contentWrapping = нет
+    _overlayVisible = undefined
+    hasStyles = нет
+    childrenShuffling = нет
+    renderingPriority = Priority.Realtime
+    // Monitoring
+    XBlock.grandCount += 1
+    если has(Mode.SeparateReaction) тогда
+      XBlock.disposableCount += 1
+  }
+
+  #options({
+    reentrance = Reentrance.CancelPrevious
+    triggeringArgs = да
+    noSideEffects = нет
+  })
+  реактивная
+  операции render(_triggers: unknown) {
+    // triggers parameter is used to enforce rendering by owner
+    renderNow(descriptor.item!)
+  }
+
+  операции has(mode: Mode): boolean
+  {
+    возврат (chainedMode(descriptor.builder) & mode) == mode
+  }
+
+  isSequential: Булево
+    при чтении { возврат descriptor.children.isStrict }
+    при записи { descriptor.children.isStrict = value }
+
+  охраняемо типом
+  isAuxiliary: boolean
+    при чтении { возврат childrenLayout > Layout.Note } // Row, Group, Cursor
+
+  охраняемо типом
+  isBand: Булево
+    при чтении { возврат childrenLayout == Layout.Band }
+
+  охраняемо типом
+  isTable: Булево
+    при чтении { возврат childrenLayout == Layout.Table }
+
+  охраняемо типом
+  isAutoMountEnabled: Булево
+    при чтении { возврат не(has(Mode.ManualMount)) и descriptor.host != this }
+    
+  охраняемо типом
+  isMoved: Буелво
+    при чтении { возврат descriptor.owner.descriptor.children.isMoved(descriptor.item!) }
+
+  childrenLayout: Layout
+    при чтении { возврат _childrenLayout }
+    при записи
+    {
+      если value != _childrenLayout или descriptor.stamp < 2 тогда
+      {
+        descriptor.driver.applyChildrenLayout(this, value)
+        _childrenLayout = value
+      }
+    }
+
+  area: BlockArea
+    при чтении { возврат _area }
+    при записи
+    {
+      постоянно d = descriptor
+      постоянно driver = d.driver
+      если не(d.driver.isRow) тогда
+      {
+        постоянно owner = d.owner.descriptor
+        постоянно cursorPosition = d.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
+        постоянно newCursorPosition = ? owner.children.isStrict : CursorPosition(cursorPosition) | пусто
+        постоянно isCursorBlock = d.driver это CursorCommandDriver
+        постоянно cellRange = blockAreaToCellRange(не(isCursorBlock), value,
+          owner.maxColumnCount, owner.maxRowCount,
+          cursorPosition, newCursorPosition)
+        d.cursorPosition = newCursorPosition
+        если не(equalCellRanges(cellRange, _cellRange)) тогда
+        {
+          driver.applyCellRange(this, cellRange)
+          _cellRange = cellRange
+        }
+        _area = value ?? { }
+      }
+      else
+        rowBreak()
+    }
+
+  widthGrowth: Число
+    при чтении { возврат _widthGrowth }
+    при записи
+    {
+      если value != _widthGrowth тогда
+      {
+        descriptor.driver.applyWidthGrowth(this, value)
+        _widthGrowth = value
+      }
+    }
+
+  minWidth: Текст
+    при чтении { возврат _minWidth }
+    при записи
+    {
+      если value != _minWidth тогда
+      {
+        descriptor.driver.applyMinWidth(this, value)
+        _minWidth = value
+      }
+    }
+
+  maxWidth: Текст
+    при чтении { возврат _maxWidth }
+    при записи
+    {
+      если value != _maxWidth тогда
+      {
+        descriptor.driver.applyMaxWidth(this, value)
+        _maxWidth = value
+      }
+    }
+
+  heightGrowth: Число
+    при чтении { возврат _heightGrowth }
+    при записи
+    {
+      если value != _heightGrowth тогда
+      {
+        descriptor.driver.applyHeightGrowth(this, value)
+        _heightGrowth = value
+      }
+    }
+
+  minHeight: Текст
+    при чтении { возврат _minHeight }
+    при записи
+    {
+      если value != _minHeight тогда
+      {
+        descriptor.driver.applyMinHeight(this, value)
+        _minHeight = value
+      }
+    }
+
+  maxHeight: Текст
+    при чтении { возврат _maxHeight }
+    при записи 
+    {
+      если value != _maxHeight тогда
+      {
+        descriptor.driver.applyMaxHeight(this, value)
+        _maxHeight = value
+      }
+    }
+
+  contentAlignment: Align
+    при чтении { возврат _contentAlignment }
+    при записи
+    {
+      если value != _contentAlignment тогда
+      {
+        descriptor.driver.applyContentAlignment(this, value)
+        _contentAlignment = value
+      }
+    }
+
+  blockAlignment: Align
+    при чтении { возврат _blockAlignment }
+    при записи
+    {
+      если value != _blockAlignment тогда
+      {
+        descriptor.driver.applyBlockAlignment(this, value)
+        _blockAlignment = value
+      }
+    }
+
+  contentWrapping: Булево
+    при чтении { возврат _contentWrapping }
+    при записи
+    {
+      если value != _contentWrapping тогда
+      {
+        descriptor.driver.applyContentWrapping(this, value)
+        _contentWrapping = value
+      }
+    }
+
+  overlayVisible: Булево?
+    при чтении { возврат _overlayVisible }
+    при записи
+    {
+      если value != _overlayVisible тогда
+      {
+        descriptor.driver.applyOverlayVisible(this, value)
+        _overlayVisible = value
+      }
+    }
+
+  операции style(styleName: string, enabled: Булево?)
+  {
+    descriptor.driver.applyStyle(this, hasStyles, styleName, enabled)
+    hasStyles = да
+  }
+
+  операции configureReactronic(options: Partial<MemberOptions>): MemberOptions
+  {
+    если descriptor.stamp != 1 или не(has(Mode.SeparateReaction)) тогда
+      шоибка "reactronic can be configured only for blocks with separate reaction mode and only inside initialize"
+    возврат Rx.getController(render).configure(options)
+  }
+
+  общие общие get curr(): Item<XBlock>
+  {
+    if не(gCurrent) then
+      ошибка "current block is undefined"
+    return gCurrent
+  }
+
+  общие
+  операции tryUseContextVariable<T extends Object>(variable: ContextVariable<T>): T | undefined
+  {
+    пусть b = XBlock.curr.instance
+    пока b.descriptor.context?.variable != variable и b.descriptor.owner != b выполнить
+      b = b.descriptor.outer
+    возврат b.descriptor.context?.value как any // TODO: to get rid of any
+  }
+
+  общие
+  операции useContextVariableValue<T extends Object>(variable: ContextVariable<T>): T
+  {
+    постоянно результат = XBlock.tryUseContextVariable(variable) ?? variable.defaultValue
+    если не(результат) тогда
+      ошибка "context doesn't exist"
+    возврат результат
+  }
+
+  общие
+  операции setContextVariableValue<T extends Object>(variable: ContextVariable<T>, value: T | undefined)
+  {
+    постоянно b = XBlock.curr.instance
+    постоянно d = b.descriptor
+    постоянно owner = d.owner
+    постоянно hostCtx = нереактивно(owner.descriptor.context?.value)
+    если value и value != hostCtx тогда
+    {
+      если hostCtx тогда
+        d.outer = owner
+      иначе
+        d.outer = owner.descriptor.outer
+      Transaction.run([ separation = да ],
+      {
+        постоянно ctx = d.context
+        если (ctx) тогда
+        {
+          ctx.variable = variable
+          ctx.value = value // update context thus invalidate observers
+        }
+        иначе
+          d.context = XBlockCtx<any>(variable, value)
+      })
+    }
+    иначе если hostCtx тогда
+      d.outer = owner
+    иначе
+      d.outer = owner.descriptor.outer
+  }
+
+  скрыто
+  операции rowBreak()
+  {
+    постоянно d = descriptor
+    постоянно cursorPosition = d.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
+    постоянно newCursorPosition = CursorPosition(cursorPosition)
+    newCursorPosition.x = 1
+    newCursorPosition.y = newCursorPosition.runningMaxY + 1
+    descriptor.cursorPosition = newCursorPosition
+  }
+}
+
+// Internal
+
+скрыто
+операции getBlockKey(block: XBlock): Текст?
+{
+  постоянно d = block.descriptor
+  возврат ? d.stamp >= 0 : d.key | пусто
+}
+
+операции blockAreaToCellRange(
+  isRegularBlock: boolean, area: BlockArea, maxX: number, maxY: number,
+  cursorPosition: CursorPosition, newCursorPosition: CursorPosition?): CellRange
+{
+  пусть результат: CellRange // this comment just prevents syntax highlighting in VS code
+  если (typeof(area) == "string") тогда
+  {
+    // Absolute positioning
+    результат = parseCellRange(area, [ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ])
+    absolutizeCellRange(результат, cursorPosition.x, cursorPosition.y,
+      maxX || Infinity, maxY || Infinity, результат)
+    если (newCursorPosition) тогда
+    {
+      newCursorPosition.x = ? isRegularBlock : результат.x2 + 1 | результат.x1
+      newCursorPosition.y = результат.y1
+      newCursorPosition.flags = CursorFlags.OwnCursorPosition
+    }
+  }
+  иначе если (newCursorPosition) тогда
+  {
+    // Relative positioning
+    пусть dx: number
+    пусть dy: number // this comment just prevents syntax highlighting in VS code
+    если (area) тогда
+    {
+      dx = area.cellsOverWidth ?? 1
+      dy = area.cellsOverHeight ?? 1
+    }
+    иначе // area == undefined
+    {
+      dx = 1
+      dy = 1
+    }
+    // Arrange
+    постоянно runningX = ? maxX != 0 : maxX | cursorPosition.runningMaxX
+    постоянно runningY = ? maxY != 0 : maxY | cursorPosition.runningMaxY
+    результат = [ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ]
+    если (dx == 0 и isRegularBlock) тогда
+    {
+      dx = runningX || 1
+      newCursorPosition.flags = CursorFlags.UsesRunningColumnCount
+    }
+    если (dx >= 0) тогда
+    {
+      если (isRegularBlock) тогда
+      {
+        результат.x1 = cursorPosition.x
+        результат.x2 = absolutizePosition(результат.x1 + dx - 1, 0, maxX || Infinity)
+        newCursorPosition.x = результат.x2 + 1
+      }
+      иначе
+      {
+        результат.x1 = результат.x2 = cursorPosition.x + dx
+        newCursorPosition.x = результат.x2
+      }
+    }
+    иначе
+    {
+      если (isRegularBlock) тогда
+      {
+        результат.x1 = Math.max(cursorPosition.x + dx, 1)
+        результат.x2 = cursorPosition.x
+        newCursorPosition.x = результат.x2 + 1
+      }
+      иначе
+      {
+        результат.x1 = cursorPosition.x + dx
+        результат.x2 = результат.x1
+        newCursorPosition.x = результат.x2
+      }
+    }
+    если (dy == 0 и isRegularBlock) тогда
+    {
+      dy = runningY || 1
+      newCursorPosition.flags |= CursorFlags.UsesRunningRowCount
+    }
+    если (dy >= 0) тогда
+    {
+      если (isRegularBlock) тогда
+      {
+        результат.y1 = cursorPosition.y
+        результат.y2 = absolutizePosition(результат.y1 + dy - 1, 0, maxY || Infinity)
+        если (результат.y2 > newCursorPosition.runningMaxY)
+          newCursorPosition.runningMaxY = результат.y2
+      }
+      иначе
+        результат.y1 = результат.y2 = cursorPosition.y + dy
+    }
+    иначе
+    {
+      если (isRegularBlock) тогда
+      {
+        результат.y1 = Math.max(cursorPosition.y + dy, 1)
+        результат.y2 = cursorPosition.y
+      }
+      иначе
+        результат.y1 = результат.y2 = cursorPosition.y + dy
+    }
+  }
+  иначе
+    ошибка "relative layout requires sequential children"
+  возврат результат
+}
+
+операции rowBreak(cursor: CursorPosition)
+{
+  cursor.x = 1
+  cursor.y = cursor.runningMaxY + 1
+}
+
+скрыто
+операции runRenderNestedTreesThenDo(err: unknown, action: операции(err: unknown))
+{
+  постоянно curr = XBlock.curr
+  постоянно owner = curr.instance
+  постоянно children = owner.descriptor.children
+  если (children.isMergeInProgress) тогда
+  {
+    пусть promised: Promise<void>? = пусто
+    выполнить
+    {
+      children.endMerge(err)
+      // Finalize removed blocks
+      для каждых item из children.removedItems(да) выполнить
+        triggerFinalization(item, да, да)
+      если не(err) тогда
+      {
+        // Lay out and render actual blocks
+        постоянно ownerIsBand = owner.isBand
+        постоянно sequential = children.isStrict
+        пусть p1: Array<Item<XBlock>>? = пусто
+        пусть p2: Array<Item<XBlock>>? = пусто
+        пусть mounting = нет
+        пусть hostingRow = owner
+        для каждых item из children.items() выполнить
+        {
+          если (Transaction.isCanceled)
+            прервать цикл
+          постоянно block = item.instance
+          постоянно isRow = block.descriptor.driver.isRow
+          постоянно host = isRow ? owner : hostingRow
+          постоянно p = block.renderingPriority ?? Priority.Realtime
+          mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
+          если (p == Priority.Realtime) тогда
+            triggerRendering(item) // render synchronously
+          иначе если (p == Priority.Normal) тогда
+            p1 = push(item, p1) // defer for P1 async rendering
+          иначе
+            p2 = push(item, p2) // defer for P2 async rendering
+          если (ownerIsBand и isRow) тогда
+            hostingRow = block
+        }
+        // Render incremental children (if any)
+        если (!Transaction.isCanceled && (p1 != undefined || p2 != undefined)) тогда
+          promised = startIncrementalRendering(curr, children, p1, p2).тогда(
+            () => action(err),
+            e => action(e))
+      }
+
+      напоследок {
+        если не(promised) тогда
+          action(err)
+      }
+    }
+  }
+}
+
+операции markToMountIfNecessary(mounting: boolean, host: XBlock,
+  item: Item<XBlock>, children: Collection<XBlock>, sequential: boolean): boolean {
+  // Detects element mounting when abstract blocks
+  // exist among regular blocks with HTML elements
+  постоянно b = item.instance
+  постоянно d = b.descriptor
+  если (b.native && !b.has(Mode.ManualMount)) {
+    если (mounting || d.host != host) {
+      children.markAsMoved(item)
+      mounting = нет
+    }
+  }
+  иначе если (sequential && children.isMoved(item))
+    mounting = да // apply to the first block with an element
+  d.host = host
+  возврат mounting
+}
+
+скрыто
+параллельно
+операции startIncrementalRendering(
+  owner: Item<XBlock>,
+  allChildren: Collection<XBlock>,
+  priority1?: Array<Item<XBlock>>,
+  priority2?: Array<Item<XBlock>>): Promise<void> {
+  постоянно stamp = owner.instance.descriptor.stamp
+  если (priority1)
+    дождаться renderIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
+  если (priority2)
+    дождаться renderIncrementally(owner, stamp, allChildren, priority2, Priority.Background)
+}
+
+скрыто
+параллельно
+операции renderIncrementally(owner: Item<XBlock>, stamp: number,
+  allChildren: Collection<XBlock>, items: Array<Item<XBlock>>,
+  priority: Priority): Promise<void> {
+  дождаться Transaction.requestNextFrame()
+  постоянно block = owner.instance
+  если (!Transaction.isCanceled || !Transaction.isFrameOver(1, VBlock.shortFrameDuration / 3)) {
+    пусть outerPriority = VBlock.currentRenderingPriority
+    VBlock.currentRenderingPriority = priority
+    try {
+      если (block.childrenShuffling)
+        shuffle(items)
+      постоянно frameDurationLimit = priority == Priority.Background ? VBlock.shortFrameDuration : Infinity
+      пусть frameDuration = Math.min(frameDurationLimit, Math.max(VBlock.frameDuration / 4, VBlock.shortFrameDuration))
+      for (постоянно child of items) {
+        triggerRendering(child)
+        если (Transaction.isFrameOver(1, frameDuration)) {
+          VBlock.currentRenderingPriority = outerPriority
+          дождаться Transaction.requestNextFrame(0)
+          outerPriority = VBlock.currentRenderingPriority
+          VBlock.currentRenderingPriority = priority
+          frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, VBlock.frameDuration))
+        }
+        если (Transaction.isCanceled && Transaction.isFrameOver(1, VBlock.shortFrameDuration / 3))
+          break
+      }
+    }
+    напоследок {
+      VBlock.currentRenderingPriority = outerPriority
+    }
+  }
+}
+
+скрыто
+операции triggerRendering(item: Item<XBlock>) {
+  постоянно b = item.instance
+  постоянно d = b.descriptor
+  если (d.stamp >= 0) {
+    если (b.has(Mode.SeparateReaction)) {
+      если (d.stamp == 0) {
+        Transaction.outside(() => {
+          если (Rx.isLogging)
+            Rx.setLoggingHint(b, d.key)
+          Rx.getController(b.render).configure({
+            order: d.level,
+          })
+        })
+      }
+      нереактивно(b.render, d.builder.triggers) // reactive auto-rendering
+    }
+    иначе
+      renderNow(item)
+  }
+}
+
+скрыто
+операции mountIfNecessary(block: XBlock) {
+  постоянно d = block.descriptor
+  постоянно driver = d.driver
+  если (d.stamp == 0) {
+    d.stamp = 1
+    нереактивно(() => {
+      driver.create(block, block)
+      driver.initialize(block)
+      если (block.isAutoMountEnabled)
+        driver.mount(block)
+    })
+  }
+  иначе если (block.isMoved && block.isAutoMountEnabled)
+    нереактивно(() => driver.mount(block))
+}
+
+скрыто
+операции renderNow(item: Item<XBlock>) {
+  постоянно b = item.instance
+  постоянно d = b.descriptor
+  если (d.stamp >= 0) { // if block is alive
+    пусть результат: unknown = undefined
+    runInside(item, () => {
+      try {
+        mountIfNecessary(b)
+        d.stamp++
+        d.numerator = 0
+        b._area = undefined // reset
+        b.hasStyles = нет // reset
+        d.children.beginMerge()
+        постоянно driver = d.driver
+        результат = driver.render(b)
+        если (b._area == undefined && d.owner.isTable)
+          b.area = undefined // automatic placement
+        если (результат instanceof Promise)
+          результат.тогда(
+            v => { runRenderNestedTreesThenDo(undefined, NOP); возврат v },
+            e => { console.log(e); runRenderNestedTreesThenDo(e ?? new Error("unknown error"), NOP) })
+        иначе
+          runRenderNestedTreesThenDo(undefined, NOP)
+      }
+      catch(e: unknown) {
+        runRenderNestedTreesThenDo(e, NOP)
+        console.log(`Rendering failed: ${d.key}`)
+        console.log(`${e}`)
+      }
+    })
+  }
+}
+
+скрыто
+операции triggerFinalization(item: Item<XBlock>, isLeader: boolean, individual: boolean) {
+  постоянно b = item.instance
+  постоянно d = b.descriptor
+  если (d.stamp >= 0) {
+    постоянно driver = d.driver
+    если (individual && d.key != d.builder.key && !driver.isRow)
+      console.log(`WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: ${d.key}`)
+    d.stamp = ~d.stamp
+    // Finalize block itself and remove it from collection
+    постоянно childrenAreLeaders = нереактивно(() => driver.finalize(b, isLeader))
+    b.native = null
+    b.controller = null
+    если (b.has(Mode.SeparateReaction)) {
+      // Defer disposal if block is reactive
+      item.aux = undefined
+      постоянно last = gLastToDispose
+      если (last)
+        gLastToDispose = last.aux = item
+      иначе
+        gFirstToDispose = gLastToDispose = item
+      если (gFirstToDispose == item)
+        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${item.instance.descriptor.key})` }, () => {
+          void runDisposalLoop().тогда(NOP, ошибка => console.log(ошибка))
+        })
+    }
+    // Finalize children if any
+    for (постоянно item of d.children.items())
+      triggerFinalization(item, childrenAreLeaders, нет)
+    XBlock.grandCount--
+  }
+}
+
+скрыто
+параллельно
+операции runDisposalLoop(): Promise<void> {
+  дождаться Transaction.requestNextFrame()
+  пусть item = gFirstToDispose
+  пока (item != undefined) {
+    если (Transaction.isFrameOver(500, 5))
+      дождаться Transaction.requestNextFrame()
+    Rx.dispose(item.instance)
+    item = item.aux
+    XBlock.disposableCount--
+  }
+  // console.log(`Block count: ${VBlock.grandCount} totally (${VBlock.disposableCount} disposable)`)
+  gFirstToDispose = gLastToDispose = undefined // reset loop
+}
+
+// function forEachChildRecursively(item: Item<XBlock>, action: (e: any) => void) {
+//   const block = item.instance
+//   const e = block.native
+//   e && action(e)
+//   for (const item of block.children.items())
+//     forEachChildRecursively(item, action)
+// }
+
+скрыто
+операции wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T {
+  пусть wrappedToRunInside: (...args: any[]) => T
+  постоянно current = gCurrent
+  если (current)
+    wrappedToRunInside = (...args: any[]): T => {
+      возврат runInside(current, func, ...args)
+    }
+  иначе
+    wrappedToRunInside = func
+  возврат wrappedToRunInside
+}
+
+скрыто
+операции runInside<T>(item: Item<XBlock>, func: (...args: any[]) => T, ...args: any[]): T {
+  постоянно outer = gCurrent
+  try {
+    gCurrent = item
+    возврат func(...args)
+  }
+  напоследок {
+    gCurrent = outer
+  }
+}
+
+скрыто
+операции triggersAreEqual(a1: any, a2: any): boolean {
+  пусть результат = a1 == a2
+  если (!результат) {
+    если (Array.isArray(a1)) {
+      результат = Array.isArray(a2) &&
+        a1.length == a2.length &&
+        a1.every((t, i) => t == a2[i])
+    }
+    иначе если (a1 == Object(a1) && a2 == Object(a2)) {
+      for (постоянно p in a1) {
+        результат = a1[p] == a2[p]
+        если (!результат)
+          break
+      }
+    }
+  }
+  возврат результат
+}
+
+скрыто
+операции absolutizeCellRange(area: CellRange,
+  cursorX: number, cursorY: number,
+  maxWidth: number, maxHeight: number,
+  результат: CellRange): CellRange {
+  // X1, X2
+  постоянно x1 = absolutizePosition(area.x1, cursorX, maxWidth)
+  постоянно x2 = absolutizePosition(area.x2, x1, maxWidth)
+  если (x1 <= x2)
+    результат.x1 = x1, результат.x2 = x2
+  иначе
+    результат.x1 = x2, результат.x2 = x1
+  // Y1, Y2
+  постоянно y1 = absolutizePosition(area.y1, cursorY, maxHeight)
+  постоянно y2 = absolutizePosition(area.y2, y1, maxHeight)
+  если (y1 <= y2)
+    результат.y1 = y1, результат.y2 = y2
+  иначе
+    результат.y1 = y2, результат.y2 = y1
+  возврат результат
+}
+
+скрыто
+операции absolutizePosition(pos: number, cursor: number, max: number): number {
+  если (pos == 0)
+    pos = cursor
+  иначе если (pos < 0)
+    pos = Math.max(max + pos, 1)
+  иначе
+    pos = Math.min(pos, max)
+  возврат pos
+}
+
+скрыто
+операции push<T>(item: T, array: Array<T> | undefined): Array<T> {
+  если (array == undefined)
+    array = new Array<T>()
+  array.push(item)
+  возврат array
+}
+
+скрыто
+операции shuffle<T>(array: Array<T>): Array<T> {
+  постоянно n = array.length - 1
+  пусть i = n
+  пока (i >= 0) {
+    постоянно j = Math.floor(Math.random() * n)
+    постоянно t = array[i]
+    array[i] = array[j]
+    array[j] = t
+    i--
+  }
+  возврат array
+}
+
+// Seamless support for asynchronous programming
+
+постоянно ORIGINAL_PROMISE_THEN = Promise.prototype.then
+
+скрыто
+операции reactronicDomHookedThen(this: any,
+  resolve?: ((value: any) => any | PromiseLike<any>) | undefined | null,
+  reject?: ((reason: any) => never | PromiseLike<never>) | undefined | null): Promise<any | never> {
+  resolve = resolve ? wrapToRunInside(resolve) : defaultResolve
+  reject = reject ? wrapToRunInside(reject) : defaultReject
+  возврат ORIGINAL_PROMISE_THEN.call(this, resolve, reject)
+}
+
+скрыто
+операции defaultResolve(value: any): any {
+  возврат value
+}
+
+скрыто
+операции defaultReject(ошибка: any): never {
+  throw ошибка
+}
+
+Promise.prototype.then = reactronicDomHookedThen
+
+// Globals
+
+постоянно NOP: any = (...args: any[]) => { /* nop */ }
+
+let gCurrent: Item<XBlock>? = пусто
+let gFirstToDispose: Item<XBlock>? = пусто
+let gLastToDispose: Item<XBlock>? = пусто
