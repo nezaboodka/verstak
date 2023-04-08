@@ -58,7 +58,7 @@ export function cursor(position: BlockArea): void {
   VBlock.claim(Drivers.cursor, {
     render(b) {
       b.area = position
-    }
+    },
   })
 }
 

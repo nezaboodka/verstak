@@ -35,6 +35,15 @@ export function Fragment<M = unknown, R = void>(
   return VBlock.claim(Driver.fragment, builder, base)
 }
 
+// Verstak
+
+export class Verstak {
+  static readonly shortFrameDuration = 16 // ms
+  static readonly longFrameDuration = 300 // ms
+  static currentRenderingPriority = Priority.Realtime
+  static frameDuration = Verstak.longFrameDuration
+}
+
 // VBlock
 
 export abstract class VBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> {
@@ -52,12 +61,6 @@ export abstract class VBlockDescriptor<T = unknown, M = unknown, C = unknown, R 
 }
 
 export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
-  // Static properties
-  static readonly shortFrameDuration = 16 // ms
-  static readonly longFrameDuration = 300 // ms
-  static currentRenderingPriority = Priority.Realtime
-  static frameDuration = VBlock.longFrameDuration
-
   // System-managed properties
   abstract readonly descriptor: VBlockDescriptor<T, M, C, R>
   abstract readonly native: T
@@ -895,29 +898,29 @@ async function renderIncrementally(owner: Item<XBlock>, stamp: number,
   priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
   const block = owner.instance
-  if (!Transaction.isCanceled || !Transaction.isFrameOver(1, VBlock.shortFrameDuration / 3)) {
-    let outerPriority = VBlock.currentRenderingPriority
-    VBlock.currentRenderingPriority = priority
+  if (!Transaction.isCanceled || !Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3)) {
+    let outerPriority = Verstak.currentRenderingPriority
+    Verstak.currentRenderingPriority = priority
     try {
       if (block.childrenShuffling)
         shuffle(items)
-      const frameDurationLimit = priority === Priority.Background ? VBlock.shortFrameDuration : Infinity
-      let frameDuration = Math.min(frameDurationLimit, Math.max(VBlock.frameDuration / 4, VBlock.shortFrameDuration))
+      const frameDurationLimit = priority === Priority.Background ? Verstak.shortFrameDuration : Infinity
+      let frameDuration = Math.min(frameDurationLimit, Math.max(Verstak.frameDuration / 4, Verstak.shortFrameDuration))
       for (const child of items) {
         triggerRendering(child)
         if (Transaction.isFrameOver(1, frameDuration)) {
-          VBlock.currentRenderingPriority = outerPriority
+          Verstak.currentRenderingPriority = outerPriority
           await Transaction.requestNextFrame(0)
-          outerPriority = VBlock.currentRenderingPriority
-          VBlock.currentRenderingPriority = priority
-          frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, VBlock.frameDuration))
+          outerPriority = Verstak.currentRenderingPriority
+          Verstak.currentRenderingPriority = priority
+          frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, Verstak.frameDuration))
         }
-        if (Transaction.isCanceled && Transaction.isFrameOver(1, VBlock.shortFrameDuration / 3))
+        if (Transaction.isCanceled && Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3))
           break
       }
     }
     finally {
-      VBlock.currentRenderingPriority = outerPriority
+      Verstak.currentRenderingPriority = outerPriority
     }
   }
 }

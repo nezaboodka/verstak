@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Item, Rx } from "reactronic"
-import { VBlock, Driver, Priority } from "../core/api"
+import { Verstak, VBlock, Driver, Priority } from "../core/api"
 
 export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Driver<T, C> {
 
@@ -65,7 +65,7 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Dri
   render(block: VBlock<T, unknown, C>): void | Promise<void> {
     const result = super.render(block)
     if (gBlinkingEffectMarker)
-      blink(block.native, VBlock.currentRenderingPriority, block.descriptor.stamp)
+      blink(block.native, Verstak.currentRenderingPriority, block.descriptor.stamp)
     return result
   }
 
