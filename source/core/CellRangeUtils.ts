@@ -5,12 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export interface CellRange {
-  x1: number
-  y1: number
-  x2: number
-  y2: number
-}
+import { CellRange } from "./Common"
 
 export function parseCellRange(text: string, result: CellRange): CellRange {
   let i = 0

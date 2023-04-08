@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 export * from "./Utils"
-export * from "./CellRange"
+export * from "./CellRangeUtils"
 export * from "./Common"
 export * from "./Restyler"
 export * from "./VBlock"

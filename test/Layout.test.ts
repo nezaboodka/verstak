@@ -6,7 +6,8 @@
 // automatically licensed under the license referred above.
 
 import test from "ava"
-import { CellRange, parseCellRange, emitCellRange } from "../source/core/CellRange"
+import { CellRange } from "../source/core/Common"
+import { parseCellRange, emitCellRange } from "../source/core/CellRangeUtils"
 
 function parse(text: string): CellRange {
   const result: CellRange = { x1: 0, y1: 0, x2: 0, y2: 0 }
