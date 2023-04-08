@@ -20,13 +20,13 @@ export class Verstak {
   static claim<T = undefined, M = unknown, C = unknown, R = void>(
     driver: Driver<T>,
     builder?: BlockBuilder<T, M, C, R>,
-    base?: BlockBuilder<T, M, C, R>): VBlock<T, M, C, R> {
+    original?: BlockBuilder<T, M, C, R>): VBlock<T, M, C, R> {
     let result: XBlock<T, M, C, R>
     // Normalize parameters
     if (builder)
-      builder.base = base
+      builder.original = original
     else
-      builder = base ?? {}
+      builder = original ?? {}
     let key = builder.key
     const owner = gCurrent?.instance
     if (owner) {
@@ -195,52 +195,52 @@ function generateKey(owner: XBlock): string {
 }
 
 function chainedMode(builder?: BlockBuilder<any, any, any, any>): Mode {
-  return builder?.modes ?? (builder?.base ? chainedMode(builder?.base) : Mode.Default)
+  return builder?.modes ?? (builder?.original ? chainedMode(builder?.original) : Mode.Default)
 }
 
 function chainedClaim(block: VBlock<any>, builder: BlockBuilder): void {
   const claim = builder.claim
-  const base = builder.base
+  const original = builder.original
   if (claim)
-    claim(block, base ? () => chainedClaim(block, base) : NOP)
-  else if (base)
-    chainedClaim(block, base)
+    claim(block, original ? () => chainedClaim(block, original) : NOP)
+  else if (original)
+    chainedClaim(block, original)
 }
 
 function chainedCreate(block: VBlock, builder: BlockBuilder): void {
   const create = builder.create
-  const base = builder.base
+  const original = builder.original
   if (create)
-    create(block, base ? () => chainedCreate(block, base) : NOP)
-  else if (base)
-    chainedCreate(block, base)
+    create(block, original ? () => chainedCreate(block, original) : NOP)
+  else if (original)
+    chainedCreate(block, original)
 }
 
 function chainedInitialize(block: VBlock<any>, builder: BlockBuilder): void {
   const initialize = builder.initialize
-  const base = builder.base
+  const original = builder.original
   if (initialize)
-    initialize(block, base ? () => chainedInitialize(block, base) : NOP)
-  else if (base)
-    chainedInitialize(block, base)
+    initialize(block, original ? () => chainedInitialize(block, original) : NOP)
+  else if (original)
+    chainedInitialize(block, original)
 }
 
 function chainedRender(block: VBlock, builder: BlockBuilder): void {
   const render = builder.render
-  const base = builder.base
+  const original = builder.original
   if (render)
-    render(block, base ? () => chainedRender(block, base) : NOP)
-  else if (base)
-    chainedRender(block, base)
+    render(block, original ? () => chainedRender(block, original) : NOP)
+  else if (original)
+    chainedRender(block, original)
 }
 
 function chainedFinalize(block: VBlock<any>, builder: BlockBuilder): void {
   const finalize = builder.finalize
-  const base = builder.base
+  const original = builder.original
   if (finalize)
-    finalize(block, base ? () => chainedFinalize(block, base) : NOP)
-  else if (base)
-    chainedFinalize(block, base)
+    finalize(block, original ? () => chainedFinalize(block, original) : NOP)
+  else if (original)
+    chainedFinalize(block, original)
 }
 
 export class StaticDriver<T> extends BaseDriver<T> {

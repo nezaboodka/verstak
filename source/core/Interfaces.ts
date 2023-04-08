@@ -8,12 +8,12 @@
 import { CollectionReader, Item, MemberOptions } from "reactronic"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
-export type Delegate<T = unknown, M = unknown, C = unknown, R = void> = (block: VBlock<T, M, C, R>, base: () => R) => R
+export type Delegate<T = unknown, M = unknown, C = unknown, R = void> = (block: VBlock<T, M, C, R>, original: () => R) => R
 export type AsyncDelegate<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
 export type SimpleDelegate<T = unknown> = (block: VBlock<T, any, any, any>) => void
 
 export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
-  base?: BlockBuilder<T, M, C, R>
+  original?: BlockBuilder<T, M, C, R>
   key?: string
   modes?: Mode
   triggers?: unknown
