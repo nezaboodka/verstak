@@ -89,7 +89,7 @@ export class Verstak {
 
 // BaseDriver
 
-export class BaseDriver<T, C = unknown> {
+export class BaseDriver<T, C = unknown> implements Driver<T, C> {
   public static readonly fragment = new BaseDriver<any>(
     "fragment", false, b => b.childrenLayout = Layout.Group)
 
