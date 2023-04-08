@@ -7,7 +7,7 @@
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, ObservableObject, raw, MemberOptions } from "reactronic"
 import { getCallerInfo } from "./Utils"
-import { CellRange, Layout, Priority, Mode, Align, BlockArea, BlockBuilder, VBlock, Driver, SimpleDelegate, VBlockDescriptor } from "./Common"
+import { CellRange, Layout, Priority, Mode, Align, BlockArea, BlockBuilder, VBlock, Driver, SimpleDelegate, VBlockDescriptor } from "./Interfaces"
 import { emitLetters, equalCellRanges, parseCellRange } from "./CellRangeUtils"
 
 // Fragment
