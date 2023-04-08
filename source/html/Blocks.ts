@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, Layout, BlockBuilder, Align, CellRange, SimpleOperation, BlockArea, CursorCommandDriver } from "../core/api"
+import { VBlock, Layout, BlockBuilder, Align, CellRange, SimpleDelegate, BlockArea, CursorCommandDriver } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -286,7 +286,7 @@ const Drivers = {
   cursor: new CursorCommandDriver(),
 }
 
-const VerstakDriversByLayout: Array<SimpleOperation<HTMLElement>> = [
+const VerstakDriversByLayout: Array<SimpleDelegate<HTMLElement>> = [
   b => { // band
     const css = b.native.style
     css.display = "flex"

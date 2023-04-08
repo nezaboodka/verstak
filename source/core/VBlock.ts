@@ -11,20 +11,20 @@ import { CellRange, emitLetters, equalCellRanges, parseCellRange } from "./CellR
 import { Layout, Priority, Mode, Align, BlockArea } from "./Common"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
-export type Operation<T = unknown, M = unknown, C = unknown, R = void> = (block: VBlock<T, M, C, R>, base: () => R) => R
-export type AsyncOperation<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
-export type SimpleOperation<T = unknown> = (block: VBlock<T, any, any, any>) => void
+export type Delegate<T = unknown, M = unknown, C = unknown, R = void> = (block: VBlock<T, M, C, R>, base: () => R) => R
+export type AsyncDelegate<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
+export type SimpleDelegate<T = unknown> = (block: VBlock<T, any, any, any>) => void
 
 export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
   base?: BlockBuilder<T, M, C, R>
   key?: string
   modes?: Mode
   triggers?: unknown
-  claim?: Operation<T, M, C, R>
-  create?: Operation<T, M, C, R>
-  initialize?: Operation<T, M, C, R>
-  render?: Operation<T, M, C, R>
-  finalize?: Operation<T, M, C, R>
+  claim?: Delegate<T, M, C, R>
+  create?: Delegate<T, M, C, R>
+  initialize?: Delegate<T, M, C, R>
+  render?: Delegate<T, M, C, R>
+  finalize?: Delegate<T, M, C, R>
 }
 
 // Fragment
@@ -180,7 +180,7 @@ export class Driver<T, C = unknown> {
   constructor(
     readonly name: string,
     readonly isRow: boolean,
-    readonly preset?: SimpleOperation<T>) {
+    readonly preset?: SimpleDelegate<T>) {
   }
 
   claim(block: VBlock<T, unknown, C>): void {
@@ -317,7 +317,7 @@ function chainedFinalize(block: VBlock, builder: BlockBuilder): void {
 export class StaticDriver<T> extends Driver<T> {
   readonly element: T
 
-  constructor(element: T, name: string, isRow: boolean, preset?: SimpleOperation<T>) {
+  constructor(element: T, name: string, isRow: boolean, preset?: SimpleDelegate<T>) {
     super(name, isRow, preset)
     this.element = element
   }
