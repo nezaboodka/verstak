@@ -8,4 +8,4 @@
 export * from "./Interfaces"
 export * from "./Utils"
 export * from "./Restyler"
-export * from "./VBlock"
+export * from "./Verstak"
