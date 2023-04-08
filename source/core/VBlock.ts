@@ -32,7 +32,7 @@ export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
 export function Fragment<M = unknown, R = void>(
   builder?: BlockBuilder<void, M, R>,
   base?: BlockBuilder<void, M, R>): VBlock<void, M, R> {
-  return VBlock.claim(Driver.fragment, builder, base)
+  return Verstak.claim(Driver.fragment, builder, base)
 }
 
 // Verstak
@@ -42,6 +42,86 @@ export class Verstak {
   static readonly longFrameDuration = 300 // ms
   static currentRenderingPriority = Priority.Realtime
   static frameDuration = Verstak.longFrameDuration
+
+  static get current(): VBlock {
+    if (gCurrent === undefined)
+      throw new Error("current block is undefined")
+    return gCurrent.instance
+  }
+
+  static claim<T = undefined, M = unknown, C = unknown, R = void>(
+    driver: Driver<T>,
+    builder?: BlockBuilder<T, M, C, R>,
+    base?: BlockBuilder<T, M, C, R>): VBlock<T, M, C, R> {
+    let result: XBlock<T, M, C, R>
+    // Normalize parameters
+    if (builder)
+      builder.base = base
+    else
+      builder = base ?? {}
+    let key = builder.key
+    const owner = gCurrent?.instance
+    if (owner) {
+      // Check for coalescing separators or lookup for existing block
+      let ex: Item<XBlock<any, any, any, any>> | undefined = undefined
+      const children = owner.descriptor.children
+      if (driver.isRow) {
+        const last = children.lastClaimedItem()
+        if (last?.instance?.descriptor.driver === driver)
+          ex = last
+      }
+      ex ??= children.claim(
+        key = key || Verstak.generateKey(owner), undefined,
+        "nested blocks can be declared inside render function only")
+      // Reuse existing block or claim a new one
+      if (ex) {
+        // Reuse existing block
+        result = ex.instance
+        const d = result.descriptor
+        if (d.driver !== driver && driver !== undefined)
+          throw new Error(`changing block driver is not yet supported: "${result.descriptor.driver.name}" -> "${driver?.name}"`)
+        const exTriggers = d.builder.triggers
+        if (triggersAreEqual(builder.triggers, exTriggers))
+          builder.triggers = exTriggers // preserve triggers instance
+        d.builder = builder
+      }
+      else {
+        // Create new block
+        result = new XBlock<T, M, C, R>(key || Verstak.generateKey(owner), driver, owner, builder)
+        result.descriptor.item = children.add(result)
+      }
+    }
+    else {
+      // Create new root block
+      result = new XBlock<T, M, C, R>(key || "", driver, owner, builder)
+      result.descriptor.item = Collection.createItem(result)
+      triggerRendering(result.descriptor.item)
+    }
+    return result
+  }
+
+  static renderNestedTreesThenDo(action: (error: unknown) => void): void {
+    runRenderNestedTreesThenDo(undefined, action)
+  }
+
+  static getDefaultLoggingOptions(): LoggingOptions | undefined {
+    return XBlock.logging
+  }
+
+  static setDefaultLoggingOptions(logging?: LoggingOptions): void {
+    XBlock.logging = logging
+  }
+
+  private static generateKey(owner: XBlock): string {
+    const n = owner.descriptor.numerator++
+    const lettered = emitLetters(n)
+    let result: string
+    if (Rx.isLogging)
+      result = `·${getCallerInfo(lettered)}`
+    else
+      result = `·${lettered}`
+    return result
+  }
 }
 
 // VBlock
@@ -92,86 +172,6 @@ export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   }
 
   abstract configureReactronic(options: Partial<MemberOptions>): MemberOptions
-
-  static get current(): VBlock {
-    if (gCurrent === undefined)
-      throw new Error("current block is undefined")
-    return gCurrent.instance
-  }
-
-  static renderNestedTreesThenDo(action: (error: unknown) => void): void {
-    runRenderNestedTreesThenDo(undefined, action)
-  }
-
-  static claim<T = undefined, M = unknown, C = unknown, R = void>(
-    driver: Driver<T>,
-    builder?: BlockBuilder<T, M, C, R>,
-    base?: BlockBuilder<T, M, C, R>): VBlock<T, M, C, R> {
-    let result: XBlock<T, M, C, R>
-    // Normalize parameters
-    if (builder)
-      builder.base = base
-    else
-      builder = base ?? {}
-    let key = builder.key
-    const owner = gCurrent?.instance
-    if (owner) {
-      // Check for coalescing separators or lookup for existing block
-      let ex: Item<XBlock<any, any, any, any>> | undefined = undefined
-      const children = owner.descriptor.children
-      if (driver.isRow) {
-        const last = children.lastClaimedItem()
-        if (last?.instance?.descriptor.driver === driver)
-          ex = last
-      }
-      ex ??= children.claim(
-        key = key || VBlock.generateKey(owner), undefined,
-        "nested blocks can be declared inside render function only")
-      // Reuse existing block or claim a new one
-      if (ex) {
-        // Reuse existing block
-        result = ex.instance
-        const d = result.descriptor
-        if (d.driver !== driver && driver !== undefined)
-          throw new Error(`changing block driver is not yet supported: "${result.descriptor.driver.name}" -> "${driver?.name}"`)
-        const exTriggers = d.builder.triggers
-        if (triggersAreEqual(builder.triggers, exTriggers))
-          builder.triggers = exTriggers // preserve triggers instance
-        d.builder = builder
-      }
-      else {
-        // Create new block
-        result = new XBlock<T, M, C, R>(key || VBlock.generateKey(owner), driver, owner, builder)
-        result.descriptor.item = children.add(result)
-      }
-    }
-    else {
-      // Create new root block
-      result = new XBlock<T, M, C, R>(key || "", driver, owner, builder)
-      result.descriptor.item = Collection.createItem(result)
-      triggerRendering(result.descriptor.item)
-    }
-    return result
-  }
-
-  private static generateKey(owner: XBlock): string {
-    const n = owner.descriptor.numerator++
-    const lettered = emitLetters(n)
-    let result: string
-    if (Rx.isLogging)
-      result = `·${getCallerInfo(lettered)}`
-    else
-      result = `·${lettered}`
-    return result
-  }
-
-  static getDefaultLoggingOptions(): LoggingOptions | undefined {
-    return XBlock.logging
-  }
-
-  static setDefaultLoggingOptions(logging?: LoggingOptions): void {
-    XBlock.logging = logging
-  }
 }
 
 // Driver

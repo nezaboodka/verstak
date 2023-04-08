@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { VBlock, Layout, BlockBuilder, Align, CellRange, SimpleDelegate, BlockArea, CursorCommandDriver } from "../core/api"
+import { Verstak, VBlock, Layout, BlockBuilder, Align, CellRange, SimpleDelegate, BlockArea, CursorCommandDriver } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -32,7 +32,7 @@ import { HtmlDriver } from "./HtmlDriver"
 export function VBand<M = unknown, R = void>(
   builder?: BlockBuilder<HTMLElement, M, R>,
   base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(Drivers.band, builder, base)
+  return Verstak.claim(Drivers.band, builder, base)
 }
 
 // Table
@@ -40,7 +40,7 @@ export function VBand<M = unknown, R = void>(
 export function VTable<M = unknown, R = void>(
   builder?: BlockBuilder<HTMLElement, M, R>,
   base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(Drivers.table, builder, base)
+  return Verstak.claim(Drivers.table, builder, base)
 }
 
 // Row
@@ -51,11 +51,11 @@ export function row<T = void>(builder?: (block: void) => T, shiftCursorDown?: nu
 }
 
 export function fromNewRow(shiftCursorDown?: number): void {
-  VBlock.claim(Drivers.row)
+  Verstak.claim(Drivers.row)
 }
 
 export function cursor(position: BlockArea): void {
-  VBlock.claim(Drivers.cursor, {
+  Verstak.claim(Drivers.cursor, {
     render(b) {
       b.area = position
     },
@@ -65,7 +65,7 @@ export function cursor(position: BlockArea): void {
 // Note (either plain or html)
 
 export function VNote(content: string, builder?: BlockBuilder<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(Drivers.note, builder, {
+  return Verstak.claim(Drivers.note, builder, {
     render(b) {
       b.native.innerText = content
     }},
@@ -73,7 +73,7 @@ export function VNote(content: string, builder?: BlockBuilder<HTMLElement, void,
 }
 
 export function VHtmlNote(content: string, builder?: BlockBuilder<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
-  return VBlock.claim(Drivers.note, builder, {
+  return Verstak.claim(Drivers.note, builder, {
     render(b) {
       b.native.innerHTML = content
     }},
@@ -85,7 +85,7 @@ export function VHtmlNote(content: string, builder?: BlockBuilder<HTMLElement, v
 export function VGroup<M = unknown, R = void>(
   builder?: BlockBuilder<HTMLElement, M, R>,
   base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
-  return VBlock.claim(Drivers.group, builder, base)
+  return Verstak.claim(Drivers.group, builder, base)
 }
 
 // VerstakHtmlDriver
