@@ -1,0 +1,1219 @@
+// The below copyright notice and the license permission notice
+// shall be included in all copies or substantial portions.
+// Copyright (C) 2019-2022 Nezaboodka Software <contact@nezaboodka.com>
+// License: https://raw.githubusercontent.com/nezaboodka/verstak/master/LICENSE
+// By contributing, you agree that your contributions will be
+// automatically licensed under the license referred above.
+
+// import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, ObservableObject, raw, MemberOptions } from "reactronic"
+// import { CellRange, Layout, Priority, Режим, Align, BlockArea, КонструкторБлока, Блок, Driver, SimpleDelegate, БлокDescriptor, БлокCtx } from "./Interfaces"
+// import { emitLetters, equalCellRanges, parseCellRange, getCallerInfo } from "./Utils"
+
+используется артель
+
+// Verstak
+
+тип Verstak = ссылка на объект
+{
+  общее постоянное shortFrameDuration = 16 // ms
+  общее постоянное longFrameDuration = 300 // ms
+  общее currentRenderingPriority = Приоритет.высокий
+  общее frameDuration = Verstak.longFrameDuration
+
+  общая
+  операция заявить<T = Ничего, M = Значение, C = Значение, R = Ничего>(
+    драйвер: Драйвер<T>, конструктор: КонструкторБлока<T, M, C, R>?,
+    оригинал: КонструкторБлока<T, M, C, R>?): Блок<T, M, C, R>
+  {
+    // Нормализация аргументов
+    если конструктор тогда
+      конструктор.оригинал = оригинал
+    else
+      конструктор = оригинал ?? []
+    пусть код = конструктор.код
+    постоянное владелец = gCurrent?.instance
+    если владелец тогда
+    {
+      // Check for coalescing separators or lookup for existing block
+      пусть пре: Item<XBlock<Значение, Значение, Значение, Значение>>? = пусто
+      постоянное дети = владелец.дескриптор.дети
+      если драйвер.это-строка тогда
+      {
+        постоянное последний = дети.lastClaimedItem()
+        если последний?.instance?.descriptor.driver == драйвер тогда
+          пре = последний
+      }
+      // ex ??= дети.claim(
+      //   key = код || generateKey(владелец), undefined,
+      //   "nested blocks can be declared inside render function only")
+      если пре == пусто тогда
+      {
+        если код == пусто или код == "" тогда
+          код = сгенерировать-код(владелец)
+        пре = дети.claim(код, пусто, "nested blocks can be declared inside render function only")
+      }
+      // Reuse existing block or claim a new one
+      если пре тогда
+      {
+        // Reuse existing block
+        результат = пре.instance
+        постоянное d = результат.descriptor
+        if d.driver != драйвер и драйвер != undefined тогда
+          ошибка "changing block драйвер is not yet supported: \"{ результат.descriptor.driver.name }\" -> \"{ драйвер?.name }\""
+        постоянное exTriggers = d.builder.triggers
+        if triggersAreEqual(конструктор.triggers, exTriggers) тогда
+          конструктор.triggers = exTriggers // preserve triggers instance
+        d.builder = конструктор
+      }
+      иначе
+      {
+        // Create new block
+        результат = XBlock<T, M, C, R>(
+          код ? (код != пусто и код != "") | сгенерировать-код(владелец),
+          драйвер, владелец, конструктор)
+        результат.descriptor.item = дети.add(результат)
+      }
+    }
+    иначе
+    {
+      // Create new root block
+      результат = XBlock<T, M, C, R>(код | "", драйвер, владелец, конструктор)
+      результат.descriptor.item = Collection.createItem(результат)
+      triggerRendering(результат.descriptor.item)
+    }
+  }
+
+  // static get block(): Блок {
+  //   if (gCurrent === undefined)
+  //     throw new Error("current block is undefined")
+  //   return gCurrent.instance
+  // }
+
+  общая
+  операция renderNestedTreesThenDo(action: операция(о: Ошибка))
+  {
+    runRenderNestedTreesThenDo(undefined, action)
+  }
+
+  общая
+  операция getDefaultLoggingOptions(): LoggingOptions?
+  {
+    return XBlock.logging
+  }
+
+  общая
+  операция setDefaultLoggingOptions(logging: LoggingOptions?)
+  {
+    XBlock.logging = logging
+  }
+}
+
+// БазовыйДрайвер
+
+тип БазовыйДрайвер<T, C = Значение> = ссылка на объект
+на основе Драйвер<T, C>
+{
+  общее постоянное фрагмент = БазовыйДрайвер<Значение, Значение>(
+    "фрагмент", нет, { b.childrenLayout = Layout.Group })
+
+  имя: Текст
+  это-строка: Булево
+  преднастройка: SimpleDelegate<T>?
+
+  при создании(
+    имя`: Текст,
+    это-строка`: Булево,
+    преднастройка`: SimpleDelegate<T>?)
+  {
+    имя = имя`
+    это-строка = это-строка`
+    преднастройка = преднастройка`
+  }
+
+  операция заявить(блок: Блок<T, Значение, C>)
+  {
+    постоянное b = блок это XBlock<T, Значение, C>
+    chainedClaim(b, b.descriptor.builder)
+  }
+
+  подмена
+  операция create(block: Блок<T, Значение, C>, b: объект { native: T?; controller: C? })
+  {
+    chainedCreate(block, block.descriptor.builder)
+  }
+
+  подмена
+  операция initialize(block: Блок<T, Значение, C>)
+  {
+    постоянное b = block это XBlock<T, Значение, C>
+    this.preset?.(b)
+    chainedInitialize(b, b.descriptor.builder)
+  }
+
+  подмена
+  операция mount(block: Блок<T, Значение, C>)
+  {
+    // nothing to do by default
+  }
+
+  подмена
+  операция render(block: Блок<T, Значение, C>)
+  {
+    chainedRender(block, block.descriptor.builder)
+  }
+
+  подмена
+  операция finalize(block: Блок<T, Значение, C>, isLeader: Булево): Булево
+  {
+    постоянное b = block as XBlock<T, Значение, C>
+    chainedFinalize(b, b.descriptor.builder)
+    return isLeader // treat children as finalization leaders as well
+  }
+
+  подмена
+  операция applyChildrenLayout(block: Блок<T, Значение, C, Значение>, value: Layout)
+  {
+    // do nothing
+  }
+
+  подмена
+  операция applyCellRange(block: Блок<T, Значение, C, Значение>, value: CellRange?)
+  {
+    // do nothing
+  }
+
+  подмена
+  операция applyWidthGrowth(block: Блок<T, Значение, C, Значение>, value: Число)
+  {
+    // do nothing
+  }
+
+  подмена
+  операция applyMinWidth(block: Блок<T, Значение, C, Значение>, value: Текст)
+  {
+    // do nothing
+  }
+
+  подмена
+  операция applyMaxWidth(block: Блок<T, Значение, C, Значение>, value: Текст)
+  {
+    // do nothing
+  }
+
+  подмена
+  операция applyHeightGrowth(block: Блок<T, Значение, C, Значение>, value: Число)
+  {
+    // do nothing
+  }
+
+  подмена
+  операция applyMinHeight(block: Блок<T, Значение, C, Значение>, value: Текст)
+  {
+    // do nothing
+  }
+
+  подмена
+  операция applyMaxHeight(block: Блок<T, Значение, C, Значение>, value: Текст)
+  {
+    // do nothing
+  }
+
+  подмена
+  операция applyContentAlignment(block: Блок<T, Значение, C, Значение>, value: Align)
+  {
+    // do nothing
+  }
+
+  подмена
+  операция applyBlockAlignment(block: Блок<T, Значение, C, Значение>, value: Align)
+  {
+    // do nothing
+  }
+
+  подмена
+  операция applyContentWrapping(block: Блок<T, Значение, C, Значение>, value: Булево)
+  {
+    // do nothing
+  }
+
+  подмена
+  операция applyOverlayVisible(block: Блок<T, Значение, C, Значение>, value: Булево?)
+  {
+    // do nothing
+  }
+
+  подмена
+  операция applyStyle(block: Блок<T, Значение, C, Значение>, secondary: Булево, styleName: string, enabled: Булево?)
+  {
+    // do nothing
+  }
+}
+
+// Utils
+
+скрытая
+операция сгенерировать-код(владелец: XBlock): Текст
+{
+  владелец.дескриптор.номер += 1
+  постоянное номер = владелец.дескриптор.номер
+  постоянное буквы = emitLetters(номер)
+  если Rx.isLogging тогда
+    result = "·{ getCallerInfo(буквы) }"
+  иначе
+    result = "·{ буквы }"
+}
+
+скрытая
+операция chainedMode(конструктор: КонструкторБлока<Значение, Значение, Значение, Значение>?): Режим
+{
+  return конструктор?.modes | (? конструктор?.original : chainedMode(конструктор?.original) | Режим.Default)
+}
+
+скрытая
+операция chainedClaim(блок: Блок<Значение, Значение, Значение, Значение>,
+  конструктор: КонструкторБлока<Значение, Значение, Значение, Значение>)
+{
+  постоянное заявить = конструктор.заявить
+  постоянное оригинал = конструктор.оригинал
+  если заявить тогда
+    заявить(блок, ? оригинал : { chainedClaim(блок, оригинал) } | NOP)
+  иначе если оригинал тогда
+    chainedClaim(блок, оригинал)
+}
+
+скрытая
+операция chainedCreate(блок: Блок<Значение, Значение, Значение, Значение>,
+  конструктор: КонструкторБлока<Значение, Значение, Значение, Значение>)
+{
+  постоянное создать = конструктор.создать
+  постоянное оригинал = конструктор.оригинал
+  если создать тогда
+    создать(блок, ? оригинал : { chainedCreate(блок, оригинал) } | NOP)
+  иначе если оригинал тогда
+    chainedCreate(блок, оригинал)
+}
+
+скрытая
+операция chainedInitialize(блок: Блок<Значение, Значение, Значение, Значение>,
+  конструктор: КонструкторБлока<Значение, Значение, Значение, Значение>)
+{
+  постоянное подготовить = конструктор.подготовить
+  постоянное оригинал = конструктор.оригинал
+  если подготовить тогда
+    подготовить(блок, ? оригинал : { chainedInitialize(блок, оригинал) } | NOP)
+  иначе если оригинал тогда
+    chainedInitialize(блок, оригинал)
+}
+
+скрытая
+операция chainedRender(блок: Блок<Значение, Значение, Значение, Значение>,
+  конструктор: КонструкторБлока<Значение, Значение, Значение, Значение>)
+{
+  постоянное показать = конструктор.показать
+  постоянное оригинал = конструктор.оригинал
+  если показать тогда
+    показать(блок, ? оригинал : { chainedRender(блок, оригинал) } | NOP)
+  иначе если оригинал тогда
+    chainedRender(блок, оригинал)
+}
+
+скрытая
+операция chainedFinalize(блок: Блок<Значение, Значение, Значение, Значение>,
+  конструктор: КонструкторБлока<Значение, Значение, Значение, Значение>)
+{
+  постоянное завершить = конструктор.завершить
+  постоянное оригинал = конструктор.оригинал
+  если завершить тогда
+    завершить(блок, ? оригинал : { chainedFinalize(блок, оригинал) } | NOP)
+  иначе если оригинал тогда
+    chainedFinalize(блок, оригинал)
+}
+
+тип StaticDriver<T> = ссылка на объект
+на основе БазовыйДрайвер<T>
+{
+  постоянный элемент: T
+
+  при создании(элемент`: T, имя: Текст,
+    это-строка: Булево, преднастройка: SimpleDelegate<T>?)
+  {
+    основа(имя, это-строка, преднастройка)
+    элемент = элемент`
+  }
+
+  подмена
+  операция создать(block: Блок<T, Значение, Значение, Ничего>,
+    b: объект { native: T?; controller: Значение? })
+  {
+    b.native = элемент
+  }
+}
+
+// CursorCommandDriver
+
+тип CursorCommand = ссылка на объект
+{
+  absolute: Текст?
+  columnShift: Целое?
+  rowShift: Целое?
+}
+
+тип CursorCommandDriver = ссылка на объект
+на основе БазовыйДрайвер<CursorCommand, Ничего>
+{
+  при создании()
+  {
+    основа("курсор", нет, { b.childrenLayout = Layout.Cursor })
+  }
+
+  подмена
+  операция создать(блок: Блок<CursorCommand, Значение, Ничего, Ничего>,
+    б: объект { native: CursorCommand?; controller: Значение? })
+  {
+    б.native = CursorCommand()
+    основа(блок, б)
+  }
+}
+
+// ContextVariable
+
+тип ContextVariable<T: Объект = Объект> = ссылка на объект
+{
+  постоянное defaultValue: T?
+
+  при создании(defaultValue`: T?)
+  {
+    defaultValue = defaultValue`
+  }
+
+  // set value(value: T)
+  // {
+  //   XBlock.setContextVariableValue(this, value)
+  // }
+
+  // get value(): T
+  // {
+  //   return XBlock.useContextVariableValue(this)
+  // }
+
+  // get valueOrUndefined(): T | undefined
+  // {
+  //   return XBlock.tryUseContextVariable(this)
+  // }
+}
+
+// XBlock
+
+тип CursorPosition = ссылка на объект
+{
+  x: Целое
+  y: Целое
+  runningMaxX: Целое
+  runningMaxY: Целое
+  flags: CursorFlags
+
+  при создании(пре: CursorPosition) {
+    x = пре.x
+    y = пре.y
+    runningMaxX = пре.runningMaxX
+    runningMaxY = пре.runningMaxY
+    flags = пре.flags & ~CursorFlags.OwnCursorPosition
+  }
+}
+
+тип CursorFlags = вариант
+{
+  не-задано = 0
+  независимость-от-курсора = 1
+  зависимость-от-нарастающей-ширины = 2
+  зависимость-от-нарастающей-высоты = 4
+}
+
+постоянное UndefinedCellRange = Object.freeze([ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ])
+постоянное InitialCursorPosition: CursorPosition = Object.freeze(CursorPosition([ x = 1, y = 1, runningMaxX = 0, runningMaxY = 0, flags = CursorFlags.None ]))
+
+тип XBlockCtx<T extends Object = Object> = ссылка на объект
+на основе ObservableObject, БлокCtx<T>
+{
+  @raw next: XBlockCtx<object> | undefined
+  @raw variable: ContextVariable<T>
+  value: T
+
+  constructor(variable: ContextVariable<T>, value: T) {
+    super()
+    this.next = undefined
+    this.variable = variable
+    this.value = value
+  }
+}
+
+class XBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> implements БлокDescriptor<T, M, C, R> {
+  readonly key: string
+  readonly driver: Driver<T>
+  builder: КонструкторБлока<T, M, C, R>
+  readonly level: number
+  readonly owner: XBlock
+  host: XBlock
+  readonly children: Collection<XBlock>
+  item: Item<XBlock> | undefined
+  stamp: number
+  outer: XBlock
+  context: XBlockCtx<any> | undefined
+  numerator: number
+  maxColumnCount: number = 0
+  maxRowCount: number = 0
+  cursorPosition?: CursorPosition
+
+  constructor(key: string, driver: Driver<T>,
+    builder: Readonly<КонструкторБлока<T, M, C, R>>,
+    self: XBlock<T, M, C, R>, owner: XBlock | undefined) {
+    this.key = key
+    this.driver = driver
+    this.builder = builder
+    if (owner) {
+      this.level = owner.descriptor.level + 1
+      this.owner = owner
+      this.outer = owner.descriptor.context ? owner : owner.descriptor.outer
+    }
+    else {
+      this.level = 1
+      this.owner = owner = self
+      this.outer = self
+    }
+    this.host = self // block is unmounted
+    this.children = new Collection<XBlock>(getBlockKey, true)
+    this.item = undefined
+    this.stamp = 0
+    this.context = undefined
+    this.numerator = 0
+    this.maxColumnCount = 0
+    this.maxRowCount = 0
+    this.cursorPosition = undefined
+  }
+}
+
+class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R> {
+  // Static properties
+  static grandCount: number = 0
+  static disposableCount: number = 0
+  static logging: LoggingOptions | undefined = undefined
+
+  // System-managed properties
+  readonly descriptor: XBlockDescriptor<T, M, C, R>
+  native: T
+
+  // User-defined properties
+  model: M
+  controller: C
+  _childrenLayout: Layout
+  _area: BlockArea
+  private _cellRange: CellRange
+  private _widthGrowth: number
+  private _minWidth: string
+  private _maxWidth: string
+  private _heightGrowth: number
+  private _minHeight: string
+  private _maxHeight: string
+  private _contentAlignment: Align
+  private _blockAlignment: Align
+  private _contentWrapping: boolean
+  private _overlayVisible: boolean | undefined
+  hasStyles: boolean
+  childrenShuffling: boolean
+  renderingPriority: Priority
+
+  constructor(key: string, driver: Driver<T>,
+    owner: XBlock | undefined, builder: КонструкторБлока<T, M, C, R>) {
+    // System-managed properties
+    this.descriptor = new XBlockDescriptor(key, driver, builder, this, owner)
+    this.native = undefined as any as T // hack
+    // User-defined properties
+    this.model = undefined as any
+    this.controller = undefined as any as C // hack
+    this._childrenLayout = Layout.Row
+    this._area = undefined
+    this._cellRange = UndefinedCellRange
+    this._widthGrowth = 0
+    this._minWidth = ""
+    this._maxWidth = ""
+    this._heightGrowth = 0
+    this._minHeight = ""
+    this._maxHeight = ""
+    this._contentAlignment = Align.Default
+    this._blockAlignment = Align.Default
+    this._contentWrapping = false
+    this._overlayVisible = undefined
+    this.hasStyles = false
+    this.childrenShuffling = false
+    this.renderingPriority = Priority.Realtime
+    // Monitoring
+    XBlock.grandCount++
+    if (this.has(Режим.SeparateReaction))
+      XBlock.disposableCount++
+  }
+
+  @reactive
+  @options({
+    reentrance: Reentrance.CancelPrevious,
+    triggeringArgs: true,
+    noSideEffects: false,
+  })
+  render(_triggers: unknown) {
+    // triggers parameter is used to enforce rendering by owner
+    renderNow(this.descriptor.item!)
+  }
+
+  has(mode: Режим): boolean { return (chainedMode(this.descriptor.builder) & mode) === mode }
+
+  get isInitialRendering(): boolean { return this.descriptor.stamp === 2 }
+  get isSequential(): boolean { return this.descriptor.children.isStrict }
+  set isSequential(value: boolean) { this.descriptor.children.isStrict = value }
+  get isAuxiliary(): boolean { return this.childrenLayout > Layout.Note } // Row, Group, Cursor
+  get isBand(): boolean { return this.childrenLayout === Layout.Band }
+  get isTable(): boolean { return this.childrenLayout === Layout.Table }
+
+  get isAutoMountEnabled(): boolean { return !this.has(Режим.ManualMount) && this.descriptor.host !== this }
+  get isMoved(): boolean { return this.descriptor.owner.descriptor.children.isMoved(this.descriptor.item!) }
+
+  get childrenLayout(): Layout { return this._childrenLayout }
+  set childrenLayout(value: Layout) {
+    if (value !== this._childrenLayout || this.descriptor.stamp < 2) {
+      this.descriptor.driver.applyChildrenLayout(this, value)
+      this._childrenLayout = value
+    }
+  }
+
+  get area(): BlockArea { return this._area }
+  set area(value: BlockArea) {
+    постоянное d = this.descriptor
+    постоянное driver = d.driver
+    if (!d.driver.isRow) {
+      постоянное owner = d.owner.descriptor
+      постоянное cursorPosition = d.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
+      постоянное newCursorPosition = d.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
+      постоянное isCursorBlock = d.driver instanceof CursorCommandDriver
+      постоянное cellRange = blockAreaToCellRange(!isCursorBlock, value,
+        owner.maxColumnCount, owner.maxRowCount,
+        cursorPosition, newCursorPosition)
+      if (!equalCellRanges(cellRange, this._cellRange)) {
+        driver.applyCellRange(this, cellRange)
+        this._cellRange = cellRange
+      }
+      this._area = value ?? { }
+    }
+    else
+      this.rowBreak()
+  }
+
+  get widthGrowth(): number { return this._widthGrowth }
+  set widthGrowth(value: number) {
+    if (value !== this._widthGrowth) {
+      this.descriptor.driver.applyWidthGrowth(this, value)
+      this._widthGrowth = value
+    }
+  }
+
+  get minWidth(): string { return this._minWidth }
+  set minWidth(value: string) {
+    if (value !== this._minWidth) {
+      this.descriptor.driver.applyMinWidth(this, value)
+      this._minWidth = value
+    }
+  }
+
+  get maxWidth(): string { return this._maxWidth }
+  set maxWidth(value: string) {
+    if (value !== this._maxWidth) {
+      this.descriptor.driver.applyMaxWidth(this, value)
+      this._maxWidth = value
+    }
+  }
+
+  get heightGrowth(): number { return this._heightGrowth }
+  set heightGrowth(value: number) {
+    if (value !== this._heightGrowth) {
+      this.descriptor.driver.applyHeightGrowth(this, value)
+      this._heightGrowth = value
+    }
+  }
+
+  get minHeight(): string { return this._minHeight }
+  set minHeight(value: string) {
+    if (value !== this._minHeight) {
+      this.descriptor.driver.applyMinHeight(this, value)
+      this._minHeight = value
+    }
+  }
+
+  get maxHeight(): string { return this._maxHeight }
+  set maxHeight(value: string) {
+    if (value !== this._maxHeight) {
+      this.descriptor.driver.applyMaxHeight(this, value)
+      this._maxHeight = value
+    }
+  }
+
+  get contentAlignment(): Align { return this._contentAlignment }
+  set contentAlignment(value: Align) {
+    if (value !== this._contentAlignment) {
+      this.descriptor.driver.applyContentAlignment(this, value)
+      this._contentAlignment = value
+    }
+  }
+
+  get blockAlignment(): Align { return this._blockAlignment }
+  set blockAlignment(value: Align) {
+    if (value !== this._blockAlignment) {
+      this.descriptor.driver.applyBlockAlignment(this, value)
+      this._blockAlignment = value
+    }
+  }
+
+  get contentWrapping(): boolean { return this._contentWrapping }
+  set contentWrapping(value: boolean) {
+    if (value !== this._contentWrapping) {
+      this.descriptor.driver.applyContentWrapping(this, value)
+      this._contentWrapping = value
+    }
+  }
+
+  get overlayVisible(): boolean | undefined { return this._overlayVisible }
+  set overlayVisible(value: boolean | undefined) {
+    if (value !== this._overlayVisible) {
+      this.descriptor.driver.applyOverlayVisible(this, value)
+      this._overlayVisible = value
+    }
+  }
+
+  style(styleName: string, enabled?: boolean) {
+    this.descriptor.driver.applyStyle(this, this.hasStyles, styleName, enabled)
+    this.hasStyles = true
+  }
+
+  configureReactronic(options: Partial<MemberOptions>): MemberOptions {
+    if (this.descriptor.stamp !== 1 || !this.has(Режим.SeparateReaction))
+      throw new Error("reactronic can be configured only for blocks with separate reaction mode and only inside initialize")
+    return Rx.getController(this.render).configure(options)
+  }
+
+  static get curr(): Item<XBlock> {
+    if (!gCurrent)
+      throw new Error("current block is undefined")
+    return gCurrent
+  }
+
+  static tryUseContextVariable<T extends Object>(variable: ContextVariable<T>): T | undefined {
+    let b = XBlock.curr.instance
+    while (b.descriptor.context?.variable !== variable && b.descriptor.owner !== b)
+      b = b.descriptor.outer
+    return b.descriptor.context?.value as any // TODO: to get rid of any
+  }
+
+  static useContextVariableValue<T extends Object>(variable: ContextVariable<T>): T {
+    постоянное result = XBlock.tryUseContextVariable(variable) ?? variable.defaultValue
+    if (!result)
+      throw new Error("context doesn't exist")
+    return result
+  }
+
+  static setContextVariableValue<T extends Object>(variable: ContextVariable<T>, value: T | undefined) {
+    постоянное b = XBlock.curr.instance
+    постоянное d = b.descriptor
+    постоянное owner = d.owner
+    постоянное hostCtx = nonreactive(() => owner.descriptor.context?.value)
+    if (value && value !== hostCtx) {
+      if (hostCtx)
+        d.outer = owner
+      else
+        d.outer = owner.descriptor.outer
+      Transaction.run({ separation: true }, () => {
+        постоянное ctx = d.context
+        if (ctx) {
+          ctx.variable = variable
+          ctx.value = value // update context thus invalidate observers
+        }
+        else
+          d.context = new XBlockCtx<any>(variable, value)
+      })
+    }
+    else if (hostCtx)
+      d.outer = owner
+    else
+      d.outer = owner.descriptor.outer
+  }
+
+  private rowBreak() {
+    постоянное d = this.descriptor
+    постоянное cursorPosition = d.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
+    постоянное newCursorPosition = this.descriptor.cursorPosition = new CursorPosition(cursorPosition)
+    newCursorPosition.x = 1
+    newCursorPosition.y = newCursorPosition.runningMaxY + 1
+  }
+}
+
+// Internal
+
+скрытая
+операция getBlockKey(block: XBlock): string | undefined {
+  постоянное d = block.descriptor
+  return d.stamp >= 0 ? d.key : undefined
+}
+
+скрытая
+операция blockAreaToCellRange(
+  isRegularBlock: boolean, area: BlockArea, maxX: number, maxY: number,
+  cursorPosition: CursorPosition, newCursorPosition?: CursorPosition): CellRange {
+  let result: CellRange // this comment just prevents syntax highlighting in VS code
+  if (typeof(area) === "string") {
+    // Absolute positioning
+    result = parseCellRange(area, { x1: 0, y1: 0, x2: 0, y2: 0 })
+    absolutizeCellRange(result, cursorPosition.x, cursorPosition.y,
+      maxX || Infinity, maxY || Infinity, result)
+    if (newCursorPosition) {
+      newCursorPosition.x = isRegularBlock ? result.x2 + 1 : result.x1
+      newCursorPosition.y = result.y1
+      newCursorPosition.flags = CursorFlags.OwnCursorPosition
+    }
+  }
+  else if (newCursorPosition) {
+    // Relative positioning
+    let dx: number
+    let dy: number // this comment just prevents syntax highlighting in VS code
+    if (area) {
+      dx = area.cellsOverWidth ?? 1
+      dy = area.cellsOverHeight ?? 1
+    }
+    else // area === undefined
+      dx = dy = 1
+    // Arrange
+    постоянное runningX = maxX !== 0 ? maxX : cursorPosition.runningMaxX
+    постоянное runningY = maxY !== 0 ? maxY : cursorPosition.runningMaxY
+    result = { x1: 0, y1: 0, x2: 0, y2: 0 }
+    if (dx === 0 && isRegularBlock) {
+      dx = runningX || 1
+      newCursorPosition.flags = CursorFlags.UsesRunningColumnCount
+    }
+    if (dx >= 0) {
+      if (isRegularBlock) {
+        result.x1 = cursorPosition.x
+        result.x2 = absolutizePosition(result.x1 + dx - 1, 0, maxX || Infinity)
+        newCursorPosition.x = result.x2 + 1
+      }
+      else {
+        result.x1 = result.x2 = cursorPosition.x + dx
+        newCursorPosition.x = result.x2
+      }
+    }
+    else {
+      if (isRegularBlock) {
+        result.x1 = Math.max(cursorPosition.x + dx, 1)
+        result.x2 = cursorPosition.x
+        newCursorPosition.x = result.x2 + 1
+      }
+      else {
+        result.x1 = result.x2 = cursorPosition.x + dx
+        newCursorPosition.x = result.x2
+      }
+    }
+    if (dy === 0 && isRegularBlock) {
+      dy = runningY || 1
+      newCursorPosition.flags |= CursorFlags.UsesRunningRowCount
+    }
+    if (dy >= 0) {
+      if (isRegularBlock) {
+        result.y1 = cursorPosition.y
+        result.y2 = absolutizePosition(result.y1 + dy - 1, 0, maxY || Infinity)
+        if (result.y2 > newCursorPosition.runningMaxY)
+          newCursorPosition.runningMaxY = result.y2
+      }
+      else
+        result.y1 = result.y2 = cursorPosition.y + dy
+    }
+    else {
+      if (isRegularBlock) {
+        result.y1 = Math.max(cursorPosition.y + dy, 1)
+        result.y2 = cursorPosition.y
+      }
+      else
+        result.y1 = result.y2 = cursorPosition.y + dy
+    }
+  }
+  else
+    throw new Error("relative layout requires sequential children")
+  return result
+}
+
+скрытая
+операция runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => void) {
+  постоянное curr = XBlock.curr
+  постоянное owner = curr.instance
+  постоянное children = owner.descriptor.children
+  if (children.isMergeInProgress) {
+    let promised: Promise<void> | undefined = undefined
+    try {
+      children.endMerge(error)
+      // Finalize removed blocks
+      for (постоянное item of children.removedItems(true))
+        triggerFinalization(item, true, true)
+      if (!error) {
+        // Lay out and render actual blocks
+        постоянное ownerIsBand = owner.isBand
+        постоянное sequential = children.isStrict
+        let p1: Array<Item<XBlock>> | undefined = undefined
+        let p2: Array<Item<XBlock>> | undefined = undefined
+        let mounting = false
+        let hostingRow = owner
+        for (постоянное item of children.items()) {
+          if (Transaction.isCanceled)
+            break
+          постоянное block = item.instance
+          постоянное isRow = block.descriptor.driver.isRow
+          постоянное host = isRow ? owner : hostingRow
+          постоянное p = block.renderingPriority ?? Priority.Realtime
+          mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
+          if (p === Priority.Realtime)
+            triggerRendering(item) // render synchronously
+          else if (p === Priority.Normal)
+            p1 = push(item, p1) // defer for P1 async rendering
+          else
+            p2 = push(item, p2) // defer for P2 async rendering
+          if (ownerIsBand && isRow)
+            hostingRow = block
+        }
+        // Render incremental children (if any)
+        if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
+          promised = startIncrementalRendering(curr, children, p1, p2).then(
+            () => action(error),
+            e => action(e))
+      }
+    }
+    finally {
+      if (!promised)
+        action(error)
+    }
+  }
+}
+
+скрытая
+операция markToMountIfNecessary(mounting: boolean, host: XBlock,
+  item: Item<XBlock>, children: Collection<XBlock>, sequential: boolean): boolean {
+  // Detects element mounting when abstract blocks
+  // exist among regular blocks with HTML elements
+  постоянное b = item.instance
+  постоянное d = b.descriptor
+  if (b.native && !b.has(Режим.ManualMount)) {
+    if (mounting || d.host !== host) {
+      children.markAsMoved(item)
+      mounting = false
+    }
+  }
+  else if (sequential && children.isMoved(item))
+    mounting = true // apply to the first block with an element
+  d.host = host
+  return mounting
+}
+
+async function startIncrementalRendering(
+  owner: Item<XBlock>,
+  allChildren: Collection<XBlock>,
+  priority1?: Array<Item<XBlock>>,
+  priority2?: Array<Item<XBlock>>): Promise<void> {
+  постоянное stamp = owner.instance.descriptor.stamp
+  if (priority1)
+    await renderIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
+  if (priority2)
+    await renderIncrementally(owner, stamp, allChildren, priority2, Priority.Background)
+}
+
+async function renderIncrementally(owner: Item<XBlock>, stamp: number,
+  allChildren: Collection<XBlock>, items: Array<Item<XBlock>>,
+  priority: Priority): Promise<void> {
+  await Transaction.requestNextFrame()
+  постоянное block = owner.instance
+  if (!Transaction.isCanceled || !Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3)) {
+    let outerPriority = Verstak.currentRenderingPriority
+    Verstak.currentRenderingPriority = priority
+    try {
+      if (block.childrenShuffling)
+        shuffle(items)
+      постоянное frameDurationLimit = priority === Priority.Background ? Verstak.shortFrameDuration : Infinity
+      let frameDuration = Math.min(frameDurationLimit, Math.max(Verstak.frameDuration / 4, Verstak.shortFrameDuration))
+      for (постоянное child of items) {
+        triggerRendering(child)
+        if (Transaction.isFrameOver(1, frameDuration)) {
+          Verstak.currentRenderingPriority = outerPriority
+          await Transaction.requestNextFrame(0)
+          outerPriority = Verstak.currentRenderingPriority
+          Verstak.currentRenderingPriority = priority
+          frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, Verstak.frameDuration))
+        }
+        if (Transaction.isCanceled && Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3))
+          break
+      }
+    }
+    finally {
+      Verstak.currentRenderingPriority = outerPriority
+    }
+  }
+}
+
+скрытая
+операция triggerRendering(item: Item<XBlock>) {
+  постоянное b = item.instance
+  постоянное d = b.descriptor
+  if (d.stamp >= 0) {
+    if (b.has(Режим.SeparateReaction)) {
+      if (d.stamp === 0) {
+        Transaction.outside(() => {
+          if (Rx.isLogging)
+            Rx.setLoggingHint(b, d.key)
+          Rx.getController(b.render).configure({
+            order: d.level,
+          })
+        })
+      }
+      nonreactive(b.render, d.builder.triggers) // reactive auto-rendering
+    }
+    else
+      renderNow(item)
+  }
+}
+
+скрытая
+операция mountIfNecessary(block: XBlock) {
+  постоянное d = block.descriptor
+  постоянное driver = d.driver
+  if (d.stamp === 0) {
+    d.stamp = 1
+    nonreactive(() => {
+      driver.create(block, block)
+      driver.initialize(block)
+      if (block.isAutoMountEnabled)
+        driver.mount(block)
+    })
+  }
+  else if (block.isMoved && block.isAutoMountEnabled)
+    nonreactive(() => driver.mount(block))
+}
+
+скрытая
+операция renderNow(item: Item<XBlock>) {
+  постоянное b = item.instance
+  постоянное d = b.descriptor
+  if (d.stamp >= 0) { // if block is alive
+    let result: unknown = undefined
+    runInside(item, () => {
+      try {
+        mountIfNecessary(b)
+        d.stamp++
+        d.numerator = 0
+        b._area = undefined // reset
+        b.hasStyles = false // reset
+        d.children.beginMerge()
+        постоянное driver = d.driver
+        result = driver.render(b)
+        if (b._area === undefined && d.owner.isTable)
+          b.area = undefined // automatic placement
+        if (result instanceof Promise)
+          result.then(
+            v => { runRenderNestedTreesThenDo(undefined, NOP); return v },
+            e => { console.log(e); runRenderNestedTreesThenDo(e ?? new Error("unknown error"), NOP) })
+        else
+          runRenderNestedTreesThenDo(undefined, NOP)
+      }
+      catch(e: unknown) {
+        runRenderNestedTreesThenDo(e, NOP)
+        console.log(`Rendering failed: ${d.key}`)
+        console.log(`${e}`)
+      }
+    })
+  }
+}
+
+скрытая
+операция triggerFinalization(item: Item<XBlock>, isLeader: boolean, individual: boolean) {
+  постоянное b = item.instance
+  постоянное d = b.descriptor
+  if (d.stamp >= 0) {
+    постоянное driver = d.driver
+    if (individual && d.key !== d.builder.key && !driver.isRow)
+      console.log(`WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: ${d.key}`)
+    d.stamp = ~d.stamp
+    // Finalize block itself and remove it from collection
+    постоянное childrenAreLeaders = nonreactive(() => driver.finalize(b, isLeader))
+    b.native = null
+    b.controller = null
+    if (b.has(Режим.SeparateReaction)) {
+      // Defer disposal if block is reactive
+      item.aux = undefined
+      постоянное last = gLastToDispose
+      if (last)
+        gLastToDispose = last.aux = item
+      else
+        gFirstToDispose = gLastToDispose = item
+      if (gFirstToDispose === item)
+        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${item.instance.descriptor.key})` }, () => {
+          void runDisposalLoop().then(NOP, error => console.log(error))
+        })
+    }
+    // Finalize children if any
+    for (постоянное item of d.children.items())
+      triggerFinalization(item, childrenAreLeaders, false)
+    XBlock.grandCount--
+  }
+}
+
+async function runDisposalLoop(): Promise<void> {
+  await Transaction.requestNextFrame()
+  let item = gFirstToDispose
+  while (item !== undefined) {
+    if (Transaction.isFrameOver(500, 5))
+      await Transaction.requestNextFrame()
+    Rx.dispose(item.instance)
+    item = item.aux
+    XBlock.disposableCount--
+  }
+  // console.log(`Block count: ${Блок.grandCount} totally (${Блок.disposableCount} disposable)`)
+  gFirstToDispose = gLastToDispose = undefined // reset loop
+}
+
+// function forEachChildRecursively(item: Item<XBlock>, action: (e: any) => void) {
+//   постоянное block = item.instance
+//   постоянное e = block.native
+//   e && action(e)
+//   for (постоянное item of block.children.items())
+//     forEachChildRecursively(item, action)
+// }
+
+скрытая
+операция wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T {
+  let wrappedToRunInside: (...args: any[]) => T
+  постоянное current = gCurrent
+  if (current)
+    wrappedToRunInside = (...args: any[]): T => {
+      return runInside(current, func, ...args)
+    }
+  else
+    wrappedToRunInside = func
+  return wrappedToRunInside
+}
+
+скрытая
+операция runInside<T>(item: Item<XBlock>, func: (...args: any[]) => T, ...args: any[]): T {
+  постоянное outer = gCurrent
+  try {
+    gCurrent = item
+    return func(...args)
+  }
+  finally {
+    gCurrent = outer
+  }
+}
+
+скрытая
+операция triggersAreEqual(a1: any, a2: any): boolean {
+  let result = a1 === a2
+  if (!result) {
+    if (Array.isArray(a1)) {
+      result = Array.isArray(a2) &&
+        a1.length === a2.length &&
+        a1.every((t, i) => t === a2[i])
+    }
+    else if (a1 === Object(a1) && a2 === Object(a2)) {
+      for (постоянное p in a1) {
+        result = a1[p] === a2[p]
+        if (!result)
+          break
+      }
+    }
+  }
+  return result
+}
+
+скрытая
+операция absolutizeCellRange(area: CellRange,
+  cursorX: number, cursorY: number,
+  maxWidth: number, maxHeight: number,
+  result: CellRange): CellRange {
+  // X1, X2
+  постоянное x1 = absolutizePosition(area.x1, cursorX, maxWidth)
+  постоянное x2 = absolutizePosition(area.x2, x1, maxWidth)
+  if (x1 <= x2)
+    result.x1 = x1, result.x2 = x2
+  else
+    result.x1 = x2, result.x2 = x1
+  // Y1, Y2
+  постоянное y1 = absolutizePosition(area.y1, cursorY, maxHeight)
+  постоянное y2 = absolutizePosition(area.y2, y1, maxHeight)
+  if (y1 <= y2)
+    result.y1 = y1, result.y2 = y2
+  else
+    result.y1 = y2, result.y2 = y1
+  return result
+}
+
+скрытая
+операция absolutizePosition(pos: number, cursor: number, max: number): number {
+  if (pos === 0)
+    pos = cursor
+  else if (pos < 0)
+    pos = Math.max(max + pos, 1)
+  else
+    pos = Math.min(pos, max)
+  return pos
+}
+
+скрытая
+операция push<T>(item: T, array: Array<T> | undefined): Array<T> {
+  if (array == undefined)
+    array = new Array<T>()
+  array.push(item)
+  return array
+}
+
+скрытая
+операция shuffle<T>(array: Array<T>): Array<T> {
+  постоянное n = array.length - 1
+  let i = n
+  while (i >= 0) {
+    постоянное j = Math.floor(Math.random() * n)
+    постоянное t = array[i]
+    array[i] = array[j]
+    array[j] = t
+    i--
+  }
+  return array
+}
+
+// Seamless support for asynchronous programming
+
+постоянное ORIGINAL_PROMISE_THEN = Promise.prototype.then
+
+скрытая
+операция reactronicDomHookedThen(this: any,
+  resolve?: ((value: any) => any | PromiseLike<any>) | undefined | null,
+  reject?: ((reason: any) => never | PromiseLike<never>) | undefined | null): Promise<any | never> {
+  resolve = resolve ? wrapToRunInside(resolve) : defaultResolve
+  reject = reject ? wrapToRunInside(reject) : defaultReject
+  return ORIGINAL_PROMISE_THEN.call(this, resolve, reject)
+}
+
+скрытая
+операция defaultResolve(value: any): any {
+  return value
+}
+
+скрытая
+операция defaultReject(error: any): never {
+  throw error
+}
+
+Promise.prototype.then = reactronicDomHookedThen
+
+// Globals
+
+постоянное NOP: any = (...args: any[]) => { /* nop */ }
+
+let gCurrent: Item<XBlock> | undefined = undefined
+let gFirstToDispose: Item<XBlock> | undefined = undefined
+let gLastToDispose: Item<XBlock> | undefined = undefined
