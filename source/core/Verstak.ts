@@ -17,12 +17,6 @@ export class Verstak {
   static currentRenderingPriority = Priority.Realtime
   static frameDuration = Verstak.longFrameDuration
 
-  static get block(): VBlock {
-    if (gCurrent === undefined)
-      throw new Error("current block is undefined")
-    return gCurrent.instance
-  }
-
   static claim<T = undefined, M = unknown, C = unknown, R = void>(
     driver: Driver<T>,
     builder?: BlockBuilder<T, M, C, R>,
@@ -72,6 +66,12 @@ export class Verstak {
       triggerRendering(result.descriptor.item)
     }
     return result
+  }
+
+  static get block(): VBlock {
+    if (gCurrent === undefined)
+      throw new Error("current block is undefined")
+    return gCurrent.instance
   }
 
   static renderNestedTreesThenDo(action: (error: unknown) => void): void {
