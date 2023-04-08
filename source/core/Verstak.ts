@@ -45,7 +45,7 @@ export class Verstak {
           ex = last
       }
       ex ??= children.claim(
-        key = key || Verstak.generateKey(owner), undefined,
+        key = key || generateKey(owner), undefined,
         "nested blocks can be declared inside render function only")
       // Reuse existing block or claim a new one
       if (ex) {
@@ -61,7 +61,7 @@ export class Verstak {
       }
       else {
         // Create new block
-        result = new XBlock<T, M, C, R>(key || Verstak.generateKey(owner), driver, owner, builder)
+        result = new XBlock<T, M, C, R>(key || generateKey(owner), driver, owner, builder)
         result.descriptor.item = children.add(result)
       }
     }
@@ -84,17 +84,6 @@ export class Verstak {
 
   static setDefaultLoggingOptions(logging?: LoggingOptions): void {
     XBlock.logging = logging
-  }
-
-  private static generateKey(owner: XBlock): string {
-    const n = owner.descriptor.numerator++
-    const lettered = emitLetters(n)
-    let result: string
-    if (Rx.isLogging)
-      result = `·${getCallerInfo(lettered)}`
-    else
-      result = `·${lettered}`
-    return result
   }
 }
 
@@ -193,6 +182,17 @@ export class BaseDriver<T, C = unknown> {
 }
 
 // Utils
+
+function generateKey(owner: XBlock): string {
+  const n = owner.descriptor.numerator++
+  const lettered = emitLetters(n)
+  let result: string
+  if (Rx.isLogging)
+    result = `·${getCallerInfo(lettered)}`
+  else
+    result = `·${lettered}`
+  return result
+}
 
 function chainedMode(builder?: BlockBuilder<any, any, any, any>): Mode {
   return builder?.modes ?? (builder?.base ? chainedMode(builder?.base) : Mode.Default)
