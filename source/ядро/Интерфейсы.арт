@@ -1,0 +1,180 @@
+// The below copyright notice and the license permission notice
+// shall be included in all copies or substantial portions.
+// Copyright (C) 2019-2022 Nezaboodka Software <contact@nezaboodka.com>
+// License: https://raw.githubusercontent.com/nezaboodka/verstak/master/LICENSE
+// By contributing, you agree that your contributions will be
+// automatically licensed under the license referred above.
+
+// import { CollectionReader, Item, MemberOptions } from "reactronic"
+
+использовать артель
+
+тип Callback<T = Значение> =
+  операции(native: T) // to be deleted
+
+тип Делегат<T = Значение, M = Значение, C = Значение, R = Ничего> =
+  операции(block: Блок<T, M, C, R>, original: операции(): R): R
+
+тип ПростойДелегат<T = Значение> =
+  операции(block: Блок<T, Значение, Значение, Значение>)
+
+тип КонструкторБлока<Т = Значение, M = Значение, C = Значение, R = Ничего> = интерфейс
+{
+  original: КонструкторБлока<Т, M, C, R>?
+  key: Текст?
+  modes: Режим?
+  triggers: Значение?
+  claim: Делегат<Т, M, C, R>?
+  create: Делегат<Т, M, C, R>?
+  initialize: Делегат<Т, M, C, R>?
+  render: Делегат<Т, M, C, R>?
+  finalize: Делегат<Т, M, C, R>?
+}
+
+// VBlock
+
+тип ДескрипторБлока<T = Значение, M = Значение, C = Значение, R = Ничего> = интерфейс
+{
+  охраняемо key: Текст
+  охраняемо driver: Драйвер<T, Значение>
+  охраняемо builder: Readonly<КонструкторБлока<T, M, C, R>>
+  охраняемо level: Целое
+  охраняемо owner: Блок<Значение, Значение, Значение, Ничего>
+  охраняемо host: Блок<Значение, Значение, Значение, Ничего>
+  охраняемо children: CollectionReader<Блок<Значение, Значение, Значение, Ничего>>
+  охраняемо item: Item<Блок<Значение, Значение, Значение, Ничего>>?
+  охраняемо stamp: Целое
+  охраняемо outer: Блок<Значение, Значение, Значение, Ничего>
+  охраняемо context: VBlockCtx<Значение>?
+}
+
+тип Блок<T = Значение, M = Значение, C = Значение, R = Ничего> = интерфейс
+{
+  // System-managed properties
+  охраняемо descriptor: ДескрипторБлока<T, M, C, R>
+  охраняемо native: T
+  охраняемо isBand: Булево
+  охраняемо isTable: Булево
+
+  // User-defined properties
+  model: M
+  controller: C
+  childrenLayout: Раскладка
+  area: ОбластьБлока
+  widthGrowth: Число
+  minWidth: Текст
+  maxWidth: Текст
+  heightGrowth: Число
+  minHeight: Текст
+  maxHeight: Текст
+  contentAlignment: Выравнивание
+  blockAlignment: Выравнивание
+  contentWrapping: Булево
+  overlayVisible: Булево?
+  childrenShuffling: Булево
+  renderingPriority: Приоритет?
+  isSequential: Булево
+  охраняемо isInitialRendering: Булево
+  операции style(styleName: Текст, enabled: Булево? = пусто)
+  операции configureReactronic(options: Partial<MemberOptions>): MemberOptions
+}
+
+тип VBlockCtx<T: Объект = Объект> = интерфейс
+{
+  value: T
+}
+
+// Драйвер
+
+тип Драйвер<T, C = Значение> = интерфейс
+{
+  постоянно name: Текст
+  постоянно isRow: Булево
+  постоянно preset: ПростойДелегат<T>?
+
+  операции claim(block: Блок<T, Значение, C, Ничего>)
+  операции create(block: Блок<T, Значение, C, Ничего>, b: объект { native: T?; controller: C? })
+  операции initialize(block: Блок<T, Значение, C, Ничего>)
+  операции mount(block: Блок<T, Значение, C, Ничего>)
+  операции render(block: Блок<T, Значение, C, Ничего>)
+  операции finalize(block: Блок<T, Значение, C, Ничего>, isLeader: Булево): Булево
+
+  операции applyChildrenLayout(block: Блок<T, Значение, C, Значение>, value: Раскладка)
+  операции applyCellRange(block: Блок<T, Значение, C, Значение>, value: Рамка?)
+  операции applyWidthGrowth(block: Блок<T, Значение, C, Значение>, value: Число)
+  операции applyMinWidth(block: Блок<T, Значение, C, Значение>, value: Текст)
+  операции applyMaxWidth(block: Блок<T, Значение, C, Значение>, value: Текст)
+  операции applyHeightGrowth(block: Блок<T, Значение, C, Значение>, value: Число)
+  операции applyMinHeight(block: Блок<T, Значение, C, Значение>, value: Текст)
+  операции applyMaxHeight(block: Блок<T, Значение, C, Значение>, value: Текст)
+  операции applyContentAlignment(block: Блок<T, Значение, C, Значение>, value: Выравнивание)
+  операции applyBlockAlignment(block: Блок<T, Значение, C, Значение>, value: Выравнивание)
+  операции applyContentWrapping(block: Блок<T, Значение, C, Значение>, value: Булево)
+  операции applyOverlayVisible(block: Блок<T, Значение, C, Значение>, value: Булево?)
+  операции applyStyle(block: Блок<T, Значение, C, Значение>, secondary: Булево, styleName: Текст, enabled: Булево?)
+}
+
+тип Рамка = интерфейс
+{
+  x1: Целое
+  y1: Целое
+  x2: Целое
+  y2: Целое
+}
+
+тип Раскладка = вариант
+{
+  Лента = 0
+  Таблица = 1
+  Заметка = 2
+  Группа = 3
+  Строка = 4
+  Курсор = 5
+}
+
+тип Приоритет = вариант
+{
+  Realtime = 0
+  Normal = 1
+  Background = 2
+}
+
+тип Режим = вариант
+{
+  Default = 0
+  SeparateReaction = 1
+  ManualMount = 2
+}
+
+тип Выравнивание = вариант
+{
+  Stretch = 0b00000
+  Left    = 0b00001
+  CenterX = 0b00010
+  Right   = 0b00011
+  Top     = 0b00100
+  CenterY = 0b01000
+  Bottom  = 0b01100
+  Default = 0b10000
+  Center  = CenterX + CenterY
+}
+
+тип ЭластичныйРазмер = интерфейс
+{
+  ячеек: Целое?            // 1 (table only)
+  минимум: Текст?              // min-content
+  максимум: Текст?              // min-content
+  доля-роста: Число?           // 0
+}
+
+тип РазмерПолосы = интерфейс на основе ЭластичныйРазмер {
+  track: Текст?            // <current>
+  track-number: Число?
+}
+
+тип ОбластьБлока = интерфейс // = undefined | string | { ... }
+{
+  область: Текст
+  ячеек-в-ширину: Целое?  // 1 (table only)
+  ячеек-в-высоту: Целое?  // 1 (table only)
+}
