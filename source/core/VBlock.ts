@@ -32,7 +32,7 @@ export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
 export function Fragment<M = unknown, R = void>(
   builder?: BlockBuilder<void, M, R>,
   base?: BlockBuilder<void, M, R>): VBlock<void, M, R> {
-  return Verstak.claim(Driver.fragment, builder, base)
+  return Verstak.claim(BaseDriver.fragment, builder, base)
 }
 
 // Verstak
@@ -172,9 +172,36 @@ export interface VBlock<T = unknown, M = unknown, C = unknown, R = void> {
 
 // Driver
 
-export class Driver<T, C = unknown> {
-  public static readonly fragment =
-    new Driver<any>("fragment", false, b => b.childrenLayout = Layout.Group)
+export interface Driver<T, C = unknown> {
+  readonly name: string,
+  readonly isRow: boolean,
+  readonly preset?: SimpleDelegate<T>
+
+  claim(block: VBlock<T, unknown, C>): void
+  create(block: VBlock<T, unknown, C>, b: { native?: T, controller?: C }): void
+  initialize(block: VBlock<T, unknown, C>): void
+  mount(block: VBlock<T, unknown, C>): void
+  render(block: VBlock<T, unknown, C>): void | Promise<void>
+  finalize(block: VBlock<T, unknown, C>, isLeader: boolean): boolean
+
+  applyChildrenLayout(block: VBlock<T, any, C, any>, value: Layout): void
+  applyCellRange(block: VBlock<T, any, C, any>, value: CellRange | undefined): void
+  applyWidthGrowth(block: VBlock<T, any, C, any>, value: number): void
+  applyMinWidth(block: VBlock<T, any, C, any>, value: string): void
+  applyMaxWidth(block: VBlock<T, any, C, any>, value: string): void
+  applyHeightGrowth(block: VBlock<T, any, C, any>, value: number): void
+  applyMinHeight(block: VBlock<T, any, C, any>, value: string): void
+  applyMaxHeight(block: VBlock<T, any, C, any>, value: string): void
+  applyContentAlignment(block: VBlock<T, any, C, any>, value: Align): void
+  applyBlockAlignment(block: VBlock<T, any, C, any>, value: Align): void
+  applyContentWrapping(block: VBlock<T, any, C, any>, value: boolean): void
+  applyOverlayVisible(block: VBlock<T, any, C, any>, value: boolean | undefined): void
+  applyStyle(block: VBlock<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void
+}
+
+export class BaseDriver<T, C = unknown> {
+  public static readonly fragment = new BaseDriver<any>(
+    "fragment", false, b => b.childrenLayout = Layout.Group)
 
   constructor(
     readonly name: string,
@@ -313,7 +340,7 @@ function chainedFinalize(block: VBlock, builder: BlockBuilder): void {
     chainedFinalize(block, base)
 }
 
-export class StaticDriver<T> extends Driver<T> {
+export class StaticDriver<T> extends BaseDriver<T> {
   readonly element: T
 
   constructor(element: T, name: string, isRow: boolean, preset?: SimpleDelegate<T>) {
@@ -334,7 +361,7 @@ export class CursorCommand {
   rowShift?: number
 }
 
-export class CursorCommandDriver extends Driver<CursorCommand, void>{
+export class CursorCommandDriver extends BaseDriver<CursorCommand, void>{
   constructor() {
     super("cursor", false, b => b.childrenLayout = Layout.Cursor)
   }

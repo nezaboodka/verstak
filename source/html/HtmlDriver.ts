@@ -6,9 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { Item, Rx } from "reactronic"
-import { Verstak, VBlock, Driver, Priority } from "../core/api"
+import { Verstak, VBlock, BaseDriver, Priority } from "../core/api"
 
-export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Driver<T, C> {
+export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends BaseDriver<T, C> {
 
   create(block: VBlock<T, unknown, C, void>, b: { native?: T; controller?: C }): void {
     super.create(block, b)
