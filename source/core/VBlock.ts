@@ -126,52 +126,48 @@ export class Verstak {
 
 // VBlock
 
-export abstract class VBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> {
-  abstract readonly key: string
-  abstract readonly driver: Driver<T>
-  abstract readonly builder: Readonly<BlockBuilder<T, M, C, R>>
-  abstract readonly level: number
-  abstract readonly owner: VBlock
-  abstract readonly host: VBlock
-  abstract readonly children: CollectionReader<VBlock>
-  abstract readonly item: Item<VBlock> | undefined
-  abstract readonly stamp: number
-  abstract readonly outer: VBlock
-  abstract readonly context: XBlockCtx | undefined
+export interface VBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> {
+  readonly key: string
+  readonly driver: Driver<T>
+  readonly builder: Readonly<BlockBuilder<T, M, C, R>>
+  readonly level: number
+  readonly owner: VBlock
+  readonly host: VBlock
+  readonly children: CollectionReader<VBlock>
+  readonly item: Item<VBlock> | undefined
+  readonly stamp: number
+  readonly outer: VBlock
+  readonly context: XBlockCtx | undefined
 }
 
-export abstract class VBlock<T = unknown, M = unknown, C = unknown, R = void> {
+export interface VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   // System-managed properties
-  abstract readonly descriptor: VBlockDescriptor<T, M, C, R>
-  abstract readonly native: T
-  abstract readonly isBand: boolean
-  abstract readonly isTable: boolean
+  readonly descriptor: VBlockDescriptor<T, M, C, R>
+  readonly native: T
+  readonly isBand: boolean
+  readonly isTable: boolean
 
   // User-defined properties
-  abstract model: M
-  abstract controller: C
-  abstract childrenLayout: Layout
-  abstract area: BlockArea
-  abstract widthGrowth: number
-  abstract minWidth: string
-  abstract maxWidth: string
-  abstract heightGrowth: number
-  abstract minHeight: string
-  abstract maxHeight: string
-  abstract contentAlignment: Align
-  abstract blockAlignment: Align
-  abstract contentWrapping: boolean
-  abstract overlayVisible: boolean | undefined
-  abstract childrenShuffling: boolean
-  abstract renderingPriority?: Priority
-  abstract isSequential: boolean
-  abstract style(styleName: string, enabled?: boolean): void
-
-  get isInitialRendering(): boolean {
-    return this.descriptor.stamp === 2
-  }
-
-  abstract configureReactronic(options: Partial<MemberOptions>): MemberOptions
+  model: M
+  controller: C
+  childrenLayout: Layout
+  area: BlockArea
+  widthGrowth: number
+  minWidth: string
+  maxWidth: string
+  heightGrowth: number
+  minHeight: string
+  maxHeight: string
+  contentAlignment: Align
+  blockAlignment: Align
+  contentWrapping: boolean
+  overlayVisible: boolean | undefined
+  childrenShuffling: boolean
+  renderingPriority?: Priority
+  isSequential: boolean
+  readonly isInitialRendering: boolean
+  style(styleName: string, enabled?: boolean): void
+  configureReactronic(options: Partial<MemberOptions>): MemberOptions
 }
 
 // Driver
@@ -413,7 +409,7 @@ class XBlockCtx<T extends Object = Object> extends ObservableObject {
   }
 }
 
-export class XBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> extends VBlockDescriptor<T, M, C, R> {
+export class XBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> implements VBlockDescriptor<T, M, C, R> {
   readonly key: string
   readonly driver: Driver<T>
   builder: BlockBuilder<T, M, C, R>
@@ -433,7 +429,6 @@ export class XBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> e
   constructor(key: string, driver: Driver<T>,
     builder: Readonly<BlockBuilder<T, M, C, R>>,
     self: XBlock<T, M, C, R>, owner: XBlock | undefined) {
-    super()
     this.key = key
     this.driver = driver
     this.builder = builder
@@ -459,7 +454,7 @@ export class XBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> e
   }
 }
 
-class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
+class XBlock<T = any, M = any, C = any, R = any> implements VBlock<T, M, C, R> {
   // Static properties
   static grandCount: number = 0
   static disposableCount: number = 0
@@ -491,7 +486,6 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
 
   constructor(key: string, driver: Driver<T>,
     owner: XBlock | undefined, builder: BlockBuilder<T, M, C, R>) {
-    super()
     // System-managed properties
     this.descriptor = new XBlockDescriptor(key, driver, builder, this, owner)
     this.native = undefined as any as T // hack
@@ -533,6 +527,7 @@ class XBlock<T = any, M = any, C = any, R = any> extends VBlock<T, M, C, R> {
 
   has(mode: Mode): boolean { return (chainedMode(this.descriptor.builder) & mode) === mode }
 
+  get isInitialRendering(): boolean { return this.descriptor.stamp === 2 }
   get isSequential(): boolean { return this.descriptor.children.isStrict }
   set isSequential(value: boolean) { this.descriptor.children.isStrict = value }
   get isAuxiliary(): boolean { return this.childrenLayout > Layout.Note } // Row, Group, Cursor
