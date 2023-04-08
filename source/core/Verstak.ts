@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, ObservableObject, raw, MemberOptions } from "reactronic"
-import { emitLetters, equalCellRanges, parseCellRange, getCallerInfo } from "./Utils"
 import { CellRange, Layout, Priority, Mode, Align, BlockArea, BlockBuilder, VBlock, Driver, SimpleDelegate, VBlockDescriptor, VBlockCtx } from "./Interfaces"
+import { emitLetters, equalCellRanges, parseCellRange, getCallerInfo } from "./Utils"
 
 // Verstak
 
