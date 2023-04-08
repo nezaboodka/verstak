@@ -17,7 +17,7 @@ export class Verstak {
   static currentRenderingPriority = Priority.Realtime
   static frameDuration = Verstak.longFrameDuration
 
-  static get current(): VBlock {
+  static get block(): VBlock {
     if (gCurrent === undefined)
       throw new Error("current block is undefined")
     return gCurrent.instance
