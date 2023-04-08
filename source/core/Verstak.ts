@@ -7,15 +7,7 @@
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, ObservableObject, raw, MemberOptions } from "reactronic"
 import { emitLetters, equalCellRanges, parseCellRange, getCallerInfo } from "./Utils"
-import { CellRange, Layout, Priority, Mode, Align, BlockArea, BlockBuilder, VBlock, Driver, SimpleDelegate, VBlockDescriptor } from "./Interfaces"
-
-// Fragment
-
-export function Fragment<M = unknown, R = void>(
-  builder?: BlockBuilder<void, M, R>,
-  base?: BlockBuilder<void, M, R>): VBlock<void, M, R> {
-  return Verstak.claim(BaseDriver.fragment, builder, base)
-}
+import { CellRange, Layout, Priority, Mode, Align, BlockArea, BlockBuilder, VBlock, Driver, SimpleDelegate, VBlockDescriptor, VBlockCtx } from "./Interfaces"
 
 // Verstak
 
@@ -105,6 +97,8 @@ export class Verstak {
     return result
   }
 }
+
+// BaseDriver
 
 export class BaseDriver<T, C = unknown> {
   public static readonly fragment = new BaseDriver<any>(
@@ -198,11 +192,13 @@ export class BaseDriver<T, C = unknown> {
   }
 }
 
+// Utils
+
 function chainedMode(builder?: BlockBuilder<any, any, any, any>): Mode {
   return builder?.modes ?? (builder?.base ? chainedMode(builder?.base) : Mode.Default)
 }
 
-function chainedClaim(block: VBlock, builder: BlockBuilder): void {
+function chainedClaim(block: VBlock<any>, builder: BlockBuilder): void {
   const claim = builder.claim
   const base = builder.base
   if (claim)
@@ -220,7 +216,7 @@ function chainedCreate(block: VBlock, builder: BlockBuilder): void {
     chainedCreate(block, base)
 }
 
-function chainedInitialize(block: VBlock, builder: BlockBuilder): void {
+function chainedInitialize(block: VBlock<any>, builder: BlockBuilder): void {
   const initialize = builder.initialize
   const base = builder.base
   if (initialize)
@@ -238,7 +234,7 @@ function chainedRender(block: VBlock, builder: BlockBuilder): void {
     chainedRender(block, base)
 }
 
-function chainedFinalize(block: VBlock, builder: BlockBuilder): void {
+function chainedFinalize(block: VBlock<any>, builder: BlockBuilder): void {
   const finalize = builder.finalize
   const base = builder.base
   if (finalize)
@@ -330,7 +326,7 @@ enum CursorFlags {
 const UndefinedCellRange = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
 const InitialCursorPosition: CursorPosition = Object.freeze(new CursorPosition({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: CursorFlags.None }))
 
-class XBlockCtx<T extends Object = Object> extends ObservableObject {
+class XBlockCtx<T extends Object = Object> extends ObservableObject implements VBlockCtx<T> {
   @raw next: XBlockCtx<object> | undefined
   @raw variable: ContextVariable<T>
   value: T
@@ -343,7 +339,7 @@ class XBlockCtx<T extends Object = Object> extends ObservableObject {
   }
 }
 
-export class XBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> implements VBlockDescriptor<T, M, C, R> {
+class XBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> implements VBlockDescriptor<T, M, C, R> {
   readonly key: string
   readonly driver: Driver<T>
   builder: BlockBuilder<T, M, C, R>
@@ -654,7 +650,7 @@ function getBlockKey(block: XBlock): string | undefined {
   return d.stamp >= 0 ? d.key : undefined
 }
 
-export function blockAreaToCellRange(
+function blockAreaToCellRange(
   isRegularBlock: boolean, area: BlockArea, maxX: number, maxY: number,
   cursorPosition: CursorPosition, newCursorPosition?: CursorPosition): CellRange {
   let result: CellRange // this comment just prevents syntax highlighting in VS code
@@ -735,11 +731,6 @@ export function blockAreaToCellRange(
   else
     throw new Error("relative layout requires sequential children")
   return result
-}
-
-export function rowBreak(cursor: CursorPosition): void {
-  cursor.x = 1
-  cursor.y = cursor.runningMaxY + 1
 }
 
 function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => void): void {

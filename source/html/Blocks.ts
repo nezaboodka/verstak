@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Verstak, VBlock, Layout, BlockBuilder, Align, CellRange, SimpleDelegate, BlockArea, CursorCommandDriver } from "../core/api"
+import { Verstak, VBlock, Layout, BlockBuilder, Align, CellRange, SimpleDelegate, BlockArea, CursorCommandDriver, BaseDriver } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -86,6 +86,14 @@ export function VGroup<M = unknown, R = void>(
   builder?: BlockBuilder<HTMLElement, M, R>,
   base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
   return Verstak.claim(Drivers.group, builder, base)
+}
+
+// Fragment
+
+export function Fragment<M = unknown, R = void>(
+  builder?: BlockBuilder<void, M, R>,
+  base?: BlockBuilder<void, M, R>): VBlock<void, M, R> {
+  return Verstak.claim(BaseDriver.fragment, builder, base)
 }
 
 // VerstakHtmlDriver
