@@ -485,8 +485,8 @@ class XBlock<T = any, M = any, C = any, R = any> implements VBlock<T, M, C, R> {
       const cursorPosition = d.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
       const newCursorPosition = d.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
       const isCursorBlock = driver instanceof CursorCommandDriver
-      const cellRange = blockAreaToCellRange(!isCursorBlock, value,
-        owner.maxColumnCount, owner.maxRowCount,
+      const cellRange = blockAreaToCellRange(!isCursorBlock,
+        value, owner.maxColumnCount, owner.maxRowCount,
         cursorPosition, newCursorPosition)
       if (!equalCellRanges(cellRange, this._cellRange)) {
         driver.applyCellRange(this, cellRange)
