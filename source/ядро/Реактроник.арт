@@ -9,6 +9,10 @@
 
 внешние
 {
+  тип Collection<T> = ссылка на объект
+  {
+  }
+
   тип CollectionReader<T> = интерфейс
   {
   }

@@ -84,7 +84,7 @@
   }
 
   // static get block(): Блок {
-  //   if (gCurrent === undefined)
+  //   if (gCurrent == undefined)
   //     throw new Error("current block is undefined")
   //   return gCurrent.instance
   // }
@@ -432,182 +432,218 @@
 постоянное UndefinedCellRange = Object.freeze([ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ])
 постоянное InitialCursorPosition: CursorPosition = Object.freeze(CursorPosition([ x = 1, y = 1, runningMaxX = 0, runningMaxY = 0, flags = CursorFlags.None ]))
 
-тип XBlockCtx<T extends Object = Object> = ссылка на объект
+тип XBlockCtx<T: Объект = Объект> = ссылка на объект
 на основе ObservableObject, БлокCtx<T>
 {
-  @raw next: XBlockCtx<object> | undefined
-  @raw variable: ContextVariable<T>
+  #raw next: XBlockCtx<Оbject>?
+  #raw variable: ContextVariable<T>
   value: T
 
-  constructor(variable: ContextVariable<T>, value: T) {
-    super()
-    this.next = undefined
-    this.variable = variable
-    this.value = value
+  при создании(variable: ContextVariable<T>, value: T) {
+    основа()
+    next = пусто
+    variable = variable
+    value = value
   }
 }
 
-class XBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> implements БлокDescriptor<T, M, C, R> {
-  readonly key: string
-  readonly driver: Driver<T>
-  builder: КонструкторБлока<T, M, C, R>
-  readonly level: number
-  readonly owner: XBlock
-  host: XBlock
-  readonly children: Collection<XBlock>
-  item: Item<XBlock> | undefined
-  stamp: number
+тип XBlockDescriptor<T = Значение, M = Значение, C = Значение, R = Ничего> = ссылка на объект
+на основе ДескрипторБлока<T, M, C, R>
+{
+  постоянный код: Текст
+  постоянный драйвер: Драйвер<T>
+  конструктор: КонструкторБлока<T, M, C, R>
+  постоянный уровень: Целое
+  постоянный владелец: XBlock
+  родитель: XBlock
+  постоянное дети: Collection<XBlock>
+  item: Item<XBlock>?
+  штапм: Целое
   outer: XBlock
-  context: XBlockCtx<any> | undefined
-  numerator: number
-  maxColumnCount: number = 0
-  maxRowCount: number = 0
-  cursorPosition?: CursorPosition
+  контекст: XBlockCtx<any>?
+  номер: Целое
+  maxColumnCount: Целое = 0
+  maxRowCount: Целое = 0
+  cursorPosition: CursorPosition?
 
-  constructor(key: string, driver: Driver<T>,
-    builder: Readonly<КонструкторБлока<T, M, C, R>>,
-    self: XBlock<T, M, C, R>, owner: XBlock | undefined) {
-    this.key = key
-    this.driver = driver
-    this.builder = builder
-    if (owner) {
-      this.level = owner.descriptor.level + 1
-      this.owner = owner
-      this.outer = owner.descriptor.context ? owner : owner.descriptor.outer
+  при создании(код`: string, драйвер`: Драйвер<T>,
+    конструктор`: Readonly<КонструкторБлока<T, M, C, R>>,
+    блок: XBlock<T, M, C, R>, владелец`: XBlock?)
+  {
+    код = код`
+    драйвер = драйвер`
+    конструктор = конструктор`
+    если владелец` тогда
+    {
+      пусть д = владелец`.дескриптор
+      уровень = д.уровень + 1
+      владелец = владелец`
+      outer = владелец` ? д.context | д.outer
     }
-    else {
-      this.level = 1
-      this.owner = owner = self
-      this.outer = self
+    иначе
+    {
+      уровень = 1
+      владелец` = блок
+      владелец = блок
+      outer = блок
     }
-    this.host = self // block is unmounted
-    this.children = new Collection<XBlock>(getBlockKey, true)
-    this.item = undefined
-    this.stamp = 0
-    this.context = undefined
-    this.numerator = 0
-    this.maxColumnCount = 0
-    this.maxRowCount = 0
-    this.cursorPosition = undefined
+    родитель = блок // block is unmounted
+    дети = Collection<XBlock>(взять-код-блока, да)
+    item = пусто
+    штамп = 0
+    контекст = пусто
+    номер = 0
+    maxColumnCount = 0
+    maxRowCount = 0
+    cursorPosition = пусто
   }
 }
 
-class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R> {
+тип XBlock<T = Значение, M = Значение, C = Значение, R = Значение> = ссылка на объект
+на основе Блок<T, M, C, R>
+{
   // Static properties
-  static grandCount: number = 0
-  static disposableCount: number = 0
-  static logging: LoggingOptions | undefined = undefined
+  общее grandCount: Целое = 0
+  общее disposableCount: Целое = 0
+  общее logging: НастройкиЖурнализации? = пусто
 
   // System-managed properties
-  readonly descriptor: XBlockDescriptor<T, M, C, R>
-  native: T
+  охраняемое типом дескриптор: XBlockDescriptor<T, M, C, R>
+  реализация: T
 
   // User-defined properties
-  model: M
-  controller: C
-  _childrenLayout: Layout
-  _area: BlockArea
-  private _cellRange: CellRange
-  private _widthGrowth: number
-  private _minWidth: string
-  private _maxWidth: string
-  private _heightGrowth: number
-  private _minHeight: string
-  private _maxHeight: string
-  private _contentAlignment: Align
-  private _blockAlignment: Align
-  private _contentWrapping: boolean
-  private _overlayVisible: boolean | undefined
-  hasStyles: boolean
-  childrenShuffling: boolean
-  renderingPriority: Priority
+  модель: M
+  контролер: C
+  // _childrenLayout: Раскладка
+  // _area: ОбластьБлока
+  // скрытое _cellRange: Рамка
+  // скрытое _widthGrowth: Число
+  // скрытое _minWidth: Текст
+  // скрытое _maxWidth: Текст
+  // скрытое _heightGrowth: Число
+  // скрытое _minHeight: Текст
+  // скрытое _maxHeight: Текст
+  // скрытое _contentAlignment: Align
+  // скрытое _blockAlignment: Align
+  // скрытое _contentWrapping: Булево
+  // скрытое _overlayVisible: Булево?
+  hasStyles: Булево
+  childrenShuffling: Булево
+  renderingPriority: Приоритет
 
-  constructor(key: string, driver: Driver<T>,
-    owner: XBlock | undefined, builder: КонструкторБлока<T, M, C, R>) {
+  при создании(код`: Текст, драйвер`: Драйвер<T>,
+    владелец`: XBlock?, конструктор: КонструкторБлока<T, M, C, R>)
+  {
     // System-managed properties
-    this.descriptor = new XBlockDescriptor(key, driver, builder, this, owner)
-    this.native = undefined as any as T // hack
+    дескриптор = XBlockDescriptor(код`, драйвер`, конструктор, объект, владелец`)
+    реализация = пусто as any as T // hack
     // User-defined properties
-    this.model = undefined as any
-    this.controller = undefined as any as C // hack
-    this._childrenLayout = Layout.Row
-    this._area = undefined
-    this._cellRange = UndefinedCellRange
-    this._widthGrowth = 0
-    this._minWidth = ""
-    this._maxWidth = ""
-    this._heightGrowth = 0
-    this._minHeight = ""
-    this._maxHeight = ""
-    this._contentAlignment = Align.Default
-    this._blockAlignment = Align.Default
-    this._contentWrapping = false
-    this._overlayVisible = undefined
-    this.hasStyles = false
-    this.childrenShuffling = false
-    this.renderingPriority = Priority.Realtime
+    модель = пусто as any
+    контролер = пусто as any as C // hack
+    // _childrenLayout = Layout.Row
+    // _area = undefined
+    // _cellRange = UndefinedCellRange
+    // _widthGrowth = 0
+    // _minWidth = ""
+    // _maxWidth = ""
+    // _heightGrowth = 0
+    // _minHeight = ""
+    // _maxHeight = ""
+    // _contentAlignment = Align.Default
+    // _blockAlignment = Align.Default
+    // _contentWrapping = нет
+    // _overlayVisible = undefined
+    hasStyles = нет
+    childrenShuffling = нет
+    renderingPriority = Priority.Realtime
     // Monitoring
-    XBlock.grandCount++
-    if (this.has(Режим.SeparateReaction))
-      XBlock.disposableCount++
+    XBlock.grandCount += 1
+    если включен-режим(Режим.SeparateReaction) тогда
+      XBlock.disposableCount += 1
   }
 
-  @reactive
-  @options({
-    reentrance: Reentrance.CancelPrevious,
-    triggeringArgs: true,
-    noSideEffects: false,
-  })
-  render(_triggers: unknown) {
+  // @reactive
+  // @options({
+  //   reentrance: Reentrance.CancelPrevious,
+  //   triggeringArgs: true,
+  //   noSideEffects: false,
+  // })
+  реактивная
+  операция render(триггеры: Значение) {
     // triggers parameter is used to enforce rendering by owner
     renderNow(this.descriptor.item!)
   }
 
-  has(mode: Режим): boolean { return (chainedMode(this.descriptor.builder) & mode) === mode }
-
-  get isInitialRendering(): boolean { return this.descriptor.stamp === 2 }
-  get isSequential(): boolean { return this.descriptor.children.isStrict }
-  set isSequential(value: boolean) { this.descriptor.children.isStrict = value }
-  get isAuxiliary(): boolean { return this.childrenLayout > Layout.Note } // Row, Group, Cursor
-  get isBand(): boolean { return this.childrenLayout === Layout.Band }
-  get isTable(): boolean { return this.childrenLayout === Layout.Table }
-
-  get isAutoMountEnabled(): boolean { return !this.has(Режим.ManualMount) && this.descriptor.host !== this }
-  get isMoved(): boolean { return this.descriptor.owner.descriptor.children.isMoved(this.descriptor.item!) }
-
-  get childrenLayout(): Layout { return this._childrenLayout }
-  set childrenLayout(value: Layout) {
-    if (value !== this._childrenLayout || this.descriptor.stamp < 2) {
-      this.descriptor.driver.applyChildrenLayout(this, value)
-      this._childrenLayout = value
-    }
+  операция включен-режим(mode: Режим): Булево
+  {
+    результат = (chainedMode(this.descriptor.builder) & mode) == mode
   }
 
-  get area(): BlockArea { return this._area }
-  set area(value: BlockArea) {
-    постоянное d = this.descriptor
-    постоянное driver = d.driver
-    if (!d.driver.isRow) {
-      постоянное owner = d.owner.descriptor
-      постоянное cursorPosition = d.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
-      постоянное newCursorPosition = d.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
-      постоянное isCursorBlock = d.driver instanceof CursorCommandDriver
-      постоянное cellRange = blockAreaToCellRange(!isCursorBlock, value,
-        owner.maxColumnCount, owner.maxRowCount,
-        cursorPosition, newCursorPosition)
-      if (!equalCellRanges(cellRange, this._cellRange)) {
-        driver.applyCellRange(this, cellRange)
-        this._cellRange = cellRange
+  охраняемое типом
+  isInitialRendering: Булево
+    при чтении { результат = дескриптор.штамп == 2 }
+
+  isSequential: Булево
+    при чтении { результат = дескриптор.дети.isStrict }
+    при записи { дескриптор.дети.isStrict = значение }
+
+  охраняемое типом
+  isAuxiliary: Булево
+    при чтении { результат = раскладка-детей > Раскладка.заметка } // Row, Group, Cursor
+
+  охраняемое типом
+  isBand: Булево
+    при чтении { результат = раскладка-детей == Раскладка.лента }
+
+  охраняемое типом
+  isTable: Булево
+    при чтении { результат = раскладка-детей == Раскладка.таблица }
+
+  охраняемое типом
+  isAutoMountEnabled: Булево
+    при чтении { return !this.has(Режим.ManualMount) && this.descriptor.host != this }
+
+  охраняемое типом
+  isMoved: Булево
+    при чтении { return this.descriptor.owner.descriptor.children.isMoved(this.descriptor.item!) }
+
+  раскладка-детей: Раскладка
+    при записи
+    {
+      если значение != хранимое или дескриптор.штапм < 2 тогда
+      {
+        дескриптор.драйвер.applyChildrenLayout(объект, значение)
+        хранимое = значение
       }
-      this._area = value ?? { }
     }
-    else
-      this.rowBreak()
-  }
+
+  area: ОбластьБлока
+    при записи
+    {
+      постоянное д = дескриптор
+      постоянное драйвер = д.driver
+      если не(драйвер.это-строка) тогда
+      {
+        постоянное owner = d.owner.descriptor
+        постоянное cursorPosition = d.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
+        постоянное newCursorPosition = d.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
+        постоянное isCursorBlock = d.driver instanceof CursorCommandDriver
+        постоянное cellRange = blockAreaToCellRange(!isCursorBlock, value,
+          owner.maxColumnCount, owner.maxRowCount,
+          cursorPosition, newCursorPosition)
+        if (!equalCellRanges(cellRange, this._cellRange)) {
+          driver.applyCellRange(this, cellRange)
+          this._cellRange = cellRange
+        }
+        this._area = value ?? { }
+      }
+      else
+        this.rowBreak()
+    }
 
   get widthGrowth(): number { return this._widthGrowth }
   set widthGrowth(value: number) {
-    if (value !== this._widthGrowth) {
+    if (value != this._widthGrowth) {
       this.descriptor.driver.applyWidthGrowth(this, value)
       this._widthGrowth = value
     }
@@ -615,7 +651,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
 
   get minWidth(): string { return this._minWidth }
   set minWidth(value: string) {
-    if (value !== this._minWidth) {
+    if (value != this._minWidth) {
       this.descriptor.driver.applyMinWidth(this, value)
       this._minWidth = value
     }
@@ -623,7 +659,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
 
   get maxWidth(): string { return this._maxWidth }
   set maxWidth(value: string) {
-    if (value !== this._maxWidth) {
+    if (value != this._maxWidth) {
       this.descriptor.driver.applyMaxWidth(this, value)
       this._maxWidth = value
     }
@@ -631,7 +667,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
 
   get heightGrowth(): number { return this._heightGrowth }
   set heightGrowth(value: number) {
-    if (value !== this._heightGrowth) {
+    if (value != this._heightGrowth) {
       this.descriptor.driver.applyHeightGrowth(this, value)
       this._heightGrowth = value
     }
@@ -639,7 +675,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
 
   get minHeight(): string { return this._minHeight }
   set minHeight(value: string) {
-    if (value !== this._minHeight) {
+    if (value != this._minHeight) {
       this.descriptor.driver.applyMinHeight(this, value)
       this._minHeight = value
     }
@@ -647,7 +683,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
 
   get maxHeight(): string { return this._maxHeight }
   set maxHeight(value: string) {
-    if (value !== this._maxHeight) {
+    if (value != this._maxHeight) {
       this.descriptor.driver.applyMaxHeight(this, value)
       this._maxHeight = value
     }
@@ -655,7 +691,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
 
   get contentAlignment(): Align { return this._contentAlignment }
   set contentAlignment(value: Align) {
-    if (value !== this._contentAlignment) {
+    if (value != this._contentAlignment) {
       this.descriptor.driver.applyContentAlignment(this, value)
       this._contentAlignment = value
     }
@@ -663,7 +699,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
 
   get blockAlignment(): Align { return this._blockAlignment }
   set blockAlignment(value: Align) {
-    if (value !== this._blockAlignment) {
+    if (value != this._blockAlignment) {
       this.descriptor.driver.applyBlockAlignment(this, value)
       this._blockAlignment = value
     }
@@ -671,7 +707,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
 
   get contentWrapping(): boolean { return this._contentWrapping }
   set contentWrapping(value: boolean) {
-    if (value !== this._contentWrapping) {
+    if (value != this._contentWrapping) {
       this.descriptor.driver.applyContentWrapping(this, value)
       this._contentWrapping = value
     }
@@ -679,7 +715,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
 
   get overlayVisible(): boolean | undefined { return this._overlayVisible }
   set overlayVisible(value: boolean | undefined) {
-    if (value !== this._overlayVisible) {
+    if (value != this._overlayVisible) {
       this.descriptor.driver.applyOverlayVisible(this, value)
       this._overlayVisible = value
     }
@@ -691,7 +727,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.descriptor.stamp !== 1 || !this.has(Режим.SeparateReaction))
+    if (this.descriptor.stamp != 1 || !this.has(Режим.SeparateReaction))
       throw new Error("reactronic can be configured only for blocks with separate reaction mode and only inside initialize")
     return Rx.getController(this.render).configure(options)
   }
@@ -704,7 +740,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
 
   static tryUseContextVariable<T extends Object>(variable: ContextVariable<T>): T | undefined {
     let b = XBlock.curr.instance
-    while (b.descriptor.context?.variable !== variable && b.descriptor.owner !== b)
+    while (b.descriptor.context?.variable != variable && b.descriptor.owner != b)
       b = b.descriptor.outer
     return b.descriptor.context?.value as any // TODO: to get rid of any
   }
@@ -721,7 +757,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
     постоянное d = b.descriptor
     постоянное owner = d.owner
     постоянное hostCtx = nonreactive(() => owner.descriptor.context?.value)
-    if (value && value !== hostCtx) {
+    if (value && value != hostCtx) {
       if (hostCtx)
         d.outer = owner
       else
@@ -754,17 +790,19 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
 // Internal
 
 скрытая
-операция getBlockKey(block: XBlock): string | undefined {
-  постоянное d = block.descriptor
-  return d.stamp >= 0 ? d.key : undefined
+операция взять-код-блока(блок: XBlock): Текст?
+{
+  пусть д = блок.дескриптор
+  результат = д.код ? д.штамп >= 0 | пусто
 }
 
 скрытая
 операция blockAreaToCellRange(
   isRegularBlock: boolean, area: BlockArea, maxX: number, maxY: number,
-  cursorPosition: CursorPosition, newCursorPosition?: CursorPosition): CellRange {
+  cursorPosition: CursorPosition, newCursorPosition?: CursorPosition): CellRange
+{
   let result: CellRange // this comment just prevents syntax highlighting in VS code
-  if (typeof(area) === "string") {
+  если typeof(area) == "string" тогда
     // Absolute positioning
     result = parseCellRange(area, { x1: 0, y1: 0, x2: 0, y2: 0 })
     absolutizeCellRange(result, cursorPosition.x, cursorPosition.y,
@@ -783,13 +821,13 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
       dx = area.cellsOverWidth ?? 1
       dy = area.cellsOverHeight ?? 1
     }
-    else // area === undefined
+    else // area == undefined
       dx = dy = 1
     // Arrange
-    постоянное runningX = maxX !== 0 ? maxX : cursorPosition.runningMaxX
-    постоянное runningY = maxY !== 0 ? maxY : cursorPosition.runningMaxY
+    постоянное runningX = maxX != 0 ? maxX : cursorPosition.runningMaxX
+    постоянное runningY = maxY != 0 ? maxY : cursorPosition.runningMaxY
     result = { x1: 0, y1: 0, x2: 0, y2: 0 }
-    if (dx === 0 && isRegularBlock) {
+    if (dx == 0 && isRegularBlock) {
       dx = runningX || 1
       newCursorPosition.flags = CursorFlags.UsesRunningColumnCount
     }
@@ -815,7 +853,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
         newCursorPosition.x = result.x2
       }
     }
-    if (dy === 0 && isRegularBlock) {
+    if (dy == 0 && isRegularBlock) {
       dy = runningY || 1
       newCursorPosition.flags |= CursorFlags.UsesRunningRowCount
     }
@@ -871,9 +909,9 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
           постоянное host = isRow ? owner : hostingRow
           постоянное p = block.renderingPriority ?? Priority.Realtime
           mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
-          if (p === Priority.Realtime)
+          if (p == Priority.Realtime)
             triggerRendering(item) // render synchronously
-          else if (p === Priority.Normal)
+          else if (p == Priority.Normal)
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
@@ -881,7 +919,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
             hostingRow = block
         }
         // Render incremental children (if any)
-        if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
+        if (!Transaction.isCanceled && (p1 != undefined || p2 != undefined))
           promised = startIncrementalRendering(curr, children, p1, p2).then(
             () => action(error),
             e => action(e))
@@ -902,7 +940,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements Блок<T, M, C, R>
   постоянное b = item.instance
   постоянное d = b.descriptor
   if (b.native && !b.has(Режим.ManualMount)) {
-    if (mounting || d.host !== host) {
+    if (mounting || d.host != host) {
       children.markAsMoved(item)
       mounting = false
     }
@@ -936,7 +974,7 @@ async function renderIncrementally(owner: Item<XBlock>, stamp: number,
     try {
       if (block.childrenShuffling)
         shuffle(items)
-      постоянное frameDurationLimit = priority === Priority.Background ? Verstak.shortFrameDuration : Infinity
+      постоянное frameDurationLimit = priority == Priority.Background ? Verstak.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(Verstak.frameDuration / 4, Verstak.shortFrameDuration))
       for (постоянное child of items) {
         triggerRendering(child)
@@ -963,7 +1001,7 @@ async function renderIncrementally(owner: Item<XBlock>, stamp: number,
   постоянное d = b.descriptor
   if (d.stamp >= 0) {
     if (b.has(Режим.SeparateReaction)) {
-      if (d.stamp === 0) {
+      if (d.stamp == 0) {
         Transaction.outside(() => {
           if (Rx.isLogging)
             Rx.setLoggingHint(b, d.key)
@@ -983,7 +1021,7 @@ async function renderIncrementally(owner: Item<XBlock>, stamp: number,
 операция mountIfNecessary(block: XBlock) {
   постоянное d = block.descriptor
   постоянное driver = d.driver
-  if (d.stamp === 0) {
+  if (d.stamp == 0) {
     d.stamp = 1
     nonreactive(() => {
       driver.create(block, block)
@@ -1012,7 +1050,7 @@ async function renderIncrementally(owner: Item<XBlock>, stamp: number,
         d.children.beginMerge()
         постоянное driver = d.driver
         result = driver.render(b)
-        if (b._area === undefined && d.owner.isTable)
+        if (b._area == undefined && d.owner.isTable)
           b.area = undefined // automatic placement
         if (result instanceof Promise)
           result.then(
@@ -1036,7 +1074,7 @@ async function renderIncrementally(owner: Item<XBlock>, stamp: number,
   постоянное d = b.descriptor
   if (d.stamp >= 0) {
     постоянное driver = d.driver
-    if (individual && d.key !== d.builder.key && !driver.isRow)
+    if (individual && d.key != d.builder.key && !driver.isRow)
       console.log(`WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: ${d.key}`)
     d.stamp = ~d.stamp
     // Finalize block itself and remove it from collection
@@ -1051,7 +1089,7 @@ async function renderIncrementally(owner: Item<XBlock>, stamp: number,
         gLastToDispose = last.aux = item
       else
         gFirstToDispose = gLastToDispose = item
-      if (gFirstToDispose === item)
+      if (gFirstToDispose == item)
         Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${item.instance.descriptor.key})` }, () => {
           void runDisposalLoop().then(NOP, error => console.log(error))
         })
@@ -1066,7 +1104,7 @@ async function renderIncrementally(owner: Item<XBlock>, stamp: number,
 async function runDisposalLoop(): Promise<void> {
   await Transaction.requestNextFrame()
   let item = gFirstToDispose
-  while (item !== undefined) {
+  while (item != undefined) {
     if (Transaction.isFrameOver(500, 5))
       await Transaction.requestNextFrame()
     Rx.dispose(item.instance)
@@ -1112,16 +1150,16 @@ async function runDisposalLoop(): Promise<void> {
 
 скрытая
 операция triggersAreEqual(a1: any, a2: any): boolean {
-  let result = a1 === a2
+  let result = a1 == a2
   if (!result) {
     if (Array.isArray(a1)) {
       result = Array.isArray(a2) &&
-        a1.length === a2.length &&
-        a1.every((t, i) => t === a2[i])
+        a1.length == a2.length &&
+        a1.every((t, i) => t == a2[i])
     }
-    else if (a1 === Object(a1) && a2 === Object(a2)) {
+    else if (a1 == Object(a1) && a2 == Object(a2)) {
       for (постоянное p in a1) {
-        result = a1[p] === a2[p]
+        result = a1[p] == a2[p]
         if (!result)
           break
       }
@@ -1154,7 +1192,7 @@ async function runDisposalLoop(): Promise<void> {
 
 скрытая
 операция absolutizePosition(pos: number, cursor: number, max: number): number {
-  if (pos === 0)
+  if (pos == 0)
     pos = cursor
   else if (pos < 0)
     pos = Math.max(max + pos, 1)
