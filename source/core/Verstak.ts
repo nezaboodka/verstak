@@ -363,9 +363,10 @@ class XBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> implemen
     this.driver = driver
     this.builder = builder
     if (owner) {
-      this.level = owner.descriptor.level + 1
+      const d = owner.descriptor
+      this.level = d.level + 1
       this.owner = owner
-      this.outer = owner.descriptor.context ? owner : owner.descriptor.outer
+      this.outer = d.context ? owner : d.outer
     }
     else {
       this.level = 1
