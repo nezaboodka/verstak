@@ -624,21 +624,23 @@
       постоянное драйвер = д.driver
       если не(драйвер.это-строка) тогда
       {
-        постоянное owner = d.owner.descriptor
-        постоянное cursorPosition = d.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
-        постоянное newCursorPosition = d.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
-        постоянное isCursorBlock = d.driver instanceof CursorCommandDriver
-        постоянное cellRange = blockAreaToCellRange(!isCursorBlock, value,
-          owner.maxColumnCount, owner.maxRowCount,
+        постоянное вд = д.владалец.дескриптор
+        постоянное cursorPosition = д.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
+        постоянное newCursorPosition = ? owner.children.isStrict : CursorPosition(cursorPosition) | пусто
+        постоянное isCursorBlock = драйвер это CursorCommandDriver
+        постоянное cellRange = blockAreaToCellRange(не(isCursorBlock),
+          value, вд.maxColumnCount, вд.maxRowCount,
           cursorPosition, newCursorPosition)
-        if (!equalCellRanges(cellRange, this._cellRange)) {
-          driver.applyCellRange(this, cellRange)
+        д.cursorPosition = newCursorPosition
+        если не(equalCellRanges(cellRange, this._cellRange)) тогда
+        {
+          драйвер.applyCellRange(this, cellRange)
           this._cellRange = cellRange
         }
         this._area = value ?? { }
       }
-      else
-        this.rowBreak()
+      иначе
+        rowBreak()
     }
 
   get widthGrowth(): number { return this._widthGrowth }
