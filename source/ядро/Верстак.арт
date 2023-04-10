@@ -22,7 +22,7 @@
 
   общая
   операция заявить<T = Ничего, M = Значение, C = Значение, R = Ничего>(
-    драйвер: Драйвер<T>, конструктор: КонструкторБлока<T, M, C, R>?,
+    драйвер: Драйвер<T, C>, конструктор: КонструкторБлока<T, M, C, R>?,
     оригинал: КонструкторБлока<T, M, C, R>?): Блок<T, M, C, R>
   {
     // Нормализация аргументов
@@ -40,7 +40,7 @@
       если драйвер.это-строка тогда
       {
         пусть последний = дети.lastClaimedItem()
-        если последний?.instance?.descriptor.driver == драйвер тогда
+        если последний?.instance?.дескриптор.driver == драйвер тогда
           пре = последний
       }
       // ex ??= дети.claim(
@@ -57,13 +57,13 @@
       {
         // Reuse existing block
         результат = пре.instance
-        пусть д = результат.descriptor
-        if д.driver != драйвер и драйвер != undefined тогда
-          ошибка "changing block драйвер is not yet supported: \"{ результат.descriptor.driver.name }\" -> \"{ драйвер?.name }\""
-        пусть exTriggers = д.builder.triggers
-        if triggersAreEqual(конструктор.triggers, exTriggers) тогда
-          конструктор.triggers = exTriggers // preserve triggers instance
-        д.builder = конструктор
+        пусть д = результат.дескриптор
+        if д.драйвер != драйвер и драйвер != пусто тогда
+          ошибка "changing block драйвер is not yet supported: \"{ результат.дескриптор.driver.name }\" -> \"{ драйвер?.name }\""
+        пусть exTriggers = д.конструктор.триггеры
+        if triggersAreEqual(конструктор.триггеры, exTriggers) тогда
+          конструктор.триггеры = exTriggers // preserve триггеры instance
+        д.конструктор = конструктор
       }
       иначе
       {
@@ -71,15 +71,15 @@
         результат = XBlock<T, M, C, R>(
           код ? (код != пусто и код != "") | сгенерировать-код(владелец),
           драйвер, владелец, конструктор)
-        результат.descriptor.item = дети.add(результат)
+        результат.дескриптор.item = дети.add(результат)
       }
     }
     иначе
     {
       // Create new root block
       результат = XBlock<T, M, C, R>(код ?? "", драйвер, владелец, конструктор)
-      результат.descriptor.item = Collection.createItem(результат)
-      triggerRendering(результат.descriptor.item)
+      результат.дескриптор.item = Collection.createItem(результат)
+      triggerRendering(результат.дескриптор.item)
     }
   }
 
@@ -92,7 +92,7 @@
   общая
   операция renderNestedTreesThenDo(action: операция(о: Ошибка))
   {
-    runRenderNestedTreesThenDo(undefined, action)
+    runRenderNestedTreesThenDo(пусто, action)
   }
 
   общая
@@ -133,13 +133,13 @@
   операция заявить(блок: Блок<T, Значение, C>)
   {
     пусть б = блок это XBlock<T, Значение, C>
-    chainedClaim(б, б.descriptor.builder)
+    chainedClaim(б, б.дескриптор.builder)
   }
 
   подмена
   операция create(block: Блок<T, Значение, C>, b: объект { native: T?; controller: C? })
   {
-    chainedCreate(block, block.descriptor.builder)
+    chainedCreate(block, block.дескриптор.builder)
   }
 
   подмена
@@ -148,7 +148,7 @@
     пусть б = block это XBlock<T, Значение, C>
     если preset тогда
       preset(б)
-    chainedInitialize(б, б.descriptor.builder)
+    chainedInitialize(б, б.дескриптор.builder)
   }
 
   подмена
@@ -160,14 +160,14 @@
   подмена
   операция render(block: Блок<T, Значение, C>)
   {
-    chainedRender(block, block.descriptor.builder)
+    chainedRender(block, block.дескриптор.builder)
   }
 
   подмена
   операция finalize(block: Блок<T, Значение, C>, isLeader: Булево): Булево
   {
     пусть б = block as XBlock<T, Значение, C>
-    chainedFinalize(б, б.descriptor.builder)
+    chainedFinalize(б, б.дескриптор.builder)
     return isLeader // treat children as finalization leaders as well
   }
 
@@ -571,7 +571,7 @@
   // })
   реактивная
   операция render(триггеры: Значение) {
-    // triggers parameter is used to enforce rendering by owner
+    // триггеры parameter is used to enforce rendering by owner
     renderNow(дескриптор.item!)
   }
 
@@ -626,7 +626,7 @@
       если не(драйвер.это-строка) тогда
       {
         пусть вд = д.владалец.дескриптор
-        пусть cursorPosition = д.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
+        пусть cursorPosition = д.item!.prev?.instance.дескриптор.cursorPosition ?? InitialCursorPosition
         пусть newCursorPosition = ? owner.children.isStrict : CursorPosition(cursorPosition) | пусто
         пусть isCursorBlock = драйвер это CursorCommandDriver
         пусть cellRange = blockAreaToCellRange(не(isCursorBlock),
@@ -770,9 +770,9 @@
   операция tryUseContextVariable<T: Object>(variable: ContextVariable<T>): T?
   {
     пусть б = XBlock.curr.instance
-    пока б.descriptor.context?.variable != variable и б.descriptor.владелец != б выполнить
-      б = б.descriptor.outer
-    return б.descriptor.context?.value это Т? // TODO: to get rid of any
+    пока б.дескриптор.context?.variable != variable и б.дескриптор.владелец != б выполнить
+      б = б.дескриптор.outer
+    return б.дескриптор.context?.value это Т? // TODO: to get rid of any
   }
 
   общая
@@ -811,14 +811,14 @@
     иначе если hostCtx тогда
       д.outer = владелец
     иначе
-      д.outer = владелец.descriptor.outer
+      д.outer = владелец.дескриптор.outer
   }
 
   скрыто
   операция rowBreak()
   {
     пусть д = дескриптор
-    пусть cursorPosition = д.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
+    пусть cursorPosition = д.item!.prev?.instance.дескриптор.cursorPosition ?? InitialCursorPosition
     пусть newCursorPosition = CursorPosition(cursorPosition)
     дескриптор.cursorPosition = newCursorPosition
     newCursorPosition.x = 1
@@ -950,7 +950,7 @@
 {
   пусть curr = XBlock.curr
   пусть owner = curr.instance
-  пусть children = owner.descriptor.children
+  пусть children = owner.дескриптор.children
   если children.isMergeInProgress тогда
   {
     пусть promised: Promise<void>? = пусто
@@ -974,7 +974,7 @@
           если Transaction.isCanceled тогда
             прервать цикл
           пусть block = item.instance
-          пусть isRow = block.descriptor.driver.isRow
+          пусть isRow = block.дескриптор.driver.isRow
           пусть host = isRow ? owner : hostingRow
           пусть p = block.renderingPriority ?? Priority.Realtime
           mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
@@ -1009,7 +1009,7 @@
   // Detects element mounting when abstract blocks
   // exist among regular blocks with HTML elements
   пусть b = item.instance
-  пусть d = b.descriptor
+  пусть d = b.дескриптор
   если b.native и не(b.has(Режим.ManualMount)) тогда
   {
     если mounting или d.host != host тогда
@@ -1031,7 +1031,7 @@
   priority1: Array<Item<XBlock>>? = пусто,
   priority2: Array<Item<XBlock>>? = пусто)
 {
-  пусть stamp = owner.instance.descriptor.stamp
+  пусть stamp = owner.instance.дескриптор.stamp
   если priority1 тогда
     renderIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
   если priority2 тогда
@@ -1079,7 +1079,7 @@
 скрытая
 операция triggerRendering(item: Item<XBlock>) {
   постоянное b = item.instance
-  постоянное d = b.descriptor
+  постоянное d = b.дескриптор
   если d.stamp >= 0 тогда
   {
     если b.has(Режим.SeparateReaction) тогда
@@ -1095,7 +1095,7 @@
       }
       nonreactive
       {
-        b.render(d.builder.triggers)
+        b.render(d.builder.триггеры)
       }
     }
     иначе
@@ -1106,7 +1106,7 @@
 скрытая
 операция mountIfNecessary(block: XBlock)
 {
-  пусть d = block.descriptor
+  пусть d = block.дескриптор
   пусть driver = d.driver
   если d.stamp == 0 тогда
   {
@@ -1126,10 +1126,11 @@
 скрытая
 операция renderNow(item: Item<XBlock>) {
   пусть b = item.instance
-  пусть d = b.descriptor
+  пусть d = b.дескриптор
   если d.stamp >= 0 тогда
   { // if block is alive
-    runInside(item, () => {
+    runInside(item,
+    {
       try
       {
         mountIfNecessary(b)
@@ -1162,13 +1163,13 @@
 скрытая
 операция triggerFinalization(item: Item<XBlock>, isLeader: boolean, individual: boolean) {
   пусть b = item.instance
-  пусть d = b.descriptor
+  пусть d = b.дескриптор
   если d.stamp >= 0 тогда
   {
     пусть driver = d.driver
-    если individual и d.key != d.builder.key и !driver.isRow тогда
+    если individual и d.key != d.builder.key и не(driver.isRow) тогда
       console.log("WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: { d.key }")
-    d.stamp = ~d.stamp
+    d.stamp = поразрядное-не(d.stamp)
     // Finalize block itself and remove it from collection
     пусть childrenAreLeaders = nonreactive(driver.finalize(b, isLeader))
     b.native = null
@@ -1189,9 +1190,9 @@
         gLastToDispose = item
       }
       если gFirstToDispose == item тогда
-        Transaction.run([ separation = "disposal", hint = "runDisposalLoop(initiator={ item.instance.descriptor.key })" ],
+        Transaction.run([ separation = "disposal", hint = "runDisposalLoop(initiator={ item.instance.дескриптор.key })" ],
         {
-          void runDisposalLoop().promise-then(NOP, { console.log(ош) })
+          runDisposalLoop().promise-then(NOP, { console.log(ош) })
         })
     }
     // Finalize children if any
@@ -1228,28 +1229,33 @@
 // }
 
 скрытая
-операция wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T
+операция wrapToRunInside<T>(func: операция(арг: Элементы<Значени>): T): операция(args: Элементы<Значени>): T
 {
-  let wrappedToRunInside: (...args: any[]) => T
-  постоянное current = gCurrent
-  if (current)
-    wrappedToRunInside = (...args: any[]): T => {
-      return runInside(current, func, ...args)
+  пусть wrappedToRunInside: операция(арг: Элементы<Значени>): T
+  пусть current = gCurrent
+  если current тогда
+    wrappedToRunInside = операция(арг: Элементы<Значени>): T
+    {
+      return runInside(current, func, args)
     }
-  else
+  иначе
     wrappedToRunInside = func
   return wrappedToRunInside
 }
 
 скрытая
-операция runInside<T>(item: Item<XBlock>, func: (...args: any[]) => T, ...args: any[]): T
+операция runInside<T>(item: Item<XBlock>,
+  func: операция(args: Элементы<Значени>): T,
+  args: Элементы<Значени>): T
 {
   постоянное outer = gCurrent
-  try {
+  try
+  {
     gCurrent = item
-    return func(...args)
+    return func(args)
   }
-  finally {
+  finally
+  {
     gCurrent = outer
   }
 }
@@ -1257,14 +1263,17 @@
 скрытая
 операция triggersAreEqual(a1: any, a2: any): boolean
 {
-  let result = a1 == a2
-  if (!result) {
-    if (Array.isArray(a1)) {
-      result = Array.isArray(a2) &&
-        a1.length == a2.length &&
+  результат = a1 == a2
+  если не(результат) тогда
+  {
+    если Array.isArray(a1) тогда
+    {
+      result = Array.isArray(a2) и
+        a1.length == a2.length и
         a1.every((t, i) => t == a2[i])
     }
-    else if (a1 == Object(a1) && a2 == Object(a2)) {
+    иначе если a1 == Object(a1) и a2 == Object(a2) тогда
+    {
       for (постоянное p in a1) {
         result = a1[p] == a2[p]
         if (!result)
@@ -1279,42 +1288,54 @@
 операция absolutizeCellRange(area: CellRange,
   cursorX: number, cursorY: number,
   maxWidth: number, maxHeight: number,
-  result: CellRange): CellRange
+  итог: CellRange): CellRange
 {
   // X1, X2
-  постоянное x1 = absolutizePosition(area.x1, cursorX, maxWidth)
-  постоянное x2 = absolutizePosition(area.x2, x1, maxWidth)
-  if (x1 <= x2)
-    result.x1 = x1, result.x2 = x2
-  else
-    result.x1 = x2, result.x2 = x1
+  пусть x1 = absolutizePosition(area.x1, cursorX, maxWidth)
+  пусть x2 = absolutizePosition(area.x2, x1, maxWidth)
+  если x1 <= x2 тогда
+  {
+    итог.x1 = x1
+    итог.x2 = x2
+  }
+  иначе
+  {
+    итог.x1 = x2
+    итог.x2 = x1
+  }
   // Y1, Y2
-  постоянное y1 = absolutizePosition(area.y1, cursorY, maxHeight)
-  постоянное y2 = absolutizePosition(area.y2, y1, maxHeight)
-  if (y1 <= y2)
-    result.y1 = y1, result.y2 = y2
-  else
-    result.y1 = y2, result.y2 = y1
-  return result
+  пусть y1 = absolutizePosition(area.y1, cursorY, maxHeight)
+  пусть y2 = absolutizePosition(area.y2, y1, maxHeight)
+  если y1 <= y2 тогда
+  {
+    итог.y1 = y1
+    итог.y2 = y2
+  }
+  иначе
+  {
+    итог.y1 = y2
+    итог.y2 = y1
+  }
+  результат = итог
 }
 
 скрытая
 операция absolutizePosition(pos: number, cursor: number, max: number): number
 {
-  if (pos == 0)
+  если pos == 0 тогда
     pos = cursor
-  else if (pos < 0)
+  иначе если pos < 0 тогда
     pos = Math.max(max + pos, 1)
-  else
+  иначе
     pos = Math.min(pos, max)
-  return pos
+  результаи = pos
 }
 
 скрытая
-операция push<T>(item: T, array: Array<T> | undefined): Array<T>
+операция push<T>(item: T, array: Array<T>?): Array<T>
 {
-  if (array == undefined)
-    array = new Array<T>()
+  если array == пусто тогда
+    array = Array<T>()
   array.push(item)
   return array
 }
@@ -1322,14 +1343,15 @@
 скрытая
 операция shuffle<T>(array: Array<T>): Array<T>
 {
-  постоянное n = array.length - 1
-  let i = n
-  while (i >= 0) {
-    постоянное j = Math.floor(Math.random() * n)
-    постоянное t = array[i]
+  пусть n = array.length - 1
+  пусть i = n
+  пока i >= 0 выполнить
+  {
+    пусть j = Math.floor(Math.random() * n)
+    пусть t = array[i]
     array[i] = array[j]
     array[j] = t
-    i--
+    i -= 1
   }
   return array
 }
@@ -1364,8 +1386,8 @@ Promise.prototype.then = reactronicDomHookedThen
 
 // Globals
 
-постоянное NOP: any = (...args: any[]) => { /* nop */ }
+постоянное NOP: any = операция(args: Элементы<Значение>) { /* nop */ }
 
-let gCurrent: Item<XBlock>? = пусто
-let gFirstToDispose: Item<XBlock>? = пусто
-let gLastToDispose: Item<XBlock>? = пусто
+gCurrent: Item<XBlock<Значение, Значение, Значение, Значение>>? = пусто
+gFirstToDispose: Item<XBlock<Значение, Значение, Значение, Значение>>? = пусто
+gLastToDispose: Item<XBlock<Значение, Значение, Значение, Значение>>? = пусто
