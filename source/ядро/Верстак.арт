@@ -58,10 +58,10 @@
         // Reuse existing block
         результат = пре.элемент
         пусть д = результат.дескриптор
-        if д.драйвер != драйвер и драйвер != пусто тогда
+        если д.драйвер != драйвер и драйвер != пусто тогда
           ошибка "changing block драйвер is not yet supported: \"{ результат.дескриптор.драйвер.name }\" -> \"{ драйвер?.name }\""
         пусть преТриггеры = д.конструктор.триггеры
-        if triggersAreEqual(конструктор.триггеры, преТриггеры) тогда
+        если triggersAreEqual(конструктор.триггеры, преТриггеры) тогда
           конструктор.триггеры = преТриггеры // preserve триггеры instance
         д.конструктор = конструктор
       }
@@ -576,9 +576,9 @@
     renderNow(дескриптор.экземпляр!)
   }
 
-  операция включен-режим(mode: Режим): Булево
+  операция включен-режим(режим: Режим): Булево
   {
-    результат = поразрядное-и(chainedMode(дескриптор.конструктор), mode) == mode
+    результат = поразрядное-и(chainedMode(дескриптор.конструктор), режим) == режим
   }
 
   охраняемое типом
@@ -603,7 +603,7 @@
 
   охраняемое типом
   isAutoMountEnabled: Булево
-    при чтении { return не(has(Режим.ManualMount)) и дескриптор.хостер != объект }
+    при чтении { return не(включен-режим(Режим.ручное-встраивание)) и дескриптор.хостер != объект }
 
   охраняемое типом
   isMoved: Булево
@@ -752,7 +752,7 @@
 
   операция configureReactronic(options: Partial<MemberOptions>): MemberOptions
   {
-    if дескриптор.штамп != 1 или не(has(Режим.раздельная-реакция)) тогда
+    если дескриптор.штамп != 1 или не(включен-режим(Режим.раздельная-реакция)) тогда
       ошибка "reactronic can be configured only for blocks with separate reaction mode and only inside initialize"
     return Rx.getController(this.render).configure(options)
   }
@@ -762,7 +762,7 @@
   curr: Item<XBlock<Значение, Значение, Значение, Значение>>
     при записи
     {
-      если не(gCurrent) тогда
+      если gCurrent == пусто тогда
         ошибка "current block is undefined"
       результат = gCurrent
     }
@@ -780,8 +780,8 @@
   операция useContextVariableValue<T: Объект>(variable: ContextVariable<T>): T
   {
     результат = XBlock.tryUseContextVariable(variable) ?? variable.defaultValue
-    если не(результат) тогда
-      ошибка "context doesn't exist"
+    если результат == пусто тогда
+      ошибка "контекст не найден"
   }
 
   общая
@@ -791,25 +791,25 @@
     пусть д = б.дескриптор
     пусть владелец = д.владелец
     пусть hostCtx = nonreactive(владелец.дескриптор.контекст?.value)
-    если value и value != hostCtx тогда
+    если value != пусто и value != hostCtx тогда
     {
-      если hostCtx тогда
+      если hostCtx != пусто тогда
         д.outer = владелец
       иначе
         д.outer = владелец.дескриптор.outer
       Transaction.run([ separation = да ],
       {
         постоянное ctx = д.context
-        если ctx тогда
+        если ctx != пусто тогда
         {
           ctx.variable = variable
           ctx.value = value // update context thus invalidate observers
         }
         иначе
-          д.context = XBlockCtx<any>(variable, value)
+          д.контекст = XBlockCtx<Значение>(variable, value)
       })
     }
-    иначе если hostCtx тогда
+    иначе если hostCtx != пусто тогда
       д.outer = владелец
     иначе
       д.outer = владелец.дескриптор.outer
@@ -838,31 +838,31 @@
 
 скрытая
 операция blockAreaToCellRange(
-  isRegularBlock: Булево, area: ОбластьБлока, maxX: Целое, maxY: Целое,
-  cursorPosition: CursorPosition, newCursorPosition: CursorPosition? = пусто): Рамка
+  isRegularBlock: Булево, область: ОбластьБлока, максX: Целое, максY: Целое,
+  позиция-курсора: CursorPosition, новая-позиция-курсора: CursorPosition? = пусто): Рамка
 {
-  если typeof(area) == "string" тогда
+  если typeof(область) == "string" тогда
   {
     // Absolute positioning
-    result = parseCellRange(area, [ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ])
-    absolutizeCellRange(result, cursorPosition.x, cursorPosition.y,
-      maxX || Infinity, maxY || Infinity, result)
-    если newCursorPosition тогда
+    result = parseCellRange(область, [ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ])
+    absolutizeCellRange(result, позиция-курсора.x, позиция-курсора.y,
+      максX || Infinity, максY || Infinity, result)
+    если новая-позиция-курсора тогда
     {
-      newCursorPosition.x = ? isRegularBlock : result.x2 + 1 | result.x1
-      newCursorPosition.y = result.y1
-      newCursorPosition.flags = CursorFlags.OwnCursorPosition
+      новая-позиция-курсора.x = ? isRegularBlock : result.x2 + 1 | result.x1
+      новая-позиция-курсора.y = result.y1
+      новая-позиция-курсора.flags = CursorFlags.OwnCursorPosition
     }
   }
-  иначе если newCursorPosition тогда
+  иначе если новая-позиция-курсора тогда
   {
     // Relative positioning
     пусть dx: Целое
     пусть dy: Целое // this comment just prevents syntax highlighting in VS code
-    если area тогда
+    если область != пусто тогда
     {
-      dx = area.ячеек-в-ширину ?? 1
-      dy = area.ячеек-в-высоту ?? 1
+      dx = область.ячеек-в-ширину ?? 1
+      dy = область.ячеек-в-высоту ?? 1
     }
     иначе // area == undefined
     {
@@ -870,61 +870,62 @@
       dy = 1
     }
     // Arrange
-    пусть runningX = ? maxX != 0 : maxX | cursorPosition.runningMaxX
-    пусть runningY = ? maxY != 0 : maxY | cursorPosition.runningMaxY
+    пусть runningX = ? максX != 0 : максX | позиция-курсора.runningMaxX
+    пусть runningY = ? максY != 0 : максY | позиция-курсора.runningMaxY
     результат = [ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ]
     если dx == 0 и isRegularBlock тогда
     {
-      dx = runningX || 1
-      newCursorPosition.flags = CursorFlags.UsesRunningColumnCount
+      dx = runningX ? runningX != пусто и runningX != 0 | 1
+      новая-позиция-курсора.flags = CursorFlags.UsesRunningColumnCount
     }
     если dx >= 0 тогда
     {
       если isRegularBlock тогда
       {
-        результат.x1 = cursorPosition.x
-        результат.x2 = абсолютная-позиция(результат.x1 + dx - 1, 0, maxX || Infinity)
-        newCursorPosition.x = результат.x2 + 1
+        результат.x1 = позиция-курсора.x
+        результат.x2 = абсолютная-позиция(результат.x1 + dx - 1, 0, максX || Infinity)
+        новая-позиция-курсора.x = результат.x2 + 1
       }
       иначе
       {
-        результат.x1 = cursorPosition.x + dx
+        результат.x1 = позиция-курсора.x + dx
         результат.x2 = результат.x1
-        newCursorPosition.x = результат.x2
+        новая-позиция-курсора.x = результат.x2
       }
     }
     иначе
     {
       если isRegularBlock тогда
       {
-        результат.x1 = Math.max(cursorPosition.x + dx, 1)
-        результат.x2 = cursorPosition.x
-        newCursorPosition.x = результат.x2 + 1
+        результат.x1 = Math.max(позиция-курсора.x + dx, 1)
+        результат.x2 = позиция-курсора.x
+        новая-позиция-курсора.x = результат.x2 + 1
       }
       иначе
       {
-        результат.x1 = cursorPosition.x + dx
+        результат.x1 = позиция-курсора.x + dx
         результат.x2 = результат.x1
-        newCursorPosition.x = результат.x2
+        новая-позиция-курсора.x = результат.x2
       }
     }
     если dy == 0 и isRegularBlock тогда
     {
-      dy = runningY || 1
-      newCursorPosition.flags |= CursorFlags.UsesRunningRowCount
+      dy = runningY ? runningY != пусто и runningY != 0 | 1
+      новая-позиция-курсора.flags = поразрядное-или(
+        новая-позиция-курсора.flags, CursorFlags.UsesRunningRowCount)
     }
     если dy >= 0 тогда
     {
       если isRegularBlock тогда
       {
-        результат.y1 = cursorPosition.y
-        результат.y2 = абсолютная-позиция(результат.y1 + dy - 1, 0, maxY || Infinity)
-        если результат.y2 > newCursorPosition.runningMaxY тогда
-          newCursorPosition.runningMaxY = результат.y2
+        результат.y1 = позиция-курсора.y
+        результат.y2 = абсолютная-позиция(результат.y1 + dy - 1, 0, максY || Infinity)
+        если результат.y2 > новая-позиция-курсора.runningMaxY тогда
+          новая-позиция-курсора.runningMaxY = результат.y2
       }
       иначе
       {
-        результат.y1 = cursorPosition.y + dy
+        результат.y1 = позиция-курсора.y + dy
         результат.y2 = результат.y1
       }
     }
@@ -932,12 +933,12 @@
     {
       если isRegularBlock тогда
       {
-        результат.y1 = Math.max(cursorPosition.y + dy, 1)
-        результат.y2 = cursorPosition.y
+        результат.y1 = Math.max(позиция-курсора.y + dy, 1)
+        результат.y2 = позиция-курсора.y
       }
       иначе
       {
-        результат.y1 = cursorPosition.y + dy
+        результат.y1 = позиция-курсора.y + dy
         результат.y2 = результат.y1
       }
     }
@@ -950,47 +951,47 @@
 операция runRenderNestedTreesThenDo(ош: Ошибка, action: операция(ош: Ошибка))
 {
   пусть curr = XBlock.curr
-  пусть owner = curr.элемент
-  пусть children = owner.дескриптор.children
-  если children.isMergeInProgress тогда
+  пусть владелец = curr.элемент
+  пусть дети = владелец.дескриптор.дети
+  если дети.isMergeInProgress тогда
   {
     пусть promised: Promise<void>? = пусто
     try
     {
-      children.endMerge(ош)
+      дети.endMerge(ош)
       // Finalize removed blocks
-      для каждого item из children.removedItems(да) выполнить
-        triggerFinalization(item, да, да)
+      для каждого э из дети.removedItems(да) выполнить
+        triggerFinalization(э, да, да)
       если не(ош) тогда
       {
         // Lay out and render actual blocks
-        пусть ownerIsBand = owner.isBand
-        пусть sequential = children.isStrict
+        пусть владелец-это-лента = владелец.isBand
+        пусть sequential = дети.isStrict
         пусть p1: Array<Item<XBlock>>? = пусто
         пусть p2: Array<Item<XBlock>>? = пусто
         пусть mounting = нет
-        пусть hostingRow = owner
-        для каждого item из children.items() выполнить
+        пусть hostingRow = владелец
+        для каждого э из дети.items() выполнить
         {
           если Transaction.isCanceled тогда
             прервать цикл
-          пусть block = item.instance
-          пусть isRow = block.дескриптор.драйвер.isRow
-          пусть host = isRow ? owner : hostingRow
-          пусть p = block.renderingPriority ?? Priority.Realtime
-          mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
-          если p == Priority.Realtime тогда
-            triggerRendering(item) // render synchronously
-          иначе если p == Priority.Normal тогда
-            p1 = добавить(item, p1) // defer for P1 async rendering
+          пусть блок = э.элемент
+          пусть это-строка = блок.дескриптор.драйвер.isRow
+          пусть хостер = это-строка ? владелец : hostingRow
+          пусть п = блок.renderingPriority ?? Приоритет.высокий
+          mounting = markToMountIfNecessary(mounting, хостер, э, дети, sequential)
+          если п == Приоритет.высокий тогда
+            triggerRendering(э) // render synchronously
+          иначе если п == Приоритет.обычный тогда
+            p1 = добавить(э, p1) // defer for P1 async rendering
           иначе
-            p2 = добавить(item, p2) // defer for P2 async rendering
-          если ownerIsBand и isRow тогда
-            hostingRow = block
+            p2 = добавить(э, p2) // defer for P2 async rendering
+          если владелец-это-лента и это-строка тогда
+            hostingRow = блок
         }
         // Render incremental children (if any)
         если не(Transaction.isCanceled и (p1 != undefined или p2 != undefined)) тогда
-          promised = startIncrementalRendering(curr, children, p1, p2).then(
+          promised = startIncrementalRendering(curr, дети, p1, p2).then(
             { action(ош) },
             { action(e) })
       }
@@ -1005,60 +1006,61 @@
 
 скрытая
 операция markToMountIfNecessary(mounting: Булево,
-  host: XBlock<Значение, Значение, Значение, Значение>,
-  item: Item<XBlock<Значение, Значение, Значение, Значение>>,
-  children: Collection<XBlock<Значение, Значение, Значение, Значение>>, sequential: Булево): Булево
+  хостер: XBlock<Значение, Значение, Значение, Значение>,
+  элемент: Item<XBlock<Значение, Значение, Значение, Значение>>,
+  дети: Collection<XBlock<Значение, Значение, Значение, Значение>>, sequential: Булево): Булево
 {
   // Detects element mounting when abstract blocks
   // exist among regular blocks with HTML elements
-  пусть b = item.элемент
-  пусть d = b.дескриптор
-  если b.native и не(b.has(Режим.ManualMount)) тогда
+  пусть б = элемент.элемент
+  пусть д = б.дескриптор
+  если б.реализация и не(б.включен-режим(Режим.ручное-встраивание)) тогда
   {
-    если mounting или d.host != host тогда
+    если mounting или д.хостер != хостер тогда
     {
-      children.markAsMoved(item)
+      дети.markAsMoved(элемент)
       mounting = нет
     }
   }
-  иначе если sequential и children.isMoved(item) тогда
+  иначе если sequential и дети.isMoved(элемент) тогда
     mounting = да // apply to the first block with an element
-  d.host = host
+  д.хостер = хостер
   return mounting
 }
 
 параллельная
 операция startIncrementalRendering(
-  owner: Item<XBlock<Значение, Значение, Значение, Значение>>,
-  allChildren: Collection<XBlock<Значение, Значение, Значение, Значение>>,
-  priority1: Список<Item<XBlock<Значение, Значение, Значение, Значение>>>? = пусто,
-  priority2: Список<Item<XBlock<Значение, Значение, Значение, Значение>>>? = пусто)
+  владелец: Item<XBlock<Значение, Значение, Значение, Значение>>,
+  все-дети: Collection<XBlock<Значение, Значение, Значение, Значение>>,
+  приоритет-1: Список<Item<XBlock<Значение, Значение, Значение, Значение>>>? = пусто,
+  приоритет-2: Список<Item<XBlock<Значение, Значение, Значение, Значение>>>? = пусто)
 {
-  пусть stamp = owner.элемент.дескриптор.штамп
-  если priority1 тогда
-    renderIncrementally(owner, stamp, allChildren, priority1, Приоритет.обычный)
-  если priority2 тогда
-    renderIncrementally(owner, stamp, allChildren, priority2, Приоритет.низкий)
+  пусть stamp = владелец.элемент.дескриптор.штамп
+  если приоритет-1 тогда
+    renderIncrementally(владелец, stamp, все-дети, приоритет-1, Приоритет.обычный)
+  если приоритет-2 тогда
+    renderIncrementally(владелец, stamp, все-дети, приоритет-2, Приоритет.низкий)
 }
 
 параллельная
-операция renderIncrementally(owner: Item<XBlock<Значение, Значение, Значение, Значение>>,
-  stamp: Целое, allChildren: Collection<XBlock<Значение, Значение, Значение, Значение>>,
-  items: Список<Item<XBlock<Значение, Значение, Значение, Значение>>>, priority: Priority)
+операция renderIncrementally(владелец: Item<XBlock<Значение, Значение, Значение, Значение>>,
+  штамп: Целое, все-дети: Collection<XBlock<Значение, Значение, Значение, Значение>>,
+  элементы: Список<Item<XBlock<Значение, Значение, Значение, Значение>>>,
+  приоритет: Приоритет)
 {
   Transaction.requestNextFrame()
-  пусть block = owner.элемент
-  если не(Transaction.isCanceled) или не(Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3)) тогда
+  пусть блок = владелец.элемент
+  если не(Transaction.отменено) или не(Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3)) тогда
   {
     пусть outerPriority = Verstak.currentRenderingPriority
-    Verstak.currentRenderingPriority = priority
+    Verstak.currentRenderingPriority = приоритет
     try
     {
-      если block.childrenShuffling тогда
-        перемешать(items)
-      пусть frameDurationLimit = ? priority == Priority.Background : Verstak.shortFrameDuration | Infinity
+      если блок.childrenShuffling тогда
+        перемешать(элементы)
+      пусть frameDurationLimit = ? приоритет == Приоритет.низкий : Verstak.shortFrameDuration | Infinity
       пусть frameDuration = Math.min(frameDurationLimit, Math.max(Verstak.frameDuration / 4, Verstak.shortFrameDuration))
-      для каждого child из items выполнить
+      для каждого child из элементы выполнить
       {
         triggerRendering(child)
         если Transaction.isFrameOver(1, frameDuration) тогда
@@ -1066,7 +1068,7 @@
           Verstak.currentRenderingPriority = outerPriority
           Transaction.requestNextFrame(0)
           outerPriority = Verstak.currentRenderingPriority
-          Verstak.currentRenderingPriority = priority
+          Verstak.currentRenderingPriority = приоритет
           frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, Verstak.frameDuration))
         }
         если Transaction.isCanceled и Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3) тогда
@@ -1086,7 +1088,7 @@
   постоянное d = b.дескриптор
   если d.штапм >= 0 тогда
   {
-    если b.has(Режим.раздельная-реакция) тогда
+    если b.включен-режим(Режим.раздельная-реакция) тогда
     {
       если d.штапм == 0 тогда
       {
@@ -1165,20 +1167,20 @@
 }
 
 скрытая
-операция triggerFinalization(item: Item<XBlock<Значение, Значение, Значение, Значение>>, isLeader: boolean, individual: boolean) {
-  пусть b = item.элемент
-  пусть d = b.дескриптор
-  если d.штамп >= 0 тогда
+операция triggerFinalization(item: Item<XBlock<Значение, Значение, Значение, Значение>>, isLeader: Булево, individual: Булево) {
+  пусть б = item.элемент
+  пусть д = б.дескриптор
+  если д.штамп >= 0 тогда
   {
-    пусть драйвер = d.драйвер
-    если individual и d.key != d.builder.key и не(драйвер.isRow) тогда
-      console.log("WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: { d.key }")
-    d.штамп = поразрядное-не(d.штамп)
+    пусть драйвер = д.драйвер
+    если individual и д.код != д.конструктор.код и не(драйвер.это-строка) тогда
+      написать("WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: { д.код }")
+    д.штамп = поразрядное-не(д.штамп)
     // Finalize block itself and remove it from collection
-    пусть childrenAreLeaders = nonreactive(драйвер.finalize(b, isLeader))
-    b.native = null
-    b.controller = null
-    если b.has(Режим.SeparateReaction) тогда
+    пусть childrenAreLeaders = nonreactive(драйвер.завершить(б, isLeader))
+    б.реализация = пусто
+    б.контролер = пусто
+    если б.включен-режим(Режим.раздельная-реакция) тогда
     {
       // Defer disposal if block is reactive
       item.aux = пусто
@@ -1200,7 +1202,7 @@
         })
     }
     // Finalize children if any
-    для каждого item из d.children.items() выполнить
+    для каждого item из д.children.items() выполнить
       triggerFinalization(item, childrenAreLeaders, нет)
     XBlock.grandCount -= 1
   }
@@ -1272,20 +1274,19 @@
   {
     если Array.isArray(a1) тогда
     {
-      result = Array.isArray(a2) и
+      результат = Array.isArray(a2) и
         a1.length == a2.length и
         a1.every((t, i) => t == a2[i])
     }
     иначе если a1 == Объект(a1) и a2 == Объект(a2) тогда
     {
       for (постоянное p in a1) {
-        result = a1[p] == a2[p]
-        if (!result)
-          break
+        результат = a1[p] == a2[p]
+        если не(результат) тогда
+          прервать цикл
       }
     }
   }
-  return result
 }
 
 скрытая
