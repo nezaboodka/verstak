@@ -59,7 +59,7 @@
         результат = пре.элемент
         пусть д = результат.дескриптор
         if д.драйвер != драйвер и драйвер != пусто тогда
-          ошибка "changing block драйвер is not yet supported: \"{ результат.дескриптор.драйвер.name }\" -> \"{ драйвер?.nam.это-строка
+          ошибка "changing block драйвер is not yet supported: \"{ результат.дескриптор.драйвер.name }\" -> \"{ драйвер?.name }\""
         пусть exTriggers = д.конструктор.триггеры
         if triggersAreEqual(конструктор.триггеры, exTriggers) тогда
           конструктор.триггеры = exTriggers // preserve триггеры instance
@@ -975,7 +975,7 @@
           если Transaction.isCanceled тогда
             прервать цикл
           пусть block = item.instance
-          пусть isRow = block.дескриптор.драйвер.это-строка
+          пусть isRow = block.дескриптор.драйвер.isRow
           пусть host = isRow ? owner : hostingRow
           пусть p = block.renderingPriority ?? Priority.Realtime
           mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
@@ -1108,7 +1108,7 @@
 операция mountIfNecessary(block: XBlock)
 {
   пусть d = block.дескриптор
-  пусть driver = d.д.это-строка
+  пусть driver = d.драйвер
   если d.stamp == 0 тогда
   {
     d.stamp = 1
@@ -1140,7 +1140,7 @@
         b._area = undefined // reset
         b.hasStyles = нет // reset
         d.children.beginMerge()
-        пусть driver = d.д.это-строка
+        пусть driver = d.драйвер
         result = driver.render(b)
         если b._area == undefined и d.владелец.isTable тогда
           b.area = undefined // automatic placement
@@ -1167,7 +1167,7 @@
   пусть d = b.дескриптор
   если d.stamp >= 0 тогда
   {
-    пусть driver = d.д.это-строка
+    пусть driver = d.драйвер
     если individual и d.key != d.builder.key и не(driver.isRow) тогда
       console.log("WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: { d.key }")
     d.stamp = поразрядное-не(d.stamp)
