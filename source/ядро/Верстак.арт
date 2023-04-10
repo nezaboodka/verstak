@@ -31,15 +31,15 @@
     else
       конструктор = оригинал ?? []
     пусть код = конструктор.код
-    постоянное владелец = gCurrent?.instance
+    пусть владелец = gCurrent?.instance
     если владелец тогда
     {
       // Check for coalescing separators or lookup for existing block
       пусть пре: Item<XBlock<Значение, Значение, Значение, Значение>>? = пусто
-      постоянное дети = владелец.дескриптор.дети
+      пусть дети = владелец.дескриптор.дети
       если драйвер.это-строка тогда
       {
-        постоянное последний = дети.lastClaimedItem()
+        пусть последний = дети.lastClaimedItem()
         если последний?.instance?.descriptor.driver == драйвер тогда
           пре = последний
       }
@@ -57,10 +57,10 @@
       {
         // Reuse existing block
         результат = пре.instance
-        постоянное d = результат.descriptor
+        пусть d = результат.descriptor
         if d.driver != драйвер и драйвер != undefined тогда
           ошибка "changing block драйвер is not yet supported: \"{ результат.descriptor.driver.name }\" -> \"{ драйвер?.name }\""
-        постоянное exTriggers = d.builder.triggers
+        пусть exTriggers = d.builder.triggers
         if triggersAreEqual(конструктор.triggers, exTriggers) тогда
           конструктор.triggers = exTriggers // preserve triggers instance
         d.builder = конструктор
@@ -132,7 +132,7 @@
 
   операция заявить(блок: Блок<T, Значение, C>)
   {
-    постоянное b = блок это XBlock<T, Значение, C>
+    пусть b = блок это XBlock<T, Значение, C>
     chainedClaim(b, b.descriptor.builder)
   }
 
@@ -145,8 +145,8 @@
   подмена
   операция initialize(block: Блок<T, Значение, C>)
   {
-    постоянное b = block это XBlock<T, Значение, C>
-    this.preset?.(b)
+    пусть b = block это XBlock<T, Значение, C>
+    preset?.(b)
     chainedInitialize(b, b.descriptor.builder)
   }
 
@@ -165,7 +165,7 @@
   подмена
   операция finalize(block: Блок<T, Значение, C>, isLeader: Булево): Булево
   {
-    постоянное b = block as XBlock<T, Значение, C>
+    пусть b = block as XBlock<T, Значение, C>
     chainedFinalize(b, b.descriptor.builder)
     return isLeader // treat children as finalization leaders as well
   }
@@ -255,8 +255,8 @@
 операция сгенерировать-код(владелец: XBlock): Текст
 {
   владелец.дескриптор.номер += 1
-  постоянное номер = владелец.дескриптор.номер
-  постоянное буквы = emitLetters(номер)
+  пусть номер = владелец.дескриптор.номер
+  пусть буквы = emitLetters(номер)
   если Rx.isLogging тогда
     result = "·{ getCallerInfo(буквы) }"
   иначе
@@ -273,8 +273,8 @@
 операция chainedClaim(блок: Блок<Значение, Значение, Значение, Значение>,
   конструктор: КонструкторБлока<Значение, Значение, Значение, Значение>)
 {
-  постоянное заявить = конструктор.заявить
-  постоянное оригинал = конструктор.оригинал
+  пусть заявить = конструктор.заявить
+  пусть оригинал = конструктор.оригинал
   если заявить тогда
     заявить(блок, ? оригинал : { chainedClaim(блок, оригинал) } | NOP)
   иначе если оригинал тогда
@@ -285,8 +285,8 @@
 операция chainedCreate(блок: Блок<Значение, Значение, Значение, Значение>,
   конструктор: КонструкторБлока<Значение, Значение, Значение, Значение>)
 {
-  постоянное создать = конструктор.создать
-  постоянное оригинал = конструктор.оригинал
+  пусть создать = конструктор.создать
+  пусть оригинал = конструктор.оригинал
   если создать тогда
     создать(блок, ? оригинал : { chainedCreate(блок, оригинал) } | NOP)
   иначе если оригинал тогда
@@ -297,8 +297,8 @@
 операция chainedInitialize(блок: Блок<Значение, Значение, Значение, Значение>,
   конструктор: КонструкторБлока<Значение, Значение, Значение, Значение>)
 {
-  постоянное подготовить = конструктор.подготовить
-  постоянное оригинал = конструктор.оригинал
+  пусть подготовить = конструктор.подготовить
+  пусть оригинал = конструктор.оригинал
   если подготовить тогда
     подготовить(блок, ? оригинал : { chainedInitialize(блок, оригинал) } | NOP)
   иначе если оригинал тогда
@@ -309,8 +309,8 @@
 операция chainedRender(блок: Блок<Значение, Значение, Значение, Значение>,
   конструктор: КонструкторБлока<Значение, Значение, Значение, Значение>)
 {
-  постоянное показать = конструктор.показать
-  постоянное оригинал = конструктор.оригинал
+  пусть показать = конструктор.показать
+  пусть оригинал = конструктор.оригинал
   если показать тогда
     показать(блок, ? оригинал : { chainedRender(блок, оригинал) } | NOP)
   иначе если оригинал тогда
@@ -321,8 +321,8 @@
 операция chainedFinalize(блок: Блок<Значение, Значение, Значение, Значение>,
   конструктор: КонструкторБлока<Значение, Значение, Значение, Значение>)
 {
-  постоянное завершить = конструктор.завершить
-  постоянное оригинал = конструктор.оригинал
+  пусть завершить = конструктор.завершить
+  пусть оригинал = конструктор.оригинал
   если завершить тогда
     завершить(блок, ? оригинал : { chainedFinalize(блок, оригинал) } | NOP)
   иначе если оригинал тогда
@@ -620,15 +620,15 @@
   area: ОбластьБлока
     при записи
     {
-      постоянное д = дескриптор
-      постоянное драйвер = д.driver
+      пусть д = дескриптор
+      пусть драйвер = д.driver
       если не(драйвер.это-строка) тогда
       {
-        постоянное вд = д.владалец.дескриптор
-        постоянное cursorPosition = д.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
-        постоянное newCursorPosition = ? owner.children.isStrict : CursorPosition(cursorPosition) | пусто
-        постоянное isCursorBlock = драйвер это CursorCommandDriver
-        постоянное cellRange = blockAreaToCellRange(не(isCursorBlock),
+        пусть вд = д.владалец.дескриптор
+        пусть cursorPosition = д.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
+        пусть newCursorPosition = ? owner.children.isStrict : CursorPosition(cursorPosition) | пусто
+        пусть isCursorBlock = драйвер это CursorCommandDriver
+        пусть cellRange = blockAreaToCellRange(не(isCursorBlock),
           value, вд.maxColumnCount, вд.maxRowCount,
           cursorPosition, newCursorPosition)
         д.cursorPosition = newCursorPosition
@@ -748,17 +748,17 @@
   }
 
   static useContextVariableValue<T extends Object>(variable: ContextVariable<T>): T {
-    постоянное result = XBlock.tryUseContextVariable(variable) ?? variable.defaultValue
+    пусть result = XBlock.tryUseContextVariable(variable) ?? variable.defaultValue
     if (!result)
       throw new Error("context doesn't exist")
     return result
   }
 
   static setContextVariableValue<T extends Object>(variable: ContextVariable<T>, value: T | undefined) {
-    постоянное b = XBlock.curr.instance
-    постоянное d = b.descriptor
-    постоянное owner = d.owner
-    постоянное hostCtx = nonreactive(() => owner.descriptor.context?.value)
+    пусть b = XBlock.curr.instance
+    пусть d = b.descriptor
+    пусть owner = d.owner
+    пусть hostCtx = nonreactive(() => owner.descriptor.context?.value)
     if (value && value != hostCtx) {
       if (hostCtx)
         d.outer = owner
