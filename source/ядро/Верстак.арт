@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-// import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, ObservableObject, raw, MemberOptions } from "reactronic"
+// import { reactive, nonreactive, Transaction, options, Reentrance, Rx, НастройкиЖурнализации, Collection, Item, ObservableObject, raw, MemberOptions } from "reactronic"
 // import { Рамка, Layout, Priority, Режим, Align, BlockArea, КонструкторБлока, Блок, Driver, ПростойДелегат, БлокDescriptor, БлокCtx } from "./Interfaces"
 // import { emitLetters, equalCellRanges, parseCellRange, getCallerInfo } from "./Utils"
 
@@ -96,13 +96,13 @@
   }
 
   общая
-  операция getDefaultLoggingOptions(): LoggingOptions?
+  операция getDefaultLoggingOptions(): НастройкиЖурнализации?
   {
     return XBlock.logging
   }
 
   общая
-  операция setDefaultLoggingOptions(logging: LoggingOptions?)
+  операция setDefaultLoggingOptions(logging: НастройкиЖурнализации?)
   {
     XBlock.logging = logging
   }
@@ -480,8 +480,8 @@
     {
       пусть д = владелец`.дескриптор
       уровень = д.уровень + 1
-      владелец = владелец`
-      outer = владелец` ? д.контекст != пусто | д.outer
+      владелец = владелец`!
+      outer = владелец`! ? д.контекст != пусто | д.outer
     }
     иначе
     {
