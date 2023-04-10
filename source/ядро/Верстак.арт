@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 // import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, ObservableObject, raw, MemberOptions } from "reactronic"
-// import { CellRange, Layout, Priority, Режим, Align, BlockArea, КонструкторБлока, Блок, Driver, SimpleDelegate, БлокDescriptor, БлокCtx } from "./Interfaces"
+// import { CellRange, Layout, Priority, Режим, Align, BlockArea, КонструкторБлока, Блок, Driver, ПростойДелегат, БлокDescriptor, БлокCtx } from "./Interfaces"
 // import { emitLetters, equalCellRanges, parseCellRange, getCallerInfo } from "./Utils"
 
 используется артель
@@ -118,56 +118,56 @@
 
   имя: Текст
   это-строка: Булево
-  преднастройка: SimpleDelegate<T>?
+  преднастройка: ПростойДелегат<T>?
 
   при создании(
     имя`: Текст,
     это-строка`: Булево,
-    преднастройка`: SimpleDelegate<T>?)
+    преднастройка`: ПростойДелегат<T>?)
   {
     имя = имя`
     это-строка = это-строка`
     преднастройка = преднастройка`
   }
 
-  операция заявить(блок: Блок<T, Значение, C>)
+  операция заявить(блок: Блок<T, Значение, C, Ничего>)
   {
-    пусть б = блок это XBlock<T, Значение, C>
-    chainedClaim(б, б.дескриптор.builder)
+    пусть б = блок как XBlock<T, Значение, C, Ничего>
+    chainedClaim(б, б.дескриптор.конструктор)
   }
 
   подмена
-  операция create(block: Блок<T, Значение, C>, b: объект { native: T?; controller: C? })
+  операция create(block: Блок<T, Значение, C, Ничего>, b: объект { native: T?; controller: C? })
   {
-    chainedCreate(block, block.дескриптор.builder)
+    chainedCreate(block, block.дескриптор.конструктор)
   }
 
   подмена
-  операция initialize(block: Блок<T, Значение, C>)
+  операция initialize(block: Блок<T, Значение, C, Ничего>)
   {
-    пусть б = block это XBlock<T, Значение, C>
+    пусть б = block как XBlock<T, Значение, C, Ничего>
     если preset тогда
       preset(б)
-    chainedInitialize(б, б.дескриптор.builder)
+    chainedInitialize(б, б.дескриптор.конструктор)
   }
 
   подмена
-  операция mount(block: Блок<T, Значение, C>)
+  операция mount(block: Блок<T, Значение, C, Ничего>)
   {
     // nothing to do by default
   }
 
   подмена
-  операция render(block: Блок<T, Значение, C>)
+  операция render(block: Блок<T, Значение, C, Ничего>)
   {
-    chainedRender(block, block.дескриптор.builder)
+    chainedRender(block, block.дескриптор.конструктор)
   }
 
   подмена
-  операция finalize(block: Блок<T, Значение, C>, isLeader: Булево): Булево
+  операция finalize(block: Блок<T, Значение, C, Ничего>, isLeader: Булево): Булево
   {
-    пусть б = block as XBlock<T, Значение, C>
-    chainedFinalize(б, б.дескриптор.builder)
+    пусть б = block as XBlock<T, Значение, C, Ничего>
+    chainedFinalize(б, б.дескриптор.конструктор)
     return isLeader // treat children as finalization leaders as well
   }
 
@@ -253,7 +253,7 @@
 // Utils
 
 скрытая
-операция сгенерировать-код(владелец: XBlock): Текст
+операция сгенерировать-код(владелец: XBlock<Значение, Значение, Значение, Значение>): Текст
 {
   владелец.дескриптор.номер += 1
   пусть номер = владелец.дескриптор.номер
@@ -336,7 +336,7 @@
   постоянный элемент: T
 
   при создании(элемент`: T, имя: Текст,
-    это-строка: Булево, преднастройка: SimpleDelegate<T>?)
+    это-строка: Булево, преднастройка: ПростойДелегат<T>?)
   {
     основа(имя, это-строка, преднастройка)
     элемент = элемент`
@@ -430,13 +430,13 @@
   зависимость-от-нарастающей-высоты = 4
 }
 
-постоянное UndefinedCellRange = Object.freeze([ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ])
+постоянное UndefinedCellRange = Объект.freeze([ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ])
 постоянное InitialCursorPosition: CursorPosition = Object.freeze(CursorPosition([ x = 1, y = 1, runningMaxX = 0, runningMaxY = 0, flags = CursorFlags.None ]))
 
 тип XBlockCtx<T: Объект = Объект> = ссылка на объект
 на основе ObservableObject, БлокCtx<T>
 {
-  #raw next: XBlockCtx<Оbject>?
+  #raw next: XBlockCtx<Объект>?
   #raw variable: ContextVariable<T>
   value: T
 
@@ -452,24 +452,24 @@
 на основе ДескрипторБлока<T, M, C, R>
 {
   постоянный код: Текст
-  постоянный драйвер: Драйвер<T>
+  постоянный драйвер: Драйвер<T, C>
   конструктор: КонструкторБлока<T, M, C, R>
   постоянный уровень: Целое
-  постоянный владелец: XBlock
-  хостер: XBlock
-  постоянное дети: Collection<XBlock>
-  item: Item<XBlock>?
+  постоянный владелец: XBlock<Значение, Значение, Значение, Значение>
+  хостер: XBlock<Значение, Значение, Значение, Значение>
+  постоянное дети: Collection<XBlock<Значение, Значение, Значение, Значение>>
+  item: Item<XBlock<Значение, Значение, Значение, Значение>>?
   штапм: Целое
-  outer: XBlock
-  контекст: XBlockCtx<any>?
+  outer: XBlock<Значение, Значение, Значение, Значение>
+  контекст: XBlockCtx<Значение>?
   номер: Целое
   maxColumnCount: Целое = 0
   maxRowCount: Целое = 0
   cursorPosition: CursorPosition?
 
-  при создании(код`: string, драйвер`: Драйвер<T>,
+  при создании(код`: Текст, драйвер`: Драйвер<T, C>,
     конструктор`: Readonly<КонструкторБлока<T, M, C, R>>,
-    блок: XBlock<T, M, C, R>, владелец`: XBlock?)
+    блок: XBlock<T, M, C, R>, владелец`: XBlock<Значение, Значение, Значение, Значение>?)
   {
     код = код`
     драйвер = драйвер`
@@ -479,7 +479,7 @@
       пусть д = владелец`.дескриптор
       уровень = д.уровень + 1
       владелец = владелец`
-      outer = владелец` ? д.context | д.outer
+      outer = владелец` ? д.контекст | д.outer
     }
     иначе
     {
@@ -489,7 +489,7 @@
       outer = блок
     }
     хостер = блок // block is unmounted
-    дети = Collection<XBlock>(взять-код-блока, да)
+    дети = Collection<XBlock<Значение, Значение, Значение, Значение>>(взять-код-блока, да)
     item = пусто
     штамп = 0
     контекст = пусто
@@ -532,15 +532,16 @@
   childrenShuffling: Булево
   renderingPriority: Приоритет
 
-  при создании(код`: Текст, драйвер`: Драйвер<T>,
-    владелец`: XBlock?, конструктор: КонструкторБлока<T, M, C, R>)
+  при создании(код`: Текст, драйвер`: Драйвер<T, C>,
+    владелец`: XBlock<Значение, Значение, Значение, Значение>?,
+    конструктор: КонструкторБлока<T, M, C, R>)
   {
     // System-managed properties
     дескриптор = XBlockDescriptor(код`, драйвер`, конструктор, объект, владелец`)
-    реализация = пусто as any as T // hack
+    реализация = пусто как Значение как T // hack
     // User-defined properties
-    модель = пусто as any
-    контролер = пусто as any as C // hack
+    модель = пусто как Значени
+    контролер = пусто как Значение как C // hack
     // _childrenLayout = Layout.Row
     // _area = undefined
     // _cellRange = UndefinedCellRange
@@ -577,7 +578,7 @@
 
   операция включен-режим(mode: Режим): Булево
   {
-    результат = поразрядное-и(chainedMode(дескриптор.builder), mode) == mode
+    результат = поразрядное-и(chainedMode(дескриптор.конструктор), mode) == mode
   }
 
   охраняемое типом
@@ -622,23 +623,23 @@
     при записи
     {
       пусть д = дескриптор
-      пусть драйвер = д.driver
+      пусть драйвер = д.драйвер
       если не(драйвер.это-строка) тогда
       {
-        пусть вд = д.владалец.дескриптор
+        пусть вд = д.владелец.дескриптор
         пусть cursorPosition = д.item!.prev?.instance.дескриптор.cursorPosition ?? InitialCursorPosition
         пусть newCursorPosition = ? owner.children.isStrict : CursorPosition(cursorPosition) | пусто
         пусть isCursorBlock = драйвер это CursorCommandDriver
         пусть cellRange = blockAreaToCellRange(не(isCursorBlock),
-          value, вд.maxColumnCount, вд.maxRowCount,
+          значение, вд.maxColumnCount, вд.maxRowCount,
           cursorPosition, newCursorPosition)
         д.cursorPosition = newCursorPosition
         если не(equalCellRanges(cellRange, this._cellRange)) тогда
         {
-          драйвер.applyCellRange(this, cellRange)
+          драйвер.applyCellRange(объект, cellRange)
           this._cellRange = cellRange
         }
-        this._area = value ?? { }
+        хранимое = значение ?? { }
       }
       иначе
         rowBreak()
