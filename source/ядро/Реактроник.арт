@@ -11,6 +11,7 @@
 {
   тип Collection<T> = ссылка на объект
   {
+    операция lastClaimedItem(): T?
   }
 
   тип CollectionReader<T> = интерфейс

@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 // import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, ObservableObject, raw, MemberOptions } from "reactronic"
-// import { CellRange, Layout, Priority, Режим, Align, BlockArea, КонструкторБлока, Блок, Driver, ПростойДелегат, БлокDescriptor, БлокCtx } from "./Interfaces"
+// import { Рамка, Layout, Priority, Режим, Align, BlockArea, КонструкторБлока, Блок, Driver, ПростойДелегат, БлокDescriptor, БлокCtx } from "./Interfaces"
 // import { emitLetters, equalCellRanges, parseCellRange, getCallerInfo } from "./Utils"
 
 используется артель
@@ -26,13 +26,13 @@
     оригинал: КонструкторБлока<T, M, C, R>?): Блок<T, M, C, R>
   {
     // Нормализация аргументов
-    если конструктор тогда
+    если конструктор != пусто тогда
       конструктор.оригинал = оригинал
     else
       конструктор = оригинал ?? []
     пусть код = конструктор.код
     пусть владелец = gCurrent?.элемент
-    если владелец тогда
+    если владелец != пусто тогда
     {
       // Check for coalescing separators or lookup for existing block
       пусть пре: Item<XBlock<Значение, Значение, Значение, Значение>>? = пусто
@@ -53,16 +53,16 @@
         пре = дети.claim(код, пусто, "nested blocks can be declared inside render function only")
       }
       // Reuse existing block or claim a new one
-      если пре тогда
+      если пре != пусто тогда
       {
         // Reuse existing block
         результат = пре.элемент
         пусть д = результат.дескриптор
         if д.драйвер != драйвер и драйвер != пусто тогда
           ошибка "changing block драйвер is not yet supported: \"{ результат.дескриптор.драйвер.name }\" -> \"{ драйвер?.name }\""
-        пусть exTriggers = д.конструктор.триггеры
-        if triggersAreEqual(конструктор.триггеры, exTriggers) тогда
-          конструктор.триггеры = exTriggers // preserve триггеры instance
+        пусть преТриггеры = д.конструктор.триггеры
+        if triggersAreEqual(конструктор.триггеры, преТриггеры) тогда
+          конструктор.триггеры = преТриггеры // preserve триггеры instance
         д.конструктор = конструктор
       }
       иначе
@@ -114,7 +114,7 @@
 на основе Драйвер<T, C>
 {
   общее постоянное фрагмент = БазовыйДрайвер<Значение, Значение>(
-    "фрагмент", нет, { b.childrenLayout = Layout.Group })
+    "фрагмент", нет, { блок.раскладка-детей = Раскладка.группа })
 
   имя: Текст
   это-строка: Булево
@@ -146,8 +146,8 @@
   операция initialize(block: Блок<T, Значение, C, Ничего>)
   {
     пусть б = block как XBlock<T, Значение, C, Ничего>
-    если preset тогда
-      preset(б)
+    если преднастройка != пусто тогда
+      преднастройка(б)
     chainedInitialize(б, б.дескриптор.конструктор)
   }
 
@@ -166,7 +166,7 @@
   подмена
   операция finalize(block: Блок<T, Значение, C, Ничего>, isLeader: Булево): Булево
   {
-    пусть б = block as XBlock<T, Значение, C, Ничего>
+    пусть б = block как XBlock<T, Значение, C, Ничего>
     chainedFinalize(б, б.дескриптор.конструктор)
     return isLeader // treat children as finalization leaders as well
   }
@@ -178,7 +178,7 @@
   }
 
   подмена
-  операция applyCellRange(block: Блок<T, Значение, C, Значение>, value: CellRange?)
+  операция applyCellRange(block: Блок<T, Значение, C, Значение>, value: Рамка?)
   {
     // do nothing
   }
@@ -267,7 +267,7 @@
 скрытая
 операция chainedMode(конструктор: КонструкторБлока<Значение, Значение, Значение, Значение>?): Режим
 {
-  return конструктор?.modes ?? (? конструктор?.original : chainedMode(конструктор?.original) | Режим.Default)
+  return конструктор?.режим ?? (? конструктор?.оригинал : chainedMode(конструктор?.оригинал) | Режим.обычный)
 }
 
 скрытая
@@ -276,9 +276,9 @@
 {
   пусть заявить = конструктор.заявить
   пусть оригинал = конструктор.оригинал
-  если заявить тогда
+  если заявить != пусто тогда
     заявить(блок, ? оригинал : { chainedClaim(блок, оригинал) } | NOP)
-  иначе если оригинал тогда
+  иначе если оригинал != пусто тогда
     chainedClaim(блок, оригинал)
 }
 
@@ -288,9 +288,9 @@
 {
   пусть создать = конструктор.создать
   пусть оригинал = конструктор.оригинал
-  если создать тогда
+  если создать != пусто тогда
     создать(блок, ? оригинал : { chainedCreate(блок, оригинал) } | NOP)
-  иначе если оригинал тогда
+  иначе если оригинал != пусто тогда
     chainedCreate(блок, оригинал)
 }
 
@@ -300,9 +300,9 @@
 {
   пусть подготовить = конструктор.подготовить
   пусть оригинал = конструктор.оригинал
-  если подготовить тогда
+  если подготовить != пусто тогда
     подготовить(блок, ? оригинал : { chainedInitialize(блок, оригинал) } | NOP)
-  иначе если оригинал тогда
+  иначе если оригинал != пусто тогда
     chainedInitialize(блок, оригинал)
 }
 
@@ -312,9 +312,9 @@
 {
   пусть показать = конструктор.показать
   пусть оригинал = конструктор.оригинал
-  если показать тогда
+  если показать != пусто тогда
     показать(блок, ? оригинал : { chainedRender(блок, оригинал) } | NOP)
-  иначе если оригинал тогда
+  иначе если оригинал != пусто тогда
     chainedRender(блок, оригинал)
 }
 
@@ -324,9 +324,9 @@
 {
   пусть завершить = конструктор.завершить
   пусть оригинал = конструктор.оригинал
-  если завершить тогда
+  если завершить != пусто тогда
     завершить(блок, ? оригинал : { chainedFinalize(блок, оригинал) } | NOP)
-  иначе если оригинал тогда
+  иначе если оригинал != пусто тогда
     chainedFinalize(блок, оригинал)
 }
 
@@ -540,7 +540,7 @@
     дескриптор = XBlockDescriptor(код`, драйвер`, конструктор, объект, владелец`)
     реализация = пусто как Значение как T // hack
     // User-defined properties
-    модель = пусто как Значени
+    модель = пусто как Значение
     контролер = пусто как Значение как C // hack
     // _childrenLayout = Layout.Row
     // _area = undefined
@@ -752,7 +752,7 @@
 
   операция configureReactronic(options: Partial<MemberOptions>): MemberOptions
   {
-    if дескриптор.stamp != 1 или не(has(Режим.SeparateReaction)) тогда
+    if дескриптор.штамп != 1 или не(has(Режим.раздельная-реакция)) тогда
       ошибка "reactronic can be configured only for blocks with separate reaction mode and only inside initialize"
     return Rx.getController(this.render).configure(options)
   }
@@ -839,7 +839,7 @@
 скрытая
 операция blockAreaToCellRange(
   isRegularBlock: Булево, area: ОбластьБлока, maxX: Целое, maxY: Целое,
-  cursorPosition: CursorPosition, newCursorPosition: CursorPosition? = пусто): CellRange
+  cursorPosition: CursorPosition, newCursorPosition: CursorPosition? = пусто): Рамка
 {
   если typeof(area) == "string" тогда
   {
@@ -883,7 +883,7 @@
       если isRegularBlock тогда
       {
         результат.x1 = cursorPosition.x
-        результат.x2 = absolutizePosition(результат.x1 + dx - 1, 0, maxX || Infinity)
+        результат.x2 = абсолютная-позиция(результат.x1 + dx - 1, 0, maxX || Infinity)
         newCursorPosition.x = результат.x2 + 1
       }
       иначе
@@ -918,7 +918,7 @@
       если isRegularBlock тогда
       {
         результат.y1 = cursorPosition.y
-        результат.y2 = absolutizePosition(результат.y1 + dy - 1, 0, maxY || Infinity)
+        результат.y2 = абсолютная-позиция(результат.y1 + dy - 1, 0, maxY || Infinity)
         если результат.y2 > newCursorPosition.runningMaxY тогда
           newCursorPosition.runningMaxY = результат.y2
       }
@@ -982,9 +982,9 @@
           если p == Priority.Realtime тогда
             triggerRendering(item) // render synchronously
           иначе если p == Priority.Normal тогда
-            p1 = push(item, p1) // defer for P1 async rendering
+            p1 = добавить(item, p1) // defer for P1 async rendering
           иначе
-            p2 = push(item, p2) // defer for P2 async rendering
+            p2 = добавить(item, p2) // defer for P2 async rendering
           если ownerIsBand и isRow тогда
             hostingRow = block
         }
@@ -1055,7 +1055,7 @@
     try
     {
       если block.childrenShuffling тогда
-        shuffle(items)
+        перемешать(items)
       пусть frameDurationLimit = ? priority == Priority.Background : Verstak.shortFrameDuration | Infinity
       пусть frameDuration = Math.min(frameDurationLimit, Math.max(Verstak.frameDuration / 4, Verstak.shortFrameDuration))
       для каждого child из items выполнить
@@ -1265,7 +1265,7 @@
 }
 
 скрытая
-операция triggersAreEqual(a1: any, a2: any): boolean
+операция triggersAreEqual(a1: Значение, a2: Значени): Булево
 {
   результат = a1 == a2
   если не(результат) тогда
@@ -1276,7 +1276,7 @@
         a1.length == a2.length и
         a1.every((t, i) => t == a2[i])
     }
-    иначе если a1 == Object(a1) и a2 == Object(a2) тогда
+    иначе если a1 == Объект(a1) и a2 == Объект(a2) тогда
     {
       for (постоянное p in a1) {
         result = a1[p] == a2[p]
@@ -1289,14 +1289,12 @@
 }
 
 скрытая
-операция absolutizeCellRange(area: CellRange,
-  cursorX: number, cursorY: number,
-  maxWidth: number, maxHeight: number,
-  итог: CellRange): CellRange
+операция absolutizeCellRange(area: Рамка, курсорX: Целое, курсорY: Целое,
+  максX: Целое, максY: Целое, итог: Рамка): Рамка
 {
   // X1, X2
-  пусть x1 = absolutizePosition(area.x1, cursorX, maxWidth)
-  пусть x2 = absolutizePosition(area.x2, x1, maxWidth)
+  пусть x1 = абсолютная-позиция(area.x1, курсорX, максX)
+  пусть x2 = абсолютная-позиция(area.x2, x1, максX)
   если x1 <= x2 тогда
   {
     итог.x1 = x1
@@ -1308,8 +1306,8 @@
     итог.x2 = x1
   }
   // Y1, Y2
-  пусть y1 = absolutizePosition(area.y1, cursorY, maxHeight)
-  пусть y2 = absolutizePosition(area.y2, y1, maxHeight)
+  пусть y1 = абсолютная-позиция(area.y1, курсорY, максY)
+  пусть y2 = абсолютная-позиция(area.y2, y1, максY)
   если y1 <= y2 тогда
   {
     итог.y1 = y1
@@ -1324,40 +1322,40 @@
 }
 
 скрытая
-операция absolutizePosition(pos: number, cursor: number, max: number): number
+операция абсолютная-позиция(позиция: Целое, курсор: Целое, макс: Целое): Целое
 {
-  если pos == 0 тогда
-    pos = cursor
-  иначе если pos < 0 тогда
-    pos = Math.max(max + pos, 1)
+  если позиция == 0 тогда
+    позиция = курсор
+  иначе если позиция < 0 тогда
+    позиция = Math.max(макс + позиция, 1)
   иначе
-    pos = Math.min(pos, max)
-  результаи = pos
+    позиция = Math.min(позиция, макс)
+  результат = позиция
 }
 
 скрытая
-операция push<T>(item: T, array: Array<T>?): Array<T>
+операция добавить<T>(элемент: T, список: Список<T>?): Список<T>
 {
-  если array == пусто тогда
-    array = Array<T>()
-  array.push(item)
-  return array
+  если список == пусто тогда
+    список = Список<T>()
+  список.добавить(элемент)
+  return список
 }
 
 скрытая
-операция shuffle<T>(array: Array<T>): Array<T>
+операция перемешать<T>(список: Список<T>): Список<T>
 {
-  пусть n = array.length - 1
+  пусть n = список.количество - 1
   пусть i = n
   пока i >= 0 выполнить
   {
     пусть j = Math.floor(Math.random() * n)
-    пусть t = array[i]
-    array[i] = array[j]
-    array[j] = t
+    пусть t = список[i]
+    список[i] = список[j]
+    список[j] = t
     i -= 1
   }
-  return array
+  return список
 }
 
 // Seamless support for asynchronous programming
