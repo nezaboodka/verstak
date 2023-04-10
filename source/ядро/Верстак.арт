@@ -259,7 +259,7 @@
 {
   владелец.дескриптор.номер += 1
   пусть номер = владелец.дескриптор.номер
-  пусть буквы = emitLetters(номер)
+  пусть буквы = целое-в-букву(номер)
   если Rx.isLogging тогда
     result = "·{ getCallerInfo(буквы) }"
   иначе
@@ -636,7 +636,7 @@
           значение, вд.maxColumnCount, вд.maxRowCount,
           cursorPosition, newCursorPosition)
         д.cursorPosition = newCursorPosition
-        если не(equalCellRanges(cellRange, this._cellRange)) тогда
+        если не(рамки-идентичны(cellRange, this._cellRange)) тогда
         {
           драйвер.applyCellRange(объект, cellRange)
           this._cellRange = cellRange
