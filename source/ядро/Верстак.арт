@@ -57,13 +57,13 @@
       {
         // Reuse existing block
         результат = пре.instance
-        пусть d = результат.descriptor
-        if d.driver != драйвер и драйвер != undefined тогда
+        пусть д = результат.descriptor
+        if д.driver != драйвер и драйвер != undefined тогда
           ошибка "changing block драйвер is not yet supported: \"{ результат.descriptor.driver.name }\" -> \"{ драйвер?.name }\""
-        пусть exTriggers = d.builder.triggers
+        пусть exTriggers = д.builder.triggers
         if triggersAreEqual(конструктор.triggers, exTriggers) тогда
           конструктор.triggers = exTriggers // preserve triggers instance
-        d.builder = конструктор
+        д.builder = конструктор
       }
       иначе
       {
@@ -132,8 +132,8 @@
 
   операция заявить(блок: Блок<T, Значение, C>)
   {
-    пусть b = блок это XBlock<T, Значение, C>
-    chainedClaim(b, b.descriptor.builder)
+    пусть б = блок это XBlock<T, Значение, C>
+    chainedClaim(б, б.descriptor.builder)
   }
 
   подмена
@@ -145,10 +145,10 @@
   подмена
   операция initialize(block: Блок<T, Значение, C>)
   {
-    пусть b = block это XBlock<T, Значение, C>
+    пусть б = block это XBlock<T, Значение, C>
     если preset тогда
-      preset(b)
-    chainedInitialize(b, b.descriptor.builder)
+      preset(б)
+    chainedInitialize(б, б.descriptor.builder)
   }
 
   подмена
@@ -166,8 +166,8 @@
   подмена
   операция finalize(block: Блок<T, Значение, C>, isLeader: Булево): Булево
   {
-    пусть b = block as XBlock<T, Значение, C>
-    chainedFinalize(b, b.descriptor.builder)
+    пусть б = block as XBlock<T, Значение, C>
+    chainedFinalize(б, б.descriptor.builder)
     return isLeader // treat children as finalization leaders as well
   }
 
@@ -566,18 +566,18 @@
   // @reactive
   // @options({
   //   reentrance: Reentrance.CancelPrevious,
-  //   triggeringArgs: true,
-  //   noSideEffects: false,
+  //   triggeringArgs: да,
+  //   noSideEffects: нет,
   // })
   реактивная
   операция render(триггеры: Значение) {
     // triggers parameter is used to enforce rendering by owner
-    renderNow(this.descriptor.item!)
+    renderNow(дескриптор.item!)
   }
 
   операция включен-режим(mode: Режим): Булево
   {
-    результат = поразрядное-и(chainedMode(this.descriptor.builder), mode) == mode
+    результат = поразрядное-и(chainedMode(дескриптор.builder), mode) == mode
   }
 
   охраняемое типом
@@ -606,7 +606,7 @@
 
   охраняемое типом
   isMoved: Булево
-    при чтении { return дескриптор.владелец.дескриптор.дети.isMoved(this.descriptor.item!) }
+    при чтении { return дескриптор.владелец.дескриптор.дети.isMoved(дескриптор.item!) }
 
   раскладка-детей: Раскладка
     при записи
@@ -751,7 +751,7 @@
 
   операция configureReactronic(options: Partial<MemberOptions>): MemberOptions
   {
-    if this.descriptor.stamp != 1 или не(has(Режим.SeparateReaction)) тогда
+    if дескриптор.stamp != 1 или не(has(Режим.SeparateReaction)) тогда
       ошибка "reactronic can be configured only for blocks with separate reaction mode and only inside initialize"
     return Rx.getController(this.render).configure(options)
   }
@@ -769,10 +769,10 @@
   общая
   операция tryUseContextVariable<T: Object>(variable: ContextVariable<T>): T?
   {
-    пусть b = XBlock.curr.instance
-    пока b.descriptor.context?.variable != variable и b.descriptor.owner != b выполнить
-      b = b.descriptor.outer
-    return b.descriptor.context?.value это Т? // TODO: to get rid of any
+    пусть б = XBlock.curr.instance
+    пока б.descriptor.context?.variable != variable и б.descriptor.владелец != б выполнить
+      б = б.descriptor.outer
+    return б.descriptor.context?.value это Т? // TODO: to get rid of any
   }
 
   общая
@@ -786,40 +786,41 @@
   общая
   операция setContextVariableValue<T: Object>(variable: ContextVariable<T>, value: T?)
   {
-    пусть b = XBlock.curr.instance
-    пусть d = b.descriptor
-    пусть owner = d.owner
-    пусть hostCtx = nonreactive(owner.descriptor.context?.value)
+    пусть б = XBlock.curr.instance
+    пусть д = б.дескриптор
+    пусть владелец = д.владелец
+    пусть hostCtx = nonreactive(владелец.дескриптор.context?.value)
     если value и value != hostCtx тогда
     {
       если hostCtx тогда
-        d.outer = owner
+        д.outer = владелец
       иначе
-        d.outer = owner.descriptor.outer
-      Transaction.run([ separation = true ],
+        д.outer = владелец.дескриптор.outer
+      Transaction.run([ separation = да ],
       {
-        постоянное ctx = d.context
+        постоянное ctx = д.context
         если ctx тогда
         {
           ctx.variable = variable
           ctx.value = value // update context thus invalidate observers
         }
         иначе
-          d.context = XBlockCtx<any>(variable, value)
+          д.context = XBlockCtx<any>(variable, value)
       })
     }
     иначе если hostCtx тогда
-      d.outer = owner
+      д.outer = владелец
     иначе
-      d.outer = owner.descriptor.outer
+      д.outer = владелец.descriptor.outer
   }
 
   скрыто
   операция rowBreak()
   {
-    пусть d = this.descriptor
-    пусть cursorPosition = d.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
-    пусть newCursorPosition = this.descriptor.cursorPosition = CursorPosition(cursorPosition)
+    пусть д = дескриптор
+    пусть cursorPosition = д.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
+    пусть newCursorPosition = CursorPosition(cursorPosition)
+    дескриптор.cursorPosition = newCursorPosition
     newCursorPosition.x = 1
     newCursorPosition.y = newCursorPosition.runningMaxY + 1
   }
@@ -837,7 +838,7 @@
 скрытая
 операция blockAreaToCellRange(
   isRegularBlock: boolean, area: BlockArea, maxX: number, maxY: number,
-  cursorPosition: CursorPosition, newCursorPosition?: CursorPosition): CellRange
+  cursorPosition: CursorPosition, newCursorPosition: CursorPosition? = пусто): CellRange
 {
   если typeof(area) == "string" тогда
   {
@@ -847,7 +848,7 @@
       maxX || Infinity, maxY || Infinity, result)
     если newCursorPosition тогда
     {
-      newCursorPosition.x = isRegularBlock ? result.x2 + 1 : result.x1
+      newCursorPosition.x = ? isRegularBlock : result.x2 + 1 | result.x1
       newCursorPosition.y = result.y1
       newCursorPosition.flags = CursorFlags.OwnCursorPosition
     }
@@ -855,19 +856,22 @@
   иначе если newCursorPosition тогда
   {
     // Relative positioning
-    let dx: number
-    let dy: number // this comment just prevents syntax highlighting in VS code
+    пусть dx: number
+    пусть dy: number // this comment just prevents syntax highlighting in VS code
     если area тогда
     {
       dx = area.cellsOverWidth ?? 1
       dy = area.cellsOverHeight ?? 1
     }
     иначе // area == undefined
-      dx = dy = 1
+    {
+      dx = 1
+      dy = 1
+    }
     // Arrange
     пусть runningX = ? maxX != 0 : maxX | cursorPosition.runningMaxX
     пусть runningY = ? maxY != 0 : maxY | cursorPosition.runningMaxY
-    result = [ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ]
+    результат = [ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ]
     если dx == 0 и isRegularBlock тогда
     {
       dx = runningX || 1
@@ -877,28 +881,30 @@
     {
       если isRegularBlock тогда
       {
-        result.x1 = cursorPosition.x
-        result.x2 = absolutizePosition(result.x1 + dx - 1, 0, maxX || Infinity)
-        newCursorPosition.x = result.x2 + 1
+        результат.x1 = cursorPosition.x
+        результат.x2 = absolutizePosition(результат.x1 + dx - 1, 0, maxX || Infinity)
+        newCursorPosition.x = результат.x2 + 1
       }
       иначе
       {
-        result.x1 = result.x2 = cursorPosition.x + dx
-        newCursorPosition.x = result.x2
+        результат.x1 = cursorPosition.x + dx
+        результат.x2 = результат.x1
+        newCursorPosition.x = результат.x2
       }
     }
     иначе
     {
       если isRegularBlock тогда
       {
-        result.x1 = Math.max(cursorPosition.x + dx, 1)
-        result.x2 = cursorPosition.x
-        newCursorPosition.x = result.x2 + 1
+        результат.x1 = Math.max(cursorPosition.x + dx, 1)
+        результат.x2 = cursorPosition.x
+        newCursorPosition.x = результат.x2 + 1
       }
       иначе
       {
-        result.x1 = result.x2 = cursorPosition.x + dx
-        newCursorPosition.x = result.x2
+        результат.x1 = cursorPosition.x + dx
+        результат.x2 = результат.x1
+        newCursorPosition.x = результат.x2
       }
     }
     если dy == 0 и isRegularBlock тогда
@@ -910,23 +916,29 @@
     {
       если isRegularBlock тогда
       {
-        result.y1 = cursorPosition.y
-        result.y2 = absolutizePosition(result.y1 + dy - 1, 0, maxY || Infinity)
-        if (result.y2 > newCursorPosition.runningMaxY)
-          newCursorPosition.runningMaxY = result.y2
+        результат.y1 = cursorPosition.y
+        результат.y2 = absolutizePosition(результат.y1 + dy - 1, 0, maxY || Infinity)
+        если результат.y2 > newCursorPosition.runningMaxY тогда
+          newCursorPosition.runningMaxY = результат.y2
       }
       иначе
-        result.y1 = result.y2 = cursorPosition.y + dy
+      {
+        результат.y1 = cursorPosition.y + dy
+        результат.y2 = результат.y1
+      }
     }
     иначе
     {
       если isRegularBlock тогда
       {
-        result.y1 = Math.max(cursorPosition.y + dy, 1)
-        result.y2 = cursorPosition.y
+        результат.y1 = Math.max(cursorPosition.y + dy, 1)
+        результат.y2 = cursorPosition.y
       }
       иначе
-        result.y1 = result.y2 = cursorPosition.y + dy
+      {
+        результат.y1 = cursorPosition.y + dy
+        результат.y2 = результат.y1
+      }
     }
   }
   иначе
@@ -941,111 +953,124 @@
   пусть children = owner.descriptor.children
   если children.isMergeInProgress тогда
   {
-    let promised: Promise<void>? = пусто
+    пусть promised: Promise<void>? = пусто
     try
     {
       children.endMerge(ош)
       // Finalize removed blocks
-      for (пусть item of children.removedItems(true))
-        triggerFinalization(item, true, true)
+      для каждого item из children.removedItems(да) выполнить
+        triggerFinalization(item, да, да)
       если не(ош) тогда
       {
         // Lay out and render actual blocks
         пусть ownerIsBand = owner.isBand
         пусть sequential = children.isStrict
-        let p1: Array<Item<XBlock>>? = пусто
-        let p2: Array<Item<XBlock>>? = пусто
-        let mounting = false
-        let hostingRow = owner
-        for (пусть item of children.items()) {
-          if (Transaction.isCanceled)
-            break
+        пусть p1: Array<Item<XBlock>>? = пусто
+        пусть p2: Array<Item<XBlock>>? = пусто
+        пусть mounting = нет
+        пусть hostingRow = owner
+        для каждого item из children.items() выполнить
+        {
+          если Transaction.isCanceled тогда
+            прервать цикл
           пусть block = item.instance
           пусть isRow = block.descriptor.driver.isRow
           пусть host = isRow ? owner : hostingRow
           пусть p = block.renderingPriority ?? Priority.Realtime
           mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
-          if (p == Priority.Realtime)
+          если p == Priority.Realtime тогда
             triggerRendering(item) // render synchronously
-          else if (p == Priority.Normal)
+          иначе если p == Priority.Normal тогда
             p1 = push(item, p1) // defer for P1 async rendering
-          else
+          иначе
             p2 = push(item, p2) // defer for P2 async rendering
-          if (ownerIsBand && isRow)
+          если ownerIsBand и isRow тогда
             hostingRow = block
         }
         // Render incremental children (if any)
-        if (!Transaction.isCanceled && (p1 != undefined || p2 != undefined))
+        если не(Transaction.isCanceled и (p1 != undefined или p2 != undefined)) тогда
           promised = startIncrementalRendering(curr, children, p1, p2).then(
-            () => action(error),
-            e => action(e))
+            { action(ош) },
+            { action(e) })
       }
     }
-    finally {
-      if (!promised)
-        action(error)
+    finally
+    {
+      если не(promised) тогда
+        action(ош)
     }
   }
 }
 
 скрытая
-операция markToMountIfNecessary(mounting: boolean, host: XBlock,
-  item: Item<XBlock>, children: Collection<XBlock>, sequential: boolean): boolean {
+операция markToMountIfNecessary(mounting: Булево, host: XBlock,
+  item: Item<XBlock>, children: Collection<XBlock>, sequential: Булево): Булево
+{
   // Detects element mounting when abstract blocks
   // exist among regular blocks with HTML elements
-  постоянное b = item.instance
-  постоянное d = b.descriptor
-  if (b.native && !b.has(Режим.ManualMount)) {
-    if (mounting || d.host != host) {
+  пусть b = item.instance
+  пусть d = b.descriptor
+  если b.native и не(b.has(Режим.ManualMount)) тогда
+  {
+    если mounting или d.host != host тогда
+    {
       children.markAsMoved(item)
-      mounting = false
+      mounting = нет
     }
   }
-  else if (sequential && children.isMoved(item))
-    mounting = true // apply to the first block with an element
+  иначе если sequential и children.isMoved(item) тогда
+    mounting = да // apply to the first block with an element
   d.host = host
   return mounting
 }
 
-async function startIncrementalRendering(
+параллельная
+операция startIncrementalRendering(
   owner: Item<XBlock>,
   allChildren: Collection<XBlock>,
-  priority1?: Array<Item<XBlock>>,
-  priority2?: Array<Item<XBlock>>): Promise<void> {
-  постоянное stamp = owner.instance.descriptor.stamp
-  if (priority1)
-    await renderIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
-  if (priority2)
-    await renderIncrementally(owner, stamp, allChildren, priority2, Priority.Background)
+  priority1: Array<Item<XBlock>>? = пусто,
+  priority2: Array<Item<XBlock>>? = пусто)
+{
+  пусть stamp = owner.instance.descriptor.stamp
+  если priority1 тогда
+    renderIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
+  если priority2 тогда
+    renderIncrementally(owner, stamp, allChildren, priority2, Priority.Background)
 }
 
-async function renderIncrementally(owner: Item<XBlock>, stamp: number,
-  allChildren: Collection<XBlock>, items: Array<Item<XBlock>>,
-  priority: Priority): Promise<void> {
-  await Transaction.requestNextFrame()
-  постоянное block = owner.instance
-  if (!Transaction.isCanceled || !Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3)) {
-    let outerPriority = Verstak.currentRenderingPriority
+параллельная
+операция renderIncrementally(owner: Item<XBlock>, stamp: Целое,
+  allChildren: Collection<XBlock>, items: Array<Item<XBlock>>, priority: Priority)
+{
+  Transaction.requestNextFrame()
+  пусть block = owner.instance
+  если не(Transaction.isCanceled) или не(Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3)) тогда
+  {
+    пусть outerPriority = Verstak.currentRenderingPriority
     Verstak.currentRenderingPriority = priority
-    try {
-      if (block.childrenShuffling)
+    try
+    {
+      если block.childrenShuffling тогда
         shuffle(items)
-      постоянное frameDurationLimit = priority == Priority.Background ? Verstak.shortFrameDuration : Infinity
-      let frameDuration = Math.min(frameDurationLimit, Math.max(Verstak.frameDuration / 4, Verstak.shortFrameDuration))
-      for (постоянное child of items) {
+      пусть frameDurationLimit = ? priority == Priority.Background : Verstak.shortFrameDuration | Infinity
+      пусть frameDuration = Math.min(frameDurationLimit, Math.max(Verstak.frameDuration / 4, Verstak.shortFrameDuration))
+      для каждого child из items выполнить
+      {
         triggerRendering(child)
-        if (Transaction.isFrameOver(1, frameDuration)) {
+        если Transaction.isFrameOver(1, frameDuration) тогда
+        {
           Verstak.currentRenderingPriority = outerPriority
-          await Transaction.requestNextFrame(0)
+          Transaction.requestNextFrame(0)
           outerPriority = Verstak.currentRenderingPriority
           Verstak.currentRenderingPriority = priority
           frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, Verstak.frameDuration))
         }
-        if (Transaction.isCanceled && Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3))
-          break
+        если Transaction.isCanceled и Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3) тогда
+          прервать цикл
       }
     }
-    finally {
+    finally
+    {
       Verstak.currentRenderingPriority = outerPriority
     }
   }
@@ -1055,70 +1080,80 @@ async function renderIncrementally(owner: Item<XBlock>, stamp: number,
 операция triggerRendering(item: Item<XBlock>) {
   постоянное b = item.instance
   постоянное d = b.descriptor
-  if (d.stamp >= 0) {
-    if (b.has(Режим.SeparateReaction)) {
-      if (d.stamp == 0) {
-        Transaction.outside(() => {
-          if (Rx.isLogging)
+  если d.stamp >= 0 тогда
+  {
+    если b.has(Режим.SeparateReaction) тогда
+    {
+      если d.stamp == 0 тогда
+      {
+        Transaction.outside(
+        {
+          если Rx.isLogging тогда
             Rx.setLoggingHint(b, d.key)
-          Rx.getController(b.render).configure({
-            order: d.level,
-          })
+          Rx.getController(b.render).configure([ order = d.level ])
         })
       }
-      nonreactive(b.render, d.builder.triggers) // reactive auto-rendering
+      nonreactive
+      {
+        b.render(d.builder.triggers)
+      }
     }
-    else
+    иначе
       renderNow(item)
   }
 }
 
 скрытая
-операция mountIfNecessary(block: XBlock) {
-  постоянное d = block.descriptor
-  постоянное driver = d.driver
-  if (d.stamp == 0) {
+операция mountIfNecessary(block: XBlock)
+{
+  пусть d = block.descriptor
+  пусть driver = d.driver
+  если d.stamp == 0 тогда
+  {
     d.stamp = 1
-    nonreactive(() => {
+    nonreactive
+    {
       driver.create(block, block)
       driver.initialize(block)
-      if (block.isAutoMountEnabled)
+      если block.isAutoMountEnabled тогда
         driver.mount(block)
-    })
+    }
   }
-  else if (block.isMoved && block.isAutoMountEnabled)
-    nonreactive(() => driver.mount(block))
+  иначе если block.isMoved и block.isAutoMountEnabled тогда
+    nonreactive(driver.mount(block))
 }
 
 скрытая
 операция renderNow(item: Item<XBlock>) {
-  постоянное b = item.instance
-  постоянное d = b.descriptor
-  if (d.stamp >= 0) { // if block is alive
-    let result: unknown = undefined
+  пусть b = item.instance
+  пусть d = b.descriptor
+  если d.stamp >= 0 тогда
+  { // if block is alive
     runInside(item, () => {
-      try {
+      try
+      {
         mountIfNecessary(b)
-        d.stamp++
+        d.stamp += 1
         d.numerator = 0
         b._area = undefined // reset
-        b.hasStyles = false // reset
+        b.hasStyles = нет // reset
         d.children.beginMerge()
-        постоянное driver = d.driver
+        пусть driver = d.driver
         result = driver.render(b)
-        if (b._area == undefined && d.owner.isTable)
+        если b._area == undefined и d.владелец.isTable тогда
           b.area = undefined // automatic placement
-        if (result instanceof Promise)
-          result.then(
-            v => { runRenderNestedTreesThenDo(undefined, NOP); return v },
-            e => { console.log(e); runRenderNestedTreesThenDo(e ?? new Error("unknown error"), NOP) })
-        else
+        если результат это Promise тогда
+          результат.promise-then(
+            { runRenderNestedTreesThenDo(undefined, NOP); return v },
+            { console.log(e); runRenderNestedTreesThenDo(e ?? Error("unknown error"), NOP) })
+        иначе
           runRenderNestedTreesThenDo(undefined, NOP)
       }
-      catch(e: unknown) {
+      catch(e)
+      {
         runRenderNestedTreesThenDo(e, NOP)
-        console.log(`Rendering failed: ${d.key}`)
-        console.log(`${e}`)
+        console.log("Rendering failed: { d.key }")
+        console.log("{ e }")
       }
     })
   }
@@ -1126,49 +1161,62 @@ async function renderIncrementally(owner: Item<XBlock>, stamp: number,
 
 скрытая
 операция triggerFinalization(item: Item<XBlock>, isLeader: boolean, individual: boolean) {
-  постоянное b = item.instance
-  постоянное d = b.descriptor
-  if (d.stamp >= 0) {
-    постоянное driver = d.driver
-    if (individual && d.key != d.builder.key && !driver.isRow)
-      console.log(`WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: ${d.key}`)
+  пусть b = item.instance
+  пусть d = b.descriptor
+  если d.stamp >= 0 тогда
+  {
+    пусть driver = d.driver
+    если individual и d.key != d.builder.key и !driver.isRow тогда
+      console.log("WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: { d.key }")
     d.stamp = ~d.stamp
     // Finalize block itself and remove it from collection
-    постоянное childrenAreLeaders = nonreactive(() => driver.finalize(b, isLeader))
+    пусть childrenAreLeaders = nonreactive(driver.finalize(b, isLeader))
     b.native = null
     b.controller = null
-    if (b.has(Режим.SeparateReaction)) {
+    если b.has(Режим.SeparateReaction) тогда
+    {
       // Defer disposal if block is reactive
       item.aux = undefined
       постоянное last = gLastToDispose
-      if (last)
-        gLastToDispose = last.aux = item
-      else
-        gFirstToDispose = gLastToDispose = item
-      if (gFirstToDispose == item)
-        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${item.instance.descriptor.key})` }, () => {
-          void runDisposalLoop().then(NOP, error => console.log(error))
+      если last тогда
+      {
+        last.aux = item
+        gLastToDispose = item
+      }
+      иначе
+      {
+        gFirstToDispose = item
+        gLastToDispose = item
+      }
+      если gFirstToDispose == item тогда
+        Transaction.run([ separation = "disposal", hint = "runDisposalLoop(initiator={ item.instance.descriptor.key })" ],
+        {
+          void runDisposalLoop().promise-then(NOP, { console.log(ош) })
         })
     }
     // Finalize children if any
-    for (постоянное item of d.children.items())
-      triggerFinalization(item, childrenAreLeaders, false)
-    XBlock.grandCount--
+    для каждого item из d.children.items() выполнить
+      triggerFinalization(item, childrenAreLeaders, нет)
+    XBlock.grandCount -= 1
   }
 }
 
-async function runDisposalLoop(): Promise<void> {
-  await Transaction.requestNextFrame()
-  let item = gFirstToDispose
-  while (item != undefined) {
-    if (Transaction.isFrameOver(500, 5))
-      await Transaction.requestNextFrame()
+параллельная
+операция runDisposalLoop()
+{
+  Transaction.requestNextFrame()
+  пусть item = gFirstToDispose
+  пока item != undefined выполнить
+  {
+    если Transaction.isFrameOver(500, 5) тогда
+      Transaction.requestNextFrame()
     Rx.dispose(item.instance)
     item = item.aux
-    XBlock.disposableCount--
+    XBlock.disposableCount -= 1
   }
   // console.log(`Block count: ${Блок.grandCount} totally (${Блок.disposableCount} disposable)`)
-  gFirstToDispose = gLastToDispose = undefined // reset loop
+  gLastToDispose = пусто // reset loop
+  gFirstToDispose = пусто
 }
 
 // function forEachChildRecursively(item: Item<XBlock>, action: (e: any) => void) {
@@ -1180,7 +1228,8 @@ async function runDisposalLoop(): Promise<void> {
 // }
 
 скрытая
-операция wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T {
+операция wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T
+{
   let wrappedToRunInside: (...args: any[]) => T
   постоянное current = gCurrent
   if (current)
@@ -1193,7 +1242,8 @@ async function runDisposalLoop(): Promise<void> {
 }
 
 скрытая
-операция runInside<T>(item: Item<XBlock>, func: (...args: any[]) => T, ...args: any[]): T {
+операция runInside<T>(item: Item<XBlock>, func: (...args: any[]) => T, ...args: any[]): T
+{
   постоянное outer = gCurrent
   try {
     gCurrent = item
@@ -1205,7 +1255,8 @@ async function runDisposalLoop(): Promise<void> {
 }
 
 скрытая
-операция triggersAreEqual(a1: any, a2: any): boolean {
+операция triggersAreEqual(a1: any, a2: any): boolean
+{
   let result = a1 == a2
   if (!result) {
     if (Array.isArray(a1)) {
@@ -1228,7 +1279,8 @@ async function runDisposalLoop(): Promise<void> {
 операция absolutizeCellRange(area: CellRange,
   cursorX: number, cursorY: number,
   maxWidth: number, maxHeight: number,
-  result: CellRange): CellRange {
+  result: CellRange): CellRange
+{
   // X1, X2
   постоянное x1 = absolutizePosition(area.x1, cursorX, maxWidth)
   постоянное x2 = absolutizePosition(area.x2, x1, maxWidth)
@@ -1247,7 +1299,8 @@ async function runDisposalLoop(): Promise<void> {
 }
 
 скрытая
-операция absolutizePosition(pos: number, cursor: number, max: number): number {
+операция absolutizePosition(pos: number, cursor: number, max: number): number
+{
   if (pos == 0)
     pos = cursor
   else if (pos < 0)
@@ -1258,7 +1311,8 @@ async function runDisposalLoop(): Promise<void> {
 }
 
 скрытая
-операция push<T>(item: T, array: Array<T> | undefined): Array<T> {
+операция push<T>(item: T, array: Array<T> | undefined): Array<T>
+{
   if (array == undefined)
     array = new Array<T>()
   array.push(item)
@@ -1266,7 +1320,8 @@ async function runDisposalLoop(): Promise<void> {
 }
 
 скрытая
-операция shuffle<T>(array: Array<T>): Array<T> {
+операция shuffle<T>(array: Array<T>): Array<T>
+{
   постоянное n = array.length - 1
   let i = n
   while (i >= 0) {
@@ -1286,19 +1341,22 @@ async function runDisposalLoop(): Promise<void> {
 скрытая
 операция reactronicDomHookedThen(this: any,
   resolve?: ((value: any) => any | PromiseLike<any>) | undefined | null,
-  reject?: ((reason: any) => never | PromiseLike<never>) | undefined | null): Promise<any | never> {
+  reject?: ((reason: any) => never | PromiseLike<never>) | undefined | null): Promise<any | never>
+{
   resolve = resolve ? wrapToRunInside(resolve) : defaultResolve
   reject = reject ? wrapToRunInside(reject) : defaultReject
   return ORIGINAL_PROMISE_THEN.call(this, resolve, reject)
 }
 
 скрытая
-операция defaultResolve(value: any): any {
+операция defaultResolve(value: any): any
+{
   return value
 }
 
 скрытая
-операция defaultReject(error: any): never {
+операция defaultReject(error: any): never
+{
   throw error
 }
 
