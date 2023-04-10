@@ -331,7 +331,7 @@
 }
 
 тип StaticDriver<T> = ссылка на объект
-на основе БазовыйДрайвер<T>
+на основе БазовыйДрайвер<T, Ничего>
 {
   постоянный элемент: T
 
@@ -364,7 +364,7 @@
 {
   при создании()
   {
-    основа("курсор", нет, { b.childrenLayout = Layout.Cursor })
+    основа("курсор", нет, { блок.раскладка-детей = Раскладка.курсор })
   }
 
   подмена
@@ -418,7 +418,7 @@
     y = пре.y
     runningMaxX = пре.runningMaxX
     runningMaxY = пре.runningMaxY
-    flags = порязрядное-и(пре.flags, поразрядное-не(CursorFlags.OwnCursorPosition))
+    flags = поразрядное-и(пре.flags, поразрядное-не(CursorFlags.OwnCursorPosition))
   }
 }
 
@@ -431,7 +431,7 @@
 }
 
 постоянное UndefinedCellRange = Объект.freeze([ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ])
-постоянное InitialCursorPosition: CursorPosition = Object.freeze(CursorPosition([ x = 1, y = 1, runningMaxX = 0, runningMaxY = 0, flags = CursorFlags.None ]))
+постоянное InitialCursorPosition: CursorPosition = Объект.freeze(CursorPosition([ x = 1, y = 1, runningMaxX = 0, runningMaxY = 0, flags = CursorFlags.None ]))
 
 тип XBlockCtx<T: Объект = Объект> = ссылка на объект
 на основе ObservableObject, БлокCtx<T>
@@ -557,10 +557,10 @@
     // _overlayVisible = undefined
     hasStyles = нет
     childrenShuffling = нет
-    renderingPriority = Priority.Realtime
+    renderingPriority = Приоритет.высокий
     // Monitoring
     XBlock.grandCount += 1
-    если включен-режим(Режим.SeparateReaction) тогда
+    если включен-режим(Режим.раздельная-реакция) тогда
       XBlock.disposableCount += 1
   }
 
@@ -614,7 +614,7 @@
     {
       если значение != хранимое или дескриптор.штапм < 2 тогда
       {
-        дескриптор.драйвер.applyChildrenLayout(объект, значение)
+        дескриптор.драйвер.применить-раскладку-детей(объект, значение)
         хранимое = значение
       }
     }
@@ -649,7 +649,7 @@
     при записи {
       если значение != хранимое тогда
       {
-        дескриптор.драйвер.applyWidthGrowth(объект, значение)
+        дескриптор.драйвер.применить-долю-роста-ширины(объект, значение)
         хранимое = значение
       }
     }
@@ -659,7 +659,7 @@
     {
       если значение != хранимое тогда
       {
-        дескриптор.драйвер.applyMinWidth(объект, значение)
+        дескриптор.драйвер.применить-минимальную-ширину(объект, значение)
         хранимое = значение
       }
     }
@@ -669,7 +669,7 @@
    {
       если значение != хранимое тогда
       {
-        дескриптор.драйвер.applyMaxWidth(объект, значение)
+        дескриптор.драйвер.применить-максимальную-ширину(объект, значение)
         хранимое = значение
       }
     }
@@ -679,7 +679,7 @@
     {
       если значение != хранимое тогда
       {
-        дескриптор.драйвер.applyHeightGrowth(объект, значение)
+        дескриптор.драйвер.применить-долю-роста-высоты(объект, значение)
         хранимое = значение
       }
     }
@@ -689,7 +689,7 @@
     {
       если значение != хранимое тогда
       {
-        дескриптор.драйвер.applyMinHeight(объект, значение)
+        дескриптор.драйвер.применить-минимальную-высоту(объект, значение)
         хранимое = значение
       }
     }
@@ -699,7 +699,7 @@
     {
       если значение != хранимое тогда
       {
-        дескриптор.драйвер.applyMaxHeight(объект, значение)
+        дескриптор.драйвер.применить-максимальную-высоту(объект, значение)
         хранимое = значение
       }
    }
@@ -709,7 +709,7 @@
     {
       если значение != хранимое тогда
       {
-        дескриптор.драйвер.applyContentAlignment(объект, значение)
+        дескриптор.драйвер.применить-выравнивание-содержимого(объект, значение)
         хранимое = значение
       }
     }
@@ -719,7 +719,7 @@
     {
       если значение != хранимое тогда
       {
-        дескриптор.драйвер.applyBlockAlignment(объект, значение)
+        дескриптор.драйвер.применить-выравнивание-блока(объект, значение)
         хранимое = значение
       }
     }
@@ -729,7 +729,7 @@
     {
       если значение != хранимое тогда
       {
-        дескриптор.драйвер.applyContentWrapping(объект, значение)
+        дескриптор.драйвер.применить-перенос-содержимого(объект, значение)
         хранимое = значение
       }
     }
@@ -746,7 +746,7 @@
 
   операция style(styleName: Текст, вкл: Булево?)
   {
-    дескриптор.драйвер.applyStyle(объект, hasStyles, styleName, вкл)
+    дескриптор.драйвер.применить-стиль(объект, hasStyles, styleName, вкл)
     hasStyles = да
   }
 
@@ -759,7 +759,7 @@
 
   общее
   охраняемое типом
-  curr: Item<XBlock>
+  curr: Item<XBlock<Значение, Значение, Значение, Значение>>
     при записи
     {
       если не(gCurrent) тогда
@@ -768,16 +768,16 @@
     }
 
   общая
-  операция tryUseContextVariable<T: Object>(variable: ContextVariable<T>): T?
+  операция tryUseContextVariable<T: Объект>(variable: ContextVariable<T>): T?
   {
     пусть б = XBlock.curr.элемент
-    пока б.дескриптор.context?.variable != variable и б.дескриптор.владелец != б выполнить
+    пока б.дескриптор.контекст?.variable != variable и б.дескриптор.владелец != б выполнить
       б = б.дескриптор.outer
-    return б.дескриптор.context?.value это Т? // TODO: to get rid of any
+    return б.дескриптор.контекст?.value это T? // TODO: to get rid of any
   }
 
   общая
-  операция useContextVariableValue<T: Object>(variable: ContextVariable<T>): T
+  операция useContextVariableValue<T: Объект>(variable: ContextVariable<T>): T
   {
     результат = XBlock.tryUseContextVariable(variable) ?? variable.defaultValue
     если не(результат) тогда
@@ -785,12 +785,12 @@
   }
 
   общая
-  операция setContextVariableValue<T: Object>(variable: ContextVariable<T>, value: T?)
+  операция setContextVariableValue<T: Объект>(variable: ContextVariable<T>, value: T?)
   {
     пусть б = XBlock.curr.элемент
     пусть д = б.дескриптор
     пусть владелец = д.владелец
-    пусть hostCtx = nonreactive(владелец.дескриптор.context?.value)
+    пусть hostCtx = nonreactive(владелец.дескриптор.контекст?.value)
     если value и value != hostCtx тогда
     {
       если hostCtx тогда
@@ -830,7 +830,7 @@
 // Internal
 
 скрытая
-операция взять-код-блока(блок: XBlock): Текст?
+операция взять-код-блока(блок: XBlock<Значение, Значение, Значение, Значение>): Текст?
 {
   пусть д = блок.дескриптор
   результат = д.код ? д.штамп >= 0 | пусто
@@ -838,7 +838,7 @@
 
 скрытая
 операция blockAreaToCellRange(
-  isRegularBlock: boolean, area: BlockArea, maxX: number, maxY: number,
+  isRegularBlock: Булево, area: ОбластьБлока, maxX: Целое, maxY: Целое,
   cursorPosition: CursorPosition, newCursorPosition: CursorPosition? = пусто): CellRange
 {
   если typeof(area) == "string" тогда
@@ -857,12 +857,12 @@
   иначе если newCursorPosition тогда
   {
     // Relative positioning
-    пусть dx: number
-    пусть dy: number // this comment just prevents syntax highlighting in VS code
+    пусть dx: Целое
+    пусть dy: Целое // this comment just prevents syntax highlighting in VS code
     если area тогда
     {
-      dx = area.cellsOverWidth ?? 1
-      dy = area.cellsOverHeight ?? 1
+      dx = area.ячеек-в-ширину ?? 1
+      dy = area.ячеек-в-высоту ?? 1
     }
     иначе // area == undefined
     {
@@ -1004,8 +1004,10 @@
 }
 
 скрытая
-операция markToMountIfNecessary(mounting: Булево, host: XBlock,
-  item: Item<XBlock>, children: Collection<XBlock>, sequential: Булево): Булево
+операция markToMountIfNecessary(mounting: Булево,
+  host: XBlock<Значение, Значение, Значение, Значение>,
+  item: Item<XBlock<Значение, Значение, Значение, Значение>>,
+  children: Collection<XBlock<Значение, Значение, Значение, Значение>>, sequential: Булево): Булево
 {
   // Detects element mounting when abstract blocks
   // exist among regular blocks with HTML elements
@@ -1027,21 +1029,22 @@
 
 параллельная
 операция startIncrementalRendering(
-  owner: Item<XBlock>,
-  allChildren: Collection<XBlock>,
-  priority1: Array<Item<XBlock>>? = пусто,
-  priority2: Array<Item<XBlock>>? = пусто)
+  owner: Item<XBlock<Значение, Значение, Значение, Значение>>,
+  allChildren: Collection<XBlock<Значение, Значение, Значение, Значение>>,
+  priority1: Список<Item<XBlock<Значение, Значение, Значение, Значение>>>? = пусто,
+  priority2: Список<Item<XBlock<Значение, Значение, Значение, Значение>>>? = пусто)
 {
-  пусть stamp = owner.элемент.дескриптор.stamp
+  пусть stamp = owner.элемент.дескриптор.штамп
   если priority1 тогда
-    renderIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
+    renderIncrementally(owner, stamp, allChildren, priority1, Приоритет.обычный)
   если priority2 тогда
-    renderIncrementally(owner, stamp, allChildren, priority2, Priority.Background)
+    renderIncrementally(owner, stamp, allChildren, priority2, Приоритет.низкий)
 }
 
 параллельная
-операция renderIncrementally(owner: Item<XBlock>, stamp: Целое,
-  allChildren: Collection<XBlock>, items: Array<Item<XBlock>>, priority: Priority)
+операция renderIncrementally(owner: Item<XBlock<Значение, Значение, Значение, Значение>>,
+  stamp: Целое, allChildren: Collection<XBlock<Значение, Значение, Значение, Значение>>,
+  items: Список<Item<XBlock<Значение, Значение, Значение, Значение>>>, priority: Priority)
 {
   Transaction.requestNextFrame()
   пусть block = owner.элемент
@@ -1078,25 +1081,25 @@
 }
 
 скрытая
-операция triggerRendering(item: Item<XBlock>) {
+операция triggerRendering(item: Item<XBlock<Значение, Значение, Значение, Значение>>) {
   постоянное b = item.элемент
   постоянное d = b.дескриптор
-  если d.stamp >= 0 тогда
+  если d.штапм >= 0 тогда
   {
-    если b.has(Режим.SeparateReaction) тогда
+    если b.has(Режим.раздельная-реакция) тогда
     {
-      если d.stamp == 0 тогда
+      если d.штапм == 0 тогда
       {
         Transaction.outside(
         {
           если Rx.isLogging тогда
-            Rx.setLoggingHint(b, d.key)
-          Rx.getController(b.render).configure([ order = d.level ])
+            Rx.setLoggingHint(b, d.код)
+          Rx.getController(b.render).configure([ order = d.уровень ])
         })
       }
       nonreactive
       {
-        b.render(d.builder.триггеры)
+        b.render(d.конструктор.триггеры)
       }
     }
     иначе
@@ -1105,45 +1108,45 @@
 }
 
 скрытая
-операция mountIfNecessary(block: XBlock)
+операция mountIfNecessary(блок: XBlock<Значение, Значение, Значение, Значение>)
 {
-  пусть d = block.дескриптор
-  пусть driver = d.драйвер
-  если d.stamp == 0 тогда
+  пусть д = блок.дескриптор
+  пусть драйвер = д.драйвер
+  если д.штамп == 0 тогда
   {
-    d.stamp = 1
+    д.штамп = 1
     nonreactive
     {
-      driver.create(block, block)
-      driver.initialize(block)
-      если block.isAutoMountEnabled тогда
-        driver.mount(block)
+      драйвер.создать(блок, блок)
+      драйвер.подготовить(блок)
+      если блок.isAutoMountEnabled тогда
+        драйвер.встроить(блок)
     }
   }
-  иначе если block.isMoved и block.isAutoMountEnabled тогда
-    nonreactive(driver.mount(block))
+  иначе если блок.isMoved и блок.isAutoMountEnabled тогда
+    nonreactive(драйвер.встроить(блок))
 }
 
 скрытая
-операция renderNow(item: Item<XBlock>) {
-  пусть b = item.элемент
-  пусть d = b.дескриптор
-  если d.stamp >= 0 тогда
+операция renderNow(item: Item<XBlock<Значение, Значение, Значение, Значение>>) {
+  пусть б = item.элемент
+  пусть д = б.дескриптор
+  если д.штамп >= 0 тогда
   { // if block is alive
     runInside(item,
     {
       try
       {
-        mountIfNecessary(b)
-        d.stamp += 1
-        d.numerator = 0
-        b._area = undefined // reset
-        b.hasStyles = нет // reset
-        d.children.beginMerge()
-        пусть driver = d.драйвер
-        result = driver.render(b)
-        если b._area == undefined и d.владелец.isTable тогда
-          b.area = undefined // automatic placement
+        mountIfNecessary(б)
+        д.штамп += 1
+        д.номер = 0
+        б._area = undefined // reset
+        б.hasStyles = нет // reset
+        д.children.beginMerge()
+        пусть driver = д.драйвер
+        result = driver.render(б)
+        если б._area == undefined и д.владелец.isTable тогда
+          б.area = undefined // automatic placement
         если результат это Promise тогда
           результат.promise-then(
             { runRenderNestedTreesThenDo(undefined, NOP); return v },
@@ -1154,7 +1157,7 @@
       catch(e)
       {
         runRenderNestedTreesThenDo(e, NOP)
-        console.log("Rendering failed: { d.key }")
+        console.log("Rendering failed: { д.key }")
         console.log("{ e }")
       }
     })
@@ -1162,23 +1165,23 @@
 }
 
 скрытая
-операция triggerFinalization(item: Item<XBlock>, isLeader: boolean, individual: boolean) {
+операция triggerFinalization(item: Item<XBlock<Значение, Значение, Значение, Значение>>, isLeader: boolean, individual: boolean) {
   пусть b = item.элемент
   пусть d = b.дескриптор
-  если d.stamp >= 0 тогда
+  если d.штамп >= 0 тогда
   {
-    пусть driver = d.драйвер
-    если individual и d.key != d.builder.key и не(driver.isRow) тогда
+    пусть драйвер = d.драйвер
+    если individual и d.key != d.builder.key и не(драйвер.isRow) тогда
       console.log("WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: { d.key }")
-    d.stamp = поразрядное-не(d.stamp)
+    d.штамп = поразрядное-не(d.штамп)
     // Finalize block itself and remove it from collection
-    пусть childrenAreLeaders = nonreactive(driver.finalize(b, isLeader))
+    пусть childrenAreLeaders = nonreactive(драйвер.finalize(b, isLeader))
     b.native = null
     b.controller = null
     если b.has(Режим.SeparateReaction) тогда
     {
       // Defer disposal if block is reactive
-      item.aux = undefined
+      item.aux = пусто
       постоянное last = gLastToDispose
       если last тогда
       {
@@ -1230,12 +1233,12 @@
 // }
 
 скрытая
-операция wrapToRunInside<T>(func: операция(арг: Элементы<Значени>): T): операция(args: Элементы<Значени>): T
+операция wrapToRunInside<T>(func: операция(арг: Элементы<Значение>): T): операция(args: Элементы<Значение>): T
 {
-  пусть wrappedToRunInside: операция(арг: Элементы<Значени>): T
+  пусть wrappedToRunInside: операция(арг: Элементы<Значение>): T
   пусть current = gCurrent
   если current тогда
-    wrappedToRunInside = операция(арг: Элементы<Значени>): T
+    wrappedToRunInside = операция(арг: Элементы<Значение>): T
     {
       return runInside(current, func, args)
     }
@@ -1245,9 +1248,9 @@
 }
 
 скрытая
-операция runInside<T>(item: Item<XBlock>,
-  func: операция(args: Элементы<Значени>): T,
-  args: Элементы<Значени>): T
+операция runInside<T>(item: Item<XBlock<Значение, Значение, Значение, Значение>>,
+  func: операция(args: Элементы<Значение>): T,
+  args: Элементы<Значение>): T
 {
   постоянное outer = gCurrent
   try
