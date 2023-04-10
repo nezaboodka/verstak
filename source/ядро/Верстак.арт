@@ -77,7 +77,7 @@
     иначе
     {
       // Create new root block
-      результат = XBlock<T, M, C, R>(код | "", драйвер, владелец, конструктор)
+      результат = XBlock<T, M, C, R>(код ?? "", драйвер, владелец, конструктор)
       результат.descriptor.item = Collection.createItem(результат)
       triggerRendering(результат.descriptor.item)
     }
@@ -146,7 +146,8 @@
   операция initialize(block: Блок<T, Значение, C>)
   {
     пусть b = block это XBlock<T, Значение, C>
-    preset?.(b)
+    если preset тогда
+      preset(b)
     chainedInitialize(b, b.descriptor.builder)
   }
 
@@ -266,7 +267,7 @@
 скрытая
 операция chainedMode(конструктор: КонструкторБлока<Значение, Значение, Значение, Значение>?): Режим
 {
-  return конструктор?.modes | (? конструктор?.original : chainedMode(конструктор?.original) | Режим.Default)
+  return конструктор?.modes ?? (? конструктор?.original : chainedMode(конструктор?.original) | Режим.Default)
 }
 
 скрытая
@@ -388,7 +389,7 @@
 
   // set value(value: T)
   // {
-  //   XBlock.setContextVariableValue(this, value)
+  //   XBlock.setContextVariableValue(объект, значение)
   // }
 
   // get value(): T
@@ -417,7 +418,7 @@
     y = пре.y
     runningMaxX = пре.runningMaxX
     runningMaxY = пре.runningMaxY
-    flags = пре.flags & ~CursorFlags.OwnCursorPosition
+    flags = порязрядное-и(пре.flags, поразрядное-не(CursorFlags.OwnCursorPosition))
   }
 }
 
@@ -576,7 +577,7 @@
 
   операция включен-режим(mode: Режим): Булево
   {
-    результат = (chainedMode(this.descriptor.builder) & mode) == mode
+    результат = поразрядное-и(chainedMode(this.descriptor.builder), mode) == mode
   }
 
   охраняемое типом
@@ -605,7 +606,7 @@
 
   охраняемое типом
   isMoved: Булево
-    при чтении { return this.descriptor.owner.descriptor.children.isMoved(this.descriptor.item!) }
+    при чтении { return дескриптор.владелец.дескриптор.дети.isMoved(this.descriptor.item!) }
 
   раскладка-детей: Раскладка
     при записи
@@ -643,147 +644,182 @@
         rowBreak()
     }
 
-  get widthGrowth(): number { return this._widthGrowth }
-  set widthGrowth(value: number) {
-    if (value != this._widthGrowth) {
-      this.descriptor.driver.applyWidthGrowth(this, value)
-      this._widthGrowth = value
+  widthGrowth: Число
+    при записи {
+      если значение != хранимое тогда
+      {
+        дескриптор.драйвер.applyWidthGrowth(объект, значение)
+        хранимое = значение
+      }
     }
-  }
 
-  get minWidth(): string { return this._minWidth }
-  set minWidth(value: string) {
-    if (value != this._minWidth) {
-      this.descriptor.driver.applyMinWidth(this, value)
-      this._minWidth = value
+  minWidth: Текст
+    при записи
+    {
+      если значение != хранимое тогда
+      {
+        дескриптор.драйвер.applyMinWidth(объект, значение)
+        хранимое = значение
+      }
     }
-  }
 
-  get maxWidth(): string { return this._maxWidth }
-  set maxWidth(value: string) {
-    if (value != this._maxWidth) {
-      this.descriptor.driver.applyMaxWidth(this, value)
-      this._maxWidth = value
+  maxWidth: Текст
+   при записи
+   {
+      если значение != хранимое тогда
+      {
+        дескриптор.драйвер.applyMaxWidth(объект, значение)
+        хранимое = значение
+      }
     }
-  }
 
-  get heightGrowth(): number { return this._heightGrowth }
-  set heightGrowth(value: number) {
-    if (value != this._heightGrowth) {
-      this.descriptor.driver.applyHeightGrowth(this, value)
-      this._heightGrowth = value
+  heightGrowth: Число
+    при записи
+    {
+      если значение != хранимое тогда
+      {
+        дескриптор.драйвер.applyHeightGrowth(объект, значение)
+        хранимое = значение
+      }
     }
-  }
 
-  get minHeight(): string { return this._minHeight }
-  set minHeight(value: string) {
-    if (value != this._minHeight) {
-      this.descriptor.driver.applyMinHeight(this, value)
-      this._minHeight = value
+  minHeight: Текст
+    при записи
+    {
+      если значение != хранимое тогда
+      {
+        дескриптор.драйвер.applyMinHeight(объект, значение)
+        хранимое = значение
+      }
     }
-  }
 
-  get maxHeight(): string { return this._maxHeight }
-  set maxHeight(value: string) {
-    if (value != this._maxHeight) {
-      this.descriptor.driver.applyMaxHeight(this, value)
-      this._maxHeight = value
+  maxHeight: Текст
+    при записи
+    {
+      если значение != хранимое тогда
+      {
+        дескриптор.драйвер.applyMaxHeight(объект, значение)
+        хранимое = значение
+      }
+   }
+
+  contentAlignment: Выравнивание
+    при записи
+    {
+      если значение != хранимое тогда
+      {
+        дескриптор.драйвер.applyContentAlignment(объект, значение)
+        хранимое = значение
+      }
     }
-  }
 
-  get contentAlignment(): Align { return this._contentAlignment }
-  set contentAlignment(value: Align) {
-    if (value != this._contentAlignment) {
-      this.descriptor.driver.applyContentAlignment(this, value)
-      this._contentAlignment = value
+  blockAlignment: Выравнивание
+    при записи
+    {
+      если значение != хранимое тогда
+      {
+        дескриптор.драйвер.applyBlockAlignment(объект, значение)
+        хранимое = значение
+      }
     }
-  }
 
-  get blockAlignment(): Align { return this._blockAlignment }
-  set blockAlignment(value: Align) {
-    if (value != this._blockAlignment) {
-      this.descriptor.driver.applyBlockAlignment(this, value)
-      this._blockAlignment = value
+  contentWrapping: Булево
+    при записи
+    {
+      если значение != хранимое тогда
+      {
+        дескриптор.драйвер.applyContentWrapping(объект, значение)
+        хранимое = значение
+      }
     }
-  }
 
-  get contentWrapping(): boolean { return this._contentWrapping }
-  set contentWrapping(value: boolean) {
-    if (value != this._contentWrapping) {
-      this.descriptor.driver.applyContentWrapping(this, value)
-      this._contentWrapping = value
+  overlayVisible: Булево?
+    при записи
+    {
+      если значение != хранимое тогда
+      {
+        дескриптор.драйвер.applyOverlayVisible(объект, значение)
+        хранимое = значение
+      }
     }
+
+  операция style(styleName: Текст, вкл: Булево?)
+  {
+    дескриптор.драйвер.applyStyle(объект, hasStyles, styleName, вкл)
+    hasStyles = да
   }
 
-  get overlayVisible(): boolean | undefined { return this._overlayVisible }
-  set overlayVisible(value: boolean | undefined) {
-    if (value != this._overlayVisible) {
-      this.descriptor.driver.applyOverlayVisible(this, value)
-      this._overlayVisible = value
-    }
-  }
-
-  style(styleName: string, enabled?: boolean) {
-    this.descriptor.driver.applyStyle(this, this.hasStyles, styleName, enabled)
-    this.hasStyles = true
-  }
-
-  configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.descriptor.stamp != 1 || !this.has(Режим.SeparateReaction))
-      throw new Error("reactronic can be configured only for blocks with separate reaction mode and only inside initialize")
+  операция configureReactronic(options: Partial<MemberOptions>): MemberOptions
+  {
+    if this.descriptor.stamp != 1 или не(has(Режим.SeparateReaction)) тогда
+      ошибка "reactronic can be configured only for blocks with separate reaction mode and only inside initialize"
     return Rx.getController(this.render).configure(options)
   }
 
-  static get curr(): Item<XBlock> {
-    if (!gCurrent)
-      throw new Error("current block is undefined")
-    return gCurrent
-  }
+  общее
+  охраняемое типом
+  curr: Item<XBlock>
+    при записи
+    {
+      если не(gCurrent) тогда
+        ошибка "current block is undefined"
+      результат = gCurrent
+    }
 
-  static tryUseContextVariable<T extends Object>(variable: ContextVariable<T>): T | undefined {
-    let b = XBlock.curr.instance
-    while (b.descriptor.context?.variable != variable && b.descriptor.owner != b)
+  общая
+  операция tryUseContextVariable<T: Object>(variable: ContextVariable<T>): T?
+  {
+    пусть b = XBlock.curr.instance
+    пока b.descriptor.context?.variable != variable и b.descriptor.owner != b выполнить
       b = b.descriptor.outer
-    return b.descriptor.context?.value as any // TODO: to get rid of any
+    return b.descriptor.context?.value это Т? // TODO: to get rid of any
   }
 
-  static useContextVariableValue<T extends Object>(variable: ContextVariable<T>): T {
-    пусть result = XBlock.tryUseContextVariable(variable) ?? variable.defaultValue
-    if (!result)
-      throw new Error("context doesn't exist")
-    return result
+  общая
+  операция useContextVariableValue<T: Object>(variable: ContextVariable<T>): T
+  {
+    результат = XBlock.tryUseContextVariable(variable) ?? variable.defaultValue
+    если не(результат) тогда
+      ошибка "context doesn't exist"
   }
 
-  static setContextVariableValue<T extends Object>(variable: ContextVariable<T>, value: T | undefined) {
+  общая
+  операция setContextVariableValue<T: Object>(variable: ContextVariable<T>, value: T?)
+  {
     пусть b = XBlock.curr.instance
     пусть d = b.descriptor
     пусть owner = d.owner
-    пусть hostCtx = nonreactive(() => owner.descriptor.context?.value)
-    if (value && value != hostCtx) {
-      if (hostCtx)
+    пусть hostCtx = nonreactive(owner.descriptor.context?.value)
+    если value и value != hostCtx тогда
+    {
+      если hostCtx тогда
         d.outer = owner
-      else
+      иначе
         d.outer = owner.descriptor.outer
-      Transaction.run({ separation: true }, () => {
+      Transaction.run([ separation = true ],
+      {
         постоянное ctx = d.context
-        if (ctx) {
+        если ctx тогда
+        {
           ctx.variable = variable
           ctx.value = value // update context thus invalidate observers
         }
-        else
-          d.context = new XBlockCtx<any>(variable, value)
+        иначе
+          d.context = XBlockCtx<any>(variable, value)
       })
     }
-    else if (hostCtx)
+    иначе если hostCtx тогда
       d.outer = owner
-    else
+    иначе
       d.outer = owner.descriptor.outer
   }
 
-  private rowBreak() {
-    постоянное d = this.descriptor
-    постоянное cursorPosition = d.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
-    постоянное newCursorPosition = this.descriptor.cursorPosition = new CursorPosition(cursorPosition)
+  скрыто
+  операция rowBreak()
+  {
+    пусть d = this.descriptor
+    пусть cursorPosition = d.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
+    пусть newCursorPosition = this.descriptor.cursorPosition = CursorPosition(cursorPosition)
     newCursorPosition.x = 1
     newCursorPosition.y = newCursorPosition.runningMaxY + 1
   }
@@ -803,113 +839,131 @@
   isRegularBlock: boolean, area: BlockArea, maxX: number, maxY: number,
   cursorPosition: CursorPosition, newCursorPosition?: CursorPosition): CellRange
 {
-  let result: CellRange // this comment just prevents syntax highlighting in VS code
   если typeof(area) == "string" тогда
+  {
     // Absolute positioning
-    result = parseCellRange(area, { x1: 0, y1: 0, x2: 0, y2: 0 })
+    result = parseCellRange(area, [ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ])
     absolutizeCellRange(result, cursorPosition.x, cursorPosition.y,
       maxX || Infinity, maxY || Infinity, result)
-    if (newCursorPosition) {
+    если newCursorPosition тогда
+    {
       newCursorPosition.x = isRegularBlock ? result.x2 + 1 : result.x1
       newCursorPosition.y = result.y1
       newCursorPosition.flags = CursorFlags.OwnCursorPosition
     }
   }
-  else if (newCursorPosition) {
+  иначе если newCursorPosition тогда
+  {
     // Relative positioning
     let dx: number
     let dy: number // this comment just prevents syntax highlighting in VS code
-    if (area) {
+    если area тогда
+    {
       dx = area.cellsOverWidth ?? 1
       dy = area.cellsOverHeight ?? 1
     }
-    else // area == undefined
+    иначе // area == undefined
       dx = dy = 1
     // Arrange
-    постоянное runningX = maxX != 0 ? maxX : cursorPosition.runningMaxX
-    постоянное runningY = maxY != 0 ? maxY : cursorPosition.runningMaxY
-    result = { x1: 0, y1: 0, x2: 0, y2: 0 }
-    if (dx == 0 && isRegularBlock) {
+    пусть runningX = ? maxX != 0 : maxX | cursorPosition.runningMaxX
+    пусть runningY = ? maxY != 0 : maxY | cursorPosition.runningMaxY
+    result = [ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ]
+    если dx == 0 и isRegularBlock тогда
+    {
       dx = runningX || 1
       newCursorPosition.flags = CursorFlags.UsesRunningColumnCount
     }
-    if (dx >= 0) {
-      if (isRegularBlock) {
+    если dx >= 0 тогда
+    {
+      если isRegularBlock тогда
+      {
         result.x1 = cursorPosition.x
         result.x2 = absolutizePosition(result.x1 + dx - 1, 0, maxX || Infinity)
         newCursorPosition.x = result.x2 + 1
       }
-      else {
+      иначе
+      {
         result.x1 = result.x2 = cursorPosition.x + dx
         newCursorPosition.x = result.x2
       }
     }
-    else {
-      if (isRegularBlock) {
+    иначе
+    {
+      если isRegularBlock тогда
+      {
         result.x1 = Math.max(cursorPosition.x + dx, 1)
         result.x2 = cursorPosition.x
         newCursorPosition.x = result.x2 + 1
       }
-      else {
+      иначе
+      {
         result.x1 = result.x2 = cursorPosition.x + dx
         newCursorPosition.x = result.x2
       }
     }
-    if (dy == 0 && isRegularBlock) {
+    если dy == 0 и isRegularBlock тогда
+    {
       dy = runningY || 1
       newCursorPosition.flags |= CursorFlags.UsesRunningRowCount
     }
-    if (dy >= 0) {
-      if (isRegularBlock) {
+    если dy >= 0 тогда
+    {
+      если isRegularBlock тогда
+      {
         result.y1 = cursorPosition.y
         result.y2 = absolutizePosition(result.y1 + dy - 1, 0, maxY || Infinity)
         if (result.y2 > newCursorPosition.runningMaxY)
           newCursorPosition.runningMaxY = result.y2
       }
-      else
+      иначе
         result.y1 = result.y2 = cursorPosition.y + dy
     }
-    else {
-      if (isRegularBlock) {
+    иначе
+    {
+      если isRegularBlock тогда
+      {
         result.y1 = Math.max(cursorPosition.y + dy, 1)
         result.y2 = cursorPosition.y
       }
-      else
+      иначе
         result.y1 = result.y2 = cursorPosition.y + dy
     }
   }
-  else
-    throw new Error("relative layout requires sequential children")
-  return result
+  иначе
+    ошибка "relative layout requires sequential children"
 }
 
 скрытая
-операция runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => void) {
-  постоянное curr = XBlock.curr
-  постоянное owner = curr.instance
-  постоянное children = owner.descriptor.children
-  if (children.isMergeInProgress) {
-    let promised: Promise<void> | undefined = undefined
-    try {
-      children.endMerge(error)
+операция runRenderNestedTreesThenDo(ош: Ошибка, action: операция(ош: Ошибка))
+{
+  пусть curr = XBlock.curr
+  пусть owner = curr.instance
+  пусть children = owner.descriptor.children
+  если children.isMergeInProgress тогда
+  {
+    let promised: Promise<void>? = пусто
+    try
+    {
+      children.endMerge(ош)
       // Finalize removed blocks
-      for (постоянное item of children.removedItems(true))
+      for (пусть item of children.removedItems(true))
         triggerFinalization(item, true, true)
-      if (!error) {
+      если не(ош) тогда
+      {
         // Lay out and render actual blocks
-        постоянное ownerIsBand = owner.isBand
-        постоянное sequential = children.isStrict
-        let p1: Array<Item<XBlock>> | undefined = undefined
-        let p2: Array<Item<XBlock>> | undefined = undefined
+        пусть ownerIsBand = owner.isBand
+        пусть sequential = children.isStrict
+        let p1: Array<Item<XBlock>>? = пусто
+        let p2: Array<Item<XBlock>>? = пусто
         let mounting = false
         let hostingRow = owner
-        for (постоянное item of children.items()) {
+        for (пусть item of children.items()) {
           if (Transaction.isCanceled)
             break
-          постоянное block = item.instance
-          постоянное isRow = block.descriptor.driver.isRow
-          постоянное host = isRow ? owner : hostingRow
-          постоянное p = block.renderingPriority ?? Priority.Realtime
+          пусть block = item.instance
+          пусть isRow = block.descriptor.driver.isRow
+          пусть host = isRow ? owner : hostingRow
+          пусть p = block.renderingPriority ?? Priority.Realtime
           mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
           if (p == Priority.Realtime)
             triggerRendering(item) // render synchronously
@@ -1254,6 +1308,6 @@ Promise.prototype.then = reactronicDomHookedThen
 
 постоянное NOP: any = (...args: any[]) => { /* nop */ }
 
-let gCurrent: Item<XBlock> | undefined = undefined
-let gFirstToDispose: Item<XBlock> | undefined = undefined
-let gLastToDispose: Item<XBlock> | undefined = undefined
+let gCurrent: Item<XBlock>? = пусто
+let gFirstToDispose: Item<XBlock>? = пусто
+let gLastToDispose: Item<XBlock>? = пусто
