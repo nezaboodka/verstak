@@ -409,7 +409,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     this.renderingPriority = Priority.Realtime
     // Monitoring
     BlockImpl.grandCount++
-    if (this.has(Mode.SeparateReaction))
+    if (this.isOn(Mode.SeparateReaction))
       BlockImpl.disposableCount++
   }
 
@@ -424,7 +424,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     renderNow(this.descriptor.item!)
   }
 
-  has(mode: Mode): boolean { return (chainedMode(this.descriptor.builder) & mode) === mode }
+  isOn(mode: Mode): boolean { return (chainedMode(this.descriptor.builder) & mode) === mode }
 
   get isInitialRendering(): boolean { return this.descriptor.stamp === 2 }
   get isSequential(): boolean { return this.descriptor.children.isStrict }
@@ -433,7 +433,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   get isBand(): boolean { return this.kind === BlockKind.Band }
   get isTable(): boolean { return this.kind === BlockKind.Table }
 
-  get isAutoMountEnabled(): boolean { return !this.has(Mode.ManualMount) && this.descriptor.host !== this }
+  get isAutoMountEnabled(): boolean { return !this.isOn(Mode.ManualMount) && this.descriptor.host !== this }
   get isMoved(): boolean { return this.descriptor.owner.descriptor.children.isMoved(this.descriptor.item!) }
 
   get kind(): BlockKind { return this._kind }
@@ -552,7 +552,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.descriptor.stamp !== 1 || !this.has(Mode.SeparateReaction))
+    if (this.descriptor.stamp !== 1 || !this.isOn(Mode.SeparateReaction))
       throw new Error("reactronic can be configured only for blocks with separate reaction mode and only inside initialize")
     return Rx.getController(this.render).configure(options)
   }
@@ -758,7 +758,7 @@ function markToMountIfNecessary(mounting: boolean, host: BlockImpl,
   // exist among regular blocks with HTML elements
   const b = item.instance
   const d = b.descriptor
-  if (b.native && !b.has(Mode.ManualMount)) {
+  if (b.native && !b.isOn(Mode.ManualMount)) {
     if (mounting || d.host !== host) {
       children.markAsMoved(item)
       mounting = false
@@ -818,7 +818,7 @@ function triggerRendering(item: Item<BlockImpl>): void {
   const b = item.instance
   const d = b.descriptor
   if (d.stamp >= 0) {
-    if (b.has(Mode.SeparateReaction)) {
+    if (b.isOn(Mode.SeparateReaction)) {
       if (d.stamp === 0) {
         Transaction.outside(() => {
           if (Rx.isLogging)
@@ -896,7 +896,7 @@ function triggerFinalization(item: Item<BlockImpl>, isLeader: boolean, individua
     const childrenAreLeaders = nonreactive(() => driver.finalize(b, isLeader))
     b.native = null
     b.controller = null
-    if (b.has(Mode.SeparateReaction)) {
+    if (b.isOn(Mode.SeparateReaction)) {
       // Defer disposal if block is reactive
       item.aux = undefined
       const last = gLastToDispose
