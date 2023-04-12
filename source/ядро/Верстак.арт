@@ -1180,8 +1180,8 @@
     д.штамп = поразрядное-не(д.штамп)
     // Finalize block itself and remove it from collection
     пусть childrenAreLeaders = nonreactive(драйвер.завершить(б, isLeader))
-    б.реализация = пусто
-    б.контролер = пусто
+    б.реализация = пусто как Значение
+    б.контролер = пусто как Значение
     если б.включен-режим(Режим.раздельная-реакция) тогда
     {
       // Defer disposal if block is reactive
@@ -1240,11 +1240,11 @@
 операция wrapToRunInside<T>(func: операция(арг: Элементы<Значение>): T): операция(args: Элементы<Значение>): T
 {
   пусть wrappedToRunInside: операция(арг: Элементы<Значение>): T
-  пусть current = gCurrent
-  если current тогда
+  пусть текущий = gCurrent
+  если текущий != пусто тогда
     wrappedToRunInside = операция(арг: Элементы<Значение>): T
     {
-      return runInside(current, func, args)
+      return runInside(текущий, func, args)
     }
   иначе
     wrappedToRunInside = func
@@ -1376,15 +1376,15 @@
 }
 
 скрытая
-операция defaultResolve(value: any): any
+операция defaultResolve(value: Значение): Значение
 {
   return value
 }
 
 скрытая
-операция defaultReject(error: any): never
+операция defaultReject(ош: Ошибка) // : never
 {
-  throw error
+  ошибка ош
 }
 
 Promise.prototype.then = reactronicDomHookedThen
