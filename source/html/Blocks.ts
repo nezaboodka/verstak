@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Verstak, VBlock, Layout, BlockBuilder, Align, BlockCoords, SimpleDelegate, BlockArea, CursorCommandDriver, BaseDriver } from "../core/api"
+import { Verstak, VBlock, BlockKind, BlockBuilder, Align, BlockCoords, SimpleDelegate, BlockArea, CursorCommandDriver, BaseDriver } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -100,11 +100,11 @@ export function Fragment<M = unknown, R = void>(
 
 export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
-  applyChildrenLayout(block: VBlock<T, any, any>, value: Layout): void {
+  applyKind(block: VBlock<T, any, any>, value: BlockKind): void {
     const kind = Constants.layouts[value]
     kind && block.native.setAttribute(Constants.attribute, kind)
     VerstakDriversByLayout[value](block)
-    super.applyChildrenLayout(block, value)
+    super.applyKind(block, value)
   }
 
   applyCoords(block: VBlock<T>, value: BlockCoords | undefined): void {
@@ -254,7 +254,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   render(block: VBlock<T>): void | Promise<void> {
     // Add initial line feed automatically
-    if (block.childrenLayout <= Layout.Table)
+    if (block.kind <= BlockKind.Table)
       fromNewRow()
     return super.render(block)
   }
@@ -275,20 +275,20 @@ const Constants = {
 
 const Drivers = {
   // display: flex, flex-direction: column
-  band: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Band),
+  band: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.kind = BlockKind.Band),
 
   // display: grid
-  table: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Table),
+  table: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.kind = BlockKind.Table),
 
   // display: block
-  note: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Note),
+  note: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.kind = BlockKind.Note),
 
   // display: contents
-  group: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.childrenLayout = Layout.Group),
+  group: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.kind = BlockKind.Group),
 
   // display: contents
   // display: flex (row)
-  row: new VerstakHtmlDriver<HTMLElement>(Constants.row, true, b => b.childrenLayout = Layout.Row),
+  row: new VerstakHtmlDriver<HTMLElement>(Constants.row, true, b => b.kind = BlockKind.Row),
 
   // cursor control element
   cursor: new CursorCommandDriver(),

@@ -50,7 +50,7 @@ export interface VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   // User-defined properties
   model: M
   controller: C
-  childrenLayout: Layout
+  kind: BlockKind
   area: BlockArea
   widthGrowth: number
   minWidth: string
@@ -88,7 +88,7 @@ export interface Driver<T, C = unknown> {
   render(block: VBlock<T, unknown, C>): void | Promise<void>
   finalize(block: VBlock<T, unknown, C>, isLeader: boolean): boolean
 
-  applyChildrenLayout(block: VBlock<T, any, C, any>, value: Layout): void
+  applyKind(block: VBlock<T, any, C, any>, value: BlockKind): void
   applyCoords(block: VBlock<T, any, C, any>, value: BlockCoords | undefined): void
   applyWidthGrowth(block: VBlock<T, any, C, any>, value: number): void
   applyMinWidth(block: VBlock<T, any, C, any>, value: string): void
@@ -110,7 +110,7 @@ export interface BlockCoords {
   y2: number
 }
 
-export enum Layout {
+export enum BlockKind {
   Band = 0,
   Table = 1,
   Note = 2,

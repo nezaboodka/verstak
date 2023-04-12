@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, ObservableObject, raw, MemberOptions } from "reactronic"
-import { BlockCoords, Layout, Priority, Mode, Align, BlockArea, BlockBuilder, VBlock, Driver, SimpleDelegate, VBlockDescriptor, VBlockCtx } from "./Interfaces"
+import { BlockCoords, BlockKind, Priority, Mode, Align, BlockArea, BlockBuilder, VBlock, Driver, SimpleDelegate, VBlockDescriptor, VBlockCtx } from "./Interfaces"
 import { emitLetters, equalBlockCoords, parseBlockCoords, getCallerInfo } from "./Utils"
 
 // Verstak
@@ -91,7 +91,7 @@ export class Verstak {
 
 export class BaseDriver<T, C = unknown> implements Driver<T, C> {
   public static readonly fragment = new BaseDriver<any>(
-    "fragment", false, b => b.childrenLayout = Layout.Group)
+    "fragment", false, b => b.kind = BlockKind.Group)
 
   constructor(
     readonly name: string,
@@ -128,7 +128,7 @@ export class BaseDriver<T, C = unknown> implements Driver<T, C> {
     return isLeader // treat children as finalization leaders as well
   }
 
-  applyChildrenLayout(block: VBlock<T, any, C, any>, value: Layout): void {
+  applyKind(block: VBlock<T, any, C, any>, value: BlockKind): void {
     // do nothing
   }
 
@@ -266,7 +266,7 @@ export class CursorCommand {
 
 export class CursorCommandDriver extends BaseDriver<CursorCommand, void>{
   constructor() {
-    super("cursor", false, b => b.childrenLayout = Layout.Cursor)
+    super("cursor", false, b => b.kind = BlockKind.Cursor)
   }
 
   create(block: VBlock<CursorCommand, unknown, void, void>,
@@ -398,7 +398,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements VBlock<T, M, C, R> {
   // User-defined properties
   model: M
   controller: C
-  _childrenLayout: Layout
+  _kind: BlockKind
   _area: BlockArea
   private _coords: BlockCoords
   private _widthGrowth: number
@@ -423,7 +423,7 @@ class XBlock<T = any, M = any, C = any, R = any> implements VBlock<T, M, C, R> {
     // User-defined properties
     this.model = undefined as any
     this.controller = undefined as any as C // hack
-    this._childrenLayout = Layout.Row
+    this._kind = BlockKind.Row
     this._area = undefined
     this._coords = UndefinedBlockCoords
     this._widthGrowth = 0
@@ -461,18 +461,18 @@ class XBlock<T = any, M = any, C = any, R = any> implements VBlock<T, M, C, R> {
   get isInitialRendering(): boolean { return this.descriptor.stamp === 2 }
   get isSequential(): boolean { return this.descriptor.children.isStrict }
   set isSequential(value: boolean) { this.descriptor.children.isStrict = value }
-  get isAuxiliary(): boolean { return this.childrenLayout > Layout.Note } // Row, Group, Cursor
-  get isBand(): boolean { return this.childrenLayout === Layout.Band }
-  get isTable(): boolean { return this.childrenLayout === Layout.Table }
+  get isAuxiliary(): boolean { return this.kind > BlockKind.Note } // Row, Group, Cursor
+  get isBand(): boolean { return this.kind === BlockKind.Band }
+  get isTable(): boolean { return this.kind === BlockKind.Table }
 
   get isAutoMountEnabled(): boolean { return !this.has(Mode.ManualMount) && this.descriptor.host !== this }
   get isMoved(): boolean { return this.descriptor.owner.descriptor.children.isMoved(this.descriptor.item!) }
 
-  get childrenLayout(): Layout { return this._childrenLayout }
-  set childrenLayout(value: Layout) {
-    if (value !== this._childrenLayout || this.descriptor.stamp < 2) {
-      this.descriptor.driver.applyChildrenLayout(this, value)
-      this._childrenLayout = value
+  get kind(): BlockKind { return this._kind }
+  set kind(value: BlockKind) {
+    if (value !== this._kind || this.descriptor.stamp < 2) {
+      this.descriptor.driver.applyKind(this, value)
+      this._kind = value
     }
   }
 
