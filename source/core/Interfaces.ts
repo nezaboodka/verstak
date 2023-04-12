@@ -51,7 +51,7 @@ export interface VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   model: M
   controller: C
   childrenLayout: Layout
-  area: BlockArea
+  areaParams: BlockAreaParams
   widthGrowth: number
   minWidth: string
   maxWidth: string
@@ -89,7 +89,7 @@ export interface Driver<T, C = unknown> {
   finalize(block: VBlock<T, unknown, C>, isLeader: boolean): boolean
 
   applyChildrenLayout(block: VBlock<T, any, C, any>, value: Layout): void
-  applyCellRange(block: VBlock<T, any, C, any>, value: CellRange | undefined): void
+  applyArea(block: VBlock<T, any, C, any>, value: BlockArea | undefined): void
   applyWidthGrowth(block: VBlock<T, any, C, any>, value: number): void
   applyMinWidth(block: VBlock<T, any, C, any>, value: string): void
   applyMaxWidth(block: VBlock<T, any, C, any>, value: string): void
@@ -103,7 +103,7 @@ export interface Driver<T, C = unknown> {
   applyStyle(block: VBlock<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void
 }
 
-export interface CellRange {
+export interface BlockArea {
   x1: number
   y1: number
   x2: number
@@ -154,7 +154,7 @@ export interface TrackSize extends ElasticSize {
   track?: string | number   // <current>
 }
 
-export type BlockArea = undefined | string | {
+export type BlockAreaParams = undefined | string | {
   cellsOverWidth?: number   // 1 (table only)
   cellsOverHeight?: number  // 1 (table only)
 }

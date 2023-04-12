@@ -6,20 +6,20 @@
 // automatically licensed under the license referred above.
 
 import test from "ava"
-import { CellRange } from "../source/core/Interfaces"
-import { parseCellRange, emitCellRange } from "../source/core/CellRangeUtils"
+import { BlockArea } from "../source/core/Interfaces"
+import { parseBlockArea, emitBlockArea } from "../source/core/Utils"
 
-function parse(text: string): CellRange {
-  const result: CellRange = { x1: 0, y1: 0, x2: 0, y2: 0 }
-  parseCellRange(text, result)
+function parse(text: string): BlockArea {
+  const result: BlockArea = { x1: 0, y1: 0, x2: 0, y2: 0 }
+  parseBlockArea(text, result)
   return result
 }
 
-function emit(value: CellRange): string {
-  return emitCellRange(value)
+function emit(value: BlockArea): string {
+  return emitBlockArea(value)
 }
 
-test("CellRange", t => {
+test("BlockArea", t => {
   // Parse
   t.deepEqual(parse(""), { x1: 0, y1: 0, x2: 0, y2: 0 })
   t.deepEqual(parse(" "), { x1: 0, y1: 0, x2: 0, y2: 0 })

@@ -7,7 +7,7 @@
 
 // import { reactive, nonreactive, Transaction, options, Reentrance, Rx, НастройкиЖурнализации, Collection, Item, ObservableObject, raw, MemberOptions } from "reactronic"
 // import { Рамка, Layout, Priority, Режим, Align, BlockArea, КонструкторБлока, Блок, Driver, ПростойДелегат, БлокDescriptor, БлокCtx } from "./Interfaces"
-// import { emitLetters, equalCellRanges, parseCellRange, getCallerInfo } from "./Utils"
+// import { emitLetters, equalBlockAreas, parseBlockArea, getCallerInfo } from "./Utils"
 
 используется артель
 
@@ -1342,7 +1342,7 @@
   если список == пусто тогда
     список = Список<T>()
   список.добавить(элемент)
-  return список
+  return список!
 }
 
 скрытая
