@@ -7,10 +7,14 @@
 
 import { CollectionReader, Item, MemberOptions } from "reactronic"
 
+// Delegates
+
 export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Delegate<T = unknown, M = unknown, C = unknown, R = void> = (block: Block<T, M, C, R>, original: () => R) => R
 export type AsyncDelegate<T = unknown, M = unknown> = (block: Block<T, M, Promise<void>>) => Promise<void>
 export type SimpleDelegate<T = unknown> = (block: Block<T, any, any, any>) => void
+
+// Block
 
 export enum BlockKind {
   Band = 0,
@@ -21,34 +25,6 @@ export enum BlockKind {
   Cursor = 5,
 }
 
-export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
-  original?: BlockBuilder<T, M, C, R>
-  key?: string
-  modes?: Mode
-  triggers?: unknown
-  claim?: Delegate<T, M, C, R>
-  create?: Delegate<T, M, C, R>
-  initialize?: Delegate<T, M, C, R>
-  render?: Delegate<T, M, C, R>
-  finalize?: Delegate<T, M, C, R>
-}
-
-// VBlock
-
-export interface BlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> {
-  readonly key: string
-  readonly driver: Driver<T>
-  readonly builder: Readonly<BlockBuilder<T, M, C, R>>
-  readonly level: number
-  readonly owner: Block
-  readonly host: Block
-  readonly children: CollectionReader<Block>
-  readonly item: Item<Block> | undefined
-  readonly stamp: number
-  readonly outer: Block
-  readonly context: BlockCtx | undefined
-}
-
 export interface Block<T = unknown, M = unknown, C = unknown, R = void> {
   // System-managed properties
   readonly descriptor: BlockDescriptor<T, M, C, R>
@@ -56,7 +32,7 @@ export interface Block<T = unknown, M = unknown, C = unknown, R = void> {
   readonly isBand: boolean
   readonly isTable: boolean
 
-  // User-defined properties
+  // User-manageable properties
   model: M
   controller: C
   kind: BlockKind
@@ -78,6 +54,38 @@ export interface Block<T = unknown, M = unknown, C = unknown, R = void> {
   style(styleName: string, enabled?: boolean): void
   configureReactronic(options: Partial<MemberOptions>): MemberOptions
 }
+
+// BlockDescriptor
+
+export interface BlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> {
+  readonly key: string
+  readonly driver: Driver<T>
+  readonly builder: Readonly<BlockBuilder<T, M, C, R>>
+  readonly level: number
+  readonly owner: Block
+  readonly host: Block
+  readonly children: CollectionReader<Block>
+  readonly item: Item<Block> | undefined
+  readonly stamp: number
+  readonly outer: Block
+  readonly context: BlockCtx | undefined
+}
+
+// BlockBuilder
+
+export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
+  original?: BlockBuilder<T, M, C, R>
+  key?: string
+  modes?: Mode
+  triggers?: unknown
+  claim?: Delegate<T, M, C, R>
+  create?: Delegate<T, M, C, R>
+  initialize?: Delegate<T, M, C, R>
+  render?: Delegate<T, M, C, R>
+  finalize?: Delegate<T, M, C, R>
+}
+
+// BlockCtx
 
 export interface BlockCtx<T extends Object = Object> {
   value: T
@@ -111,6 +119,8 @@ export interface Driver<T, C = unknown> {
   applyOverlayVisible(block: Block<T, any, C, any>, value: boolean | undefined): void
   applyStyle(block: Block<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void
 }
+
+// Other
 
 export interface BlockCoords {
   x1: number
