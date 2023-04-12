@@ -6,21 +6,21 @@
 // automatically licensed under the license referred above.
 
 import { Item, Rx } from "reactronic"
-import { Verstak, VBlock, BaseDriver, Priority } from "../core/api"
+import { Verstak, Block, BaseDriver, Priority } from "../core/api"
 
 export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends BaseDriver<T, C> {
 
-  create(block: VBlock<T, unknown, C, void>, b: { native?: T; controller?: C }): void {
+  create(block: Block<T, unknown, C, void>, b: { native?: T; controller?: C }): void {
     super.create(block, b)
   }
 
-  initialize(block: VBlock<T, unknown, C, void>): void {
+  initialize(block: Block<T, unknown, C, void>): void {
     if (Rx.isLogging && !block.descriptor.driver.isRow)
       block.native.setAttribute("key", block.descriptor.key)
     super.initialize(block)
   }
 
-  finalize(block: VBlock<T, unknown, C>, isLeader: boolean): boolean {
+  finalize(block: Block<T, unknown, C>, isLeader: boolean): boolean {
     const e = block.native as T | undefined // hack
     if (e) {
       e.resizeObserver?.unobserve(e) // is it really needed or browser does this automatically?
@@ -31,7 +31,7 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     return false // children of HTML blocks are not treated as leaders
   }
 
-  mount(block: VBlock<T, unknown, C>): void {
+  mount(block: Block<T, unknown, C>): void {
     const e = block.native as T | undefined // hack
     if (e) {
       const bNode = block.descriptor
@@ -58,11 +58,11 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     }
   }
 
-  relocate(block: VBlock<T, unknown, C>): void {
+  relocate(block: Block<T, unknown, C>): void {
     // nothing to do by default
   }
 
-  render(block: VBlock<T, unknown, C>): void | Promise<void> {
+  render(block: Block<T, unknown, C>): void | Promise<void> {
     const result = super.render(block)
     if (gBlinkingEffectMarker)
       blink(block.native, Verstak.currentRenderingPriority, block.descriptor.stamp)
@@ -77,14 +77,14 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     gBlinkingEffectMarker = value
   }
 
-  static findEffectiveHtmlBlockHost(block: VBlock<any>): VBlock<HTMLElement> {
+  static findEffectiveHtmlBlockHost(block: Block<any>): Block<HTMLElement> {
     let p = block.descriptor.host
     while (p.native instanceof HTMLElement === false && p !== block)
       p = p.descriptor.host
-    return p as VBlock<HTMLElement>
+    return p as Block<HTMLElement>
   }
 
-  static findPrevSiblingHtmlBlock(item: Item<VBlock<any>>): Item<VBlock<HTMLElement>> | undefined {
+  static findPrevSiblingHtmlBlock(item: Item<Block<any>>): Item<Block<HTMLElement>> | undefined {
     let p = item.prev
     while (p && !(p.instance.native instanceof HTMLElement))
       p = p.prev
@@ -93,14 +93,14 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
 }
 
 export class HtmlDriver<T extends HTMLElement, C = unknown> extends BaseHtmlDriver<T, C> {
-  create(block: VBlock<T, unknown, C, void>, b: { native?: T | undefined; controller?: C | undefined }): void {
+  create(block: Block<T, unknown, C, void>, b: { native?: T | undefined; controller?: C | undefined }): void {
     b.native = document.createElement(block.descriptor.driver.name) as T
     super.create(block, b)
   }
 }
 
 export class SvgDriver<T extends SVGElement, C = unknown> extends BaseHtmlDriver<T, C> {
-  create(block: VBlock<T, unknown, C, void>, b: { native?: T | undefined; controller?: C | undefined }): void {
+  create(block: Block<T, unknown, C, void>, b: { native?: T | undefined; controller?: C | undefined }): void {
     b.native = document.createElementNS("http://www.w3.org/2000/svg", block.descriptor.driver.name) as T
     super.create(block, b)
   }

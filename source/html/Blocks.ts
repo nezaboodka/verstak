@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Verstak, VBlock, BlockKind, BlockBuilder, Align, BlockCoords, SimpleDelegate, BlockArea, CursorCommandDriver, BaseDriver } from "../core/api"
+import { Verstak, Block, BlockKind, BlockBuilder, Align, BlockCoords, SimpleDelegate, BlockArea, CursorCommandDriver, BaseDriver } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -31,7 +31,7 @@ import { HtmlDriver } from "./HtmlDriver"
 
 export function Band<M = unknown, R = void>(
   builder?: BlockBuilder<HTMLElement, M, R>,
-  base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  base?: BlockBuilder<HTMLElement, M, R>): Block<HTMLElement, M, R> {
   return Verstak.claim(Drivers.band, builder, base)
 }
 
@@ -39,7 +39,7 @@ export function Band<M = unknown, R = void>(
 
 export function Table<M = unknown, R = void>(
   builder?: BlockBuilder<HTMLElement, M, R>,
-  base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  base?: BlockBuilder<HTMLElement, M, R>): Block<HTMLElement, M, R> {
   return Verstak.claim(Drivers.table, builder, base)
 }
 
@@ -64,7 +64,7 @@ export function cursor(areaParams: BlockArea): void {
 
 // Note (either plain or html)
 
-export function Note(content: string, builder?: BlockBuilder<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+export function Note(content: string, builder?: BlockBuilder<HTMLElement, void, void>): Block<HTMLElement, void, void> {
   return Verstak.claim(Drivers.note, builder, {
     render(b) {
       b.native.innerText = content
@@ -72,7 +72,7 @@ export function Note(content: string, builder?: BlockBuilder<HTMLElement, void, 
   )
 }
 
-export function HtmlNote(content: string, builder?: BlockBuilder<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+export function HtmlNote(content: string, builder?: BlockBuilder<HTMLElement, void, void>): Block<HTMLElement, void, void> {
   return Verstak.claim(Drivers.note, builder, {
     render(b) {
       b.native.innerHTML = content
@@ -84,7 +84,7 @@ export function HtmlNote(content: string, builder?: BlockBuilder<HTMLElement, vo
 
 export function Group<M = unknown, R = void>(
   builder?: BlockBuilder<HTMLElement, M, R>,
-  base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
+  base?: BlockBuilder<HTMLElement, M, R>): Block<HTMLElement, M, R> {
   return Verstak.claim(Drivers.group, builder, base)
 }
 
@@ -92,7 +92,7 @@ export function Group<M = unknown, R = void>(
 
 export function Fragment<M = unknown, R = void>(
   builder?: BlockBuilder<void, M, R>,
-  base?: BlockBuilder<void, M, R>): VBlock<void, M, R> {
+  base?: BlockBuilder<void, M, R>): Block<void, M, R> {
   return Verstak.claim(BaseDriver.fragment, builder, base)
 }
 
@@ -100,14 +100,14 @@ export function Fragment<M = unknown, R = void>(
 
 export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
-  applyKind(block: VBlock<T, any, any>, value: BlockKind): void {
+  applyKind(block: Block<T, any, any>, value: BlockKind): void {
     const kind = Constants.layouts[value]
     kind && block.native.setAttribute(Constants.attribute, kind)
     VerstakDriversByLayout[value](block)
     super.applyKind(block, value)
   }
 
-  applyCoords(block: VBlock<T>, value: BlockCoords | undefined): void {
+  applyCoords(block: Block<T>, value: BlockCoords | undefined): void {
     const css = block.native.style
     if (value) {
       const x1 = value.x1 || 1
@@ -121,7 +121,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     super.applyCoords(block, value)
   }
 
-  applyWidthGrowth(block: VBlock<T>, value: number): void {
+  applyWidthGrowth(block: Block<T>, value: number): void {
     const css = block.native.style
     if (value > 0) {
       css.flexGrow = `${value}`
@@ -133,15 +133,15 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
   }
 
-  applyMinWidth(block: VBlock<T>, value: string): void {
+  applyMinWidth(block: Block<T>, value: string): void {
     block.native.style.minWidth = `${value}`
   }
 
-  applyMaxWidth(block: VBlock<T>, value: string): void {
+  applyMaxWidth(block: Block<T>, value: string): void {
     block.native.style.maxWidth = `${value}`
   }
 
-  applyHeightGrowth(block: VBlock<T>, value: number): void {
+  applyHeightGrowth(block: Block<T>, value: number): void {
     const bNode = block.descriptor
     const driver = bNode.driver
     if (driver.isRow) {
@@ -160,15 +160,15 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
   }
 
-  applyMinHeight(block: VBlock<T>, value: string): void {
+  applyMinHeight(block: Block<T>, value: string): void {
     block.native.style.minHeight = `${value}`
   }
 
-  applyMaxHeight(block: VBlock<T>, value: string): void {
+  applyMaxHeight(block: Block<T>, value: string): void {
     block.native.style.maxHeight = `${value}`
   }
 
-  applyContentAlignment(block: VBlock<T>, value: Align): void {
+  applyContentAlignment(block: Block<T>, value: Align): void {
     const css = block.native.style
     if ((value & Align.Default) === 0) { // if not auto mode
       const v = AlignToCss[(value >> 2) & 0b11]
@@ -182,7 +182,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
       css.justifyContent = css.alignContent = css.textAlign = ""
   }
 
-  applyBlockAlignment(block: VBlock<T>, value: Align): void {
+  applyBlockAlignment(block: Block<T>, value: Align): void {
     const css = block.native.style
     if ((value & Align.Default) === 0) { // if not auto mode
       const v = AlignToCss[(value >> 2) & 0b11]
@@ -197,7 +197,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
       css.alignSelf = css.justifySelf = ""
   }
 
-  applyContentWrapping(block: VBlock<T>, value: boolean): void {
+  applyContentWrapping(block: Block<T>, value: boolean): void {
     const css = block.native.style
     if (value) {
       css.flexFlow = "wrap"
@@ -213,7 +213,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
   }
 
-  applyOverlayVisible(block: VBlock<T>, value: boolean | undefined): void {
+  applyOverlayVisible(block: Block<T>, value: boolean | undefined): void {
     const e = block.native
     const css = e.style
     const host = HtmlDriver.findEffectiveHtmlBlockHost(block).native
@@ -243,7 +243,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
   }
 
-  applyStyle(block: VBlock<T, any, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
+  applyStyle(block: Block<T, any, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
     const e = block.native
     enabled ??= true
     if (secondary)
@@ -252,7 +252,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
       e.className = enabled ? styleName : ""
   }
 
-  render(block: VBlock<T>): void | Promise<void> {
+  render(block: Block<T>): void | Promise<void> {
     // Add initial line feed automatically
     if (block.kind <= BlockKind.Table)
       fromNewRow()

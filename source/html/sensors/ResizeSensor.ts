@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, transactional, LoggingLevel } from "reactronic"
-import { VBlock } from "../../core/api"
+import { Block } from "../../core/api"
 import { Sensor } from "./Sensor"
 
 export interface ResizedElement {
@@ -30,7 +30,7 @@ export class ResizeSensor extends Sensor {
     this.doReset()
   }
 
-  observeResizing(block: VBlock<any, any ,any>, value: boolean, boxSizing: ResizeObserverBoxOptions = "content-box"): void {
+  observeResizing(block: Block<any, any ,any>, value: boolean, boxSizing: ResizeObserverBoxOptions = "content-box"): void {
     const native = block.native
     if (native instanceof Element) {
       if (value) {

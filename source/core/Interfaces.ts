@@ -8,9 +8,18 @@
 import { CollectionReader, Item, MemberOptions } from "reactronic"
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
-export type Delegate<T = unknown, M = unknown, C = unknown, R = void> = (block: VBlock<T, M, C, R>, original: () => R) => R
-export type AsyncDelegate<T = unknown, M = unknown> = (block: VBlock<T, M, Promise<void>>) => Promise<void>
-export type SimpleDelegate<T = unknown> = (block: VBlock<T, any, any, any>) => void
+export type Delegate<T = unknown, M = unknown, C = unknown, R = void> = (block: Block<T, M, C, R>, original: () => R) => R
+export type AsyncDelegate<T = unknown, M = unknown> = (block: Block<T, M, Promise<void>>) => Promise<void>
+export type SimpleDelegate<T = unknown> = (block: Block<T, any, any, any>) => void
+
+export enum BlockKind {
+  Band = 0,
+  Table = 1,
+  Note = 2,
+  Group = 3,
+  Row = 4,
+  Cursor = 5,
+}
 
 export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
   original?: BlockBuilder<T, M, C, R>
@@ -26,23 +35,23 @@ export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
 
 // VBlock
 
-export interface VBlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> {
+export interface BlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> {
   readonly key: string
   readonly driver: Driver<T>
   readonly builder: Readonly<BlockBuilder<T, M, C, R>>
   readonly level: number
-  readonly owner: VBlock
-  readonly host: VBlock
-  readonly children: CollectionReader<VBlock>
-  readonly item: Item<VBlock> | undefined
+  readonly owner: Block
+  readonly host: Block
+  readonly children: CollectionReader<Block>
+  readonly item: Item<Block> | undefined
   readonly stamp: number
-  readonly outer: VBlock
-  readonly context: VBlockCtx | undefined
+  readonly outer: Block
+  readonly context: BlockCtx | undefined
 }
 
-export interface VBlock<T = unknown, M = unknown, C = unknown, R = void> {
+export interface Block<T = unknown, M = unknown, C = unknown, R = void> {
   // System-managed properties
-  readonly descriptor: VBlockDescriptor<T, M, C, R>
+  readonly descriptor: BlockDescriptor<T, M, C, R>
   readonly native: T
   readonly isBand: boolean
   readonly isTable: boolean
@@ -70,7 +79,7 @@ export interface VBlock<T = unknown, M = unknown, C = unknown, R = void> {
   configureReactronic(options: Partial<MemberOptions>): MemberOptions
 }
 
-export interface VBlockCtx<T extends Object = Object> {
+export interface BlockCtx<T extends Object = Object> {
   value: T
 }
 
@@ -81,26 +90,26 @@ export interface Driver<T, C = unknown> {
   readonly isRow: boolean,
   readonly preset?: SimpleDelegate<T>
 
-  claim(block: VBlock<T, unknown, C>): void
-  create(block: VBlock<T, unknown, C>, b: { native?: T, controller?: C }): void
-  initialize(block: VBlock<T, unknown, C>): void
-  mount(block: VBlock<T, unknown, C>): void
-  render(block: VBlock<T, unknown, C>): void | Promise<void>
-  finalize(block: VBlock<T, unknown, C>, isLeader: boolean): boolean
+  claim(block: Block<T, unknown, C>): void
+  create(block: Block<T, unknown, C>, b: { native?: T, controller?: C }): void
+  initialize(block: Block<T, unknown, C>): void
+  mount(block: Block<T, unknown, C>): void
+  render(block: Block<T, unknown, C>): void | Promise<void>
+  finalize(block: Block<T, unknown, C>, isLeader: boolean): boolean
 
-  applyKind(block: VBlock<T, any, C, any>, value: BlockKind): void
-  applyCoords(block: VBlock<T, any, C, any>, value: BlockCoords | undefined): void
-  applyWidthGrowth(block: VBlock<T, any, C, any>, value: number): void
-  applyMinWidth(block: VBlock<T, any, C, any>, value: string): void
-  applyMaxWidth(block: VBlock<T, any, C, any>, value: string): void
-  applyHeightGrowth(block: VBlock<T, any, C, any>, value: number): void
-  applyMinHeight(block: VBlock<T, any, C, any>, value: string): void
-  applyMaxHeight(block: VBlock<T, any, C, any>, value: string): void
-  applyContentAlignment(block: VBlock<T, any, C, any>, value: Align): void
-  applyBlockAlignment(block: VBlock<T, any, C, any>, value: Align): void
-  applyContentWrapping(block: VBlock<T, any, C, any>, value: boolean): void
-  applyOverlayVisible(block: VBlock<T, any, C, any>, value: boolean | undefined): void
-  applyStyle(block: VBlock<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void
+  applyKind(block: Block<T, any, C, any>, value: BlockKind): void
+  applyCoords(block: Block<T, any, C, any>, value: BlockCoords | undefined): void
+  applyWidthGrowth(block: Block<T, any, C, any>, value: number): void
+  applyMinWidth(block: Block<T, any, C, any>, value: string): void
+  applyMaxWidth(block: Block<T, any, C, any>, value: string): void
+  applyHeightGrowth(block: Block<T, any, C, any>, value: number): void
+  applyMinHeight(block: Block<T, any, C, any>, value: string): void
+  applyMaxHeight(block: Block<T, any, C, any>, value: string): void
+  applyContentAlignment(block: Block<T, any, C, any>, value: Align): void
+  applyBlockAlignment(block: Block<T, any, C, any>, value: Align): void
+  applyContentWrapping(block: Block<T, any, C, any>, value: boolean): void
+  applyOverlayVisible(block: Block<T, any, C, any>, value: boolean | undefined): void
+  applyStyle(block: Block<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void
 }
 
 export interface BlockCoords {
@@ -108,15 +117,6 @@ export interface BlockCoords {
   y1: number
   x2: number
   y2: number
-}
-
-export enum BlockKind {
-  Band = 0,
-  Table = 1,
-  Note = 2,
-  Group = 3,
-  Row = 4,
-  Cursor = 5,
 }
 
 export const enum Priority {
