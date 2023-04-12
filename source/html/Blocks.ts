@@ -29,7 +29,7 @@ import { HtmlDriver } from "./HtmlDriver"
 
 // Band
 
-export function VBand<M = unknown, R = void>(
+export function Band<M = unknown, R = void>(
   builder?: BlockBuilder<HTMLElement, M, R>,
   base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
   return Verstak.claim(Drivers.band, builder, base)
@@ -37,7 +37,7 @@ export function VBand<M = unknown, R = void>(
 
 // Table
 
-export function VTable<M = unknown, R = void>(
+export function Table<M = unknown, R = void>(
   builder?: BlockBuilder<HTMLElement, M, R>,
   base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
   return Verstak.claim(Drivers.table, builder, base)
@@ -64,7 +64,7 @@ export function cursor(areaParams: BlockArea): void {
 
 // Note (either plain or html)
 
-export function VNote(content: string, builder?: BlockBuilder<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+export function Note(content: string, builder?: BlockBuilder<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
   return Verstak.claim(Drivers.note, builder, {
     render(b) {
       b.native.innerText = content
@@ -72,7 +72,7 @@ export function VNote(content: string, builder?: BlockBuilder<HTMLElement, void,
   )
 }
 
-export function VHtmlNote(content: string, builder?: BlockBuilder<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
+export function HtmlNote(content: string, builder?: BlockBuilder<HTMLElement, void, void>): VBlock<HTMLElement, void, void> {
   return Verstak.claim(Drivers.note, builder, {
     render(b) {
       b.native.innerHTML = content
@@ -82,7 +82,7 @@ export function VHtmlNote(content: string, builder?: BlockBuilder<HTMLElement, v
 
 // Group
 
-export function VGroup<M = unknown, R = void>(
+export function Group<M = unknown, R = void>(
   builder?: BlockBuilder<HTMLElement, M, R>,
   base?: BlockBuilder<HTMLElement, M, R>): VBlock<HTMLElement, M, R> {
   return Verstak.claim(Drivers.group, builder, base)
