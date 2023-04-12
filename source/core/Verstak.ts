@@ -453,7 +453,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
       const cursorPosition = d.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
       const newCursorPosition = d.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
       const isCursorBlock = driver instanceof CursorCommandDriver
-      const coords = areaToCoords(!isCursorBlock,
+      const coords = getEffectiveCoords(!isCursorBlock,
         value, owner.maxColumnCount, owner.maxRowCount,
         cursorPosition, newCursorPosition)
       if (!equalBlockCoords(coords, this._coords)) {
@@ -619,7 +619,7 @@ function getBlockKey(block: BlockImpl): string | undefined {
   return d.stamp >= 0 ? d.key : undefined
 }
 
-function areaToCoords(
+function getEffectiveCoords(
   isRegularBlock: boolean, area: BlockArea, maxX: number, maxY: number,
   cursorPosition: CursorPosition, newCursorPosition?: CursorPosition): BlockCoords {
   let result: BlockCoords // this comment just prevents syntax highlighting in VS code
