@@ -614,10 +614,10 @@
   раскладка-детей: Раскладка
     при записи
     {
-      если значение != хранимое или дескриптор.штапм < 2 тогда
+      если параметр != хранимое или дескриптор.штапм < 2 тогда
       {
-        дескриптор.драйвер.применить-раскладку-детей(объект, значение)
-        хранимое = значение
+        дескриптор.драйвер.применить-раскладку-детей(объект, параметр)
+        хранимое = параметр
       }
     }
 
@@ -633,7 +633,7 @@
         пусть newCursorPosition = ? owner.children.isStrict : CursorPosition(cursorPosition) | пусто
         пусть isCursorBlock = драйвер это CursorCommandDriver
         пусть cellRange = blockAreaToCellRange(не(isCursorBlock),
-          значение, вд.maxColumnCount, вд.maxRowCount,
+          параметр, вд.maxColumnCount, вд.maxRowCount,
           cursorPosition, newCursorPosition)
         д.cursorPosition = newCursorPosition
         если не(рамки-идентичны(cellRange, this._cellRange)) тогда
@@ -641,7 +641,7 @@
           драйвер.applyCellRange(объект, cellRange)
           this._cellRange = cellRange
         }
-        хранимое = значение ?? { }
+        хранимое = параметр ?? [ ]
       }
       иначе
         rowBreak()
@@ -849,14 +849,14 @@
     result = parseCellRange(область, [ x1 = 0, y1 = 0, x2 = 0, y2 = 0 ])
     absolutizeCellRange(result, позиция-курсора.x, позиция-курсора.y,
       максX || Infinity, максY || Infinity, result)
-    если новая-позиция-курсора тогда
+    если новая-позиция-курсора != пусто тогда
     {
       новая-позиция-курсора.x = ? isRegularBlock : result.x2 + 1 | result.x1
       новая-позиция-курсора.y = result.y1
       новая-позиция-курсора.flags = CursorFlags.OwnCursorPosition
     }
   }
-  иначе если новая-позиция-курсора тогда
+  иначе если новая-позиция-курсора != пусто тогда
   {
     // Relative positioning
     пусть dx: Целое
@@ -1038,10 +1038,10 @@
   приоритет-2: Список<Item<XBlock<Значение, Значение, Значение, Значение>>>? = пусто)
 {
   пусть stamp = владелец.элемент.дескриптор.штамп
-  если приоритет-1 тогда
-    renderIncrementally(владелец, stamp, все-дети, приоритет-1, Приоритет.обычный)
-  если приоритет-2 тогда
-    renderIncrementally(владелец, stamp, все-дети, приоритет-2, Приоритет.низкий)
+  если приоритет-1 != пусто тогда
+    renderIncrementally(владелец, stamp, все-дети, приоритет-1!, Приоритет.обычный)
+  если приоритет-2 != пусто тогда
+    renderIncrementally(владелец, stamp, все-дети, приоритет-2!, Приоритет.низкий)
 }
 
 параллельная
