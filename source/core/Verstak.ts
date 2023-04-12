@@ -366,8 +366,8 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   // User-defined properties
   model: M
   controller: C
-  _kind: BlockKind
-  _area: BlockArea
+  private _kind: BlockKind
+  private _area: BlockArea
   private _coords: BlockCoords
   private _widthGrowth: number
   private _minWidth: string
@@ -379,7 +379,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   private _blockAlignment: Align
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
-  hasStyles: boolean
+  private _hasStyles: boolean
   childrenShuffling: boolean
   renderingPriority: Priority
 
@@ -404,13 +404,18 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     this._blockAlignment = Align.Default
     this._contentWrapping = false
     this._overlayVisible = undefined
-    this.hasStyles = false
+    this._hasStyles = false
     this.childrenShuffling = false
     this.renderingPriority = Priority.Realtime
     // Monitoring
     BlockImpl.grandCount++
     if (this.isOn(Mode.SeparateReaction))
       BlockImpl.disposableCount++
+  }
+
+  prepareForRender(): void {
+    this._area = undefined // reset
+    this._hasStyles = false // reset
   }
 
   @reactive
@@ -547,8 +552,8 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   }
 
   style(styleName: string, enabled?: boolean): void {
-    this.descriptor.driver.applyStyle(this, this.hasStyles, styleName, enabled)
-    this.hasStyles = true
+    this.descriptor.driver.applyStyle(this, this._hasStyles, styleName, enabled)
+    this._hasStyles = true
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
@@ -861,12 +866,11 @@ function renderNow(item: Item<BlockImpl>): void {
         mountIfNecessary(b)
         d.stamp++
         d.numerator = 0
-        b._area = undefined // reset
-        b.hasStyles = false // reset
+        b.prepareForRender()
         d.children.beginMerge()
         const driver = d.driver
         result = driver.render(b)
-        if (b._area === undefined && d.owner.isTable)
+        if (b.area === undefined && d.owner.isTable)
           b.area = undefined // automatic placement
         if (result instanceof Promise)
           result.then(
