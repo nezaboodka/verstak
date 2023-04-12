@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, ObservableObject, raw, MemberOptions } from "reactronic"
-import { BlockArea, Layout, Priority, Mode, Align, BlockAreaParams, BlockBuilder, VBlock, Driver, SimpleDelegate, VBlockDescriptor, VBlockCtx } from "./Interfaces"
-import { emitLetters, equalBlockAreas, parseBlockArea, getCallerInfo } from "./Utils"
+import { BlockCoords, Layout, Priority, Mode, Align, BlockArea, BlockBuilder, VBlock, Driver, SimpleDelegate, VBlockDescriptor, VBlockCtx } from "./Interfaces"
+import { emitLetters, equalBlockCoords, parseBlockCoords, getCallerInfo } from "./Utils"
 
 // Verstak
 
@@ -132,7 +132,7 @@ export class BaseDriver<T, C = unknown> implements Driver<T, C> {
     // do nothing
   }
 
-  applyArea(block: VBlock<T, any, C, any>, value: BlockArea | undefined): void {
+  applyCoords(block: VBlock<T, any, C, any>, value: BlockCoords | undefined): void {
     // do nothing
   }
 
@@ -323,7 +323,7 @@ enum CursorFlags {
   UsesRunningRowCount = 4,
 }
 
-const UndefinedBlockArea = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
+const UndefinedBlockCoords = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
 const InitialCursorPosition: CursorPosition = Object.freeze(new CursorPosition({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: CursorFlags.None }))
 
 class XBlockCtx<T extends Object = Object> extends ObservableObject implements VBlockCtx<T> {
@@ -399,8 +399,8 @@ class XBlock<T = any, M = any, C = any, R = any> implements VBlock<T, M, C, R> {
   model: M
   controller: C
   _childrenLayout: Layout
-  _areaParams: BlockAreaParams
-  private _area: BlockArea
+  _area: BlockArea
+  private _coords: BlockCoords
   private _widthGrowth: number
   private _minWidth: string
   private _maxWidth: string
@@ -424,8 +424,8 @@ class XBlock<T = any, M = any, C = any, R = any> implements VBlock<T, M, C, R> {
     this.model = undefined as any
     this.controller = undefined as any as C // hack
     this._childrenLayout = Layout.Row
-    this._areaParams = undefined
-    this._area = UndefinedBlockArea
+    this._area = undefined
+    this._coords = UndefinedBlockCoords
     this._widthGrowth = 0
     this._minWidth = ""
     this._maxWidth = ""
@@ -476,8 +476,8 @@ class XBlock<T = any, M = any, C = any, R = any> implements VBlock<T, M, C, R> {
     }
   }
 
-  get areaParams(): BlockAreaParams { return this._areaParams }
-  set areaParams(value: BlockAreaParams) {
+  get area(): BlockArea { return this._area }
+  set area(value: BlockArea) {
     const d = this.descriptor
     const driver = d.driver
     if (!driver.isRow) {
@@ -485,14 +485,14 @@ class XBlock<T = any, M = any, C = any, R = any> implements VBlock<T, M, C, R> {
       const cursorPosition = d.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
       const newCursorPosition = d.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
       const isCursorBlock = driver instanceof CursorCommandDriver
-      const area = paramsToArea(!isCursorBlock,
+      const coords = areaToCoords(!isCursorBlock,
         value, owner.maxColumnCount, owner.maxRowCount,
         cursorPosition, newCursorPosition)
-      if (!equalBlockAreas(area, this._area)) {
-        driver.applyArea(this, area)
-        this._area = area
+      if (!equalBlockCoords(coords, this._coords)) {
+        driver.applyCoords(this, coords)
+        this._coords = coords
       }
-      this._areaParams = value ?? { }
+      this._area = value ?? { }
     }
     else
       this.rowBreak()
@@ -651,14 +651,14 @@ function getBlockKey(block: XBlock): string | undefined {
   return d.stamp >= 0 ? d.key : undefined
 }
 
-function paramsToArea(
-  isRegularBlock: boolean, area: BlockAreaParams, maxX: number, maxY: number,
-  cursorPosition: CursorPosition, newCursorPosition?: CursorPosition): BlockArea {
-  let result: BlockArea // this comment just prevents syntax highlighting in VS code
+function areaToCoords(
+  isRegularBlock: boolean, area: BlockArea, maxX: number, maxY: number,
+  cursorPosition: CursorPosition, newCursorPosition?: CursorPosition): BlockCoords {
+  let result: BlockCoords // this comment just prevents syntax highlighting in VS code
   if (typeof(area) === "string") {
     // Absolute positioning
-    result = parseBlockArea(area, { x1: 0, y1: 0, x2: 0, y2: 0 })
-    absolutizeBlockArea(result, cursorPosition.x, cursorPosition.y,
+    result = parseBlockCoords(area, { x1: 0, y1: 0, x2: 0, y2: 0 })
+    absolutizeBlockCoords(result, cursorPosition.x, cursorPosition.y,
       maxX || Infinity, maxY || Infinity, result)
     if (newCursorPosition) {
       newCursorPosition.x = isRegularBlock ? result.x2 + 1 : result.x1
@@ -893,13 +893,13 @@ function renderNow(item: Item<XBlock>): void {
         mountIfNecessary(b)
         d.stamp++
         d.numerator = 0
-        b._areaParams = undefined // reset
+        b._area = undefined // reset
         b.hasStyles = false // reset
         d.children.beginMerge()
         const driver = d.driver
         result = driver.render(b)
-        if (b._areaParams === undefined && d.owner.isTable)
-          b.areaParams = undefined // automatic placement
+        if (b._area === undefined && d.owner.isTable)
+          b.area = undefined // automatic placement
         if (result instanceof Promise)
           result.then(
             v => { runRenderNestedTreesThenDo(undefined, NOP); return v },
@@ -1012,10 +1012,10 @@ function triggersAreEqual(a1: any, a2: any): boolean {
   return result
 }
 
-function absolutizeBlockArea(area: BlockArea,
+function absolutizeBlockCoords(area: BlockCoords,
   cursorX: number, cursorY: number,
   maxWidth: number, maxHeight: number,
-  result: BlockArea): BlockArea {
+  result: BlockCoords): BlockCoords {
   // X1, X2
   const x1 = absolutizePosition(area.x1, cursorX, maxWidth)
   const x2 = absolutizePosition(area.x2, x1, maxWidth)

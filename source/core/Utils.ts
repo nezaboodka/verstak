@@ -5,9 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { BlockArea } from "./Interfaces"
+import { BlockCoords } from "./Interfaces"
 
-export function parseBlockArea(text: string, result: BlockArea): BlockArea {
+export function parseBlockCoords(text: string, result: BlockCoords): BlockCoords {
   let i = 0
   let value = 0
   let sign = 1
@@ -129,10 +129,10 @@ export function parseBlockArea(text: string, result: BlockArea): BlockArea {
         result.y2 = sign
     }
   }
-  return result as BlockArea
+  return result as BlockCoords
 }
 
-export function emitBlockArea(value: BlockArea): string {
+export function emitBlockCoords(value: BlockCoords): string {
   const p1 = emitCellPosition(value.x1, value.y1)
   const p2 = emitCellPosition(value.x2, value.y2)
   return `${p1}${p2 !== "" ? `:${p2}` : ""}`
@@ -165,7 +165,7 @@ export function emitCellPosition(x: number, y: number): string {
   return result
 }
 
-export function equalBlockAreas(a: BlockArea, b: BlockArea): boolean {
+export function equalBlockCoords(a: BlockCoords, b: BlockCoords): boolean {
   return a.x1 === b.x1 && a.y1 === b.y1 && a.x2 === b.x2 && a.y1 === b.y2
 }
 

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Verstak, VBlock, Layout, BlockBuilder, Align, BlockArea, SimpleDelegate, BlockAreaParams, CursorCommandDriver, BaseDriver } from "../core/api"
+import { Verstak, VBlock, Layout, BlockBuilder, Align, BlockCoords, SimpleDelegate, BlockArea, CursorCommandDriver, BaseDriver } from "../core/api"
 import { HtmlDriver } from "./HtmlDriver"
 
 // Verstak is based on two fundamental layout structures
@@ -54,10 +54,10 @@ export function fromNewRow(shiftCursorDown?: number): void {
   Verstak.claim(Drivers.row)
 }
 
-export function cursor(areaParams: BlockAreaParams): void {
+export function cursor(areaParams: BlockArea): void {
   Verstak.claim(Drivers.cursor, {
     render(b) {
-      b.areaParams = areaParams
+      b.area = areaParams
     },
   })
 }
@@ -107,7 +107,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     super.applyChildrenLayout(block, value)
   }
 
-  applyArea(block: VBlock<T>, value: BlockArea | undefined): void {
+  applyCoords(block: VBlock<T>, value: BlockCoords | undefined): void {
     const css = block.native.style
     if (value) {
       const x1 = value.x1 || 1
@@ -118,7 +118,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
     else
       css.gridArea = ""
-    super.applyArea(block, value)
+    super.applyCoords(block, value)
   }
 
   applyWidthGrowth(block: VBlock<T>, value: number): void {

@@ -6,20 +6,20 @@
 // automatically licensed under the license referred above.
 
 import test from "ava"
-import { BlockArea } from "../source/core/Interfaces"
-import { parseBlockArea, emitBlockArea } from "../source/core/Utils"
+import { BlockCoords } from "../source/core/Interfaces"
+import { parseBlockCoords, emitBlockCoords } from "../source/core/Utils"
 
-function parse(text: string): BlockArea {
-  const result: BlockArea = { x1: 0, y1: 0, x2: 0, y2: 0 }
-  parseBlockArea(text, result)
+function parse(text: string): BlockCoords {
+  const result: BlockCoords = { x1: 0, y1: 0, x2: 0, y2: 0 }
+  parseBlockCoords(text, result)
   return result
 }
 
-function emit(value: BlockArea): string {
-  return emitBlockArea(value)
+function emit(value: BlockCoords): string {
+  return emitBlockCoords(value)
 }
 
-test("BlockArea", t => {
+test("BlockCoods", t => {
   // Parse
   t.deepEqual(parse(""), { x1: 0, y1: 0, x2: 0, y2: 0 })
   t.deepEqual(parse(" "), { x1: 0, y1: 0, x2: 0, y2: 0 })
