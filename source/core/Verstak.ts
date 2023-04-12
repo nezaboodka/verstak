@@ -128,57 +128,19 @@ export class BaseDriver<T, C = unknown> implements Driver<T, C> {
     return isLeader // treat children as finalization leaders as well
   }
 
-  applyKind(block: Block<T, any, C, any>, value: BlockKind): void {
-    // do nothing
-  }
-
-  applyCoords(block: Block<T, any, C, any>, value: BlockCoords | undefined): void {
-    // do nothing
-  }
-
-  applyWidthGrowth(block: Block<T, any, C, any>, value: number): void {
-    // do nothing
-  }
-
-  applyMinWidth(block: Block<T, any, C, any>, value: string): void {
-    // do nothing
-  }
-
-  applyMaxWidth(block: Block<T, any, C, any>, value: string): void {
-    // do nothing
-  }
-
-  applyHeightGrowth(block: Block<T, any, C, any>, value: number): void {
-    // do nothing
-  }
-
-  applyMinHeight(block: Block<T, any, C, any>, value: string): void {
-    // do nothing
-  }
-
-  applyMaxHeight(block: Block<T, any, C, any>, value: string): void {
-    // do nothing
-  }
-
-  applyContentAlignment(block: Block<T, any, C, any>, value: Align): void {
-    // do nothing
-  }
-
-  applyBlockAlignment(block: Block<T, any, C, any>, value: Align): void {
-    // do nothing
-  }
-
-  applyContentWrapping(block: Block<T, any, C, any>, value: boolean): void {
-    // do nothing
-  }
-
-  applyOverlayVisible(block: Block<T, any, C, any>, value: boolean | undefined): void {
-    // do nothing
-  }
-
-  applyStyle(block: Block<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
-    // do nothing
-  }
+  applyKind(block: Block<T, any, C, any>, value: BlockKind): void { /* nop */ }
+  applyCoords(block: Block<T, any, C, any>, value: BlockCoords | undefined): void { /* nop */ }
+  applyWidthGrowth(block: Block<T, any, C, any>, value: number): void { /* nop */ }
+  applyMinWidth(block: Block<T, any, C, any>, value: string): void { /* nop */ }
+  applyMaxWidth(block: Block<T, any, C, any>, value: string): void { /* nop */ }
+  applyHeightGrowth(block: Block<T, any, C, any>, value: number): void { /* nop */ }
+  applyMinHeight(block: Block<T, any, C, any>, value: string): void { /* nop */ }
+  applyMaxHeight(block: Block<T, any, C, any>, value: string): void { /* nop */ }
+  applyContentAlignment(block: Block<T, any, C, any>, value: Align): void { /* nop */ }
+  applyBlockAlignment(block: Block<T, any, C, any>, value: Align): void { /* nop */ }
+  applyContentWrapping(block: Block<T, any, C, any>, value: boolean): void { /* nop */ }
+  applyOverlayVisible(block: Block<T, any, C, any>, value: boolean | undefined): void { /* nop */ }
+  applyStyle(block: Block<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void { /* nop */ }
 }
 
 // Utils
@@ -298,7 +260,7 @@ export class ContextVariable<T extends Object = Object> {
   }
 }
 
-// XBlock
+// CursorPosition
 
 class CursorPosition {
   x: number
@@ -326,6 +288,8 @@ enum CursorFlags {
 const UndefinedBlockCoords = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
 const InitialCursorPosition: CursorPosition = Object.freeze(new CursorPosition({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: CursorFlags.None }))
 
+// BlockCtxImpl
+
 class BlockCtxImpl<T extends Object = Object> extends ObservableObject implements BlockCtx<T> {
   @raw next: BlockCtxImpl<object> | undefined
   @raw variable: ContextVariable<T>
@@ -338,6 +302,8 @@ class BlockCtxImpl<T extends Object = Object> extends ObservableObject implement
     this.value = value
   }
 }
+
+// BlockDescriptorImpl
 
 class BlockDescriptorImpl<T = unknown, M = unknown, C = unknown, R = void> implements BlockDescriptor<T, M, C, R> {
   readonly key: string
@@ -384,6 +350,8 @@ class BlockDescriptorImpl<T = unknown, M = unknown, C = unknown, R = void> imple
     this.cursorPosition = undefined
   }
 }
+
+// BlockImpl
 
 class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R> {
   // Static properties
