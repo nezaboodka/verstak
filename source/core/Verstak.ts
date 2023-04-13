@@ -156,49 +156,49 @@ function generateKey(owner: BlockImpl): string {
   return result
 }
 
-function chainedMode(builder?: BlockBuilder<any, any, any, any>): Mode {
-  return builder?.modes ?? (builder?.original ? chainedMode(builder?.original) : Mode.Default)
+function chainedIsOn(bb?: BlockBuilder<any, any, any, any>): Mode {
+  return bb?.modes ?? (bb?.original ? chainedIsOn(bb?.original) : Mode.Default)
 }
 
-function chainedClaim(block: Block<any>, builder: BlockBuilder): void {
-  const claim = builder.claim
-  const original = builder.original
+function chainedClaim(block: Block<any>, bb: BlockBuilder): void {
+  const claim = bb.claim
+  const original = bb.original
   if (claim)
     claim(block, original ? () => chainedClaim(block, original) : NOP)
   else if (original)
     chainedClaim(block, original)
 }
 
-function chainedCreate(block: Block, builder: BlockBuilder): void {
-  const create = builder.create
-  const original = builder.original
+function chainedCreate(block: Block, bb: BlockBuilder): void {
+  const create = bb.create
+  const original = bb.original
   if (create)
     create(block, original ? () => chainedCreate(block, original) : NOP)
   else if (original)
     chainedCreate(block, original)
 }
 
-function chainedInitialize(block: Block<any>, builder: BlockBuilder): void {
-  const initialize = builder.initialize
-  const original = builder.original
+function chainedInitialize(block: Block<any>, bb: BlockBuilder): void {
+  const initialize = bb.initialize
+  const original = bb.original
   if (initialize)
     initialize(block, original ? () => chainedInitialize(block, original) : NOP)
   else if (original)
     chainedInitialize(block, original)
 }
 
-function chainedRender(block: Block, builder: BlockBuilder): void {
-  const render = builder.render
-  const original = builder.original
+function chainedRender(block: Block, bb: BlockBuilder): void {
+  const render = bb.render
+  const original = bb.original
   if (render)
     render(block, original ? () => chainedRender(block, original) : NOP)
   else if (original)
     chainedRender(block, original)
 }
 
-function chainedFinalize(block: Block<any>, builder: BlockBuilder): void {
-  const finalize = builder.finalize
-  const original = builder.original
+function chainedFinalize(block: Block<any>, bb: BlockBuilder): void {
+  const finalize = bb.finalize
+  const original = bb.original
   if (finalize)
     finalize(block, original ? () => chainedFinalize(block, original) : NOP)
   else if (original)
@@ -413,11 +413,6 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
       BlockImpl.disposableCount++
   }
 
-  prepareForRender(): void {
-    this._area = undefined // reset
-    this._hasStyles = false // reset
-  }
-
   @reactive
   @options({
     reentrance: Reentrance.CancelPrevious,
@@ -429,7 +424,14 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     renderNow(this.descriptor.item!)
   }
 
-  isOn(mode: Mode): boolean { return (chainedMode(this.descriptor.builder) & mode) === mode }
+  prepareForRender(): void {
+    this._area = undefined // reset
+    this._hasStyles = false // reset
+  }
+
+  isOn(mode: Mode): boolean {
+    return (chainedIsOn(this.descriptor.builder) & mode) === mode
+  }
 
   get isInitialRendering(): boolean { return this.descriptor.stamp === 2 }
   get isSequential(): boolean { return this.descriptor.children.isStrict }
