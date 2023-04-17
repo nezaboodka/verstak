@@ -23,6 +23,7 @@ export enum BlockKind {
   Group = 3,
   Row = 4,
   Cursor = 5,
+  Raw = 6,
 }
 
 export interface Block<T = unknown, M = unknown, C = unknown, R = void> {

@@ -36,7 +36,7 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     if (e) {
       const bNode = block.descriptor
       const sequential = bNode.owner.descriptor.children.isStrict
-      const nativeParent = BaseHtmlDriver.findEffectiveHtmlBlockHost(block).native as Element | undefined // hack
+      const nativeParent = BaseHtmlDriver.findEffectiveHtmlBlockHost(block).native as unknown as Element | undefined // hack
       if (nativeParent) {
         if (sequential && !bNode.driver.isRow) {
           const after = BaseHtmlDriver.findPrevSiblingHtmlBlock(block.descriptor.item!)
@@ -77,16 +77,17 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     gBlinkingEffectMarker = value
   }
 
-  static findEffectiveHtmlBlockHost(block: Block<any>): Block<HTMLElement> {
+  static findEffectiveHtmlBlockHost(block: Block<any>): Block<HTMLOrSVGElement> {
     let p = block.descriptor.host
-    while (p.native instanceof HTMLElement === false && p !== block)
+    while (p.native instanceof HTMLElement === false &&
+      p.native instanceof SVGElement === false && p !== block)
       p = p.descriptor.host
-    return p as Block<HTMLElement>
+    return p as Block<HTMLOrSVGElement>
   }
 
-  static findPrevSiblingHtmlBlock(item: Item<Block<any>>): Item<Block<HTMLElement>> | undefined {
+  static findPrevSiblingHtmlBlock(item: Item<Block<any>>): Item<Block<HTMLOrSVGElement>> | undefined {
     let p = item.prev
-    while (p && !(p.instance.native instanceof HTMLElement))
+    while (p && !(p.instance.native instanceof HTMLElement) && !(p.instance.native instanceof SVGElement))
       p = p.prev
     return p
   }
