@@ -77,15 +77,15 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     gBlinkingEffectMarker = value
   }
 
-  static findEffectiveHtmlBlockHost(block: Block<any>): Block<HTMLOrSVGElement> {
+  static findEffectiveHtmlBlockHost(block: Block<any>): Block<HTMLElement | SVGElement> {
     let p = block.descriptor.host
     while (p.native instanceof HTMLElement === false &&
       p.native instanceof SVGElement === false && p !== block)
       p = p.descriptor.host
-    return p as Block<HTMLOrSVGElement>
+    return p as Block<HTMLElement | SVGElement>
   }
 
-  static findPrevSiblingHtmlBlock(item: Item<Block<any>>): Item<Block<HTMLOrSVGElement>> | undefined {
+  static findPrevSiblingHtmlBlock(item: Item<Block<any>>): Item<Block<HTMLElement | SVGElement>> | undefined {
     let p = item.prev
     while (p && !(p.instance.native instanceof HTMLElement) && !(p.instance.native instanceof SVGElement))
       p = p.prev
