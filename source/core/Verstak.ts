@@ -156,8 +156,8 @@ function generateKey(owner: BlockImpl): string {
   return result
 }
 
-function chainedIsOn(bb?: BlockBuilder<any, any, any, any>): Mode {
-  return bb?.modes ?? (bb?.original ? chainedIsOn(bb?.original) : Mode.Default)
+function chainedMode(bb?: BlockBuilder<any, any, any, any>): Mode {
+  return bb?.modes ?? (bb?.original ? chainedMode(bb?.original) : Mode.Default)
 }
 
 function chainedClaim(block: Block<any>, bb: BlockBuilder): void {
@@ -409,7 +409,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     this.renderingPriority = Priority.Realtime
     // Monitoring
     BlockImpl.grandCount++
-    if (this.isOn(Mode.IndependentRerendering))
+    if (this.isOn(Mode.PinpointRefresh))
       BlockImpl.disposableCount++
   }
 
@@ -430,7 +430,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   }
 
   isOn(mode: Mode): boolean {
-    return (chainedIsOn(this.descriptor.builder) & mode) === mode
+    return (chainedMode(this.descriptor.builder) & mode) === mode
   }
 
   get isInitialRendering(): boolean { return this.descriptor.stamp === 2 }
@@ -559,7 +559,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.descriptor.stamp !== 1 || !this.isOn(Mode.IndependentRerendering))
+    if (this.descriptor.stamp !== 1 || !this.isOn(Mode.PinpointRefresh))
       throw new Error("reactronic can be configured only for blocks with separate reaction mode and only inside initialize")
     return Rx.getController(this.render).configure(options)
   }
@@ -825,7 +825,7 @@ function triggerRendering(item: Item<BlockImpl>): void {
   const b = item.instance
   const d = b.descriptor
   if (d.stamp >= 0) {
-    if (b.isOn(Mode.IndependentRerendering)) {
+    if (b.isOn(Mode.PinpointRefresh)) {
       if (d.stamp === 0) {
         Transaction.outside(() => {
           if (Rx.isLogging)
@@ -902,7 +902,7 @@ function triggerFinalization(item: Item<BlockImpl>, isLeader: boolean, individua
     const childrenAreLeaders = nonreactive(() => driver.finalize(b, isLeader))
     b.native = null
     b.controller = null
-    if (b.isOn(Mode.IndependentRerendering)) {
+    if (b.isOn(Mode.PinpointRefresh)) {
       // Defer disposal if block is reactive
       item.aux = undefined
       const last = gLastToDispose
