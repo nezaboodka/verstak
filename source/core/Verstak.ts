@@ -409,7 +409,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     this.renderingPriority = Priority.Realtime
     // Monitoring
     BlockImpl.grandCount++
-    if (this.isOn(Mode.SeparateReaction))
+    if (this.isOn(Mode.IndependentRerendering))
       BlockImpl.disposableCount++
   }
 
@@ -559,7 +559,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.descriptor.stamp !== 1 || !this.isOn(Mode.SeparateReaction))
+    if (this.descriptor.stamp !== 1 || !this.isOn(Mode.IndependentRerendering))
       throw new Error("reactronic can be configured only for blocks with separate reaction mode and only inside initialize")
     return Rx.getController(this.render).configure(options)
   }
@@ -825,7 +825,7 @@ function triggerRendering(item: Item<BlockImpl>): void {
   const b = item.instance
   const d = b.descriptor
   if (d.stamp >= 0) {
-    if (b.isOn(Mode.SeparateReaction)) {
+    if (b.isOn(Mode.IndependentRerendering)) {
       if (d.stamp === 0) {
         Transaction.outside(() => {
           if (Rx.isLogging)
@@ -902,7 +902,7 @@ function triggerFinalization(item: Item<BlockImpl>, isLeader: boolean, individua
     const childrenAreLeaders = nonreactive(() => driver.finalize(b, isLeader))
     b.native = null
     b.controller = null
-    if (b.isOn(Mode.SeparateReaction)) {
+    if (b.isOn(Mode.IndependentRerendering)) {
       // Defer disposal if block is reactive
       item.aux = undefined
       const last = gLastToDispose

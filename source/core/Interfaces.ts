@@ -138,7 +138,7 @@ export const enum Priority {
 
 export enum Mode {
   Default = 0,
-  SeparateReaction = 1,
+  IndependentRerendering = 1,
   ManualMount = 2,
 }
 
