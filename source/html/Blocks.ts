@@ -108,28 +108,28 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   applyCoords(block: Block<T>, value: BlockCoords | undefined): void {
-    const css = block.native.style
+    const s = block.native.style
     if (value) {
       const x1 = value.x1 || 1
       const y1 = value.y1 || 1
       const x2 = value.x2 || x1
       const y2 = value.y2 || y1
-      css.gridArea = `${y1} / ${x1} / span ${y2 - y1 + 1} / span ${x2 - x1 + 1}`
+      s.gridArea = `${y1} / ${x1} / span ${y2 - y1 + 1} / span ${x2 - x1 + 1}`
     }
     else
-      css.gridArea = ""
+      s.gridArea = ""
     super.applyCoords(block, value)
   }
 
   applyWidthGrowth(block: Block<T>, value: number): void {
-    const css = block.native.style
+    const s = block.native.style
     if (value > 0) {
-      css.flexGrow = `${value}`
-      css.flexBasis = "0"
+      s.flexGrow = `${value}`
+      s.flexBasis = "0"
     }
     else {
-      css.flexGrow = ""
-      css.flexBasis = ""
+      s.flexGrow = ""
+      s.flexBasis = ""
     }
   }
 
@@ -145,11 +145,11 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     const bNode = block.descriptor
     const driver = bNode.driver
     if (driver.isRow) {
-      const css = block.native.style
+      const s = block.native.style
       if (value > 0)
-        css.flexGrow = `${value}`
+        s.flexGrow = `${value}`
       else
-        css.flexGrow = ""
+        s.flexGrow = ""
     }
     else {
       const hostDriver = bNode.host.descriptor.driver
@@ -169,77 +169,77 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   applyContentAlignment(block: Block<T>, value: Align): void {
-    const css = block.native.style
+    const s = block.native.style
     if ((value & Align.Default) === 0) { // if not auto mode
       const v = AlignToCss[(value >> 2) & 0b11]
       const h = AlignToCss[value & 0b11]
       const t = TextAlignCss[value & 0b11]
-      css.justifyContent = v
-      css.alignItems = h
-      css.textAlign = t
+      s.justifyContent = v
+      s.alignItems = h
+      s.textAlign = t
     }
     else
-      css.justifyContent = css.alignContent = css.textAlign = ""
+      s.justifyContent = s.alignContent = s.textAlign = ""
   }
 
   applyBlockAlignment(block: Block<T>, value: Align): void {
-    const css = block.native.style
+    const s = block.native.style
     if ((value & Align.Default) === 0) { // if not auto mode
       const v = AlignToCss[(value >> 2) & 0b11]
       const h = AlignToCss[value & 0b11]
-      css.alignSelf = v
-      css.justifySelf = h
+      s.alignSelf = v
+      s.justifySelf = h
     }
     // else if (heightGrowth > 0) {
-    //   css.alignSelf = AlignToCss[Align.Stretch]
+    //   s.alignSelf = AlignToCss[Align.Stretch]
     // }
     else
-      css.alignSelf = css.justifySelf = ""
+      s.alignSelf = s.justifySelf = ""
   }
 
   applyContentWrapping(block: Block<T>, value: boolean): void {
-    const css = block.native.style
+    const s = block.native.style
     if (value) {
-      css.flexFlow = "wrap"
-      css.overflow = ""
-      css.textOverflow = ""
-      css.whiteSpace = ""
+      s.flexFlow = "wrap"
+      s.overflow = ""
+      s.textOverflow = ""
+      s.whiteSpace = ""
     }
     else {
-      css.flexFlow = ""
-      css.overflow = "hidden"
-      css.textOverflow = "ellipsis"
-      css.whiteSpace = "nowrap"
+      s.flexFlow = ""
+      s.overflow = "hidden"
+      s.textOverflow = "ellipsis"
+      s.whiteSpace = "nowrap"
     }
   }
 
   applyOverlayVisible(block: Block<T>, value: boolean | undefined): void {
     const e = block.native
-    const css = e.style
+    const s = e.style
     const host = HtmlDriver.findEffectiveHtmlBlockHost(block).native
     if (value === true) {
       const doc = document.body
       const rect = host.getBoundingClientRect()
       if (doc.offsetWidth - rect.left > rect.right) // rightward
-        css.left = "0", css.right = ""
+        s.left = "0", s.right = ""
       else // leftward
-        css.left = "", css.right = "0"
+        s.left = "", s.right = "0"
       if (doc.clientHeight - rect.top > rect.bottom) // downward
-        css.top = "100%", css.bottom = ""
+        s.top = "100%", s.bottom = ""
       else // upward
-        css.top = "", css.bottom = "100%"
-      css.display = ""
-      css.position = "absolute"
-      css.minWidth = "100%"
-      css.boxSizing = "border-box"
+        s.top = "", s.bottom = "100%"
+      s.display = ""
+      s.position = "absolute"
+      s.minWidth = "100%"
+      s.boxSizing = "border-box"
       host.style.position = "relative"
     }
     else {
       host.style.position = ""
       if (value === false)
-        css.display = "none"
+        s.display = "none"
       else // overlayVisible === undefined
-        css.position = css.display = css.left = css.right = css.top = css.bottom = "" // clear
+        s.position = s.display = s.left = s.right = s.top = s.bottom = "" // clear
     }
   }
 
@@ -319,9 +319,9 @@ const VerstakDriversByLayout: Array<SimpleDelegate<HTMLElement>> = [
     s.display = "inline-grid"
     s.flexShrink = "1"
     // Wrapping=false
-    // css.overflow = "hidden"
-    // css.textOverflow = "ellipsis"
-    // css.whiteSpace = "nowrap"
+    // s.overflow = "hidden"
+    // s.textOverflow = "ellipsis"
+    // s.whiteSpace = "nowrap"
     // Wrapping=true
     s.overflow = ""
     s.textOverflow = ""
