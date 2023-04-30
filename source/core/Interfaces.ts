@@ -139,7 +139,7 @@ export const enum Priority {
 export enum Mode {
   Default = 0,
   PinpointRefresh = 1,
-  ManualMount = 2,
+  ManualMounting = 2,
 }
 
 export enum Align {
