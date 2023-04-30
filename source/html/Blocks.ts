@@ -296,45 +296,45 @@ const Drivers = {
 
 const VerstakDriversByLayout: Array<SimpleDelegate<HTMLElement>> = [
   b => { // band
-    const css = b.native.style
-    css.display = "flex"
-    css.flexDirection = "column"
-    css.alignSelf = b.descriptor.owner.isTable ? "stretch" : "center"
-    css.textAlign = "initial"
-    css.flexShrink = "1"
-    css.minWidth = "0"
+    const s = b.native.style
+    s.display = "flex"
+    s.flexDirection = "column"
+    s.alignSelf = b.descriptor.owner.isTable ? "stretch" : "center"
+    s.textAlign = "initial"
+    s.flexShrink = "1"
+    s.minWidth = "0"
   },
   b => { // table
-    const css = b.native.style
-    css.alignSelf = b.descriptor.owner.isTable ? "stretch" : "center"
-    css.display = "grid"
-    css.flexBasis = "0"
-    css.gridAutoRows = "minmax(min-content, 1fr)"
-    css.gridAutoColumns = "minmax(min-content, 1fr)"
-    css.textAlign = "initial"
+    const s = b.native.style
+    s.alignSelf = b.descriptor.owner.isTable ? "stretch" : "center"
+    s.display = "grid"
+    s.flexBasis = "0"
+    s.gridAutoRows = "minmax(min-content, 1fr)"
+    s.gridAutoColumns = "minmax(min-content, 1fr)"
+    s.textAlign = "initial"
   },
   b => { // note
-    const css = b.native.style
-    css.alignSelf = b.descriptor.owner.isTable ? "stretch" : "center"
-    css.display = "inline-grid"
-    css.flexShrink = "1"
+    const s = b.native.style
+    s.alignSelf = b.descriptor.owner.isTable ? "stretch" : "center"
+    s.display = "inline-grid"
+    s.flexShrink = "1"
     // Wrapping=false
     // css.overflow = "hidden"
     // css.textOverflow = "ellipsis"
     // css.whiteSpace = "nowrap"
     // Wrapping=true
-    css.overflow = ""
-    css.textOverflow = ""
-    css.whiteSpace = ""
+    s.overflow = ""
+    s.textOverflow = ""
+    s.whiteSpace = ""
   },
   b => { // group
-    const css = b.native.style
-    css.display = "contents"
+    const s = b.native.style
+    s.display = "contents"
   },
   b => { // row
-    const css = b.native.style
-    css.display = b.descriptor.owner.isTable ? "none" : "flex"
-    css.flexDirection = "row"
+    const s = b.native.style
+    s.display = b.descriptor.owner.isTable ? "none" : "flex"
+    s.flexDirection = "row"
   },
   // undefined // cursor
 ]
