@@ -52,7 +52,7 @@ export interface Block<T = unknown, M = unknown, C = unknown, R = void> {
   renderingPriority?: Priority
   isSequential: boolean
   readonly isInitialRendering: boolean
-  style(styleName: string, enabled?: boolean): void
+  useStyle(styleName: string, enabled?: boolean): void
   configureReactronic(options: Partial<MemberOptions>): MemberOptions
 }
 

@@ -553,7 +553,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     }
   }
 
-  style(styleName: string, enabled?: boolean): void {
+  useStyle(styleName: string, enabled?: boolean): void {
     this.descriptor.driver.applyStyle(this, this._hasStyles, styleName, enabled)
     this._hasStyles = true
   }
