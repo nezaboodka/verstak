@@ -14,8 +14,8 @@ those visual elements are refreshed, which really depend on
 actual data changed. It is achieved by automatic tracking of
 all dependencies between visual elements and data they use
 during run time. Such an approach is usually called reactive
-programming. It frees programmer from writing a code for
-"pushing" changed data to visual elements.
+programming. It frees a programmer from writing boilerplate
+code for "pushing" changed data to visual elements.
 
 Changing of compound data and refreshing of visual elements
 on the screen is performed consistently, in other words in
