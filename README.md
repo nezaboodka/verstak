@@ -27,16 +27,16 @@ in case of exception or cancellation of changes. Such a
 change of compound data in "all-or-nothing" way is called
 a transaction.
 
-Работа с данными и отрисовка визуальных элементов может
-выполняться **асинхронно**. Асинхронное программирование
-комплексно поддерживается на всех уровнях библиотеки.
+Verstak supports asynchronous programming out of the box
+at all the layers, including transactions and visual elements
+rendering.
 
 Altogether it is called reactive transactional programming.
 Transactional reactivity means that state changes are being
 made in an isolated data snapshot and then, once atomically
 applied, are **consistently propagated** to corresponding
-visual components for (re)rendering. All that is done in automatic,
-seamless, and fine-grained way, because Verstak
+visual components for (re)rendering. All that is done in
+automatic, seamless, and fine-grained way, because Verstak
 **takes full care of tracking dependencies** between visual
 components (observers) and state objects (observables).
 
