@@ -40,7 +40,7 @@ automatic, seamless, and fine-grained way, because Verstak
 **takes full care of tracking dependencies** between visual
 components (observers) and state objects (observables).
 
-Example application: https://nevod.io ([source code](https://gitlab.com/nezaboodka/nevod.web.public/-/blob/master/README.md))
+Example application: https://nevod.io ([source code](https://gitlab.com/nezaboodka/nevod.web.public/-/blob/master/README.md)).
 
 Verstak is based on [Reactronic](https://github.com/nezaboodka/reactronic/blob/master/README.md#readme).
 
