@@ -402,7 +402,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     this._maxHeight = ""
     this._contentAlignment = Align.Default
     this._blockAlignment = Align.Default
-    this._contentWrapping = false
+    this._contentWrapping = true
     this._overlayVisible = undefined
     this._hasStyles = false
     this.childrenShuffling = false

@@ -318,14 +318,6 @@ const VerstakDriversByLayout: Array<SimpleDelegate<HTMLElement>> = [
     s.alignSelf = b.descriptor.owner.isTable ? "stretch" : "center"
     s.display = "inline-grid"
     s.flexShrink = "1"
-    // Wrapping=false
-    // s.overflow = "hidden"
-    // s.textOverflow = "ellipsis"
-    // s.whiteSpace = "nowrap"
-    // Wrapping=true
-    s.overflow = ""
-    s.textOverflow = ""
-    s.whiteSpace = ""
   },
   b => { // group
     const s = b.native.style
