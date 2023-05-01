@@ -5,17 +5,40 @@
 
 # **Verstak** - Experimental Front-End Library
 
-Verstak is an experimental JavaScript library that provides
-chain-based an table-based layouts with
-[transactional reactive](https://blog.nezaboodka.com/post/2019/593-modern-database-should-natively-support-transactionally-reactive-programming)
-facilities for building front-end applications.
+Verstak is a experimental library for rapid development of user
+interfaces. It provides **automatic refresh** of visual elements
+upon change of underlying data in a program.
 
-Transactional reactivity means that state changes are being made in an
-isolated data snapshot and then, once atomically applied, are
-**consistently propagated** to corresponding visual components for
-(re)rendering. All that is done in automatic, seamless, and fine-grained
-way, because reactronic **takes full care of tracking dependencies**
-between visual components (observers) and state objects (observables).
+Refresh on the screen is **fine-grained**, meaning that only
+those visual elements are refreshed, which really depend on
+actual data changed. It is achieved by automatic tracking of
+all dependencies between visual elements and data they use
+during run time. Such an approach is usually called reactive
+programming. It frees programmer from writing a code for
+"pushing" changed data to visual elements.
+
+Changing of compound data and refreshing of visual elements
+on the screen is performed consistently, in other words in
+"all-or-nothing" way. It means that in case of changing
+multiple variables in a program actual visual refresh
+happens only in case of successful change of all the variables.
+Partial changes are "not visible" to visual elements even
+in case of exception or cancellation of changes. Such a
+change of compound data in "all-or-nothing" way is called
+a transaction.
+
+Работа с данными и отрисовка визуальных элементов может
+выполняться **асинхронно**. Асинхронное программирование
+комплексно поддерживается на всех уровнях библиотеки.
+
+Altogether it is called reactive transactional programming.
+Transactional reactivity means that state changes are being
+made in an isolated data snapshot and then, once atomically
+applied, are **consistently propagated** to corresponding
+visual components for (re)rendering. All that is done in automatic,
+seamless, and fine-grained way, because Verstak
+**takes full care of tracking dependencies** between visual
+components (observers) and state objects (observables).
 
 Based on Reactronic: https://github.com/nezaboodka/reactronic/blob/master/README.md#readme
 
