@@ -10,7 +10,7 @@ import { CollectionReader, Item, MemberOptions } from "reactronic"
 // Delegates
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
-export type Delegate<T = unknown, M = unknown, C = unknown, R = void> = (block: Block<T, M, C, R>, original: () => R) => R
+export type Delegate<T = unknown, M = unknown, C = unknown, R = void> = (block: Block<T, M, C, R>, base: () => R) => R
 export type AsyncDelegate<T = unknown, M = unknown> = (block: Block<T, M, Promise<void>>) => Promise<void>
 export type SimpleDelegate<T = unknown> = (block: Block<T, any, any, any>) => void
 
@@ -75,7 +75,7 @@ export interface BlockDescriptor<T = unknown, M = unknown, C = unknown, R = void
 // BlockBuilder
 
 export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
-  original?: BlockBuilder<T, M, C, R>
+  base?: BlockBuilder<T, M, C, R>
   key?: string
   mode?: Mode
   triggers?: unknown
