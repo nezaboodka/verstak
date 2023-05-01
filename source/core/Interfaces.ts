@@ -77,7 +77,7 @@ export interface BlockDescriptor<T = unknown, M = unknown, C = unknown, R = void
 export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
   original?: BlockBuilder<T, M, C, R>
   key?: string
-  modes?: Mode
+  mode?: Mode
   triggers?: unknown
   claim?: Delegate<T, M, C, R>
   create?: Delegate<T, M, C, R>

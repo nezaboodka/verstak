@@ -157,7 +157,7 @@ function generateKey(owner: BlockImpl): string {
 }
 
 function chainedMode(bb?: BlockBuilder<any, any, any, any>): Mode {
-  return bb?.modes ?? (bb?.original ? chainedMode(bb?.original) : Mode.Default)
+  return bb?.mode ?? (bb?.original ? chainedMode(bb?.original) : Mode.Default)
 }
 
 function chainedClaim(block: Block<any>, bb: BlockBuilder): void {
