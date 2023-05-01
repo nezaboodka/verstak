@@ -42,9 +42,7 @@ components (observers) and state objects (observables).
 
 Based on Reactronic: https://github.com/nezaboodka/reactronic/blob/master/README.md#readme
 
-Example of the application built with Verstak: https://nevod.io
-
-Source code of the example: https://gitlab.com/nezaboodka/nevod.web.public/-/blob/master/README.md
+Example of the application built with Verstak: https://nevod.io ([source code](https://gitlab.com/nezaboodka/nevod.web.public/-/blob/master/README.md))
 
 # Contribution
 
