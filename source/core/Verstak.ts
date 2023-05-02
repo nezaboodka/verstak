@@ -440,7 +440,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   get isBand(): boolean { return this.kind === BlockKind.Band }
   get isTable(): boolean { return this.kind === BlockKind.Table }
 
-  get isAutoMountingEnabled(): boolean { return !this.isOn(Mode.ManualMounting) && this.node.host !== this }
+  get isAutoMountEnabled(): boolean { return !this.isOn(Mode.ManualMount) && this.node.host !== this }
   get isMoved(): boolean { return this.node.owner.node.children.isMoved(this.node.item!) }
 
   get kind(): BlockKind { return this._kind }
@@ -765,7 +765,7 @@ function markToMountIfNecessary(mounting: boolean, host: BlockImpl,
   // exist among regular blocks with HTML elements
   const b = item.instance
   const node = b.node
-  if (b.native && !b.isOn(Mode.ManualMounting)) {
+  if (b.native && !b.isOn(Mode.ManualMount)) {
     if (mounting || node.host !== host) {
       children.markAsMoved(item)
       mounting = false
@@ -850,11 +850,11 @@ function mountIfNecessary(block: BlockImpl): void {
     nonreactive(() => {
       driver.create(block, block)
       driver.initialize(block)
-      if (block.isAutoMountingEnabled)
+      if (block.isAutoMountEnabled)
         driver.mount(block)
     })
   }
-  else if (block.isMoved && block.isAutoMountingEnabled)
+  else if (block.isMoved && block.isAutoMountEnabled)
     nonreactive(() => driver.mount(block))
 }
 
