@@ -238,9 +238,9 @@ export class CursorCommandDriver extends BaseDriver<CursorCommand, void>{
   }
 }
 
-// ContextVariable
+// SubTreeVariable
 
-export class ContextVariable<T extends Object = Object> {
+export class SubTreeVariable<T extends Object = Object> {
   readonly defaultValue: T | undefined
 
   constructor(defaultValue?: T) {
@@ -248,15 +248,15 @@ export class ContextVariable<T extends Object = Object> {
   }
 
   set value(value: T) {
-    BlockImpl.setContextVariableValue(this, value)
+    BlockImpl.setSubTreeVariableValue(this, value)
   }
 
   get value(): T {
-    return BlockImpl.useContextVariableValue(this)
+    return BlockImpl.useSubTreeVariableValue(this)
   }
 
   get valueOrUndefined(): T | undefined {
-    return BlockImpl.tryUseContextVariable(this)
+    return BlockImpl.tryUseSubTreeVariable(this)
   }
 }
 
@@ -292,10 +292,10 @@ const InitialCursorPosition: CursorPosition = Object.freeze(new CursorPosition({
 
 class BlockCtxImpl<T extends Object = Object> extends ObservableObject implements BlockCtx<T> {
   @raw next: BlockCtxImpl<object> | undefined
-  @raw variable: ContextVariable<T>
+  @raw variable: SubTreeVariable<T>
   value: T
 
-  constructor(variable: ContextVariable<T>, value: T) {
+  constructor(variable: SubTreeVariable<T>, value: T) {
     super()
     this.next = undefined
     this.variable = variable
@@ -570,21 +570,21 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     return gCurrent
   }
 
-  static tryUseContextVariable<T extends Object>(variable: ContextVariable<T>): T | undefined {
+  static tryUseSubTreeVariable<T extends Object>(variable: SubTreeVariable<T>): T | undefined {
     let b = BlockImpl.curr.instance
     while (b.descriptor.context?.variable !== variable && b.descriptor.owner !== b)
       b = b.descriptor.outer
     return b.descriptor.context?.value as any // TODO: to get rid of any
   }
 
-  static useContextVariableValue<T extends Object>(variable: ContextVariable<T>): T {
-    const result = BlockImpl.tryUseContextVariable(variable) ?? variable.defaultValue
+  static useSubTreeVariableValue<T extends Object>(variable: SubTreeVariable<T>): T {
+    const result = BlockImpl.tryUseSubTreeVariable(variable) ?? variable.defaultValue
     if (!result)
       throw new Error("context doesn't exist")
     return result
   }
 
-  static setContextVariableValue<T extends Object>(variable: ContextVariable<T>, value: T | undefined): void {
+  static setSubTreeVariableValue<T extends Object>(variable: SubTreeVariable<T>, value: T | undefined): void {
     const b = BlockImpl.curr.instance
     const d = b.descriptor
     const owner = d.owner

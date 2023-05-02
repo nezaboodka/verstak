@@ -378,9 +378,9 @@
   }
 }
 
-// ContextVariable
+// SubTreeVariable
 
-тип ContextVariable<T: Объект = Объект> = ссылка на объект
+тип SubTreeVariable<T: Объект = Объект> = ссылка на объект
 {
   постоянное defaultValue: T?
 
@@ -391,17 +391,17 @@
 
   // set value(value: T)
   // {
-  //   XBlock.setContextVariableValue(объект, значение)
+  //   XBlock.setSubTreeVariableValue(объект, значение)
   // }
 
   // get value(): T
   // {
-  //   return XBlock.useContextVariableValue(this)
+  //   return XBlock.useSubTreeVariableValue(this)
   // }
 
   // get valueOrUndefined(): T | undefined
   // {
-  //   return XBlock.tryUseContextVariable(this)
+  //   return XBlock.tryUseSubTreeVariable(this)
   // }
 }
 
@@ -439,10 +439,10 @@
 на основе ObservableObject, БлокCtx<T>
 {
   #raw next: XBlockCtx<Объект>?
-  #raw variable: ContextVariable<T>
+  #raw variable: SubTreeVariable<T>
   value: T
 
-  при создании(variable: ContextVariable<T>, value: T) {
+  при создании(variable: SubTreeVariable<T>, value: T) {
     основа()
     next = пусто
     variable = variable
@@ -770,7 +770,7 @@
     }
 
   общая
-  операция tryUseContextVariable<T: Объект>(variable: ContextVariable<T>): T?
+  операция tryUseSubTreeVariable<T: Объект>(variable: SubTreeVariable<T>): T?
   {
     пусть б = XBlock.curr.элемент
     пока б.дескриптор.контекст?.variable != variable и б.дескриптор.владелец != б выполнить
@@ -779,15 +779,15 @@
   }
 
   общая
-  операция useContextVariableValue<T: Объект>(variable: ContextVariable<T>): T
+  операция useSubTreeVariableValue<T: Объект>(variable: SubTreeVariable<T>): T
   {
-    результат = XBlock.tryUseContextVariable(variable) ?? variable.defaultValue
+    результат = XBlock.tryUseSubTreeVariable(variable) ?? variable.defaultValue
     если результат == пусто тогда
       ошибка "контекст не найден"
   }
 
   общая
-  операция setContextVariableValue<T: Объект>(variable: ContextVariable<T>, value: T?)
+  операция setSubTreeVariableValue<T: Объект>(variable: SubTreeVariable<T>, value: T?)
   {
     пусть б = XBlock.curr.элемент
     пусть д = б.дескриптор
