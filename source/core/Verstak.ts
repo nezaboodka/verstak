@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, ObservableObject, raw, MemberOptions } from "reactronic"
-import { BlockCoords, BlockKind, Priority, Mode, Align, BlockArea, BlockBuilder, Block, Driver, SimpleDelegate, BlockDescriptor, BlockCtx } from "./Interfaces"
+import { BlockCoords, BlockKind, Priority, Mode, Align, BlockArea, BlockBuilder, Block, Driver, SimpleDelegate, BlockNode, BlockCtx } from "./Interfaces"
 import { emitLetters, equalBlockCoords, parseBlockCoords, getCallerInfo } from "./Utils"
 
 // Verstak
@@ -32,10 +32,10 @@ export class Verstak {
     if (owner) {
       // Check for coalescing separators or lookup for existing block
       let ex: Item<BlockImpl<any, any, any, any>> | undefined = undefined
-      const children = owner.descriptor.children
+      const children = owner.node.children
       if (driver.isRow) {
         const last = children.lastClaimedItem()
-        if (last?.instance?.descriptor.driver === driver)
+        if (last?.instance?.node.driver === driver)
           ex = last
       }
       ex ??= children.claim(
@@ -45,25 +45,25 @@ export class Verstak {
       if (ex) {
         // Reuse existing block
         result = ex.instance
-        const d = result.descriptor
-        if (d.driver !== driver && driver !== undefined)
-          throw new Error(`changing block driver is not yet supported: "${result.descriptor.driver.name}" -> "${driver?.name}"`)
-        const exTriggers = d.builder.triggers
+        const node = result.node
+        if (node.driver !== driver && driver !== undefined)
+          throw new Error(`changing block driver is not yet supported: "${result.node.driver.name}" -> "${driver?.name}"`)
+        const exTriggers = node.builder.triggers
         if (triggersAreEqual(builder.triggers, exTriggers))
           builder.triggers = exTriggers // preserve triggers instance
-        d.builder = builder
+        node.builder = builder
       }
       else {
         // Create new block
         result = new BlockImpl<T, M, C, R>(key || generateKey(owner), driver, owner, builder)
-        result.descriptor.item = children.add(result)
+        result.node.item = children.add(result)
       }
     }
     else {
       // Create new root block
       result = new BlockImpl<T, M, C, R>(key || "", driver, owner, builder)
-      result.descriptor.item = Collection.createItem(result)
-      triggerRendering(result.descriptor.item)
+      result.node.item = Collection.createItem(result)
+      triggerRendering(result.node.item)
     }
     return result
   }
@@ -101,17 +101,17 @@ export class BaseDriver<T, C = unknown> implements Driver<T, C> {
 
   claim(block: Block<T, unknown, C>): void {
     const b = block as BlockImpl<T, unknown, C>
-    chainedClaim(b, b.descriptor.builder)
+    chainedClaim(b, b.node.builder)
   }
 
   create(block: Block<T, unknown, C>, b: { native?: T, controller?: C }): void {
-    chainedCreate(block, block.descriptor.builder)
+    chainedCreate(block, block.node.builder)
   }
 
   initialize(block: Block<T, unknown, C>): void {
     const b = block as BlockImpl<T, unknown, C>
     this.preset?.(b)
-    chainedInitialize(b, b.descriptor.builder)
+    chainedInitialize(b, b.node.builder)
   }
 
   mount(block: Block<T, unknown, C>): void {
@@ -119,12 +119,12 @@ export class BaseDriver<T, C = unknown> implements Driver<T, C> {
   }
 
   render(block: Block<T, unknown, C>): void | Promise<void> {
-    chainedRender(block, block.descriptor.builder)
+    chainedRender(block, block.node.builder)
   }
 
   finalize(block: Block<T, unknown, C>, isLeader: boolean): boolean {
     const b = block as BlockImpl<T, unknown, C>
-    chainedFinalize(b, b.descriptor.builder)
+    chainedFinalize(b, b.node.builder)
     return isLeader // treat children as finalization leaders as well
   }
 
@@ -146,7 +146,7 @@ export class BaseDriver<T, C = unknown> implements Driver<T, C> {
 // Utils
 
 function generateKey(owner: BlockImpl): string {
-  const n = owner.descriptor.numerator++
+  const n = owner.node.numerator++
   const lettered = emitLetters(n)
   let result: string
   if (Rx.isLogging)
@@ -303,9 +303,9 @@ class BlockCtxImpl<T extends Object = Object> extends ObservableObject implement
   }
 }
 
-// BlockDescriptorImpl
+// BlockNodeImpl
 
-class BlockDescriptorImpl<T = unknown, M = unknown, C = unknown, R = void> implements BlockDescriptor<T, M, C, R> {
+class BlockNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements BlockNode<T, M, C, R> {
   readonly key: string
   readonly driver: Driver<T>
   builder: BlockBuilder<T, M, C, R>
@@ -329,10 +329,10 @@ class BlockDescriptorImpl<T = unknown, M = unknown, C = unknown, R = void> imple
     this.driver = driver
     this.builder = builder
     if (owner) {
-      const d = owner.descriptor
-      this.level = d.level + 1
+      const node = owner.node
+      this.level = node.level + 1
       this.owner = owner
-      this.outer = d.context ? owner : d.outer
+      this.outer = node.context ? owner : node.outer
     }
     else {
       this.level = 1
@@ -360,7 +360,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   static logging: LoggingOptions | undefined = undefined
 
   // System-managed properties
-  readonly descriptor: BlockDescriptorImpl<T, M, C, R>
+  readonly node: BlockNodeImpl<T, M, C, R>
   native: T
 
   // User-defined properties
@@ -386,7 +386,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   constructor(key: string, driver: Driver<T>,
     owner: BlockImpl | undefined, builder: BlockBuilder<T, M, C, R>) {
     // System-managed properties
-    this.descriptor = new BlockDescriptorImpl(key, driver, builder, this, owner)
+    this.node = new BlockNodeImpl(key, driver, builder, this, owner)
     this.native = undefined as any as T // hack
     // User-defined properties
     this.model = undefined as any
@@ -421,7 +421,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   })
   render(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by owner
-    renderNow(this.descriptor.item!)
+    renderNow(this.node.item!)
   }
 
   prepareForRender(): void {
@@ -430,35 +430,35 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   }
 
   isOn(mode: Mode): boolean {
-    return (chainedMode(this.descriptor.builder) & mode) === mode
+    return (chainedMode(this.node.builder) & mode) === mode
   }
 
-  get isInitialRendering(): boolean { return this.descriptor.stamp === 2 }
-  get isSequential(): boolean { return this.descriptor.children.isStrict }
-  set isSequential(value: boolean) { this.descriptor.children.isStrict = value }
+  get isInitialRendering(): boolean { return this.node.stamp === 2 }
+  get isSequential(): boolean { return this.node.children.isStrict }
+  set isSequential(value: boolean) { this.node.children.isStrict = value }
   get isAuxiliary(): boolean { return this.kind > BlockKind.Note } // Row, Group, Cursor
   get isBand(): boolean { return this.kind === BlockKind.Band }
   get isTable(): boolean { return this.kind === BlockKind.Table }
 
-  get isAutoMountingEnabled(): boolean { return !this.isOn(Mode.ManualMounting) && this.descriptor.host !== this }
-  get isMoved(): boolean { return this.descriptor.owner.descriptor.children.isMoved(this.descriptor.item!) }
+  get isAutoMountingEnabled(): boolean { return !this.isOn(Mode.ManualMounting) && this.node.host !== this }
+  get isMoved(): boolean { return this.node.owner.node.children.isMoved(this.node.item!) }
 
   get kind(): BlockKind { return this._kind }
   set kind(value: BlockKind) {
-    if (value !== this._kind || this.descriptor.stamp < 2) {
-      this.descriptor.driver.applyKind(this, value)
+    if (value !== this._kind || this.node.stamp < 2) {
+      this.node.driver.applyKind(this, value)
       this._kind = value
     }
   }
 
   get area(): BlockArea { return this._area }
   set area(value: BlockArea) {
-    const d = this.descriptor
-    const driver = d.driver
+    const node = this.node
+    const driver = node.driver
     if (!driver.isRow) {
-      const owner = d.owner.descriptor
-      const cursorPosition = d.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
-      const newCursorPosition = d.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
+      const owner = node.owner.node
+      const cursorPosition = node.item!.prev?.instance.node.cursorPosition ?? InitialCursorPosition
+      const newCursorPosition = node.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
       const isCursorBlock = driver instanceof CursorCommandDriver
       const coords = getEffectiveBlockCoords(!isCursorBlock,
         value, owner.maxColumnCount, owner.maxRowCount,
@@ -476,7 +476,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   get widthGrowth(): number { return this._widthGrowth }
   set widthGrowth(value: number) {
     if (value !== this._widthGrowth) {
-      this.descriptor.driver.applyWidthGrowth(this, value)
+      this.node.driver.applyWidthGrowth(this, value)
       this._widthGrowth = value
     }
   }
@@ -484,7 +484,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   get minWidth(): string { return this._minWidth }
   set minWidth(value: string) {
     if (value !== this._minWidth) {
-      this.descriptor.driver.applyMinWidth(this, value)
+      this.node.driver.applyMinWidth(this, value)
       this._minWidth = value
     }
   }
@@ -492,7 +492,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   get maxWidth(): string { return this._maxWidth }
   set maxWidth(value: string) {
     if (value !== this._maxWidth) {
-      this.descriptor.driver.applyMaxWidth(this, value)
+      this.node.driver.applyMaxWidth(this, value)
       this._maxWidth = value
     }
   }
@@ -500,7 +500,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   get heightGrowth(): number { return this._heightGrowth }
   set heightGrowth(value: number) {
     if (value !== this._heightGrowth) {
-      this.descriptor.driver.applyHeightGrowth(this, value)
+      this.node.driver.applyHeightGrowth(this, value)
       this._heightGrowth = value
     }
   }
@@ -508,7 +508,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   get minHeight(): string { return this._minHeight }
   set minHeight(value: string) {
     if (value !== this._minHeight) {
-      this.descriptor.driver.applyMinHeight(this, value)
+      this.node.driver.applyMinHeight(this, value)
       this._minHeight = value
     }
   }
@@ -516,7 +516,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   get maxHeight(): string { return this._maxHeight }
   set maxHeight(value: string) {
     if (value !== this._maxHeight) {
-      this.descriptor.driver.applyMaxHeight(this, value)
+      this.node.driver.applyMaxHeight(this, value)
       this._maxHeight = value
     }
   }
@@ -524,7 +524,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   get contentAlignment(): Align { return this._contentAlignment }
   set contentAlignment(value: Align) {
     if (value !== this._contentAlignment) {
-      this.descriptor.driver.applyContentAlignment(this, value)
+      this.node.driver.applyContentAlignment(this, value)
       this._contentAlignment = value
     }
   }
@@ -532,7 +532,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   get blockAlignment(): Align { return this._blockAlignment }
   set blockAlignment(value: Align) {
     if (value !== this._blockAlignment) {
-      this.descriptor.driver.applyBlockAlignment(this, value)
+      this.node.driver.applyBlockAlignment(this, value)
       this._blockAlignment = value
     }
   }
@@ -540,7 +540,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   get contentWrapping(): boolean { return this._contentWrapping }
   set contentWrapping(value: boolean) {
     if (value !== this._contentWrapping) {
-      this.descriptor.driver.applyContentWrapping(this, value)
+      this.node.driver.applyContentWrapping(this, value)
       this._contentWrapping = value
     }
   }
@@ -548,18 +548,18 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   get overlayVisible(): boolean | undefined { return this._overlayVisible }
   set overlayVisible(value: boolean | undefined) {
     if (value !== this._overlayVisible) {
-      this.descriptor.driver.applyOverlayVisible(this, value)
+      this.node.driver.applyOverlayVisible(this, value)
       this._overlayVisible = value
     }
   }
 
   useStyle(styleName: string, enabled?: boolean): void {
-    this.descriptor.driver.applyStyle(this, this._hasStyles, styleName, enabled)
+    this.node.driver.applyStyle(this, this._hasStyles, styleName, enabled)
     this._hasStyles = true
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.descriptor.stamp !== 1 || !this.isOn(Mode.PinpointRefresh))
+    if (this.node.stamp !== 1 || !this.isOn(Mode.PinpointRefresh))
       throw new Error("reactronic can be configured only for blocks with separate reaction mode and only inside initialize")
     return Rx.getController(this.render).configure(options)
   }
@@ -572,9 +572,9 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
 
   static tryUseSubTreeVariable<T extends Object>(variable: SubTreeVariable<T>): T | undefined {
     let b = BlockImpl.curr.instance
-    while (b.descriptor.context?.variable !== variable && b.descriptor.owner !== b)
-      b = b.descriptor.outer
-    return b.descriptor.context?.value as any // TODO: to get rid of any
+    while (b.node.context?.variable !== variable && b.node.owner !== b)
+      b = b.node.outer
+    return b.node.context?.value as any // TODO: to get rid of any
   }
 
   static useSubTreeVariableValue<T extends Object>(variable: SubTreeVariable<T>): T {
@@ -586,34 +586,34 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
 
   static setSubTreeVariableValue<T extends Object>(variable: SubTreeVariable<T>, value: T | undefined): void {
     const b = BlockImpl.curr.instance
-    const d = b.descriptor
-    const owner = d.owner
-    const hostCtx = nonreactive(() => owner.descriptor.context?.value)
+    const node = b.node
+    const owner = node.owner
+    const hostCtx = nonreactive(() => owner.node.context?.value)
     if (value && value !== hostCtx) {
       if (hostCtx)
-        d.outer = owner
+        node.outer = owner
       else
-        d.outer = owner.descriptor.outer
+        node.outer = owner.node.outer
       Transaction.run({ separation: true }, () => {
-        const ctx = d.context
+        const ctx = node.context
         if (ctx) {
           ctx.variable = variable
           ctx.value = value // update context thus invalidate observers
         }
         else
-          d.context = new BlockCtxImpl<any>(variable, value)
+          node.context = new BlockCtxImpl<any>(variable, value)
       })
     }
     else if (hostCtx)
-      d.outer = owner
+      node.outer = owner
     else
-      d.outer = owner.descriptor.outer
+      node.outer = owner.node.outer
   }
 
   private rowBreak(): void {
-    const d = this.descriptor
-    const cursorPosition = d.item!.prev?.instance.descriptor.cursorPosition ?? InitialCursorPosition
-    const newCursorPosition = this.descriptor.cursorPosition = new CursorPosition(cursorPosition)
+    const node = this.node
+    const cursorPosition = node.item!.prev?.instance.node.cursorPosition ?? InitialCursorPosition
+    const newCursorPosition = this.node.cursorPosition = new CursorPosition(cursorPosition)
     newCursorPosition.x = 1
     newCursorPosition.y = newCursorPosition.runningMaxY + 1
   }
@@ -622,8 +622,8 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
 // Internal
 
 function getBlockKey(block: BlockImpl): string | undefined {
-  const d = block.descriptor
-  return d.stamp >= 0 ? d.key : undefined
+  const node = block.node
+  return node.stamp >= 0 ? node.key : undefined
 }
 
 function getEffectiveBlockCoords(
@@ -712,7 +712,7 @@ function getEffectiveBlockCoords(
 function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => void): void {
   const curr = BlockImpl.curr
   const owner = curr.instance
-  const children = owner.descriptor.children
+  const children = owner.node.children
   if (children.isMergeInProgress) {
     let promised: Promise<void> | undefined = undefined
     try {
@@ -732,7 +732,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           if (Transaction.isCanceled)
             break
           const block = item.instance
-          const isRow = block.descriptor.driver.isRow
+          const isRow = block.node.driver.isRow
           const host = isRow ? owner : hostingRow
           const p = block.renderingPriority ?? Priority.Realtime
           mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
@@ -764,16 +764,16 @@ function markToMountIfNecessary(mounting: boolean, host: BlockImpl,
   // Detects element mounting when abstract blocks
   // exist among regular blocks with HTML elements
   const b = item.instance
-  const d = b.descriptor
+  const node = b.node
   if (b.native && !b.isOn(Mode.ManualMounting)) {
-    if (mounting || d.host !== host) {
+    if (mounting || node.host !== host) {
       children.markAsMoved(item)
       mounting = false
     }
   }
   else if (sequential && children.isMoved(item))
     mounting = true // apply to the first block with an element
-  d.host = host
+  node.host = host
   return mounting
 }
 
@@ -782,7 +782,7 @@ async function startIncrementalRendering(
   allChildren: Collection<BlockImpl>,
   priority1?: Array<Item<BlockImpl>>,
   priority2?: Array<Item<BlockImpl>>): Promise<void> {
-  const stamp = owner.instance.descriptor.stamp
+  const stamp = owner.instance.node.stamp
   if (priority1)
     await renderIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
   if (priority2)
@@ -823,19 +823,19 @@ async function renderIncrementally(owner: Item<BlockImpl>, stamp: number,
 
 function triggerRendering(item: Item<BlockImpl>): void {
   const b = item.instance
-  const d = b.descriptor
-  if (d.stamp >= 0) {
+  const node = b.node
+  if (node.stamp >= 0) {
     if (b.isOn(Mode.PinpointRefresh)) {
-      if (d.stamp === 0) {
+      if (node.stamp === 0) {
         Transaction.outside(() => {
           if (Rx.isLogging)
-            Rx.setLoggingHint(b, d.key)
+            Rx.setLoggingHint(b, node.key)
           Rx.getController(b.render).configure({
-            order: d.level,
+            order: node.level,
           })
         })
       }
-      nonreactive(b.render, d.builder.triggers) // reactive auto-rendering
+      nonreactive(b.render, node.builder.triggers) // reactive auto-rendering
     }
     else
       renderNow(item)
@@ -843,10 +843,10 @@ function triggerRendering(item: Item<BlockImpl>): void {
 }
 
 function mountIfNecessary(block: BlockImpl): void {
-  const d = block.descriptor
-  const driver = d.driver
-  if (d.stamp === 0) {
-    d.stamp = 1
+  const node = block.node
+  const driver = node.driver
+  if (node.stamp === 0) {
+    node.stamp = 1
     nonreactive(() => {
       driver.create(block, block)
       driver.initialize(block)
@@ -860,19 +860,19 @@ function mountIfNecessary(block: BlockImpl): void {
 
 function renderNow(item: Item<BlockImpl>): void {
   const b = item.instance
-  const d = b.descriptor
-  if (d.stamp >= 0) { // if block is alive
+  const node = b.node
+  if (node.stamp >= 0) { // if block is alive
     let result: unknown = undefined
     runInside(item, () => {
       try {
         mountIfNecessary(b)
-        d.stamp++
-        d.numerator = 0
+        node.stamp++
+        node.numerator = 0
         b.prepareForRender()
-        d.children.beginMerge()
-        const driver = d.driver
+        node.children.beginMerge()
+        const driver = node.driver
         result = driver.render(b)
-        if (b.area === undefined && d.owner.isTable)
+        if (b.area === undefined && node.owner.isTable)
           b.area = undefined // automatic placement
         if (result instanceof Promise)
           result.then(
@@ -883,7 +883,7 @@ function renderNow(item: Item<BlockImpl>): void {
       }
       catch(e: unknown) {
         runRenderNestedTreesThenDo(e, NOP)
-        console.log(`Rendering failed: ${d.key}`)
+        console.log(`Rendering failed: ${node.key}`)
         console.log(`${e}`)
       }
     })
@@ -892,12 +892,12 @@ function renderNow(item: Item<BlockImpl>): void {
 
 function triggerFinalization(item: Item<BlockImpl>, isLeader: boolean, individual: boolean): void {
   const b = item.instance
-  const d = b.descriptor
-  if (d.stamp >= 0) {
-    const driver = d.driver
-    if (individual && d.key !== d.builder.key && !driver.isRow)
-      console.log(`WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: ${d.key}`)
-    d.stamp = ~d.stamp
+  const node = b.node
+  if (node.stamp >= 0) {
+    const driver = node.driver
+    if (individual && node.key !== node.builder.key && !driver.isRow)
+      console.log(`WARNING: it is recommended to assign explicit key for conditionally rendered block in order to avoid unexpected side effects: ${node.key}`)
+    node.stamp = ~node.stamp
     // Finalize block itself and remove it from collection
     const childrenAreLeaders = nonreactive(() => driver.finalize(b, isLeader))
     b.native = null
@@ -911,12 +911,12 @@ function triggerFinalization(item: Item<BlockImpl>, isLeader: boolean, individua
       else
         gFirstToDispose = gLastToDispose = item
       if (gFirstToDispose === item)
-        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${item.instance.descriptor.key})` }, () => {
+        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${item.instance.node.key})` }, () => {
           void runDisposalLoop().then(NOP, error => console.log(error))
         })
     }
     // Finalize children if any
-    for (const item of d.children.items())
+    for (const item of node.children.items())
       triggerFinalization(item, childrenAreLeaders, false)
     BlockImpl.grandCount--
   }

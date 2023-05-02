@@ -28,7 +28,7 @@ export enum BlockKind {
 
 export interface Block<T = unknown, M = unknown, C = unknown, R = void> {
   // System-managed properties
-  readonly descriptor: BlockDescriptor<T, M, C, R>
+  readonly node: BlockNode<T, M, C, R>
   readonly native: T
   readonly isBand: boolean
   readonly isTable: boolean
@@ -56,9 +56,9 @@ export interface Block<T = unknown, M = unknown, C = unknown, R = void> {
   configureReactronic(options: Partial<MemberOptions>): MemberOptions
 }
 
-// BlockDescriptor
+// BlockNode
 
-export interface BlockDescriptor<T = unknown, M = unknown, C = unknown, R = void> {
+export interface BlockNode<T = unknown, M = unknown, C = unknown, R = void> {
   readonly key: string
   readonly driver: Driver<T>
   readonly builder: Readonly<BlockBuilder<T, M, C, R>>

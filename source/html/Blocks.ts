@@ -142,7 +142,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 
   applyHeightGrowth(block: Block<T>, value: number): void {
-    const bNode = block.descriptor
+    const bNode = block.node
     const driver = bNode.driver
     if (driver.isRow) {
       const s = block.native.style
@@ -152,7 +152,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
         s.flexGrow = ""
     }
     else {
-      const hostDriver = bNode.host.descriptor.driver
+      const hostDriver = bNode.host.node.driver
       if (hostDriver.isRow) {
         driver.applyBlockAlignment(block, Align.Stretch)
         hostDriver.applyHeightGrowth(bNode.host, value)
@@ -299,14 +299,14 @@ const VerstakDriversByLayout: Array<SimpleDelegate<HTMLElement>> = [
     const s = b.native.style
     s.display = "flex"
     s.flexDirection = "column"
-    s.alignSelf = b.descriptor.owner.isTable ? "stretch" : "center"
+    s.alignSelf = b.node.owner.isTable ? "stretch" : "center"
     s.textAlign = "initial"
     s.flexShrink = "1"
     s.minWidth = "0"
   },
   b => { // table
     const s = b.native.style
-    s.alignSelf = b.descriptor.owner.isTable ? "stretch" : "center"
+    s.alignSelf = b.node.owner.isTable ? "stretch" : "center"
     s.display = "grid"
     s.flexBasis = "0"
     s.gridAutoRows = "minmax(min-content, 1fr)"
@@ -315,7 +315,7 @@ const VerstakDriversByLayout: Array<SimpleDelegate<HTMLElement>> = [
   },
   b => { // note
     const s = b.native.style
-    s.alignSelf = b.descriptor.owner.isTable ? "stretch" : "center"
+    s.alignSelf = b.node.owner.isTable ? "stretch" : "center"
     s.display = "inline-grid"
     s.flexShrink = "1"
   },
@@ -325,7 +325,7 @@ const VerstakDriversByLayout: Array<SimpleDelegate<HTMLElement>> = [
   },
   b => { // row
     const s = b.native.style
-    s.display = b.descriptor.owner.isTable ? "none" : "flex"
+    s.display = b.node.owner.isTable ? "none" : "flex"
     s.flexDirection = "row"
   },
   // undefined // cursor
