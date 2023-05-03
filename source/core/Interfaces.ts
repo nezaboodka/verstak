@@ -48,9 +48,9 @@ export interface Block<T = unknown, M = unknown, C = unknown, R = void> {
   blockAlignment: Align
   contentWrapping: boolean
   overlayVisible: boolean | undefined
-  childrenShuffling: boolean
   renderingPriority?: Priority
-  isSequential: boolean
+  childrenShuffling: boolean
+  strictOrder: boolean
   readonly isInitialRendering: boolean
   useStyle(styleName: string, enabled?: boolean): void
   configureReactronic(options: Partial<MemberOptions>): MemberOptions

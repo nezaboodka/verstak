@@ -355,8 +355,8 @@ class BlockNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements 
 
 class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R> {
   // Static properties
-  static grandCount: number = 0
-  static disposableCount: number = 0
+  static grandBlockCount: number = 0
+  static disposableBlockCount: number = 0
   static logging: LoggingOptions | undefined = undefined
 
   // System-managed properties
@@ -380,8 +380,8 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
   private _hasStyles: boolean
-  childrenShuffling: boolean
   renderingPriority: Priority
+  childrenShuffling: boolean
 
   constructor(key: string, driver: Driver<T>,
     owner: BlockImpl | undefined, builder: BlockBuilder<T, M, C, R>) {
@@ -405,12 +405,12 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     this._contentWrapping = true
     this._overlayVisible = undefined
     this._hasStyles = false
-    this.childrenShuffling = false
     this.renderingPriority = Priority.Realtime
+    this.childrenShuffling = false
     // Monitoring
-    BlockImpl.grandCount++
+    BlockImpl.grandBlockCount++
     if (this.isOn(Mode.PinpointRefresh))
-      BlockImpl.disposableCount++
+      BlockImpl.disposableBlockCount++
   }
 
   @reactive
@@ -434,14 +434,15 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   }
 
   get isInitialRendering(): boolean { return this.node.stamp === 2 }
-  get isSequential(): boolean { return this.node.children.isStrict }
-  set isSequential(value: boolean) { this.node.children.isStrict = value }
   get isAuxiliary(): boolean { return this.kind > BlockKind.Note } // Row, Group, Cursor
   get isBand(): boolean { return this.kind === BlockKind.Band }
   get isTable(): boolean { return this.kind === BlockKind.Table }
 
   get isAutoMountEnabled(): boolean { return !this.isOn(Mode.ManualMount) && this.node.host !== this }
   get isMoved(): boolean { return this.node.owner.node.children.isMoved(this.node.item!) }
+
+  get strictOrder(): boolean { return this.node.children.isStrict }
+  set strictOrder(value: boolean) { this.node.children.isStrict = value }
 
   get kind(): BlockKind { return this._kind }
   set kind(value: BlockKind) {
@@ -918,7 +919,7 @@ function triggerFinalization(item: Item<BlockImpl>, isLeader: boolean, individua
     // Finalize children if any
     for (const item of node.children.items())
       triggerFinalization(item, childrenAreLeaders, false)
-    BlockImpl.grandCount--
+    BlockImpl.grandBlockCount--
   }
 }
 
@@ -930,7 +931,7 @@ async function runDisposalLoop(): Promise<void> {
       await Transaction.requestNextFrame()
     Rx.dispose(item.instance)
     item = item.aux
-    BlockImpl.disposableCount--
+    BlockImpl.disposableBlockCount--
   }
   // console.log(`Block count: ${VBlock.grandCount} totally (${VBlock.disposableCount} disposable)`)
   gFirstToDispose = gLastToDispose = undefined // reset loop
