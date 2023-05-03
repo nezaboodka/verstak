@@ -74,6 +74,15 @@ export class Verstak {
     return gCurrent.instance
   }
 
+  static triggerRendering(block: Block<any, any, any, void>, triggers: unknown): void {
+    const b = block as BlockImpl
+    const builder = b.node.builder
+    if (!triggersAreEqual(triggers, builder.triggers)) {
+      builder.triggers = triggers // remember new triggers
+      triggerRendering(b.node.item!)
+    }
+  }
+
   static renderNestedTreesThenDo(action: (error: unknown) => void): void {
     runRenderNestedTreesThenDo(undefined, action)
   }
