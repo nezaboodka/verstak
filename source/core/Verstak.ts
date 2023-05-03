@@ -56,14 +56,14 @@ export class Verstak {
       else {
         // Create new block
         result = new BlockImpl<T, M, C, R>(key || generateKey(owner), driver, owner, builder)
-        result.node.item = children.add(result)
+        result.node.tied = children.add(result)
       }
     }
     else {
       // Create new root block
       result = new BlockImpl<T, M, C, R>(key || "", driver, owner, builder)
-      result.node.item = Collection.createItem(result)
-      triggerRendering(result.node.item)
+      result.node.tied = Collection.createItem(result)
+      triggerRendering(result.node.tied)
     }
     return result
   }
@@ -79,7 +79,7 @@ export class Verstak {
     const builder = b.node.builder
     if (!triggersAreEqual(triggers, builder.triggers)) {
       builder.triggers = triggers // remember new triggers
-      triggerRendering(b.node.item!)
+      triggerRendering(b.node.tied!)
     }
   }
 
@@ -322,7 +322,7 @@ class BlockNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements 
   readonly owner: BlockImpl
   host: BlockImpl
   readonly children: Collection<BlockImpl>
-  item: Item<BlockImpl> | undefined
+  tied: Item<BlockImpl> | undefined
   stamp: number
   outer: BlockImpl
   context: BlockCtxImpl<any> | undefined
@@ -350,7 +350,7 @@ class BlockNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements 
     }
     this.host = self // block is unmounted
     this.children = new Collection<BlockImpl>(getBlockKey, true)
-    this.item = undefined
+    this.tied = undefined
     this.stamp = 0
     this.context = undefined
     this.numerator = 0
@@ -430,7 +430,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   })
   render(_triggers: unknown): void {
     // triggers parameter is used to enforce rendering by owner
-    renderNow(this.node.item!)
+    renderNow(this.node.tied!)
   }
 
   prepareForRender(): void {
@@ -448,7 +448,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   get isTable(): boolean { return this.kind === BlockKind.Table }
 
   get isAutoMountEnabled(): boolean { return !this.isOn(Mode.ManualMount) && this.node.host !== this }
-  get isMoved(): boolean { return this.node.owner.node.children.isMoved(this.node.item!) }
+  get isMoved(): boolean { return this.node.owner.node.children.isMoved(this.node.tied!) }
 
   get strictOrder(): boolean { return this.node.children.isStrict }
   set strictOrder(value: boolean) { this.node.children.isStrict = value }
@@ -467,7 +467,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     const driver = node.driver
     if (!driver.isRow) {
       const owner = node.owner.node
-      const cursorPosition = node.item!.prev?.instance.node.cursorPosition ?? InitialCursorPosition
+      const cursorPosition = node.tied!.prev?.instance.node.cursorPosition ?? InitialCursorPosition
       const newCursorPosition = node.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
       const isCursorBlock = driver instanceof CursorCommandDriver
       const coords = getEffectiveBlockCoords(!isCursorBlock,
@@ -622,7 +622,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
 
   private rowBreak(): void {
     const node = this.node
-    const cursorPosition = node.item!.prev?.instance.node.cursorPosition ?? InitialCursorPosition
+    const cursorPosition = node.tied!.prev?.instance.node.cursorPosition ?? InitialCursorPosition
     const newCursorPosition = this.node.cursorPosition = new CursorPosition(cursorPosition)
     newCursorPosition.x = 1
     newCursorPosition.y = newCursorPosition.runningMaxY + 1
@@ -770,18 +770,18 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
 }
 
 function markToMountIfNecessary(mounting: boolean, host: BlockImpl,
-  item: Item<BlockImpl>, children: Collection<BlockImpl>, sequential: boolean): boolean {
+  tied: Item<BlockImpl>, children: Collection<BlockImpl>, sequential: boolean): boolean {
   // Detects element mounting when abstract blocks
   // exist among regular blocks with HTML elements
-  const b = item.instance
+  const b = tied.instance
   const node = b.node
   if (b.native && !b.isOn(Mode.ManualMount)) {
     if (mounting || node.host !== host) {
-      children.markAsMoved(item)
+      children.markAsMoved(tied)
       mounting = false
     }
   }
-  else if (sequential && children.isMoved(item))
+  else if (sequential && children.isMoved(tied))
     mounting = true // apply to the first block with an element
   node.host = host
   return mounting
@@ -831,8 +831,8 @@ async function renderIncrementally(owner: Item<BlockImpl>, stamp: number,
   }
 }
 
-function triggerRendering(item: Item<BlockImpl>): void {
-  const b = item.instance
+function triggerRendering(tied: Item<BlockImpl>): void {
+  const b = tied.instance
   const node = b.node
   if (node.stamp >= 0) {
     if (b.isOn(Mode.PinpointRefresh)) {
@@ -848,7 +848,7 @@ function triggerRendering(item: Item<BlockImpl>): void {
       nonreactive(b.render, node.builder.triggers) // reactive auto-rendering
     }
     else
-      renderNow(item)
+      renderNow(tied)
   }
 }
 
@@ -868,12 +868,12 @@ function mountIfNecessary(block: BlockImpl): void {
     nonreactive(() => driver.mount(block))
 }
 
-function renderNow(item: Item<BlockImpl>): void {
-  const b = item.instance
+function renderNow(tied: Item<BlockImpl>): void {
+  const b = tied.instance
   const node = b.node
   if (node.stamp >= 0) { // if block is alive
     let result: unknown = undefined
-    runInside(item, () => {
+    runInside(tied, () => {
       try {
         mountIfNecessary(b)
         node.stamp++
@@ -900,8 +900,8 @@ function renderNow(item: Item<BlockImpl>): void {
   }
 }
 
-function triggerFinalization(item: Item<BlockImpl>, isLeader: boolean, individual: boolean): void {
-  const b = item.instance
+function triggerFinalization(tied: Item<BlockImpl>, isLeader: boolean, individual: boolean): void {
+  const b = tied.instance
   const node = b.node
   if (node.stamp >= 0) {
     const driver = node.driver
@@ -914,14 +914,14 @@ function triggerFinalization(item: Item<BlockImpl>, isLeader: boolean, individua
     b.controller = null
     if (b.isOn(Mode.PinpointRefresh)) {
       // Defer disposal if block is reactive
-      item.aux = undefined
+      tied.aux = undefined
       const last = gLastToDispose
       if (last)
-        gLastToDispose = last.aux = item
+        gLastToDispose = last.aux = tied
       else
-        gFirstToDispose = gLastToDispose = item
-      if (gFirstToDispose === item)
-        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${item.instance.node.key})` }, () => {
+        gFirstToDispose = gLastToDispose = tied
+      if (gFirstToDispose === tied)
+        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${tied.instance.node.key})` }, () => {
           void runDisposalLoop().then(NOP, error => console.log(error))
         })
     }
@@ -966,10 +966,10 @@ function wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T 
   return wrappedToRunInside
 }
 
-function runInside<T>(item: Item<BlockImpl>, func: (...args: any[]) => T, ...args: any[]): T {
+function runInside<T>(tied: Item<BlockImpl>, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gCurrent
   try {
-    gCurrent = item
+    gCurrent = tied
     return func(...args)
   }
   finally {

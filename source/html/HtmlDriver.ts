@@ -39,7 +39,7 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
       const nativeParent = BaseHtmlDriver.findEffectiveHtmlBlockHost(block).native as unknown as Element | undefined // hack
       if (nativeParent) {
         if (sequential && !node.driver.isRow) {
-          const after = BaseHtmlDriver.findPrevSiblingHtmlBlock(block.node.item!)
+          const after = BaseHtmlDriver.findPrevSiblingHtmlBlock(block.node.tied!)
           if (after === undefined || after.instance.node.driver.isRow) {
             if (nativeParent !== e.parentNode || !e.previousSibling)
               nativeParent.prepend(e)
@@ -85,8 +85,8 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     return p as Block<HTMLElement | SVGElement>
   }
 
-  static findPrevSiblingHtmlBlock(item: Item<Block<any>>): Item<Block<HTMLElement | SVGElement>> | undefined {
-    let p = item.prev
+  static findPrevSiblingHtmlBlock(tied: Item<Block<any>>): Item<Block<HTMLElement | SVGElement>> | undefined {
+    let p = tied.prev
     while (p && !(p.instance.native instanceof HTMLElement) && !(p.instance.native instanceof SVGElement))
       p = p.prev
     return p
