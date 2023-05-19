@@ -9,7 +9,7 @@ import { Verstak, Block, StaticDriver, BlockKind, BlockBuilder } from "../core/a
 import { HtmlDriver, SvgDriver } from "./HtmlDriver"
 
 export function HtmlBody(builder?: BlockBuilder<HTMLElement>, base?: BlockBuilder<HTMLElement>): Block<HTMLElement> {
-  const driver = new StaticDriver(global.document.body, "HtmlBody", false, b => b.kind = BlockKind.Band)
+  const driver = new StaticDriver(global.document.body, "HtmlBody", false, b => b.kind = BlockKind.Section)
   return Verstak.claim(driver, builder, base)
 }
 

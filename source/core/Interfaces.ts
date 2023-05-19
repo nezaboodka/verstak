@@ -17,7 +17,7 @@ export type SimpleDelegate<T = unknown> = (block: Block<T, any, any, any>) => vo
 // Block
 
 export enum BlockKind {
-  Band = 0,
+  Section = 0,
   Table = 1,
   Note = 2,
   Group = 3,
@@ -30,7 +30,7 @@ export interface Block<T = unknown, M = unknown, C = unknown, R = void> {
   // System-managed properties
   readonly node: BlockNode<T, M, C, R>
   readonly native: T
-  readonly isBand: boolean
+  readonly isSection: boolean
   readonly isTable: boolean
 
   // User-manageable properties

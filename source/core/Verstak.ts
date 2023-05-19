@@ -444,7 +444,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
 
   get isInitialRendering(): boolean { return this.node.stamp === 2 }
   get isAuxiliary(): boolean { return this.kind > BlockKind.Note } // Row, Group, Cursor
-  get isBand(): boolean { return this.kind === BlockKind.Band }
+  get isSection(): boolean { return this.kind === BlockKind.Section }
   get isTable(): boolean { return this.kind === BlockKind.Table }
 
   get isAutoMountEnabled(): boolean { return !this.isOn(Mode.ManualMount) && this.node.host !== this }
@@ -732,7 +732,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         triggerFinalization(item, true, true)
       if (!error) {
         // Lay out and render actual blocks
-        const ownerIsBand = owner.isBand
+        const ownerIsSection = owner.isSection
         const sequential = children.isStrict
         let p1: Array<Item<BlockImpl>> | undefined = undefined
         let p2: Array<Item<BlockImpl>> | undefined = undefined
@@ -752,7 +752,7 @@ function runRenderNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async rendering
           else
             p2 = push(item, p2) // defer for P2 async rendering
-          if (ownerIsBand && isRow)
+          if (ownerIsSection && isRow)
             hostingRow = block
         }
         // Render incremental children (if any)
