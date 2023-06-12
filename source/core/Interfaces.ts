@@ -48,10 +48,10 @@ export interface Block<T = unknown, M = unknown, C = unknown, R = void> {
   blockAlignment: Align
   contentWrapping: boolean
   overlayVisible: boolean | undefined
-  renderingPriority?: Priority
+  updatePriority?: Priority
   childrenShuffling: boolean
   strictOrder: boolean
-  readonly isInitialRendering: boolean
+  readonly isInitialUpdate: boolean
   useStyle(styleName: string, enabled?: boolean): void
   configureReactronic(options: Partial<MemberOptions>): MemberOptions
 }
@@ -82,7 +82,7 @@ export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
   claim?: Delegate<T, M, C, R>
   create?: Delegate<T, M, C, R>
   initialize?: Delegate<T, M, C, R>
-  render?: Delegate<T, M, C, R>
+  update?: Delegate<T, M, C, R>
   finalize?: Delegate<T, M, C, R>
 }
 
@@ -103,7 +103,7 @@ export interface Driver<T, C = unknown> {
   create(block: Block<T, unknown, C>, b: { native?: T, controller?: C }): void
   initialize(block: Block<T, unknown, C>): void
   mount(block: Block<T, unknown, C>): void
-  render(block: Block<T, unknown, C>): void | Promise<void>
+  update(block: Block<T, unknown, C>): void | Promise<void>
   finalize(block: Block<T, unknown, C>, isLeader: boolean): boolean
 
   applyKind(block: Block<T, any, C, any>, value: BlockKind): void
@@ -138,7 +138,7 @@ export const enum Priority {
 
 export enum Mode {
   Default = 0,
-  PinpointRefresh = 1,
+  PinpointUpdate = 1,
   ManualMount = 2,
 }
 
