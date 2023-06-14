@@ -1,0 +1,163 @@
+// The below copyright notice and the license permission notice
+// shall be included in all copies or substantial portions.
+// Copyright (C) 2019-2022 Nezaboodka Software <contact@nezaboodka.com>
+// License: https://raw.githubusercontent.com/nezaboodka/verstak/master/LICENSE
+// By contributing, you agree that your contributions will be
+// automatically licensed under the license referred above.
+
+используется артель
+
+внешний тип Callback<T = Нечто> = операция(native: T): Ничего
+внешний тип Delegate<T = Нечто, M = Нечто, C = Нечто, R = Ничего> = операция(block: Block<T, M, C, R>, base: операция(): R): R
+внешний тип AsyncDelegate<T = Нечто, M = Нечто> = операция(block: Block<T, M, Promise<Ничего>>): Promise<Ничего>
+внешний тип SimpleDelegate<T = Нечто> = операция(block: Block<T, Нечто, Нечто, Нечто>): Ничего
+
+внешний тип BlockKind = вариант
+{
+    Band = 0
+    Table = 1
+    Note = 2
+    Group = 3
+    Row = 4
+    Cursor = 5
+    Native = 6
+}
+
+внешний тип Block<T = Нечто, M = Нечто, C = Нечто, R = Ничего> = интерфейс
+{
+    постоянное node: BlockNode<T, M, C, R>
+    постоянное native: T
+    постоянное isBand: Булево
+    постоянное isTable: Булево
+    model: M
+    controller: C
+    kind: BlockKind
+    area: BlockArea
+    widthGrowth: Число
+    minWidth: Текст
+    maxWidth: Текст
+    heightGrowth: Число
+    minHeight: Текст
+    maxHeight: Текст
+    contentAlignment: Align
+    blockAlignment: Align
+    contentWrapping: Булево
+    overlayVisible: Булево?
+    renderingPriority: Priority?
+    childrenShuffling: Булево
+    strictOrder: Булево
+    постоянное isInitialRendering: Булево
+    операция useStyle(styleName: Текст, enabled: Булево? = пусто): Ничего
+    операция configureReactronic(options: Partial<MemberOptions>): MemberOptions
+}
+
+внешний тип BlockNode<T = Нечто, M = Нечто, C = Нечто, R = Ничего> = интерфейс
+{
+    постоянное key: Текст
+    постоянное driver: Driver<T>
+    постоянное builder: ТолькоЧитаемое<BlockBuilder<T, M, C, R>>
+    постоянное level: Число
+    постоянное owner: Block
+    постоянное host: Block
+    постоянное children: CollectionReader<Block>
+    постоянное ties: Item<Block>?
+    постоянное stamp: Число
+    постоянное outer: Block
+    постоянное context: BlockCtx?
+}
+
+внешний тип BlockBuilder<T = Нечто, M = Нечто, C = Нечто, R = Ничего> = интерфейс
+{
+    super: BlockBuilder<T, M, C, R>?
+    key: Текст?
+    mode: Mode?
+    triggers: Нечто?
+    claim: Delegate<T, M, C, R>?
+    create: Delegate<T, M, C, R>?
+    initialize: Delegate<T, M, C, R>?
+    render: Delegate<T, M, C, R>?
+    finalize: Delegate<T, M, C, R>?
+}
+
+внешний тип BlockCtx<T: Object = Object> = интерфейс
+{
+    value: T
+}
+
+внешний тип Driver<T, C = Нечто> = интерфейс
+{
+    постоянное name: Текст
+    постоянное isRow: Булево
+    постоянное preset: SimpleDelegate<T>?
+    операция claim(block: Block<T, Нечто, C>): Ничего
+    операция create(block: Block<T, Нечто, C>, b: объект { native: T?; controller: C? }): Ничего
+    операция initialize(block: Block<T, Нечто, C>): Ничего
+    операция mount(block: Block<T, Нечто, C>): Ничего
+    операция render(block: Block<T, Нечто, C>): Ничего // | Promise<Ничего>
+    операция finalize(block: Block<T, Нечто, C>, isLeader: Булево): Булево
+    операция applyKind(block: Block<T, Нечто, C, Нечто>, value: BlockKind): Ничего
+    операция applyCoords(block: Block<T, Нечто, C, Нечто>, value: BlockCoords?): Ничего
+    операция applyWidthGrowth(block: Block<T, Нечто, C, Нечто>, value: Число): Ничего
+    операция applyMinWidth(block: Block<T, Нечто, C, Нечто>, value: Текст): Ничего
+    операция applyMaxWidth(block: Block<T, Нечто, C, Нечто>, value: Текст): Ничего
+    операция applyHeightGrowth(block: Block<T, Нечто, C, Нечто>, value: Число): Ничего
+    операция applyMinHeight(block: Block<T, Нечто, C, Нечто>, value: Текст): Ничего
+    операция applyMaxHeight(block: Block<T, Нечто, C, Нечто>, value: Текст): Ничего
+    операция applyContentAlignment(block: Block<T, Нечто, C, Нечто>, value: Align): Ничего
+    операция applyBlockAlignment(block: Block<T, Нечто, C, Нечто>, value: Align): Ничего
+    операция applyContentWrapping(block: Block<T, Нечто, C, Нечто>, value: Булево): Ничего
+    операция applyOverlayVisible(block: Block<T, Нечто, C, Нечто>, value: Булево?): Ничего
+    операция applyStyle(block: Block<T, Нечто, C, Нечто>, secondary: Булево, styleName: Текст, enabled: Булево? = пусто): Ничего
+}
+
+внешний тип BlockCoords = интерфейс
+{
+    x1: Число
+    y1: Число
+    x2: Число
+    y2: Число
+}
+
+внешний тип Priority = вариант
+{
+    Realtime = 0
+    Normal = 1
+    Background = 2
+}
+
+внешний тип Mode = вариант
+{
+    Default = 0
+    PinpointRefresh = 1
+    ManualMount = 2
+}
+
+внешний тип Align = вариант
+{
+    Stretch = 0
+    Left = 1
+    CenterX = 2
+    Right = 3
+    Top = 4
+    CenterY = 8
+    Bottom = 12
+    Default = 16
+    Center = 10
+}
+
+внешний тип ElasticSize = интерфейс
+{
+    cells: Число?
+    min: Текст?
+    max: Текст?
+    growth: Число?
+}
+
+внешний тип TrackSize = интерфейс на основе ElasticSize {
+    track: Текст? // | Число
+}
+
+внешний тип BlockArea = Текст? /*  | {
+    cellsOverWidth: Число?
+    cellsOverHeight: Число?
+} */

@@ -1,0 +1,78 @@
+// The below copyright notice and the license permission notice
+// shall be included in all copies or substantial portions.
+// Copyright (C) 2019-2022 Nezaboodka Software <contact@nezaboodka.com>
+// License: https://raw.githubusercontent.com/nezaboodka/verstak/master/LICENSE
+// By contributing, you agree that your contributions will be
+// automatically licensed under the license referred above.
+
+используется артель
+
+внешний тип Verstak = объект
+{
+  общее постоянное shortFrameDuration
+  общее постоянное longFrameDuration
+  общее currentRenderingPriority: Priority
+  общее frameDuration: Число
+  общая операция claim<T = undefined, M = Нечто, C = Нечто, R = Ничего>(driver: Driver<T>, builder: BlockBuilder<T, M, C, R>? = пусто, super: BlockBuilder<T, M, C, R>? = пусто): Block<T, M, C, R>
+  общее постоянное block: Block
+  общая операция triggerRendering(block: Block<any, any, any, Ничего>, triggers: Нечто): Ничего
+  общая операция renderNestedTreesThenDo(action: операция(err: Нечто): Ничего): Ничего
+  общая операция getDefaultLoggingOptions(): LoggingOptions?
+  общая операция setDefaultLoggingOptions(logging: LoggingOptions? = пусто): Ничего
+}
+
+внешний тип BaseDriver<T, C = Нечто> = объект на основе Driver<T, C>
+{
+    постоянное name: Текст
+    постоянное isRow: Булево
+    постоянное preset: SimpleDelegate<T>?
+    общее постоянное fragment: BaseDriver<any, Нечто>
+    операция constructor(name: Текст, isRow: Булево, preset: SimpleDelegate<T>? = пусто)
+    операция claim(block: Block<T, Нечто, C>): Ничего
+    операция create(block: Block<T, Нечто, C>, b: объект { native: T?; controller: C? }): Ничего
+    операция initialize(block: Block<T, Нечто, C>): Ничего
+    операция mount(block: Block<T, Нечто, C>): Ничего
+    операция render(block: Block<T, Нечто, C>): Ничего //| Promise<Ничего>
+    операция finalize(block: Block<T, Нечто, C>, isLeader: Булево): Булево
+    операция applyKind(block: Block<T, any, C, any>, value: BlockKind): Ничего
+    операция applyCoords(block: Block<T, any, C, any>, value: BlockCoords?): Ничего
+    операция applyWidthGrowth(block: Block<T, any, C, any>, value: Число): Ничего
+    операция applyMinWidth(block: Block<T, any, C, any>, value: Текст): Ничего
+    операция applyMaxWidth(block: Block<T, any, C, any>, value: Текст): Ничего
+    операция applyHeightGrowth(block: Block<T, any, C, any>, value: Число): Ничего
+    операция applyMinHeight(block: Block<T, any, C, any>, value: Текст): Ничего
+    операция applyMaxHeight(block: Block<T, any, C, any>, value: Текст): Ничего
+    операция applyContentAlignment(block: Block<T, any, C, any>, value: Align): Ничего
+    операция applyBlockAlignment(block: Block<T, any, C, any>, value: Align): Ничего
+    операция applyContentWrapping(block: Block<T, any, C, any>, value: Булево): Ничего
+    операция applyOverlayVisible(block: Block<T, any, C, any>, value: Булево?): Ничего
+    операция applyStyle(block: Block<T, any, C, any>, secondary: Булево, styleName: Текст, enabled: Булево? = пусто): Ничего
+}
+
+внешний тип StaticDriver<T> = объект на основе BaseDriver<T>
+{
+    постоянное element: T
+    при создании(element: T, name: Текст, isRow: Булево, preset: SimpleDelegate<T>? = пусто)
+    операция create(block: Block<T, Нечто, Нечто, Ничего>, b: объект { native: T?; controller: Нечто? }): Ничего
+}
+
+внешний тип CursorCommand = объект
+{
+    absolute: Текст?
+    columnShift: Число?
+    rowShift: Число?
+}
+
+внешний тип CursorCommandDriver = объект на основе BaseDriver<CursorCommand, Ничего>
+{
+    при создании()
+    операция create(block: Block<CursorCommand, Нечто, Ничего, Ничего>, b: объект { native: CursorCommand?; controller: Ничего? }): Ничего
+}
+
+внешний тип SubTreeVariable<T: Object = Object> = объект
+{
+    постоянное defaultValue: T?
+    при создании(defaultValue: T? = пусто)
+    value: T
+    защищённое valueOrUndefined: T?
+}

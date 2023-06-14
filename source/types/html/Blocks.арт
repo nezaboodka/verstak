@@ -1,0 +1,36 @@
+// The below copyright notice and the license permission notice
+// shall be included in all copies or substantial portions.
+// Copyright (C) 2019-2022 Nezaboodka Software <contact@nezaboodka.com>
+// License: https://raw.githubusercontent.com/nezaboodka/verstak/master/LICENSE
+// By contributing, you agree that your contributions will be
+// automatically licensed under the license referred above.
+
+используется артель
+
+внешний тип Band<M = Нечто, R = Ничего> = операция(builder: BlockBuilder<HTMLElement, M, R>? = пусто, super: BlockBuilder<HTMLElement, M, R>? = пусто): Block<HTMLElement, M, R>
+внешний тип Table<M = Нечто, R = Ничего> = операция(builder: BlockBuilder<HTMLElement, M, R>? = пусто, super: BlockBuilder<HTMLElement, M, R>? = пусто): Block<HTMLElement, M, R>
+внешний тип row<T = Ничего> = операция(builder: операция(block: Ничего): T, shiftCursorDown: Число? = пусто): Ничего
+внешний тип fromNewRow = операция(shiftCursorDown: Число? = пусто): Ничего
+внешний тип cursor = операция(areaParams: BlockArea): Ничего
+внешний тип Note = операция(content: Текст, builder: BlockBuilder<HTMLElement, Ничего, Ничего>? = пусто): Block<HTMLElement, Ничего, Ничего>
+внешний тип HtmlNote = операция(content: Текст, builder: BlockBuilder<HTMLElement, Ничего, Ничего>? = пусто): Block<HTMLElement, Ничего, Ничего>
+внешний тип Group<M = Нечто, R = Ничего> = операция(builder: BlockBuilder<HTMLElement, M, R>? = пусто, super: BlockBuilder<HTMLElement, M, R>? = пусто): Block<HTMLElement, M, R>
+внешний тип Fragment<M = Нечто, R = Ничего> = операция(builder: BlockBuilder<Ничего, M, R>? = пусто, super: BlockBuilder<Ничего, M, R>? = пусто): Block<Ничего, M, R>
+
+внешний тип VerstakHtmlDriver<T: HTMLElement> = объект на основе HtmlDriver<T>
+{
+    операция applyKind(block: Block<T, Нечто, Нечто>, value: BlockKind): Ничего
+    операция applyCoords(block: Block<T>, value: BlockCoords?): Ничего
+    операция applyWidthGrowth(block: Block<T>, value: Число): Ничего
+    операция applyMinWidth(block: Block<T>, value: Текст): Ничего
+    операция applyMaxWidth(block: Block<T>, value: Текст): Ничего
+    операция applyHeightGrowth(block: Block<T>, value: Число): Ничего
+    операция applyMinHeight(block: Block<T>, value: Текст): Ничего
+    операция applyMaxHeight(block: Block<T>, value: Текст): Ничего
+    операция applyContentAlignment(block: Block<T>, value: Align): Ничего
+    операция applyBlockAlignment(block: Block<T>, value: Align): Ничего
+    операция applyContentWrapping(block: Block<T>, value: Булево): Ничего
+    операция applyOverlayVisible(block: Block<T>, value: Булево?): Ничего
+    операция applyStyle(block: Block<T, Нечто, Нечто>, secondary: Булево, styleName: Текст, enabled: Булево? = пусто): Ничего
+    операция render(block: Block<T>): Ничего //| Promise<Ничего>
+}
