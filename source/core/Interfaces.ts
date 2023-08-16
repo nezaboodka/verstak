@@ -82,7 +82,7 @@ export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
   claim?: Delegate<T, M, C, R>
   create?: Delegate<T, M, C, R>
   initialize?: Delegate<T, M, C, R>
-  update?: Delegate<T, M, C, R>
+  rebuild?: Delegate<T, M, C, R>
   finalize?: Delegate<T, M, C, R>
 }
 
@@ -138,7 +138,7 @@ export const enum Priority {
 
 export enum Mode {
   Default = 0,
-  PinpointUpdate = 1,
+  PinpointRebuild = 1,
   ManualMount = 2,
 }
 

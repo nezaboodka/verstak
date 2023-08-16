@@ -13,12 +13,12 @@ export function FocuserReaction(key: string, target: HTMLElement, model: FocusMo
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {
   Fragment({
     key,
-    mode: Mode.PinpointUpdate,
+    mode: Mode.PinpointRebuild,
     triggers: { target, model },
     initialize(b) {
       b.configureReactronic({ throttling: 0 })
     },
-    update() {
+    rebuild() {
       if (switchEditMode !== undefined) {
         switchEditMode(model)
       }

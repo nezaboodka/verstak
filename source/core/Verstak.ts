@@ -197,7 +197,7 @@ function chainedInitialize(block: Block<any>, bb: BlockBuilder): void {
 }
 
 function chainedUpdate(block: Block, bb: BlockBuilder): void {
-  const update = bb.update
+  const update = bb.rebuild
   const base = bb.base
   if (update)
     update(block, base ? () => chainedUpdate(block, base) : NOP)
@@ -418,7 +418,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     this.childrenShuffling = false
     // Monitoring
     BlockImpl.grandBlockCount++
-    if (this.isOn(Mode.PinpointUpdate))
+    if (this.isOn(Mode.PinpointRebuild))
       BlockImpl.disposableBlockCount++
   }
 
@@ -569,7 +569,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.node.stamp !== 1 || !this.isOn(Mode.PinpointUpdate))
+    if (this.node.stamp !== 1 || !this.isOn(Mode.PinpointRebuild))
       throw new Error("reactronic can be configured only for blocks with separate reaction mode and only inside initialize")
     return Rx.getController(this.update).configure(options)
   }
@@ -835,7 +835,7 @@ function triggerUpdate(ties: Item<BlockImpl>): void {
   const b = ties.instance
   const node = b.node
   if (node.stamp >= 0) {
-    if (b.isOn(Mode.PinpointUpdate)) {
+    if (b.isOn(Mode.PinpointRebuild)) {
       if (node.stamp === 0) {
         Transaction.outside(() => {
           if (Rx.isLogging)
@@ -912,7 +912,7 @@ function triggerFinalization(ties: Item<BlockImpl>, isLeader: boolean, individua
     const childrenAreLeaders = nonreactive(() => driver.finalize(b, isLeader))
     b.native = null
     b.controller = null
-    if (b.isOn(Mode.PinpointUpdate)) {
+    if (b.isOn(Mode.PinpointRebuild)) {
       // Defer disposal if block is reactive
       ties.aux = undefined
       const last = gLastToDispose

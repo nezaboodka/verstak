@@ -56,7 +56,7 @@ export function fromNewRow(shiftCursorDown?: number): void {
 
 export function cursor(areaParams: BlockArea): void {
   Verstak.claim(Drivers.cursor, {
-    update(b) {
+    rebuild(b) {
       b.area = areaParams
     },
   })
@@ -66,7 +66,7 @@ export function cursor(areaParams: BlockArea): void {
 
 export function Note(content: string, builder?: BlockBuilder<HTMLElement, void, void>): Block<HTMLElement, void, void> {
   return Verstak.claim(Drivers.note, builder, {
-    update(b) {
+    rebuild(b) {
       b.native.innerText = content
     }},
   )
@@ -74,7 +74,7 @@ export function Note(content: string, builder?: BlockBuilder<HTMLElement, void, 
 
 export function HtmlNote(content: string, builder?: BlockBuilder<HTMLElement, void, void>): Block<HTMLElement, void, void> {
   return Verstak.claim(Drivers.note, builder, {
-    update(b) {
+    rebuild(b) {
       b.native.innerHTML = content
     }},
   )
