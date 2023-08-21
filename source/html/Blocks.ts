@@ -252,11 +252,11 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
       e.className = enabled ? styleName : ""
   }
 
-  update(block: Block<T>): void | Promise<void> {
+  rebuild(block: Block<T>): void | Promise<void> {
     // Add initial line feed automatically
     if (block.kind <= BlockKind.Table)
       fromNewRow()
-    return super.update(block)
+    return super.rebuild(block)
   }
 }
 

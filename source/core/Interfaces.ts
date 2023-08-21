@@ -48,10 +48,10 @@ export interface Block<T = unknown, M = unknown, C = unknown, R = void> {
   blockAlignment: Align
   contentWrapping: boolean
   overlayVisible: boolean | undefined
-  updatePriority?: Priority
+  rebuildPriority?: Priority
   childrenShuffling: boolean
   strictOrder: boolean
-  readonly isInitialUpdate: boolean
+  readonly isInitialRebuild: boolean
   useStyle(styleName: string, enabled?: boolean): void
   configureReactronic(options: Partial<MemberOptions>): MemberOptions
 }
@@ -103,7 +103,7 @@ export interface Driver<T, C = unknown> {
   create(block: Block<T, unknown, C>, b: { native?: T, controller?: C }): void
   initialize(block: Block<T, unknown, C>): void
   mount(block: Block<T, unknown, C>): void
-  update(block: Block<T, unknown, C>): void | Promise<void>
+  rebuild(block: Block<T, unknown, C>): void | Promise<void>
   finalize(block: Block<T, unknown, C>, isLeader: boolean): boolean
 
   applyKind(block: Block<T, any, C, any>, value: BlockKind): void
