@@ -10,7 +10,7 @@
 внешний тип Band<M = Нечто, R = Ничего> = операция(builder: BlockBuilder<HTMLElement, M, R>? = пусто, super: BlockBuilder<HTMLElement, M, R>? = пусто): Block<HTMLElement, M, R>
 внешний тип Table<M = Нечто, R = Ничего> = операция(builder: BlockBuilder<HTMLElement, M, R>? = пусто, super: BlockBuilder<HTMLElement, M, R>? = пусто): Block<HTMLElement, M, R>
 внешний тип row<T = Ничего> = операция(builder: операция(block: Ничего): T, shiftCursorDown: Число? = пусто): Ничего
-внешний тип fromNewRow = операция(shiftCursorDown: Число? = пусто): Ничего
+внешний тип startNewRow = операция(shiftCursorDown: Число? = пусто): Ничего
 внешний тип cursor = операция(areaParams: BlockArea): Ничего
 внешний тип Note = операция(content: Текст, builder: BlockBuilder<HTMLElement, Ничего, Ничего>? = пусто): Block<HTMLElement, Ничего, Ничего>
 внешний тип HtmlNote = операция(content: Текст, builder: BlockBuilder<HTMLElement, Ничего, Ничего>? = пусто): Block<HTMLElement, Ничего, Ничего>

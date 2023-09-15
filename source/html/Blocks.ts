@@ -46,11 +46,11 @@ export function Table<M = unknown, R = void>(
 // Row
 
 export function row<T = void>(builder?: (block: void) => T, shiftCursorDown?: number): void {
-  fromNewRow(shiftCursorDown)
+  startNewRow(shiftCursorDown)
   builder?.()
 }
 
-export function fromNewRow(shiftCursorDown?: number): void {
+export function startNewRow(shiftCursorDown?: number): void {
   Verstak.claim(Drivers.row)
 }
 
@@ -255,7 +255,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
   rebuild(block: Block<T>): void | Promise<void> {
     // Add initial line feed automatically
     if (block.kind <= BlockKind.Table)
-      fromNewRow()
+      startNewRow()
     return super.rebuild(block)
   }
 }
