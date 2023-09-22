@@ -26,9 +26,6 @@
       "args": ["${file}"],
       "outputCapture": "std",
       "internalConsoleOptions": "openOnSessionStart",
-      "env": {
-        "AVA_DEBUG": "${file}"
-      },
       "smartStep": true,
       "skipFiles": [
         "<node_internals>/**/*.js"
