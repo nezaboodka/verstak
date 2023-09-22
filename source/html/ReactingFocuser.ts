@@ -5,9 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Mode } from "../core/api"
-import { Fragment } from "./Blocks"
-import { FocusModel } from "./sensors/FocusSensor"
+import { Mode } from "../core/api.js"
+import { Fragment } from "./Blocks.js"
+import { FocusModel } from "./sensors/FocusSensor.js"
 
 export function FocuserReaction(key: string, target: HTMLElement, model: FocusModel,
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {

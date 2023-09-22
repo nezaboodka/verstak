@@ -6,15 +6,15 @@
 // automatically licensed under the license referred above.
 
 import { transactional } from "reactronic"
-import { FocusSensor } from "./FocusSensor"
-import { HoverSensor } from "./HoverSensor"
-import { HtmlDragSensor } from "./HtmlDragSensor"
-import { KeyboardSensor } from "./KeyboardSensor"
-import { ButtonSensor } from "./ButtonSensor"
-import { ResizeSensor } from "./ResizeSensor"
-import { WheelSensor } from "./WheelSensor"
-import { WindowSensor } from "./WindowSensor"
-import { PointerSensor } from "./PointerSensor"
+import { FocusSensor } from "./FocusSensor.js"
+import { HoverSensor } from "./HoverSensor.js"
+import { HtmlDragSensor } from "./HtmlDragSensor.js"
+import { KeyboardSensor } from "./KeyboardSensor.js"
+import { ButtonSensor } from "./ButtonSensor.js"
+import { ResizeSensor } from "./ResizeSensor.js"
+import { WheelSensor } from "./WheelSensor.js"
+import { WindowSensor } from "./WindowSensor.js"
+import { PointerSensor } from "./PointerSensor.js"
 
 export class HtmlSensors {
   readonly window: WindowSensor

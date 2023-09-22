@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import test from "ava"
-import { BlockCoords } from "../source/core/Interfaces"
-import { parseBlockCoords, emitBlockCoords } from "../source/core/Utils"
+import { BlockCoords } from "../source/core/Interfaces.js"
+import { parseBlockCoords, emitBlockCoords } from "../source/core/Utils.js"
 
 function parse(text: string): BlockCoords {
   const result: BlockCoords = { x1: 0, y1: 0, x2: 0, y2: 0 }

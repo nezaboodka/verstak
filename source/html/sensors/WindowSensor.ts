@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { ToggleRef, transactional } from "reactronic"
-import { objectHasMember } from "../../core/Utils"
-import { Sensor } from "./Sensor"
+import { objectHasMember } from "../../core/Utils.js"
+import { Sensor } from "./Sensor.js"
 
 export interface WindowModel {
   popupToggle?: ToggleRef

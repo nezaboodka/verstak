@@ -6,10 +6,10 @@
 // automatically licensed under the license referred above.
 
 import { raw } from "reactronic"
-import { DataForSensor, SymDataForSensor } from "./DataForSensor"
-// import { FocusSensor } from './FocusSensor'
-import { Sensor } from "./Sensor"
-import { WindowSensor } from "./WindowSensor"
+import { DataForSensor, SymDataForSensor } from "./DataForSensor.js"
+// import { FocusSensor } from './FocusSensor.js'
+import { Sensor } from "./Sensor.js"
+import { WindowSensor } from "./WindowSensor.js"
 
 export class HtmlElementSensor extends Sensor {
   @raw readonly focusSensor?: any

@@ -6,9 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { options, transactional, LoggingLevel } from "reactronic"
-import { findTargetElementData, SymDataForSensor } from "./DataForSensor"
-import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor"
-import { BasePointerSensor } from "./BasePointerSensor"
+import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
+import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
+import { BasePointerSensor } from "./BasePointerSensor.js"
 
 export class HoverSensor extends BasePointerSensor {
   target: unknown = undefined

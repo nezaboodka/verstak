@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { options, sensitive, transactional, LoggingLevel } from "reactronic"
-import { grabElementDataList, SymDataForSensor } from "./DataForSensor"
-import { HtmlElementSensor } from "./HtmlElementSensor"
+import { grabElementDataList, SymDataForSensor } from "./DataForSensor.js"
+import { HtmlElementSensor } from "./HtmlElementSensor.js"
 
 export enum KeyboardModifiers {
   None = 0,

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 import { reactive, nonreactive, Transaction, Rx, options, Reentrance } from "reactronic"
-import { Render, SuperRender, RxNodeType, RxNodeInstance, RxNode } from "./RxDomV1.Types"
+import { Render, SuperRender, RxNodeType, RxNodeInstance, RxNode } from "./RxDomV1.Types.js"
 
 // BasicNodeType
 

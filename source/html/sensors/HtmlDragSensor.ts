@@ -6,11 +6,11 @@
 // automatically licensed under the license referred above.
 
 import { options, reactive, transactional, raw, Transaction, LoggingLevel } from "reactronic"
-import { findTargetElementData, SymDataForSensor } from "./DataForSensor"
-import { FocusSensor } from "./FocusSensor"
-import { HtmlElementSensor } from "./HtmlElementSensor"
-import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor"
-import { WindowSensor } from "./WindowSensor"
+import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
+import { FocusSensor } from "./FocusSensor.js"
+import { HtmlElementSensor } from "./HtmlElementSensor.js"
+import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
+import { WindowSensor } from "./WindowSensor.js"
 
 export type DragEffectAllowed = "none" | "copy" | "copyLink" | "copyMove" | "link" | "linkMove" | "move" | "all" | "uninitialized"
 export type DropEffect = "none" | "copy" | "link" | "move"

@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Item, Rx } from "reactronic"
-import { Verstak, Block, BaseDriver, Priority } from "../core/api"
+import { Verstak, Block, BaseDriver, Priority } from "../core/api.js"
 
 export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends BaseDriver<T, C> {
 

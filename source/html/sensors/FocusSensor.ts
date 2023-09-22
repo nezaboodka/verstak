@@ -6,10 +6,10 @@
 // automatically licensed under the license referred above.
 
 import { options, transactional, LoggingLevel, ToggleRef } from "reactronic"
-import { objectHasMember } from "../../core/Utils"
-import { grabElementDataList, SymDataForSensor } from "./DataForSensor"
-import { HtmlElementSensor } from "./HtmlElementSensor"
-import { WindowSensor } from "./WindowSensor"
+import { objectHasMember } from "../../core/Utils.js"
+import { grabElementDataList, SymDataForSensor } from "./DataForSensor.js"
+import { HtmlElementSensor } from "./HtmlElementSensor.js"
+import { WindowSensor } from "./WindowSensor.js"
 
 export interface FocusModel {
   isEditMode: boolean

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { BlockCoords } from "./Interfaces"
+import { BlockCoords } from "./Interfaces.js"
 
 export function parseBlockCoords(text: string, result: BlockCoords): BlockCoords {
   let i = 0

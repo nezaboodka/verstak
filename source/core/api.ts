@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from "./Interfaces"
-export * from "./Utils"
-export * from "./Restyler"
-export * from "./Verstak"
+export * from "./Interfaces.js"
+export * from "./Utils.js"
+export * from "./Restyler.js"
+export * from "./Verstak.js"

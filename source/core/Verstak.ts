@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, ObservableObject, raw, MemberOptions } from "reactronic"
-import { BlockCoords, BlockKind, Priority, Mode, Align, BlockArea, BlockBuilder, Block, Driver, SimpleDelegate, BlockNode, BlockCtx } from "./Interfaces"
-import { emitLetters, equalBlockCoords, parseBlockCoords, getCallerInfo } from "./Utils"
+import { BlockCoords, BlockKind, Priority, Mode, Align, BlockArea, BlockBuilder, Block, Driver, SimpleDelegate, BlockNode, BlockCtx } from "./Interfaces.js"
+import { emitLetters, equalBlockCoords, parseBlockCoords, getCallerInfo } from "./Utils.js"
 
 // Verstak
 

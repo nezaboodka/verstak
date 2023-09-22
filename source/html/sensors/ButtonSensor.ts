@@ -6,11 +6,11 @@
 // automatically licensed under the license referred above.
 
 import { options, Reentrance, transactional, Transaction, LoggingLevel } from "reactronic"
-import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from "./BasePointerSensor"
-import { findTargetElementData, SymDataForSensor } from "./DataForSensor"
-import { FocusSensor } from "./FocusSensor"
-import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor"
-import { WindowSensor } from "./WindowSensor"
+import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from "./BasePointerSensor.js"
+import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
+import { FocusSensor } from "./FocusSensor.js"
+import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
+import { WindowSensor } from "./WindowSensor.js"
 
 export enum ButtonState {
   Pressed,

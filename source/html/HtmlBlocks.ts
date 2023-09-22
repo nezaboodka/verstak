@@ -5,8 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Verstak, Block, StaticDriver, BlockKind, BlockBuilder } from "../core/api"
-import { HtmlDriver, SvgDriver } from "./HtmlDriver"
+import { Verstak, Block, StaticDriver, BlockKind, BlockBuilder } from "../core/api.js"
+import { HtmlDriver, SvgDriver } from "./HtmlDriver.js"
 
 export function HtmlBody(builder?: BlockBuilder<HTMLElement>, base?: BlockBuilder<HTMLElement>): Block<HTMLElement> {
   const driver = new StaticDriver(global.document.body, "HtmlBody", false, b => b.kind = BlockKind.Section)

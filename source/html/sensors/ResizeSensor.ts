@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { options, transactional, LoggingLevel } from "reactronic"
-import { Block } from "../../core/api"
-import { Sensor } from "./Sensor"
+import { Block } from "../../core/api.js"
+import { Sensor } from "./Sensor.js"
 
 export interface ResizedElement {
   readonly borderBoxSize: ReadonlyArray<ResizeObserverSize>

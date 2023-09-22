@@ -5,8 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Verstak, Block, BlockKind, BlockBuilder, Align, BlockCoords, SimpleDelegate, BlockArea, CursorCommandDriver, BaseDriver } from "../core/api"
-import { HtmlDriver } from "./HtmlDriver"
+import { Verstak, Block, BlockKind, BlockBuilder, Align, BlockCoords, SimpleDelegate, BlockArea, CursorCommandDriver, BaseDriver } from "../core/api.js"
+import { HtmlDriver } from "./HtmlDriver.js"
 
 // Verstak is based on two fundamental layout structures
 // called section and table; and on two special non-visual

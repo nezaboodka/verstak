@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { DataForSensor, SymDataForSensor, SymResizeObserver } from "./sensors/DataForSensor"
+import { DataForSensor, SymDataForSensor, SymResizeObserver } from "./sensors/DataForSensor.js"
 
 declare global {
   interface Element {
