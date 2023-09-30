@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, Collection, Item, ObservableObject, raw, MemberOptions } from "reactronic"
+import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, MergeList, MergeItem, ObservableObject, raw, MemberOptions } from "reactronic"
 import { BlockCoords, BlockKind, Priority, Mode, Align, BlockArea, BlockBuilder, Block, Driver, SimpleDelegate, BlockNode, BlockCtx } from "./Interfaces.js"
 import { emitLetters, equalBlockCoords, parseBlockCoords, getCallerInfo } from "./Utils.js"
 
@@ -31,7 +31,7 @@ export class Verstak {
     const owner = gCurrent?.instance
     if (owner) {
       // Check for coalescing separators or lookup for existing block
-      let ex: Item<BlockImpl<any, any, any, any>> | undefined = undefined
+      let ex: MergeItem<BlockImpl<any, any, any, any>> | undefined = undefined
       const children = owner.node.children
       if (driver.isRow) {
         const last = children.lastClaimedItem()
@@ -62,7 +62,7 @@ export class Verstak {
     else {
       // Create new root block
       result = new BlockImpl<T, M, C, R>(key || "", driver, owner, builder)
-      result.node.ties = Collection.createItem(result)
+      result.node.ties = MergeList.createItem(result)
       triggerRebuild(result.node.ties)
     }
     return result
@@ -321,8 +321,8 @@ class BlockNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements 
   readonly level: number
   readonly owner: BlockImpl
   host: BlockImpl
-  readonly children: Collection<BlockImpl>
-  ties: Item<BlockImpl> | undefined
+  readonly children: MergeList<BlockImpl>
+  ties: MergeItem<BlockImpl> | undefined
   stamp: number
   outer: BlockImpl
   context: BlockCtxImpl<any> | undefined
@@ -349,7 +349,7 @@ class BlockNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements 
       this.outer = self
     }
     this.host = self // block is unmounted
-    this.children = new Collection<BlockImpl>(getBlockKey, true)
+    this.children = new MergeList<BlockImpl>(getBlockKey, true)
     this.ties = undefined
     this.stamp = 0
     this.context = undefined
@@ -574,7 +574,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     return Rx.getController(this.rebuild).configure(options)
   }
 
-  static get curr(): Item<BlockImpl> {
+  static get curr(): MergeItem<BlockImpl> {
     if (!gCurrent)
       throw new Error("current block is undefined")
     return gCurrent
@@ -734,8 +734,8 @@ function runRebuildNestedTreesThenDo(error: unknown, action: (error: unknown) =>
         // Lay out and rebuild actual blocks
         const ownerIsSection = owner.isSection
         const sequential = children.isStrict
-        let p1: Array<Item<BlockImpl>> | undefined = undefined
-        let p2: Array<Item<BlockImpl>> | undefined = undefined
+        let p1: Array<MergeItem<BlockImpl>> | undefined = undefined
+        let p2: Array<MergeItem<BlockImpl>> | undefined = undefined
         let mounting = false
         let hostingRow = owner
         for (const item of children.items()) {
@@ -770,7 +770,7 @@ function runRebuildNestedTreesThenDo(error: unknown, action: (error: unknown) =>
 }
 
 function markToMountIfNecessary(mounting: boolean, host: BlockImpl,
-  ties: Item<BlockImpl>, children: Collection<BlockImpl>, sequential: boolean): boolean {
+  ties: MergeItem<BlockImpl>, children: MergeList<BlockImpl>, sequential: boolean): boolean {
   // Detects element mounting when abstract blocks
   // exist among regular blocks with HTML elements
   const b = ties.instance
@@ -788,10 +788,10 @@ function markToMountIfNecessary(mounting: boolean, host: BlockImpl,
 }
 
 async function startIncrementalRebuild(
-  owner: Item<BlockImpl>,
-  allChildren: Collection<BlockImpl>,
-  priority1?: Array<Item<BlockImpl>>,
-  priority2?: Array<Item<BlockImpl>>): Promise<void> {
+  owner: MergeItem<BlockImpl>,
+  allChildren: MergeList<BlockImpl>,
+  priority1?: Array<MergeItem<BlockImpl>>,
+  priority2?: Array<MergeItem<BlockImpl>>): Promise<void> {
   const stamp = owner.instance.node.stamp
   if (priority1)
     await rebuildIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
@@ -799,8 +799,8 @@ async function startIncrementalRebuild(
     await rebuildIncrementally(owner, stamp, allChildren, priority2, Priority.Background)
 }
 
-async function rebuildIncrementally(owner: Item<BlockImpl>, stamp: number,
-  allChildren: Collection<BlockImpl>, items: Array<Item<BlockImpl>>,
+async function rebuildIncrementally(owner: MergeItem<BlockImpl>, stamp: number,
+  allChildren: MergeList<BlockImpl>, items: Array<MergeItem<BlockImpl>>,
   priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
   const block = owner.instance
@@ -831,7 +831,7 @@ async function rebuildIncrementally(owner: Item<BlockImpl>, stamp: number,
   }
 }
 
-function triggerRebuild(ties: Item<BlockImpl>): void {
+function triggerRebuild(ties: MergeItem<BlockImpl>): void {
   const b = ties.instance
   const node = b.node
   if (node.stamp >= 0) {
@@ -868,7 +868,7 @@ function mountIfNecessary(block: BlockImpl): void {
     nonreactive(() => driver.mount(block))
 }
 
-function rebuildNow(ties: Item<BlockImpl>): void {
+function rebuildNow(ties: MergeItem<BlockImpl>): void {
   const b = ties.instance
   const node = b.node
   if (node.stamp >= 0) { // if block is alive
@@ -900,7 +900,7 @@ function rebuildNow(ties: Item<BlockImpl>): void {
   }
 }
 
-function triggerFinalization(ties: Item<BlockImpl>, isLeader: boolean, individual: boolean): void {
+function triggerFinalization(ties: MergeItem<BlockImpl>, isLeader: boolean, individual: boolean): void {
   const b = ties.instance
   const node = b.node
   if (node.stamp >= 0) {
@@ -946,7 +946,7 @@ async function runDisposalLoop(): Promise<void> {
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
-// function forEachChildRecursively(item: Item<XBlock>, action: (e: any) => void): void {
+// function forEachChildRecursively(item: MergeItem<XBlock>, action: (e: any) => void): void {
 //   const block = item.instance
 //   const e = block.native
 //   e && action(e)
@@ -966,7 +966,7 @@ function wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T 
   return wrappedToRunInside
 }
 
-function runInside<T>(ties: Item<BlockImpl>, func: (...args: any[]) => T, ...args: any[]): T {
+function runInside<T>(ties: MergeItem<BlockImpl>, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gCurrent
   try {
     gCurrent = ties
@@ -1073,6 +1073,6 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const NOP: any = (...args: any[]): void => { /* nop */ }
 
-let gCurrent: Item<BlockImpl> | undefined = undefined
-let gFirstToDispose: Item<BlockImpl> | undefined = undefined
-let gLastToDispose: Item<BlockImpl> | undefined = undefined
+let gCurrent: MergeItem<BlockImpl> | undefined = undefined
+let gFirstToDispose: MergeItem<BlockImpl> | undefined = undefined
+let gLastToDispose: MergeItem<BlockImpl> | undefined = undefined

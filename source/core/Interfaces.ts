@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { CollectionReader, Item, MemberOptions } from "reactronic"
+import { MergeListReader, MergeItem, MemberOptions } from "reactronic"
 
 // Delegates
 
@@ -65,8 +65,8 @@ export interface BlockNode<T = unknown, M = unknown, C = unknown, R = void> {
   readonly level: number
   readonly owner: Block
   readonly host: Block
-  readonly children: CollectionReader<Block>
-  readonly ties: Item<Block> | undefined
+  readonly children: MergeListReader<Block>
+  readonly ties: MergeItem<Block> | undefined
   readonly stamp: number
   readonly outer: Block
   readonly context: BlockCtx | undefined
