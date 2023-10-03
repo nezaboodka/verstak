@@ -571,7 +571,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
     if (this.node.stamp !== 1 || !this.isOn(Mode.PinpointRebuild))
       throw new Error("reactronic can be configured only for blocks with separate reaction mode and only inside initialize")
-    return Rx.getController(this.rebuild).configure(options)
+    return Rx.getReaction(this.rebuild).configure(options)
   }
 
   static get curr(): MergeItem<BlockImpl> {
@@ -840,7 +840,7 @@ function triggerRebuild(ties: MergeItem<BlockImpl>): void {
         Transaction.outside(() => {
           if (Rx.isLogging)
             Rx.setLoggingHint(b, node.key)
-          Rx.getController(b.rebuild).configure({
+          Rx.getReaction(b.rebuild).configure({
             order: node.level,
           })
         })
