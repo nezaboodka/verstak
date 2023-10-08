@@ -143,15 +143,15 @@ export enum Mode {
 }
 
 export enum Align {
-  Stretch = 0b00000,
-  Left    = 0b00001,
-  CenterX = 0b00010,
-  Right   = 0b00011,
-  Top     = 0b00100,
-  CenterY = 0b01000,
-  Bottom  = 0b01100,
   Default = 0b10000,
-  Center  = CenterX + CenterY,
+  ToBounds = 0b00000,
+  ToLeft    = 0b00001,
+  ToCenterX = 0b00010,
+  ToRight   = 0b00011,
+  ToTop     = 0b00100,
+  ToCenterY = 0b01000,
+  ToBottom  = 0b01100,
+  ToCenter  = ToCenterX + ToCenterY,
 }
 
 export interface ElasticSize {

@@ -154,7 +154,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     else {
       const hostDriver = bNode.host.node.driver
       if (hostDriver.isRow) {
-        driver.applyBlockAlignment(block, Align.Stretch)
+        driver.applyBlockAlignment(block, Align.ToBounds)
         hostDriver.applyHeightGrowth(bNode.host, value)
       }
     }
