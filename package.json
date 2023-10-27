@@ -31,15 +31,15 @@
   },
   "homepage": "https://github.com/nezaboodka/verstak/blob/master/README.md#readme",
   "dependencies": {
-    "reactronic": "^0.23.110"
+    "reactronic": "^0.23.111"
   },
   "devDependencies": {
-    "@types/node": "20.6.3",
-    "@typescript-eslint/eslint-plugin": "6.7.2",
-    "@typescript-eslint/parser": "6.7.2",
+    "@types/node": "20.8.9",
+    "@typescript-eslint/eslint-plugin": "6.9.0",
+    "@typescript-eslint/parser": "6.9.0",
     "ava": "5.3.1",
     "c8": "8.0.1",
-    "eslint": "8.49.0",
+    "eslint": "8.52.0",
     "ts-node": "10.9.1",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.2.2"

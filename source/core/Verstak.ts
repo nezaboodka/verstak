@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reactive, nonreactive, Transaction, options, Reentrance, Rx, LoggingOptions, MergeList, MergeItem, ObservableObject, raw, MemberOptions } from "reactronic"
+import { reactive, unobs, Transaction, options, Reentrance, Rx, LoggingOptions, MergeList, MergeItem, ObservableObject, raw, MemberOptions } from "reactronic"
 import { BlockCoords, BlockKind, Priority, Mode, Align, BlockArea, BlockBuilder, Block, Driver, SimpleDelegate, BlockNode, BlockCtx } from "./Interfaces.js"
 import { emitLetters, equalBlockCoords, parseBlockCoords, getCallerInfo } from "./Utils.js"
 
@@ -598,7 +598,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     const b = BlockImpl.curr.instance
     const node = b.node
     const owner = node.owner
-    const hostCtx = nonreactive(() => owner.node.context?.value)
+    const hostCtx = unobs(() => owner.node.context?.value)
     if (value && value !== hostCtx) {
       if (hostCtx)
         node.outer = owner
@@ -845,7 +845,7 @@ function triggerRebuild(ties: MergeItem<BlockImpl>): void {
           })
         })
       }
-      nonreactive(b.rebuild, node.builder.triggers) // reactive auto-rebuild
+      unobs(b.rebuild, node.builder.triggers) // reactive auto-rebuild
     }
     else
       rebuildNow(ties)
@@ -857,7 +857,7 @@ function mountIfNecessary(block: BlockImpl): void {
   const driver = node.driver
   if (node.stamp === 0) {
     node.stamp = 1
-    nonreactive(() => {
+    unobs(() => {
       driver.create(block, block)
       driver.initialize(block)
       if (block.isAutoMountEnabled)
@@ -865,7 +865,7 @@ function mountIfNecessary(block: BlockImpl): void {
     })
   }
   else if (block.isMoved && block.isAutoMountEnabled)
-    nonreactive(() => driver.mount(block))
+    unobs(() => driver.mount(block))
 }
 
 function rebuildNow(ties: MergeItem<BlockImpl>): void {
@@ -909,7 +909,7 @@ function triggerFinalization(ties: MergeItem<BlockImpl>, isLeader: boolean, indi
       console.log(`WARNING: it is recommended to assign explicit key for conditional block in order to avoid unexpected side effects: ${node.key}`)
     node.stamp = ~node.stamp
     // Finalize block itself and remove it from collection
-    const childrenAreLeaders = nonreactive(() => driver.finalize(b, isLeader))
+    const childrenAreLeaders = unobs(() => driver.finalize(b, isLeader))
     b.native = null
     b.controller = null
     if (b.isOn(Mode.PinpointRebuild)) {
