@@ -62,10 +62,10 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     // nothing to do by default
   }
 
-  rebuild(block: Block<T, unknown, C>): void | Promise<void> {
-    const result = super.rebuild(block)
+  update(block: Block<T, unknown, C>): void | Promise<void> {
+    const result = super.update(block)
     if (gBlinkingEffectMarker)
-      blink(block.native, Verstak.currentRebuildPriority, block.node.stamp)
+      blink(block.native, Verstak.currentUpdatePriority, block.node.stamp)
     return result
   }
 

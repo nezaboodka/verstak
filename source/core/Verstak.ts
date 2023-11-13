@@ -14,7 +14,7 @@ import { emitLetters, equalBlockCoords, parseBlockCoords, getCallerInfo } from "
 export class Verstak {
   static readonly shortFrameDuration = 16 // ms
   static readonly longFrameDuration = 300 // ms
-  static currentRebuildPriority = Priority.Realtime
+  static currentUpdatePriority = Priority.Realtime
   static frameDuration = Verstak.longFrameDuration
 
   static claim<T = undefined, M = unknown, C = unknown, R = void>(
@@ -40,7 +40,7 @@ export class Verstak {
       }
       ex ??= children.claim(
         key = key || generateKey(owner), undefined,
-        "nested blocks can be declared inside rebuild function only")
+        "nested blocks can be declared inside update function only")
       // Reuse existing block or claim a new one
       if (ex) {
         // Reuse existing block
@@ -63,7 +63,7 @@ export class Verstak {
       // Create new root block
       result = new BlockImpl<T, M, C, R>(key || "", driver, owner, builder)
       result.node.ties = MergeList.createItem(result)
-      triggerRebuild(result.node.ties)
+      triggerUpdate(result.node.ties)
     }
     return result
   }
@@ -74,17 +74,17 @@ export class Verstak {
     return gCurrent.instance
   }
 
-  static triggerRebuild(block: Block<any, any, any, void>, triggers: unknown): void {
+  static triggerUpdate(block: Block<any, any, any, void>, triggers: unknown): void {
     const b = block as BlockImpl
     const builder = b.node.builder
     if (!triggersAreEqual(triggers, builder.triggers)) {
       builder.triggers = triggers // remember new triggers
-      triggerRebuild(b.node.ties!)
+      triggerUpdate(b.node.ties!)
     }
   }
 
-  static rebuildNestedTreesThenDo(action: (error: unknown) => void): void {
-    runRebuildNestedTreesThenDo(undefined, action)
+  static updateNestedTreesThenDo(action: (error: unknown) => void): void {
+    runUpdateNestedTreesThenDo(undefined, action)
   }
 
   static getDefaultLoggingOptions(): LoggingOptions | undefined {
@@ -127,8 +127,8 @@ export class BaseDriver<T, C = unknown> implements Driver<T, C> {
     // nothing to do by default
   }
 
-  rebuild(block: Block<T, unknown, C>): void | Promise<void> {
-    chainedRebuild(block, block.node.builder)
+  update(block: Block<T, unknown, C>): void | Promise<void> {
+    chainedUpdated(block, block.node.builder)
   }
 
   finalize(block: Block<T, unknown, C>, isLeader: boolean): boolean {
@@ -196,13 +196,13 @@ function chainedInitialize(block: Block<any>, bb: BlockBuilder): void {
     chainedInitialize(block, base)
 }
 
-function chainedRebuild(block: Block, bb: BlockBuilder): void {
-  const rebuild = bb.rebuild
+function chainedUpdated(block: Block, bb: BlockBuilder): void {
+  const update = bb.update
   const base = bb.base
-  if (rebuild)
-    rebuild(block, base ? () => chainedRebuild(block, base) : NOP)
+  if (update)
+    update(block, base ? () => chainedUpdated(block, base) : NOP)
   else if (base)
-    chainedRebuild(block, base)
+    chainedUpdated(block, base)
 }
 
 function chainedFinalize(block: Block<any>, bb: BlockBuilder): void {
@@ -389,7 +389,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
   private _hasStyles: boolean
-  rebuildPriority: Priority
+  updatePriority: Priority
   childrenShuffling: boolean
 
   constructor(key: string, driver: Driver<T>,
@@ -414,11 +414,11 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     this._contentWrapping = true
     this._overlayVisible = undefined
     this._hasStyles = false
-    this.rebuildPriority = Priority.Realtime
+    this.updatePriority = Priority.Realtime
     this.childrenShuffling = false
     // Monitoring
     BlockImpl.grandBlockCount++
-    if (this.isOn(Mode.PinpointRebuild))
+    if (this.isOn(Mode.PinpointUpdate))
       BlockImpl.disposableBlockCount++
   }
 
@@ -428,12 +428,12 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     triggeringArgs: true,
     noSideEffects: false,
   })
-  rebuild(_triggers: unknown): void {
-    // triggers parameter is used to enforce rebuild by owner
-    rebuildNow(this.node.ties!)
+  update(_triggers: unknown): void {
+    // triggers parameter is used to enforce update by owner
+    updateNow(this.node.ties!)
   }
 
-  prepareForRebuild(): void {
+  prepareForUpdate(): void {
     this._area = undefined // reset
     this._hasStyles = false // reset
   }
@@ -442,7 +442,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     return (chainedMode(this.node.builder) & mode) === mode
   }
 
-  get isInitialRebuild(): boolean { return this.node.stamp === 2 }
+  get isInitialUpdate(): boolean { return this.node.stamp === 2 }
   get isAuxiliary(): boolean { return this.kind > BlockKind.Note } // Row, Group, Cursor
   get isSection(): boolean { return this.kind === BlockKind.Section }
   get isTable(): boolean { return this.kind === BlockKind.Table }
@@ -569,9 +569,9 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.node.stamp !== 1 || !this.isOn(Mode.PinpointRebuild))
+    if (this.node.stamp !== 1 || !this.isOn(Mode.PinpointUpdate))
       throw new Error("reactronic can be configured only for blocks with separate reaction mode and only inside initialize")
-    return Rx.getReaction(this.rebuild).configure(options)
+    return Rx.getReaction(this.update).configure(options)
   }
 
   static get curr(): MergeItem<BlockImpl> {
@@ -719,7 +719,7 @@ function getEffectiveBlockCoords(
   return result
 }
 
-function runRebuildNestedTreesThenDo(error: unknown, action: (error: unknown) => void): void {
+function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => void): void {
   const curr = BlockImpl.curr
   const owner = curr.instance
   const children = owner.node.children
@@ -731,7 +731,7 @@ function runRebuildNestedTreesThenDo(error: unknown, action: (error: unknown) =>
       for (const item of children.removedItems(true))
         triggerFinalization(item, true, true)
       if (!error) {
-        // Lay out and rebuild actual blocks
+        // Lay out and update actual blocks
         const ownerIsSection = owner.isSection
         const sequential = children.isStrict
         let p1: Array<MergeItem<BlockImpl>> | undefined = undefined
@@ -744,20 +744,20 @@ function runRebuildNestedTreesThenDo(error: unknown, action: (error: unknown) =>
           const block = item.instance
           const isRow = block.node.driver.isRow
           const host = isRow ? owner : hostingRow
-          const p = block.rebuildPriority ?? Priority.Realtime
+          const p = block.updatePriority ?? Priority.Realtime
           mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
           if (p === Priority.Realtime)
-            triggerRebuild(item) // rebuild synchronously
+            triggerUpdate(item) // update synchronously
           else if (p === Priority.Normal)
-            p1 = push(item, p1) // defer for P1 async rebuild
+            p1 = push(item, p1) // defer for P1 async update
           else
-            p2 = push(item, p2) // defer for P2 async rebuild
+            p2 = push(item, p2) // defer for P2 async update
           if (ownerIsSection && isRow)
             hostingRow = block
         }
-        // Rebuild incremental children (if any)
+        // Update incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
-          promised = startIncrementalRebuild(curr, children, p1, p2).then(
+          promised = startIncrementalUpdate(curr, children, p1, p2).then(
             () => action(error),
             e => action(e))
       }
@@ -787,38 +787,38 @@ function markToMountIfNecessary(mounting: boolean, host: BlockImpl,
   return mounting
 }
 
-async function startIncrementalRebuild(
+async function startIncrementalUpdate(
   owner: MergeItem<BlockImpl>,
   allChildren: MergeList<BlockImpl>,
   priority1?: Array<MergeItem<BlockImpl>>,
   priority2?: Array<MergeItem<BlockImpl>>): Promise<void> {
   const stamp = owner.instance.node.stamp
   if (priority1)
-    await rebuildIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
+    await updateIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
   if (priority2)
-    await rebuildIncrementally(owner, stamp, allChildren, priority2, Priority.Background)
+    await updateIncrementally(owner, stamp, allChildren, priority2, Priority.Background)
 }
 
-async function rebuildIncrementally(owner: MergeItem<BlockImpl>, stamp: number,
+async function updateIncrementally(owner: MergeItem<BlockImpl>, stamp: number,
   allChildren: MergeList<BlockImpl>, items: Array<MergeItem<BlockImpl>>,
   priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
   const block = owner.instance
   if (!Transaction.isCanceled || !Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3)) {
-    let outerPriority = Verstak.currentRebuildPriority
-    Verstak.currentRebuildPriority = priority
+    let outerPriority = Verstak.currentUpdatePriority
+    Verstak.currentUpdatePriority = priority
     try {
       if (block.childrenShuffling)
         shuffle(items)
       const frameDurationLimit = priority === Priority.Background ? Verstak.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(Verstak.frameDuration / 4, Verstak.shortFrameDuration))
       for (const child of items) {
-        triggerRebuild(child)
+        triggerUpdate(child)
         if (Transaction.isFrameOver(1, frameDuration)) {
-          Verstak.currentRebuildPriority = outerPriority
+          Verstak.currentUpdatePriority = outerPriority
           await Transaction.requestNextFrame(0)
-          outerPriority = Verstak.currentRebuildPriority
-          Verstak.currentRebuildPriority = priority
+          outerPriority = Verstak.currentUpdatePriority
+          Verstak.currentUpdatePriority = priority
           frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, Verstak.frameDuration))
         }
         if (Transaction.isCanceled && Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3))
@@ -826,29 +826,29 @@ async function rebuildIncrementally(owner: MergeItem<BlockImpl>, stamp: number,
       }
     }
     finally {
-      Verstak.currentRebuildPriority = outerPriority
+      Verstak.currentUpdatePriority = outerPriority
     }
   }
 }
 
-function triggerRebuild(ties: MergeItem<BlockImpl>): void {
+function triggerUpdate(ties: MergeItem<BlockImpl>): void {
   const b = ties.instance
   const node = b.node
   if (node.stamp >= 0) {
-    if (b.isOn(Mode.PinpointRebuild)) {
+    if (b.isOn(Mode.PinpointUpdate)) {
       if (node.stamp === 0) {
         Transaction.outside(() => {
           if (Rx.isLogging)
             Rx.setLoggingHint(b, node.key)
-          Rx.getReaction(b.rebuild).configure({
+          Rx.getReaction(b.update).configure({
             order: node.level,
           })
         })
       }
-      unobs(b.rebuild, node.builder.triggers) // reactive auto-rebuild
+      unobs(b.update, node.builder.triggers) // reactive auto-update
     }
     else
-      rebuildNow(ties)
+      updateNow(ties)
   }
 }
 
@@ -868,7 +868,7 @@ function mountIfNecessary(block: BlockImpl): void {
     unobs(() => driver.mount(block))
 }
 
-function rebuildNow(ties: MergeItem<BlockImpl>): void {
+function updateNow(ties: MergeItem<BlockImpl>): void {
   const b = ties.instance
   const node = b.node
   if (node.stamp >= 0) { // if block is alive
@@ -878,22 +878,22 @@ function rebuildNow(ties: MergeItem<BlockImpl>): void {
         mountIfNecessary(b)
         node.stamp++
         node.numerator = 0
-        b.prepareForRebuild()
+        b.prepareForUpdate()
         node.children.beginMerge()
         const driver = node.driver
-        result = driver.rebuild(b)
+        result = driver.update(b)
         if (b.area === undefined && node.owner.isTable)
           b.area = undefined // automatic placement
         if (result instanceof Promise)
           result.then(
-            v => { runRebuildNestedTreesThenDo(undefined, NOP); return v },
-            e => { console.log(e); runRebuildNestedTreesThenDo(e ?? new Error("unknown error"), NOP) })
+            v => { runUpdateNestedTreesThenDo(undefined, NOP); return v },
+            e => { console.log(e); runUpdateNestedTreesThenDo(e ?? new Error("unknown error"), NOP) })
         else
-          runRebuildNestedTreesThenDo(undefined, NOP)
+          runUpdateNestedTreesThenDo(undefined, NOP)
       }
       catch(e: unknown) {
-        runRebuildNestedTreesThenDo(e, NOP)
-        console.log(`Rebuild failed: ${node.key}`)
+        runUpdateNestedTreesThenDo(e, NOP)
+        console.log(`Update failed: ${node.key}`)
         console.log(`${e}`)
       }
     })
@@ -912,7 +912,7 @@ function triggerFinalization(ties: MergeItem<BlockImpl>, isLeader: boolean, indi
     const childrenAreLeaders = unobs(() => driver.finalize(b, isLeader))
     b.native = null
     b.controller = null
-    if (b.isOn(Mode.PinpointRebuild)) {
+    if (b.isOn(Mode.PinpointUpdate)) {
       // Defer disposal if block is reactive
       ties.aux = undefined
       const last = gLastToDispose

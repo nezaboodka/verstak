@@ -56,7 +56,7 @@ export function startNewRow(shiftCursorDown?: number): void {
 
 export function cursor(areaParams: BlockArea): void {
   Verstak.claim(Drivers.cursor, {
-    rebuild(b) {
+    update(b) {
       b.area = areaParams
     },
   })
@@ -66,7 +66,7 @@ export function cursor(areaParams: BlockArea): void {
 
 export function Note(content: string, builder?: BlockBuilder<HTMLElement, void, void>): Block<HTMLElement, void, void> {
   return Verstak.claim(Drivers.note, builder, {
-    rebuild(b) {
+    update(b) {
       b.native.innerText = content
     }},
   )
@@ -74,7 +74,7 @@ export function Note(content: string, builder?: BlockBuilder<HTMLElement, void, 
 
 export function HtmlNote(content: string, builder?: BlockBuilder<HTMLElement, void, void>): Block<HTMLElement, void, void> {
   return Verstak.claim(Drivers.note, builder, {
-    rebuild(b) {
+    update(b) {
       b.native.innerHTML = content
     }},
   )
@@ -252,11 +252,11 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
       e.className = enabled ? styleName : ""
   }
 
-  rebuild(block: Block<T>): void | Promise<void> {
+  update(block: Block<T>): void | Promise<void> {
     // Add initial line feed automatically
     if (block.kind <= BlockKind.Table)
       startNewRow()
-    return super.rebuild(block)
+    return super.update(block)
   }
 }
 
