@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { MergeItem, Rx } from "reactronic"
-import { Verstak, El, BaseDriver, Priority, Mode } from "../core/api.js"
+import { Verstak, El, BaseDriver, Priority } from "../core/api.js"
 
 export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends BaseDriver<T, C> {
 
