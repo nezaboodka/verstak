@@ -36,7 +36,7 @@ export class Verstak {
       if (driver.isSeparator) {
         const last = children.lastClaimedItem()
         if (last?.instance?.node.driver === driver)
-          ex = last // collapse multiple elements into single one
+          ex = last // collapse multiple separators into single one
       }
       ex ??= children.claim(
         key = key || generateKey(owner), undefined,
