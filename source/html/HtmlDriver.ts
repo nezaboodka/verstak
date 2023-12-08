@@ -15,7 +15,7 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
   }
 
   initialize(element: El<T, unknown, C, void>): void {
-    if (Rx.isLogging && !element.node.driver.isGroupBreak)
+    if (Rx.isLogging && !element.node.driver.isSeparator)
       element.native.setAttribute("key", element.node.key)
     super.initialize(element)
   }
@@ -38,9 +38,9 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
       const sequential = node.owner.node.children.isStrict
       const automaticNativeHost = BaseHtmlDriver.findEffectiveHtmlElementHost(element).native as unknown as Element | undefined // hack
       if (automaticNativeHost) {
-        if (sequential && !node.driver.isGroupBreak) {
+        if (sequential && !node.driver.isSeparator) {
           const after = BaseHtmlDriver.findPrevSiblingHtmlElement(element.node.links!)
-          if (after === undefined || after.instance.node.driver.isGroupBreak) {
+          if (after === undefined || after.instance.node.driver.isSeparator) {
             if (automaticNativeHost !== native.parentNode || !native.previousSibling)
               automaticNativeHost.prepend(native)
           }

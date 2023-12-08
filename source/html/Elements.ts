@@ -144,7 +144,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
   applyHeightGrowth(element: El<T>, value: number): void {
     const bNode = element.node
     const driver = bNode.driver
-    if (driver.isGroupBreak) {
+    if (driver.isSeparator) {
       const s = element.native.style
       if (value > 0)
         s.flexGrow = `${value}`
@@ -153,7 +153,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
     else {
       const hostDriver = bNode.host.node.driver
-      if (hostDriver.isGroupBreak) {
+      if (hostDriver.isSeparator) {
         driver.applyElementAlignment(element, Align.ToBounds)
         hostDriver.applyHeightGrowth(bNode.host, value)
       }

@@ -33,7 +33,7 @@ export class Verstak {
       // Check for coalescing separators or lookup for existing element
       let ex: MergeItem<ElImpl<any, any, any, any>> | undefined = undefined
       const children = owner.node.children
-      if (driver.isGroupBreak) {
+      if (driver.isSeparator) {
         const last = children.lastClaimedItem()
         if (last?.instance?.node.driver === driver)
           ex = last // collapse multiple elements into single one
@@ -108,7 +108,7 @@ export class BaseDriver<T, C = unknown> implements Driver<T, C> {
 
   constructor(
     readonly name: string,
-    readonly isGroupBreak: boolean,
+    readonly isSeparator: boolean,
     readonly preset?: SimpleDelegate<T>) {
   }
 
@@ -471,7 +471,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   set area(value: ElArea) {
     const node = this.node
     const driver = node.driver
-    if (!driver.isGroupBreak) {
+    if (!driver.isSeparator) {
       const owner = node.owner
       const cursorPosition = node.links!.prev?.instance.cursorPosition ?? InitialCursorPosition
       const newCursorPosition = this.cursorPosition = owner.node.children.isStrict ? new CursorPosition(cursorPosition) : undefined
@@ -749,7 +749,7 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           if (Transaction.isCanceled)
             break
           const el = item.instance
-          const isGroupBreak = el.node.driver.isGroupBreak
+          const isGroupBreak = el.node.driver.isSeparator
           const host = isGroupBreak ? owner : hostingRow
           const p = el.node.updatePriority ?? Priority.Realtime
           mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
@@ -918,7 +918,7 @@ function triggerFinalization(ties: MergeItem<ElImpl>, isLeader: boolean, individ
   const node = el.node
   if (node.stamp >= 0) {
     const driver = node.driver
-    if (individual && node.key !== node.builder.key && !driver.isGroupBreak)
+    if (individual && node.key !== node.builder.key && !driver.isSeparator)
       console.log(`WARNING: it is recommended to assign explicit key for conditional element in order to avoid unexpected side effects: ${node.key}`)
     node.stamp = ~node.stamp
     // Finalize element itself and remove it from collection

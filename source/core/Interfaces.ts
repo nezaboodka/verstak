@@ -97,7 +97,7 @@ export interface ElCtx<T extends Object = Object> {
 
 export interface Driver<T, C = unknown> {
   readonly name: string,
-  readonly isGroupBreak: boolean,
+  readonly isSeparator: boolean,
   readonly preset?: SimpleDelegate<T>
 
   claim(element: El<T, unknown, C>): void
