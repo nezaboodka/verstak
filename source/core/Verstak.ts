@@ -36,7 +36,7 @@ export class Verstak {
       if (driver.isRow) {
         const last = children.lastClaimedItem()
         if (last?.instance?.node.driver === driver)
-          ex = last
+          ex = last // collapse multiple elements into single one
       }
       ex ??= children.claim(
         key = key || generateKey(owner), undefined,
