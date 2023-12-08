@@ -54,6 +54,7 @@ export interface El<T = unknown, M = unknown, C = unknown, R = void> {
   readonly isInitialUpdate: boolean
   useStyle(styleName: string, enabled?: boolean): void
   configureReactronic(options: Partial<MemberOptions>): MemberOptions
+  hasMode(mode: Mode): boolean
 }
 
 // ElNode
@@ -102,7 +103,7 @@ export interface Driver<T, C = unknown> {
   claim(element: El<T, unknown, C>): void
   create(element: El<T, unknown, C>, b: { native?: T, controller?: C }): void
   initialize(element: El<T, unknown, C>): void
-  mount(element: El<T, unknown, C>): void
+  mount(element: El<T, unknown, C>, nativeHost?: T): void
   update(element: El<T, unknown, C>): void | Promise<void>
   finalize(element: El<T, unknown, C>, isLeader: boolean): boolean
 

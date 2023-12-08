@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { MergeItem, Rx } from "reactronic"
-import { Verstak, El, BaseDriver, Priority } from "../core/api.js"
+import { Verstak, El, BaseDriver, Priority, Mode } from "../core/api.js"
 
 export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends BaseDriver<T, C> {
 
@@ -31,29 +31,29 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     return false // children elements having native HTML elements are not treated as leaders
   }
 
-  mount(element: El<T, unknown, C>): void {
+  mount(element: El<T, unknown, C>, nativeHost?: T): void {
     const native = element.native as T | undefined // hack
     if (native) {
       const node = element.node
       const sequential = node.owner.node.children.isStrict
-      const nativeParent = BaseHtmlDriver.findEffectiveHtmlElementHost(element).native as unknown as Element | undefined // hack
-      if (nativeParent) {
+      const automaticNativeHost = BaseHtmlDriver.findEffectiveHtmlElementHost(element).native as unknown as Element | undefined // hack
+      if (automaticNativeHost) {
         if (sequential && !node.driver.isRow) {
           const after = BaseHtmlDriver.findPrevSiblingHtmlElement(element.node.ties!)
           if (after === undefined || after.instance.node.driver.isRow) {
-            if (nativeParent !== native.parentNode || !native.previousSibling)
-              nativeParent.prepend(native)
+            if (automaticNativeHost !== native.parentNode || !native.previousSibling)
+              automaticNativeHost.prepend(native)
           }
           else { // if (after.instance.host.native === nativeParent) {
             const nativeAfter = after.instance.native
             if (nativeAfter instanceof Element) {
               if (nativeAfter.nextSibling !== native)
-                nativeParent.insertBefore(native, nativeAfter.nextSibling)
+                automaticNativeHost.insertBefore(native, nativeAfter.nextSibling)
             }
           }
         }
         else
-          nativeParent.appendChild(native)
+          automaticNativeHost.appendChild(native)
       }
     }
   }

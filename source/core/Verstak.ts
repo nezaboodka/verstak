@@ -74,6 +74,10 @@ export class Verstak {
     return gCurrent.instance
   }
 
+  // static setNativeHost<T>(element: El<T, any, any, void>, nativeHost: T | undefined): void {
+  //   element.node.driver.mount(element, nativeHost)
+  // }
+
   static triggerUpdate(element: El<any, any, any, void>, triggers: unknown): void {
     const el = element as ElImpl
     const builder = el.node.builder
@@ -123,7 +127,7 @@ export class BaseDriver<T, C = unknown> implements Driver<T, C> {
     chainedInitialize(el, el.node.builder)
   }
 
-  mount(element: El<T, unknown, C>): void {
+  mount(element: El<T, unknown, C>, nativeHost?: T): void {
     // nothing to do by default
   }
 
@@ -418,7 +422,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     this.childrenShuffling = false
     // Monitoring
     ElImpl.grandElementCount++
-    if (this.isOn(Mode.PinpointUpdate))
+    if (this.hasMode(Mode.PinpointUpdate))
       ElImpl.disposableElementCount++
   }
 
@@ -438,7 +442,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     this._hasStyles = false // reset
   }
 
-  isOn(mode: Mode): boolean {
+  hasMode(mode: Mode): boolean {
     return (chainedMode(this.node.builder) & mode) === mode
   }
 
@@ -447,7 +451,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   get isSection(): boolean { return this.kind === ElKind.Section }
   get isTable(): boolean { return this.kind === ElKind.Table }
 
-  get isAutoMountEnabled(): boolean { return !this.isOn(Mode.ManualMount) && this.node.host !== this }
+  get isAutoMountEnabled(): boolean { return !this.hasMode(Mode.ManualMount) && this.node.host !== this }
   get isMoved(): boolean { return this.node.owner.node.children.isMoved(this.node.ties!) }
 
   get strictOrder(): boolean { return this.node.children.isStrict }
@@ -569,7 +573,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.node.stamp !== 1 || !this.isOn(Mode.PinpointUpdate))
+    if (this.node.stamp !== 1 || !this.hasMode(Mode.PinpointUpdate))
       throw new Error("reactronic can be configured only for elements with pinpoint update mode and only inside initialize")
     return Rx.getReaction(this.update).configure(options)
   }
@@ -775,7 +779,7 @@ function markToMountIfNecessary(mounting: boolean, host: ElImpl,
   // exist among regular elements having native HTML elements
   const el = ties.instance
   const node = el.node
-  if (el.native && !el.isOn(Mode.ManualMount)) {
+  if (el.native && !el.hasMode(Mode.ManualMount)) {
     if (mounting || node.host !== host) {
       children.markAsMoved(ties)
       mounting = false
@@ -835,7 +839,7 @@ function triggerUpdate(ties: MergeItem<ElImpl>): void {
   const el = ties.instance
   const node = el.node
   if (node.stamp >= 0) {
-    if (el.isOn(Mode.PinpointUpdate)) {
+    if (el.hasMode(Mode.PinpointUpdate)) {
       if (node.stamp === 0) {
         Transaction.outside(() => {
           if (Rx.isLogging)
@@ -852,7 +856,7 @@ function triggerUpdate(ties: MergeItem<ElImpl>): void {
   }
 }
 
-function mountIfNecessary(element: ElImpl): void {
+function mountOrRemountIfNecessary(element: ElImpl): void {
   const node = element.node
   const driver = node.driver
   if (node.stamp === 0) {
@@ -875,7 +879,7 @@ function updateNow(ties: MergeItem<ElImpl>): void {
     let result: unknown = undefined
     runInside(ties, () => {
       try {
-        mountIfNecessary(el)
+        mountOrRemountIfNecessary(el)
         node.stamp++
         node.numerator = 0
         el.prepareForUpdate()
@@ -912,7 +916,7 @@ function triggerFinalization(ties: MergeItem<ElImpl>, isLeader: boolean, individ
     const childrenAreLeaders = unobs(() => driver.finalize(el, isLeader))
     el.native = null
     el.controller = null
-    if (el.isOn(Mode.PinpointUpdate)) {
+    if (el.hasMode(Mode.PinpointUpdate)) {
       // Defer disposal if element is reactive (having pinpoint update mode)
       ties.aux = undefined
       const last = gLastToDispose
