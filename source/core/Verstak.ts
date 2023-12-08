@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, unobs, Transaction, options, Reentrance, Rx, LoggingOptions, MergeList, MergeItem, ObservableObject, raw, MemberOptions } from "reactronic"
-import { ElCoords, ElKind, Priority, Mode, Align, ElArea, ElBuilder, El, Driver, SimpleDelegate, ElNode, ElCtx } from "./Interfaces.js"
+import { ElCoords, ElKind, Priority, Mode, Align, ElArea, ElBuilder, El, Driver, SimpleDelegate, RxNode, ElCtx } from "./Interfaces.js"
 import { emitLetters, equalElCoords, parseElCoords, getCallerInfo } from "./Utils.js"
 
 // Verstak
@@ -316,9 +316,9 @@ class ElCtxImpl<T extends Object = Object> extends ObservableObject implements E
   }
 }
 
-// ElNodeImpl
+// RxNodeImpl
 
-class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElNode<T, M, C, R> {
+class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxNode<T, M, C, R> {
   // Static properties
   static grandCount: number = 0
   static disposableCount: number = 0
@@ -356,7 +356,7 @@ class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElN
       this.outer = self
     }
     this.host = self // element is unmounted
-    this.children = new MergeList<ElImpl>(getElNodeKey, true)
+    this.children = new MergeList<ElImpl>(getNodeKey, true)
     this.links = undefined
     this.stamp = Number.MAX_SAFE_INTEGER // empty
     this.context = undefined
@@ -364,9 +364,9 @@ class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElN
     this.updatePriority = Priority.Realtime
     this.childrenShuffling = false
     // Monitoring
-    ElNodeImpl.grandCount++
+    RxNodeImpl.grandCount++
     if (this.has(Mode.PinpointUpdate))
-      ElNodeImpl.disposableCount++
+      RxNodeImpl.disposableCount++
   }
 
   get isInitialUpdate(): boolean { return this.stamp === 1 }
@@ -399,7 +399,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   static logging: LoggingOptions | undefined = undefined
 
   // System-managed properties
-  readonly node: ElNodeImpl<T, M, C, R>
+  readonly node: RxNodeImpl<T, M, C, R>
   maxColumnCount: number
   maxRowCount: number
   cursorPosition?: CursorPosition
@@ -426,7 +426,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   constructor(key: string, driver: Driver<T>,
     owner: ElImpl | undefined, builder: ElBuilder<T, M, C, R>) {
     // System-managed properties
-    this.node = new ElNodeImpl(key, driver, builder, this, owner)
+    this.node = new RxNodeImpl(key, driver, builder, this, owner)
     this.maxColumnCount = 0
     this.maxRowCount = 0
     this.cursorPosition = undefined
@@ -638,7 +638,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
 
 // Internal
 
-function getElNodeKey(element: ElImpl): string | undefined {
+function getNodeKey(element: ElImpl): string | undefined {
   const node = element.node
   return node.stamp >= 0 ? node.key : undefined
 }
@@ -941,7 +941,7 @@ function triggerFinalization(ties: MergeItem<ElImpl>, isLeader: boolean, individ
     // Finalize children if any
     for (const item of node.children.items())
       triggerFinalization(item, childrenAreLeaders, false)
-    ElNodeImpl.grandCount--
+    RxNodeImpl.grandCount--
   }
 }
 
@@ -953,9 +953,9 @@ async function runDisposalLoop(): Promise<void> {
       await Transaction.requestNextFrame()
     Rx.dispose(item.instance)
     item = item.aux
-    ElNodeImpl.disposableCount--
+    RxNodeImpl.disposableCount--
   }
-  // console.log(`Element count: ${ElNodeImpl.grandNodeCount} totally (${ElNodeImpl.disposableNodeCount} disposable)`)
+  // console.log(`Element count: ${RxNodeImpl.grandNodeCount} totally (${RxNodeImpl.disposableNodeCount} disposable)`)
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
