@@ -340,7 +340,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
 
   constructor(key: string, driver: Driver<T>,
     builder: Readonly<ElBuilder<T, M, C, R>>,
-    self: ElImpl<T, M, C, R>, owner: ElImpl | undefined) {
+    element: ElImpl<T, M, C, R>, owner: ElImpl | undefined) {
     this.key = key
     this.driver = driver
     this.builder = builder
@@ -352,10 +352,10 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
     }
     else {
       this.level = 1
-      this.owner = owner = self
-      this.outer = self
+      this.owner = owner = element
+      this.outer = element
     }
-    this.host = self // element is unmounted
+    this.host = element // element is unmounted
     this.children = new MergeList<ElImpl>(getNodeKey, true)
     this.links = undefined
     this.stamp = Number.MAX_SAFE_INTEGER // empty
