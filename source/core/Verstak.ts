@@ -319,6 +319,10 @@ class ElCtxImpl<T extends Object = Object> extends ObservableObject implements E
 // ElNodeImpl
 
 class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElNode<T, M, C, R> {
+  // Static properties
+  static grandCount: number = 0
+  static disposableCount: number = 0
+
   readonly key: string
   readonly driver: Driver<T>
   builder: ElBuilder<T, M, C, R>
@@ -355,6 +359,10 @@ class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElN
     this.stamp = Number.MAX_SAFE_INTEGER // empty
     this.context = undefined
     this.numerator = 0
+    // Monitoring
+    ElNodeImpl.grandCount++
+    if (this.hasMode(Mode.PinpointUpdate))
+      ElNodeImpl.disposableCount++
   }
 
   hasMode(mode: Mode): boolean {
@@ -377,8 +385,6 @@ class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElN
 
 class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   // Static properties
-  static grandElementCount: number = 0
-  static disposableElementCount: number = 0
   static logging: LoggingOptions | undefined = undefined
 
   // System-managed properties
@@ -435,10 +441,6 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     this._hasStyles = false
     this.updatePriority = Priority.Realtime
     this.childrenShuffling = false
-    // Monitoring
-    ElImpl.grandElementCount++
-    if (this.node.hasMode(Mode.PinpointUpdate))
-      ElImpl.disposableElementCount++
   }
 
   prepareForUpdate(): void {
@@ -938,7 +940,7 @@ function triggerFinalization(ties: MergeItem<ElImpl>, isLeader: boolean, individ
     // Finalize children if any
     for (const item of node.children.items())
       triggerFinalization(item, childrenAreLeaders, false)
-    ElImpl.grandElementCount--
+    ElNodeImpl.grandCount--
   }
 }
 
@@ -950,9 +952,9 @@ async function runDisposalLoop(): Promise<void> {
       await Transaction.requestNextFrame()
     Rx.dispose(item.instance)
     item = item.aux
-    ElImpl.disposableElementCount--
+    ElNodeImpl.disposableCount--
   }
-  // console.log(`Element count: ${ElImpl.grandElementCount} totally (${ElImpl.disposableElementCount} disposable)`)
+  // console.log(`Element count: ${ElNodeImpl.grandNodeCount} totally (${ElNodeImpl.disposableNodeCount} disposable)`)
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
