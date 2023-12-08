@@ -56,14 +56,14 @@ export class Verstak {
       else {
         // Create new element
         result = new ElImpl<T, M, C, R>(key || generateKey(owner), driver, owner, builder)
-        result.node.ties = children.add(result)
+        result.node.links = children.add(result)
       }
     }
     else {
       // Create new root element
       result = new ElImpl<T, M, C, R>(key || "", driver, owner, builder)
-      result.node.ties = MergeList.createItem(result)
-      triggerUpdate(result.node.ties)
+      result.node.links = MergeList.createItem(result)
+      triggerUpdate(result.node.links)
     }
     return result
   }
@@ -83,7 +83,7 @@ export class Verstak {
     const builder = el.node.builder
     if (!triggersAreEqual(triggers, builder.triggers)) {
       builder.triggers = triggers // remember new triggers
-      triggerUpdate(el.node.ties!)
+      triggerUpdate(el.node.links!)
     }
   }
 
@@ -330,7 +330,7 @@ class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElN
   readonly owner: ElImpl
   host: ElImpl
   readonly children: MergeList<ElImpl>
-  ties: MergeItem<ElImpl> | undefined
+  links: MergeItem<ElImpl> | undefined
   stamp: number
   outer: ElImpl
   context: ElCtxImpl<any> | undefined
@@ -357,7 +357,7 @@ class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElN
     }
     this.host = self // element is unmounted
     this.children = new MergeList<ElImpl>(getElNodeKey, true)
-    this.ties = undefined
+    this.links = undefined
     this.stamp = Number.MAX_SAFE_INTEGER // empty
     this.context = undefined
     this.numerator = 0
@@ -374,7 +374,7 @@ class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElN
   get strictOrder(): boolean { return this.children.isStrict }
   set strictOrder(value: boolean) { this.children.isStrict = value }
 
-  get isMoved(): boolean { return this.owner.node.children.isMoved(this.ties!) }
+  get isMoved(): boolean { return this.owner.node.children.isMoved(this.links!) }
 
   has(mode: Mode): boolean {
     return (chainedMode(this.builder) & mode) === mode
@@ -388,7 +388,7 @@ class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElN
   })
   update(_triggers: unknown): void {
     // triggers parameter is used to enforce update by owner
-    updateNow(this.ties!)
+    updateNow(this.links!)
   }
 }
 
@@ -473,7 +473,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     const driver = node.driver
     if (!driver.isRow) {
       const owner = node.owner
-      const cursorPosition = node.ties!.prev?.instance.cursorPosition ?? InitialCursorPosition
+      const cursorPosition = node.links!.prev?.instance.cursorPosition ?? InitialCursorPosition
       const newCursorPosition = this.cursorPosition = owner.node.children.isStrict ? new CursorPosition(cursorPosition) : undefined
       const isCursorElement = driver instanceof CursorCommandDriver
       const coords = getEffectiveElCoords(!isCursorElement,
@@ -629,7 +629,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
 
   private rowBreak(): void {
     const node = this.node
-    const cursorPosition = node.ties!.prev?.instance.cursorPosition ?? InitialCursorPosition
+    const cursorPosition = node.links!.prev?.instance.cursorPosition ?? InitialCursorPosition
     const newCursorPosition = this.cursorPosition = new CursorPosition(cursorPosition)
     newCursorPosition.x = 1
     newCursorPosition.y = newCursorPosition.runningMaxY + 1

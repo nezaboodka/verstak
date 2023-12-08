@@ -62,7 +62,7 @@ export interface ElNode<T = unknown, M = unknown, C = unknown, R = void> {
   readonly owner: El
   readonly host: El
   readonly children: MergeListReader<El>
-  readonly ties: MergeItem<El> | undefined
+  readonly links: MergeItem<El> | undefined
   readonly stamp: number
   readonly outer: El
   readonly context: ElCtx | undefined
