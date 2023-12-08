@@ -275,57 +275,57 @@ const Constants = {
 
 const Drivers = {
   // display: flex, flex-direction: column
-  section: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, b => b.kind = ElKind.Section),
+  section: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, el => el.kind = ElKind.Section),
 
   // display: grid
-  table: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, b => b.kind = ElKind.Table),
+  table: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, el => el.kind = ElKind.Table),
 
   // display: block
-  note: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, b => b.kind = ElKind.Note),
+  note: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, el => el.kind = ElKind.Note),
 
   // display: contents
-  group: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, b => b.kind = ElKind.Group),
+  group: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, el => el.kind = ElKind.Group),
 
   // display: contents
   // display: flex (row)
-  row: new VerstakHtmlDriver<HTMLElement>(Constants.row, true, b => b.kind = ElKind.Row),
+  row: new VerstakHtmlDriver<HTMLElement>(Constants.row, true, el => el.kind = ElKind.Row),
 
   // cursor control element
   cursor: new CursorCommandDriver(),
 }
 
 const VerstakDriversByLayout: Array<SimpleDelegate<HTMLElement>> = [
-  b => { // section
-    const s = b.native.style
+  el => { // section
+    const s = el.native.style
     s.display = "flex"
     s.flexDirection = "column"
-    s.alignSelf = b.node.owner.isTable ? "stretch" : "center"
+    s.alignSelf = el.node.owner.isTable ? "stretch" : "center"
     s.textAlign = "initial"
     s.flexShrink = "1"
     s.minWidth = "0"
   },
-  b => { // table
-    const s = b.native.style
-    s.alignSelf = b.node.owner.isTable ? "stretch" : "center"
+  el => { // table
+    const s = el.native.style
+    s.alignSelf = el.node.owner.isTable ? "stretch" : "center"
     s.display = "grid"
     s.flexBasis = "0"
     s.gridAutoRows = "minmax(min-content, 1fr)"
     s.gridAutoColumns = "minmax(min-content, 1fr)"
     s.textAlign = "initial"
   },
-  b => { // note
-    const s = b.native.style
-    s.alignSelf = b.node.owner.isTable ? "stretch" : "center"
+  el => { // note
+    const s = el.native.style
+    s.alignSelf = el.node.owner.isTable ? "stretch" : "center"
     s.display = "inline-grid"
     s.flexShrink = "1"
   },
-  b => { // group
-    const s = b.native.style
+  el => { // group
+    const s = el.native.style
     s.display = "contents"
   },
-  b => { // row
-    const s = b.native.style
-    s.display = b.node.owner.isTable ? "none" : "flex"
+  el => { // row
+    const s = el.native.style
+    s.display = el.node.owner.isTable ? "none" : "flex"
     s.flexDirection = "row"
   },
   // undefined // cursor
