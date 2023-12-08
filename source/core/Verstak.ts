@@ -749,8 +749,8 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           if (Transaction.isCanceled)
             break
           const el = item.instance
-          const isGroupBreak = el.node.driver.isSeparator
-          const host = isGroupBreak ? owner : hostingRow
+          const isSeparator = el.node.driver.isSeparator
+          const host = isSeparator ? owner : hostingRow
           const p = el.node.updatePriority ?? Priority.Realtime
           mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
           if (p === Priority.Realtime)
@@ -759,7 +759,7 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async update
           else
             p2 = push(item, p2) // defer for P2 async update
-          if (ownerIsSection && isGroupBreak)
+          if (ownerIsSection && isSeparator)
             hostingRow = el
         }
         // Update incremental children (if any)
