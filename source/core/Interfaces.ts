@@ -48,10 +48,6 @@ export interface El<T = unknown, M = unknown, C = unknown, R = void> {
   elementAlignment: Align
   contentWrapping: boolean
   overlayVisible: boolean | undefined
-  updatePriority?: Priority
-  childrenShuffling: boolean
-  strictOrder: boolean
-  readonly isInitialUpdate: boolean
   useStyle(styleName: string, enabled?: boolean): void
   configureReactronic(options: Partial<MemberOptions>): MemberOptions
 }
@@ -70,6 +66,10 @@ export interface ElNode<T = unknown, M = unknown, C = unknown, R = void> {
   readonly stamp: number
   readonly outer: El
   readonly context: ElCtx | undefined
+  readonly isInitialUpdate: boolean
+  updatePriority?: Priority
+  childrenShuffling: boolean
+  strictOrder: boolean
   has(mode: Mode): boolean
 }
 

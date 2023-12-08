@@ -335,6 +335,8 @@ class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElN
   outer: ElImpl
   context: ElCtxImpl<any> | undefined
   numerator: number
+  updatePriority: Priority
+  childrenShuffling: boolean
 
   constructor(key: string, driver: Driver<T>,
     builder: Readonly<ElBuilder<T, M, C, R>>,
@@ -359,11 +361,20 @@ class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElN
     this.stamp = Number.MAX_SAFE_INTEGER // empty
     this.context = undefined
     this.numerator = 0
+    this.updatePriority = Priority.Realtime
+    this.childrenShuffling = false
     // Monitoring
     ElNodeImpl.grandCount++
     if (this.has(Mode.PinpointUpdate))
       ElNodeImpl.disposableCount++
   }
+
+  get isInitialUpdate(): boolean { return this.stamp === 1 }
+
+  get strictOrder(): boolean { return this.children.isStrict }
+  set strictOrder(value: boolean) { this.children.isStrict = value }
+
+  get isMoved(): boolean { return this.owner.node.children.isMoved(this.ties!) }
 
   has(mode: Mode): boolean {
     return (chainedMode(this.builder) & mode) === mode
@@ -411,8 +422,6 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
   private _hasStyles: boolean
-  updatePriority: Priority
-  childrenShuffling: boolean
 
   constructor(key: string, driver: Driver<T>,
     owner: ElImpl | undefined, builder: ElBuilder<T, M, C, R>) {
@@ -439,8 +448,6 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     this._contentWrapping = true
     this._overlayVisible = undefined
     this._hasStyles = false
-    this.updatePriority = Priority.Realtime
-    this.childrenShuffling = false
   }
 
   prepareForUpdate(): void {
@@ -448,15 +455,9 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     this._hasStyles = false // reset
   }
 
-  get isInitialUpdate(): boolean { return this.node.stamp === 1 }
   get isAuxiliary(): boolean { return this.kind > ElKind.Note } // Row, Group, Cursor
   get isSection(): boolean { return this.kind === ElKind.Section }
   get isTable(): boolean { return this.kind === ElKind.Table }
-
-  get isMoved(): boolean { return this.node.owner.node.children.isMoved(this.node.ties!) }
-
-  get strictOrder(): boolean { return this.node.children.isStrict }
-  set strictOrder(value: boolean) { this.node.children.isStrict = value }
 
   get kind(): ElKind { return this._kind }
   set kind(value: ElKind) {
@@ -750,7 +751,7 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const el = item.instance
           const isRow = el.node.driver.isRow
           const host = isRow ? owner : hostingRow
-          const p = el.updatePriority ?? Priority.Realtime
+          const p = el.node.updatePriority ?? Priority.Realtime
           mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
           if (p === Priority.Realtime)
             triggerUpdate(item) // update synchronously
@@ -814,7 +815,7 @@ async function updateIncrementally(owner: MergeItem<ElImpl>, stamp: number,
     let outerPriority = Verstak.currentUpdatePriority
     Verstak.currentUpdatePriority = priority
     try {
-      if (el.childrenShuffling)
+      if (el.node.childrenShuffling)
         shuffle(items)
       const frameDurationLimit = priority === Priority.Background ? Verstak.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(Verstak.frameDuration / 4, Verstak.shortFrameDuration))
@@ -874,7 +875,7 @@ function mountOrRemountIfNecessary(element: ElImpl): void {
       node.stamp = 0 // TEMPORARY
     })
   }
-  else if (element.isMoved && !node.has(Mode.ManualMount) && element.node.host !== element)
+  else if (node.isMoved && !node.has(Mode.ManualMount) && element.node.host !== element)
     unobs(() => driver.mount(element))
 }
 
