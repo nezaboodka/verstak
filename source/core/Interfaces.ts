@@ -70,7 +70,7 @@ export interface ElNode<T = unknown, M = unknown, C = unknown, R = void> {
   readonly stamp: number
   readonly outer: El
   readonly context: ElCtx | undefined
-  hasMode(mode: Mode): boolean
+  has(mode: Mode): boolean
 }
 
 // ElBuilder

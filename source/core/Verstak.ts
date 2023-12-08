@@ -361,11 +361,11 @@ class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElN
     this.numerator = 0
     // Monitoring
     ElNodeImpl.grandCount++
-    if (this.hasMode(Mode.PinpointUpdate))
+    if (this.has(Mode.PinpointUpdate))
       ElNodeImpl.disposableCount++
   }
 
-  hasMode(mode: Mode): boolean {
+  has(mode: Mode): boolean {
     return (chainedMode(this.builder) & mode) === mode
   }
 
@@ -575,7 +575,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
     const node = this.node
-    if (node.stamp < Number.MAX_SAFE_INTEGER - 1 || !node.hasMode(Mode.PinpointUpdate))
+    if (node.stamp < Number.MAX_SAFE_INTEGER - 1 || !node.has(Mode.PinpointUpdate))
       throw new Error("reactronic can be configured only for elements with pinpoint update mode and only inside initialize")
     return Rx.getReaction(node.update).configure(options)
   }
@@ -781,7 +781,7 @@ function markToMountIfNecessary(mounting: boolean, host: ElImpl,
   // exist among regular elements having native HTML elements
   const el = ties.instance
   const node = el.node
-  if (el.native && !node.hasMode(Mode.ManualMount)) {
+  if (el.native && !node.has(Mode.ManualMount)) {
     if (mounting || node.host !== host) {
       children.markAsMoved(ties)
       mounting = false
@@ -841,7 +841,7 @@ function triggerUpdate(ties: MergeItem<ElImpl>): void {
   const el = ties.instance
   const node = el.node
   if (node.stamp >= 0) { // if not finalized
-    if (node.hasMode(Mode.PinpointUpdate)) {
+    if (node.has(Mode.PinpointUpdate)) {
       if (node.stamp === Number.MAX_SAFE_INTEGER) {
         Transaction.outside(() => {
           if (Rx.isLogging)
@@ -866,7 +866,7 @@ function mountOrRemountIfNecessary(element: ElImpl): void {
     unobs(() => {
       driver.create(element, element)
       driver.initialize(element)
-      if (!node.hasMode(Mode.ManualMount)) {
+      if (!node.has(Mode.ManualMount)) {
         node.stamp = 0 // mounting
         if (element.node.host !== element)
           driver.mount(element)
@@ -874,7 +874,7 @@ function mountOrRemountIfNecessary(element: ElImpl): void {
       node.stamp = 0 // TEMPORARY
     })
   }
-  else if (element.isMoved && !node.hasMode(Mode.ManualMount) && element.node.host !== element)
+  else if (element.isMoved && !node.has(Mode.ManualMount) && element.node.host !== element)
     unobs(() => driver.mount(element))
 }
 
@@ -924,7 +924,7 @@ function triggerFinalization(ties: MergeItem<ElImpl>, isLeader: boolean, individ
     const childrenAreLeaders = unobs(() => driver.finalize(el, isLeader))
     el.native = null
     el.controller = null
-    if (node.hasMode(Mode.PinpointUpdate)) {
+    if (node.has(Mode.PinpointUpdate)) {
       // Defer disposal if element is reactive (having pinpoint update mode)
       ties.aux = undefined
       const last = gLastToDispose
