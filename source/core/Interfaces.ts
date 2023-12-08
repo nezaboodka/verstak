@@ -10,13 +10,13 @@ import { MergeListReader, MergeItem, MemberOptions } from "reactronic"
 // Delegates
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
-export type Delegate<T = unknown, M = unknown, C = unknown, R = void> = (block: Block<T, M, C, R>, base: () => R) => R
-export type AsyncDelegate<T = unknown, M = unknown> = (block: Block<T, M, Promise<void>>) => Promise<void>
-export type SimpleDelegate<T = unknown> = (block: Block<T, any, any, any>) => void
+export type Delegate<T = unknown, M = unknown, C = unknown, R = void> = (element: El<T, M, C, R>, base: () => R) => R
+export type AsyncDelegate<T = unknown, M = unknown> = (element: El<T, M, Promise<void>>) => Promise<void>
+export type SimpleDelegate<T = unknown> = (element: El<T, any, any, any>) => void
 
-// Block
+// El, ElKind
 
-export enum BlockKind {
+export enum ElKind {
   Section = 0,
   Table = 1,
   Note = 2,
@@ -26,9 +26,9 @@ export enum BlockKind {
   Native = 6,
 }
 
-export interface Block<T = unknown, M = unknown, C = unknown, R = void> {
+export interface El<T = unknown, M = unknown, C = unknown, R = void> {
   // System-managed properties
-  readonly node: BlockNode<T, M, C, R>
+  readonly node: ElNode<T, M, C, R>
   readonly native: T
   readonly isSection: boolean
   readonly isTable: boolean
@@ -36,8 +36,8 @@ export interface Block<T = unknown, M = unknown, C = unknown, R = void> {
   // User-manageable properties
   model: M
   controller: C
-  kind: BlockKind
-  area: BlockArea
+  kind: ElKind
+  area: ElArea
   widthGrowth: number
   minWidth: string
   maxWidth: string
@@ -45,7 +45,7 @@ export interface Block<T = unknown, M = unknown, C = unknown, R = void> {
   minHeight: string
   maxHeight: string
   contentAlignment: Align
-  blockAlignment: Align
+  elementAlignment: Align
   contentWrapping: boolean
   overlayVisible: boolean | undefined
   updatePriority?: Priority
@@ -56,26 +56,26 @@ export interface Block<T = unknown, M = unknown, C = unknown, R = void> {
   configureReactronic(options: Partial<MemberOptions>): MemberOptions
 }
 
-// BlockNode
+// ElNode
 
-export interface BlockNode<T = unknown, M = unknown, C = unknown, R = void> {
+export interface ElNode<T = unknown, M = unknown, C = unknown, R = void> {
   readonly key: string
   readonly driver: Driver<T>
-  readonly builder: Readonly<BlockBuilder<T, M, C, R>>
+  readonly builder: Readonly<ElBuilder<T, M, C, R>>
   readonly level: number
-  readonly owner: Block
-  readonly host: Block
-  readonly children: MergeListReader<Block>
-  readonly ties: MergeItem<Block> | undefined
+  readonly owner: El
+  readonly host: El
+  readonly children: MergeListReader<El>
+  readonly ties: MergeItem<El> | undefined
   readonly stamp: number
-  readonly outer: Block
-  readonly context: BlockCtx | undefined
+  readonly outer: El
+  readonly context: ElCtx | undefined
 }
 
-// BlockBuilder
+// ElBuilder
 
-export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
-  base?: BlockBuilder<T, M, C, R>
+export interface ElBuilder<T = unknown, M = unknown, C = unknown, R = void> {
+  base?: ElBuilder<T, M, C, R>
   key?: string
   mode?: Mode
   triggers?: unknown
@@ -86,9 +86,9 @@ export interface BlockBuilder<T = unknown, M = unknown, C = unknown, R = void> {
   finalize?: Delegate<T, M, C, R>
 }
 
-// BlockCtx
+// ElCtx
 
-export interface BlockCtx<T extends Object = Object> {
+export interface ElCtx<T extends Object = Object> {
   value: T
 }
 
@@ -99,31 +99,31 @@ export interface Driver<T, C = unknown> {
   readonly isRow: boolean,
   readonly preset?: SimpleDelegate<T>
 
-  claim(block: Block<T, unknown, C>): void
-  create(block: Block<T, unknown, C>, b: { native?: T, controller?: C }): void
-  initialize(block: Block<T, unknown, C>): void
-  mount(block: Block<T, unknown, C>): void
-  update(block: Block<T, unknown, C>): void | Promise<void>
-  finalize(block: Block<T, unknown, C>, isLeader: boolean): boolean
+  claim(element: El<T, unknown, C>): void
+  create(element: El<T, unknown, C>, b: { native?: T, controller?: C }): void
+  initialize(element: El<T, unknown, C>): void
+  mount(element: El<T, unknown, C>): void
+  update(element: El<T, unknown, C>): void | Promise<void>
+  finalize(element: El<T, unknown, C>, isLeader: boolean): boolean
 
-  applyKind(block: Block<T, any, C, any>, value: BlockKind): void
-  applyCoords(block: Block<T, any, C, any>, value: BlockCoords | undefined): void
-  applyWidthGrowth(block: Block<T, any, C, any>, value: number): void
-  applyMinWidth(block: Block<T, any, C, any>, value: string): void
-  applyMaxWidth(block: Block<T, any, C, any>, value: string): void
-  applyHeightGrowth(block: Block<T, any, C, any>, value: number): void
-  applyMinHeight(block: Block<T, any, C, any>, value: string): void
-  applyMaxHeight(block: Block<T, any, C, any>, value: string): void
-  applyContentAlignment(block: Block<T, any, C, any>, value: Align): void
-  applyBlockAlignment(block: Block<T, any, C, any>, value: Align): void
-  applyContentWrapping(block: Block<T, any, C, any>, value: boolean): void
-  applyOverlayVisible(block: Block<T, any, C, any>, value: boolean | undefined): void
-  applyStyle(block: Block<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void
+  applyKind(element: El<T, any, C, any>, value: ElKind): void
+  applyCoords(element: El<T, any, C, any>, value: ElCoords | undefined): void
+  applyWidthGrowth(element: El<T, any, C, any>, value: number): void
+  applyMinWidth(element: El<T, any, C, any>, value: string): void
+  applyMaxWidth(element: El<T, any, C, any>, value: string): void
+  applyHeightGrowth(element: El<T, any, C, any>, value: number): void
+  applyMinHeight(element: El<T, any, C, any>, value: string): void
+  applyMaxHeight(element: El<T, any, C, any>, value: string): void
+  applyContentAlignment(element: El<T, any, C, any>, value: Align): void
+  applyElementAlignment(element: El<T, any, C, any>, value: Align): void
+  applyContentWrapping(element: El<T, any, C, any>, value: boolean): void
+  applyOverlayVisible(element: El<T, any, C, any>, value: boolean | undefined): void
+  applyStyle(element: El<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void
 }
 
 // Other
 
-export interface BlockCoords {
+export interface ElCoords {
   x1: number
   y1: number
   x2: number
@@ -165,7 +165,7 @@ export interface TrackSize extends ElasticSize {
   track?: string | number   // <current>
 }
 
-export type BlockArea = undefined | string | {
+export type ElArea = undefined | string | {
   cellsOverWidth?: number   // 1 (table only)
   cellsOverHeight?: number  // 1 (table only)
 }

@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { reactive, unobs, Transaction, options, Reentrance, Rx, LoggingOptions, MergeList, MergeItem, ObservableObject, raw, MemberOptions } from "reactronic"
-import { BlockCoords, BlockKind, Priority, Mode, Align, BlockArea, BlockBuilder, Block, Driver, SimpleDelegate, BlockNode, BlockCtx } from "./Interfaces.js"
-import { emitLetters, equalBlockCoords, parseBlockCoords, getCallerInfo } from "./Utils.js"
+import { ElCoords, ElKind, Priority, Mode, Align, ElArea, ElBuilder, El, Driver, SimpleDelegate, ElNode, ElCtx } from "./Interfaces.js"
+import { emitLetters, equalElCoords, parseElCoords, getCallerInfo } from "./Utils.js"
 
 // Verstak
 
@@ -19,9 +19,9 @@ export class Verstak {
 
   static claim<T = undefined, M = unknown, C = unknown, R = void>(
     driver: Driver<T>,
-    builder?: BlockBuilder<T, M, C, R>,
-    base?: BlockBuilder<T, M, C, R>): Block<T, M, C, R> {
-    let result: BlockImpl<T, M, C, R>
+    builder?: ElBuilder<T, M, C, R>,
+    base?: ElBuilder<T, M, C, R>): El<T, M, C, R> {
+    let result: ElImpl<T, M, C, R>
     // Normalize parameters
     if (builder)
       builder.base = base
@@ -30,8 +30,8 @@ export class Verstak {
     let key = builder.key
     const owner = gCurrent?.instance
     if (owner) {
-      // Check for coalescing separators or lookup for existing block
-      let ex: MergeItem<BlockImpl<any, any, any, any>> | undefined = undefined
+      // Check for coalescing separators or lookup for existing element
+      let ex: MergeItem<ElImpl<any, any, any, any>> | undefined = undefined
       const children = owner.node.children
       if (driver.isRow) {
         const last = children.lastClaimedItem()
@@ -40,46 +40,46 @@ export class Verstak {
       }
       ex ??= children.claim(
         key = key || generateKey(owner), undefined,
-        "nested blocks can be declared inside update function only")
-      // Reuse existing block or claim a new one
+        "nested elements can be declared inside update function only")
+      // Reuse existing element or claim a new one
       if (ex) {
-        // Reuse existing block
+        // Reuse existing element
         result = ex.instance
         const node = result.node
         if (node.driver !== driver && driver !== undefined)
-          throw new Error(`changing block driver is not yet supported: "${result.node.driver.name}" -> "${driver?.name}"`)
+          throw new Error(`changing element driver is not yet supported: "${result.node.driver.name}" -> "${driver?.name}"`)
         const exTriggers = node.builder.triggers
         if (triggersAreEqual(builder.triggers, exTriggers))
           builder.triggers = exTriggers // preserve triggers instance
         node.builder = builder
       }
       else {
-        // Create new block
-        result = new BlockImpl<T, M, C, R>(key || generateKey(owner), driver, owner, builder)
+        // Create new element
+        result = new ElImpl<T, M, C, R>(key || generateKey(owner), driver, owner, builder)
         result.node.ties = children.add(result)
       }
     }
     else {
-      // Create new root block
-      result = new BlockImpl<T, M, C, R>(key || "", driver, owner, builder)
+      // Create new root element
+      result = new ElImpl<T, M, C, R>(key || "", driver, owner, builder)
       result.node.ties = MergeList.createItem(result)
       triggerUpdate(result.node.ties)
     }
     return result
   }
 
-  static get block(): Block {
+  static get element(): El {
     if (gCurrent === undefined)
-      throw new Error("current block is undefined")
+      throw new Error("current element is undefined")
     return gCurrent.instance
   }
 
-  static triggerUpdate(block: Block<any, any, any, void>, triggers: unknown): void {
-    const b = block as BlockImpl
-    const builder = b.node.builder
+  static triggerUpdate(element: El<any, any, any, void>, triggers: unknown): void {
+    const el = element as ElImpl
+    const builder = el.node.builder
     if (!triggersAreEqual(triggers, builder.triggers)) {
       builder.triggers = triggers // remember new triggers
-      triggerUpdate(b.node.ties!)
+      triggerUpdate(el.node.ties!)
     }
   }
 
@@ -88,11 +88,11 @@ export class Verstak {
   }
 
   static getDefaultLoggingOptions(): LoggingOptions | undefined {
-    return BlockImpl.logging
+    return ElImpl.logging
   }
 
   static setDefaultLoggingOptions(logging?: LoggingOptions): void {
-    BlockImpl.logging = logging
+    ElImpl.logging = logging
   }
 }
 
@@ -100,7 +100,7 @@ export class Verstak {
 
 export class BaseDriver<T, C = unknown> implements Driver<T, C> {
   public static readonly fragment = new BaseDriver<any>(
-    "fragment", false, b => b.kind = BlockKind.Group)
+    "fragment", false, el => el.kind = ElKind.Group)
 
   constructor(
     readonly name: string,
@@ -108,53 +108,53 @@ export class BaseDriver<T, C = unknown> implements Driver<T, C> {
     readonly preset?: SimpleDelegate<T>) {
   }
 
-  claim(block: Block<T, unknown, C>): void {
-    const b = block as BlockImpl<T, unknown, C>
-    chainedClaim(b, b.node.builder)
+  claim(element: El<T, unknown, C>): void {
+    const el = element as ElImpl<T, unknown, C>
+    chainedClaim(el, el.node.builder)
   }
 
-  create(block: Block<T, unknown, C>, b: { native?: T, controller?: C }): void {
-    chainedCreate(block, block.node.builder)
+  create(element: El<T, unknown, C>, result: { native?: T, controller?: C }): void {
+    chainedCreate(element, element.node.builder)
   }
 
-  initialize(block: Block<T, unknown, C>): void {
-    const b = block as BlockImpl<T, unknown, C>
-    this.preset?.(b)
-    chainedInitialize(b, b.node.builder)
+  initialize(element: El<T, unknown, C>): void {
+    const el = element as ElImpl<T, unknown, C>
+    this.preset?.(el)
+    chainedInitialize(el, el.node.builder)
   }
 
-  mount(block: Block<T, unknown, C>): void {
+  mount(element: El<T, unknown, C>): void {
     // nothing to do by default
   }
 
-  update(block: Block<T, unknown, C>): void | Promise<void> {
-    chainedUpdated(block, block.node.builder)
+  update(element: El<T, unknown, C>): void | Promise<void> {
+    chainedUpdated(element, element.node.builder)
   }
 
-  finalize(block: Block<T, unknown, C>, isLeader: boolean): boolean {
-    const b = block as BlockImpl<T, unknown, C>
-    chainedFinalize(b, b.node.builder)
+  finalize(element: El<T, unknown, C>, isLeader: boolean): boolean {
+    const el = element as ElImpl<T, unknown, C>
+    chainedFinalize(el, el.node.builder)
     return isLeader // treat children as finalization leaders as well
   }
 
-  applyKind(block: Block<T, any, C, any>, value: BlockKind): void { /* nop */ }
-  applyCoords(block: Block<T, any, C, any>, value: BlockCoords | undefined): void { /* nop */ }
-  applyWidthGrowth(block: Block<T, any, C, any>, value: number): void { /* nop */ }
-  applyMinWidth(block: Block<T, any, C, any>, value: string): void { /* nop */ }
-  applyMaxWidth(block: Block<T, any, C, any>, value: string): void { /* nop */ }
-  applyHeightGrowth(block: Block<T, any, C, any>, value: number): void { /* nop */ }
-  applyMinHeight(block: Block<T, any, C, any>, value: string): void { /* nop */ }
-  applyMaxHeight(block: Block<T, any, C, any>, value: string): void { /* nop */ }
-  applyContentAlignment(block: Block<T, any, C, any>, value: Align): void { /* nop */ }
-  applyBlockAlignment(block: Block<T, any, C, any>, value: Align): void { /* nop */ }
-  applyContentWrapping(block: Block<T, any, C, any>, value: boolean): void { /* nop */ }
-  applyOverlayVisible(block: Block<T, any, C, any>, value: boolean | undefined): void { /* nop */ }
-  applyStyle(block: Block<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void { /* nop */ }
+  applyKind(element: El<T, any, C, any>, value: ElKind): void { /* nop */ }
+  applyCoords(element: El<T, any, C, any>, value: ElCoords | undefined): void { /* nop */ }
+  applyWidthGrowth(element: El<T, any, C, any>, value: number): void { /* nop */ }
+  applyMinWidth(element: El<T, any, C, any>, value: string): void { /* nop */ }
+  applyMaxWidth(element: El<T, any, C, any>, value: string): void { /* nop */ }
+  applyHeightGrowth(element: El<T, any, C, any>, value: number): void { /* nop */ }
+  applyMinHeight(element: El<T, any, C, any>, value: string): void { /* nop */ }
+  applyMaxHeight(element: El<T, any, C, any>, value: string): void { /* nop */ }
+  applyContentAlignment(element: El<T, any, C, any>, value: Align): void { /* nop */ }
+  applyElementAlignment(element: El<T, any, C, any>, value: Align): void { /* nop */ }
+  applyContentWrapping(element: El<T, any, C, any>, value: boolean): void { /* nop */ }
+  applyOverlayVisible(element: El<T, any, C, any>, value: boolean | undefined): void { /* nop */ }
+  applyStyle(element: El<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void { /* nop */ }
 }
 
 // Utils
 
-function generateKey(owner: BlockImpl): string {
+function generateKey(owner: ElImpl): string {
   const n = owner.node.numerator++
   const lettered = emitLetters(n)
   let result: string
@@ -165,65 +165,65 @@ function generateKey(owner: BlockImpl): string {
   return result
 }
 
-function chainedMode(bb?: BlockBuilder<any, any, any, any>): Mode {
+function chainedMode(bb?: ElBuilder<any, any, any, any>): Mode {
   return bb?.mode ?? (bb?.base ? chainedMode(bb?.base) : Mode.Default)
 }
 
-function chainedClaim(block: Block<any>, bb: BlockBuilder): void {
-  const claim = bb.claim
-  const base = bb.base
+function chainedClaim(element: El<any>, elb: ElBuilder): void {
+  const claim = elb.claim
+  const base = elb.base
   if (claim)
-    claim(block, base ? () => chainedClaim(block, base) : NOP)
+    claim(element, base ? () => chainedClaim(element, base) : NOP)
   else if (base)
-    chainedClaim(block, base)
+    chainedClaim(element, base)
 }
 
-function chainedCreate(block: Block, bb: BlockBuilder): void {
-  const create = bb.create
-  const base = bb.base
+function chainedCreate(element: El, elb: ElBuilder): void {
+  const create = elb.create
+  const base = elb.base
   if (create)
-    create(block, base ? () => chainedCreate(block, base) : NOP)
+    create(element, base ? () => chainedCreate(element, base) : NOP)
   else if (base)
-    chainedCreate(block, base)
+    chainedCreate(element, base)
 }
 
-function chainedInitialize(block: Block<any>, bb: BlockBuilder): void {
-  const initialize = bb.initialize
-  const base = bb.base
+function chainedInitialize(element: El<any>, elb: ElBuilder): void {
+  const initialize = elb.initialize
+  const base = elb.base
   if (initialize)
-    initialize(block, base ? () => chainedInitialize(block, base) : NOP)
+    initialize(element, base ? () => chainedInitialize(element, base) : NOP)
   else if (base)
-    chainedInitialize(block, base)
+    chainedInitialize(element, base)
 }
 
-function chainedUpdated(block: Block, bb: BlockBuilder): void {
-  const update = bb.update
-  const base = bb.base
+function chainedUpdated(element: El, elb: ElBuilder): void {
+  const update = elb.update
+  const base = elb.base
   if (update)
-    update(block, base ? () => chainedUpdated(block, base) : NOP)
+    update(element, base ? () => chainedUpdated(element, base) : NOP)
   else if (base)
-    chainedUpdated(block, base)
+    chainedUpdated(element, base)
 }
 
-function chainedFinalize(block: Block<any>, bb: BlockBuilder): void {
-  const finalize = bb.finalize
-  const base = bb.base
+function chainedFinalize(element: El<any>, elb: ElBuilder): void {
+  const finalize = elb.finalize
+  const base = elb.base
   if (finalize)
-    finalize(block, base ? () => chainedFinalize(block, base) : NOP)
+    finalize(element, base ? () => chainedFinalize(element, base) : NOP)
   else if (base)
-    chainedFinalize(block, base)
+    chainedFinalize(element, base)
 }
 
 export class StaticDriver<T> extends BaseDriver<T> {
-  readonly element: T
+  readonly native: T
 
-  constructor(element: T, name: string, isRow: boolean, preset?: SimpleDelegate<T>) {
+  constructor(native: T, name: string, isRow: boolean, preset?: SimpleDelegate<T>) {
     super(name, isRow, preset)
-    this.element = element
+    this.native = native
   }
 
-  create(block: Block<T, unknown, unknown, void>, b: { native?: T; controller?: unknown }): void {
-    b.native = this.element
+  create(element: El<T, unknown, unknown, void>, result: { native?: T; controller?: unknown }): void {
+    result.native = this.native
   }
 }
 
@@ -237,13 +237,13 @@ export class CursorCommand {
 
 export class CursorCommandDriver extends BaseDriver<CursorCommand, void>{
   constructor() {
-    super("cursor", false, b => b.kind = BlockKind.Cursor)
+    super("cursor", false, el => el.kind = ElKind.Cursor)
   }
 
-  create(block: Block<CursorCommand, unknown, void, void>,
-    b: { native?: CursorCommand; controller?: void }): void {
-    b.native = new CursorCommand()
-    super.create(block, b)
+  create(element: El<CursorCommand, unknown, void, void>,
+    result: { native?: CursorCommand; controller?: void }): void {
+    result.native = new CursorCommand()
+    super.create(element, result)
   }
 }
 
@@ -257,15 +257,15 @@ export class SubTreeVariable<T extends Object = Object> {
   }
 
   set value(value: T) {
-    BlockImpl.setSubTreeVariableValue(this, value)
+    ElImpl.setSubTreeVariableValue(this, value)
   }
 
   get value(): T {
-    return BlockImpl.useSubTreeVariableValue(this)
+    return ElImpl.useSubTreeVariableValue(this)
   }
 
   get valueOrUndefined(): T | undefined {
-    return BlockImpl.tryUseSubTreeVariable(this)
+    return ElImpl.tryUseSubTreeVariable(this)
   }
 }
 
@@ -294,13 +294,13 @@ enum CursorFlags {
   UsesRunningRowCount = 4,
 }
 
-const UndefinedBlockCoords = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
+const UndefinedElCoords = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
 const InitialCursorPosition: CursorPosition = Object.freeze(new CursorPosition({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: CursorFlags.None }))
 
-// BlockCtxImpl
+// ElCtxImpl
 
-class BlockCtxImpl<T extends Object = Object> extends ObservableObject implements BlockCtx<T> {
-  @raw next: BlockCtxImpl<object> | undefined
+class ElCtxImpl<T extends Object = Object> extends ObservableObject implements ElCtx<T> {
+  @raw next: ElCtxImpl<object> | undefined
   @raw variable: SubTreeVariable<T>
   value: T
 
@@ -312,28 +312,28 @@ class BlockCtxImpl<T extends Object = Object> extends ObservableObject implement
   }
 }
 
-// BlockNodeImpl
+// ElNodeImpl
 
-class BlockNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements BlockNode<T, M, C, R> {
+class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElNode<T, M, C, R> {
   readonly key: string
   readonly driver: Driver<T>
-  builder: BlockBuilder<T, M, C, R>
+  builder: ElBuilder<T, M, C, R>
   readonly level: number
-  readonly owner: BlockImpl
-  host: BlockImpl
-  readonly children: MergeList<BlockImpl>
-  ties: MergeItem<BlockImpl> | undefined
+  readonly owner: ElImpl
+  host: ElImpl
+  readonly children: MergeList<ElImpl>
+  ties: MergeItem<ElImpl> | undefined
   stamp: number
-  outer: BlockImpl
-  context: BlockCtxImpl<any> | undefined
+  outer: ElImpl
+  context: ElCtxImpl<any> | undefined
   numerator: number
   maxColumnCount: number = 0
   maxRowCount: number = 0
   cursorPosition?: CursorPosition
 
   constructor(key: string, driver: Driver<T>,
-    builder: Readonly<BlockBuilder<T, M, C, R>>,
-    self: BlockImpl<T, M, C, R>, owner: BlockImpl | undefined) {
+    builder: Readonly<ElBuilder<T, M, C, R>>,
+    self: ElImpl<T, M, C, R>, owner: ElImpl | undefined) {
     this.key = key
     this.driver = driver
     this.builder = builder
@@ -348,8 +348,8 @@ class BlockNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements 
       this.owner = owner = self
       this.outer = self
     }
-    this.host = self // block is unmounted
-    this.children = new MergeList<BlockImpl>(getBlockKey, true)
+    this.host = self // element is unmounted
+    this.children = new MergeList<ElImpl>(getElNodeKey, true)
     this.ties = undefined
     this.stamp = 0
     this.context = undefined
@@ -360,24 +360,24 @@ class BlockNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements 
   }
 }
 
-// BlockImpl
+// ElImpl
 
-class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R> {
+class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   // Static properties
-  static grandBlockCount: number = 0
-  static disposableBlockCount: number = 0
+  static grandElementCount: number = 0
+  static disposableElementCount: number = 0
   static logging: LoggingOptions | undefined = undefined
 
   // System-managed properties
-  readonly node: BlockNodeImpl<T, M, C, R>
+  readonly node: ElNodeImpl<T, M, C, R>
   native: T
 
   // User-defined properties
   model: M
   controller: C
-  private _kind: BlockKind
-  private _area: BlockArea
-  private _coords: BlockCoords
+  private _kind: ElKind
+  private _area: ElArea
+  private _coords: ElCoords
   private _widthGrowth: number
   private _minWidth: string
   private _maxWidth: string
@@ -385,7 +385,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   private _minHeight: string
   private _maxHeight: string
   private _contentAlignment: Align
-  private _blockAlignment: Align
+  private _elementAlignment: Align
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
   private _hasStyles: boolean
@@ -393,16 +393,16 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   childrenShuffling: boolean
 
   constructor(key: string, driver: Driver<T>,
-    owner: BlockImpl | undefined, builder: BlockBuilder<T, M, C, R>) {
+    owner: ElImpl | undefined, builder: ElBuilder<T, M, C, R>) {
     // System-managed properties
-    this.node = new BlockNodeImpl(key, driver, builder, this, owner)
+    this.node = new ElNodeImpl(key, driver, builder, this, owner)
     this.native = undefined as any as T // hack
     // User-defined properties
     this.model = undefined as any
     this.controller = undefined as any as C // hack
-    this._kind = BlockKind.Row
+    this._kind = ElKind.Row
     this._area = undefined
-    this._coords = UndefinedBlockCoords
+    this._coords = UndefinedElCoords
     this._widthGrowth = 0
     this._minWidth = ""
     this._maxWidth = ""
@@ -410,16 +410,16 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     this._minHeight = ""
     this._maxHeight = ""
     this._contentAlignment = Align.Default
-    this._blockAlignment = Align.Default
+    this._elementAlignment = Align.Default
     this._contentWrapping = true
     this._overlayVisible = undefined
     this._hasStyles = false
     this.updatePriority = Priority.Realtime
     this.childrenShuffling = false
     // Monitoring
-    BlockImpl.grandBlockCount++
+    ElImpl.grandElementCount++
     if (this.isOn(Mode.PinpointUpdate))
-      BlockImpl.disposableBlockCount++
+      ElImpl.disposableElementCount++
   }
 
   @reactive
@@ -443,9 +443,9 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   }
 
   get isInitialUpdate(): boolean { return this.node.stamp === 2 }
-  get isAuxiliary(): boolean { return this.kind > BlockKind.Note } // Row, Group, Cursor
-  get isSection(): boolean { return this.kind === BlockKind.Section }
-  get isTable(): boolean { return this.kind === BlockKind.Table }
+  get isAuxiliary(): boolean { return this.kind > ElKind.Note } // Row, Group, Cursor
+  get isSection(): boolean { return this.kind === ElKind.Section }
+  get isTable(): boolean { return this.kind === ElKind.Table }
 
   get isAutoMountEnabled(): boolean { return !this.isOn(Mode.ManualMount) && this.node.host !== this }
   get isMoved(): boolean { return this.node.owner.node.children.isMoved(this.node.ties!) }
@@ -453,27 +453,27 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
   get strictOrder(): boolean { return this.node.children.isStrict }
   set strictOrder(value: boolean) { this.node.children.isStrict = value }
 
-  get kind(): BlockKind { return this._kind }
-  set kind(value: BlockKind) {
+  get kind(): ElKind { return this._kind }
+  set kind(value: ElKind) {
     if (value !== this._kind || this.node.stamp < 2) {
       this.node.driver.applyKind(this, value)
       this._kind = value
     }
   }
 
-  get area(): BlockArea { return this._area }
-  set area(value: BlockArea) {
+  get area(): ElArea { return this._area }
+  set area(value: ElArea) {
     const node = this.node
     const driver = node.driver
     if (!driver.isRow) {
       const owner = node.owner.node
       const cursorPosition = node.ties!.prev?.instance.node.cursorPosition ?? InitialCursorPosition
       const newCursorPosition = node.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
-      const isCursorBlock = driver instanceof CursorCommandDriver
-      const coords = getEffectiveBlockCoords(!isCursorBlock,
+      const isCursorElement = driver instanceof CursorCommandDriver
+      const coords = getEffectiveElCoords(!isCursorElement,
         value, owner.maxColumnCount, owner.maxRowCount,
         cursorPosition, newCursorPosition)
-      if (!equalBlockCoords(coords, this._coords)) {
+      if (!equalElCoords(coords, this._coords)) {
         driver.applyCoords(this, coords)
         this._coords = coords
       }
@@ -539,11 +539,11 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
     }
   }
 
-  get blockAlignment(): Align { return this._blockAlignment }
-  set blockAlignment(value: Align) {
-    if (value !== this._blockAlignment) {
-      this.node.driver.applyBlockAlignment(this, value)
-      this._blockAlignment = value
+  get elementAlignment(): Align { return this._elementAlignment }
+  set elementAlignment(value: Align) {
+    if (value !== this._elementAlignment) {
+      this.node.driver.applyElementAlignment(this, value)
+      this._elementAlignment = value
     }
   }
 
@@ -570,33 +570,33 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
     if (this.node.stamp !== 1 || !this.isOn(Mode.PinpointUpdate))
-      throw new Error("reactronic can be configured only for blocks with separate reaction mode and only inside initialize")
+      throw new Error("reactronic can be configured only for elements with pinpoint update mode and only inside initialize")
     return Rx.getReaction(this.update).configure(options)
   }
 
-  static get curr(): MergeItem<BlockImpl> {
+  static get curr(): MergeItem<ElImpl> {
     if (!gCurrent)
-      throw new Error("current block is undefined")
+      throw new Error("current element is undefined")
     return gCurrent
   }
 
   static tryUseSubTreeVariable<T extends Object>(variable: SubTreeVariable<T>): T | undefined {
-    let b = BlockImpl.curr.instance
-    while (b.node.context?.variable !== variable && b.node.owner !== b)
-      b = b.node.outer
-    return b.node.context?.value as any // TODO: to get rid of any
+    let el = ElImpl.curr.instance
+    while (el.node.context?.variable !== variable && el.node.owner !== el)
+      el = el.node.outer
+    return el.node.context?.value as any // TODO: to get rid of any
   }
 
   static useSubTreeVariableValue<T extends Object>(variable: SubTreeVariable<T>): T {
-    const result = BlockImpl.tryUseSubTreeVariable(variable) ?? variable.defaultValue
+    const result = ElImpl.tryUseSubTreeVariable(variable) ?? variable.defaultValue
     if (!result)
       throw new Error("context doesn't exist")
     return result
   }
 
   static setSubTreeVariableValue<T extends Object>(variable: SubTreeVariable<T>, value: T | undefined): void {
-    const b = BlockImpl.curr.instance
-    const node = b.node
+    const el = ElImpl.curr.instance
+    const node = el.node
     const owner = node.owner
     const hostCtx = unobs(() => owner.node.context?.value)
     if (value && value !== hostCtx) {
@@ -611,7 +611,7 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
           ctx.value = value // update context thus invalidate observers
         }
         else
-          node.context = new BlockCtxImpl<any>(variable, value)
+          node.context = new ElCtxImpl<any>(variable, value)
       })
     }
     else if (hostCtx)
@@ -631,22 +631,22 @@ class BlockImpl<T = any, M = any, C = any, R = any> implements Block<T, M, C, R>
 
 // Internal
 
-function getBlockKey(block: BlockImpl): string | undefined {
-  const node = block.node
+function getElNodeKey(element: ElImpl): string | undefined {
+  const node = element.node
   return node.stamp >= 0 ? node.key : undefined
 }
 
-function getEffectiveBlockCoords(
-  isRegularBlock: boolean, area: BlockArea, maxX: number, maxY: number,
-  cursorPosition: CursorPosition, newCursorPosition?: CursorPosition): BlockCoords {
-  let result: BlockCoords // this comment just prevents syntax highlighting in VS code
+function getEffectiveElCoords(
+  isRegularElement: boolean, area: ElArea, maxX: number, maxY: number,
+  cursorPosition: CursorPosition, newCursorPosition?: CursorPosition): ElCoords {
+  let result: ElCoords // this comment just prevents syntax highlighting in VS code
   if (typeof(area) === "string") {
     // Absolute positioning
-    result = parseBlockCoords(area, { x1: 0, y1: 0, x2: 0, y2: 0 })
-    absolutizeBlockCoords(result, cursorPosition.x, cursorPosition.y,
+    result = parseElCoords(area, { x1: 0, y1: 0, x2: 0, y2: 0 })
+    absolutizeElCoords(result, cursorPosition.x, cursorPosition.y,
       maxX || Infinity, maxY || Infinity, result)
     if (newCursorPosition) {
-      newCursorPosition.x = isRegularBlock ? result.x2 + 1 : result.x1
+      newCursorPosition.x = isRegularElement ? result.x2 + 1 : result.x1
       newCursorPosition.y = result.y1
       newCursorPosition.flags = CursorFlags.OwnCursorPosition
     }
@@ -665,12 +665,12 @@ function getEffectiveBlockCoords(
     const runningX = maxX !== 0 ? maxX : cursorPosition.runningMaxX
     const runningY = maxY !== 0 ? maxY : cursorPosition.runningMaxY
     result = { x1: 0, y1: 0, x2: 0, y2: 0 }
-    if (dx === 0 && isRegularBlock) {
+    if (dx === 0 && isRegularElement) {
       dx = runningX || 1
       newCursorPosition.flags = CursorFlags.UsesRunningColumnCount
     }
     if (dx >= 0) {
-      if (isRegularBlock) {
+      if (isRegularElement) {
         result.x1 = cursorPosition.x
         result.x2 = absolutizePosition(result.x1 + dx - 1, 0, maxX || Infinity)
         newCursorPosition.x = result.x2 + 1
@@ -681,7 +681,7 @@ function getEffectiveBlockCoords(
       }
     }
     else {
-      if (isRegularBlock) {
+      if (isRegularElement) {
         result.x1 = Math.max(cursorPosition.x + dx, 1)
         result.x2 = cursorPosition.x
         newCursorPosition.x = result.x2 + 1
@@ -691,12 +691,12 @@ function getEffectiveBlockCoords(
         newCursorPosition.x = result.x2
       }
     }
-    if (dy === 0 && isRegularBlock) {
+    if (dy === 0 && isRegularElement) {
       dy = runningY || 1
       newCursorPosition.flags |= CursorFlags.UsesRunningRowCount
     }
     if (dy >= 0) {
-      if (isRegularBlock) {
+      if (isRegularElement) {
         result.y1 = cursorPosition.y
         result.y2 = absolutizePosition(result.y1 + dy - 1, 0, maxY || Infinity)
         if (result.y2 > newCursorPosition.runningMaxY)
@@ -706,7 +706,7 @@ function getEffectiveBlockCoords(
         result.y1 = result.y2 = cursorPosition.y + dy
     }
     else {
-      if (isRegularBlock) {
+      if (isRegularElement) {
         result.y1 = Math.max(cursorPosition.y + dy, 1)
         result.y2 = cursorPosition.y
       }
@@ -720,31 +720,31 @@ function getEffectiveBlockCoords(
 }
 
 function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => void): void {
-  const curr = BlockImpl.curr
+  const curr = ElImpl.curr
   const owner = curr.instance
   const children = owner.node.children
   if (children.isMergeInProgress) {
     let promised: Promise<void> | undefined = undefined
     try {
       children.endMerge(error)
-      // Finalize removed blocks
+      // Finalize removed elements
       for (const item of children.removedItems(true))
         triggerFinalization(item, true, true)
       if (!error) {
-        // Lay out and update actual blocks
+        // Lay out and update actual elements
         const ownerIsSection = owner.isSection
         const sequential = children.isStrict
-        let p1: Array<MergeItem<BlockImpl>> | undefined = undefined
-        let p2: Array<MergeItem<BlockImpl>> | undefined = undefined
+        let p1: Array<MergeItem<ElImpl>> | undefined = undefined
+        let p2: Array<MergeItem<ElImpl>> | undefined = undefined
         let mounting = false
         let hostingRow = owner
         for (const item of children.items()) {
           if (Transaction.isCanceled)
             break
-          const block = item.instance
-          const isRow = block.node.driver.isRow
+          const el = item.instance
+          const isRow = el.node.driver.isRow
           const host = isRow ? owner : hostingRow
-          const p = block.updatePriority ?? Priority.Realtime
+          const p = el.updatePriority ?? Priority.Realtime
           mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
           if (p === Priority.Realtime)
             triggerUpdate(item) // update synchronously
@@ -753,7 +753,7 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           else
             p2 = push(item, p2) // defer for P2 async update
           if (ownerIsSection && isRow)
-            hostingRow = block
+            hostingRow = el
         }
         // Update incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
@@ -769,29 +769,29 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
   }
 }
 
-function markToMountIfNecessary(mounting: boolean, host: BlockImpl,
-  ties: MergeItem<BlockImpl>, children: MergeList<BlockImpl>, sequential: boolean): boolean {
-  // Detects element mounting when abstract blocks
-  // exist among regular blocks with HTML elements
-  const b = ties.instance
-  const node = b.node
-  if (b.native && !b.isOn(Mode.ManualMount)) {
+function markToMountIfNecessary(mounting: boolean, host: ElImpl,
+  ties: MergeItem<ElImpl>, children: MergeList<ElImpl>, sequential: boolean): boolean {
+  // Detects element mounting when abstract elements
+  // exist among regular elements having native HTML elements
+  const el = ties.instance
+  const node = el.node
+  if (el.native && !el.isOn(Mode.ManualMount)) {
     if (mounting || node.host !== host) {
       children.markAsMoved(ties)
       mounting = false
     }
   }
   else if (sequential && children.isMoved(ties))
-    mounting = true // apply to the first block with an element
+    mounting = true // apply to the first element having native HTML element
   node.host = host
   return mounting
 }
 
 async function startIncrementalUpdate(
-  owner: MergeItem<BlockImpl>,
-  allChildren: MergeList<BlockImpl>,
-  priority1?: Array<MergeItem<BlockImpl>>,
-  priority2?: Array<MergeItem<BlockImpl>>): Promise<void> {
+  owner: MergeItem<ElImpl>,
+  allChildren: MergeList<ElImpl>,
+  priority1?: Array<MergeItem<ElImpl>>,
+  priority2?: Array<MergeItem<ElImpl>>): Promise<void> {
   const stamp = owner.instance.node.stamp
   if (priority1)
     await updateIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
@@ -799,16 +799,16 @@ async function startIncrementalUpdate(
     await updateIncrementally(owner, stamp, allChildren, priority2, Priority.Background)
 }
 
-async function updateIncrementally(owner: MergeItem<BlockImpl>, stamp: number,
-  allChildren: MergeList<BlockImpl>, items: Array<MergeItem<BlockImpl>>,
+async function updateIncrementally(owner: MergeItem<ElImpl>, stamp: number,
+  allChildren: MergeList<ElImpl>, items: Array<MergeItem<ElImpl>>,
   priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
-  const block = owner.instance
+  const el = owner.instance
   if (!Transaction.isCanceled || !Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3)) {
     let outerPriority = Verstak.currentUpdatePriority
     Verstak.currentUpdatePriority = priority
     try {
-      if (block.childrenShuffling)
+      if (el.childrenShuffling)
         shuffle(items)
       const frameDurationLimit = priority === Priority.Background ? Verstak.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(Verstak.frameDuration / 4, Verstak.shortFrameDuration))
@@ -831,59 +831,59 @@ async function updateIncrementally(owner: MergeItem<BlockImpl>, stamp: number,
   }
 }
 
-function triggerUpdate(ties: MergeItem<BlockImpl>): void {
-  const b = ties.instance
-  const node = b.node
+function triggerUpdate(ties: MergeItem<ElImpl>): void {
+  const el = ties.instance
+  const node = el.node
   if (node.stamp >= 0) {
-    if (b.isOn(Mode.PinpointUpdate)) {
+    if (el.isOn(Mode.PinpointUpdate)) {
       if (node.stamp === 0) {
         Transaction.outside(() => {
           if (Rx.isLogging)
-            Rx.setLoggingHint(b, node.key)
-          Rx.getReaction(b.update).configure({
+            Rx.setLoggingHint(el, node.key)
+          Rx.getReaction(el.update).configure({
             order: node.level,
           })
         })
       }
-      unobs(b.update, node.builder.triggers) // reactive auto-update
+      unobs(el.update, node.builder.triggers) // reactive auto-update
     }
     else
       updateNow(ties)
   }
 }
 
-function mountIfNecessary(block: BlockImpl): void {
-  const node = block.node
+function mountIfNecessary(element: ElImpl): void {
+  const node = element.node
   const driver = node.driver
   if (node.stamp === 0) {
     node.stamp = 1
     unobs(() => {
-      driver.create(block, block)
-      driver.initialize(block)
-      if (block.isAutoMountEnabled)
-        driver.mount(block)
+      driver.create(element, element)
+      driver.initialize(element)
+      if (element.isAutoMountEnabled)
+        driver.mount(element)
     })
   }
-  else if (block.isMoved && block.isAutoMountEnabled)
-    unobs(() => driver.mount(block))
+  else if (element.isMoved && element.isAutoMountEnabled)
+    unobs(() => driver.mount(element))
 }
 
-function updateNow(ties: MergeItem<BlockImpl>): void {
-  const b = ties.instance
-  const node = b.node
-  if (node.stamp >= 0) { // if block is alive
+function updateNow(ties: MergeItem<ElImpl>): void {
+  const el = ties.instance
+  const node = el.node
+  if (node.stamp >= 0) { // if element is alive
     let result: unknown = undefined
     runInside(ties, () => {
       try {
-        mountIfNecessary(b)
+        mountIfNecessary(el)
         node.stamp++
         node.numerator = 0
-        b.prepareForUpdate()
+        el.prepareForUpdate()
         node.children.beginMerge()
         const driver = node.driver
-        result = driver.update(b)
-        if (b.area === undefined && node.owner.isTable)
-          b.area = undefined // automatic placement
+        result = driver.update(el)
+        if (el.area === undefined && node.owner.isTable)
+          el.area = undefined // automatic placement
         if (result instanceof Promise)
           result.then(
             v => { runUpdateNestedTreesThenDo(undefined, NOP); return v },
@@ -900,20 +900,20 @@ function updateNow(ties: MergeItem<BlockImpl>): void {
   }
 }
 
-function triggerFinalization(ties: MergeItem<BlockImpl>, isLeader: boolean, individual: boolean): void {
-  const b = ties.instance
-  const node = b.node
+function triggerFinalization(ties: MergeItem<ElImpl>, isLeader: boolean, individual: boolean): void {
+  const el = ties.instance
+  const node = el.node
   if (node.stamp >= 0) {
     const driver = node.driver
     if (individual && node.key !== node.builder.key && !driver.isRow)
-      console.log(`WARNING: it is recommended to assign explicit key for conditional block in order to avoid unexpected side effects: ${node.key}`)
+      console.log(`WARNING: it is recommended to assign explicit key for conditional element in order to avoid unexpected side effects: ${node.key}`)
     node.stamp = ~node.stamp
-    // Finalize block itself and remove it from collection
-    const childrenAreLeaders = unobs(() => driver.finalize(b, isLeader))
-    b.native = null
-    b.controller = null
-    if (b.isOn(Mode.PinpointUpdate)) {
-      // Defer disposal if block is reactive
+    // Finalize element itself and remove it from collection
+    const childrenAreLeaders = unobs(() => driver.finalize(el, isLeader))
+    el.native = null
+    el.controller = null
+    if (el.isOn(Mode.PinpointUpdate)) {
+      // Defer disposal if element is reactive (having pinpoint update mode)
       ties.aux = undefined
       const last = gLastToDispose
       if (last)
@@ -928,7 +928,7 @@ function triggerFinalization(ties: MergeItem<BlockImpl>, isLeader: boolean, indi
     // Finalize children if any
     for (const item of node.children.items())
       triggerFinalization(item, childrenAreLeaders, false)
-    BlockImpl.grandBlockCount--
+    ElImpl.grandElementCount--
   }
 }
 
@@ -940,17 +940,17 @@ async function runDisposalLoop(): Promise<void> {
       await Transaction.requestNextFrame()
     Rx.dispose(item.instance)
     item = item.aux
-    BlockImpl.disposableBlockCount--
+    ElImpl.disposableElementCount--
   }
-  // console.log(`Block count: ${VBlock.grandCount} totally (${VBlock.disposableCount} disposable)`)
+  // console.log(`Element count: ${ElImpl.grandElementCount} totally (${ElImpl.disposableElementCount} disposable)`)
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
-// function forEachChildRecursively(item: MergeItem<XBlock>, action: (e: any) => void): void {
-//   const block = item.instance
-//   const e = block.native
+// function forEachChildRecursively(item: MergeItem<El>, action: (e: any) => void): void {
+//   const el = item.instance
+//   const e = el.native
 //   e && action(e)
-//   for (const item of block.children.items())
+//   for (const item of el.children.items())
 //     forEachChildRecursively(item, action)
 // }
 
@@ -966,7 +966,7 @@ function wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T 
   return wrappedToRunInside
 }
 
-function runInside<T>(ties: MergeItem<BlockImpl>, func: (...args: any[]) => T, ...args: any[]): T {
+function runInside<T>(ties: MergeItem<ElImpl>, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gCurrent
   try {
     gCurrent = ties
@@ -996,10 +996,10 @@ function triggersAreEqual(a1: any, a2: any): boolean {
   return result
 }
 
-function absolutizeBlockCoords(area: BlockCoords,
+function absolutizeElCoords(area: ElCoords,
   cursorX: number, cursorY: number,
   maxWidth: number, maxHeight: number,
-  result: BlockCoords): BlockCoords {
+  result: ElCoords): ElCoords {
   // X1, X2
   const x1 = absolutizePosition(area.x1, cursorX, maxWidth)
   const x2 = absolutizePosition(area.x2, x1, maxWidth)
@@ -1073,6 +1073,6 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const NOP: any = (...args: any[]): void => { /* nop */ }
 
-let gCurrent: MergeItem<BlockImpl> | undefined = undefined
-let gFirstToDispose: MergeItem<BlockImpl> | undefined = undefined
-let gLastToDispose: MergeItem<BlockImpl> | undefined = undefined
+let gCurrent: MergeItem<ElImpl> | undefined = undefined
+let gFirstToDispose: MergeItem<ElImpl> | undefined = undefined
+let gLastToDispose: MergeItem<ElImpl> | undefined = undefined

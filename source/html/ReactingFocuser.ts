@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Mode } from "../core/api.js"
-import { Fragment } from "./Blocks.js"
+import { Fragment } from "./Elements.js"
 import { FocusModel } from "./sensors/FocusSensor.js"
 
 export function FocuserReaction(key: string, target: HTMLElement, model: FocusModel,

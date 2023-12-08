@@ -6,66 +6,66 @@
 // automatically licensed under the license referred above.
 
 import { MergeItem, Rx } from "reactronic"
-import { Verstak, Block, BaseDriver, Priority } from "../core/api.js"
+import { Verstak, El, BaseDriver, Priority } from "../core/api.js"
 
 export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends BaseDriver<T, C> {
 
-  create(block: Block<T, unknown, C, void>, b: { native?: T; controller?: C }): void {
-    super.create(block, b)
+  create(element: El<T, unknown, C, void>, result: { native?: T; controller?: C }): void {
+    super.create(element, result)
   }
 
-  initialize(block: Block<T, unknown, C, void>): void {
-    if (Rx.isLogging && !block.node.driver.isRow)
-      block.native.setAttribute("key", block.node.key)
-    super.initialize(block)
+  initialize(element: El<T, unknown, C, void>): void {
+    if (Rx.isLogging && !element.node.driver.isRow)
+      element.native.setAttribute("key", element.node.key)
+    super.initialize(element)
   }
 
-  finalize(block: Block<T, unknown, C>, isLeader: boolean): boolean {
-    const e = block.native as T | undefined // hack
-    if (e) {
-      e.resizeObserver?.unobserve(e) // is it really needed or browser does this automatically?
+  finalize(element: El<T, unknown, C>, isLeader: boolean): boolean {
+    const native = element.native as T | undefined // hack
+    if (native) {
+      native.resizeObserver?.unobserve(native) // is it really needed or browser does this automatically?
       if (isLeader)
-        e.remove()
+        native.remove()
     }
-    super.finalize(block, isLeader)
-    return false // children of HTML blocks are not treated as leaders
+    super.finalize(element, isLeader)
+    return false // children elements having native HTML elements are not treated as leaders
   }
 
-  mount(block: Block<T, unknown, C>): void {
-    const e = block.native as T | undefined // hack
-    if (e) {
-      const node = block.node
+  mount(element: El<T, unknown, C>): void {
+    const native = element.native as T | undefined // hack
+    if (native) {
+      const node = element.node
       const sequential = node.owner.node.children.isStrict
-      const nativeParent = BaseHtmlDriver.findEffectiveHtmlBlockHost(block).native as unknown as Element | undefined // hack
+      const nativeParent = BaseHtmlDriver.findEffectiveHtmlElementHost(element).native as unknown as Element | undefined // hack
       if (nativeParent) {
         if (sequential && !node.driver.isRow) {
-          const after = BaseHtmlDriver.findPrevSiblingHtmlBlock(block.node.ties!)
+          const after = BaseHtmlDriver.findPrevSiblingHtmlElement(element.node.ties!)
           if (after === undefined || after.instance.node.driver.isRow) {
-            if (nativeParent !== e.parentNode || !e.previousSibling)
-              nativeParent.prepend(e)
+            if (nativeParent !== native.parentNode || !native.previousSibling)
+              nativeParent.prepend(native)
           }
           else { // if (after.instance.host.native === nativeParent) {
             const nativeAfter = after.instance.native
             if (nativeAfter instanceof Element) {
-              if (nativeAfter.nextSibling !== e)
-                nativeParent.insertBefore(e, nativeAfter.nextSibling)
+              if (nativeAfter.nextSibling !== native)
+                nativeParent.insertBefore(native, nativeAfter.nextSibling)
             }
           }
         }
         else
-          nativeParent.appendChild(e)
+          nativeParent.appendChild(native)
       }
     }
   }
 
-  relocate(block: Block<T, unknown, C>): void {
+  relocate(element: El<T, unknown, C>): void {
     // nothing to do by default
   }
 
-  update(block: Block<T, unknown, C>): void | Promise<void> {
-    const result = super.update(block)
+  update(element: El<T, unknown, C>): void | Promise<void> {
+    const result = super.update(element)
     if (gBlinkingEffectMarker)
-      blink(block.native, Verstak.currentUpdatePriority, block.node.stamp)
+      blink(element.native, Verstak.currentUpdatePriority, element.node.stamp)
     return result
   }
 
@@ -77,15 +77,15 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     gBlinkingEffectMarker = value
   }
 
-  static findEffectiveHtmlBlockHost(block: Block<any>): Block<HTMLElement | SVGElement> {
-    let p = block.node.host
+  static findEffectiveHtmlElementHost(element: El<any>): El<HTMLElement | SVGElement> {
+    let p = element.node.host
     while (p.native instanceof HTMLElement === false &&
-      p.native instanceof SVGElement === false && p !== block)
+      p.native instanceof SVGElement === false && p !== element)
       p = p.node.host
-    return p as Block<HTMLElement | SVGElement>
+    return p as El<HTMLElement | SVGElement>
   }
 
-  static findPrevSiblingHtmlBlock(ties: MergeItem<Block<any>>): MergeItem<Block<HTMLElement | SVGElement>> | undefined {
+  static findPrevSiblingHtmlElement(ties: MergeItem<El<any>>): MergeItem<El<HTMLElement | SVGElement>> | undefined {
     let p = ties.prev
     while (p && !(p.instance.native instanceof HTMLElement) && !(p.instance.native instanceof SVGElement))
       p = p.prev
@@ -94,26 +94,26 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
 }
 
 export class HtmlDriver<T extends HTMLElement, C = unknown> extends BaseHtmlDriver<T, C> {
-  create(block: Block<T, unknown, C, void>, b: { native?: T | undefined; controller?: C | undefined }): void {
-    b.native = document.createElement(block.node.driver.name) as T
-    super.create(block, b)
+  create(element: El<T, unknown, C, void>, result: { native?: T | undefined; controller?: C | undefined }): void {
+    result.native = document.createElement(element.node.driver.name) as T
+    super.create(element, result)
   }
 }
 
 export class SvgDriver<T extends SVGElement, C = unknown> extends BaseHtmlDriver<T, C> {
-  create(block: Block<T, unknown, C, void>, b: { native?: T | undefined; controller?: C | undefined }): void {
-    b.native = document.createElementNS("http://www.w3.org/2000/svg", block.node.driver.name) as T
-    super.create(block, b)
+  create(element: El<T, unknown, C, void>, result: { native?: T | undefined; controller?: C | undefined }): void {
+    result.native = document.createElementNS("http://www.w3.org/2000/svg", element.node.driver.name) as T
+    super.create(element, result)
   }
 }
 
-function blink(e: Element | undefined, priority: Priority, revision: number): void {
-  if (e !== undefined) {
+function blink(element: Element | undefined, priority: Priority, revision: number): void {
+  if (element !== undefined) {
     const n1 = revision % 2
     const n2 = 1 >> n1
     const bem = gBlinkingEffectMarker
-    e.classList.toggle(`${bem}${priority}${n1}`, true)
-    e.classList.toggle(`${bem}${priority}${n2}`, false)
+    element.classList.toggle(`${bem}${priority}${n1}`, true)
+    element.classList.toggle(`${bem}${priority}${n2}`, false)
   }
 }
 

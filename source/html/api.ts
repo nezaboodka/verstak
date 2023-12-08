@@ -6,9 +6,9 @@
 // automatically licensed under the license referred above.
 
 export * from "./HtmlDriver.js"
-export * from "./HtmlBlocks.js"
+export * from "./HtmlElements.js"
 export * from "./HtmlApiExt.js"
-export * from "./Blocks.js"
+export * from "./Elements.js"
 export * from "./ReactingFocuser.js"
 export * from "./sensors/Sensor.js"
 export * from "./sensors/PointerSensor.js"

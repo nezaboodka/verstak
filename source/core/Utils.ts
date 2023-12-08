@@ -5,9 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { BlockCoords } from "./Interfaces.js"
+import { ElCoords } from "./Interfaces.js"
 
-export function parseBlockCoords(text: string, result: BlockCoords): BlockCoords {
+export function parseElCoords(text: string, result: ElCoords): ElCoords {
   let i = 0
   let value = 0
   let sign = 1
@@ -129,10 +129,10 @@ export function parseBlockCoords(text: string, result: BlockCoords): BlockCoords
         result.y2 = sign
     }
   }
-  return result as BlockCoords
+  return result as ElCoords
 }
 
-export function emitBlockCoords(value: BlockCoords): string {
+export function emitElCoords(value: ElCoords): string {
   const p1 = emitCellPosition(value.x1, value.y1)
   const p2 = emitCellPosition(value.x2, value.y2)
   return `${p1}${p2 !== "" ? `:${p2}` : ""}`
@@ -165,7 +165,7 @@ export function emitCellPosition(x: number, y: number): string {
   return result
 }
 
-export function equalBlockCoords(a: BlockCoords, b: BlockCoords): boolean {
+export function equalElCoords(a: ElCoords, b: ElCoords): boolean {
   return a.x1 === b.x1 && a.y1 === b.y1 && a.x2 === b.x2 && a.y1 === b.y2
 }
 

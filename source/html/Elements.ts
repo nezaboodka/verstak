@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Verstak, Block, BlockKind, BlockBuilder, Align, BlockCoords, SimpleDelegate, BlockArea, CursorCommandDriver, BaseDriver } from "../core/api.js"
+import { Verstak, El, ElKind, ElBuilder, Align, ElCoords, SimpleDelegate, ElArea, CursorCommandDriver, BaseDriver } from "../core/api.js"
 import { HtmlDriver } from "./HtmlDriver.js"
 
 // Verstak is based on two fundamental layout structures
@@ -30,22 +30,22 @@ import { HtmlDriver } from "./HtmlDriver.js"
 // Section
 
 export function Section<M = unknown, R = void>(
-  builder?: BlockBuilder<HTMLElement, M, R>,
-  base?: BlockBuilder<HTMLElement, M, R>): Block<HTMLElement, M, R> {
+  builder?: ElBuilder<HTMLElement, M, R>,
+  base?: ElBuilder<HTMLElement, M, R>): El<HTMLElement, M, R> {
   return Verstak.claim(Drivers.section, builder, base)
 }
 
 // Table
 
 export function Table<M = unknown, R = void>(
-  builder?: BlockBuilder<HTMLElement, M, R>,
-  base?: BlockBuilder<HTMLElement, M, R>): Block<HTMLElement, M, R> {
+  builder?: ElBuilder<HTMLElement, M, R>,
+  base?: ElBuilder<HTMLElement, M, R>): El<HTMLElement, M, R> {
   return Verstak.claim(Drivers.table, builder, base)
 }
 
 // Row
 
-export function row<T = void>(builder?: (block: void) => T, shiftCursorDown?: number): void {
+export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: number): void {
   startNewRow(shiftCursorDown)
   builder?.()
 }
@@ -54,7 +54,7 @@ export function startNewRow(shiftCursorDown?: number): void {
   Verstak.claim(Drivers.row)
 }
 
-export function cursor(areaParams: BlockArea): void {
+export function cursor(areaParams: ElArea): void {
   Verstak.claim(Drivers.cursor, {
     update(b) {
       b.area = areaParams
@@ -64,7 +64,7 @@ export function cursor(areaParams: BlockArea): void {
 
 // Note (either plain or html)
 
-export function Note(content: string, builder?: BlockBuilder<HTMLElement, void, void>): Block<HTMLElement, void, void> {
+export function Note(content: string, builder?: ElBuilder<HTMLElement, void, void>): El<HTMLElement, void, void> {
   return Verstak.claim(Drivers.note, builder, {
     update(b) {
       b.native.innerText = content
@@ -72,7 +72,7 @@ export function Note(content: string, builder?: BlockBuilder<HTMLElement, void, 
   )
 }
 
-export function HtmlNote(content: string, builder?: BlockBuilder<HTMLElement, void, void>): Block<HTMLElement, void, void> {
+export function HtmlNote(content: string, builder?: ElBuilder<HTMLElement, void, void>): El<HTMLElement, void, void> {
   return Verstak.claim(Drivers.note, builder, {
     update(b) {
       b.native.innerHTML = content
@@ -83,16 +83,16 @@ export function HtmlNote(content: string, builder?: BlockBuilder<HTMLElement, vo
 // Group
 
 export function Group<M = unknown, R = void>(
-  builder?: BlockBuilder<HTMLElement, M, R>,
-  base?: BlockBuilder<HTMLElement, M, R>): Block<HTMLElement, M, R> {
+  builder?: ElBuilder<HTMLElement, M, R>,
+  base?: ElBuilder<HTMLElement, M, R>): El<HTMLElement, M, R> {
   return Verstak.claim(Drivers.group, builder, base)
 }
 
 // Fragment
 
 export function Fragment<M = unknown, R = void>(
-  builder?: BlockBuilder<void, M, R>,
-  base?: BlockBuilder<void, M, R>): Block<void, M, R> {
+  builder?: ElBuilder<void, M, R>,
+  base?: ElBuilder<void, M, R>): El<void, M, R> {
   return Verstak.claim(BaseDriver.fragment, builder, base)
 }
 
@@ -100,15 +100,15 @@ export function Fragment<M = unknown, R = void>(
 
 export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
-  applyKind(block: Block<T, any, any>, value: BlockKind): void {
+  applyKind(element: El<T, any, any>, value: ElKind): void {
     const kind = Constants.layouts[value]
-    kind && block.native.setAttribute(Constants.attribute, kind)
-    VerstakDriversByLayout[value](block)
-    super.applyKind(block, value)
+    kind && element.native.setAttribute(Constants.attribute, kind)
+    VerstakDriversByLayout[value](element)
+    super.applyKind(element, value)
   }
 
-  applyCoords(block: Block<T>, value: BlockCoords | undefined): void {
-    const s = block.native.style
+  applyCoords(element: El<T>, value: ElCoords | undefined): void {
+    const s = element.native.style
     if (value) {
       const x1 = value.x1 || 1
       const y1 = value.y1 || 1
@@ -118,11 +118,11 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
     else
       s.gridArea = ""
-    super.applyCoords(block, value)
+    super.applyCoords(element, value)
   }
 
-  applyWidthGrowth(block: Block<T>, value: number): void {
-    const s = block.native.style
+  applyWidthGrowth(element: El<T>, value: number): void {
+    const s = element.native.style
     if (value > 0) {
       s.flexGrow = `${value}`
       s.flexBasis = "0"
@@ -133,19 +133,19 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
   }
 
-  applyMinWidth(block: Block<T>, value: string): void {
-    block.native.style.minWidth = `${value}`
+  applyMinWidth(element: El<T>, value: string): void {
+    element.native.style.minWidth = `${value}`
   }
 
-  applyMaxWidth(block: Block<T>, value: string): void {
-    block.native.style.maxWidth = `${value}`
+  applyMaxWidth(element: El<T>, value: string): void {
+    element.native.style.maxWidth = `${value}`
   }
 
-  applyHeightGrowth(block: Block<T>, value: number): void {
-    const bNode = block.node
+  applyHeightGrowth(element: El<T>, value: number): void {
+    const bNode = element.node
     const driver = bNode.driver
     if (driver.isRow) {
-      const s = block.native.style
+      const s = element.native.style
       if (value > 0)
         s.flexGrow = `${value}`
       else
@@ -154,22 +154,22 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     else {
       const hostDriver = bNode.host.node.driver
       if (hostDriver.isRow) {
-        driver.applyBlockAlignment(block, Align.ToBounds)
+        driver.applyElementAlignment(element, Align.ToBounds)
         hostDriver.applyHeightGrowth(bNode.host, value)
       }
     }
   }
 
-  applyMinHeight(block: Block<T>, value: string): void {
-    block.native.style.minHeight = `${value}`
+  applyMinHeight(element: El<T>, value: string): void {
+    element.native.style.minHeight = `${value}`
   }
 
-  applyMaxHeight(block: Block<T>, value: string): void {
-    block.native.style.maxHeight = `${value}`
+  applyMaxHeight(element: El<T>, value: string): void {
+    element.native.style.maxHeight = `${value}`
   }
 
-  applyContentAlignment(block: Block<T>, value: Align): void {
-    const s = block.native.style
+  applyContentAlignment(element: El<T>, value: Align): void {
+    const s = element.native.style
     if ((value & Align.Default) === 0) { // if not auto mode
       const v = AlignToCss[(value >> 2) & 0b11]
       const h = AlignToCss[value & 0b11]
@@ -182,8 +182,8 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
       s.justifyContent = s.alignContent = s.textAlign = ""
   }
 
-  applyBlockAlignment(block: Block<T>, value: Align): void {
-    const s = block.native.style
+  applyElementAlignment(element: El<T>, value: Align): void {
+    const s = element.native.style
     if ((value & Align.Default) === 0) { // if not auto mode
       const v = AlignToCss[(value >> 2) & 0b11]
       const h = AlignToCss[value & 0b11]
@@ -197,8 +197,8 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
       s.alignSelf = s.justifySelf = ""
   }
 
-  applyContentWrapping(block: Block<T>, value: boolean): void {
-    const s = block.native.style
+  applyContentWrapping(element: El<T>, value: boolean): void {
+    const s = element.native.style
     if (value) {
       s.flexFlow = "wrap"
       s.overflow = ""
@@ -213,10 +213,10 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
   }
 
-  applyOverlayVisible(block: Block<T>, value: boolean | undefined): void {
-    const e = block.native
+  applyOverlayVisible(element: El<T>, value: boolean | undefined): void {
+    const e = element.native
     const s = e.style
-    const host = HtmlDriver.findEffectiveHtmlBlockHost(block).native
+    const host = HtmlDriver.findEffectiveHtmlElementHost(element).native
     if (value === true) {
       const doc = document.body
       const rect = host.getBoundingClientRect()
@@ -243,31 +243,31 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
     }
   }
 
-  applyStyle(block: Block<T, any, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
-    const e = block.native
+  applyStyle(element: El<T, any, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
+    const native = element.native
     enabled ??= true
     if (secondary)
-      e.classList.toggle(styleName, enabled)
+      native.classList.toggle(styleName, enabled)
     else
-      e.className = enabled ? styleName : ""
+      native.className = enabled ? styleName : ""
   }
 
-  update(block: Block<T>): void | Promise<void> {
+  update(element: El<T>): void | Promise<void> {
     // Add initial line feed automatically
-    if (block.kind <= BlockKind.Table)
+    if (element.kind <= ElKind.Table)
       startNewRow()
-    return super.update(block)
+    return super.update(element)
   }
 }
 
 // Constants
 
 const Constants = {
-  // block: "блок",
+  // el: "эль",
   // row: "строка",
   // layouts: ["цепочка", "таблица", "" /* строка */, "группа", "заметка"],
   // attribute: "вид",
-  block: "block",
+  el: "el",
   row: "row",
   layouts: ["section", "table", "note", "group", "" /* row */, "" /* cursor */],
   attribute: "kind",
@@ -275,20 +275,20 @@ const Constants = {
 
 const Drivers = {
   // display: flex, flex-direction: column
-  section: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.kind = BlockKind.Section),
+  section: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, b => b.kind = ElKind.Section),
 
   // display: grid
-  table: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.kind = BlockKind.Table),
+  table: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, b => b.kind = ElKind.Table),
 
   // display: block
-  note: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.kind = BlockKind.Note),
+  note: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, b => b.kind = ElKind.Note),
 
   // display: contents
-  group: new VerstakHtmlDriver<HTMLElement>(Constants.block, false, b => b.kind = BlockKind.Group),
+  group: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, b => b.kind = ElKind.Group),
 
   // display: contents
   // display: flex (row)
-  row: new VerstakHtmlDriver<HTMLElement>(Constants.row, true, b => b.kind = BlockKind.Row),
+  row: new VerstakHtmlDriver<HTMLElement>(Constants.row, true, b => b.kind = ElKind.Row),
 
   // cursor control element
   cursor: new CursorCommandDriver(),

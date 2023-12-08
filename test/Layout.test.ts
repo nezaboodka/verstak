@@ -6,20 +6,20 @@
 // automatically licensed under the license referred above.
 
 import test from "ava"
-import { BlockCoords } from "../source/core/Interfaces.js"
-import { parseBlockCoords, emitBlockCoords } from "../source/core/Utils.js"
+import { ElCoords } from "../source/core/Interfaces.js"
+import { parseElCoords, emitElCoords } from "../source/core/Utils.js"
 
-function parse(text: string): BlockCoords {
-  const result: BlockCoords = { x1: 0, y1: 0, x2: 0, y2: 0 }
-  parseBlockCoords(text, result)
+function parse(text: string): ElCoords {
+  const result: ElCoords = { x1: 0, y1: 0, x2: 0, y2: 0 }
+  parseElCoords(text, result)
   return result
 }
 
-function emit(value: BlockCoords): string {
-  return emitBlockCoords(value)
+function emit(value: ElCoords): string {
+  return emitElCoords(value)
 }
 
-test("BlockCoods", t => {
+test("ElCoods", t => {
   // Parse
   t.deepEqual(parse(""), { x1: 0, y1: 0, x2: 0, y2: 0 })
   t.deepEqual(parse(" "), { x1: 0, y1: 0, x2: 0, y2: 0 })
