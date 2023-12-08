@@ -33,7 +33,7 @@ export class Verstak {
       // Check for coalescing separators or lookup for existing element
       let ex: MergeItem<ElImpl<any, any, any, any>> | undefined = undefined
       const children = owner.node.children
-      if (driver.isRow) {
+      if (driver.isGroupBreak) {
         const last = children.lastClaimedItem()
         if (last?.instance?.node.driver === driver)
           ex = last // collapse multiple elements into single one
@@ -108,7 +108,7 @@ export class BaseDriver<T, C = unknown> implements Driver<T, C> {
 
   constructor(
     readonly name: string,
-    readonly isRow: boolean,
+    readonly isGroupBreak: boolean,
     readonly preset?: SimpleDelegate<T>) {
   }
 
@@ -471,7 +471,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   set area(value: ElArea) {
     const node = this.node
     const driver = node.driver
-    if (!driver.isRow) {
+    if (!driver.isGroupBreak) {
       const owner = node.owner
       const cursorPosition = node.links!.prev?.instance.cursorPosition ?? InitialCursorPosition
       const newCursorPosition = this.cursorPosition = owner.node.children.isStrict ? new CursorPosition(cursorPosition) : undefined
@@ -749,8 +749,8 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           if (Transaction.isCanceled)
             break
           const el = item.instance
-          const isRow = el.node.driver.isRow
-          const host = isRow ? owner : hostingRow
+          const isGroupBreak = el.node.driver.isGroupBreak
+          const host = isGroupBreak ? owner : hostingRow
           const p = el.node.updatePriority ?? Priority.Realtime
           mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
           if (p === Priority.Realtime)
@@ -759,7 +759,7 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(item, p1) // defer for P1 async update
           else
             p2 = push(item, p2) // defer for P2 async update
-          if (ownerIsSection && isRow)
+          if (ownerIsSection && isGroupBreak)
             hostingRow = el
         }
         // Update incremental children (if any)
@@ -918,7 +918,7 @@ function triggerFinalization(ties: MergeItem<ElImpl>, isLeader: boolean, individ
   const node = el.node
   if (node.stamp >= 0) {
     const driver = node.driver
-    if (individual && node.key !== node.builder.key && !driver.isRow)
+    if (individual && node.key !== node.builder.key && !driver.isGroupBreak)
       console.log(`WARNING: it is recommended to assign explicit key for conditional element in order to avoid unexpected side effects: ${node.key}`)
     node.stamp = ~node.stamp
     // Finalize element itself and remove it from collection
