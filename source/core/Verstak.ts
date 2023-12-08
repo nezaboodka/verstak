@@ -331,9 +331,6 @@ class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElN
   outer: ElImpl
   context: ElCtxImpl<any> | undefined
   numerator: number
-  maxColumnCount: number = 0
-  maxRowCount: number = 0
-  cursorPosition?: CursorPosition
 
   constructor(key: string, driver: Driver<T>,
     builder: Readonly<ElBuilder<T, M, C, R>>,
@@ -358,9 +355,6 @@ class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElN
     this.stamp = Number.MAX_SAFE_INTEGER // empty
     this.context = undefined
     this.numerator = 0
-    this.maxColumnCount = 0
-    this.maxRowCount = 0
-    this.cursorPosition = undefined
   }
 }
 
@@ -374,6 +368,9 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
 
   // System-managed properties
   readonly node: ElNodeImpl<T, M, C, R>
+  maxColumnCount: number
+  maxRowCount: number
+  cursorPosition?: CursorPosition
   native: T
 
   // User-defined properties
@@ -400,6 +397,9 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     owner: ElImpl | undefined, builder: ElBuilder<T, M, C, R>) {
     // System-managed properties
     this.node = new ElNodeImpl(key, driver, builder, this, owner)
+    this.maxColumnCount = 0
+    this.maxRowCount = 0
+    this.cursorPosition = undefined
     this.native = undefined as any as T // hack
     // User-defined properties
     this.model = undefined as any
@@ -469,9 +469,9 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     const node = this.node
     const driver = node.driver
     if (!driver.isRow) {
-      const owner = node.owner.node
-      const cursorPosition = node.ties!.prev?.instance.node.cursorPosition ?? InitialCursorPosition
-      const newCursorPosition = node.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
+      const owner = node.owner
+      const cursorPosition = node.ties!.prev?.instance.cursorPosition ?? InitialCursorPosition
+      const newCursorPosition = this.cursorPosition = owner.node.children.isStrict ? new CursorPosition(cursorPosition) : undefined
       const isCursorElement = driver instanceof CursorCommandDriver
       const coords = getEffectiveElCoords(!isCursorElement,
         value, owner.maxColumnCount, owner.maxRowCount,
@@ -625,8 +625,8 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
 
   private rowBreak(): void {
     const node = this.node
-    const cursorPosition = node.ties!.prev?.instance.node.cursorPosition ?? InitialCursorPosition
-    const newCursorPosition = this.node.cursorPosition = new CursorPosition(cursorPosition)
+    const cursorPosition = node.ties!.prev?.instance.cursorPosition ?? InitialCursorPosition
+    const newCursorPosition = this.cursorPosition = new CursorPosition(cursorPosition)
     newCursorPosition.x = 1
     newCursorPosition.y = newCursorPosition.runningMaxY + 1
   }
