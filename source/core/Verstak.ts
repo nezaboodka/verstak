@@ -38,8 +38,7 @@ export class Verstak {
         if (last?.instance?.node.driver === driver)
           ex = last // collapse multiple separators into single one
       }
-      ex ??= children.claim(
-        key = key || generateKey(owner), undefined,
+      ex ??= children.claim(key = key || generateKey(owner), undefined,
         "nested elements can be declared inside update function only")
       // Reuse existing element or claim a new one
       if (ex) {
