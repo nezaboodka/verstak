@@ -356,6 +356,17 @@ class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElN
     this.context = undefined
     this.numerator = 0
   }
+
+  @reactive
+  @options({
+    reentrance: Reentrance.CancelPrevious,
+    triggeringArgs: true,
+    noSideEffects: false,
+  })
+  update(_triggers: unknown): void {
+    // triggers parameter is used to enforce update by owner
+    updateNow(this.ties!)
+  }
 }
 
 // ElImpl
@@ -424,17 +435,6 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     ElImpl.grandElementCount++
     if (this.hasMode(Mode.PinpointUpdate))
       ElImpl.disposableElementCount++
-  }
-
-  @reactive
-  @options({
-    reentrance: Reentrance.CancelPrevious,
-    triggeringArgs: true,
-    noSideEffects: false,
-  })
-  update(_triggers: unknown): void {
-    // triggers parameter is used to enforce update by owner
-    updateNow(this.node.ties!)
   }
 
   prepareForUpdate(): void {
@@ -572,9 +572,10 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.node.stamp < Number.MAX_SAFE_INTEGER - 1 || !this.hasMode(Mode.PinpointUpdate))
+    const node = this.node
+    if (node.stamp < Number.MAX_SAFE_INTEGER - 1 || !this.hasMode(Mode.PinpointUpdate))
       throw new Error("reactronic can be configured only for elements with pinpoint update mode and only inside initialize")
-    return Rx.getReaction(this.update).configure(options)
+    return Rx.getReaction(node.update).configure(options)
   }
 
   static get curr(): MergeItem<ElImpl> {
@@ -843,12 +844,12 @@ function triggerUpdate(ties: MergeItem<ElImpl>): void {
         Transaction.outside(() => {
           if (Rx.isLogging)
             Rx.setLoggingHint(el, node.key)
-          Rx.getReaction(el.update).configure({
+          Rx.getReaction(node.update).configure({
             order: node.level,
           })
         })
       }
-      unobs(el.update, node.builder.triggers) // reactive auto-update
+      unobs(node.update, node.builder.triggers) // reactive auto-update
     }
     else
       updateNow(ties)
