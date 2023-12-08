@@ -868,6 +868,7 @@ function mountOrRemountIfNecessary(element: ElImpl): void {
         if (element.node.host !== element)
           driver.mount(element)
       }
+      node.stamp = 0 // TEMPORARY
     })
   }
   else if (element.isMoved && !element.hasMode(Mode.ManualMount) && element.node.host !== element)
