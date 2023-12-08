@@ -54,7 +54,6 @@ export interface El<T = unknown, M = unknown, C = unknown, R = void> {
   readonly isInitialUpdate: boolean
   useStyle(styleName: string, enabled?: boolean): void
   configureReactronic(options: Partial<MemberOptions>): MemberOptions
-  hasMode(mode: Mode): boolean
 }
 
 // ElNode
@@ -71,6 +70,7 @@ export interface ElNode<T = unknown, M = unknown, C = unknown, R = void> {
   readonly stamp: number
   readonly outer: El
   readonly context: ElCtx | undefined
+  hasMode(mode: Mode): boolean
 }
 
 // ElBuilder
