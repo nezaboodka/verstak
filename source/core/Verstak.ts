@@ -355,7 +355,7 @@ class ElNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements ElN
     this.host = self // element is unmounted
     this.children = new MergeList<ElImpl>(getElNodeKey, true)
     this.ties = undefined
-    this.stamp = 0
+    this.stamp = Number.MAX_SAFE_INTEGER // empty
     this.context = undefined
     this.numerator = 0
     this.maxColumnCount = 0
@@ -446,12 +446,11 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     return (chainedMode(this.node.builder) & mode) === mode
   }
 
-  get isInitialUpdate(): boolean { return this.node.stamp === 2 }
+  get isInitialUpdate(): boolean { return this.node.stamp === 1 }
   get isAuxiliary(): boolean { return this.kind > ElKind.Note } // Row, Group, Cursor
   get isSection(): boolean { return this.kind === ElKind.Section }
   get isTable(): boolean { return this.kind === ElKind.Table }
 
-  get isAutoMountEnabled(): boolean { return !this.hasMode(Mode.ManualMount) && this.node.host !== this }
   get isMoved(): boolean { return this.node.owner.node.children.isMoved(this.node.ties!) }
 
   get strictOrder(): boolean { return this.node.children.isStrict }
@@ -459,7 +458,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
 
   get kind(): ElKind { return this._kind }
   set kind(value: ElKind) {
-    if (value !== this._kind || this.node.stamp < 2) {
+    if (value !== this._kind || this.node.stamp >= Number.MAX_SAFE_INTEGER - 1) {
       this.node.driver.applyKind(this, value)
       this._kind = value
     }
@@ -573,7 +572,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   }
 
   configureReactronic(options: Partial<MemberOptions>): MemberOptions {
-    if (this.node.stamp !== 1 || !this.hasMode(Mode.PinpointUpdate))
+    if (this.node.stamp < Number.MAX_SAFE_INTEGER - 1 || !this.hasMode(Mode.PinpointUpdate))
       throw new Error("reactronic can be configured only for elements with pinpoint update mode and only inside initialize")
     return Rx.getReaction(this.update).configure(options)
   }
@@ -838,9 +837,9 @@ async function updateIncrementally(owner: MergeItem<ElImpl>, stamp: number,
 function triggerUpdate(ties: MergeItem<ElImpl>): void {
   const el = ties.instance
   const node = el.node
-  if (node.stamp >= 0) {
+  if (node.stamp >= 0) { // if not finalized
     if (el.hasMode(Mode.PinpointUpdate)) {
-      if (node.stamp === 0) {
+      if (node.stamp === Number.MAX_SAFE_INTEGER) {
         Transaction.outside(() => {
           if (Rx.isLogging)
             Rx.setLoggingHint(el, node.key)
@@ -859,16 +858,19 @@ function triggerUpdate(ties: MergeItem<ElImpl>): void {
 function mountOrRemountIfNecessary(element: ElImpl): void {
   const node = element.node
   const driver = node.driver
-  if (node.stamp === 0) {
-    node.stamp = 1
+  if (node.stamp === Number.MAX_SAFE_INTEGER) {
+    node.stamp = Number.MAX_SAFE_INTEGER - 1 // initializing
     unobs(() => {
       driver.create(element, element)
       driver.initialize(element)
-      if (element.isAutoMountEnabled)
-        driver.mount(element)
+      if (!element.hasMode(Mode.ManualMount)) {
+        node.stamp = 0 // mounting
+        if (element.node.host !== element)
+          driver.mount(element)
+      }
     })
   }
-  else if (element.isMoved && element.isAutoMountEnabled)
+  else if (element.isMoved && !element.hasMode(Mode.ManualMount) && element.node.host !== element)
     unobs(() => driver.mount(element))
 }
 
@@ -878,27 +880,29 @@ function updateNow(ties: MergeItem<ElImpl>): void {
   if (node.stamp >= 0) { // if element is alive
     let result: unknown = undefined
     runInside(ties, () => {
-      try {
-        mountOrRemountIfNecessary(el)
-        node.stamp++
-        node.numerator = 0
-        el.prepareForUpdate()
-        node.children.beginMerge()
-        const driver = node.driver
-        result = driver.update(el)
-        if (el.area === undefined && node.owner.isTable)
-          el.area = undefined // automatic placement
-        if (result instanceof Promise)
-          result.then(
-            v => { runUpdateNestedTreesThenDo(undefined, NOP); return v },
-            e => { console.log(e); runUpdateNestedTreesThenDo(e ?? new Error("unknown error"), NOP) })
-        else
-          runUpdateNestedTreesThenDo(undefined, NOP)
-      }
-      catch(e: unknown) {
-        runUpdateNestedTreesThenDo(e, NOP)
-        console.log(`Update failed: ${node.key}`)
-        console.log(`${e}`)
+      mountOrRemountIfNecessary(el)
+      if (node.stamp < Number.MAX_SAFE_INTEGER - 1) { // if mounted
+        try {
+          node.stamp++
+          node.numerator = 0
+          el.prepareForUpdate()
+          node.children.beginMerge()
+          const driver = node.driver
+          result = driver.update(el)
+          if (el.area === undefined && node.owner.isTable)
+            el.area = undefined // automatic placement
+          if (result instanceof Promise)
+            result.then(
+              v => { runUpdateNestedTreesThenDo(undefined, NOP); return v },
+              e => { console.log(e); runUpdateNestedTreesThenDo(e ?? new Error("unknown error"), NOP) })
+          else
+            runUpdateNestedTreesThenDo(undefined, NOP)
+        }
+        catch(e: unknown) {
+          runUpdateNestedTreesThenDo(e, NOP)
+          console.log(`Update failed: ${node.key}`)
+          console.log(`${e}`)
+        }
       }
     })
   }
