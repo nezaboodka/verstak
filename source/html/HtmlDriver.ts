@@ -39,7 +39,7 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
       const automaticNativeHost = BaseHtmlDriver.findEffectiveHtmlElementHost(element).native as unknown as Element | undefined // hack
       if (automaticNativeHost) {
         if (sequential && !node.driver.isSeparator) {
-          const after = BaseHtmlDriver.findPrevSiblingHtmlElement(element.node.links!)
+          const after = BaseHtmlDriver.findPrevSiblingHtmlElement(element.node.slot!)
           if (after === undefined || after.instance.node.driver.isSeparator) {
             if (automaticNativeHost !== native.parentNode || !native.previousSibling)
               automaticNativeHost.prepend(native)

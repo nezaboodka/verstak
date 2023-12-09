@@ -56,14 +56,14 @@ export class Verstak {
       else {
         // Create new node
         result = new ElImpl<T, M, C, R>(key || generateKey(owner), driver, owner, builder)
-        result.node.links = children.add(result)
+        result.node.slot = children.add(result)
       }
     }
     else {
       // Create new root node
       result = new ElImpl<T, M, C, R>(key || "", driver, owner, builder)
-      result.node.links = MergeList.createItem(result)
-      triggerUpdate(result.node.links)
+      result.node.slot = MergeList.createItem(result)
+      triggerUpdate(result.node.slot)
     }
     return result
   }
@@ -83,7 +83,7 @@ export class Verstak {
     const builder = el.node.builder
     if (!triggersAreEqual(triggers, builder.triggers)) {
       builder.triggers = triggers // remember new triggers
-      triggerUpdate(el.node.links!)
+      triggerUpdate(el.node.slot!)
     }
   }
 
@@ -330,7 +330,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   readonly owner: ElImpl
   host: ElImpl
   readonly children: MergeList<ElImpl>
-  links: MergeItem<ElImpl> | undefined
+  slot: MergeItem<ElImpl> | undefined
   stamp: number
   outer: ElImpl
   context: ElCtxImpl<any> | undefined
@@ -357,7 +357,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
     }
     this.host = element // element is unmounted
     this.children = new MergeList<ElImpl>(getNodeKey, true)
-    this.links = undefined
+    this.slot = undefined
     this.stamp = Number.MAX_SAFE_INTEGER // empty
     this.context = undefined
     this.numerator = 0
@@ -374,7 +374,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   get strictOrder(): boolean { return this.children.isStrict }
   set strictOrder(value: boolean) { this.children.isStrict = value }
 
-  get isMoved(): boolean { return this.owner.node.children.isMoved(this.links!) }
+  get isMoved(): boolean { return this.owner.node.children.isMoved(this.slot!) }
 
   has(mode: Mode): boolean {
     return (chainedMode(this.builder) & mode) === mode
@@ -388,7 +388,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   })
   update(_triggers: unknown): void {
     // triggers parameter is used to enforce update by owner
-    updateNow(this.links!)
+    updateNow(this.slot!)
   }
 }
 
@@ -473,7 +473,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     const driver = node.driver
     if (!driver.isSeparator) {
       const owner = node.owner
-      const cursorPosition = node.links!.prev?.instance.cursorPosition ?? InitialCursorPosition
+      const cursorPosition = node.slot!.prev?.instance.cursorPosition ?? InitialCursorPosition
       const newCursorPosition = this.cursorPosition = owner.node.children.isStrict ? new CursorPosition(cursorPosition) : undefined
       const isCursorElement = driver instanceof CursorCommandDriver
       const coords = getEffectiveElCoords(!isCursorElement,
@@ -629,7 +629,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
 
   private rowBreak(): void {
     const node = this.node
-    const cursorPosition = node.links!.prev?.instance.cursorPosition ?? InitialCursorPosition
+    const cursorPosition = node.slot!.prev?.instance.cursorPosition ?? InitialCursorPosition
     const newCursorPosition = this.cursorPosition = new CursorPosition(cursorPosition)
     newCursorPosition.x = 1
     newCursorPosition.y = newCursorPosition.runningMaxY + 1
@@ -735,8 +735,8 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
     try {
       children.endMerge(error)
       // Finalize removed elements
-      for (const item of children.removedItems(true))
-        triggerFinalization(item, true, true)
+      for (const slot of children.removedItems(true))
+        triggerFinalization(slot, true, true)
       if (!error) {
         // Lay out and update actual elements
         const ownerIsSection = owner.isSection
@@ -745,20 +745,20 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         let p2: Array<MergeItem<ElImpl>> | undefined = undefined
         let mounting = false
         let hostingRow = owner
-        for (const item of children.items()) {
+        for (const slot of children.items()) {
           if (Transaction.isCanceled)
             break
-          const el = item.instance
+          const el = slot.instance
           const isSeparator = el.node.driver.isSeparator
           const host = isSeparator ? owner : hostingRow
           const p = el.node.updatePriority ?? Priority.Realtime
-          mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
+          mounting = markToMountIfNecessary(mounting, host, slot, children, sequential)
           if (p === Priority.Realtime)
-            triggerUpdate(item) // update synchronously
+            triggerUpdate(slot) // update synchronously
           else if (p === Priority.Normal)
-            p1 = push(item, p1) // defer for P1 async update
+            p1 = push(slot, p1) // defer for P1 async update
           else
-            p2 = push(item, p2) // defer for P2 async update
+            p2 = push(slot, p2) // defer for P2 async update
           if (ownerIsSection && isSeparator)
             hostingRow = el
         }
@@ -777,18 +777,18 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
 }
 
 function markToMountIfNecessary(mounting: boolean, host: ElImpl,
-  links: MergeItem<ElImpl>, children: MergeList<ElImpl>, sequential: boolean): boolean {
+  slot: MergeItem<ElImpl>, children: MergeList<ElImpl>, sequential: boolean): boolean {
   // Detects element mounting when abstract elements
   // exist among regular elements having native HTML elements
-  const el = links.instance
+  const el = slot.instance
   const node = el.node
   if (el.native && !node.has(Mode.ManualMount)) {
     if (mounting || node.host !== host) {
-      children.markAsMoved(links)
+      children.markAsMoved(slot)
       mounting = false
     }
   }
-  else if (sequential && children.isMoved(links))
+  else if (sequential && children.isMoved(slot))
     mounting = true // apply to the first element having native HTML element
   node.host = host
   return mounting
@@ -838,8 +838,8 @@ async function updateIncrementally(owner: MergeItem<ElImpl>, stamp: number,
   }
 }
 
-function triggerUpdate(links: MergeItem<ElImpl>): void {
-  const el = links.instance
+function triggerUpdate(slot: MergeItem<ElImpl>): void {
+  const el = slot.instance
   const node = el.node
   if (node.stamp >= 0) { // if not finalized
     if (node.has(Mode.PinpointUpdate)) {
@@ -855,7 +855,7 @@ function triggerUpdate(links: MergeItem<ElImpl>): void {
       unobs(node.update, node.builder.triggers) // reactive auto-update
     }
     else
-      updateNow(links)
+      updateNow(slot)
   }
 }
 
@@ -879,12 +879,12 @@ function mountOrRemountIfNecessary(element: ElImpl): void {
     unobs(() => driver.mount(element))
 }
 
-function updateNow(links: MergeItem<ElImpl>): void {
-  const el = links.instance
+function updateNow(slot: MergeItem<ElImpl>): void {
+  const el = slot.instance
   const node = el.node
   if (node.stamp >= 0) { // if element is alive
     let result: unknown = undefined
-    runInside(links, () => {
+    runInside(slot, () => {
       mountOrRemountIfNecessary(el)
       if (node.stamp < Number.MAX_SAFE_INTEGER - 1) { // if mounted
         try {
@@ -913,8 +913,8 @@ function updateNow(links: MergeItem<ElImpl>): void {
   }
 }
 
-function triggerFinalization(links: MergeItem<ElImpl>, isLeader: boolean, individual: boolean): void {
-  const el = links.instance
+function triggerFinalization(slot: MergeItem<ElImpl>, isLeader: boolean, individual: boolean): void {
+  const el = slot.instance
   const node = el.node
   if (node.stamp >= 0) {
     const driver = node.driver
@@ -927,44 +927,44 @@ function triggerFinalization(links: MergeItem<ElImpl>, isLeader: boolean, indivi
     el.controller = null
     if (node.has(Mode.PinpointUpdate)) {
       // Defer disposal if element is reactive (having pinpoint update mode)
-      links.aux = undefined
+      slot.aux = undefined
       const last = gLastToDispose
       if (last)
-        gLastToDispose = last.aux = links
+        gLastToDispose = last.aux = slot
       else
-        gFirstToDispose = gLastToDispose = links
-      if (gFirstToDispose === links)
-        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${links.instance.node.key})` }, () => {
+        gFirstToDispose = gLastToDispose = slot
+      if (gFirstToDispose === slot)
+        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${slot.instance.node.key})` }, () => {
           void runDisposalLoop().then(NOP, error => console.log(error))
         })
     }
     // Finalize children if any
-    for (const item of node.children.items())
-      triggerFinalization(item, childrenAreLeaders, false)
+    for (const slot of node.children.items())
+      triggerFinalization(slot, childrenAreLeaders, false)
     RxNodeImpl.grandNodeCount--
   }
 }
 
 async function runDisposalLoop(): Promise<void> {
   await Transaction.requestNextFrame()
-  let item = gFirstToDispose
-  while (item !== undefined) {
+  let slot = gFirstToDispose
+  while (slot !== undefined) {
     if (Transaction.isFrameOver(500, 5))
       await Transaction.requestNextFrame()
-    Rx.dispose(item.instance)
-    item = item.aux
+    Rx.dispose(slot.instance)
+    slot = slot.aux
     RxNodeImpl.disposableNodeCount--
   }
   // console.log(`Element count: ${RxNodeImpl.grandNodeCount} totally (${RxNodeImpl.disposableNodeCount} disposable)`)
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
-// function forEachChildRecursively(item: MergeItem<El>, action: (e: any) => void): void {
-//   const el = item.instance
+// function forEachChildRecursively(slot: MergeItem<El>, action: (e: any) => void): void {
+//   const el = slot.instance
 //   const e = el.native
 //   e && action(e)
-//   for (const item of el.children.items())
-//     forEachChildRecursively(item, action)
+//   for (const slot of el.children.items())
+//     forEachChildRecursively(slot, action)
 // }
 
 function wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T {
@@ -979,10 +979,10 @@ function wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T 
   return wrappedToRunInside
 }
 
-function runInside<T>(links: MergeItem<ElImpl>, func: (...args: any[]) => T, ...args: any[]): T {
+function runInside<T>(slot: MergeItem<ElImpl>, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gCurrent
   try {
-    gCurrent = links
+    gCurrent = slot
     return func(...args)
   }
   finally {
