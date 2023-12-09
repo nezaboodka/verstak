@@ -9,9 +9,8 @@ import { MergeListReader, MergedItem, MemberOptions } from "reactronic"
 
 // Delegates
 
-export type Callback<T = unknown> = (native: T) => void // to be deleted
 export type Delegate<T> = (element: T, base: () => void) => void
-export type AsyncDelegate<T = unknown, M = unknown> = (element: El<T, M, Promise<void>>) => Promise<void>
+// export type AsyncDelegate<T = unknown, M = unknown> = (element: El<T, M, Promise<void>>) => Promise<void>
 export type SimpleDelegate<T = unknown> = (element: El<T, any, any, any>) => void
 
 // El, ElKind
