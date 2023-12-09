@@ -31,12 +31,12 @@ export class Verstak {
     const owner = gCurrent?.instance
     if (owner) {
       // Check for coalescing separators or lookup for existing node
-      let ex: MergedItem<ElImpl<any, any, any, any>> | undefined = undefined
-      const children = owner.node.children
+      let ex: MergedItem<RxNodeImpl<any, any, any, any>> | undefined = undefined
+      const children = owner.children
       // Collapse multiple separators into single one, if any
       if (driver.isSeparator) {
         const last = children.lastMergedItem()
-        if (last?.instance?.node.driver === driver)
+        if (last?.instance?.driver === driver)
           ex = last
       }
       // Reuse existing node or specify a new one
@@ -44,8 +44,8 @@ export class Verstak {
         "nested elements can be declared inside update function only")
       if (ex) {
         // Reuse existing node
-        result = ex.instance
-        const node = result.node
+        const node = ex.instance
+        result = node.element
         if (node.driver !== driver && driver !== undefined)
           throw new Error(`changing element driver is not yet supported: "${result.node.driver.name}" -> "${driver?.name}"`)
         const exTriggers = node.spec.triggers
@@ -56,21 +56,21 @@ export class Verstak {
       else {
         // Create new node
         result = new ElImpl<T, M, C, R>(key || generateKey(owner), driver, owner, spec)
-        result.node.slot = children.mergeAsAdded(result)
+        result.node.slot = children.mergeAsAdded(result.node)
       }
       // driver.specify(result)
     }
     else {
       // Create new root node
       result = new ElImpl<T, M, C, R>(key || "", driver, owner, spec)
-      result.node.slot = MergeList.createItem(result)
+      result.node.slot = MergeList.createItem(result.node)
       // driver.specify(result)
       triggerUpdate(result.node.slot)
     }
     return result
   }
 
-  static get element(): El {
+  static get element(): RxNode {
     if (gCurrent === undefined)
       throw new Error("current element is undefined")
     return gCurrent.instance
@@ -157,8 +157,8 @@ export class BaseDriver<T, C = unknown> implements RxNodeDriver<T, C> {
 
 // Utils
 
-function generateKey(owner: ElImpl): string {
-  const n = owner.node.numerator++
+function generateKey(owner: RxNodeImpl): string {
+  const n = owner.numerator++
   const lettered = emitLetters(n)
   let result: string
   if (Rx.isLogging)
@@ -326,9 +326,10 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   spec: RxNodeSpec<El<T, M, C, R>>
   readonly level: number
   readonly owner: RxNodeImpl<any, any, any, any>
+  readonly element: ElImpl<T, M, C, R>
   host: RxNodeImpl<any, any, any, any>
-  readonly children: MergeList<ElImpl>
-  slot: MergedItem<ElImpl> | undefined
+  readonly children: MergeList<RxNodeImpl<any, any, any, any>>
+  slot: MergedItem<RxNodeImpl<T, M, C, R>> | undefined
   stamp: number
   outer: RxNodeImpl<any, any, any, any>
   context: RxNodeCtxImpl<any> | undefined
@@ -338,7 +339,8 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
 
   constructor(key: string, driver: RxNodeDriver<T>,
     spec: Readonly<RxNodeSpec<El<T, M, C, R>>>,
-    element: ElImpl<T, M, C, R>, owner: RxNodeImpl<any, any, any, any> | undefined) {
+    element: ElImpl<T, M, C, R>,
+    owner: RxNodeImpl<any, any, any, any> | undefined) {
     this.key = key
     this.driver = driver
     this.spec = spec
@@ -353,8 +355,9 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
       this.owner = owner = this
       this.outer = this
     }
+    this.element = element
     this.host = this // node is unmounted
-    this.children = new MergeList<ElImpl>(getNodeKey, true)
+    this.children = new MergeList<RxNodeImpl<any, any, any, any>>(getNodeKey, true)
     this.slot = undefined
     this.stamp = Number.MAX_SAFE_INTEGER // empty
     this.context = undefined
@@ -422,9 +425,9 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   private _hasStyles: boolean
 
   constructor(key: string, driver: RxNodeDriver<T>,
-    owner: ElImpl | undefined, spec: RxNodeSpec<El<T, M, C, R>>) {
+    owner: RxNodeImpl | undefined, spec: RxNodeSpec<El<T, M, C, R>>) {
     // System-managed properties
-    this.node = new RxNodeImpl(key, driver, spec, this, owner?.node)
+    this.node = new RxNodeImpl(key, driver, spec, this, owner)
     this.maxColumnCount = 0
     this.maxRowCount = 0
     this.cursorPosition = undefined
@@ -471,8 +474,8 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     const driver = node.driver
     if (!driver.isSeparator) {
       const owner = node.owner
-      const ownerEl = owner.slot!.instance
-      const cursorPosition = node.slot!.prev?.instance.cursorPosition ?? InitialCursorPosition
+      const ownerEl = owner.element
+      const cursorPosition = node.slot!.prev?.instance.element.cursorPosition ?? InitialCursorPosition
       const newCursorPosition = this.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
       const isCursorElement = driver instanceof CursorCommandDriver
       const coords = getEffectiveElCoords(!isCursorElement,
@@ -580,17 +583,17 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     return Rx.getReaction(node.update).configure(options)
   }
 
-  static get curr(): MergedItem<ElImpl> {
+  static get curr(): MergedItem<RxNodeImpl<any, any, any, any>> {
     if (!gCurrent)
       throw new Error("current element is undefined")
     return gCurrent
   }
 
   static tryUseSubTreeVariable<T extends Object>(variable: SubTreeVariable<T>): T | undefined {
-    let el = ElImpl.curr.instance
-    while (el.node.context?.variable !== variable && el.node.owner !== el.node)
-      el = el.node.outer.slot!.instance
-    return el.node.context?.value as any // TODO: to get rid of any
+    let node = ElImpl.curr.instance
+    while (node.context?.variable !== variable && node.owner !== node)
+      node = node.outer.slot!.instance
+    return node.context?.value as any // TODO: to get rid of any
   }
 
   static useSubTreeVariableValue<T extends Object>(variable: SubTreeVariable<T>): T {
@@ -601,8 +604,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   }
 
   static setSubTreeVariableValue<T extends Object>(variable: SubTreeVariable<T>, value: T | undefined): void {
-    const el = ElImpl.curr.instance
-    const node = el.node
+    const node = ElImpl.curr.instance
     const owner = node.owner
     const hostCtx = unobs(() => owner.context?.value)
     if (value && value !== hostCtx) {
@@ -628,7 +630,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
 
   private rowBreak(): void {
     const node = this.node
-    const cursorPosition = node.slot!.prev?.instance.cursorPosition ?? InitialCursorPosition
+    const cursorPosition = node.slot!.prev?.instance.element.cursorPosition ?? InitialCursorPosition
     const newCursorPosition = this.cursorPosition = new CursorPosition(cursorPosition)
     newCursorPosition.x = 1
     newCursorPosition.y = newCursorPosition.runningMaxY + 1
@@ -637,8 +639,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
 
 // Internal
 
-function getNodeKey(element: ElImpl): string | undefined {
-  const node = element.node
+function getNodeKey(node: RxNode): string | undefined {
   return node.stamp >= 0 ? node.key : undefined
 }
 
@@ -728,7 +729,7 @@ function getEffectiveElCoords(
 function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => void): void {
   const curr = ElImpl.curr
   const owner = curr.instance
-  const children = owner.node.children
+  const children = owner.children
   if (children.isMergeInProgress) {
     let promised: Promise<void> | undefined = undefined
     try {
@@ -738,28 +739,29 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         triggerFinalization(slot, true, true)
       if (!error) {
         // Lay out and update actual elements
-        const ownerIsSection = owner.isSection
+        const ownerIsSection = owner.element.isSection
         const sequential = children.isStrict
-        let p1: Array<MergedItem<ElImpl>> | undefined = undefined
-        let p2: Array<MergedItem<ElImpl>> | undefined = undefined
+        let p1: Array<MergedItem<RxNodeImpl>> | undefined = undefined
+        let p2: Array<MergedItem<RxNodeImpl>> | undefined = undefined
         let mounting = false
         let hostingRow = owner
-        for (const slot of children.items()) {
+        for (const item of children.items()) {
           if (Transaction.isCanceled)
             break
-          const el = slot.instance
+          const node = item.instance
+          const el = node.element
           const isSeparator = el.node.driver.isSeparator
           const host = isSeparator ? owner : hostingRow
           const p = el.node.priority ?? Priority.Realtime
-          mounting = markToMountIfNecessary(mounting, host, slot, children, sequential)
+          mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
           if (p === Priority.Realtime)
-            triggerUpdate(slot) // update synchronously
+            triggerUpdate(item) // update synchronously
           else if (p === Priority.Normal)
-            p1 = push(slot, p1) // defer for P1 async update
+            p1 = push(item, p1) // defer for P1 async update
           else
-            p2 = push(slot, p2) // defer for P2 async update
+            p2 = push(item, p2) // defer for P2 async update
           if (ownerIsSection && isSeparator)
-            hostingRow = el
+            hostingRow = node
         }
         // Update incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
@@ -775,46 +777,46 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
   }
 }
 
-function markToMountIfNecessary(mounting: boolean, host: ElImpl,
-  slot: MergedItem<ElImpl>, children: MergeList<ElImpl>, sequential: boolean): boolean {
+function markToMountIfNecessary(mounting: boolean, host: RxNodeImpl,
+  slot: MergedItem<RxNodeImpl>, children: MergeList<RxNodeImpl>, sequential: boolean): boolean {
   // Detects element mounting when abstract elements
   // exist among regular elements having native HTML elements
-  const el = slot.instance
-  const node = el.node
+  const node = slot.instance
+  const el = node.element
   if (el.native && !node.has(Mode.ManualMount)) {
-    if (mounting || node.host !== host.node) {
+    if (mounting || node.host !== host) {
       children.markAsMoved(slot)
       mounting = false
     }
   }
   else if (sequential && children.isMoved(slot))
     mounting = true // apply to the first element having native HTML element
-  node.host = host.node
+  node.host = host
   return mounting
 }
 
 async function startIncrementalUpdate(
-  owner: MergedItem<ElImpl>,
-  allChildren: MergeList<ElImpl>,
-  priority1?: Array<MergedItem<ElImpl>>,
-  priority2?: Array<MergedItem<ElImpl>>): Promise<void> {
-  const stamp = owner.instance.node.stamp
+  ownerSlot: MergedItem<RxNodeImpl>,
+  allChildren: MergeList<RxNodeImpl>,
+  priority1?: Array<MergedItem<RxNodeImpl>>,
+  priority2?: Array<MergedItem<RxNodeImpl>>): Promise<void> {
+  const stamp = ownerSlot.instance.stamp
   if (priority1)
-    await updateIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
+    await updateIncrementally(ownerSlot, stamp, allChildren, priority1, Priority.Normal)
   if (priority2)
-    await updateIncrementally(owner, stamp, allChildren, priority2, Priority.Background)
+    await updateIncrementally(ownerSlot, stamp, allChildren, priority2, Priority.Background)
 }
 
-async function updateIncrementally(owner: MergedItem<ElImpl>, stamp: number,
-  allChildren: MergeList<ElImpl>, items: Array<MergedItem<ElImpl>>,
+async function updateIncrementally(owner: MergedItem<RxNodeImpl>, stamp: number,
+  allChildren: MergeList<RxNodeImpl>, items: Array<MergedItem<RxNodeImpl>>,
   priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
-  const el = owner.instance
+  const node = owner.instance
   if (!Transaction.isCanceled || !Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3)) {
     let outerPriority = Verstak.currentUpdatePriority
     Verstak.currentUpdatePriority = priority
     try {
-      if (el.node.childrenShuffling)
+      if (node.childrenShuffling)
         shuffle(items)
       const frameDurationLimit = priority === Priority.Background ? Verstak.shortFrameDuration : Infinity
       let frameDuration = Math.min(frameDurationLimit, Math.max(Verstak.frameDuration / 4, Verstak.shortFrameDuration))
@@ -837,15 +839,14 @@ async function updateIncrementally(owner: MergedItem<ElImpl>, stamp: number,
   }
 }
 
-function triggerUpdate(slot: MergedItem<ElImpl>): void {
-  const el = slot.instance
-  const node = el.node
+function triggerUpdate(slot: MergedItem<RxNodeImpl<any, any, any, any>>): void {
+  const node = slot.instance
   if (node.stamp >= 0) { // if not finalized
     if (node.has(Mode.PinpointUpdate)) {
       if (node.stamp === Number.MAX_SAFE_INTEGER) {
         Transaction.outside(() => {
           if (Rx.isLogging)
-            Rx.setLoggingHint(el, node.key)
+            Rx.setLoggingHint(node.element, node.key)
           Rx.getReaction(node.update).configure({
             order: node.level,
           })
@@ -878,9 +879,9 @@ function mountOrRemountIfNecessary(element: ElImpl): void {
     unobs(() => driver.mount(element))
 }
 
-function updateNow(slot: MergedItem<ElImpl>): void {
-  const el = slot.instance
-  const node = el.node
+function updateNow(slot: MergedItem<RxNodeImpl<any, any, any, any>>): void {
+  const node = slot.instance
+  const el = node.element
   if (node.stamp >= 0) { // if element is alive
     let result: unknown = undefined
     runInside(slot, () => {
@@ -893,7 +894,7 @@ function updateNow(slot: MergedItem<ElImpl>): void {
           node.children.beginMerge()
           const driver = node.driver
           result = driver.update(el)
-          if (el.area === undefined && node.owner.slot!.instance.isTable)
+          if (el.area === undefined && node.owner.element.isTable)
             el.area = undefined // automatic placement
           if (result instanceof Promise)
             result.then(
@@ -912,9 +913,9 @@ function updateNow(slot: MergedItem<ElImpl>): void {
   }
 }
 
-function triggerFinalization(slot: MergedItem<ElImpl>, isLeader: boolean, individual: boolean): void {
-  const el = slot.instance
-  const node = el.node
+function triggerFinalization(slot: MergedItem<RxNodeImpl>, isLeader: boolean, individual: boolean): void {
+  const node = slot.instance
+  const el = node.element
   if (node.stamp >= 0) {
     const driver = node.driver
     if (individual && node.key !== node.spec.key && !driver.isSeparator)
@@ -933,7 +934,7 @@ function triggerFinalization(slot: MergedItem<ElImpl>, isLeader: boolean, indivi
       else
         gFirstToDispose = gLastToDispose = slot
       if (gFirstToDispose === slot)
-        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${slot.instance.node.key})` }, () => {
+        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${slot.instance.key})` }, () => {
           void runDisposalLoop().then(NOP, error => console.log(error))
         })
     }
@@ -978,7 +979,7 @@ function wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T 
   return wrappedToRunInside
 }
 
-function runInside<T>(slot: MergedItem<ElImpl>, func: (...args: any[]) => T, ...args: any[]): T {
+function runInside<T>(slot: MergedItem<RxNodeImpl>, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gCurrent
   try {
     gCurrent = slot
@@ -1085,6 +1086,6 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const NOP: any = (...args: any[]): void => { /* nop */ }
 
-let gCurrent: MergedItem<ElImpl> | undefined = undefined
-let gFirstToDispose: MergedItem<ElImpl> | undefined = undefined
-let gLastToDispose: MergedItem<ElImpl> | undefined = undefined
+let gCurrent: MergedItem<RxNodeImpl> | undefined = undefined
+let gFirstToDispose: MergedItem<RxNodeImpl> | undefined = undefined
+let gLastToDispose: MergedItem<RxNodeImpl> | undefined = undefined

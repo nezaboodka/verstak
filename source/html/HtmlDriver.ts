@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { MergedItem, Rx } from "reactronic"
-import { Verstak, El, BaseDriver, Priority } from "../core/api.js"
+import { Verstak, El, BaseDriver, Priority, RxNode } from "../core/api.js"
 
 export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends BaseDriver<T, C> {
 
@@ -36,16 +36,16 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     if (native) {
       const node = element.node
       const sequential = node.owner.children.isStrict
-      const automaticNativeHost = BaseHtmlDriver.findEffectiveHtmlElementHost(element).native as unknown as Element | undefined // hack
+      const automaticNativeHost = BaseHtmlDriver.findEffectiveHtmlElementHost(node).element.native as unknown as Element | undefined // hack
       if (automaticNativeHost) {
         if (sequential && !node.driver.isSeparator) {
           const after = BaseHtmlDriver.findPrevSiblingHtmlElement(element.node.slot!)
-          if (after === undefined || after.instance.node.driver.isSeparator) {
+          if (after === undefined || after.instance.driver.isSeparator) {
             if (automaticNativeHost !== native.parentNode || !native.previousSibling)
               automaticNativeHost.prepend(native)
           }
           else { // if (after.instance.host.native === nativeParent) {
-            const nativeAfter = after.instance.native
+            const nativeAfter = after.instance.element.native
             if (nativeAfter instanceof Element) {
               if (nativeAfter.nextSibling !== native)
                 automaticNativeHost.insertBefore(native, nativeAfter.nextSibling)
@@ -77,17 +77,17 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     gBlinkingEffectMarker = value
   }
 
-  static findEffectiveHtmlElementHost(element: El<any>): El<HTMLElement | SVGElement> {
-    let p = element.node.host
-    while (p.slot!.instance.native instanceof HTMLElement === false &&
-      p.slot!.instance.native instanceof SVGElement === false && p !== element.node)
+  static findEffectiveHtmlElementHost(node: RxNode<any, any, any, any>): RxNode<HTMLElement | SVGElement> {
+    let p = node.host
+    while (p.slot!.instance.element.native instanceof HTMLElement === false &&
+      p.slot!.instance.element.native instanceof SVGElement === false && p !== node)
       p = p.host
-    return p.slot!.instance as El<HTMLElement | SVGElement>
+    return p.slot!.instance as RxNode<HTMLElement | SVGElement>
   }
 
-  static findPrevSiblingHtmlElement(ties: MergedItem<El<any>>): MergedItem<El<HTMLElement | SVGElement>> | undefined {
-    let p = ties.prev
-    while (p && !(p.instance.native instanceof HTMLElement) && !(p.instance.native instanceof SVGElement))
+  static findPrevSiblingHtmlElement(slot: MergedItem<RxNode<any, any, any, any>>): MergedItem<RxNode<HTMLElement | SVGElement>> | undefined {
+    let p = slot.prev
+    while (p && !(p.instance.element.native instanceof HTMLElement) && !(p.instance.element.native instanceof SVGElement))
       p = p.prev
     return p
   }

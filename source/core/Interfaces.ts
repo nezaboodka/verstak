@@ -59,9 +59,10 @@ export interface RxNode<T = unknown, M = unknown, C = unknown, R = void> {
   readonly spec: Readonly<RxNodeSpec<El<T, M, C, R>>>
   readonly level: number
   readonly owner: RxNode
+  readonly element: El<T, M, C, R>
   readonly host: RxNode
-  readonly children: MergeListReader<El>
-  readonly slot: MergedItem<El> | undefined
+  readonly children: MergeListReader<RxNode<any, any, any, any>>
+  readonly slot: MergedItem<RxNode<T, M, C, R>> | undefined
   readonly stamp: number
   readonly outer: RxNode
   readonly context: RxNodeCtx | undefined
