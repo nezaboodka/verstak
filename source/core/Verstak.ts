@@ -130,7 +130,7 @@ export class BaseDriver<T, C = unknown> implements RxNodeDriver<T, C> {
   }
 
   update(element: El<T, unknown, C>): void | Promise<void> {
-    chainedUpdated(element, element.node.spec)
+    chainedUpdate(element, element.node.spec)
   }
 
   finalize(element: El<T, unknown, C>, isLeader: boolean): boolean {
@@ -197,13 +197,13 @@ function chainedInitialize(element: El<any, any, any, any>, elb: RxNodeSpec<any>
     chainedInitialize(element, preset)
 }
 
-function chainedUpdated(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
+function chainedUpdate(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const update = elb.update
   const preset = elb.preset
   if (update)
-    update(element, preset ? () => chainedUpdated(element, preset) : NOP)
+    update(element, preset ? () => chainedUpdate(element, preset) : NOP)
   else if (preset)
-    chainedUpdated(element, preset)
+    chainedUpdate(element, preset)
 }
 
 function chainedFinalize(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
