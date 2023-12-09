@@ -35,7 +35,7 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     const native = element.native as T | undefined // hack
     if (native) {
       const node = element.node
-      const sequential = node.owner.node.children.isStrict
+      const sequential = node.owner.children.isStrict
       const automaticNativeHost = BaseHtmlDriver.findEffectiveHtmlElementHost(element).native as unknown as Element | undefined // hack
       if (automaticNativeHost) {
         if (sequential && !node.driver.isSeparator) {
@@ -79,10 +79,10 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
 
   static findEffectiveHtmlElementHost(element: El<any>): El<HTMLElement | SVGElement> {
     let p = element.node.host
-    while (p.native instanceof HTMLElement === false &&
-      p.native instanceof SVGElement === false && p !== element)
-      p = p.node.host
-    return p as El<HTMLElement | SVGElement>
+    while (p.slot!.instance.native instanceof HTMLElement === false &&
+      p.slot!.instance.native instanceof SVGElement === false && p !== element.node)
+      p = p.host
+    return p.slot!.instance as El<HTMLElement | SVGElement>
   }
 
   static findPrevSiblingHtmlElement(ties: MergeItem<El<any>>): MergeItem<El<HTMLElement | SVGElement>> | undefined {

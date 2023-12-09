@@ -327,12 +327,12 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   readonly driver: Driver<T>
   builder: ElBuilder<T, M, C, R>
   readonly level: number
-  readonly owner: ElImpl
-  host: ElImpl
+  readonly owner: RxNodeImpl<any, any, any, any>
+  host: RxNodeImpl<any, any, any, any>
   readonly children: MergeList<ElImpl>
   slot: MergeItem<ElImpl> | undefined
   stamp: number
-  outer: ElImpl
+  outer: RxNodeImpl<any, any, any, any>
   context: ElCtxImpl<any> | undefined
   numerator: number
   updatePriority: Priority
@@ -340,22 +340,22 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
 
   constructor(key: string, driver: Driver<T>,
     builder: Readonly<ElBuilder<T, M, C, R>>,
-    element: ElImpl<T, M, C, R>, owner: ElImpl | undefined) {
+    element: ElImpl<T, M, C, R>, owner: RxNodeImpl<any, any, any, any> | undefined) {
     this.key = key
     this.driver = driver
     this.builder = builder
     if (owner) {
-      const node = owner.node
+      const node = owner
       this.level = node.level + 1
       this.owner = owner
       this.outer = node.context ? owner : node.outer
     }
     else {
       this.level = 1
-      this.owner = owner = element
-      this.outer = element
+      this.owner = owner = this
+      this.outer = this
     }
-    this.host = element // element is unmounted
+    this.host = this // node is unmounted
     this.children = new MergeList<ElImpl>(getNodeKey, true)
     this.slot = undefined
     this.stamp = Number.MAX_SAFE_INTEGER // empty
@@ -374,7 +374,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   get strictOrder(): boolean { return this.children.isStrict }
   set strictOrder(value: boolean) { this.children.isStrict = value }
 
-  get isMoved(): boolean { return this.owner.node.children.isMoved(this.slot!) }
+  get isMoved(): boolean { return this.owner.children.isMoved(this.slot!) }
 
   has(mode: Mode): boolean {
     return (chainedMode(this.builder) & mode) === mode
@@ -426,7 +426,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   constructor(key: string, driver: Driver<T>,
     owner: ElImpl | undefined, builder: ElBuilder<T, M, C, R>) {
     // System-managed properties
-    this.node = new RxNodeImpl(key, driver, builder, this, owner)
+    this.node = new RxNodeImpl(key, driver, builder, this, owner?.node)
     this.maxColumnCount = 0
     this.maxRowCount = 0
     this.cursorPosition = undefined
@@ -473,11 +473,12 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     const driver = node.driver
     if (!driver.isSeparator) {
       const owner = node.owner
+      const ownerEl = owner.slot!.instance
       const cursorPosition = node.slot!.prev?.instance.cursorPosition ?? InitialCursorPosition
-      const newCursorPosition = this.cursorPosition = owner.node.children.isStrict ? new CursorPosition(cursorPosition) : undefined
+      const newCursorPosition = this.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
       const isCursorElement = driver instanceof CursorCommandDriver
       const coords = getEffectiveElCoords(!isCursorElement,
-        value, owner.maxColumnCount, owner.maxRowCount,
+        value, ownerEl.maxColumnCount, ownerEl.maxRowCount,
         cursorPosition, newCursorPosition)
       if (!equalElCoords(coords, this._coords)) {
         driver.applyCoords(this, coords)
@@ -589,8 +590,8 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
 
   static tryUseSubTreeVariable<T extends Object>(variable: SubTreeVariable<T>): T | undefined {
     let el = ElImpl.curr.instance
-    while (el.node.context?.variable !== variable && el.node.owner !== el)
-      el = el.node.outer
+    while (el.node.context?.variable !== variable && el.node.owner !== el.node)
+      el = el.node.outer.slot!.instance
     return el.node.context?.value as any // TODO: to get rid of any
   }
 
@@ -605,12 +606,12 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     const el = ElImpl.curr.instance
     const node = el.node
     const owner = node.owner
-    const hostCtx = unobs(() => owner.node.context?.value)
+    const hostCtx = unobs(() => owner.context?.value)
     if (value && value !== hostCtx) {
       if (hostCtx)
         node.outer = owner
       else
-        node.outer = owner.node.outer
+        node.outer = owner.outer
       Transaction.run({ separation: true }, () => {
         const ctx = node.context
         if (ctx) {
@@ -624,7 +625,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     else if (hostCtx)
       node.outer = owner
     else
-      node.outer = owner.node.outer
+      node.outer = owner.outer
   }
 
   private rowBreak(): void {
@@ -783,14 +784,14 @@ function markToMountIfNecessary(mounting: boolean, host: ElImpl,
   const el = slot.instance
   const node = el.node
   if (el.native && !node.has(Mode.ManualMount)) {
-    if (mounting || node.host !== host) {
+    if (mounting || node.host !== host.node) {
       children.markAsMoved(slot)
       mounting = false
     }
   }
   else if (sequential && children.isMoved(slot))
     mounting = true // apply to the first element having native HTML element
-  node.host = host
+  node.host = host.node
   return mounting
 }
 
@@ -869,13 +870,13 @@ function mountOrRemountIfNecessary(element: ElImpl): void {
       driver.initialize(element)
       if (!node.has(Mode.ManualMount)) {
         node.stamp = 0 // mounting
-        if (element.node.host !== element)
+        if (element.node.host !== element.node)
           driver.mount(element)
       }
       node.stamp = 0 // TEMPORARY
     })
   }
-  else if (node.isMoved && !node.has(Mode.ManualMount) && element.node.host !== element)
+  else if (node.isMoved && !node.has(Mode.ManualMount) && element.node.host !== element.node)
     unobs(() => driver.mount(element))
 }
 
@@ -894,7 +895,7 @@ function updateNow(slot: MergeItem<ElImpl>): void {
           node.children.beginMerge()
           const driver = node.driver
           result = driver.update(el)
-          if (el.area === undefined && node.owner.isTable)
+          if (el.area === undefined && node.owner.slot!.instance.isTable)
             el.area = undefined // automatic placement
           if (result instanceof Promise)
             result.then(

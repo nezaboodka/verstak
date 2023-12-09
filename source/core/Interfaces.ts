@@ -59,12 +59,12 @@ export interface RxNode<T = unknown, M = unknown, C = unknown, R = void> {
   readonly driver: Driver<T>
   readonly builder: Readonly<ElBuilder<T, M, C, R>>
   readonly level: number
-  readonly owner: El
-  readonly host: El
+  readonly owner: RxNode
+  readonly host: RxNode
   readonly children: MergeListReader<El>
   readonly slot: MergeItem<El> | undefined
   readonly stamp: number
-  readonly outer: El
+  readonly outer: RxNode
   readonly context: ElCtx | undefined
   readonly isInitialUpdate: boolean
   updatePriority?: Priority

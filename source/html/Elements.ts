@@ -152,10 +152,10 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
         s.flexGrow = ""
     }
     else {
-      const hostDriver = bNode.host.node.driver
+      const hostDriver = bNode.host.driver
       if (hostDriver.isSeparator) {
         driver.applyElementAlignment(element, Align.ToBounds)
-        hostDriver.applyHeightGrowth(bNode.host, value)
+        hostDriver.applyHeightGrowth(bNode.host.slot!.instance, value)
       }
     }
   }
@@ -299,14 +299,14 @@ const VerstakDriversByLayout: Array<SimpleDelegate<HTMLElement>> = [
     const s = el.native.style
     s.display = "flex"
     s.flexDirection = "column"
-    s.alignSelf = el.node.owner.isTable ? "stretch" : "center"
+    s.alignSelf = el.node.owner.slot!.instance.isTable ? "stretch" : "center"
     s.textAlign = "initial"
     s.flexShrink = "1"
     s.minWidth = "0"
   },
   el => { // table
     const s = el.native.style
-    s.alignSelf = el.node.owner.isTable ? "stretch" : "center"
+    s.alignSelf = el.node.owner.slot!.instance.isTable ? "stretch" : "center"
     s.display = "grid"
     s.flexBasis = "0"
     s.gridAutoRows = "minmax(min-content, 1fr)"
@@ -315,7 +315,7 @@ const VerstakDriversByLayout: Array<SimpleDelegate<HTMLElement>> = [
   },
   el => { // note
     const s = el.native.style
-    s.alignSelf = el.node.owner.isTable ? "stretch" : "center"
+    s.alignSelf = el.node.owner.slot!.instance.isTable ? "stretch" : "center"
     s.display = "inline-grid"
     s.flexShrink = "1"
   },
@@ -325,7 +325,7 @@ const VerstakDriversByLayout: Array<SimpleDelegate<HTMLElement>> = [
   },
   el => { // row
     const s = el.native.style
-    s.display = el.node.owner.isTable ? "none" : "flex"
+    s.display = el.node.owner.slot!.instance.isTable ? "none" : "flex"
     s.flexDirection = "row"
   },
   // undefined // cursor
