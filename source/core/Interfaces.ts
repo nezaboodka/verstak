@@ -65,7 +65,7 @@ export interface RxNode<T = unknown, M = unknown, C = unknown, R = void> {
   readonly slot: MergeItem<El> | undefined
   readonly stamp: number
   readonly outer: RxNode
-  readonly context: ElCtx | undefined
+  readonly context: RxNodeCtx | undefined
   readonly isInitialUpdate: boolean
   priority?: Priority
   childrenShuffling: boolean
@@ -87,9 +87,9 @@ export interface ElBuilder<T = unknown, M = unknown, C = unknown, R = void> {
   finalize?: Delegate<T, M, C, R>
 }
 
-// ElCtx
+// RxNodeCtx
 
-export interface ElCtx<T extends Object = Object> {
+export interface RxNodeCtx<T extends Object = Object> {
   value: T
 }
 

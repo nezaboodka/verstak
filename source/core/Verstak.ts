@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, unobs, Transaction, options, Reentrance, Rx, LoggingOptions, MergeList, MergeItem, ObservableObject, raw, MemberOptions } from "reactronic"
-import { ElCoords, ElKind, Priority, Mode, Align, ElArea, ElBuilder, El, Driver, SimpleDelegate, RxNode, ElCtx } from "./Interfaces.js"
+import { ElCoords, ElKind, Priority, Mode, Align, ElArea, ElBuilder, El, Driver, SimpleDelegate, RxNode, RxNodeCtx } from "./Interfaces.js"
 import { emitLetters, equalElCoords, parseElCoords, getCallerInfo } from "./Utils.js"
 
 // Verstak
@@ -300,10 +300,10 @@ enum CursorFlags {
 const UndefinedElCoords = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
 const InitialCursorPosition: CursorPosition = Object.freeze(new CursorPosition({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: CursorFlags.None }))
 
-// ElCtxImpl
+// RxNodeCtxImpl
 
-class ElCtxImpl<T extends Object = Object> extends ObservableObject implements ElCtx<T> {
-  @raw next: ElCtxImpl<object> | undefined
+class RxNodeCtxImpl<T extends Object = Object> extends ObservableObject implements RxNodeCtx<T> {
+  @raw next: RxNodeCtxImpl<object> | undefined
   @raw variable: SubTreeVariable<T>
   value: T
 
@@ -332,7 +332,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   slot: MergeItem<ElImpl> | undefined
   stamp: number
   outer: RxNodeImpl<any, any, any, any>
-  context: ElCtxImpl<any> | undefined
+  context: RxNodeCtxImpl<any> | undefined
   numerator: number
   priority: Priority
   childrenShuffling: boolean
@@ -618,7 +618,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
           ctx.value = value // update context thus invalidate observers
         }
         else
-          node.context = new ElCtxImpl<any>(variable, value)
+          node.context = new RxNodeCtxImpl<any>(variable, value)
       })
     }
     else if (hostCtx)
