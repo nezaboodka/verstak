@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, unobs, Transaction, options, Reentrance, Rx, LoggingOptions, MergeList, MergeItem, ObservableObject, raw, MemberOptions } from "reactronic"
-import { ElCoords, ElKind, Priority, Mode, Align, ElArea, RxNodeDecl, El, RxNodeDriver, SimpleDelegate, RxNode, RxNodeCtx } from "./Interfaces.js"
+import { ElCoords, ElKind, Priority, Mode, Align, ElArea, RxNodeSpec, El, RxNodeDriver, SimpleDelegate, RxNode, RxNodeCtx } from "./Interfaces.js"
 import { emitLetters, equalElCoords, parseElCoords, getCallerInfo } from "./Utils.js"
 
 // Verstak
@@ -19,15 +19,15 @@ export class Verstak {
 
   static claim<T = undefined, M = unknown, C = unknown, R = void>(
     driver: RxNodeDriver<T>,
-    builder?: RxNodeDecl<El<T, M, C, R>>,
-    base?: RxNodeDecl<El<T, M, C, R>>): El<T, M, C, R> {
+    spec?: RxNodeSpec<El<T, M, C, R>>,
+    base?: RxNodeSpec<El<T, M, C, R>>): El<T, M, C, R> {
     let result: ElImpl<T, M, C, R>
     // Normalize parameters
-    if (builder)
-      builder.base = base
+    if (spec)
+      spec.base = base
     else
-      builder = base ?? {}
-    let key = builder.key
+      spec = base ?? {}
+    let key = spec.key
     const owner = gCurrent?.instance
     if (owner) {
       // Check for coalescing separators or lookup for existing node
@@ -48,20 +48,20 @@ export class Verstak {
         const node = result.node
         if (node.driver !== driver && driver !== undefined)
           throw new Error(`changing element driver is not yet supported: "${result.node.driver.name}" -> "${driver?.name}"`)
-        const exTriggers = node.builder.triggers
-        if (triggersAreEqual(builder.triggers, exTriggers))
-          builder.triggers = exTriggers // preserve triggers instance
-        node.builder = builder
+        const exTriggers = node.spec.triggers
+        if (triggersAreEqual(spec.triggers, exTriggers))
+          spec.triggers = exTriggers // preserve triggers instance
+        node.spec = spec
       }
       else {
         // Create new node
-        result = new ElImpl<T, M, C, R>(key || generateKey(owner), driver, owner, builder)
+        result = new ElImpl<T, M, C, R>(key || generateKey(owner), driver, owner, spec)
         result.node.slot = children.add(result)
       }
     }
     else {
       // Create new root node
-      result = new ElImpl<T, M, C, R>(key || "", driver, owner, builder)
+      result = new ElImpl<T, M, C, R>(key || "", driver, owner, spec)
       result.node.slot = MergeList.createItem(result)
       triggerUpdate(result.node.slot)
     }
@@ -80,9 +80,9 @@ export class Verstak {
 
   static triggerUpdate(element: El<any, any, any, void>, triggers: unknown): void {
     const el = element as ElImpl
-    const builder = el.node.builder
-    if (!triggersAreEqual(triggers, builder.triggers)) {
-      builder.triggers = triggers // remember new triggers
+    const spec = el.node.spec
+    if (!triggersAreEqual(triggers, spec.triggers)) {
+      spec.triggers = triggers // remember new triggers
       triggerUpdate(el.node.slot!)
     }
   }
@@ -113,16 +113,16 @@ export class BaseDriver<T, C = unknown> implements RxNodeDriver<T, C> {
   }
 
   claim(element: El<T, unknown, C>): void {
-    chainedClaim(element, element.node.builder)
+    chainedClaim(element, element.node.spec)
   }
 
   create(element: El<T, unknown, C>): void {
-    chainedCreate(element, element.node.builder)
+    chainedCreate(element, element.node.spec)
   }
 
   initialize(element: El<T, unknown, C>): void {
     this.preset?.(element)
-    chainedInitialize(element, element.node.builder)
+    chainedInitialize(element, element.node.spec)
   }
 
   mount(element: El<T, unknown, C>): void {
@@ -130,11 +130,11 @@ export class BaseDriver<T, C = unknown> implements RxNodeDriver<T, C> {
   }
 
   update(element: El<T, unknown, C>): void | Promise<void> {
-    chainedUpdated(element, element.node.builder)
+    chainedUpdated(element, element.node.spec)
   }
 
   finalize(element: El<T, unknown, C>, isLeader: boolean): boolean {
-    chainedFinalize(element, element.node.builder)
+    chainedFinalize(element, element.node.spec)
     return isLeader // treat children as finalization leaders as well
   }
 
@@ -166,11 +166,11 @@ function generateKey(owner: ElImpl): string {
   return result
 }
 
-function chainedMode(bb?: RxNodeDecl<any>): Mode {
+function chainedMode(bb?: RxNodeSpec<any>): Mode {
   return bb?.mode ?? (bb?.base ? chainedMode(bb?.base) : Mode.Default)
 }
 
-function chainedClaim(element: El<any, any, any, any>, elb: RxNodeDecl<any>): void {
+function chainedClaim(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const claim = elb.claim
   const base = elb.base
   if (claim)
@@ -179,7 +179,7 @@ function chainedClaim(element: El<any, any, any, any>, elb: RxNodeDecl<any>): vo
     chainedClaim(element, base)
 }
 
-function chainedCreate(element: El<any, any, any, any>, elb: RxNodeDecl<any>): void {
+function chainedCreate(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const create = elb.create
   const base = elb.base
   if (create)
@@ -188,7 +188,7 @@ function chainedCreate(element: El<any, any, any, any>, elb: RxNodeDecl<any>): v
     chainedCreate(element, base)
 }
 
-function chainedInitialize(element: El<any, any, any, any>, elb: RxNodeDecl<any>): void {
+function chainedInitialize(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const initialize = elb.initialize
   const base = elb.base
   if (initialize)
@@ -197,7 +197,7 @@ function chainedInitialize(element: El<any, any, any, any>, elb: RxNodeDecl<any>
     chainedInitialize(element, base)
 }
 
-function chainedUpdated(element: El<any, any, any, any>, elb: RxNodeDecl<any>): void {
+function chainedUpdated(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const update = elb.update
   const base = elb.base
   if (update)
@@ -206,7 +206,7 @@ function chainedUpdated(element: El<any, any, any, any>, elb: RxNodeDecl<any>): 
     chainedUpdated(element, base)
 }
 
-function chainedFinalize(element: El<any, any, any, any>, elb: RxNodeDecl<any>): void {
+function chainedFinalize(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const finalize = elb.finalize
   const base = elb.base
   if (finalize)
@@ -321,7 +321,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
 
   readonly key: string
   readonly driver: RxNodeDriver<T, C>
-  builder: RxNodeDecl<El<T, M, C, R>>
+  spec: RxNodeSpec<El<T, M, C, R>>
   readonly level: number
   readonly owner: RxNodeImpl<any, any, any, any>
   host: RxNodeImpl<any, any, any, any>
@@ -335,11 +335,11 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   childrenShuffling: boolean
 
   constructor(key: string, driver: RxNodeDriver<T>,
-    builder: Readonly<RxNodeDecl<El<T, M, C, R>>>,
+    spec: Readonly<RxNodeSpec<El<T, M, C, R>>>,
     element: ElImpl<T, M, C, R>, owner: RxNodeImpl<any, any, any, any> | undefined) {
     this.key = key
     this.driver = driver
-    this.builder = builder
+    this.spec = spec
     if (owner) {
       const node = owner
       this.level = node.level + 1
@@ -373,7 +373,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   get isMoved(): boolean { return this.owner.children.isMoved(this.slot!) }
 
   has(mode: Mode): boolean {
-    return (chainedMode(this.builder) & mode) === mode
+    return (chainedMode(this.spec) & mode) === mode
   }
 
   @reactive
@@ -420,9 +420,9 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   private _hasStyles: boolean
 
   constructor(key: string, driver: RxNodeDriver<T>,
-    owner: ElImpl | undefined, builder: RxNodeDecl<El<T, M, C, R>>) {
+    owner: ElImpl | undefined, spec: RxNodeSpec<El<T, M, C, R>>) {
     // System-managed properties
-    this.node = new RxNodeImpl(key, driver, builder, this, owner?.node)
+    this.node = new RxNodeImpl(key, driver, spec, this, owner?.node)
     this.maxColumnCount = 0
     this.maxRowCount = 0
     this.cursorPosition = undefined
@@ -849,7 +849,7 @@ function triggerUpdate(slot: MergeItem<ElImpl>): void {
           })
         })
       }
-      unobs(node.update, node.builder.triggers) // reactive auto-update
+      unobs(node.update, node.spec.triggers) // reactive auto-update
     }
     else
       updateNow(slot)
@@ -915,7 +915,7 @@ function triggerFinalization(slot: MergeItem<ElImpl>, isLeader: boolean, individ
   const node = el.node
   if (node.stamp >= 0) {
     const driver = node.driver
-    if (individual && node.key !== node.builder.key && !driver.isSeparator)
+    if (individual && node.key !== node.spec.key && !driver.isSeparator)
       console.log(`WARNING: it is recommended to assign explicit key for conditional element in order to avoid unexpected side effects: ${node.key}`)
     node.stamp = ~node.stamp
     // Finalize element itself and remove it from collection

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Verstak, El, ElKind, RxNodeDecl, Align, ElCoords, SimpleDelegate, ElArea, CursorCommandDriver, BaseDriver } from "../core/api.js"
+import { Verstak, El, ElKind, RxNodeSpec, Align, ElCoords, SimpleDelegate, ElArea, CursorCommandDriver, BaseDriver } from "../core/api.js"
 import { HtmlDriver } from "./HtmlDriver.js"
 
 // Verstak is based on two fundamental layout structures
@@ -30,17 +30,17 @@ import { HtmlDriver } from "./HtmlDriver.js"
 // Section
 
 export function Section<M = unknown, R = void>(
-  builder?: RxNodeDecl<El<HTMLElement, M, R>>,
-  base?: RxNodeDecl<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.claim(Drivers.section, builder, base)
+  spec?: RxNodeSpec<El<HTMLElement, M, R>>,
+  base?: RxNodeSpec<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
+  return Verstak.claim(Drivers.section, spec, base)
 }
 
 // Table
 
 export function Table<M = unknown, R = void>(
-  builder?: RxNodeDecl<El<HTMLElement, M, R>>,
-  base?: RxNodeDecl<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.claim(Drivers.table, builder, base)
+  spec?: RxNodeSpec<El<HTMLElement, M, R>>,
+  base?: RxNodeSpec<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
+  return Verstak.claim(Drivers.table, spec, base)
 }
 
 // Row
@@ -64,16 +64,16 @@ export function cursor(areaParams: ElArea): void {
 
 // Note (either plain or html)
 
-export function Note(content: string, builder?: RxNodeDecl<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
-  return Verstak.claim(Drivers.note, builder, {
+export function Note(content: string, spec?: RxNodeSpec<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
+  return Verstak.claim(Drivers.note, spec, {
     update(b) {
       b.native.innerText = content
     }},
   )
 }
 
-export function HtmlNote(content: string, builder?: RxNodeDecl<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
-  return Verstak.claim(Drivers.note, builder, {
+export function HtmlNote(content: string, spec?: RxNodeSpec<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
+  return Verstak.claim(Drivers.note, spec, {
     update(b) {
       b.native.innerHTML = content
     }},
@@ -83,17 +83,17 @@ export function HtmlNote(content: string, builder?: RxNodeDecl<El<HTMLElement, v
 // Group
 
 export function Group<M = unknown, R = void>(
-  builder?: RxNodeDecl<El<HTMLElement, M, R>>,
-  base?: RxNodeDecl<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.claim(Drivers.group, builder, base)
+  spec?: RxNodeSpec<El<HTMLElement, M, R>>,
+  base?: RxNodeSpec<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
+  return Verstak.claim(Drivers.group, spec, base)
 }
 
 // Fragment
 
 export function Fragment<M = unknown, R = void>(
-  builder?: RxNodeDecl<El<void, M, R>>,
-  base?: RxNodeDecl<El<void, M, R>>): El<void, M, R> {
-  return Verstak.claim(BaseDriver.fragment, builder, base)
+  spec?: RxNodeSpec<El<void, M, R>>,
+  base?: RxNodeSpec<El<void, M, R>>): El<void, M, R> {
+  return Verstak.claim(BaseDriver.fragment, spec, base)
 }
 
 // VerstakHtmlDriver
