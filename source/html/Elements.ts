@@ -32,7 +32,7 @@ import { HtmlDriver } from "./HtmlDriver.js"
 export function Section<M = unknown, R = void>(
   spec?: RxNodeSpec<El<HTMLElement, M, R>>,
   base?: RxNodeSpec<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.claim(Drivers.section, spec, base)
+  return Verstak.specify(Drivers.section, spec, base)
 }
 
 // Table
@@ -40,7 +40,7 @@ export function Section<M = unknown, R = void>(
 export function Table<M = unknown, R = void>(
   spec?: RxNodeSpec<El<HTMLElement, M, R>>,
   base?: RxNodeSpec<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.claim(Drivers.table, spec, base)
+  return Verstak.specify(Drivers.table, spec, base)
 }
 
 // Row
@@ -51,11 +51,11 @@ export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: 
 }
 
 export function startNewRow(shiftCursorDown?: number): void {
-  Verstak.claim(Drivers.row)
+  Verstak.specify(Drivers.row)
 }
 
 export function cursor(areaParams: ElArea): void {
-  Verstak.claim(Drivers.cursor, {
+  Verstak.specify(Drivers.cursor, {
     update(b) {
       b.area = areaParams
     },
@@ -65,7 +65,7 @@ export function cursor(areaParams: ElArea): void {
 // Note (either plain or html)
 
 export function Note(content: string, spec?: RxNodeSpec<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
-  return Verstak.claim(Drivers.note, spec, {
+  return Verstak.specify(Drivers.note, spec, {
     update(b) {
       b.native.innerText = content
     }},
@@ -73,7 +73,7 @@ export function Note(content: string, spec?: RxNodeSpec<El<HTMLElement, void, vo
 }
 
 export function HtmlNote(content: string, spec?: RxNodeSpec<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
-  return Verstak.claim(Drivers.note, spec, {
+  return Verstak.specify(Drivers.note, spec, {
     update(b) {
       b.native.innerHTML = content
     }},
@@ -85,7 +85,7 @@ export function HtmlNote(content: string, spec?: RxNodeSpec<El<HTMLElement, void
 export function Group<M = unknown, R = void>(
   spec?: RxNodeSpec<El<HTMLElement, M, R>>,
   base?: RxNodeSpec<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.claim(Drivers.group, spec, base)
+  return Verstak.specify(Drivers.group, spec, base)
 }
 
 // Fragment
@@ -93,7 +93,7 @@ export function Group<M = unknown, R = void>(
 export function Fragment<M = unknown, R = void>(
   spec?: RxNodeSpec<El<void, M, R>>,
   base?: RxNodeSpec<El<void, M, R>>): El<void, M, R> {
-  return Verstak.claim(BaseDriver.fragment, spec, base)
+  return Verstak.specify(BaseDriver.fragment, spec, base)
 }
 
 // VerstakHtmlDriver

@@ -17,7 +17,7 @@ export class Verstak {
   static currentUpdatePriority = Priority.Realtime
   static frameDuration = Verstak.longFrameDuration
 
-  static claim<T = undefined, M = unknown, C = unknown, R = void>(
+  static specify<T = undefined, M = unknown, C = unknown, R = void>(
     driver: RxNodeDriver<T>,
     spec?: RxNodeSpec<El<T, M, C, R>>,
     base?: RxNodeSpec<El<T, M, C, R>>): El<T, M, C, R> {
@@ -112,8 +112,8 @@ export class BaseDriver<T, C = unknown> implements RxNodeDriver<T, C> {
     readonly preset?: SimpleDelegate<T>) {
   }
 
-  claim(element: El<T, unknown, C>): void {
-    chainedClaim(element, element.node.spec)
+  specify(element: El<T, unknown, C>): void {
+    chainedSpecify(element, element.node.spec)
   }
 
   create(element: El<T, unknown, C>): void {
@@ -170,13 +170,13 @@ function chainedMode(bb?: RxNodeSpec<any>): Mode {
   return bb?.mode ?? (bb?.base ? chainedMode(bb?.base) : Mode.Default)
 }
 
-function chainedClaim(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
-  const claim = elb.claim
+function chainedSpecify(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
+  const specify = elb.specify
   const base = elb.base
-  if (claim)
-    claim(element, base ? () => chainedClaim(element, base) : NOP)
+  if (specify)
+    specify(element, base ? () => chainedSpecify(element, base) : NOP)
   else if (base)
-    chainedClaim(element, base)
+    chainedSpecify(element, base)
 }
 
 function chainedCreate(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {

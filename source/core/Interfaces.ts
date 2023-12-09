@@ -80,7 +80,7 @@ export interface RxNodeSpec<T = unknown> {
   key?: string
   mode?: Mode
   triggers?: unknown
-  claim?: Delegate<T>
+  specify?: Delegate<T>
   create?: Delegate<T>
   initialize?: Delegate<T>
   update?: Delegate<T>
@@ -100,7 +100,7 @@ export interface RxNodeDriver<T, C = unknown> {
   readonly isSeparator: boolean,
   readonly preset?: SimpleDelegate<T>
 
-  claim(element: El<T, unknown, C>): void
+  specify(element: El<T, unknown, C>): void
   create(element: El<T, unknown, C>): void
   initialize(element: El<T, unknown, C>): void
   mount(element: El<T, unknown, C>): void
