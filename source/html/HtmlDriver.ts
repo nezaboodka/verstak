@@ -31,7 +31,7 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     return false // children elements having native HTML elements are not treated as leaders
   }
 
-  mount(element: El<T, unknown, C>, nativeHost?: T): void {
+  mount(element: El<T, unknown, C>): void {
     const native = element.native as T | undefined // hack
     if (native) {
       const node = element.node

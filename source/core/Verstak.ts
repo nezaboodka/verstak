@@ -127,7 +127,7 @@ export class BaseDriver<T, C = unknown> implements Driver<T, C> {
     chainedInitialize(el, el.node.builder)
   }
 
-  mount(element: El<T, unknown, C>, nativeHost?: T): void {
+  mount(element: El<T, unknown, C>): void {
     // nothing to do by default
   }
 
