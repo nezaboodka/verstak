@@ -113,8 +113,7 @@ export class BaseDriver<T, C = unknown> implements RxNodeDriver<T, C> {
   }
 
   claim(element: El<T, unknown, C>): void {
-    const el = element as ElImpl<T, unknown, C>
-    chainedClaim(el, el.node.builder)
+    chainedClaim(element, element.node.builder)
   }
 
   create(element: El<T, unknown, C>): void {
@@ -122,9 +121,8 @@ export class BaseDriver<T, C = unknown> implements RxNodeDriver<T, C> {
   }
 
   initialize(element: El<T, unknown, C>): void {
-    const el = element as ElImpl<T, unknown, C>
-    this.preset?.(el)
-    chainedInitialize(el, el.node.builder)
+    this.preset?.(element)
+    chainedInitialize(element, element.node.builder)
   }
 
   mount(element: El<T, unknown, C>): void {
@@ -136,8 +134,7 @@ export class BaseDriver<T, C = unknown> implements RxNodeDriver<T, C> {
   }
 
   finalize(element: El<T, unknown, C>, isLeader: boolean): boolean {
-    const el = element as ElImpl<T, unknown, C>
-    chainedFinalize(el, el.node.builder)
+    chainedFinalize(element, element.node.builder)
     return isLeader // treat children as finalization leaders as well
   }
 
