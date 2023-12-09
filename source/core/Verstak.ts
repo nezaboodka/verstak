@@ -35,12 +35,12 @@ export class Verstak {
       const children = owner.node.children
       // Collapse multiple separators into single one, if any
       if (driver.isSeparator) {
-        const last = children.lastSpecifiedItem()
+        const last = children.lastMergedItem()
         if (last?.instance?.node.driver === driver)
           ex = last
       }
       // Reuse existing node or specify a new one
-      ex ??= children.specify(key = key || generateKey(owner), undefined,
+      ex ??= children.tryMergeAsExisting(key = key || generateKey(owner), undefined,
         "nested elements can be declared inside update function only")
       if (ex) {
         // Reuse existing node
@@ -56,7 +56,7 @@ export class Verstak {
       else {
         // Create new node
         result = new ElImpl<T, M, C, R>(key || generateKey(owner), driver, owner, spec)
-        result.node.slot = children.add(result)
+        result.node.slot = children.mergeAsAdded(result)
       }
     }
     else {
