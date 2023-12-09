@@ -56,8 +56,8 @@ export interface El<T = unknown, M = unknown, C = unknown, R = void> {
 
 export interface RxNode<T = unknown, M = unknown, C = unknown, R = void> {
   readonly key: string
-  readonly driver: Driver<T>
-  readonly builder: Readonly<ElBuilder<T, M, C, R>>
+  readonly driver: RxNodeDriver<T>
+  readonly builder: Readonly<RxNodeDecl<T, M, C, R>>
   readonly level: number
   readonly owner: RxNode
   readonly host: RxNode
@@ -73,10 +73,10 @@ export interface RxNode<T = unknown, M = unknown, C = unknown, R = void> {
   has(mode: Mode): boolean
 }
 
-// ElBuilder
+// RxNodeDecl
 
-export interface ElBuilder<T = unknown, M = unknown, C = unknown, R = void> {
-  base?: ElBuilder<T, M, C, R>
+export interface RxNodeDecl<T = unknown, M = unknown, C = unknown, R = void> {
+  base?: RxNodeDecl<T, M, C, R>
   key?: string
   mode?: Mode
   triggers?: unknown
@@ -95,7 +95,7 @@ export interface RxNodeCtx<T extends Object = Object> {
 
 // Driver
 
-export interface Driver<T, C = unknown> {
+export interface RxNodeDriver<T, C = unknown> {
   readonly name: string,
   readonly isSeparator: boolean,
   readonly preset?: SimpleDelegate<T>

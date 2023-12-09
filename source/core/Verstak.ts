@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, unobs, Transaction, options, Reentrance, Rx, LoggingOptions, MergeList, MergeItem, ObservableObject, raw, MemberOptions } from "reactronic"
-import { ElCoords, ElKind, Priority, Mode, Align, ElArea, ElBuilder, El, Driver, SimpleDelegate, RxNode, RxNodeCtx } from "./Interfaces.js"
+import { ElCoords, ElKind, Priority, Mode, Align, ElArea, RxNodeDecl, El, RxNodeDriver, SimpleDelegate, RxNode, RxNodeCtx } from "./Interfaces.js"
 import { emitLetters, equalElCoords, parseElCoords, getCallerInfo } from "./Utils.js"
 
 // Verstak
@@ -18,9 +18,9 @@ export class Verstak {
   static frameDuration = Verstak.longFrameDuration
 
   static claim<T = undefined, M = unknown, C = unknown, R = void>(
-    driver: Driver<T>,
-    builder?: ElBuilder<T, M, C, R>,
-    base?: ElBuilder<T, M, C, R>): El<T, M, C, R> {
+    driver: RxNodeDriver<T>,
+    builder?: RxNodeDecl<T, M, C, R>,
+    base?: RxNodeDecl<T, M, C, R>): El<T, M, C, R> {
     let result: ElImpl<T, M, C, R>
     // Normalize parameters
     if (builder)
@@ -102,7 +102,7 @@ export class Verstak {
 
 // BaseDriver
 
-export class BaseDriver<T, C = unknown> implements Driver<T, C> {
+export class BaseDriver<T, C = unknown> implements RxNodeDriver<T, C> {
   public static readonly fragment = new BaseDriver<any>(
     "fragment", false, el => el.kind = ElKind.Group)
 
@@ -169,11 +169,11 @@ function generateKey(owner: ElImpl): string {
   return result
 }
 
-function chainedMode(bb?: ElBuilder<any, any, any, any>): Mode {
+function chainedMode(bb?: RxNodeDecl<any, any, any, any>): Mode {
   return bb?.mode ?? (bb?.base ? chainedMode(bb?.base) : Mode.Default)
 }
 
-function chainedClaim(element: El<any>, elb: ElBuilder): void {
+function chainedClaim(element: El<any>, elb: RxNodeDecl): void {
   const claim = elb.claim
   const base = elb.base
   if (claim)
@@ -182,7 +182,7 @@ function chainedClaim(element: El<any>, elb: ElBuilder): void {
     chainedClaim(element, base)
 }
 
-function chainedCreate(element: El, elb: ElBuilder): void {
+function chainedCreate(element: El, elb: RxNodeDecl): void {
   const create = elb.create
   const base = elb.base
   if (create)
@@ -191,7 +191,7 @@ function chainedCreate(element: El, elb: ElBuilder): void {
     chainedCreate(element, base)
 }
 
-function chainedInitialize(element: El<any>, elb: ElBuilder): void {
+function chainedInitialize(element: El<any>, elb: RxNodeDecl): void {
   const initialize = elb.initialize
   const base = elb.base
   if (initialize)
@@ -200,7 +200,7 @@ function chainedInitialize(element: El<any>, elb: ElBuilder): void {
     chainedInitialize(element, base)
 }
 
-function chainedUpdated(element: El, elb: ElBuilder): void {
+function chainedUpdated(element: El, elb: RxNodeDecl): void {
   const update = elb.update
   const base = elb.base
   if (update)
@@ -209,7 +209,7 @@ function chainedUpdated(element: El, elb: ElBuilder): void {
     chainedUpdated(element, base)
 }
 
-function chainedFinalize(element: El<any>, elb: ElBuilder): void {
+function chainedFinalize(element: El<any>, elb: RxNodeDecl): void {
   const finalize = elb.finalize
   const base = elb.base
   if (finalize)
@@ -323,8 +323,8 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   static disposableNodeCount: number = 0
 
   readonly key: string
-  readonly driver: Driver<T>
-  builder: ElBuilder<T, M, C, R>
+  readonly driver: RxNodeDriver<T>
+  builder: RxNodeDecl<T, M, C, R>
   readonly level: number
   readonly owner: RxNodeImpl<any, any, any, any>
   host: RxNodeImpl<any, any, any, any>
@@ -337,8 +337,8 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   priority: Priority
   childrenShuffling: boolean
 
-  constructor(key: string, driver: Driver<T>,
-    builder: Readonly<ElBuilder<T, M, C, R>>,
+  constructor(key: string, driver: RxNodeDriver<T>,
+    builder: Readonly<RxNodeDecl<T, M, C, R>>,
     element: ElImpl<T, M, C, R>, owner: RxNodeImpl<any, any, any, any> | undefined) {
     this.key = key
     this.driver = driver
@@ -422,8 +422,8 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   private _overlayVisible: boolean | undefined
   private _hasStyles: boolean
 
-  constructor(key: string, driver: Driver<T>,
-    owner: ElImpl | undefined, builder: ElBuilder<T, M, C, R>) {
+  constructor(key: string, driver: RxNodeDriver<T>,
+    owner: ElImpl | undefined, builder: RxNodeDecl<T, M, C, R>) {
     // System-managed properties
     this.node = new RxNodeImpl(key, driver, builder, this, owner?.node)
     this.maxColumnCount = 0
