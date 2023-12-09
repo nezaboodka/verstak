@@ -30,19 +30,20 @@ export class Verstak {
     let key = builder.key
     const owner = gCurrent?.instance
     if (owner) {
-      // Check for coalescing separators or lookup for existing element
+      // Check for coalescing separators or lookup for existing node
       let ex: MergeItem<ElImpl<any, any, any, any>> | undefined = undefined
       const children = owner.node.children
+      // Collapse multiple separators into single one, if any
       if (driver.isSeparator) {
         const last = children.lastClaimedItem()
         if (last?.instance?.node.driver === driver)
-          ex = last // collapse multiple separators into single one
+          ex = last
       }
+      // Reuse existing node or claim a new one
       ex ??= children.claim(key = key || generateKey(owner), undefined,
         "nested elements can be declared inside update function only")
-      // Reuse existing element or claim a new one
       if (ex) {
-        // Reuse existing element
+        // Reuse existing node
         result = ex.instance
         const node = result.node
         if (node.driver !== driver && driver !== undefined)
@@ -53,13 +54,13 @@ export class Verstak {
         node.builder = builder
       }
       else {
-        // Create new element
+        // Create new node
         result = new ElImpl<T, M, C, R>(key || generateKey(owner), driver, owner, builder)
         result.node.links = children.add(result)
       }
     }
     else {
-      // Create new root element
+      // Create new root node
       result = new ElImpl<T, M, C, R>(key || "", driver, owner, builder)
       result.node.links = MergeList.createItem(result)
       triggerUpdate(result.node.links)
