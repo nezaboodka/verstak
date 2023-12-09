@@ -93,7 +93,7 @@ export interface RxNodeCtx<T extends Object = Object> {
   value: T
 }
 
-// Driver
+// RxNodeDriver
 
 export interface RxNodeDriver<T, C = unknown> {
   readonly name: string,
