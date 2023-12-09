@@ -35,12 +35,12 @@ export class Verstak {
       const children = owner.node.children
       // Collapse multiple separators into single one, if any
       if (driver.isSeparator) {
-        const last = children.lastClaimedItem()
+        const last = children.lastSpecifiedItem()
         if (last?.instance?.node.driver === driver)
           ex = last
       }
-      // Reuse existing node or claim a new one
-      ex ??= children.claim(key = key || generateKey(owner), undefined,
+      // Reuse existing node or specify a new one
+      ex ??= children.specify(key = key || generateKey(owner), undefined,
         "nested elements can be declared inside update function only")
       if (ex) {
         // Reuse existing node
