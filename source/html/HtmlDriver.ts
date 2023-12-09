@@ -10,8 +10,8 @@ import { Verstak, El, BaseDriver, Priority } from "../core/api.js"
 
 export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends BaseDriver<T, C> {
 
-  create(element: El<T, unknown, C, void>, result: { native?: T; controller?: C }): void {
-    super.create(element, result)
+  create(element: El<T, unknown, C, void>): void {
+    super.create(element)
   }
 
   initialize(element: El<T, unknown, C, void>): void {
@@ -94,16 +94,16 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
 }
 
 export class HtmlDriver<T extends HTMLElement, C = unknown> extends BaseHtmlDriver<T, C> {
-  create(element: El<T, unknown, C, void>, result: { native?: T | undefined; controller?: C | undefined }): void {
-    result.native = document.createElement(element.node.driver.name) as T
-    super.create(element, result)
+  create(element: El<T, unknown, C, void>): void {
+    element.native = document.createElement(element.node.driver.name) as T
+    super.create(element)
   }
 }
 
 export class SvgDriver<T extends SVGElement, C = unknown> extends BaseHtmlDriver<T, C> {
-  create(element: El<T, unknown, C, void>, result: { native?: T | undefined; controller?: C | undefined }): void {
-    result.native = document.createElementNS("http://www.w3.org/2000/svg", element.node.driver.name) as T
-    super.create(element, result)
+  create(element: El<T, unknown, C, void>): void {
+    element.native = document.createElementNS("http://www.w3.org/2000/svg", element.node.driver.name) as T
+    super.create(element)
   }
 }
 

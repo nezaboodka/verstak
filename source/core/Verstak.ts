@@ -117,7 +117,7 @@ export class BaseDriver<T, C = unknown> implements Driver<T, C> {
     chainedClaim(el, el.node.builder)
   }
 
-  create(element: El<T, unknown, C>, result: { native?: T, controller?: C }): void {
+  create(element: El<T, unknown, C>): void {
     chainedCreate(element, element.node.builder)
   }
 
@@ -226,8 +226,8 @@ export class StaticDriver<T> extends BaseDriver<T> {
     this.native = native
   }
 
-  create(element: El<T, unknown, unknown, void>, result: { native?: T; controller?: unknown }): void {
-    result.native = this.native
+  create(element: El<T, unknown, unknown, void>): void {
+    element.native = this.native
   }
 }
 
@@ -244,10 +244,9 @@ export class CursorCommandDriver extends BaseDriver<CursorCommand, void>{
     super("cursor", false, el => el.kind = ElKind.Cursor)
   }
 
-  create(element: El<CursorCommand, unknown, void, void>,
-    result: { native?: CursorCommand; controller?: void }): void {
-    result.native = new CursorCommand()
-    super.create(element, result)
+  create(element: El<CursorCommand, unknown, void, void>): void {
+    element.native = new CursorCommand()
+    super.create(element)
   }
 }
 

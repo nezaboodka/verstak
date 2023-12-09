@@ -29,9 +29,9 @@ export enum ElKind {
 export interface El<T = unknown, M = unknown, C = unknown, R = void> {
   // System-managed properties
   readonly node: RxNode<T, M, C, R>
-  readonly native: T
   readonly isSection: boolean
   readonly isTable: boolean
+  native: T
 
   // User-manageable properties
   model: M
