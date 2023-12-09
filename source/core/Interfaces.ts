@@ -98,7 +98,7 @@ export interface RxNodeCtx<T extends Object = Object> {
 export interface RxNodeDriver<T, C = unknown> {
   readonly name: string,
   readonly isSeparator: boolean,
-  readonly preset?: SimpleDelegate<T>
+  readonly predefine?: SimpleDelegate<T>
 
   specify(element: El<T, unknown, C>): void
   create(element: El<T, unknown, C>): void

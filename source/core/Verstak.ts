@@ -109,7 +109,7 @@ export class BaseDriver<T, C = unknown> implements RxNodeDriver<T, C> {
   constructor(
     readonly name: string,
     readonly isSeparator: boolean,
-    readonly preset?: SimpleDelegate<T>) {
+    readonly predefine?: SimpleDelegate<T>) {
   }
 
   specify(element: El<T, unknown, C>): void {
@@ -121,7 +121,7 @@ export class BaseDriver<T, C = unknown> implements RxNodeDriver<T, C> {
   }
 
   initialize(element: El<T, unknown, C>): void {
-    this.preset?.(element)
+    this.predefine?.(element)
     chainedInitialize(element, element.node.spec)
   }
 
@@ -218,8 +218,8 @@ function chainedFinalize(element: El<any, any, any, any>, elb: RxNodeSpec<any>):
 export class StaticDriver<T> extends BaseDriver<T> {
   readonly native: T
 
-  constructor(native: T, name: string, isRow: boolean, preset?: SimpleDelegate<T>) {
-    super(name, isRow, preset)
+  constructor(native: T, name: string, isRow: boolean, predefine?: SimpleDelegate<T>) {
+    super(name, isRow, predefine)
     this.native = native
   }
 
