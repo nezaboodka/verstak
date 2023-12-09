@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { MergeListReader, MergeItem, MemberOptions } from "reactronic"
+import { MergeListReader, MergedItem, MemberOptions } from "reactronic"
 
 // Delegates
 
@@ -62,7 +62,7 @@ export interface RxNode<T = unknown, M = unknown, C = unknown, R = void> {
   readonly owner: RxNode
   readonly host: RxNode
   readonly children: MergeListReader<El>
-  readonly slot: MergeItem<El> | undefined
+  readonly slot: MergedItem<El> | undefined
   readonly stamp: number
   readonly outer: RxNode
   readonly context: RxNodeCtx | undefined

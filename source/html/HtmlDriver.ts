@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { MergeItem, Rx } from "reactronic"
+import { MergedItem, Rx } from "reactronic"
 import { Verstak, El, BaseDriver, Priority } from "../core/api.js"
 
 export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends BaseDriver<T, C> {
@@ -85,7 +85,7 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     return p.slot!.instance as El<HTMLElement | SVGElement>
   }
 
-  static findPrevSiblingHtmlElement(ties: MergeItem<El<any>>): MergeItem<El<HTMLElement | SVGElement>> | undefined {
+  static findPrevSiblingHtmlElement(ties: MergedItem<El<any>>): MergedItem<El<HTMLElement | SVGElement>> | undefined {
     let p = ties.prev
     while (p && !(p.instance.native instanceof HTMLElement) && !(p.instance.native instanceof SVGElement))
       p = p.prev

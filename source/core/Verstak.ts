@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { reactive, unobs, Transaction, options, Reentrance, Rx, LoggingOptions, MergeList, MergeItem, ObservableObject, raw, MemberOptions } from "reactronic"
+import { reactive, unobs, Transaction, options, Reentrance, Rx, LoggingOptions, MergeList, MergedItem, ObservableObject, raw, MemberOptions } from "reactronic"
 import { ElCoords, ElKind, Priority, Mode, Align, ElArea, RxNodeSpec, El, RxNodeDriver, SimpleDelegate, RxNode, RxNodeCtx } from "./Interfaces.js"
 import { emitLetters, equalElCoords, parseElCoords, getCallerInfo } from "./Utils.js"
 
@@ -31,7 +31,7 @@ export class Verstak {
     const owner = gCurrent?.instance
     if (owner) {
       // Check for coalescing separators or lookup for existing node
-      let ex: MergeItem<ElImpl<any, any, any, any>> | undefined = undefined
+      let ex: MergedItem<ElImpl<any, any, any, any>> | undefined = undefined
       const children = owner.node.children
       // Collapse multiple separators into single one, if any
       if (driver.isSeparator) {
@@ -326,7 +326,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   readonly owner: RxNodeImpl<any, any, any, any>
   host: RxNodeImpl<any, any, any, any>
   readonly children: MergeList<ElImpl>
-  slot: MergeItem<ElImpl> | undefined
+  slot: MergedItem<ElImpl> | undefined
   stamp: number
   outer: RxNodeImpl<any, any, any, any>
   context: RxNodeCtxImpl<any> | undefined
@@ -578,7 +578,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     return Rx.getReaction(node.update).configure(options)
   }
 
-  static get curr(): MergeItem<ElImpl> {
+  static get curr(): MergedItem<ElImpl> {
     if (!gCurrent)
       throw new Error("current element is undefined")
     return gCurrent
@@ -738,8 +738,8 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         // Lay out and update actual elements
         const ownerIsSection = owner.isSection
         const sequential = children.isStrict
-        let p1: Array<MergeItem<ElImpl>> | undefined = undefined
-        let p2: Array<MergeItem<ElImpl>> | undefined = undefined
+        let p1: Array<MergedItem<ElImpl>> | undefined = undefined
+        let p2: Array<MergedItem<ElImpl>> | undefined = undefined
         let mounting = false
         let hostingRow = owner
         for (const slot of children.items()) {
@@ -774,7 +774,7 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
 }
 
 function markToMountIfNecessary(mounting: boolean, host: ElImpl,
-  slot: MergeItem<ElImpl>, children: MergeList<ElImpl>, sequential: boolean): boolean {
+  slot: MergedItem<ElImpl>, children: MergeList<ElImpl>, sequential: boolean): boolean {
   // Detects element mounting when abstract elements
   // exist among regular elements having native HTML elements
   const el = slot.instance
@@ -792,10 +792,10 @@ function markToMountIfNecessary(mounting: boolean, host: ElImpl,
 }
 
 async function startIncrementalUpdate(
-  owner: MergeItem<ElImpl>,
+  owner: MergedItem<ElImpl>,
   allChildren: MergeList<ElImpl>,
-  priority1?: Array<MergeItem<ElImpl>>,
-  priority2?: Array<MergeItem<ElImpl>>): Promise<void> {
+  priority1?: Array<MergedItem<ElImpl>>,
+  priority2?: Array<MergedItem<ElImpl>>): Promise<void> {
   const stamp = owner.instance.node.stamp
   if (priority1)
     await updateIncrementally(owner, stamp, allChildren, priority1, Priority.Normal)
@@ -803,8 +803,8 @@ async function startIncrementalUpdate(
     await updateIncrementally(owner, stamp, allChildren, priority2, Priority.Background)
 }
 
-async function updateIncrementally(owner: MergeItem<ElImpl>, stamp: number,
-  allChildren: MergeList<ElImpl>, items: Array<MergeItem<ElImpl>>,
+async function updateIncrementally(owner: MergedItem<ElImpl>, stamp: number,
+  allChildren: MergeList<ElImpl>, items: Array<MergedItem<ElImpl>>,
   priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
   const el = owner.instance
@@ -835,7 +835,7 @@ async function updateIncrementally(owner: MergeItem<ElImpl>, stamp: number,
   }
 }
 
-function triggerUpdate(slot: MergeItem<ElImpl>): void {
+function triggerUpdate(slot: MergedItem<ElImpl>): void {
   const el = slot.instance
   const node = el.node
   if (node.stamp >= 0) { // if not finalized
@@ -876,7 +876,7 @@ function mountOrRemountIfNecessary(element: ElImpl): void {
     unobs(() => driver.mount(element))
 }
 
-function updateNow(slot: MergeItem<ElImpl>): void {
+function updateNow(slot: MergedItem<ElImpl>): void {
   const el = slot.instance
   const node = el.node
   if (node.stamp >= 0) { // if element is alive
@@ -910,7 +910,7 @@ function updateNow(slot: MergeItem<ElImpl>): void {
   }
 }
 
-function triggerFinalization(slot: MergeItem<ElImpl>, isLeader: boolean, individual: boolean): void {
+function triggerFinalization(slot: MergedItem<ElImpl>, isLeader: boolean, individual: boolean): void {
   const el = slot.instance
   const node = el.node
   if (node.stamp >= 0) {
@@ -956,7 +956,7 @@ async function runDisposalLoop(): Promise<void> {
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
 
-// function forEachChildRecursively(slot: MergeItem<El>, action: (e: any) => void): void {
+// function forEachChildRecursively(slot: MergedItem<El>, action: (e: any) => void): void {
 //   const el = slot.instance
 //   const e = el.native
 //   e && action(e)
@@ -976,7 +976,7 @@ function wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T 
   return wrappedToRunInside
 }
 
-function runInside<T>(slot: MergeItem<ElImpl>, func: (...args: any[]) => T, ...args: any[]): T {
+function runInside<T>(slot: MergedItem<ElImpl>, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gCurrent
   try {
     gCurrent = slot
@@ -1083,6 +1083,6 @@ Promise.prototype.then = reactronicDomHookedThen
 
 const NOP: any = (...args: any[]): void => { /* nop */ }
 
-let gCurrent: MergeItem<ElImpl> | undefined = undefined
-let gFirstToDispose: MergeItem<ElImpl> | undefined = undefined
-let gLastToDispose: MergeItem<ElImpl> | undefined = undefined
+let gCurrent: MergedItem<ElImpl> | undefined = undefined
+let gFirstToDispose: MergedItem<ElImpl> | undefined = undefined
+let gLastToDispose: MergedItem<ElImpl> | undefined = undefined
