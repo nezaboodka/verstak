@@ -73,7 +73,7 @@ export interface RxNode<T = unknown, M = unknown, C = unknown, R = void> {
   has(mode: Mode): boolean
 }
 
-// RxNodeDecl
+// RxNodeSpec
 
 export interface RxNodeSpec<T = unknown> {
   preset?: RxNodeSpec<T>
