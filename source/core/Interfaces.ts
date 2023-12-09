@@ -10,7 +10,7 @@ import { MergeListReader, MergeItem, MemberOptions } from "reactronic"
 // Delegates
 
 export type Callback<T = unknown> = (native: T) => void // to be deleted
-export type Delegate<T = unknown, M = unknown, C = unknown, R = void> = (element: El<T, M, C, R>, base: () => R) => R
+export type Delegate<T> = (element: T, base: () => void) => void
 export type AsyncDelegate<T = unknown, M = unknown> = (element: El<T, M, Promise<void>>) => Promise<void>
 export type SimpleDelegate<T = unknown> = (element: El<T, any, any, any>) => void
 
@@ -80,11 +80,11 @@ export interface RxNodeDecl<T = unknown, M = unknown, C = unknown, R = void> {
   key?: string
   mode?: Mode
   triggers?: unknown
-  claim?: Delegate<T, M, C, R>
-  create?: Delegate<T, M, C, R>
-  initialize?: Delegate<T, M, C, R>
-  update?: Delegate<T, M, C, R>
-  finalize?: Delegate<T, M, C, R>
+  claim?: Delegate<El<T, M, C, R>>
+  create?: Delegate<El<T, M, C, R>>
+  initialize?: Delegate<El<T, M, C, R>>
+  update?: Delegate<El<T, M, C, R>>
+  finalize?: Delegate<El<T, M, C, R>>
 }
 
 // RxNodeCtx

@@ -173,7 +173,7 @@ function chainedMode(bb?: RxNodeDecl<any, any, any, any>): Mode {
   return bb?.mode ?? (bb?.base ? chainedMode(bb?.base) : Mode.Default)
 }
 
-function chainedClaim(element: El<any>, elb: RxNodeDecl): void {
+function chainedClaim(element: El<any, any, any, any>, elb: RxNodeDecl<any, any, any, any>): void {
   const claim = elb.claim
   const base = elb.base
   if (claim)
@@ -182,7 +182,7 @@ function chainedClaim(element: El<any>, elb: RxNodeDecl): void {
     chainedClaim(element, base)
 }
 
-function chainedCreate(element: El, elb: RxNodeDecl): void {
+function chainedCreate(element: El<any, any, any, any>, elb: RxNodeDecl<any, any, any, any>): void {
   const create = elb.create
   const base = elb.base
   if (create)
@@ -191,7 +191,7 @@ function chainedCreate(element: El, elb: RxNodeDecl): void {
     chainedCreate(element, base)
 }
 
-function chainedInitialize(element: El<any>, elb: RxNodeDecl): void {
+function chainedInitialize(element: El<any, any, any, any>, elb: RxNodeDecl<any, any, any, any>): void {
   const initialize = elb.initialize
   const base = elb.base
   if (initialize)
@@ -200,7 +200,7 @@ function chainedInitialize(element: El<any>, elb: RxNodeDecl): void {
     chainedInitialize(element, base)
 }
 
-function chainedUpdated(element: El, elb: RxNodeDecl): void {
+function chainedUpdated(element: El<any, any, any, any>, elb: RxNodeDecl<any, any, any, any>): void {
   const update = elb.update
   const base = elb.base
   if (update)
@@ -209,7 +209,7 @@ function chainedUpdated(element: El, elb: RxNodeDecl): void {
     chainedUpdated(element, base)
 }
 
-function chainedFinalize(element: El<any>, elb: RxNodeDecl): void {
+function chainedFinalize(element: El<any, any, any, any>, elb: RxNodeDecl<any, any, any, any>): void {
   const finalize = elb.finalize
   const base = elb.base
   if (finalize)
@@ -323,7 +323,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   static disposableNodeCount: number = 0
 
   readonly key: string
-  readonly driver: RxNodeDriver<T>
+  readonly driver: RxNodeDriver<T, C>
   builder: RxNodeDecl<T, M, C, R>
   readonly level: number
   readonly owner: RxNodeImpl<any, any, any, any>
