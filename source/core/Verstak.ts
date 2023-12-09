@@ -865,7 +865,7 @@ function mountOrRemountIfNecessary(element: ElImpl): void {
   if (node.stamp === Number.MAX_SAFE_INTEGER) {
     node.stamp = Number.MAX_SAFE_INTEGER - 1 // initializing
     unobs(() => {
-      driver.create(element, element)
+      driver.create(element)
       driver.initialize(element)
       if (!node.has(Mode.ManualMount)) {
         node.stamp = 0 // mounting

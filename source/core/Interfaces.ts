@@ -101,7 +101,7 @@ export interface Driver<T, C = unknown> {
   readonly preset?: SimpleDelegate<T>
 
   claim(element: El<T, unknown, C>): void
-  create(element: El<T, unknown, C>, b: { native?: T, controller?: C }): void
+  create(element: El<T, unknown, C>): void
   initialize(element: El<T, unknown, C>): void
   mount(element: El<T, unknown, C>): void
   update(element: El<T, unknown, C>): void | Promise<void>
