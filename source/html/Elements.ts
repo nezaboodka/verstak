@@ -31,16 +31,16 @@ import { HtmlDriver } from "./HtmlDriver.js"
 
 export function Section<M = unknown, R = void>(
   spec?: RxNodeSpec<El<HTMLElement, M, R>>,
-  base?: RxNodeSpec<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.specify(Drivers.section, spec, base)
+  preset?: RxNodeSpec<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
+  return Verstak.specify(Drivers.section, spec, preset)
 }
 
 // Table
 
 export function Table<M = unknown, R = void>(
   spec?: RxNodeSpec<El<HTMLElement, M, R>>,
-  base?: RxNodeSpec<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.specify(Drivers.table, spec, base)
+  preset?: RxNodeSpec<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
+  return Verstak.specify(Drivers.table, spec, preset)
 }
 
 // Row
@@ -84,16 +84,16 @@ export function HtmlNote(content: string, spec?: RxNodeSpec<El<HTMLElement, void
 
 export function Group<M = unknown, R = void>(
   spec?: RxNodeSpec<El<HTMLElement, M, R>>,
-  base?: RxNodeSpec<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.specify(Drivers.group, spec, base)
+  preset?: RxNodeSpec<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
+  return Verstak.specify(Drivers.group, spec, preset)
 }
 
 // Fragment
 
 export function Fragment<M = unknown, R = void>(
   spec?: RxNodeSpec<El<void, M, R>>,
-  base?: RxNodeSpec<El<void, M, R>>): El<void, M, R> {
-  return Verstak.specify(BaseDriver.fragment, spec, base)
+  preset?: RxNodeSpec<El<void, M, R>>): El<void, M, R> {
+  return Verstak.specify(BaseDriver.fragment, spec, preset)
 }
 
 // VerstakHtmlDriver
