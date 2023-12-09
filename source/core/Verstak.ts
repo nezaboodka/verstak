@@ -320,8 +320,8 @@ class ElCtxImpl<T extends Object = Object> extends ObservableObject implements E
 
 class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxNode<T, M, C, R> {
   // Static properties
-  static grandCount: number = 0
-  static disposableCount: number = 0
+  static grandNodeCount: number = 0
+  static disposableNodeCount: number = 0
 
   readonly key: string
   readonly driver: Driver<T>
@@ -364,9 +364,9 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
     this.updatePriority = Priority.Realtime
     this.childrenShuffling = false
     // Monitoring
-    RxNodeImpl.grandCount++
+    RxNodeImpl.grandNodeCount++
     if (this.has(Mode.PinpointUpdate))
-      RxNodeImpl.disposableCount++
+      RxNodeImpl.disposableNodeCount++
   }
 
   get isInitialUpdate(): boolean { return this.stamp === 1 }
@@ -941,7 +941,7 @@ function triggerFinalization(ties: MergeItem<ElImpl>, isLeader: boolean, individ
     // Finalize children if any
     for (const item of node.children.items())
       triggerFinalization(item, childrenAreLeaders, false)
-    RxNodeImpl.grandCount--
+    RxNodeImpl.grandNodeCount--
   }
 }
 
@@ -953,7 +953,7 @@ async function runDisposalLoop(): Promise<void> {
       await Transaction.requestNextFrame()
     Rx.dispose(item.instance)
     item = item.aux
-    RxNodeImpl.disposableCount--
+    RxNodeImpl.disposableNodeCount--
   }
   // console.log(`Element count: ${RxNodeImpl.grandNodeCount} totally (${RxNodeImpl.disposableNodeCount} disposable)`)
   gFirstToDispose = gLastToDispose = undefined // reset loop
