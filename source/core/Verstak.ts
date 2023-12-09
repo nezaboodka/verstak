@@ -58,11 +58,13 @@ export class Verstak {
         result = new ElImpl<T, M, C, R>(key || generateKey(owner), driver, owner, spec)
         result.node.slot = children.mergeAsAdded(result)
       }
+      // driver.specify(result)
     }
     else {
       // Create new root node
       result = new ElImpl<T, M, C, R>(key || "", driver, owner, spec)
       result.node.slot = MergeList.createItem(result)
+      // driver.specify(result)
       triggerUpdate(result.node.slot)
     }
     return result
