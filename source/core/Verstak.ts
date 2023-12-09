@@ -777,18 +777,18 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
 }
 
 function markToMountIfNecessary(mounting: boolean, host: ElImpl,
-  ties: MergeItem<ElImpl>, children: MergeList<ElImpl>, sequential: boolean): boolean {
+  links: MergeItem<ElImpl>, children: MergeList<ElImpl>, sequential: boolean): boolean {
   // Detects element mounting when abstract elements
   // exist among regular elements having native HTML elements
-  const el = ties.instance
+  const el = links.instance
   const node = el.node
   if (el.native && !node.has(Mode.ManualMount)) {
     if (mounting || node.host !== host) {
-      children.markAsMoved(ties)
+      children.markAsMoved(links)
       mounting = false
     }
   }
-  else if (sequential && children.isMoved(ties))
+  else if (sequential && children.isMoved(links))
     mounting = true // apply to the first element having native HTML element
   node.host = host
   return mounting
@@ -838,8 +838,8 @@ async function updateIncrementally(owner: MergeItem<ElImpl>, stamp: number,
   }
 }
 
-function triggerUpdate(ties: MergeItem<ElImpl>): void {
-  const el = ties.instance
+function triggerUpdate(links: MergeItem<ElImpl>): void {
+  const el = links.instance
   const node = el.node
   if (node.stamp >= 0) { // if not finalized
     if (node.has(Mode.PinpointUpdate)) {
@@ -855,7 +855,7 @@ function triggerUpdate(ties: MergeItem<ElImpl>): void {
       unobs(node.update, node.builder.triggers) // reactive auto-update
     }
     else
-      updateNow(ties)
+      updateNow(links)
   }
 }
 
@@ -879,12 +879,12 @@ function mountOrRemountIfNecessary(element: ElImpl): void {
     unobs(() => driver.mount(element))
 }
 
-function updateNow(ties: MergeItem<ElImpl>): void {
-  const el = ties.instance
+function updateNow(links: MergeItem<ElImpl>): void {
+  const el = links.instance
   const node = el.node
   if (node.stamp >= 0) { // if element is alive
     let result: unknown = undefined
-    runInside(ties, () => {
+    runInside(links, () => {
       mountOrRemountIfNecessary(el)
       if (node.stamp < Number.MAX_SAFE_INTEGER - 1) { // if mounted
         try {
@@ -913,8 +913,8 @@ function updateNow(ties: MergeItem<ElImpl>): void {
   }
 }
 
-function triggerFinalization(ties: MergeItem<ElImpl>, isLeader: boolean, individual: boolean): void {
-  const el = ties.instance
+function triggerFinalization(links: MergeItem<ElImpl>, isLeader: boolean, individual: boolean): void {
+  const el = links.instance
   const node = el.node
   if (node.stamp >= 0) {
     const driver = node.driver
@@ -927,14 +927,14 @@ function triggerFinalization(ties: MergeItem<ElImpl>, isLeader: boolean, individ
     el.controller = null
     if (node.has(Mode.PinpointUpdate)) {
       // Defer disposal if element is reactive (having pinpoint update mode)
-      ties.aux = undefined
+      links.aux = undefined
       const last = gLastToDispose
       if (last)
-        gLastToDispose = last.aux = ties
+        gLastToDispose = last.aux = links
       else
-        gFirstToDispose = gLastToDispose = ties
-      if (gFirstToDispose === ties)
-        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${ties.instance.node.key})` }, () => {
+        gFirstToDispose = gLastToDispose = links
+      if (gFirstToDispose === links)
+        Transaction.run({ separation: "disposal", hint: `runDisposalLoop(initiator=${links.instance.node.key})` }, () => {
           void runDisposalLoop().then(NOP, error => console.log(error))
         })
     }
@@ -979,10 +979,10 @@ function wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T 
   return wrappedToRunInside
 }
 
-function runInside<T>(ties: MergeItem<ElImpl>, func: (...args: any[]) => T, ...args: any[]): T {
+function runInside<T>(links: MergeItem<ElImpl>, func: (...args: any[]) => T, ...args: any[]): T {
   const outer = gCurrent
   try {
-    gCurrent = ties
+    gCurrent = links
     return func(...args)
   }
   finally {
