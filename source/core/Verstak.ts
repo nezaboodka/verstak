@@ -335,7 +335,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   outer: RxNodeImpl<any, any, any, any>
   context: ElCtxImpl<any> | undefined
   numerator: number
-  updatePriority: Priority
+  priority: Priority
   childrenShuffling: boolean
 
   constructor(key: string, driver: Driver<T>,
@@ -361,7 +361,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
     this.stamp = Number.MAX_SAFE_INTEGER // empty
     this.context = undefined
     this.numerator = 0
-    this.updatePriority = Priority.Realtime
+    this.priority = Priority.Realtime
     this.childrenShuffling = false
     // Monitoring
     RxNodeImpl.grandNodeCount++
@@ -752,7 +752,7 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
           const el = slot.instance
           const isSeparator = el.node.driver.isSeparator
           const host = isSeparator ? owner : hostingRow
-          const p = el.node.updatePriority ?? Priority.Realtime
+          const p = el.node.priority ?? Priority.Realtime
           mounting = markToMountIfNecessary(mounting, host, slot, children, sequential)
           if (p === Priority.Realtime)
             triggerUpdate(slot) // update synchronously

@@ -67,7 +67,7 @@ export interface RxNode<T = unknown, M = unknown, C = unknown, R = void> {
   readonly outer: RxNode
   readonly context: ElCtx | undefined
   readonly isInitialUpdate: boolean
-  updatePriority?: Priority
+  priority?: Priority
   childrenShuffling: boolean
   strictOrder: boolean
   has(mode: Mode): boolean
