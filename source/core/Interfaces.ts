@@ -76,7 +76,7 @@ export interface RxNode<T = unknown, M = unknown, C = unknown, R = void> {
 // RxNodeDecl
 
 export interface RxNodeSpec<T = unknown> {
-  base?: RxNodeSpec<T>
+  preset?: RxNodeSpec<T>
   key?: string
   mode?: Mode
   triggers?: unknown

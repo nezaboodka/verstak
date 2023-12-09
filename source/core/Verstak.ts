@@ -20,13 +20,13 @@ export class Verstak {
   static specify<T = undefined, M = unknown, C = unknown, R = void>(
     driver: RxNodeDriver<T>,
     spec?: RxNodeSpec<El<T, M, C, R>>,
-    base?: RxNodeSpec<El<T, M, C, R>>): El<T, M, C, R> {
+    preset?: RxNodeSpec<El<T, M, C, R>>): El<T, M, C, R> {
     let result: ElImpl<T, M, C, R>
     // Normalize parameters
     if (spec)
-      spec.base = base
+      spec.preset = preset
     else
-      spec = base ?? {}
+      spec = preset ?? {}
     let key = spec.key
     const owner = gCurrent?.instance
     if (owner) {
@@ -167,52 +167,52 @@ function generateKey(owner: ElImpl): string {
 }
 
 function chainedMode(bb?: RxNodeSpec<any>): Mode {
-  return bb?.mode ?? (bb?.base ? chainedMode(bb?.base) : Mode.Default)
+  return bb?.mode ?? (bb?.preset ? chainedMode(bb?.preset) : Mode.Default)
 }
 
 function chainedSpecify(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const specify = elb.specify
-  const base = elb.base
+  const preset = elb.preset
   if (specify)
-    specify(element, base ? () => chainedSpecify(element, base) : NOP)
-  else if (base)
-    chainedSpecify(element, base)
+    specify(element, preset ? () => chainedSpecify(element, preset) : NOP)
+  else if (preset)
+    chainedSpecify(element, preset)
 }
 
 function chainedCreate(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const create = elb.create
-  const base = elb.base
+  const preset = elb.preset
   if (create)
-    create(element, base ? () => chainedCreate(element, base) : NOP)
-  else if (base)
-    chainedCreate(element, base)
+    create(element, preset ? () => chainedCreate(element, preset) : NOP)
+  else if (preset)
+    chainedCreate(element, preset)
 }
 
 function chainedInitialize(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const initialize = elb.initialize
-  const base = elb.base
+  const preset = elb.preset
   if (initialize)
-    initialize(element, base ? () => chainedInitialize(element, base) : NOP)
-  else if (base)
-    chainedInitialize(element, base)
+    initialize(element, preset ? () => chainedInitialize(element, preset) : NOP)
+  else if (preset)
+    chainedInitialize(element, preset)
 }
 
 function chainedUpdated(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const update = elb.update
-  const base = elb.base
+  const preset = elb.preset
   if (update)
-    update(element, base ? () => chainedUpdated(element, base) : NOP)
-  else if (base)
-    chainedUpdated(element, base)
+    update(element, preset ? () => chainedUpdated(element, preset) : NOP)
+  else if (preset)
+    chainedUpdated(element, preset)
 }
 
 function chainedFinalize(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const finalize = elb.finalize
-  const base = elb.base
+  const preset = elb.preset
   if (finalize)
-    finalize(element, base ? () => chainedFinalize(element, base) : NOP)
-  else if (base)
-    chainedFinalize(element, base)
+    finalize(element, preset ? () => chainedFinalize(element, preset) : NOP)
+  else if (preset)
+    chainedFinalize(element, preset)
 }
 
 export class StaticDriver<T> extends BaseDriver<T> {
