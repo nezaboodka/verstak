@@ -19,8 +19,8 @@ export class Verstak {
 
   static claim<T = undefined, M = unknown, C = unknown, R = void>(
     driver: RxNodeDriver<T>,
-    builder?: RxNodeDecl<T, M, C, R>,
-    base?: RxNodeDecl<T, M, C, R>): El<T, M, C, R> {
+    builder?: RxNodeDecl<El<T, M, C, R>>,
+    base?: RxNodeDecl<El<T, M, C, R>>): El<T, M, C, R> {
     let result: ElImpl<T, M, C, R>
     // Normalize parameters
     if (builder)
@@ -169,11 +169,11 @@ function generateKey(owner: ElImpl): string {
   return result
 }
 
-function chainedMode(bb?: RxNodeDecl<any, any, any, any>): Mode {
+function chainedMode(bb?: RxNodeDecl<any>): Mode {
   return bb?.mode ?? (bb?.base ? chainedMode(bb?.base) : Mode.Default)
 }
 
-function chainedClaim(element: El<any, any, any, any>, elb: RxNodeDecl<any, any, any, any>): void {
+function chainedClaim(element: El<any, any, any, any>, elb: RxNodeDecl<any>): void {
   const claim = elb.claim
   const base = elb.base
   if (claim)
@@ -182,7 +182,7 @@ function chainedClaim(element: El<any, any, any, any>, elb: RxNodeDecl<any, any,
     chainedClaim(element, base)
 }
 
-function chainedCreate(element: El<any, any, any, any>, elb: RxNodeDecl<any, any, any, any>): void {
+function chainedCreate(element: El<any, any, any, any>, elb: RxNodeDecl<any>): void {
   const create = elb.create
   const base = elb.base
   if (create)
@@ -191,7 +191,7 @@ function chainedCreate(element: El<any, any, any, any>, elb: RxNodeDecl<any, any
     chainedCreate(element, base)
 }
 
-function chainedInitialize(element: El<any, any, any, any>, elb: RxNodeDecl<any, any, any, any>): void {
+function chainedInitialize(element: El<any, any, any, any>, elb: RxNodeDecl<any>): void {
   const initialize = elb.initialize
   const base = elb.base
   if (initialize)
@@ -200,7 +200,7 @@ function chainedInitialize(element: El<any, any, any, any>, elb: RxNodeDecl<any,
     chainedInitialize(element, base)
 }
 
-function chainedUpdated(element: El<any, any, any, any>, elb: RxNodeDecl<any, any, any, any>): void {
+function chainedUpdated(element: El<any, any, any, any>, elb: RxNodeDecl<any>): void {
   const update = elb.update
   const base = elb.base
   if (update)
@@ -209,7 +209,7 @@ function chainedUpdated(element: El<any, any, any, any>, elb: RxNodeDecl<any, an
     chainedUpdated(element, base)
 }
 
-function chainedFinalize(element: El<any, any, any, any>, elb: RxNodeDecl<any, any, any, any>): void {
+function chainedFinalize(element: El<any, any, any, any>, elb: RxNodeDecl<any>): void {
   const finalize = elb.finalize
   const base = elb.base
   if (finalize)
@@ -324,7 +324,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
 
   readonly key: string
   readonly driver: RxNodeDriver<T, C>
-  builder: RxNodeDecl<T, M, C, R>
+  builder: RxNodeDecl<El<T, M, C, R>>
   readonly level: number
   readonly owner: RxNodeImpl<any, any, any, any>
   host: RxNodeImpl<any, any, any, any>
@@ -338,7 +338,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   childrenShuffling: boolean
 
   constructor(key: string, driver: RxNodeDriver<T>,
-    builder: Readonly<RxNodeDecl<T, M, C, R>>,
+    builder: Readonly<RxNodeDecl<El<T, M, C, R>>>,
     element: ElImpl<T, M, C, R>, owner: RxNodeImpl<any, any, any, any> | undefined) {
     this.key = key
     this.driver = driver
@@ -423,7 +423,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   private _hasStyles: boolean
 
   constructor(key: string, driver: RxNodeDriver<T>,
-    owner: ElImpl | undefined, builder: RxNodeDecl<T, M, C, R>) {
+    owner: ElImpl | undefined, builder: RxNodeDecl<El<T, M, C, R>>) {
     // System-managed properties
     this.node = new RxNodeImpl(key, driver, builder, this, owner?.node)
     this.maxColumnCount = 0

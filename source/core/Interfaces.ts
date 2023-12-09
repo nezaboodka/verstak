@@ -57,7 +57,7 @@ export interface El<T = unknown, M = unknown, C = unknown, R = void> {
 export interface RxNode<T = unknown, M = unknown, C = unknown, R = void> {
   readonly key: string
   readonly driver: RxNodeDriver<T>
-  readonly builder: Readonly<RxNodeDecl<T, M, C, R>>
+  readonly builder: Readonly<RxNodeDecl<El<T, M, C, R>>>
   readonly level: number
   readonly owner: RxNode
   readonly host: RxNode
@@ -75,16 +75,16 @@ export interface RxNode<T = unknown, M = unknown, C = unknown, R = void> {
 
 // RxNodeDecl
 
-export interface RxNodeDecl<T = unknown, M = unknown, C = unknown, R = void> {
-  base?: RxNodeDecl<T, M, C, R>
+export interface RxNodeDecl<T = unknown> {
+  base?: RxNodeDecl<T>
   key?: string
   mode?: Mode
   triggers?: unknown
-  claim?: Delegate<El<T, M, C, R>>
-  create?: Delegate<El<T, M, C, R>>
-  initialize?: Delegate<El<T, M, C, R>>
-  update?: Delegate<El<T, M, C, R>>
-  finalize?: Delegate<El<T, M, C, R>>
+  claim?: Delegate<T>
+  create?: Delegate<T>
+  initialize?: Delegate<T>
+  update?: Delegate<T>
+  finalize?: Delegate<T>
 }
 
 // RxNodeCtx
