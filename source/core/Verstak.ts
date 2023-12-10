@@ -30,21 +30,21 @@ export class Verstak {
     let key = spec.key
     const owner = gCurrent?.instance
     if (owner) {
-      // Check for coalescing separators or lookup for existing node
-      let ex: MergedItem<RxNodeImpl<any, any, any, any>> | undefined = undefined
+      // Lookup for existing node and check for coalescing separators
+      let existing: MergedItem<RxNodeImpl<any, any, any, any>> | undefined = undefined
       const children = owner.children
-      // Collapse multiple separators into single one, if any
+      // Coalesce multiple separators into single one, if any
       if (driver.isSeparator) {
         const last = children.lastMergedItem()
         if (last?.instance?.driver === driver)
-          ex = last
+          existing = last
       }
       // Reuse existing node or specify a new one
-      ex ??= children.tryMergeAsExisting(key = key || generateKey(owner), undefined,
+      existing ??= children.tryMergeAsExisting(key = key || generateKey(owner), undefined,
         "nested elements can be declared inside update function only")
-      if (ex) {
+      if (existing) {
         // Reuse existing node
-        const node = ex.instance
+        const node = existing.instance
         result = node.element
         if (node.driver !== driver && driver !== undefined)
           throw new Error(`changing element driver is not yet supported: "${result.node.driver.name}" -> "${driver?.name}"`)
