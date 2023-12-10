@@ -70,7 +70,7 @@ export class Verstak {
     return result
   }
 
-  static get element(): RxNode {
+  static get currentNode(): RxNode {
     if (gCurrent === undefined)
       throw new Error("current element is undefined")
     return gCurrent.instance
