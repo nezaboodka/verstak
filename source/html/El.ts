@@ -14,7 +14,7 @@ export class ElDriver<T = unknown, M = unknown, C = unknown> extends BaseDriver<
   public static readonly fragment = new ElDriver<any, any, any>(
     "fragment", false, el => el.kind = ElKind.Group)
 
-  allocate(node: RxNode<El<T, M, C, void>>): El<T, M, C, void> {
+  create(node: RxNode<El<T, M, C, void>>): El<T, M, C, void> {
     return new ElImpl<T, M, C, void>(node)
   }
 }
