@@ -119,8 +119,8 @@ export class BaseDriver<T extends { node: RxNode }> implements RxNodeDriver<T> {
     specifyUsingPresetChain(element, element.node.spec)
   }
 
-  create(element: T): void {
-    createUsingPresetChain(element, element.node.spec)
+  assign(element: T): void {
+    assignUsingPresetChain(element, element.node.spec)
   }
 
   initialize(element: T): void {
@@ -182,13 +182,13 @@ function specifyUsingPresetChain(element: unknown, spec: RxNodeSpec<any>): void 
     specifyUsingPresetChain(element, preset)
 }
 
-function createUsingPresetChain(element: unknown, spec: RxNodeSpec<any>): void {
+function assignUsingPresetChain(element: unknown, spec: RxNodeSpec<any>): void {
   const preset = spec.preset
   const create = spec.create
   if (create)
-    create(element, preset ? () => createUsingPresetChain(element, preset) : NOP)
+    create(element, preset ? () => assignUsingPresetChain(element, preset) : NOP)
   else if (preset)
-    createUsingPresetChain(element, preset)
+    assignUsingPresetChain(element, preset)
 }
 
 function initializeUsingPresetChain(element: unknown, spec: RxNodeSpec<any>): void {
@@ -226,7 +226,7 @@ export class StaticDriver<T> extends BaseDriver<El<T>> {
     this.native = native
   }
 
-  create(element: El<T>): void {
+  assign(element: El<T>): void {
     element.native = this.native
   }
 }
@@ -246,9 +246,9 @@ export class CursorCommandDriver
     super("cursor", false, el => el.kind = ElKind.Cursor)
   }
 
-  create(element: El<CursorCommand, unknown, void, void>): void {
+  assign(element: El<CursorCommand, unknown, void, void>): void {
     element.native = new CursorCommand()
-    super.create(element)
+    super.assign(element)
   }
 }
 
@@ -870,7 +870,7 @@ function mountOrRemountIfNecessary(element: ElImpl): void {
   if (node.stamp === Number.MAX_SAFE_INTEGER) {
     node.stamp = Number.MAX_SAFE_INTEGER - 1 // initializing
     unobs(() => {
-      driver.create(element)
+      driver.assign(element)
       driver.initialize(element)
       if (!node.has(Mode.ManualMount)) {
         node.stamp = 0 // mounting

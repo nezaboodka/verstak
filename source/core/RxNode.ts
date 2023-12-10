@@ -63,7 +63,7 @@ export interface RxNodeDriver<T> {
   readonly predefine?: SimpleDelegate<T>
 
   specify(element: T): void
-  create(element: T): void
+  assign(element: T): void
   initialize(element: T): void
   mount(element: T): void
   update(element: T): void | Promise<void>

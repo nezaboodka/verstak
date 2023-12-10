@@ -12,8 +12,8 @@ import { Verstak, El, BaseDriver, Priority, RxNode } from "../core/api.js"
 
 export abstract class VerstakDriver<T extends Element, M = unknown, C = unknown> extends BaseDriver<El<T, M, C, void>> {
 
-  create(element: El<T, M, C>): void {
-    super.create(element)
+  assign(element: El<T, M, C>): void {
+    super.assign(element)
   }
 
   initialize(element: El<T, M, C>): void {
@@ -96,16 +96,16 @@ export abstract class VerstakDriver<T extends Element, M = unknown, C = unknown>
 }
 
 export class HtmlDriver<T extends HTMLElement, M = any, C = any> extends VerstakDriver<T, M, C> {
-  create(element: El<T, any, C, void>): void {
+  assign(element: El<T, any, C, void>): void {
     element.native = document.createElement(element.node.driver.name) as T
-    super.create(element)
+    super.assign(element)
   }
 }
 
 export class SvgDriver<T extends SVGElement, M = any, C = any> extends VerstakDriver<T, M, C> {
-  create(element: El<T, any, C, void>): void {
+  assign(element: El<T, any, C, void>): void {
     element.native = document.createElementNS("http://www.w3.org/2000/svg", element.node.driver.name) as T
-    super.create(element)
+    super.assign(element)
   }
 }
 
