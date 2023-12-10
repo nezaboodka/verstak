@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { Verstak, ElKind, RxNodeSpec, Align, ElCoords, SimpleDelegate } from "../core/api.js"
-import { CursorCommandDriver, El, ElArea } from "./El.js"
-import { ElDriver, HtmlDriver, VerstakDriver } from "./HtmlDriver.js"
+import { CursorCommandDriver, El, ElArea, ElDriver } from "./El.js"
+import { HtmlDriver } from "./HtmlDriver.js"
 
 // Verstak is based on two fundamental layout structures
 // called section and table; and on two special non-visual

@@ -6,19 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { MergedItem, Rx } from "reactronic"
-import { Verstak, BaseDriver, Priority, RxNode, ElKind } from "../core/api.js"
-import { El, ElImpl } from "./El.js"
-
-// ElDriver
-
-export class ElDriver<T = unknown, M = unknown, C = unknown> extends BaseDriver<El<T, M, C, void>> {
-  public static readonly fragment = new ElDriver<any, any, any>(
-    "fragment", false, el => el.kind = ElKind.Group)
-
-  allocate(node: RxNode<El<T, M, C, void>>): El<T, M, C, void> {
-    return new ElImpl<T, M, C, void>(node)
-  }
-}
+import { Verstak, Priority, RxNode, SimpleDelegate } from "../core/api.js"
+import { El, ElDriver } from "./El.js"
 
 // VerstakDriver
 
@@ -107,12 +96,31 @@ export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends 
   }
 }
 
+// StaticDriver
+
+export class StaticDriver<T extends Element> extends VerstakDriver<T> {
+  readonly native: T
+
+  constructor(native: T, name: string, isRow: boolean, predefine?: SimpleDelegate<El<T>>) {
+    super(name, isRow, predefine)
+    this.native = native
+  }
+
+  assign(element: El<T>): void {
+    element.native = this.native
+  }
+}
+
+// HtmlDriver
+
 export class HtmlDriver<T extends HTMLElement, M = any, C = any> extends VerstakDriver<T, M, C> {
   assign(element: El<T, any, C, void>): void {
     element.native = document.createElement(element.node.driver.name) as T
     super.assign(element)
   }
 }
+
+// SvgDriver
 
 export class SvgDriver<T extends SVGElement, M = any, C = any> extends VerstakDriver<T, M, C> {
   assign(element: El<T, any, C, void>): void {

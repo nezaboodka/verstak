@@ -5,9 +5,19 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Align, ElCoords, ElKind, RxNode, SimpleDelegate } from "../core/RxNode.js"
-import { equalElCoords, parseElCoords } from "../core/api.js"
-import { ElDriver, VerstakDriver } from "./HtmlDriver.js"
+import { Align, ElCoords, ElKind, RxNode } from "../core/RxNode.js"
+import { BaseDriver, equalElCoords, parseElCoords } from "../core/api.js"
+
+// ElDriver
+
+export class ElDriver<T = unknown, M = unknown, C = unknown> extends BaseDriver<El<T, M, C, void>> {
+  public static readonly fragment = new ElDriver<any, any, any>(
+    "fragment", false, el => el.kind = ElKind.Group)
+
+  allocate(node: RxNode<El<T, M, C, void>>): El<T, M, C, void> {
+    return new ElImpl<T, M, C, void>(node)
+  }
+}
 
 // El
 
@@ -406,19 +416,3 @@ export class CursorCommandDriver
     super.assign(element)
   }
 }
-
-// StaticDriver
-
-export class StaticDriver<T extends Element> extends VerstakDriver<T> {
-  readonly native: T
-
-  constructor(native: T, name: string, isRow: boolean, predefine?: SimpleDelegate<El<T>>) {
-    super(name, isRow, predefine)
-    this.native = native
-  }
-
-  assign(element: El<T>): void {
-    element.native = this.native
-  }
-}
-
