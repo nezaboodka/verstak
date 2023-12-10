@@ -8,7 +8,7 @@
 import { MergedItem, Rx } from "reactronic"
 import { Verstak, El, BaseDriver, Priority, RxNode } from "../core/api.js"
 
-export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends BaseDriver<T, C> {
+export abstract class WebDriver<T extends Element, C = unknown> extends BaseDriver<T, C> {
 
   create(element: El<T, unknown, C, void>): void {
     super.create(element)
@@ -36,10 +36,10 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
     if (native) {
       const node = element.node
       const sequential = node.owner.children.isStrict
-      const automaticNativeHost = BaseHtmlDriver.findEffectiveHtmlElementHost(node).element.native as unknown as Element | undefined // hack
+      const automaticNativeHost = WebDriver.findEffectiveHtmlElementHost(node).element.native as unknown as Element | undefined // hack
       if (automaticNativeHost) {
         if (sequential && !node.driver.isSeparator) {
-          const after = BaseHtmlDriver.findPrevSiblingHtmlElement(element.node.slot!)
+          const after = WebDriver.findPrevSiblingHtmlElement(element.node.slot!)
           if (after === undefined || after.instance.driver.isSeparator) {
             if (automaticNativeHost !== native.parentNode || !native.previousSibling)
               automaticNativeHost.prepend(native)
@@ -93,14 +93,14 @@ export abstract class BaseHtmlDriver<T extends Element, C = unknown> extends Bas
   }
 }
 
-export class HtmlDriver<T extends HTMLElement, C = unknown> extends BaseHtmlDriver<T, C> {
+export class HtmlDriver<T extends HTMLElement, C = unknown> extends WebDriver<T, C> {
   create(element: El<T, unknown, C, void>): void {
     element.native = document.createElement(element.node.driver.name) as T
     super.create(element)
   }
 }
 
-export class SvgDriver<T extends SVGElement, C = unknown> extends BaseHtmlDriver<T, C> {
+export class SvgDriver<T extends SVGElement, C = unknown> extends WebDriver<T, C> {
   create(element: El<T, unknown, C, void>): void {
     element.native = document.createElementNS("http://www.w3.org/2000/svg", element.node.driver.name) as T
     super.create(element)
