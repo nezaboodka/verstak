@@ -103,7 +103,7 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
   applyKind(element: El<T, any, any>, value: ElKind): void {
     const kind = Constants.layouts[value]
     kind && element.native.setAttribute(Constants.attribute, kind)
-    VerstakDriversByLayout[value](element)
+    VerstakDriversByLayout[value](element as any)
     super.applyKind(element, value)
   }
 
