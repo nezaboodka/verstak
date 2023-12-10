@@ -168,49 +168,49 @@ function generateKey(owner: RxNodeImpl): string {
   return result
 }
 
-function modeUsingPresetChain(bb?: RxNodeSpec<any>): Mode {
-  return bb?.mode ?? (bb?.preset ? modeUsingPresetChain(bb?.preset) : Mode.Default)
+function modeUsingPresetChain(spec?: RxNodeSpec<any>): Mode {
+  return spec?.mode ?? (spec?.preset ? modeUsingPresetChain(spec?.preset) : Mode.Default)
 }
 
-function specifyUsingPresetChain(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
-  const specify = elb.specify
-  const preset = elb.preset
+function specifyUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpec<any>): void {
+  const specify = spec.specify
+  const preset = spec.preset
   if (specify)
     specify(element, preset ? () => specifyUsingPresetChain(element, preset) : NOP)
   else if (preset)
     specifyUsingPresetChain(element, preset)
 }
 
-function createUsingPresetChain(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
-  const create = elb.create
-  const preset = elb.preset
+function createUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpec<any>): void {
+  const create = spec.create
+  const preset = spec.preset
   if (create)
     create(element, preset ? () => createUsingPresetChain(element, preset) : NOP)
   else if (preset)
     createUsingPresetChain(element, preset)
 }
 
-function initializeUsingPresetChain(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
-  const initialize = elb.initialize
-  const preset = elb.preset
+function initializeUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpec<any>): void {
+  const initialize = spec.initialize
+  const preset = spec.preset
   if (initialize)
     initialize(element, preset ? () => initializeUsingPresetChain(element, preset) : NOP)
   else if (preset)
     initializeUsingPresetChain(element, preset)
 }
 
-function updateUsingPresetChain(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
-  const update = elb.update
-  const preset = elb.preset
+function updateUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpec<any>): void {
+  const update = spec.update
+  const preset = spec.preset
   if (update)
     update(element, preset ? () => updateUsingPresetChain(element, preset) : NOP)
   else if (preset)
     updateUsingPresetChain(element, preset)
 }
 
-function finalizeUsingPresetChain(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
-  const finalize = elb.finalize
-  const preset = elb.preset
+function finalizeUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpec<any>): void {
+  const finalize = spec.finalize
+  const preset = spec.preset
   if (finalize)
     finalize(element, preset ? () => finalizeUsingPresetChain(element, preset) : NOP)
   else if (preset)
