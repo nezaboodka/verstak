@@ -5,7 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Verstak, El, StaticDriver, ElKind, RxNodeSpec } from "../core/api.js"
+import { Verstak, ElKind, RxNodeSpec } from "../core/api.js"
+import { El, StaticDriver } from "./El.js"
 import { HtmlDriver, SvgDriver } from "./HtmlDriver.js"
 
 export function HtmlBody(spec?: RxNodeSpec<El<HTMLElement>>, preset?: RxNodeSpec<El<HTMLElement>>): El<HTMLElement> {

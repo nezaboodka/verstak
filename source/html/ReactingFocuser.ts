@@ -16,7 +16,7 @@ export function FocuserReaction(key: string, target: HTMLElement, model: FocusMo
     mode: Mode.PinpointUpdate,
     triggers: { target, model },
     initialize(b) {
-      b.configureReactronic({ throttling: 0 })
+      b.node.configureReactronic({ throttling: 0 })
     },
     update() {
       if (switchEditMode !== undefined) {

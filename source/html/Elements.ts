@@ -5,8 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Verstak, El, ElKind, RxNodeSpec, Align, ElCoords, SimpleDelegate, ElArea, CursorCommandDriver, BaseDriver } from "../core/api.js"
-import { HtmlDriver } from "./HtmlDriver.js"
+import { Verstak, ElKind, RxNodeSpec, Align, ElCoords, SimpleDelegate } from "../core/api.js"
+import { CursorCommandDriver, El, ElArea } from "./El.js"
+import { ElDriver, HtmlDriver, VerstakDriver } from "./HtmlDriver.js"
 
 // Verstak is based on two fundamental layout structures
 // called section and table; and on two special non-visual
@@ -93,7 +94,7 @@ export function Group<M = unknown, R = void>(
 export function Fragment<M = unknown, R = void>(
   spec?: RxNodeSpec<El<void, M, R>>,
   preset?: RxNodeSpec<El<void, M, R>>): El<void, M, R> {
-  return Verstak.specify(BaseDriver.fragment, spec, preset)
+  return Verstak.specify(ElDriver.fragment, spec, preset) as El<void, M, R>
 }
 
 // VerstakHtmlDriver

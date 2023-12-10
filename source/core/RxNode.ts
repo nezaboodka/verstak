@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { MergeListReader, MergedItem } from "reactronic"
+import { MemberOptions, MergeListReader, MergedItem } from "reactronic"
 
 // Delegates
 
@@ -33,6 +33,7 @@ export interface RxNode<T = any> {
   childrenShuffling: boolean
   strictOrder: boolean
   has(mode: Mode): boolean
+  configureReactronic(options: Partial<MemberOptions>): MemberOptions
 }
 
 // RxNodeSpec
@@ -62,7 +63,7 @@ export interface RxNodeDriver<T> {
   readonly isSeparator: boolean,
   readonly predefine?: SimpleDelegate<T>
 
-  specify(element: T): void
+  allocate(node: RxNode<T>): T
   assign(element: T): void
   initialize(element: T): void
   mount(element: T): void

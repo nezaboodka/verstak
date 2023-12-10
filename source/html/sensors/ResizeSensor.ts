@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, transactional, LoggingLevel } from "reactronic"
-import { El } from "../../core/api.js"
+import { El } from "../El.js"
 import { Sensor } from "./Sensor.js"
 
 export interface ResizedElement {

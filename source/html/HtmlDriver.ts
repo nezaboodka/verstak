@@ -6,11 +6,23 @@
 // automatically licensed under the license referred above.
 
 import { MergedItem, Rx } from "reactronic"
-import { Verstak, El, BaseDriver, Priority, RxNode } from "../core/api.js"
+import { Verstak, BaseDriver, Priority, RxNode, ElKind } from "../core/api.js"
+import { El, ElImpl } from "./El.js"
+
+// ElDriver
+
+export class ElDriver<T = unknown, M = unknown, C = unknown> extends BaseDriver<El<T, M, C, void>> {
+  public static readonly fragment = new ElDriver<any, any, any>(
+    "fragment", false, el => el.kind = ElKind.Group)
+
+  allocate(node: RxNode<El<T, M, C, void>>): El<T, M, C, void> {
+    return new ElImpl<T, M, C, void>(node)
+  }
+}
 
 // VerstakDriver
 
-export abstract class VerstakDriver<T extends Element, M = unknown, C = unknown> extends BaseDriver<El<T, M, C, void>> {
+export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends ElDriver<T, M, C> {
 
   assign(element: El<T, M, C>): void {
     super.assign(element)
