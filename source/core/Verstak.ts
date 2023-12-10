@@ -6,7 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { reactive, unobs, Transaction, options, Reentrance, Rx, LoggingOptions, MergeList, MergedItem, ObservableObject, raw, MemberOptions } from "reactronic"
-import { ElCoords, ElKind, Priority, Mode, Align, ElArea, RxNodeSpec, El, RxNodeDriver, SimpleDelegate, RxNode, RxNodeCtx } from "./Interfaces.js"
+import { ElCoords, ElKind, Priority, Mode, Align, RxNodeSpec, RxNodeDriver, SimpleDelegate, RxNode, RxNodeCtx } from "./RxNode.js"
+import { El, ElArea } from "./El.js"
 import { emitLetters, equalElCoords, parseElCoords, getCallerInfo } from "./Utils.js"
 
 // Verstak

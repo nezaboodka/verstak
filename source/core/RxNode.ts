@@ -5,51 +5,13 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { MergeListReader, MergedItem, MemberOptions } from "reactronic"
+import { MergeListReader, MergedItem } from "reactronic"
 
 // Delegates
 
 export type Delegate<T> = (element: T, base: () => void) => void
 // export type AsyncDelegate<T = unknown, M = unknown> = (element: El<T, M, Promise<void>>) => Promise<void>
 export type SimpleDelegate<T = unknown> = (element: T) => void
-
-// El, ElKind
-
-export enum ElKind {
-  Section = 0,
-  Table = 1,
-  Note = 2,
-  Group = 3,
-  Row = 4,
-  Cursor = 5,
-  Native = 6,
-}
-
-export interface El<T = any, M = any, C = any, R = void> {
-  // System-managed properties
-  readonly node: RxNode<El<T, M, C, R>>
-  readonly isSection: boolean
-  readonly isTable: boolean
-  native: T
-
-  // User-manageable properties
-  model: M
-  controller: C
-  kind: ElKind
-  area: ElArea
-  widthGrowth: number
-  minWidth: string
-  maxWidth: string
-  heightGrowth: number
-  minHeight: string
-  maxHeight: string
-  contentAlignment: Align
-  elementAlignment: Align
-  contentWrapping: boolean
-  overlayVisible: boolean | undefined
-  useStyle(styleName: string, enabled?: boolean): void
-  configureReactronic(options: Partial<MemberOptions>): MemberOptions
-}
 
 // RxNode
 
@@ -124,13 +86,6 @@ export interface RxNodeDriver<T> {
 
 // Other
 
-export interface ElCoords {
-  x1: number
-  y1: number
-  x2: number
-  y2: number
-}
-
 export const enum Priority {
   Realtime = 0,
   Normal = 1,
@@ -143,6 +98,25 @@ export enum Mode {
   ManualMount = 2,
 }
 
+// TEMPORARY
+
+export enum ElKind {
+  Section = 0,
+  Table = 1,
+  Note = 2,
+  Group = 3,
+  Row = 4,
+  Cursor = 5,
+  Native = 6,
+}
+
+export interface ElCoords {
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+}
+
 export enum Align {
   Default = 0b10000,
   ToBounds = 0b00000,
@@ -153,20 +127,4 @@ export enum Align {
   ToCenterY = 0b01000,
   ToBottom  = 0b01100,
   ToCenter  = ToCenterX + ToCenterY,
-}
-
-export interface ElasticSize {
-  cells?: number            // 1 (table only)
-  min?: string              // min-content
-  max?: string              // min-content
-  growth?: number           // 0
-}
-
-export interface TrackSize extends ElasticSize {
-  track?: string | number   // <current>
-}
-
-export type ElArea = undefined | string | {
-  cellsOverWidth?: number   // 1 (table only)
-  cellsOverHeight?: number  // 1 (table only)
 }
