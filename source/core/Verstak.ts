@@ -115,16 +115,16 @@ export class BaseDriver<T, C = unknown> implements RxNodeDriver<T, C> {
   }
 
   specify(element: El<T, unknown, C>): void {
-    chainedSpecify(element, element.node.spec)
+    specifyUsingPresetChain(element, element.node.spec)
   }
 
   create(element: El<T, unknown, C>): void {
-    chainedCreate(element, element.node.spec)
+    createUsingPresetChain(element, element.node.spec)
   }
 
   initialize(element: El<T, unknown, C>): void {
     this.predefine?.(element)
-    chainedInitialize(element, element.node.spec)
+    initializeUsingPresetChain(element, element.node.spec)
   }
 
   mount(element: El<T, unknown, C>): void {
@@ -132,11 +132,11 @@ export class BaseDriver<T, C = unknown> implements RxNodeDriver<T, C> {
   }
 
   update(element: El<T, unknown, C>): void | Promise<void> {
-    chainedUpdate(element, element.node.spec)
+    updateUsingPresetChain(element, element.node.spec)
   }
 
   finalize(element: El<T, unknown, C>, isLeader: boolean): boolean {
-    chainedFinalize(element, element.node.spec)
+    finalizeUsingPresetChain(element, element.node.spec)
     return isLeader // treat children as finalization leaders as well
   }
 
@@ -168,53 +168,53 @@ function generateKey(owner: RxNodeImpl): string {
   return result
 }
 
-function chainedMode(bb?: RxNodeSpec<any>): Mode {
-  return bb?.mode ?? (bb?.preset ? chainedMode(bb?.preset) : Mode.Default)
+function modeUsingPresetChain(bb?: RxNodeSpec<any>): Mode {
+  return bb?.mode ?? (bb?.preset ? modeUsingPresetChain(bb?.preset) : Mode.Default)
 }
 
-function chainedSpecify(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
+function specifyUsingPresetChain(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const specify = elb.specify
   const preset = elb.preset
   if (specify)
-    specify(element, preset ? () => chainedSpecify(element, preset) : NOP)
+    specify(element, preset ? () => specifyUsingPresetChain(element, preset) : NOP)
   else if (preset)
-    chainedSpecify(element, preset)
+    specifyUsingPresetChain(element, preset)
 }
 
-function chainedCreate(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
+function createUsingPresetChain(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const create = elb.create
   const preset = elb.preset
   if (create)
-    create(element, preset ? () => chainedCreate(element, preset) : NOP)
+    create(element, preset ? () => createUsingPresetChain(element, preset) : NOP)
   else if (preset)
-    chainedCreate(element, preset)
+    createUsingPresetChain(element, preset)
 }
 
-function chainedInitialize(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
+function initializeUsingPresetChain(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const initialize = elb.initialize
   const preset = elb.preset
   if (initialize)
-    initialize(element, preset ? () => chainedInitialize(element, preset) : NOP)
+    initialize(element, preset ? () => initializeUsingPresetChain(element, preset) : NOP)
   else if (preset)
-    chainedInitialize(element, preset)
+    initializeUsingPresetChain(element, preset)
 }
 
-function chainedUpdate(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
+function updateUsingPresetChain(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const update = elb.update
   const preset = elb.preset
   if (update)
-    update(element, preset ? () => chainedUpdate(element, preset) : NOP)
+    update(element, preset ? () => updateUsingPresetChain(element, preset) : NOP)
   else if (preset)
-    chainedUpdate(element, preset)
+    updateUsingPresetChain(element, preset)
 }
 
-function chainedFinalize(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
+function finalizeUsingPresetChain(element: El<any, any, any, any>, elb: RxNodeSpec<any>): void {
   const finalize = elb.finalize
   const preset = elb.preset
   if (finalize)
-    finalize(element, preset ? () => chainedFinalize(element, preset) : NOP)
+    finalize(element, preset ? () => finalizeUsingPresetChain(element, preset) : NOP)
   else if (preset)
-    chainedFinalize(element, preset)
+    finalizeUsingPresetChain(element, preset)
 }
 
 export class StaticDriver<T> extends BaseDriver<T> {
@@ -378,7 +378,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
   get isMoved(): boolean { return this.owner.children.isMoved(this.slot!) }
 
   has(mode: Mode): boolean {
-    return (chainedMode(this.spec) & mode) === mode
+    return (modeUsingPresetChain(this.spec) & mode) === mode
   }
 
   @reactive
