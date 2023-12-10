@@ -10,7 +10,7 @@ import { Verstak, El, BaseDriver, Priority, RxNode } from "../core/api.js"
 
 // WebDriver
 
-export abstract class WebDriver<T extends Element, C = unknown> extends BaseDriver<T, C> {
+export abstract class WebDriver<T extends Element, C = unknown> extends BaseDriver<El<T, unknown, C, void>> {
 
   create(element: El<T, unknown, C, void>): void {
     super.create(element)
@@ -79,15 +79,15 @@ export abstract class WebDriver<T extends Element, C = unknown> extends BaseDriv
     gBlinkingEffectMarker = value
   }
 
-  static findEffectiveHtmlElementHost(node: RxNode<any, any, any, any>): RxNode<HTMLElement | SVGElement> {
+  static findEffectiveHtmlElementHost(node: RxNode): RxNode<El<HTMLElement | SVGElement>> {
     let p = node.host
     while (p.slot!.instance.element.native instanceof HTMLElement === false &&
       p.slot!.instance.element.native instanceof SVGElement === false && p !== node)
       p = p.host
-    return p.slot!.instance as RxNode<HTMLElement | SVGElement>
+    return p.slot!.instance as RxNode<El<HTMLElement | SVGElement>>
   }
 
-  static findPrevSiblingHtmlElement(slot: MergedItem<RxNode<any, any, any, any>>): MergedItem<RxNode<HTMLElement | SVGElement>> | undefined {
+  static findPrevSiblingHtmlElement(slot: MergedItem<RxNode>): MergedItem<RxNode<El<HTMLElement | SVGElement>>> | undefined {
     let p = slot.prev
     while (p && !(p.instance.element.native instanceof HTMLElement) && !(p.instance.element.native instanceof SVGElement))
       p = p.prev
@@ -95,15 +95,15 @@ export abstract class WebDriver<T extends Element, C = unknown> extends BaseDriv
   }
 }
 
-export class HtmlDriver<T extends HTMLElement, C = unknown> extends WebDriver<T, C> {
-  create(element: El<T, unknown, C, void>): void {
+export class HtmlDriver<T extends HTMLElement, C = any> extends WebDriver<T, C> {
+  create(element: El<T, any, C, void>): void {
     element.native = document.createElement(element.node.driver.name) as T
     super.create(element)
   }
 }
 
-export class SvgDriver<T extends SVGElement, C = unknown> extends WebDriver<T, C> {
-  create(element: El<T, unknown, C, void>): void {
+export class SvgDriver<T extends SVGElement, C = any> extends WebDriver<T, C> {
+  create(element: El<T, any, C, void>): void {
     element.native = document.createElementNS("http://www.w3.org/2000/svg", element.node.driver.name) as T
     super.create(element)
   }

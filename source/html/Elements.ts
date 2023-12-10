@@ -294,7 +294,7 @@ const Drivers = {
   cursor: new CursorCommandDriver(),
 }
 
-const VerstakDriversByLayout: Array<SimpleDelegate<HTMLElement>> = [
+const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
   el => { // section
     const s = el.native.style
     s.display = "flex"

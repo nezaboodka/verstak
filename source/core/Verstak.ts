@@ -18,7 +18,7 @@ export class Verstak {
   static frameDuration = Verstak.longFrameDuration
 
   static specify<T = undefined, M = unknown, C = unknown, R = void>(
-    driver: RxNodeDriver<T>,
+    driver: RxNodeDriver<El<T, M, C, R>>,
     spec?: RxNodeSpec<El<T, M, C, R>>,
     preset?: RxNodeSpec<El<T, M, C, R>>): El<T, M, C, R> {
     let result: ElImpl<T, M, C, R>
@@ -31,7 +31,7 @@ export class Verstak {
     const owner = gCurrent?.instance
     if (owner) {
       // Lookup for existing node and check for coalescing separators
-      let existing: MergedItem<RxNodeImpl<any, any, any, any>> | undefined = undefined
+      let existing: MergedItem<RxNodeImpl> | undefined = undefined
       const children = owner.children
       // Coalesce multiple separators into single one, if any
       if (driver.isSeparator) {
@@ -104,7 +104,7 @@ export class Verstak {
 
 // BaseDriver
 
-export class BaseDriver<T, C = unknown> implements RxNodeDriver<T, C> {
+export class BaseDriver<T extends { node: RxNode }> implements RxNodeDriver<T> {
   public static readonly fragment = new BaseDriver<any>(
     "fragment", false, el => el.kind = ElKind.Group)
 
@@ -114,45 +114,45 @@ export class BaseDriver<T, C = unknown> implements RxNodeDriver<T, C> {
     readonly predefine?: SimpleDelegate<T>) {
   }
 
-  specify(element: El<T, unknown, C>): void {
+  specify(element: T): void {
     specifyUsingPresetChain(element, element.node.spec)
   }
 
-  create(element: El<T, unknown, C>): void {
+  create(element: T): void {
     createUsingPresetChain(element, element.node.spec)
   }
 
-  initialize(element: El<T, unknown, C>): void {
+  initialize(element: T): void {
     this.predefine?.(element)
     initializeUsingPresetChain(element, element.node.spec)
   }
 
-  mount(element: El<T, unknown, C>): void {
+  mount(element: T): void {
     // nothing to do by default
   }
 
-  update(element: El<T, unknown, C>): void | Promise<void> {
+  update(element: T): void | Promise<void> {
     updateUsingPresetChain(element, element.node.spec)
   }
 
-  finalize(element: El<T, unknown, C>, isLeader: boolean): boolean {
+  finalize(element: T, isLeader: boolean): boolean {
     finalizeUsingPresetChain(element, element.node.spec)
     return isLeader // treat children as finalization leaders as well
   }
 
-  applyKind(element: El<T, any, C, any>, value: ElKind): void { /* nop */ }
-  applyCoords(element: El<T, any, C, any>, value: ElCoords | undefined): void { /* nop */ }
-  applyWidthGrowth(element: El<T, any, C, any>, value: number): void { /* nop */ }
-  applyMinWidth(element: El<T, any, C, any>, value: string): void { /* nop */ }
-  applyMaxWidth(element: El<T, any, C, any>, value: string): void { /* nop */ }
-  applyHeightGrowth(element: El<T, any, C, any>, value: number): void { /* nop */ }
-  applyMinHeight(element: El<T, any, C, any>, value: string): void { /* nop */ }
-  applyMaxHeight(element: El<T, any, C, any>, value: string): void { /* nop */ }
-  applyContentAlignment(element: El<T, any, C, any>, value: Align): void { /* nop */ }
-  applyElementAlignment(element: El<T, any, C, any>, value: Align): void { /* nop */ }
-  applyContentWrapping(element: El<T, any, C, any>, value: boolean): void { /* nop */ }
-  applyOverlayVisible(element: El<T, any, C, any>, value: boolean | undefined): void { /* nop */ }
-  applyStyle(element: El<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void { /* nop */ }
+  applyKind(element: T, value: ElKind): void { /* nop */ }
+  applyCoords(element: T, value: ElCoords | undefined): void { /* nop */ }
+  applyWidthGrowth(element: T, value: number): void { /* nop */ }
+  applyMinWidth(element: T, value: string): void { /* nop */ }
+  applyMaxWidth(element: T, value: string): void { /* nop */ }
+  applyHeightGrowth(element: T, value: number): void { /* nop */ }
+  applyMinHeight(element: T, value: string): void { /* nop */ }
+  applyMaxHeight(element: T, value: string): void { /* nop */ }
+  applyContentAlignment(element: T, value: Align): void { /* nop */ }
+  applyElementAlignment(element: T, value: Align): void { /* nop */ }
+  applyContentWrapping(element: T, value: boolean): void { /* nop */ }
+  applyOverlayVisible(element: T, value: boolean | undefined): void { /* nop */ }
+  applyStyle(element: T, secondary: boolean, styleName: string, enabled?: boolean): void { /* nop */ }
 }
 
 // Utils
@@ -172,7 +172,7 @@ function modeUsingPresetChain(spec?: RxNodeSpec<any>): Mode {
   return spec?.mode ?? (spec?.preset ? modeUsingPresetChain(spec?.preset) : Mode.Default)
 }
 
-function specifyUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpec<any>): void {
+function specifyUsingPresetChain(element: unknown, spec: RxNodeSpec<any>): void {
   const preset = spec.preset
   const specify = spec.specify
   if (specify)
@@ -181,7 +181,7 @@ function specifyUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSp
     specifyUsingPresetChain(element, preset)
 }
 
-function createUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpec<any>): void {
+function createUsingPresetChain(element: unknown, spec: RxNodeSpec<any>): void {
   const preset = spec.preset
   const create = spec.create
   if (create)
@@ -190,7 +190,7 @@ function createUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpe
     createUsingPresetChain(element, preset)
 }
 
-function initializeUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpec<any>): void {
+function initializeUsingPresetChain(element: unknown, spec: RxNodeSpec<any>): void {
   const preset = spec.preset
   const initialize = spec.initialize
   if (initialize)
@@ -199,7 +199,7 @@ function initializeUsingPresetChain(element: El<any, any, any, any>, spec: RxNod
     initializeUsingPresetChain(element, preset)
 }
 
-function updateUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpec<any>): void {
+function updateUsingPresetChain(element: unknown, spec: RxNodeSpec<any>): void {
   const preset = spec.preset
   const update = spec.update
   if (update)
@@ -208,7 +208,7 @@ function updateUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpe
     updateUsingPresetChain(element, preset)
 }
 
-function finalizeUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpec<any>): void {
+function finalizeUsingPresetChain(element: unknown, spec: RxNodeSpec<any>): void {
   const preset = spec.preset
   const finalize = spec.finalize
   if (finalize)
@@ -217,15 +217,15 @@ function finalizeUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeS
     finalizeUsingPresetChain(element, preset)
 }
 
-export class StaticDriver<T> extends BaseDriver<T> {
+export class StaticDriver<T> extends BaseDriver<El<T>> {
   readonly native: T
 
-  constructor(native: T, name: string, isRow: boolean, predefine?: SimpleDelegate<T>) {
+  constructor(native: T, name: string, isRow: boolean, predefine?: SimpleDelegate<El<T>>) {
     super(name, isRow, predefine)
     this.native = native
   }
 
-  create(element: El<T, unknown, unknown, void>): void {
+  create(element: El<T>): void {
     element.native = this.native
   }
 }
@@ -238,7 +238,9 @@ export class CursorCommand {
   rowShift?: number
 }
 
-export class CursorCommandDriver extends BaseDriver<CursorCommand, void>{
+export class CursorCommandDriver
+  extends BaseDriver<El<CursorCommand, unknown, void, void>> {
+
   constructor() {
     super("cursor", false, el => el.kind = ElKind.Cursor)
   }
@@ -316,31 +318,31 @@ class RxNodeCtxImpl<T extends Object = Object> extends ObservableObject implemen
 
 // RxNodeImpl
 
-class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxNode<T, M, C, R> {
+class RxNodeImpl<T = any> implements RxNode<T> {
   // Static properties
   static grandNodeCount: number = 0
   static disposableNodeCount: number = 0
 
   readonly key: string
-  readonly driver: RxNodeDriver<T, C>
-  spec: RxNodeSpec<El<T, M, C, R>>
+  readonly driver: RxNodeDriver<T>
+  spec: RxNodeSpec<T>
   readonly level: number
-  readonly owner: RxNodeImpl<any, any, any, any>
-  readonly element: ElImpl<T, M, C, R>
-  host: RxNodeImpl<any, any, any, any>
-  readonly children: MergeList<RxNodeImpl<any, any, any, any>>
-  slot: MergedItem<RxNodeImpl<T, M, C, R>> | undefined
+  readonly owner: RxNodeImpl
+  readonly element: T
+  host: RxNodeImpl
+  readonly children: MergeList<RxNodeImpl>
+  slot: MergedItem<RxNodeImpl<T>> | undefined
   stamp: number
-  outer: RxNodeImpl<any, any, any, any>
+  outer: RxNodeImpl
   context: RxNodeCtxImpl<any> | undefined
   numerator: number
   priority: Priority
   childrenShuffling: boolean
 
-  constructor(key: string, driver: RxNodeDriver<T>,
-    spec: Readonly<RxNodeSpec<El<T, M, C, R>>>,
-    element: ElImpl<T, M, C, R>,
-    owner: RxNodeImpl<any, any, any, any> | undefined) {
+  constructor(
+    key: string, driver: RxNodeDriver<T>,
+    spec: Readonly<RxNodeSpec<T>>, element: T,
+    owner: RxNodeImpl | undefined) {
     this.key = key
     this.driver = driver
     this.spec = spec
@@ -357,7 +359,7 @@ class RxNodeImpl<T = unknown, M = unknown, C = unknown, R = void> implements RxN
     }
     this.element = element
     this.host = this // node is unmounted
-    this.children = new MergeList<RxNodeImpl<any, any, any, any>>(getNodeKey, true)
+    this.children = new MergeList<RxNodeImpl>(getNodeKey, true)
     this.slot = undefined
     this.stamp = Number.MAX_SAFE_INTEGER // empty
     this.context = undefined
@@ -400,7 +402,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   static logging: LoggingOptions | undefined = undefined
 
   // System-managed properties
-  readonly node: RxNodeImpl<T, M, C, R>
+  readonly node: RxNodeImpl<El<T, M, C, R>>
   maxColumnCount: number
   maxRowCount: number
   cursorPosition?: CursorPosition
@@ -424,7 +426,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
   private _overlayVisible: boolean | undefined
   private _hasStyles: boolean
 
-  constructor(key: string, driver: RxNodeDriver<T>,
+  constructor(key: string, driver: RxNodeDriver<El<T, M, C, R>>,
     owner: RxNodeImpl | undefined, spec: RxNodeSpec<El<T, M, C, R>>) {
     // System-managed properties
     this.node = new RxNodeImpl(key, driver, spec, this, owner)
@@ -475,7 +477,8 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     if (!driver.isSeparator) {
       const owner = node.owner
       const ownerEl = owner.element
-      const cursorPosition = node.slot!.prev?.instance.element.cursorPosition ?? InitialCursorPosition
+      const prevEl = node.slot!.prev?.instance.element as ElImpl
+      const cursorPosition = prevEl?.cursorPosition ?? InitialCursorPosition
       const newCursorPosition = this.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
       const isCursorElement = driver instanceof CursorCommandDriver
       const coords = getEffectiveElCoords(!isCursorElement,
@@ -583,7 +586,7 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
     return Rx.getReaction(node.update).configure(options)
   }
 
-  static get curr(): MergedItem<RxNodeImpl<any, any, any, any>> {
+  static get curr(): MergedItem<RxNodeImpl> {
     if (!gCurrent)
       throw new Error("current element is undefined")
     return gCurrent
@@ -630,7 +633,8 @@ class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R> {
 
   private rowBreak(): void {
     const node = this.node
-    const cursorPosition = node.slot!.prev?.instance.element.cursorPosition ?? InitialCursorPosition
+    const prevEl = node.slot!.prev?.instance.element as ElImpl
+    const cursorPosition = prevEl?.cursorPosition ?? InitialCursorPosition
     const newCursorPosition = this.cursorPosition = new CursorPosition(cursorPosition)
     newCursorPosition.x = 1
     newCursorPosition.y = newCursorPosition.runningMaxY + 1
@@ -839,7 +843,7 @@ async function updateIncrementally(owner: MergedItem<RxNodeImpl>, stamp: number,
   }
 }
 
-function triggerUpdate(slot: MergedItem<RxNodeImpl<any, any, any, any>>): void {
+function triggerUpdate(slot: MergedItem<RxNodeImpl>): void {
   const node = slot.instance
   if (node.stamp >= 0) { // if not finalized
     if (node.has(Mode.PinpointUpdate)) {
@@ -879,7 +883,7 @@ function mountOrRemountIfNecessary(element: ElImpl): void {
     unobs(() => driver.mount(element))
 }
 
-function updateNow(slot: MergedItem<RxNodeImpl<any, any, any, any>>): void {
+function updateNow(slot: MergedItem<RxNodeImpl>): void {
   const node = slot.instance
   const el = node.element
   if (node.stamp >= 0) { // if element is alive

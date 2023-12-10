@@ -11,7 +11,7 @@ import { MergeListReader, MergedItem, MemberOptions } from "reactronic"
 
 export type Delegate<T> = (element: T, base: () => void) => void
 // export type AsyncDelegate<T = unknown, M = unknown> = (element: El<T, M, Promise<void>>) => Promise<void>
-export type SimpleDelegate<T = unknown> = (element: El<T, any, any, any>) => void
+export type SimpleDelegate<T = unknown> = (element: T) => void
 
 // El, ElKind
 
@@ -27,7 +27,7 @@ export enum ElKind {
 
 export interface El<T = unknown, M = unknown, C = unknown, R = void> {
   // System-managed properties
-  readonly node: RxNode<T, M, C, R>
+  readonly node: RxNode<El<T, M, C, R>>
   readonly isSection: boolean
   readonly isTable: boolean
   native: T
@@ -53,16 +53,16 @@ export interface El<T = unknown, M = unknown, C = unknown, R = void> {
 
 // RxNode
 
-export interface RxNode<T = unknown, M = unknown, C = unknown, R = void> {
+export interface RxNode<T = any> {
   readonly key: string
   readonly driver: RxNodeDriver<T>
-  readonly spec: Readonly<RxNodeSpec<El<T, M, C, R>>>
+  readonly spec: Readonly<RxNodeSpec<T>>
   readonly level: number
   readonly owner: RxNode
-  readonly element: El<T, M, C, R>
+  readonly element: T
   readonly host: RxNode
-  readonly children: MergeListReader<RxNode<any, any, any, any>>
-  readonly slot: MergedItem<RxNode<T, M, C, R>> | undefined
+  readonly children: MergeListReader<RxNode>
+  readonly slot: MergedItem<RxNode<T>> | undefined
   readonly stamp: number
   readonly outer: RxNode
   readonly context: RxNodeCtx | undefined
@@ -95,31 +95,31 @@ export interface RxNodeCtx<T extends Object = Object> {
 
 // RxNodeDriver
 
-export interface RxNodeDriver<T, C = unknown> {
+export interface RxNodeDriver<T> {
   readonly name: string,
   readonly isSeparator: boolean,
   readonly predefine?: SimpleDelegate<T>
 
-  specify(element: El<T, unknown, C>): void
-  create(element: El<T, unknown, C>): void
-  initialize(element: El<T, unknown, C>): void
-  mount(element: El<T, unknown, C>): void
-  update(element: El<T, unknown, C>): void | Promise<void>
-  finalize(element: El<T, unknown, C>, isLeader: boolean): boolean
+  specify(element: T): void
+  create(element: T): void
+  initialize(element: T): void
+  mount(element: T): void
+  update(element: T): void | Promise<void>
+  finalize(element: T, isLeader: boolean): boolean
 
-  applyKind(element: El<T, any, C, any>, value: ElKind): void
-  applyCoords(element: El<T, any, C, any>, value: ElCoords | undefined): void
-  applyWidthGrowth(element: El<T, any, C, any>, value: number): void
-  applyMinWidth(element: El<T, any, C, any>, value: string): void
-  applyMaxWidth(element: El<T, any, C, any>, value: string): void
-  applyHeightGrowth(element: El<T, any, C, any>, value: number): void
-  applyMinHeight(element: El<T, any, C, any>, value: string): void
-  applyMaxHeight(element: El<T, any, C, any>, value: string): void
-  applyContentAlignment(element: El<T, any, C, any>, value: Align): void
-  applyElementAlignment(element: El<T, any, C, any>, value: Align): void
-  applyContentWrapping(element: El<T, any, C, any>, value: boolean): void
-  applyOverlayVisible(element: El<T, any, C, any>, value: boolean | undefined): void
-  applyStyle(element: El<T, any, C, any>, secondary: boolean, styleName: string, enabled?: boolean): void
+  applyKind(element: T, value: ElKind): void
+  applyCoords(element: T, value: ElCoords | undefined): void
+  applyWidthGrowth(element: T, value: number): void
+  applyMinWidth(element: T, value: string): void
+  applyMaxWidth(element: T, value: string): void
+  applyHeightGrowth(element: T, value: number): void
+  applyMinHeight(element: T, value: string): void
+  applyMaxHeight(element: T, value: string): void
+  applyContentAlignment(element: T, value: Align): void
+  applyElementAlignment(element: T, value: Align): void
+  applyContentWrapping(element: T, value: boolean): void
+  applyOverlayVisible(element: T, value: boolean | undefined): void
+  applyStyle(element: T, secondary: boolean, styleName: string, enabled?: boolean): void
 }
 
 // Other
