@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import test from "ava"
-import { ElCoords } from "../source/core/Interfaces.js"
+import { ElCoords } from "../source/core/RxNode.js"
 import { parseElCoords, emitElCoords } from "../source/core/Utils.js"
 
 function parse(text: string): ElCoords {
@@ -19,7 +19,7 @@ function emit(value: ElCoords): string {
   return emitElCoords(value)
 }
 
-test("ElCoods", t => {
+test("ElCoords", t => {
   // Parse
   t.deepEqual(parse(""), { x1: 0, y1: 0, x2: 0, y2: 0 })
   t.deepEqual(parse(" "), { x1: 0, y1: 0, x2: 0, y2: 0 })

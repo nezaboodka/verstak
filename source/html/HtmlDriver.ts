@@ -8,21 +8,21 @@
 import { MergedItem, Rx } from "reactronic"
 import { Verstak, El, BaseDriver, Priority, RxNode } from "../core/api.js"
 
-// WebDriver
+// VerstakDriver
 
-export abstract class WebDriver<T extends Element, C = unknown> extends BaseDriver<El<T, unknown, C, void>> {
+export abstract class VerstakDriver<T extends Element, M = unknown, C = unknown> extends BaseDriver<El<T, M, C, void>> {
 
-  create(element: El<T, unknown, C, void>): void {
+  create(element: El<T, M, C>): void {
     super.create(element)
   }
 
-  initialize(element: El<T, unknown, C, void>): void {
+  initialize(element: El<T, M, C>): void {
     if (Rx.isLogging && !element.node.driver.isSeparator)
       element.native.setAttribute("key", element.node.key)
     super.initialize(element)
   }
 
-  finalize(element: El<T, unknown, C>, isLeader: boolean): boolean {
+  finalize(element: El<T, M, C>, isLeader: boolean): boolean {
     const native = element.native as T | undefined // hack
     if (native) {
       native.resizeObserver?.unobserve(native) // is it really needed or browser does this automatically?
@@ -33,15 +33,15 @@ export abstract class WebDriver<T extends Element, C = unknown> extends BaseDriv
     return false // children elements having native HTML elements are not treated as leaders
   }
 
-  mount(element: El<T, unknown, C>): void {
+  mount(element: El<T, M, C>): void {
     const native = element.native as T | undefined // hack
     if (native) {
       const node = element.node
       const sequential = node.owner.children.isStrict
-      const automaticNativeHost = WebDriver.findEffectiveHtmlElementHost(node).element.native as unknown as Element | undefined // hack
+      const automaticNativeHost = VerstakDriver.findEffectiveHtmlElementHost(node).element.native as unknown as Element | undefined // hack
       if (automaticNativeHost) {
         if (sequential && !node.driver.isSeparator) {
-          const after = WebDriver.findPrevSiblingHtmlElement(element.node.slot!)
+          const after = VerstakDriver.findPrevSiblingHtmlElement(element.node.slot!)
           if (after === undefined || after.instance.driver.isSeparator) {
             if (automaticNativeHost !== native.parentNode || !native.previousSibling)
               automaticNativeHost.prepend(native)
@@ -60,11 +60,11 @@ export abstract class WebDriver<T extends Element, C = unknown> extends BaseDriv
     }
   }
 
-  relocate(element: El<T, unknown, C>): void {
+  relocate(element: El<T, M, C>): void {
     // nothing to do by default
   }
 
-  update(element: El<T, unknown, C>): void | Promise<void> {
+  update(element: El<T, M, C>): void | Promise<void> {
     const result = super.update(element)
     if (gBlinkingEffectMarker)
       blink(element.native, Verstak.currentUpdatePriority, element.node.stamp)
@@ -95,14 +95,14 @@ export abstract class WebDriver<T extends Element, C = unknown> extends BaseDriv
   }
 }
 
-export class HtmlDriver<T extends HTMLElement, C = any> extends WebDriver<T, C> {
+export class HtmlDriver<T extends HTMLElement, M = any, C = any> extends VerstakDriver<T, M, C> {
   create(element: El<T, any, C, void>): void {
     element.native = document.createElement(element.node.driver.name) as T
     super.create(element)
   }
 }
 
-export class SvgDriver<T extends SVGElement, C = any> extends WebDriver<T, C> {
+export class SvgDriver<T extends SVGElement, M = any, C = any> extends VerstakDriver<T, M, C> {
   create(element: El<T, any, C, void>): void {
     element.native = document.createElementNS("http://www.w3.org/2000/svg", element.node.driver.name) as T
     super.create(element)
