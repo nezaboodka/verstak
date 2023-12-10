@@ -173,8 +173,8 @@ function modeUsingPresetChain(spec?: RxNodeSpec<any>): Mode {
 }
 
 function specifyUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpec<any>): void {
-  const specify = spec.specify
   const preset = spec.preset
+  const specify = spec.specify
   if (specify)
     specify(element, preset ? () => specifyUsingPresetChain(element, preset) : NOP)
   else if (preset)
@@ -182,8 +182,8 @@ function specifyUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSp
 }
 
 function createUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpec<any>): void {
-  const create = spec.create
   const preset = spec.preset
+  const create = spec.create
   if (create)
     create(element, preset ? () => createUsingPresetChain(element, preset) : NOP)
   else if (preset)
@@ -191,8 +191,8 @@ function createUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpe
 }
 
 function initializeUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpec<any>): void {
-  const initialize = spec.initialize
   const preset = spec.preset
+  const initialize = spec.initialize
   if (initialize)
     initialize(element, preset ? () => initializeUsingPresetChain(element, preset) : NOP)
   else if (preset)
@@ -200,8 +200,8 @@ function initializeUsingPresetChain(element: El<any, any, any, any>, spec: RxNod
 }
 
 function updateUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpec<any>): void {
-  const update = spec.update
   const preset = spec.preset
+  const update = spec.update
   if (update)
     update(element, preset ? () => updateUsingPresetChain(element, preset) : NOP)
   else if (preset)
@@ -209,8 +209,8 @@ function updateUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpe
 }
 
 function finalizeUsingPresetChain(element: El<any, any, any, any>, spec: RxNodeSpec<any>): void {
-  const finalize = spec.finalize
   const preset = spec.preset
+  const finalize = spec.finalize
   if (finalize)
     finalize(element, preset ? () => finalizeUsingPresetChain(element, preset) : NOP)
   else if (preset)
