@@ -25,7 +25,7 @@ export enum ElKind {
   Native = 6,
 }
 
-export interface El<T = unknown, M = unknown, C = unknown, R = void> {
+export interface El<T = any, M = any, C = any, R = void> {
   // System-managed properties
   readonly node: RxNode<El<T, M, C, R>>
   readonly isSection: boolean
