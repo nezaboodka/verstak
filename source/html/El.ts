@@ -63,8 +63,8 @@ export interface ElCoords {
 }
 
 export enum Align {
-  Default = 0b10000,
-  ToBounds = 0b00000,
+  Default   = 0b10000,
+  ToBounds  = 0b00000,
   ToLeft    = 0b00001,
   ToCenterX = 0b00010,
   ToRight   = 0b00011,
