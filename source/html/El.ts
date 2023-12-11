@@ -438,16 +438,16 @@ export class CursorCommand {
 }
 
 export class CursorCommandDriver
-  extends ElDriver<CursorCommand, unknown, void> {
+  extends ElDriver<Element, unknown, void> {
 
   constructor() {
     super("cursor", false, el => el.kind = ElKind.Cursor)
   }
 
-  assign(element: El<CursorCommand, unknown, void, void>): void {
-    // element.native = new CursorCommand()
-    super.assign(element)
-  }
+  // assign(element: El<CursorCommand, unknown, void, void>): void {
+  //   // element.native = new CursorCommand()
+  //   super.assign(element)
+  // }
 }
 
 export class Apply {
