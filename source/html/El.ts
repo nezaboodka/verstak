@@ -157,9 +157,9 @@ export class ElImpl<T extends Element = any, M = any, C = any, R = any> implemen
     this._hasStyles = false // reset
   }
 
+  get isSection(): boolean { return this.kind === ElKind.Section }
+  get isTable(): boolean { return this.kind === ElKind.Table }
   get isAuxiliary(): boolean { return this.kind > ElKind.Note } // Row, Group, Cursor
-  get isSection(): boolean { return this.kind === ElKind.Note } // Row, Group, Cursor
-  get isTable(): boolean { return this.kind > ElKind.Note } // Row, Group, Cursor
 
   get kind(): ElKind { return this._kind }
   set kind(value: ElKind) {
