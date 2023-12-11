@@ -13,6 +13,20 @@ export type Delegate<T> = (element: T, base: () => void) => void
 // export type AsyncDelegate<T = unknown, M = unknown> = (element: El<T, M, Promise<void>>) => Promise<void>
 export type SimpleDelegate<T = unknown> = (element: T) => void
 
+// Enums
+
+export const enum Priority {
+  Realtime = 0,
+  Normal = 1,
+  Background = 2
+}
+
+export enum Mode {
+  Default = 0,
+  PinpointUpdate = 1,
+  ManualMount = 2,
+}
+
 // RxNode
 
 export abstract class RxNode<T = any> {
@@ -69,18 +83,4 @@ export interface RxNodeDriver<T> {
   mount(element: T): void
   update(element: T): void | Promise<void>
   finalize(element: T, isLeader: boolean): boolean
-}
-
-// Other
-
-export const enum Priority {
-  Realtime = 0,
-  Normal = 1,
-  Background = 2
-}
-
-export enum Mode {
-  Default = 0,
-  PinpointUpdate = 1,
-  ManualMount = 2,
 }
