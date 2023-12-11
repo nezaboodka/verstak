@@ -18,16 +18,22 @@ export class ElDriver<T extends Element, M = unknown, C = unknown> extends BaseD
   }
 }
 
-// El
+// BaseEl
 
-export interface El<T = any, M = any, C = any, R = void> {
+export interface BaseEl<T = any, M = any, C = any, R = void> {
   // System-managed properties
   readonly node: RxNode<El<T, M, C, R>>
-  native: T
 
   // User-manageable properties
   model: M
   controller: C
+}
+
+// El
+
+export interface El<T = any, M = any, C = any, R = void> extends BaseEl<T, M, C, R> {
+  // System-managed properties
+  native: T
 
   // User-manageable properties
   kind: ElKind
@@ -152,6 +158,8 @@ export class ElImpl<T extends Element = any, M = any, C = any, R = any> implemen
   }
 
   get isAuxiliary(): boolean { return this.kind > ElKind.Note } // Row, Group, Cursor
+  get isSection(): boolean { return this.kind === ElKind.Note } // Row, Group, Cursor
+  get isTable(): boolean { return this.kind > ElKind.Note } // Row, Group, Cursor
 
   get kind(): ElKind { return this._kind }
   set kind(value: ElKind) {
