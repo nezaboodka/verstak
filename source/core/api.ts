@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-export * from "./RxNode.js"
 export * from "./Utils.js"
+export * from "./RxNode.js"
+export * from "./RxNodeImpl.js"
 export * from "./Restyler.js"
-export * from "./Verstak.js"
