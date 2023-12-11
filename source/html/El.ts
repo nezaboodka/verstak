@@ -18,9 +18,6 @@ export class ElDriver<T extends Element, M = unknown, C = unknown> extends BaseD
   }
 }
 
-export class WebDriver<T extends Element, M = unknown, C = unknown> extends ElDriver<T, M, C> {
-}
-
 // El
 
 export interface El<T = any, M = any, C = any, R = void> {

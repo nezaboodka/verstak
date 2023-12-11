@@ -7,11 +7,11 @@
 
 import { Rx } from "reactronic"
 import { Verstak, Priority, SimpleDelegate } from "../core/api.js"
-import { Apply, El, WebDriver, ElKind } from "./El.js"
+import { Apply, El, ElDriver, ElKind } from "./El.js"
 
 // VerstakDriver
 
-export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends WebDriver<T, M, C> {
+export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends ElDriver<T, M, C> {
 
   initialize(element: El<T, M, C>): void {
     if (Rx.isLogging && !element.node.driver.isSeparator)
