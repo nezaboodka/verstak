@@ -7,7 +7,7 @@
 
 import { Rx } from "reactronic"
 import { Verstak, Priority, SimpleDelegate } from "../core/api.js"
-import { Apply, El, ElDriver, ElKind } from "./El.js"
+import { Apply, El, ElDriver, ElImpl, ElKind } from "./El.js"
 
 // VerstakDriver
 
@@ -63,6 +63,11 @@ export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends 
 
   update(element: El<T, M, C>): void | Promise<void> {
     const result = super.update(element)
+    if (element.area === undefined) {
+      const hostEl = element.node.host.element
+      if (hostEl instanceof ElImpl && hostEl.isTable)
+        element.area = undefined // automatic placement in table
+    }
     if (gBlinkingEffectMarker)
       blink(element.native, Verstak.currentUpdatePriority, element.node.stamp)
     return result

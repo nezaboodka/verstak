@@ -529,8 +529,6 @@ function updateNow(slot: MergedItem<RxNodeImpl>): void {
           node.children.beginMerge()
           const driver = node.driver
           result = driver.update(el)
-          if (el.area === undefined && node.owner.element.isTable)
-            el.area = undefined // automatic placement
           if (result instanceof Promise)
             result.then(
               v => { runUpdateNestedTreesThenDo(undefined, NOP); return v },
