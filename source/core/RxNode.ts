@@ -15,25 +15,25 @@ export type SimpleDelegate<T = unknown> = (element: T) => void
 
 // RxNode
 
-export interface RxNode<T = any> {
-  readonly key: string
-  readonly driver: RxNodeDriver<T>
-  readonly spec: Readonly<RxNodeSpec<T>>
-  readonly level: number
-  readonly owner: RxNode
-  readonly element: T
-  readonly host: RxNode
-  readonly children: MergeListReader<RxNode>
-  readonly slot: MergedItem<RxNode<T>> | undefined
-  readonly stamp: number
-  readonly outer: RxNode
-  readonly context: RxNodeCtx | undefined
-  readonly isInitialUpdate: boolean
-  priority?: Priority
-  childrenShuffling: boolean
-  strictOrder: boolean
-  has(mode: Mode): boolean
-  configureReactronic(options: Partial<MemberOptions>): MemberOptions
+export abstract class RxNode<T = any> {
+  abstract readonly key: string
+  abstract readonly driver: RxNodeDriver<T>
+  abstract readonly spec: Readonly<RxNodeSpec<T>>
+  abstract readonly level: number
+  abstract readonly owner: RxNode
+  abstract readonly element: T
+  abstract readonly host: RxNode
+  abstract readonly children: MergeListReader<RxNode>
+  abstract readonly slot: MergedItem<RxNode<T>> | undefined
+  abstract readonly stamp: number
+  abstract readonly outer: RxNode
+  abstract readonly context: RxNodeCtx | undefined
+  abstract readonly isInitialUpdate: boolean
+  abstract priority?: Priority
+  abstract childrenShuffling: boolean
+  abstract strictOrder: boolean
+  abstract has(mode: Mode): boolean
+  abstract configureReactronic(options: Partial<MemberOptions>): MemberOptions
 }
 
 // RxNodeSpec
