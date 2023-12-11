@@ -13,7 +13,7 @@ import { equalElCoords, parseElCoords } from "./ElUtils.js"
 // ElDriver
 
 export class ElDriver<T extends Element, M = unknown, C = unknown> extends BaseDriver<El<T, M, C, void>> {
-  create(node: RxNode<El<T, M, C, void>>): El<T, M, C, void> {
+  allocate(node: RxNode<El<T, M, C, void>>): El<T, M, C, void> {
     return new ElImpl<T, M, C, void>(node)
   }
 }

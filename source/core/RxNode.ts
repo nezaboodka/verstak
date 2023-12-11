@@ -70,7 +70,7 @@ export interface RxNodeDriver<T> {
   readonly isSeparator: boolean,
   readonly predefine?: SimpleDelegate<T>
 
-  create(node: RxNode<T>): T
+  allocate(node: RxNode<T>): T
   assign(element: T): void
   initialize(element: T): void
   mount(element: T): void

@@ -101,7 +101,7 @@ export abstract class BaseDriver<T extends { node: RxNode }> implements RxNodeDr
     readonly predefine?: SimpleDelegate<T>) {
   }
 
-  abstract create(node: RxNode<T>): T
+  abstract allocate(node: RxNode<T>): T
 
   assign(element: T): void {
     assignUsingPresetChain(element, element.node.decl)
@@ -266,7 +266,7 @@ class RxNodeImpl<T = any> implements RxNode<T> {
       this.owner = owner = this
       this.outer = this
     }
-    this.element = driver.create(this)
+    this.element = driver.allocate(this)
     this.host = this // node is unmounted
     this.children = new MergeList<RxNodeImpl>(getNodeKey, true)
     this.slot = undefined
