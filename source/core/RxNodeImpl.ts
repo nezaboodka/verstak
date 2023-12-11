@@ -70,12 +70,6 @@ export class Verstak {
     return result
   }
 
-  static get currentNode(): RxNode {
-    if (gCurrent === undefined)
-      throw new Error("current element is undefined")
-    return gCurrent.instance
-  }
-
   static triggerUpdate(element: { node: RxNode }, triggers: unknown): void {
     const el = element as { node: RxNodeImpl }
     const decl = el.node.decl
@@ -315,14 +309,14 @@ class RxNodeImpl<T = any> implements RxNode<T> {
     return Rx.getReaction(this.update).configure(options)
   }
 
-  static get curr(): MergedItem<RxNodeImpl> {
+  static get current(): MergedItem<RxNodeImpl> {
     if (!gCurrent)
       throw new Error("current element is undefined")
     return gCurrent
   }
 
   static tryUseSubTreeVariable<T extends Object>(variable: SubTreeVariable<T>): T | undefined {
-    let node = RxNodeImpl.curr.instance
+    let node = RxNodeImpl.current.instance
     while (node.context?.variable !== variable && node.owner !== node)
       node = node.outer.slot!.instance
     return node.context?.value as any // TODO: to get rid of any
@@ -336,7 +330,7 @@ class RxNodeImpl<T = any> implements RxNode<T> {
   }
 
   static setSubTreeVariableValue<T extends Object>(variable: SubTreeVariable<T>, value: T | undefined): void {
-    const node = RxNodeImpl.curr.instance
+    const node = RxNodeImpl.current.instance
     const owner = node.owner
     const hostCtx = unobs(() => owner.context?.value)
     if (value && value !== hostCtx) {
@@ -368,7 +362,7 @@ function getNodeKey(node: RxNode): string | undefined {
 }
 
 function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => void): void {
-  const curr = RxNodeImpl.curr
+  const curr = RxNodeImpl.current
   const owner = curr.instance
   const children = owner.children
   if (children.isMergeInProgress) {
