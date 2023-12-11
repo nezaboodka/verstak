@@ -14,16 +14,16 @@ export type SimpleDelegate<T = unknown> = (element: T) => void
 
 // Enums
 
-export const enum Priority {
-  Realtime = 0,
-  Normal = 1,
-  Background = 2
-}
-
 export enum Mode {
   Default = 0,
   PinpointUpdate = 1,
   ManualMount = 2,
+}
+
+export const enum Priority {
+  Realtime = 0,
+  Normal = 1,
+  Background = 2
 }
 
 // RxNode
