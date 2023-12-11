@@ -32,7 +32,7 @@ export enum Mode {
 export abstract class RxNode<T = any> {
   abstract readonly key: string
   abstract readonly driver: RxNodeDriver<T>
-  abstract readonly spec: Readonly<RxNodeSpec<T>>
+  abstract readonly decl: Readonly<RxNodeDecl<T>>
   abstract readonly level: number
   abstract readonly owner: RxNode
   abstract readonly element: T
@@ -50,10 +50,10 @@ export abstract class RxNode<T = any> {
   abstract configureReactronic(options: Partial<MemberOptions>): MemberOptions
 }
 
-// RxNodeSpec
+// RxNodeDecl
 
-export interface RxNodeSpec<T = unknown> {
-  preset?: RxNodeSpec<T>
+export interface RxNodeDecl<T = unknown> {
+  preset?: RxNodeDecl<T>
   key?: string
   mode?: Mode
   triggers?: unknown

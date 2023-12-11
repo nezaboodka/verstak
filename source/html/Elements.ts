@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Verstak, RxNodeSpec } from "../core/api.js"
+import { Verstak, RxNodeDecl } from "../core/api.js"
 import { Constants, CursorCommandDriver, El, ElKind, ElArea } from "./El.js"
 import { HtmlDriver } from "./HtmlDriver.js"
 
@@ -31,17 +31,17 @@ import { HtmlDriver } from "./HtmlDriver.js"
 // Section
 
 export function Section<M = unknown, R = void>(
-  spec?: RxNodeSpec<El<HTMLElement, M, R>>,
-  preset?: RxNodeSpec<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.specify(Drivers.section, spec, preset)
+  decl?: RxNodeDecl<El<HTMLElement, M, R>>,
+  preset?: RxNodeDecl<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
+  return Verstak.declare(Drivers.section, decl, preset)
 }
 
 // Table
 
 export function Table<M = unknown, R = void>(
-  spec?: RxNodeSpec<El<HTMLElement, M, R>>,
-  preset?: RxNodeSpec<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.specify(Drivers.table, spec, preset)
+  decl?: RxNodeDecl<El<HTMLElement, M, R>>,
+  preset?: RxNodeDecl<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
+  return Verstak.declare(Drivers.table, decl, preset)
 }
 
 // Row
@@ -52,11 +52,11 @@ export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: 
 }
 
 export function startNewRow(shiftCursorDown?: number): void {
-  Verstak.specify(Drivers.row)
+  Verstak.declare(Drivers.row)
 }
 
 export function cursor(areaParams: ElArea): void {
-  Verstak.specify(Drivers.cursor, {
+  Verstak.declare(Drivers.cursor, {
     update(b) {
       b.area = areaParams
     },
@@ -65,16 +65,16 @@ export function cursor(areaParams: ElArea): void {
 
 // Note (either plain or html)
 
-export function Note(content: string, spec?: RxNodeSpec<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
-  return Verstak.specify(Drivers.note, spec, {
+export function Note(content: string, decl?: RxNodeDecl<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
+  return Verstak.declare(Drivers.note, decl, {
     update(b) {
       b.native.innerText = content
     }},
   )
 }
 
-export function HtmlNote(content: string, spec?: RxNodeSpec<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
-  return Verstak.specify(Drivers.note, spec, {
+export function HtmlNote(content: string, decl?: RxNodeDecl<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
+  return Verstak.declare(Drivers.note, decl, {
     update(b) {
       b.native.innerHTML = content
     }},
@@ -84,17 +84,17 @@ export function HtmlNote(content: string, spec?: RxNodeSpec<El<HTMLElement, void
 // Group
 
 export function Group<M = unknown, R = void>(
-  spec?: RxNodeSpec<El<HTMLElement, M, R>>,
-  preset?: RxNodeSpec<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.specify(Drivers.group, spec, preset)
+  decl?: RxNodeDecl<El<HTMLElement, M, R>>,
+  preset?: RxNodeDecl<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
+  return Verstak.declare(Drivers.group, decl, preset)
 }
 
 // Fragment
 
 export function Fragment<M = unknown, R = void>(
-  spec?: RxNodeSpec<El<void, M, R>>,
-  preset?: RxNodeSpec<El<void, M, R>>): El<void, M, R> {
-  return Verstak.specify(HtmlDriver.group, spec, preset) as El<void, M, R>
+  decl?: RxNodeDecl<El<void, M, R>>,
+  preset?: RxNodeDecl<El<void, M, R>>): El<void, M, R> {
+  return Verstak.declare(HtmlDriver.group, decl, preset) as El<void, M, R>
 }
 
 // VerstakHtmlDriver
