@@ -28,6 +28,8 @@ export interface El<T = any, M = any, C = any, R = void> {
   // User-manageable properties
   model: M
   controller: C
+
+  // User-manageable properties
   kind: ElKind
   area: ElArea
   widthGrowth: number
