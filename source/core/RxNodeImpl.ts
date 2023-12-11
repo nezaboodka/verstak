@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, unobs, Transaction, options, Reentrance, Rx, LoggingOptions, MergeList, MergedItem, ObservableObject, raw, MemberOptions } from "reactronic"
-import { Priority, Mode, RxNodeDecl, RxNodeDriver, SimpleDelegate, RxNode, RxNodeCtx } from "./RxNode.js"
+import { Priority, Mode, RxNodeDecl, RxNodeDriver, SimpleDelegate, RxNode, RxNodeContext } from "./RxNode.js"
 import { emitLetters, getCallerInfo } from "./Utils.js"
 
 // Verstak
@@ -216,10 +216,10 @@ export class SubTreeVariable<T extends Object = Object> {
   }
 }
 
-// RxNodeCtxImpl
+// RxNodeContextImpl
 
-class RxNodeCtxImpl<T extends Object = Object> extends ObservableObject implements RxNodeCtx<T> {
-  @raw next: RxNodeCtxImpl<object> | undefined
+class RxNodeContextImpl<T extends Object = Object> extends ObservableObject implements RxNodeContext<T> {
+  @raw next: RxNodeContextImpl<object> | undefined
   @raw variable: SubTreeVariable<T>
   value: T
 
@@ -250,7 +250,7 @@ class RxNodeImpl<T = any> implements RxNode<T> {
   slot: MergedItem<RxNodeImpl<T>> | undefined
   stamp: number
   outer: RxNodeImpl
-  context: RxNodeCtxImpl<any> | undefined
+  context: RxNodeContextImpl<any> | undefined
   numerator: number
   priority: Priority
   childrenShuffling: boolean
@@ -351,7 +351,7 @@ class RxNodeImpl<T = any> implements RxNode<T> {
           ctx.value = value // update context thus invalidate observers
         }
         else
-          node.context = new RxNodeCtxImpl<any>(variable, value)
+          node.context = new RxNodeContextImpl<any>(variable, value)
       })
     }
     else if (hostCtx)

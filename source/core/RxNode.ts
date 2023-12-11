@@ -40,7 +40,7 @@ export abstract class RxNode<T = any> {
   abstract readonly slot: MergedItem<RxNode<T>> | undefined
   abstract readonly stamp: number
   abstract readonly outer: RxNode
-  abstract readonly context: RxNodeCtx | undefined
+  abstract readonly context: RxNodeContext | undefined
   abstract readonly isInitialUpdate: boolean
   abstract priority?: Priority
   abstract childrenShuffling: boolean
@@ -63,12 +63,6 @@ export interface RxNodeDecl<T = unknown> {
   finalize?: Delegate<T>
 }
 
-// RxNodeCtx
-
-export interface RxNodeCtx<T extends Object = Object> {
-  value: T
-}
-
 // RxNodeDriver
 
 export interface RxNodeDriver<T> {
@@ -82,4 +76,10 @@ export interface RxNodeDriver<T> {
   mount(element: T): void
   update(element: T): void | Promise<void>
   finalize(element: T, isLeader: boolean): boolean
+}
+
+// RxNodeContext
+
+export interface RxNodeContext<T extends Object = Object> {
+  value: T
 }
