@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import test from "ava"
-import { ElCoords } from "../source/core/RxNode.js"
-import { parseElCoords, emitElCoords } from "../source/core/Utils.js"
+import { ElCoords } from "api.js"
+import { emitElCoords, parseElCoords } from "html/ElUtils.js"
 
 function parse(text: string): ElCoords {
   const result: ElCoords = { x1: 0, y1: 0, x2: 0, y2: 0 }

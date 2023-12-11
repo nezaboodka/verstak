@@ -5,8 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Verstak, ElKind, RxNodeSpec } from "../core/api.js"
-import { Constants, CursorCommandDriver, El, ElArea } from "./El.js"
+import { Verstak, RxNodeSpec } from "../core/api.js"
+import { Constants, CursorCommandDriver, El, ElKind, ElArea } from "./El.js"
 import { HtmlDriver } from "./HtmlDriver.js"
 
 // Verstak is based on two fundamental layout structures

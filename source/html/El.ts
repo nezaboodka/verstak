@@ -6,8 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { MergedItem } from "reactronic"
-import { Align, ElCoords, ElKind, RxNode, SimpleDelegate } from "../core/RxNode.js"
-import { BaseDriver, equalElCoords, parseElCoords } from "../core/api.js"
+import { RxNode, SimpleDelegate } from "../core/RxNode.js"
+import { BaseDriver, emitLetters } from "../core/api.js"
+import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // ElDriver
 
@@ -45,6 +46,35 @@ export interface El<T = any, M = any, C = any, R = void> {
 }
 
 // Other
+
+export enum ElKind {
+  Section = 0,
+  Table = 1,
+  Note = 2,
+  Group = 3,
+  Row = 4,
+  Cursor = 5,
+  Native = 6,
+}
+
+export interface ElCoords {
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+}
+
+export enum Align {
+  Default = 0b10000,
+  ToBounds = 0b00000,
+  ToLeft    = 0b00001,
+  ToCenterX = 0b00010,
+  ToRight   = 0b00011,
+  ToTop     = 0b00100,
+  ToCenterY = 0b01000,
+  ToBottom  = 0b01100,
+  ToCenter  = ToCenterX + ToCenterY,
+}
 
 export interface ElasticSize {
   cells?: number            // 1 (table only)

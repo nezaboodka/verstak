@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { Rx } from "reactronic"
-import { Verstak, Priority, SimpleDelegate, ElKind } from "../core/api.js"
-import { Apply, El, ElDriver } from "./El.js"
+import { Verstak, Priority, SimpleDelegate } from "../core/api.js"
+import { Apply, El, ElDriver, ElKind } from "./El.js"
 
 // VerstakDriver
 
