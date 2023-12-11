@@ -5,15 +5,13 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Align, ElCoords, ElKind, RxNode } from "../core/RxNode.js"
+import { MergedItem } from "reactronic"
+import { Align, ElCoords, ElKind, RxNode, SimpleDelegate } from "../core/RxNode.js"
 import { BaseDriver, equalElCoords, parseElCoords } from "../core/api.js"
 
 // ElDriver
 
-export class ElDriver<T = unknown, M = unknown, C = unknown> extends BaseDriver<El<T, M, C, void>> {
-  public static readonly fragment = new ElDriver<any, any, any>(
-    "fragment", false, el => el.kind = ElKind.Group)
-
+export class ElDriver<T, M = unknown, C = unknown> extends BaseDriver<El<T, M, C, void>> {
   create(node: RxNode<El<T, M, C, void>>): El<T, M, C, void> {
     return new ElImpl<T, M, C, void>(node)
   }
@@ -130,7 +128,8 @@ export class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R
   get kind(): ElKind { return this._kind }
   set kind(value: ElKind) {
     if (value !== this._kind || this.node.stamp >= Number.MAX_SAFE_INTEGER - 1) {
-      this.node.driver.applyKind(this, value)
+      if (this.native)
+        Apply.kind(this, value)
       this._kind = value
     }
   }
@@ -150,7 +149,8 @@ export class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R
         value, ownerEl.maxColumnCount, ownerEl.maxRowCount,
         cursorPosition, newCursorPosition)
       if (!equalElCoords(coords, this._coords)) {
-        driver.applyCoords(this, coords)
+        if (this.native)
+          Apply.coords(this, coords)
         this._coords = coords
       }
       this._area = value ?? { }
@@ -162,7 +162,7 @@ export class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R
   get widthGrowth(): number { return this._widthGrowth }
   set widthGrowth(value: number) {
     if (value !== this._widthGrowth) {
-      this.node.driver.applyWidthGrowth(this, value)
+      Apply.widthGrowth(this, value)
       this._widthGrowth = value
     }
   }
@@ -170,7 +170,7 @@ export class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R
   get minWidth(): string { return this._minWidth }
   set minWidth(value: string) {
     if (value !== this._minWidth) {
-      this.node.driver.applyMinWidth(this, value)
+      Apply.minWidth(this, value)
       this._minWidth = value
     }
   }
@@ -178,7 +178,7 @@ export class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R
   get maxWidth(): string { return this._maxWidth }
   set maxWidth(value: string) {
     if (value !== this._maxWidth) {
-      this.node.driver.applyMaxWidth(this, value)
+      Apply.applyMaxWidth(this, value)
       this._maxWidth = value
     }
   }
@@ -186,7 +186,7 @@ export class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R
   get heightGrowth(): number { return this._heightGrowth }
   set heightGrowth(value: number) {
     if (value !== this._heightGrowth) {
-      this.node.driver.applyHeightGrowth(this, value)
+      Apply.heightGrowth(this, value)
       this._heightGrowth = value
     }
   }
@@ -194,7 +194,7 @@ export class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R
   get minHeight(): string { return this._minHeight }
   set minHeight(value: string) {
     if (value !== this._minHeight) {
-      this.node.driver.applyMinHeight(this, value)
+      Apply.minHeight(this, value)
       this._minHeight = value
     }
   }
@@ -202,7 +202,7 @@ export class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R
   get maxHeight(): string { return this._maxHeight }
   set maxHeight(value: string) {
     if (value !== this._maxHeight) {
-      this.node.driver.applyMaxHeight(this, value)
+      Apply.maxHeight(this, value)
       this._maxHeight = value
     }
   }
@@ -210,7 +210,7 @@ export class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R
   get contentAlignment(): Align { return this._contentAlignment }
   set contentAlignment(value: Align) {
     if (value !== this._contentAlignment) {
-      this.node.driver.applyContentAlignment(this, value)
+      Apply.contentAlignment(this, value)
       this._contentAlignment = value
     }
   }
@@ -218,7 +218,7 @@ export class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R
   get elementAlignment(): Align { return this._elementAlignment }
   set elementAlignment(value: Align) {
     if (value !== this._elementAlignment) {
-      this.node.driver.applyElementAlignment(this, value)
+      Apply.elementAlignment(this, value)
       this._elementAlignment = value
     }
   }
@@ -226,7 +226,7 @@ export class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R
   get contentWrapping(): boolean { return this._contentWrapping }
   set contentWrapping(value: boolean) {
     if (value !== this._contentWrapping) {
-      this.node.driver.applyContentWrapping(this, value)
+      Apply.contentWrapping(this, value)
       this._contentWrapping = value
     }
   }
@@ -234,13 +234,13 @@ export class ElImpl<T = any, M = any, C = any, R = any> implements El<T, M, C, R
   get overlayVisible(): boolean | undefined { return this._overlayVisible }
   set overlayVisible(value: boolean | undefined) {
     if (value !== this._overlayVisible) {
-      this.node.driver.applyOverlayVisible(this, value)
+      Apply.overlayVisible(this, value)
       this._overlayVisible = value
     }
   }
 
   useStyle(styleName: string, enabled?: boolean): void {
-    this.node.driver.applyStyle(this, this._hasStyles, styleName, enabled)
+    Apply.style(this, this._hasStyles, styleName, enabled)
     this._hasStyles = true
   }
 
@@ -412,7 +412,231 @@ export class CursorCommandDriver
   }
 
   assign(element: El<CursorCommand, unknown, void, void>): void {
-    element.native = new CursorCommand()
+    // element.native = new CursorCommand()
     super.assign(element)
   }
 }
+
+export class Apply {
+  static kind<T extends Element>(element: El<T, any, any>, value: ElKind): void {
+    const kind = Constants.layouts[value]
+    kind && element.native.setAttribute(Constants.attribute, kind)
+    VerstakDriversByLayout[value](element as any)
+  }
+
+  static coords<T extends HTMLElement>(element: El<T>, value: ElCoords | undefined): void {
+    const s = element.native.style
+    if (value) {
+      const x1 = value.x1 || 1
+      const y1 = value.y1 || 1
+      const x2 = value.x2 || x1
+      const y2 = value.y2 || y1
+      s.gridArea = `${y1} / ${x1} / span ${y2 - y1 + 1} / span ${x2 - x1 + 1}`
+    }
+    else
+      s.gridArea = ""
+  }
+
+  static widthGrowth<T extends HTMLElement>(element: El<T>, value: number): void {
+    const s = element.native.style
+    if (value > 0) {
+      s.flexGrow = `${value}`
+      s.flexBasis = "0"
+    }
+    else {
+      s.flexGrow = ""
+      s.flexBasis = ""
+    }
+  }
+
+  static minWidth<T extends HTMLElement>(element: El<T>, value: string): void {
+    element.native.style.minWidth = `${value}`
+  }
+
+  static applyMaxWidth<T extends HTMLElement>(element: El<T>, value: string): void {
+    element.native.style.maxWidth = `${value}`
+  }
+
+  static heightGrowth<T extends HTMLElement>(element: El<T>, value: number): void {
+    const bNode = element.node
+    const driver = bNode.driver
+    if (driver.isSeparator) {
+      const s = element.native.style
+      if (value > 0)
+        s.flexGrow = `${value}`
+      else
+        s.flexGrow = ""
+    }
+    else {
+      const hostDriver = bNode.host.driver
+      if (hostDriver.isSeparator) {
+        Apply.elementAlignment(element, Align.ToBounds)
+        Apply.heightGrowth(bNode.host.slot!.instance.element, value)
+      }
+    }
+  }
+
+  static minHeight<T extends HTMLElement>(element: El<T>, value: string): void {
+    element.native.style.minHeight = `${value}`
+  }
+
+  static maxHeight<T extends HTMLElement>(element: El<T>, value: string): void {
+    element.native.style.maxHeight = `${value}`
+  }
+
+  static contentAlignment<T extends HTMLElement>(element: El<T>, value: Align): void {
+    const s = element.native.style
+    if ((value & Align.Default) === 0) { // if not auto mode
+      const v = AlignToCss[(value >> 2) & 0b11]
+      const h = AlignToCss[value & 0b11]
+      const t = TextAlignCss[value & 0b11]
+      s.justifyContent = v
+      s.alignItems = h
+      s.textAlign = t
+    }
+    else
+      s.justifyContent = s.alignContent = s.textAlign = ""
+  }
+
+  static elementAlignment<T extends HTMLElement>(element: El<T>, value: Align): void {
+    const s = element.native.style
+    if ((value & Align.Default) === 0) { // if not auto mode
+      const v = AlignToCss[(value >> 2) & 0b11]
+      const h = AlignToCss[value & 0b11]
+      s.alignSelf = v
+      s.justifySelf = h
+    }
+    // else if (heightGrowth > 0) {
+    //   s.alignSelf = AlignToCss[Align.Stretch]
+    // }
+    else
+      s.alignSelf = s.justifySelf = ""
+  }
+
+  static contentWrapping<T extends HTMLElement>(element: El<T>, value: boolean): void {
+    const s = element.native.style
+    if (value) {
+      s.flexFlow = "wrap"
+      s.overflow = ""
+      s.textOverflow = ""
+      s.whiteSpace = ""
+    }
+    else {
+      s.flexFlow = ""
+      s.overflow = "hidden"
+      s.textOverflow = "ellipsis"
+      s.whiteSpace = "nowrap"
+    }
+  }
+
+  static overlayVisible<T extends HTMLElement>(element: El<T>, value: boolean | undefined): void {
+    const e = element.native
+    const s = e.style
+    const host = Apply.findEffectiveHtmlElementHost(element.node).element.native
+    if (value === true) {
+      const doc = document.body
+      const rect = host.getBoundingClientRect()
+      if (doc.offsetWidth - rect.left > rect.right) // rightward
+        s.left = "0", s.right = ""
+      else // leftward
+        s.left = "", s.right = "0"
+      if (doc.clientHeight - rect.top > rect.bottom) // downward
+        s.top = "100%", s.bottom = ""
+      else // upward
+        s.top = "", s.bottom = "100%"
+      s.display = ""
+      s.position = "absolute"
+      s.minWidth = "100%"
+      s.boxSizing = "border-box"
+      host.style.position = "relative"
+    }
+    else {
+      host.style.position = ""
+      if (value === false)
+        s.display = "none"
+      else // overlayVisible === undefined
+        s.position = s.display = s.left = s.right = s.top = s.bottom = "" // clear
+    }
+  }
+
+  static style<T extends HTMLElement>(element: El<T, any, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
+    const native = element.native
+    enabled ??= true
+    if (secondary)
+      native.classList.toggle(styleName, enabled)
+    else
+      native.className = enabled ? styleName : ""
+  }
+
+  static findEffectiveHtmlElementHost(node: RxNode): RxNode<El<HTMLElement | SVGElement>> {
+    let p = node.host
+    while (p.slot!.instance.element.native instanceof HTMLElement === false &&
+      p.slot!.instance.element.native instanceof SVGElement === false && p !== node)
+      p = p.host
+    return p.slot!.instance as RxNode<El<HTMLElement | SVGElement>>
+  }
+
+  static findPrevSiblingHtmlElement(slot: MergedItem<RxNode>): MergedItem<RxNode<El<HTMLElement | SVGElement>>> | undefined {
+    let p = slot.prev
+    while (p && !(p.instance.element.native instanceof HTMLElement) && !(p.instance.element.native instanceof SVGElement))
+      p = p.prev
+    return p
+  }
+}
+
+// Constants
+
+export const Constants = {
+  // el: "эль",
+  // row: "строка",
+  // layouts: ["цепочка", "таблица", "" /* строка */, "группа", "заметка"],
+  // attribute: "вид",
+  el: "el",
+  row: "row",
+  layouts: ["section", "table", "note", "group", "" /* row */, "" /* cursor */],
+  attribute: "kind",
+}
+
+const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
+  el => { // section
+    const s = el.native.style
+    s.display = "flex"
+    s.flexDirection = "column"
+    s.alignSelf = el.node.owner.slot!.instance.element.isTable ? "stretch" : "center"
+    s.textAlign = "initial"
+    s.flexShrink = "1"
+    s.minWidth = "0"
+  },
+  el => { // table
+    const s = el.native.style
+    s.alignSelf = el.node.owner.slot!.instance.element.isTable ? "stretch" : "center"
+    s.display = "grid"
+    s.flexBasis = "0"
+    s.gridAutoRows = "minmax(min-content, 1fr)"
+    s.gridAutoColumns = "minmax(min-content, 1fr)"
+    s.textAlign = "initial"
+  },
+  el => { // note
+    const s = el.native.style
+    s.alignSelf = el.node.owner.slot!.instance.element.isTable ? "stretch" : "center"
+    s.display = "inline-grid"
+    s.flexShrink = "1"
+  },
+  el => { // group
+    const s = el.native.style
+    s.display = "contents"
+  },
+  el => { // row
+    const s = el.native.style
+    s.display = el.node.owner.slot!.instance.element.isTable ? "none" : "flex"
+    s.flexDirection = "row"
+  },
+  el => { // cursor
+  },
+  el => { // native
+  },
+  // undefined // cursor
+]
+
+const AlignToCss = ["stretch", "start", "center", "end"]
+const TextAlignCss = ["justify", "left", "center", "right"]

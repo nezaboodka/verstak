@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { reactive, unobs, Transaction, options, Reentrance, Rx, LoggingOptions, MergeList, MergedItem, ObservableObject, raw, MemberOptions } from "reactronic"
-import { ElCoords, ElKind, Priority, Mode, Align, RxNodeSpec, RxNodeDriver, SimpleDelegate, RxNode, RxNodeCtx } from "./RxNode.js"
+import { Priority, Mode, RxNodeSpec, RxNodeDriver, SimpleDelegate, RxNode, RxNodeCtx } from "./RxNode.js"
 import { emitLetters, getCallerInfo } from "./Utils.js"
 
 // Verstak
@@ -76,10 +76,6 @@ export class Verstak {
     return gCurrent.instance
   }
 
-  // static setNativeHost<T>(element: El<T, any, any, void>, nativeHost: T | undefined): void {
-  //   element.node.driver.mount(element, nativeHost)
-  // }
-
   static triggerUpdate(element: { node: RxNode }, triggers: unknown): void {
     const el = element as { node: RxNodeImpl }
     const spec = el.node.spec
@@ -134,20 +130,6 @@ export abstract class BaseDriver<T extends { node: RxNode }> implements RxNodeDr
     finalizeUsingPresetChain(element, element.node.spec)
     return isLeader // treat children as finalization leaders as well
   }
-
-  applyKind(element: T, value: ElKind): void { /* nop */ }
-  applyCoords(element: T, value: ElCoords | undefined): void { /* nop */ }
-  applyWidthGrowth(element: T, value: number): void { /* nop */ }
-  applyMinWidth(element: T, value: string): void { /* nop */ }
-  applyMaxWidth(element: T, value: string): void { /* nop */ }
-  applyHeightGrowth(element: T, value: number): void { /* nop */ }
-  applyMinHeight(element: T, value: string): void { /* nop */ }
-  applyMaxHeight(element: T, value: string): void { /* nop */ }
-  applyContentAlignment(element: T, value: Align): void { /* nop */ }
-  applyElementAlignment(element: T, value: Align): void { /* nop */ }
-  applyContentWrapping(element: T, value: boolean): void { /* nop */ }
-  applyOverlayVisible(element: T, value: boolean | undefined): void { /* nop */ }
-  applyStyle(element: T, secondary: boolean, styleName: string, enabled?: boolean): void { /* nop */ }
 }
 
 // Utils

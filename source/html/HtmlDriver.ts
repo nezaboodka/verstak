@@ -5,17 +5,13 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { MergedItem, Rx } from "reactronic"
-import { Verstak, Priority, RxNode, SimpleDelegate } from "../core/api.js"
-import { El, ElDriver } from "./El.js"
+import { Rx } from "reactronic"
+import { Verstak, Priority, SimpleDelegate, ElKind } from "../core/api.js"
+import { Apply, El, ElDriver } from "./El.js"
 
 // VerstakDriver
 
 export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends ElDriver<T, M, C> {
-
-  assign(element: El<T, M, C>): void {
-    super.assign(element)
-  }
 
   initialize(element: El<T, M, C>): void {
     if (Rx.isLogging && !element.node.driver.isSeparator)
@@ -39,10 +35,10 @@ export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends 
     if (native) {
       const node = element.node
       const sequential = node.owner.children.isStrict
-      const automaticNativeHost = VerstakDriver.findEffectiveHtmlElementHost(node).element.native as unknown as Element | undefined // hack
+      const automaticNativeHost = Apply.findEffectiveHtmlElementHost(node).element.native as unknown as Element | undefined // hack
       if (automaticNativeHost) {
         if (sequential && !node.driver.isSeparator) {
-          const after = VerstakDriver.findPrevSiblingHtmlElement(element.node.slot!)
+          const after = Apply.findPrevSiblingHtmlElement(element.node.slot!)
           if (after === undefined || after.instance.driver.isSeparator) {
             if (automaticNativeHost !== native.parentNode || !native.previousSibling)
               automaticNativeHost.prepend(native)
@@ -79,26 +75,11 @@ export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends 
   static set blinkingEffectMarker(value: string | undefined) {
     gBlinkingEffectMarker = value
   }
-
-  static findEffectiveHtmlElementHost(node: RxNode): RxNode<El<HTMLElement | SVGElement>> {
-    let p = node.host
-    while (p.slot!.instance.element.native instanceof HTMLElement === false &&
-      p.slot!.instance.element.native instanceof SVGElement === false && p !== node)
-      p = p.host
-    return p.slot!.instance as RxNode<El<HTMLElement | SVGElement>>
-  }
-
-  static findPrevSiblingHtmlElement(slot: MergedItem<RxNode>): MergedItem<RxNode<El<HTMLElement | SVGElement>>> | undefined {
-    let p = slot.prev
-    while (p && !(p.instance.element.native instanceof HTMLElement) && !(p.instance.element.native instanceof SVGElement))
-      p = p.prev
-    return p
-  }
 }
 
 // StaticDriver
 
-export class StaticDriver<T extends Element> extends VerstakDriver<T> {
+export class StaticDriver<T extends HTMLElement> extends VerstakDriver<T> {
   readonly native: T
 
   constructor(native: T, name: string, isRow: boolean, predefine?: SimpleDelegate<El<T>>) {
@@ -114,6 +95,9 @@ export class StaticDriver<T extends Element> extends VerstakDriver<T> {
 // HtmlDriver
 
 export class HtmlDriver<T extends HTMLElement, M = any, C = any> extends VerstakDriver<T, M, C> {
+  public static readonly group = new HtmlDriver<any, any, any>(
+    "group", false, el => el.kind = ElKind.Group)
+
   assign(element: El<T, any, C, void>): void {
     element.native = document.createElement(element.node.driver.name) as T
     super.assign(element)

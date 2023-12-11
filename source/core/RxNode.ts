@@ -69,20 +69,6 @@ export interface RxNodeDriver<T> {
   mount(element: T): void
   update(element: T): void | Promise<void>
   finalize(element: T, isLeader: boolean): boolean
-
-  applyKind(element: T, value: ElKind): void
-  applyCoords(element: T, value: ElCoords | undefined): void
-  applyWidthGrowth(element: T, value: number): void
-  applyMinWidth(element: T, value: string): void
-  applyMaxWidth(element: T, value: string): void
-  applyHeightGrowth(element: T, value: number): void
-  applyMinHeight(element: T, value: string): void
-  applyMaxHeight(element: T, value: string): void
-  applyContentAlignment(element: T, value: Align): void
-  applyElementAlignment(element: T, value: Align): void
-  applyContentWrapping(element: T, value: boolean): void
-  applyOverlayVisible(element: T, value: boolean | undefined): void
-  applyStyle(element: T, secondary: boolean, styleName: string, enabled?: boolean): void
 }
 
 // Other
