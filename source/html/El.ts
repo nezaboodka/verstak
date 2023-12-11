@@ -23,8 +23,6 @@ export class ElDriver<T extends Element, M = unknown, C = unknown> extends BaseD
 export interface El<T = any, M = any, C = any, R = void> {
   // System-managed properties
   readonly node: RxNode<El<T, M, C, R>>
-  readonly isSection: boolean
-  readonly isTable: boolean
   native: T
 
   // User-manageable properties
@@ -152,8 +150,6 @@ export class ElImpl<T extends Element = any, M = any, C = any, R = any> implemen
   }
 
   get isAuxiliary(): boolean { return this.kind > ElKind.Note } // Row, Group, Cursor
-  get isSection(): boolean { return this.kind === ElKind.Section }
-  get isTable(): boolean { return this.kind === ElKind.Table }
 
   get kind(): ElKind { return this._kind }
   set kind(value: ElKind) {
