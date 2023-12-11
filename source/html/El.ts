@@ -7,7 +7,7 @@
 
 import { MergedItem } from "reactronic"
 import { RxNode, SimpleDelegate } from "../core/RxNode.js"
-import { BaseDriver, emitLetters } from "../core/api.js"
+import { BaseDriver } from "../core/api.js"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // ElDriver
