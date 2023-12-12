@@ -181,8 +181,8 @@ function generateKey(owner: RxNodeImpl): string {
   return result
 }
 
-function modeViaPresetChain(declaration?: RxNodeDecl<any>): Mode {
-  return declaration?.mode ?? (declaration?.preset ? modeViaPresetChain(declaration?.preset) : Mode.Default)
+function getModeViaPresetChain(declaration?: RxNodeDecl<any>): Mode {
+  return declaration?.mode ?? (declaration?.preset ? getModeViaPresetChain(declaration?.preset) : Mode.Default)
 }
 
 function assignViaPresetChain(element: unknown, declaration: RxNodeDecl<any>): void {
@@ -301,7 +301,7 @@ class RxNodeImpl<T = any> implements RxNode<T> {
   get isMoved(): boolean { return this.owner.children.isMoved(this.slot!) }
 
   has(mode: Mode): boolean {
-    return (modeViaPresetChain(this.declaration) & mode) === mode
+    return (getModeViaPresetChain(this.declaration) & mode) === mode
   }
 
   @reactive
