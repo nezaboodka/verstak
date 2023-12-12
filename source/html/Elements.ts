@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Verstak, RxNodeDecl } from "../core/api.js"
+import { RxTree, RxNodeDecl } from "../core/api.js"
 import { Constants, CursorCommandDriver, El, ElKind, ElArea } from "./El.js"
 import { HtmlDriver } from "./HtmlDriver.js"
 
@@ -33,7 +33,7 @@ import { HtmlDriver } from "./HtmlDriver.js"
 export function Section<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<HTMLElement, M, R>>,
   preset?: RxNodeDecl<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.declare(Drivers.section, declaration, preset)
+  return RxTree.declare(Drivers.section, declaration, preset)
 }
 
 // Table
@@ -41,7 +41,7 @@ export function Section<M = unknown, R = void>(
 export function Table<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<HTMLElement, M, R>>,
   preset?: RxNodeDecl<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.declare(Drivers.table, declaration, preset)
+  return RxTree.declare(Drivers.table, declaration, preset)
 }
 
 // Partition
@@ -52,11 +52,11 @@ export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: 
 }
 
 export function startNewRow(shiftCursorDown?: number): void {
-  Verstak.declare(Drivers.partition)
+  RxTree.declare(Drivers.partition)
 }
 
 export function cursor(areaParams: ElArea): void {
-  Verstak.declare(Drivers.cursor, {
+  RxTree.declare(Drivers.cursor, {
     update(b) {
       b.area = areaParams
     },
@@ -67,7 +67,7 @@ export function cursor(areaParams: ElArea): void {
 
 export function Note(content: string,
   declaration?: RxNodeDecl<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
-  return Verstak.declare(Drivers.note, declaration, {
+  return RxTree.declare(Drivers.note, declaration, {
     update(b) {
       b.native.innerText = content
     }},
@@ -76,7 +76,7 @@ export function Note(content: string,
 
 export function HtmlNote(content: string,
   declaration?: RxNodeDecl<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
-  return Verstak.declare(Drivers.note, declaration, {
+  return RxTree.declare(Drivers.note, declaration, {
     update(b) {
       b.native.innerHTML = content
     }},
@@ -88,7 +88,7 @@ export function HtmlNote(content: string,
 export function Group<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<HTMLElement, M, R>>,
   preset?: RxNodeDecl<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.declare(Drivers.group, declaration, preset)
+  return RxTree.declare(Drivers.group, declaration, preset)
 }
 
 // Fragment
@@ -96,7 +96,7 @@ export function Group<M = unknown, R = void>(
 export function Fragment<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<void, M, R>>,
   preset?: RxNodeDecl<El<void, M, R>>): El<void, M, R> {
-  return Verstak.declare(HtmlDriver.group, declaration, preset) as El<void, M, R>
+  return RxTree.declare(HtmlDriver.group, declaration, preset) as El<void, M, R>
 }
 
 // VerstakHtmlDriver

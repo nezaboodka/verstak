@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { RxNode, SimpleDelegate } from "../core/RxNode.js"
-import { BaseDriver, Verstak } from "../core/api.js"
+import { BaseDriver, RxTree } from "../core/api.js"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // ElDriver
@@ -584,7 +584,7 @@ export class Apply {
     const e = element.native
     if (e instanceof HTMLElement) {
       const s = e.style
-      const host = Verstak.findMatchingHost<El, El>(element.node, n =>
+      const host = RxTree.findMatchingHost<El, El>(element.node, n =>
         n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
       const nativeHost = host?.element.native
       if (value === true) {

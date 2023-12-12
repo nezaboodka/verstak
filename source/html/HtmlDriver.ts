@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Rx } from "reactronic"
-import { Verstak, Priority, SimpleDelegate } from "../core/api.js"
+import { RxTree, Priority, SimpleDelegate } from "../core/api.js"
 import { Constants, El, ElDriver, ElImpl, ElKind } from "./El.js"
 
 // VerstakDriver
@@ -35,12 +35,12 @@ export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends 
     if (native) {
       const node = element.node
       const sequential = node.owner.children.isStrict
-      const automaticHost = Verstak.findMatchingHost<El, El>(node, n =>
+      const automaticHost = RxTree.findMatchingHost<El, El>(node, n =>
         n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
       const automaticNativeHost = automaticHost?.element.native
       if (automaticNativeHost) {
         if (sequential && !node.driver.isPartitionSeparator) {
-          const after = Verstak.findMatchingPrevSibling<El, El>(element.node, n =>
+          const after = RxTree.findMatchingPrevSibling<El, El>(element.node, n =>
             n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
           if (after === undefined || after.driver.isPartitionSeparator) {
             if (automaticNativeHost !== native.parentNode || !native.previousSibling)
@@ -72,7 +72,7 @@ export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends 
         element.area = undefined // automatic placement in table
     }
     if (gBlinkingEffectMarker)
-      blink(element.native, Verstak.currentUpdatePriority, element.node.stamp)
+      blink(element.native, RxTree.currentUpdatePriority, element.node.stamp)
     return result
   }
 

@@ -9,13 +9,13 @@ import { reactive, unobs, Transaction, options, Reentrance, Rx, LoggingOptions, 
 import { Priority, Mode, RxNodeDecl, RxNodeDriver, SimpleDelegate, RxNode, RxNodeContext } from "./RxNode.js"
 import { emitLetters, getCallerInfo } from "./Utils.js"
 
-// Verstak
+// RxTree
 
-export class Verstak {
+export class RxTree {
   static readonly shortFrameDuration = 16 // ms
   static readonly longFrameDuration = 300 // ms
   static currentUpdatePriority = Priority.Realtime
-  static frameDuration = Verstak.longFrameDuration
+  static frameDuration = RxTree.longFrameDuration
 
   static declare<T = undefined>(
     driver: RxNodeDriver<T>,
@@ -100,7 +100,7 @@ export class Verstak {
   static forEachChildRecursively<T>(node: RxNode<T>, action: SimpleDelegate<RxNode<T>>): void {
     action(node)
     for (const child of node.children.items())
-      Verstak.forEachChildRecursively<T>(child.instance, action)
+      RxTree.forEachChildRecursively<T>(child.instance, action)
   }
 
   static getDefaultLoggingOptions(): LoggingOptions | undefined {
@@ -458,29 +458,29 @@ async function updateIncrementally(owner: MergedItem<RxNodeImpl>, stamp: number,
   priority: Priority): Promise<void> {
   await Transaction.requestNextFrame()
   const node = owner.instance
-  if (!Transaction.isCanceled || !Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3)) {
-    let outerPriority = Verstak.currentUpdatePriority
-    Verstak.currentUpdatePriority = priority
+  if (!Transaction.isCanceled || !Transaction.isFrameOver(1, RxTree.shortFrameDuration / 3)) {
+    let outerPriority = RxTree.currentUpdatePriority
+    RxTree.currentUpdatePriority = priority
     try {
       if (node.childrenShuffling)
         shuffle(items)
-      const frameDurationLimit = priority === Priority.Background ? Verstak.shortFrameDuration : Infinity
-      let frameDuration = Math.min(frameDurationLimit, Math.max(Verstak.frameDuration / 4, Verstak.shortFrameDuration))
+      const frameDurationLimit = priority === Priority.Background ? RxTree.shortFrameDuration : Infinity
+      let frameDuration = Math.min(frameDurationLimit, Math.max(RxTree.frameDuration / 4, RxTree.shortFrameDuration))
       for (const child of items) {
         triggerUpdate(child)
         if (Transaction.isFrameOver(1, frameDuration)) {
-          Verstak.currentUpdatePriority = outerPriority
+          RxTree.currentUpdatePriority = outerPriority
           await Transaction.requestNextFrame(0)
-          outerPriority = Verstak.currentUpdatePriority
-          Verstak.currentUpdatePriority = priority
-          frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, Verstak.frameDuration))
+          outerPriority = RxTree.currentUpdatePriority
+          RxTree.currentUpdatePriority = priority
+          frameDuration = Math.min(4 * frameDuration, Math.min(frameDurationLimit, RxTree.frameDuration))
         }
-        if (Transaction.isCanceled && Transaction.isFrameOver(1, Verstak.shortFrameDuration / 3))
+        if (Transaction.isCanceled && Transaction.isFrameOver(1, RxTree.shortFrameDuration / 3))
           break
       }
     }
     finally {
-      Verstak.currentUpdatePriority = outerPriority
+      RxTree.currentUpdatePriority = outerPriority
     }
   }
 }
