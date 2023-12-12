@@ -124,12 +124,12 @@ export abstract class BaseDriver<T extends { node: RxNode }> implements RxNodeDr
   abstract allocate(node: RxNode<T>): T
 
   assign(element: T): void {
-    assignUsingPresetChain(element, element.node.declaration)
+    assignViaPresetChain(element, element.node.declaration)
   }
 
   initialize(element: T): void {
     this.predefine?.(element)
-    initializeUsingPresetChain(element, element.node.declaration)
+    initializeViaPresetChain(element, element.node.declaration)
   }
 
   mount(element: T): void {
@@ -137,80 +137,18 @@ export abstract class BaseDriver<T extends { node: RxNode }> implements RxNodeDr
   }
 
   update(element: T): void | Promise<void> {
-    updateUsingPresetChain(element, element.node.declaration)
+    updateViaPresetChain(element, element.node.declaration)
   }
 
   finalize(element: T, isLeader: boolean): boolean {
-    finalizeUsingPresetChain(element, element.node.declaration)
+    finalizeViaPresetChain(element, element.node.declaration)
     return isLeader // treat children as finalization leaders as well
   }
 }
 
-// Utils
+// RxNodeVariable
 
-function generateKey(owner: RxNodeImpl): string {
-  const n = owner.numerator++
-  const lettered = emitLetters(n)
-  let result: string
-  if (Rx.isLogging)
-    result = `·${getCallerInfo(lettered)}`
-  else
-    result = `·${lettered}`
-  return result
-}
-
-function modeUsingPresetChain(declaration?: RxNodeDecl<any>): Mode {
-  return declaration?.mode ?? (declaration?.preset ? modeUsingPresetChain(declaration?.preset) : Mode.Default)
-}
-
-// function declareUsingPresetChain(element: unknown, declaration: RxNodeDecl<any>): void {
-//   const preset = declaration.preset
-//   const declare = declaration.declare
-//   if (declare)
-//     declare(element, preset ? () => declareUsingPresetChain(element, preset) : NOP)
-//   else if (preset)
-//     declareUsingPresetChain(element, preset)
-// }
-
-function assignUsingPresetChain(element: unknown, declaration: RxNodeDecl<any>): void {
-  const preset = declaration.preset
-  const create = declaration.create
-  if (create)
-    create(element, preset ? () => assignUsingPresetChain(element, preset) : NOP)
-  else if (preset)
-    assignUsingPresetChain(element, preset)
-}
-
-function initializeUsingPresetChain(element: unknown, declaration: RxNodeDecl<any>): void {
-  const preset = declaration.preset
-  const initialize = declaration.initialize
-  if (initialize)
-    initialize(element, preset ? () => initializeUsingPresetChain(element, preset) : NOP)
-  else if (preset)
-    initializeUsingPresetChain(element, preset)
-}
-
-function updateUsingPresetChain(element: unknown, declaration: RxNodeDecl<any>): void {
-  const preset = declaration.preset
-  const update = declaration.update
-  if (update)
-    update(element, preset ? () => updateUsingPresetChain(element, preset) : NOP)
-  else if (preset)
-    updateUsingPresetChain(element, preset)
-}
-
-function finalizeUsingPresetChain(element: unknown, declaration: RxNodeDecl<any>): void {
-  const preset = declaration.preset
-  const finalize = declaration.finalize
-  if (finalize)
-    finalize(element, preset ? () => finalizeUsingPresetChain(element, preset) : NOP)
-  else if (preset)
-    finalizeUsingPresetChain(element, preset)
-}
-
-// SubTreeVariable
-
-export class SubTreeVariable<T extends Object = Object> {
+export class RxNodeVariable<T extends Object = Object> {
   readonly defaultValue: T | undefined
 
   constructor(defaultValue?: T) {
@@ -230,14 +168,67 @@ export class SubTreeVariable<T extends Object = Object> {
   }
 }
 
+// Utils
+
+function generateKey(owner: RxNodeImpl): string {
+  const n = owner.numerator++
+  const lettered = emitLetters(n)
+  let result: string
+  if (Rx.isLogging)
+    result = `·${getCallerInfo(lettered)}`
+  else
+    result = `·${lettered}`
+  return result
+}
+
+function modeViaPresetChain(declaration?: RxNodeDecl<any>): Mode {
+  return declaration?.mode ?? (declaration?.preset ? modeViaPresetChain(declaration?.preset) : Mode.Default)
+}
+
+function assignViaPresetChain(element: unknown, declaration: RxNodeDecl<any>): void {
+  const preset = declaration.preset
+  const create = declaration.create
+  if (create)
+    create(element, preset ? () => assignViaPresetChain(element, preset) : NOP)
+  else if (preset)
+    assignViaPresetChain(element, preset)
+}
+
+function initializeViaPresetChain(element: unknown, declaration: RxNodeDecl<any>): void {
+  const preset = declaration.preset
+  const initialize = declaration.initialize
+  if (initialize)
+    initialize(element, preset ? () => initializeViaPresetChain(element, preset) : NOP)
+  else if (preset)
+    initializeViaPresetChain(element, preset)
+}
+
+function updateViaPresetChain(element: unknown, declaration: RxNodeDecl<any>): void {
+  const preset = declaration.preset
+  const update = declaration.update
+  if (update)
+    update(element, preset ? () => updateViaPresetChain(element, preset) : NOP)
+  else if (preset)
+    updateViaPresetChain(element, preset)
+}
+
+function finalizeViaPresetChain(element: unknown, declaration: RxNodeDecl<any>): void {
+  const preset = declaration.preset
+  const finalize = declaration.finalize
+  if (finalize)
+    finalize(element, preset ? () => finalizeViaPresetChain(element, preset) : NOP)
+  else if (preset)
+    finalizeViaPresetChain(element, preset)
+}
+
 // RxNodeContextImpl
 
 class RxNodeContextImpl<T extends Object = Object> extends ObservableObject implements RxNodeContext<T> {
   @raw next: RxNodeContextImpl<object> | undefined
-  @raw variable: SubTreeVariable<T>
+  @raw variable: RxNodeVariable<T>
   value: T
 
-  constructor(variable: SubTreeVariable<T>, value: T) {
+  constructor(variable: RxNodeVariable<T>, value: T) {
     super()
     this.next = undefined
     this.variable = variable
@@ -310,7 +301,7 @@ class RxNodeImpl<T = any> implements RxNode<T> {
   get isMoved(): boolean { return this.owner.children.isMoved(this.slot!) }
 
   has(mode: Mode): boolean {
-    return (modeUsingPresetChain(this.declaration) & mode) === mode
+    return (modeViaPresetChain(this.declaration) & mode) === mode
   }
 
   @reactive
@@ -336,21 +327,21 @@ class RxNodeImpl<T = any> implements RxNode<T> {
     return gCurrent
   }
 
-  static tryUseSubTreeVariable<T extends Object>(variable: SubTreeVariable<T>): T | undefined {
+  static tryUseSubTreeVariable<T extends Object>(variable: RxNodeVariable<T>): T | undefined {
     let node = RxNodeImpl.current.instance
     while (node.context?.variable !== variable && node.owner !== node)
       node = node.outer.slot!.instance
     return node.context?.value as any // TODO: to get rid of any
   }
 
-  static useSubTreeVariableValue<T extends Object>(variable: SubTreeVariable<T>): T {
+  static useSubTreeVariableValue<T extends Object>(variable: RxNodeVariable<T>): T {
     const result = RxNodeImpl.tryUseSubTreeVariable(variable) ?? variable.defaultValue
     if (!result)
       throw new Error("context doesn't exist")
     return result
   }
 
-  static setSubTreeVariableValue<T extends Object>(variable: SubTreeVariable<T>, value: T | undefined): void {
+  static setSubTreeVariableValue<T extends Object>(variable: RxNodeVariable<T>, value: T | undefined): void {
     const node = RxNodeImpl.current.instance
     const owner = node.owner
     const hostCtx = unobs(() => owner.context?.value)
