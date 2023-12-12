@@ -5,8 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Rx } from "reactronic"
-import { RxTree, Priority, SimpleDelegate } from "../core/api.js"
+import { Rx, RxTree, Priority, SimpleDelegate } from "reactronic"
 import { Constants, El, ElDriver, ElImpl, ElKind } from "./El.js"
 
 // VerstakDriver

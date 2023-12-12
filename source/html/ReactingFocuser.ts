@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Mode } from "../core/api.js"
+import { Mode } from "reactronic"
 import { Fragment } from "./Elements.js"
 import { FocusModel } from "./sensors/FocusSensor.js"
 

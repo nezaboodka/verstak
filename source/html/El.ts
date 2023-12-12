@@ -5,8 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNode, SimpleDelegate } from "../core/RxNode.js"
-import { BaseDriver, RxTree } from "../core/api.js"
+import { RxTree, RxNode, SimpleDelegate, BaseDriver } from "reactronic"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // ElDriver

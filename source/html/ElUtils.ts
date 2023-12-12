@@ -5,8 +5,23 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { emitLetters } from "../core/api.js"
 import { ElCoords } from "./El.js"
+
+export function objectHasMember<T>(obj: any, member: string): obj is T {
+  return obj === Object(obj) && !Array.isArray(obj) && member in obj
+}
+
+export function emitLetters(n: number): string {
+  if (n < 0)
+    throw new Error(`emitLetters: argument (${n}) should not be negative or zero`)
+  let result = ""
+  while (n >= 0) {
+    const r = n % 26
+    n = Math.floor(n / 26) - 1
+    result = String.fromCharCode(65 + r) + result
+  }
+  return result
+}
 
 export function parseElCoords(text: string, result: ElCoords): ElCoords {
   let i = 0

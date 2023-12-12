@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxTree, RxNodeDecl } from "../core/api.js"
+import { RxTree, RxNodeDecl } from "reactronic"
 import { Constants, CursorCommandDriver, El, ElKind, ElArea } from "./El.js"
 import { HtmlDriver } from "./HtmlDriver.js"
 

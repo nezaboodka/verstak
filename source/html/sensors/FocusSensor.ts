@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, transactional, LoggingLevel, ToggleRef } from "reactronic"
-import { objectHasMember } from "../../core/Utils.js"
+import { objectHasMember } from "../ElUtils.js"
 import { grabElementDataList, SymDataForSensor } from "./DataForSensor.js"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
 import { WindowSensor } from "./WindowSensor.js"
