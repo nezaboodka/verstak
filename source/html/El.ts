@@ -642,13 +642,13 @@ export class Apply {
 // Constants
 
 export const Constants = {
-  // el: "эль",
-  // part: "раздел",
-  // layouts: ["цепочка", "таблица", "" /* строка */, "группа", "заметка"],
+  // element: "элемент",
+  // partition: "раздел",
+  // layouts: ["цепочка", "таблица", "" /* раздел */, "группа", "заметка"],
   // attribute: "вид",
-  el: "el",
-  part: "part",
-  layouts: ["section", "table", "note", "group", "" /* part */, "" /* cursor */],
+  element: "element",
+  partition: "partition",
+  layouts: ["section", "table", "note", "group", "" /* partition */, "" /* cursor */],
   attribute: "kind",
 }
 
@@ -681,7 +681,7 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     const s = el.native.style
     s.display = "contents"
   },
-  el => { // part
+  el => { // partition
     const s = el.native.style
     s.display = el.node.owner.element.isTable ? "contents" : "flex"
     s.flexDirection = "row"

@@ -52,7 +52,7 @@ export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: 
 }
 
 export function startNewRow(shiftCursorDown?: number): void {
-  Verstak.declare(Drivers.part)
+  Verstak.declare(Drivers.partition)
 }
 
 export function cursor(areaParams: ElArea): void {
@@ -110,19 +110,19 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 const Drivers = {
   // display: flex, flex-direction: column
-  section: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, el => el.kind = ElKind.Section),
+  section: new VerstakHtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.Section),
 
   // display: grid
-  table: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, el => el.kind = ElKind.Table),
+  table: new VerstakHtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.Table),
 
   // display: block
-  note: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, el => el.kind = ElKind.Note),
+  note: new VerstakHtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.Note),
 
   // display: contents
-  group: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, el => el.kind = ElKind.Group),
+  group: new VerstakHtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.Group),
 
   // display: flex/row or contents
-  part: new VerstakHtmlDriver<HTMLElement>(Constants.part, true, el => el.kind = ElKind.Part),
+  partition: new VerstakHtmlDriver<HTMLElement>(Constants.partition, true, el => el.kind = ElKind.Part),
 
   // cursor control element
   cursor: new CursorCommandDriver(),
