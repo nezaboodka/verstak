@@ -97,6 +97,12 @@ export class Verstak {
     return p?.instance as RxNode<R> | undefined
   }
 
+  static forEachChildRecursively<T>(node: RxNode<T>, action: SimpleDelegate<RxNode<T>>): void {
+    action(node)
+    for (const child of node.children.items())
+      Verstak.forEachChildRecursively<T>(child.instance, action)
+  }
+
   static getDefaultLoggingOptions(): LoggingOptions | undefined {
     return RxNodeImpl.logging
   }
@@ -394,21 +400,21 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         let p2: Array<MergedItem<RxNodeImpl>> | undefined = undefined
         let mounting = false
         let hostingRow = owner
-        for (const item of children.items()) {
+        for (const child of children.items()) {
           if (Transaction.isCanceled)
             break
-          const node = item.instance
+          const node = child.instance
           const el = node.element
           const isSeparator = el.node.driver.isSeparator
           const host = isSeparator ? owner : hostingRow
           const p = el.node.priority ?? Priority.Realtime
-          mounting = markToMountIfNecessary(mounting, host, item, children, sequential)
+          mounting = markToMountIfNecessary(mounting, host, child, children, sequential)
           if (p === Priority.Realtime)
-            triggerUpdate(item) // update synchronously
+            triggerUpdate(child) // update synchronously
           else if (p === Priority.Normal)
-            p1 = push(item, p1) // defer for P1 async update
+            p1 = push(child, p1) // defer for P1 async update
           else
-            p2 = push(item, p2) // defer for P2 async update
+            p2 = push(child, p2) // defer for P2 async update
           if (ownerIsSection && isSeparator)
             hostingRow = node
         }
@@ -586,8 +592,8 @@ function triggerFinalization(slot: MergedItem<RxNodeImpl>, isLeader: boolean, in
         })
     }
     // Finalize children if any
-    for (const slot of node.children.items())
-      triggerFinalization(slot, childrenAreLeaders, false)
+    for (const child of node.children.items())
+      triggerFinalization(child, childrenAreLeaders, false)
     RxNodeImpl.grandNodeCount--
   }
 }
@@ -605,14 +611,6 @@ async function runDisposalLoop(): Promise<void> {
   // console.log(`Element count: ${RxNodeImpl.grandNodeCount} totally (${RxNodeImpl.disposableNodeCount} disposable)`)
   gFirstToDispose = gLastToDispose = undefined // reset loop
 }
-
-// function forEachChildRecursively(slot: MergedItem<El>, action: (e: any) => void): void {
-//   const el = slot.instance
-//   const e = el.native
-//   e && action(e)
-//   for (const slot of el.children.items())
-//     forEachChildRecursively(slot, action)
-// }
 
 function wrapToRunInside<T>(func: (...args: any[]) => T): (...args: any[]) => T {
   let wrappedToRunInside: (...args: any[]) => T
