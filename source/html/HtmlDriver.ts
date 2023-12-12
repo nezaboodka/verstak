@@ -7,7 +7,7 @@
 
 import { Rx } from "reactronic"
 import { Verstak, Priority, SimpleDelegate } from "../core/api.js"
-import { El, ElDriver, ElImpl, ElKind } from "./El.js"
+import { Constants, El, ElDriver, ElImpl, ElKind } from "./El.js"
 
 // VerstakDriver
 
@@ -15,7 +15,7 @@ export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends 
 
   initialize(element: El<T, M, C>): void {
     if (Rx.isLogging && !element.node.driver.isPartitionSeparator)
-      element.native.setAttribute("key", element.node.key)
+      element.native.setAttribute(Constants.keyAttrName, element.node.key)
     super.initialize(element)
   }
 

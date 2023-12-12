@@ -645,10 +645,12 @@ export const Constants = {
   // element: "элемент",
   // partition: "раздел",
   // layouts: ["цепочка", "таблица", "" /* раздел */, "группа", "заметка"],
+  // keyAttrName: "ключ",
   // kindAttrName: "вид",
   element: "element",
   partition: "partition",
   layouts: ["section", "table", "note", "group", "" /* partition */, "" /* cursor */],
+  keyAttrName: "key",
   kindAttrName: "kind",
 }
 
