@@ -657,14 +657,14 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     const s = el.native.style
     s.display = "flex"
     s.flexDirection = "column"
-    s.alignSelf = el.node.owner.slot!.instance.element.isTable ? "stretch" : "center"
+    s.alignSelf = el.node.owner.element.isTable ? "stretch" : "center"
     s.textAlign = "initial"
     s.flexShrink = "1"
     s.minWidth = "0"
   },
   el => { // table
     const s = el.native.style
-    s.alignSelf = el.node.owner.slot!.instance.element.isTable ? "stretch" : "center"
+    s.alignSelf = el.node.owner.element.isTable ? "stretch" : "center"
     s.display = "grid"
     s.flexBasis = "0"
     s.gridAutoRows = "minmax(min-content, 1fr)"
@@ -673,7 +673,7 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
   },
   el => { // note
     const s = el.native.style
-    s.alignSelf = el.node.owner.slot!.instance.element.isTable ? "stretch" : "center"
+    s.alignSelf = el.node.owner.element.isTable ? "stretch" : "center"
     s.display = "inline-grid"
     s.flexShrink = "1"
   },
@@ -683,7 +683,7 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
   },
   el => { // part
     const s = el.native.style
-    s.display = el.node.owner.slot!.instance.element.isTable ? "contents" : "flex"
+    s.display = el.node.owner.element.isTable ? "contents" : "flex"
     s.flexDirection = "row"
   },
   el => { // cursor
