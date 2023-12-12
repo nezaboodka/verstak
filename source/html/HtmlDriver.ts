@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Rx, RxTree, Priority, SimpleDelegate } from "reactronic"
+import { RxSystem, RxTree, Priority, SimpleDelegate } from "reactronic"
 import { Constants, El, ElDriver, ElImpl, ElKind } from "./El.js"
 
 // VerstakDriver
@@ -13,7 +13,7 @@ import { Constants, El, ElDriver, ElImpl, ElKind } from "./El.js"
 export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends ElDriver<T, M, C> {
 
   initialize(element: El<T, M, C>): void {
-    if (Rx.isLogging && !element.node.driver.isPartitionSeparator)
+    if (RxSystem.isLogging && !element.node.driver.isPartitionSeparator)
       element.native.setAttribute(Constants.keyAttrName, element.node.key)
     super.initialize(element)
   }
