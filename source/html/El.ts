@@ -654,17 +654,19 @@ export const Constants = {
 
 const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
   el => { // section
+    const owner = el.node.owner.element as ElImpl
     const s = el.native.style
     s.display = "flex"
     s.flexDirection = "column"
-    s.alignSelf = el.node.owner.element.isTable ? "stretch" : "center"
+    s.alignSelf = owner.isTable ? "stretch" : "center"
     s.textAlign = "initial"
     s.flexShrink = "1"
     s.minWidth = "0"
   },
   el => { // table
+    const owner = el.node.owner.element as ElImpl
     const s = el.native.style
-    s.alignSelf = el.node.owner.element.isTable ? "stretch" : "center"
+    s.alignSelf = owner.isTable ? "stretch" : "center"
     s.display = "grid"
     s.flexBasis = "0"
     s.gridAutoRows = "minmax(min-content, 1fr)"
@@ -672,8 +674,9 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     s.textAlign = "initial"
   },
   el => { // note
+    const owner = el.node.owner.element as ElImpl
     const s = el.native.style
-    s.alignSelf = el.node.owner.element.isTable ? "stretch" : "center"
+    s.alignSelf = owner.isTable ? "stretch" : "center"
     s.display = "inline-grid"
     s.flexShrink = "1"
   },
@@ -682,8 +685,9 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     s.display = "contents"
   },
   el => { // partition
+    const owner = el.node.owner.element as ElImpl
     const s = el.native.style
-    s.display = el.node.owner.element.isTable ? "contents" : "flex"
+    s.display = owner.isTable ? "contents" : "flex"
     s.flexDirection = "row"
   },
   el => { // cursor
