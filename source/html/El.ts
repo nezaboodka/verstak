@@ -455,7 +455,7 @@ export class CursorCommandDriver
 export class Apply {
   static kind<T extends Element>(element: El<T, any, any, any>, value: ElKind): void {
     const kind = Constants.layouts[value]
-    kind && element.native.setAttribute(Constants.attribute, kind)
+    kind && element.native.setAttribute(Constants.kindAttrName, kind)
     VerstakDriversByLayout[value](element as any)
   }
 
@@ -645,11 +645,11 @@ export const Constants = {
   // element: "элемент",
   // partition: "раздел",
   // layouts: ["цепочка", "таблица", "" /* раздел */, "группа", "заметка"],
-  // attribute: "вид",
+  // kindAttrName: "вид",
   element: "element",
   partition: "partition",
   layouts: ["section", "table", "note", "group", "" /* partition */, "" /* cursor */],
-  attribute: "kind",
+  kindAttrName: "kind",
 }
 
 const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
