@@ -1,6 +1,6 @@
 {
   "name": "verstak",
-  "version": "0.24.104",
+  "version": "0.24.106",
   "description": "Verstak - Front-End Library",
   "publisher": "Nezaboodka Software",
   "license": "Apache-2.0",
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/nezaboodka/verstak/blob/master/README.md#readme",
   "dependencies": {
-    "reactronic": "^0.24.104"
+    "reactronic": "^0.24.106"
   },
   "devDependencies": {
     "@types/node": "20.10.4",
