@@ -5,9 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { MergedItem } from "reactronic"
 import { RxNode, SimpleDelegate } from "../core/RxNode.js"
-import { BaseDriver } from "../core/api.js"
+import { BaseDriver, Verstak } from "../core/api.js"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // ElDriver
@@ -585,10 +584,12 @@ export class Apply {
     const e = element.native
     if (e instanceof HTMLElement) {
       const s = e.style
-      const host = Apply.findEffectiveHtmlElementHost(element.node).element.native
+      const host = Verstak.findMatchingHost<El, El>(element.node, n =>
+        n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
+      const nativeHost = host?.element.native
       if (value === true) {
         const doc = document.body
-        const rect = host.getBoundingClientRect()
+        const rect = nativeHost.getBoundingClientRect()
         if (doc.offsetWidth - rect.left > rect.right) // rightward
           s.left = "0", s.right = ""
         else // leftward
@@ -601,10 +602,10 @@ export class Apply {
         s.position = "absolute"
         s.minWidth = "100%"
         s.boxSizing = "border-box"
-        host.style.position = "relative"
+        nativeHost.style.position = "relative"
       }
       else {
-        host.style.position = ""
+        nativeHost.style.position = ""
         if (value === false)
           s.display = "none"
         else // overlayVisible === undefined
@@ -622,20 +623,20 @@ export class Apply {
       native.className = enabled ? styleName : ""
   }
 
-  static findEffectiveHtmlElementHost(node: RxNode): RxNode<El<HTMLElement | SVGElement>> {
-    let p = node.host
-    while (p.slot!.instance.element.native instanceof HTMLElement === false &&
-      p.slot!.instance.element.native instanceof SVGElement === false && p !== node)
-      p = p.host
-    return p.slot!.instance as RxNode<El<HTMLElement | SVGElement>>
-  }
+  // static findEffectiveHtmlElementHost(node: RxNode): RxNode<El<HTMLElement | SVGElement>> {
+  //   let p = node.host
+  //   while (p.slot!.instance.element.native instanceof HTMLElement === false &&
+  //     p.slot!.instance.element.native instanceof SVGElement === false && p !== node)
+  //     p = p.host
+  //   return p.slot!.instance as RxNode<El<HTMLElement | SVGElement>>
+  // }
 
-  static findPrevSiblingHtmlElement(slot: MergedItem<RxNode>): MergedItem<RxNode<El<HTMLElement | SVGElement>>> | undefined {
-    let p = slot.prev
-    while (p && !(p.instance.element.native instanceof HTMLElement) && !(p.instance.element.native instanceof SVGElement))
-      p = p.prev
-    return p
-  }
+  // static findPrevSiblingHtmlElement(slot: MergedItem<RxNode>): MergedItem<RxNode<El<HTMLElement | SVGElement>>> | undefined {
+  //   let p = slot.prev
+  //   while (p && !(p.instance.element.native instanceof HTMLElement) && !(p.instance.element.native instanceof SVGElement))
+  //     p = p.prev
+  //   return p
+  // }
 }
 
 // Constants

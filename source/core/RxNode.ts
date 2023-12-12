@@ -10,7 +10,7 @@ import { MemberOptions, MergeListReader, MergedItem } from "reactronic"
 // Delegates
 
 export type Delegate<T> = (element: T, base: () => void) => void
-export type SimpleDelegate<T = unknown> = (element: T) => void
+export type SimpleDelegate<T = unknown, R = void> = (element: T) => R
 
 // Enums
 

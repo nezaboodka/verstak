@@ -7,7 +7,7 @@
 
 import { Rx } from "reactronic"
 import { Verstak, Priority, SimpleDelegate } from "../core/api.js"
-import { Apply, El, ElDriver, ElImpl, ElKind } from "./El.js"
+import { El, ElDriver, ElImpl, ElKind } from "./El.js"
 
 // VerstakDriver
 
@@ -35,16 +35,19 @@ export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends 
     if (native) {
       const node = element.node
       const sequential = node.owner.children.isStrict
-      const automaticNativeHost = Apply.findEffectiveHtmlElementHost(node).element.native as unknown as Element | undefined // hack
+      const automaticHost = Verstak.findMatchingHost<El, El>(node, n =>
+        n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
+      const automaticNativeHost = automaticHost?.element.native
       if (automaticNativeHost) {
         if (sequential && !node.driver.isSeparator) {
-          const after = Apply.findPrevSiblingHtmlElement(element.node.slot!)
-          if (after === undefined || after.instance.driver.isSeparator) {
+          const after = Verstak.findMatchingPrevSibling<El, El>(element.node, n =>
+            n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
+          if (after === undefined || after.driver.isSeparator) {
             if (automaticNativeHost !== native.parentNode || !native.previousSibling)
               automaticNativeHost.prepend(native)
           }
           else { // if (after.instance.host.native === nativeParent) {
-            const nativeAfter = after.instance.element.native
+            const nativeAfter = after.element.native
             if (nativeAfter instanceof Element) {
               if (nativeAfter.nextSibling !== native)
                 automaticNativeHost.insertBefore(native, nativeAfter.nextSibling)

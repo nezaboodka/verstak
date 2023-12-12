@@ -83,6 +83,20 @@ export class Verstak {
     runUpdateNestedTreesThenDo(undefined, action)
   }
 
+  static findMatchingHost<T, R>(node: RxNode<T>, match: SimpleDelegate<RxNode<T>, boolean>): RxNode<R> | undefined {
+    let p = node.host
+    while (p !== p.host && !match(p))
+      p = p.host
+    return p
+  }
+
+  static findMatchingPrevSibling<T, R>(node: RxNode<T>, match: SimpleDelegate<RxNode<T>, boolean>): RxNode<R> | undefined {
+    let p = node.slot!.prev
+    while (p && !match(p.instance))
+      p = p.prev
+    return p?.instance as RxNode<R> | undefined
+  }
+
   static getDefaultLoggingOptions(): LoggingOptions | undefined {
     return RxNodeImpl.logging
   }
