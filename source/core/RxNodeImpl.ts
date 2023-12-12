@@ -19,15 +19,15 @@ export class Verstak {
 
   static declare<T = undefined>(
     driver: RxNodeDriver<T>,
-    decl?: RxNodeDecl<T>,
+    declaration?: RxNodeDecl<T>,
     preset?: RxNodeDecl<T>): T {
     let result: T
     // Normalize parameters
-    if (decl)
-      decl.preset = preset
+    if (declaration)
+      declaration.preset = preset
     else
-      decl = preset ?? {}
-    let key = decl.key
+      declaration = preset ?? {}
+    let key = declaration.key
     const owner = gCurrent?.instance
     if (owner) {
       // Lookup for existing node and check for coalescing separators
@@ -48,21 +48,21 @@ export class Verstak {
         result = node.element
         if (node.driver !== driver && driver !== undefined)
           throw new Error(`changing element driver is not yet supported: "${node.driver.name}" -> "${driver?.name}"`)
-        const exTriggers = node.decl.triggers
-        if (triggersAreEqual(decl.triggers, exTriggers))
-          decl.triggers = exTriggers // preserve triggers instance
-        node.decl = decl
+        const exTriggers = node.declaration.triggers
+        if (triggersAreEqual(declaration.triggers, exTriggers))
+          declaration.triggers = exTriggers // preserve triggers instance
+        node.declaration = declaration
       }
       else {
         // Create new node
-        const node = new RxNodeImpl(key || generateKey(owner), driver, decl, owner)
+        const node = new RxNodeImpl(key || generateKey(owner), driver, declaration, owner)
         node.slot = children.mergeAsAdded(node)
         result = node.element
       }
     }
     else {
       // Create new root node
-      const node = new RxNodeImpl(key || "", driver, decl, owner)
+      const node = new RxNodeImpl(key || "", driver, declaration, owner)
       node.slot = MergeList.createItem(node)
       result = node.element
       triggerUpdate(node.slot)
@@ -72,9 +72,9 @@ export class Verstak {
 
   static triggerUpdate(element: { node: RxNode }, triggers: unknown): void {
     const el = element as { node: RxNodeImpl }
-    const decl = el.node.decl
-    if (!triggersAreEqual(triggers, decl.triggers)) {
-      decl.triggers = triggers // remember new triggers
+    const declaration = el.node.declaration
+    if (!triggersAreEqual(triggers, declaration.triggers)) {
+      declaration.triggers = triggers // remember new triggers
       triggerUpdate(el.node.slot!)
     }
   }
@@ -124,12 +124,12 @@ export abstract class BaseDriver<T extends { node: RxNode }> implements RxNodeDr
   abstract allocate(node: RxNode<T>): T
 
   assign(element: T): void {
-    assignUsingPresetChain(element, element.node.decl)
+    assignUsingPresetChain(element, element.node.declaration)
   }
 
   initialize(element: T): void {
     this.predefine?.(element)
-    initializeUsingPresetChain(element, element.node.decl)
+    initializeUsingPresetChain(element, element.node.declaration)
   }
 
   mount(element: T): void {
@@ -137,11 +137,11 @@ export abstract class BaseDriver<T extends { node: RxNode }> implements RxNodeDr
   }
 
   update(element: T): void | Promise<void> {
-    updateUsingPresetChain(element, element.node.decl)
+    updateUsingPresetChain(element, element.node.declaration)
   }
 
   finalize(element: T, isLeader: boolean): boolean {
-    finalizeUsingPresetChain(element, element.node.decl)
+    finalizeUsingPresetChain(element, element.node.declaration)
     return isLeader // treat children as finalization leaders as well
   }
 }
@@ -159,49 +159,49 @@ function generateKey(owner: RxNodeImpl): string {
   return result
 }
 
-function modeUsingPresetChain(decl?: RxNodeDecl<any>): Mode {
-  return decl?.mode ?? (decl?.preset ? modeUsingPresetChain(decl?.preset) : Mode.Default)
+function modeUsingPresetChain(declaration?: RxNodeDecl<any>): Mode {
+  return declaration?.mode ?? (declaration?.preset ? modeUsingPresetChain(declaration?.preset) : Mode.Default)
 }
 
-// function declareUsingPresetChain(element: unknown, decl: RxNodeDecl<any>): void {
-//   const preset = decl.preset
-//   const declare = decl.declare
+// function declareUsingPresetChain(element: unknown, declaration: RxNodeDecl<any>): void {
+//   const preset = declaration.preset
+//   const declare = declaration.declare
 //   if (declare)
 //     declare(element, preset ? () => declareUsingPresetChain(element, preset) : NOP)
 //   else if (preset)
 //     declareUsingPresetChain(element, preset)
 // }
 
-function assignUsingPresetChain(element: unknown, decl: RxNodeDecl<any>): void {
-  const preset = decl.preset
-  const create = decl.create
+function assignUsingPresetChain(element: unknown, declaration: RxNodeDecl<any>): void {
+  const preset = declaration.preset
+  const create = declaration.create
   if (create)
     create(element, preset ? () => assignUsingPresetChain(element, preset) : NOP)
   else if (preset)
     assignUsingPresetChain(element, preset)
 }
 
-function initializeUsingPresetChain(element: unknown, decl: RxNodeDecl<any>): void {
-  const preset = decl.preset
-  const initialize = decl.initialize
+function initializeUsingPresetChain(element: unknown, declaration: RxNodeDecl<any>): void {
+  const preset = declaration.preset
+  const initialize = declaration.initialize
   if (initialize)
     initialize(element, preset ? () => initializeUsingPresetChain(element, preset) : NOP)
   else if (preset)
     initializeUsingPresetChain(element, preset)
 }
 
-function updateUsingPresetChain(element: unknown, decl: RxNodeDecl<any>): void {
-  const preset = decl.preset
-  const update = decl.update
+function updateUsingPresetChain(element: unknown, declaration: RxNodeDecl<any>): void {
+  const preset = declaration.preset
+  const update = declaration.update
   if (update)
     update(element, preset ? () => updateUsingPresetChain(element, preset) : NOP)
   else if (preset)
     updateUsingPresetChain(element, preset)
 }
 
-function finalizeUsingPresetChain(element: unknown, decl: RxNodeDecl<any>): void {
-  const preset = decl.preset
-  const finalize = decl.finalize
+function finalizeUsingPresetChain(element: unknown, declaration: RxNodeDecl<any>): void {
+  const preset = declaration.preset
+  const finalize = declaration.finalize
   if (finalize)
     finalize(element, preset ? () => finalizeUsingPresetChain(element, preset) : NOP)
   else if (preset)
@@ -255,7 +255,7 @@ class RxNodeImpl<T = any> implements RxNode<T> {
 
   readonly key: string
   readonly driver: RxNodeDriver<T>
-  decl: RxNodeDecl<T>
+  declaration: RxNodeDecl<T>
   readonly level: number
   readonly owner: RxNodeImpl
   readonly element: T
@@ -271,10 +271,11 @@ class RxNodeImpl<T = any> implements RxNode<T> {
 
   constructor(
     key: string, driver: RxNodeDriver<T>,
-    decl: Readonly<RxNodeDecl<T>>, owner: RxNodeImpl | undefined) {
+    declaration: Readonly<RxNodeDecl<T>>,
+    owner: RxNodeImpl | undefined) {
     this.key = key
     this.driver = driver
-    this.decl = decl
+    this.declaration = declaration
     if (owner) {
       const node = owner
       this.level = node.level + 1
@@ -309,7 +310,7 @@ class RxNodeImpl<T = any> implements RxNode<T> {
   get isMoved(): boolean { return this.owner.children.isMoved(this.slot!) }
 
   has(mode: Mode): boolean {
-    return (modeUsingPresetChain(this.decl) & mode) === mode
+    return (modeUsingPresetChain(this.declaration) & mode) === mode
   }
 
   @reactive
@@ -506,7 +507,7 @@ function triggerUpdate(slot: MergedItem<RxNodeImpl>): void {
           })
         })
       }
-      unobs(node.update, node.decl.triggers) // reactive auto-update
+      unobs(node.update, node.declaration.triggers) // reactive auto-update
     }
     else
       updateNow(slot)
@@ -570,7 +571,7 @@ function triggerFinalization(slot: MergedItem<RxNodeImpl>, isLeader: boolean, in
   const el = node.element
   if (node.stamp >= 0) {
     const driver = node.driver
-    if (individual && node.key !== node.decl.key && !driver.isPartitionSeparator)
+    if (individual && node.key !== node.declaration.key && !driver.isPartitionSeparator)
       console.log(`WARNING: it is recommended to assign explicit key for conditional element in order to avoid unexpected side effects: ${node.key}`)
     node.stamp = ~node.stamp
     // Finalize element itself and remove it from collection

@@ -31,7 +31,7 @@ export const enum Priority {
 export abstract class RxNode<T = any> {
   abstract readonly key: string
   abstract readonly driver: RxNodeDriver<T>
-  abstract readonly decl: Readonly<RxNodeDecl<T>>
+  abstract readonly declaration: Readonly<RxNodeDecl<T>>
   abstract readonly level: number
   abstract readonly owner: RxNode
   abstract readonly element: T

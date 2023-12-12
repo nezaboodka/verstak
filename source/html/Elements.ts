@@ -31,17 +31,17 @@ import { HtmlDriver } from "./HtmlDriver.js"
 // Section
 
 export function Section<M = unknown, R = void>(
-  decl?: RxNodeDecl<El<HTMLElement, M, R>>,
+  declaration?: RxNodeDecl<El<HTMLElement, M, R>>,
   preset?: RxNodeDecl<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.declare(Drivers.section, decl, preset)
+  return Verstak.declare(Drivers.section, declaration, preset)
 }
 
 // Table
 
 export function Table<M = unknown, R = void>(
-  decl?: RxNodeDecl<El<HTMLElement, M, R>>,
+  declaration?: RxNodeDecl<El<HTMLElement, M, R>>,
   preset?: RxNodeDecl<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.declare(Drivers.table, decl, preset)
+  return Verstak.declare(Drivers.table, declaration, preset)
 }
 
 // Partition
@@ -65,16 +65,18 @@ export function cursor(areaParams: ElArea): void {
 
 // Note (either plain or html)
 
-export function Note(content: string, decl?: RxNodeDecl<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
-  return Verstak.declare(Drivers.note, decl, {
+export function Note(content: string,
+  declaration?: RxNodeDecl<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
+  return Verstak.declare(Drivers.note, declaration, {
     update(b) {
       b.native.innerText = content
     }},
   )
 }
 
-export function HtmlNote(content: string, decl?: RxNodeDecl<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
-  return Verstak.declare(Drivers.note, decl, {
+export function HtmlNote(content: string,
+  declaration?: RxNodeDecl<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
+  return Verstak.declare(Drivers.note, declaration, {
     update(b) {
       b.native.innerHTML = content
     }},
@@ -84,17 +86,17 @@ export function HtmlNote(content: string, decl?: RxNodeDecl<El<HTMLElement, void
 // Group
 
 export function Group<M = unknown, R = void>(
-  decl?: RxNodeDecl<El<HTMLElement, M, R>>,
+  declaration?: RxNodeDecl<El<HTMLElement, M, R>>,
   preset?: RxNodeDecl<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
-  return Verstak.declare(Drivers.group, decl, preset)
+  return Verstak.declare(Drivers.group, declaration, preset)
 }
 
 // Fragment
 
 export function Fragment<M = unknown, R = void>(
-  decl?: RxNodeDecl<El<void, M, R>>,
+  declaration?: RxNodeDecl<El<void, M, R>>,
   preset?: RxNodeDecl<El<void, M, R>>): El<void, M, R> {
-  return Verstak.declare(HtmlDriver.group, decl, preset) as El<void, M, R>
+  return Verstak.declare(HtmlDriver.group, declaration, preset) as El<void, M, R>
 }
 
 // VerstakHtmlDriver
