@@ -173,7 +173,7 @@ export class ElImpl<T extends Element = any, M = any, C = any, R = any> implemen
   set area(value: ElArea) {
     const node = this.node
     const driver = node.driver
-    if (!driver.isSeparator) {
+    if (!driver.isPartitionSeparator) {
       const owner = node.owner
       const ownerEl = owner.element
       const prevEl = node.slot!.prev?.instance.element as ElImpl
@@ -501,7 +501,7 @@ export class Apply {
   static heightGrowth<T extends Element>(element: El<T, any, any, any>, value: number): void {
     const bNode = element.node
     const driver = bNode.driver
-    if (driver.isSeparator) {
+    if (driver.isPartitionSeparator) {
       if (element.native instanceof HTMLElement) {
         const s = element.native.style
         if (value > 0)
@@ -512,7 +512,7 @@ export class Apply {
     }
     else {
       const hostDriver = bNode.host.driver
-      if (hostDriver.isSeparator) {
+      if (hostDriver.isPartitionSeparator) {
         Apply.elementAlignment(element, Align.ToBounds)
         Apply.heightGrowth(bNode.host.slot!.instance.element, value)
       }

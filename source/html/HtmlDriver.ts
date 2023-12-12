@@ -14,7 +14,7 @@ import { El, ElDriver, ElImpl, ElKind } from "./El.js"
 export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends ElDriver<T, M, C> {
 
   initialize(element: El<T, M, C>): void {
-    if (Rx.isLogging && !element.node.driver.isSeparator)
+    if (Rx.isLogging && !element.node.driver.isPartitionSeparator)
       element.native.setAttribute("key", element.node.key)
     super.initialize(element)
   }
@@ -39,10 +39,10 @@ export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends 
         n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
       const automaticNativeHost = automaticHost?.element.native
       if (automaticNativeHost) {
-        if (sequential && !node.driver.isSeparator) {
+        if (sequential && !node.driver.isPartitionSeparator) {
           const after = Verstak.findMatchingPrevSibling<El, El>(element.node, n =>
             n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
-          if (after === undefined || after.driver.isSeparator) {
+          if (after === undefined || after.driver.isPartitionSeparator) {
             if (automaticNativeHost !== native.parentNode || !native.previousSibling)
               automaticNativeHost.prepend(native)
           }
@@ -67,8 +67,8 @@ export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends 
   update(element: El<T, M, C>): void | Promise<void> {
     const result = super.update(element)
     if (element.area === undefined) {
-      const hostEl = element.node.host.element
-      if (hostEl instanceof ElImpl && hostEl.isTable)
+      const oel = element.node.owner.element
+      if (oel instanceof ElImpl && oel.isTable)
         element.area = undefined // automatic placement in table
     }
     if (gBlinkingEffectMarker)

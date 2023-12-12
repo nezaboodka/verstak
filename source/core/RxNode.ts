@@ -67,7 +67,7 @@ export interface RxNodeDecl<T = unknown> {
 
 export interface RxNodeDriver<T> {
   readonly name: string,
-  readonly isSeparator: boolean,
+  readonly isPartitionSeparator: boolean,
   readonly predefine?: SimpleDelegate<T>
 
   allocate(node: RxNode<T>): T

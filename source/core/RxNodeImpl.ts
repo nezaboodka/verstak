@@ -34,7 +34,7 @@ export class Verstak {
       let existing: MergedItem<RxNodeImpl> | undefined = undefined
       const children = owner.children
       // Coalesce multiple separators into single one, if any
-      if (driver.isSeparator) {
+      if (driver.isPartitionSeparator) {
         const last = children.lastMergedItem()
         if (last?.instance?.driver === driver)
           existing = last
@@ -117,7 +117,7 @@ export class Verstak {
 export abstract class BaseDriver<T extends { node: RxNode }> implements RxNodeDriver<T> {
   constructor(
     readonly name: string,
-    readonly isSeparator: boolean,
+    readonly isPartitionSeparator: boolean,
     readonly predefine?: SimpleDelegate<T>) {
   }
 
@@ -394,19 +394,18 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
         triggerFinalization(slot, true, true)
       if (!error) {
         // Lay out and update actual elements
-        const ownerIsSection = owner.element.isSection
         const sequential = children.isStrict
         let p1: Array<MergedItem<RxNodeImpl>> | undefined = undefined
         let p2: Array<MergedItem<RxNodeImpl>> | undefined = undefined
         let mounting = false
-        let hostingRow = owner
+        let partition = owner
         for (const child of children.items()) {
           if (Transaction.isCanceled)
             break
           const node = child.instance
           const el = node.element
-          const isSeparator = el.node.driver.isSeparator
-          const host = isSeparator ? owner : hostingRow
+          const isPart = node.driver.isPartitionSeparator
+          const host = isPart ? owner : partition
           const p = el.node.priority ?? Priority.Realtime
           mounting = markToMountIfNecessary(mounting, host, child, children, sequential)
           if (p === Priority.Realtime)
@@ -415,8 +414,8 @@ function runUpdateNestedTreesThenDo(error: unknown, action: (error: unknown) => 
             p1 = push(child, p1) // defer for P1 async update
           else
             p2 = push(child, p2) // defer for P2 async update
-          if (ownerIsSection && isSeparator)
-            hostingRow = node
+          if (isPart)
+            partition = node
         }
         // Update incremental children (if any)
         if (!Transaction.isCanceled && (p1 !== undefined || p2 !== undefined))
@@ -571,7 +570,7 @@ function triggerFinalization(slot: MergedItem<RxNodeImpl>, isLeader: boolean, in
   const el = node.element
   if (node.stamp >= 0) {
     const driver = node.driver
-    if (individual && node.key !== node.decl.key && !driver.isSeparator)
+    if (individual && node.key !== node.decl.key && !driver.isPartitionSeparator)
       console.log(`WARNING: it is recommended to assign explicit key for conditional element in order to avoid unexpected side effects: ${node.key}`)
     node.stamp = ~node.stamp
     // Finalize element itself and remove it from collection
