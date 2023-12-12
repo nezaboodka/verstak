@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxSystem, RxTree, Priority, SimpleDelegate } from "reactronic"
+import { RxSystem, RxTree, Priority, SimpleDelegate, RxNode } from "reactronic"
 import { Constants, El, ElDriver, ElImpl, ElKind } from "./El.js"
 
 // VerstakDriver
@@ -73,6 +73,16 @@ export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends 
     if (gBlinkingEffectMarker)
       blink(element.native, RxTree.currentUpdatePriority, element.node.stamp)
     return result
+  }
+
+  static findBrotherlyHost<T, R>(node: RxNode<El<T>>): RxNode<El<R>> | undefined {
+    return RxTree.findMatchingHost<El, El>(node, n =>
+      n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
+  }
+
+  static findBrotherlyPrevSibling<T, R>(node: RxNode<El<T>>): RxNode<El<R>> | undefined {
+    return RxTree.findMatchingPrevSibling<El, El>(node, n =>
+      n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
   }
 
   static get blinkingEffectMarker(): string | undefined {

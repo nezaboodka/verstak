@@ -5,6 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
+export * from "./ElUtils.js"
 export * from "./El.js"
 export * from "./HtmlDriver.js"
 export * from "./HtmlElements.js"
