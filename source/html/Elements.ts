@@ -102,7 +102,7 @@ export function Fragment<M = unknown, R = void>(
 export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
   update(element: El<T>): void | Promise<void> {
     // Add initial line feed automatically
-    if (element.kind < ElKind.Table)
+    if (element.kind === ElKind.Section)
       startNewRow()
     return super.update(element)
   }
