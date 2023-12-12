@@ -57,7 +57,7 @@ export enum ElKind {
   Table = 1,
   Note = 2,
   Group = 3,
-  Row = 4,
+  Part = 4,
   Cursor = 5,
   Native = 6,
 }
@@ -135,7 +135,7 @@ export class ElImpl<T extends Element = any, M = any, C = any, R = any> implemen
     // User-defined properties
     this.model = undefined as any
     this.controller = undefined as any as C // hack
-    this._kind = ElKind.Row
+    this._kind = ElKind.Part
     this._area = undefined
     this._coords = UndefinedElCoords
     this._widthGrowth = 0
@@ -158,7 +158,7 @@ export class ElImpl<T extends Element = any, M = any, C = any, R = any> implemen
 
   get isSection(): boolean { return this.kind === ElKind.Section }
   get isTable(): boolean { return this.kind === ElKind.Table }
-  get isAuxiliary(): boolean { return this.kind > ElKind.Note } // Row, Group, Cursor
+  get isAuxiliary(): boolean { return this.kind > ElKind.Note } // Part, Group, Cursor
 
   get kind(): ElKind { return this._kind }
   set kind(value: ElKind) {
@@ -643,12 +643,12 @@ export class Apply {
 
 export const Constants = {
   // el: "эль",
-  // row: "строка",
+  // part: "раздел",
   // layouts: ["цепочка", "таблица", "" /* строка */, "группа", "заметка"],
   // attribute: "вид",
   el: "el",
-  row: "row",
-  layouts: ["section", "table", "note", "group", "" /* row */, "" /* cursor */],
+  part: "part",
+  layouts: ["section", "table", "note", "group", "" /* part */, "" /* cursor */],
   attribute: "kind",
 }
 
@@ -681,9 +681,9 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     const s = el.native.style
     s.display = "contents"
   },
-  el => { // row
+  el => { // part
     const s = el.native.style
-    s.display = el.node.owner.slot!.instance.element.isTable ? "none" : "flex"
+    s.display = el.node.owner.slot!.instance.element.isTable ? "contents" : "flex"
     s.flexDirection = "row"
   },
   el => { // cursor

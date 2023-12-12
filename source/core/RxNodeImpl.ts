@@ -591,7 +591,7 @@ function triggerFinalization(slot: MergedItem<RxNodeImpl>, isLeader: boolean, in
           void runDisposalLoop().then(NOP, error => console.log(error))
         })
     }
-    // Finalize children if any
+    // Finalize children
     for (const child of node.children.items())
       triggerFinalization(child, childrenAreLeaders, false)
     RxNodeImpl.grandNodeCount--

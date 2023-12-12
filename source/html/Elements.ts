@@ -11,7 +11,7 @@ import { HtmlDriver } from "./HtmlDriver.js"
 
 // Verstak is based on two fundamental layout structures
 // called section and table; and on two special non-visual
-// elements called row and group.
+// elements called partition and group.
 
 // Section is a layout structure, which children are layed
 // out naturally: rightwards-downwards.
@@ -19,8 +19,8 @@ import { HtmlDriver } from "./HtmlDriver.js"
 // Table is layout structure, which children are layed out
 // over table cells.
 
-// Row is a special non-visual element, which begins
-// new layout row inside section or table.
+// Partition is a special non-visual element, which begins
+// new layout partition inside section or table.
 
 // Note is either plain or markdown-formatted text
 // supporting syntax highlighting for code blocks.
@@ -44,7 +44,7 @@ export function Table<M = unknown, R = void>(
   return Verstak.declare(Drivers.table, decl, preset)
 }
 
-// Row
+// Partition
 
 export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: number): void {
   startNewRow(shiftCursorDown)
@@ -52,7 +52,7 @@ export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: 
 }
 
 export function startNewRow(shiftCursorDown?: number): void {
-  Verstak.declare(Drivers.row)
+  Verstak.declare(Drivers.part)
 }
 
 export function cursor(areaParams: ElArea): void {
@@ -121,9 +121,8 @@ const Drivers = {
   // display: contents
   group: new VerstakHtmlDriver<HTMLElement>(Constants.el, false, el => el.kind = ElKind.Group),
 
-  // display: contents
-  // display: flex (row)
-  row: new VerstakHtmlDriver<HTMLElement>(Constants.row, true, el => el.kind = ElKind.Row),
+  // display: flex/row or contents
+  part: new VerstakHtmlDriver<HTMLElement>(Constants.part, true, el => el.kind = ElKind.Part),
 
   // cursor control element
   cursor: new CursorCommandDriver(),
