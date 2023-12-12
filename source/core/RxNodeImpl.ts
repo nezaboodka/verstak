@@ -156,15 +156,15 @@ export class RxNodeVariable<T extends Object = Object> {
   }
 
   set value(value: T) {
-    RxNodeImpl.setSubTreeVariableValue(this, value)
+    RxNodeImpl.setNodeVariableValue(this, value)
   }
 
   get value(): T {
-    return RxNodeImpl.useSubTreeVariableValue(this)
+    return RxNodeImpl.useNodeVariableValue(this)
   }
 
   get valueOrUndefined(): T | undefined {
-    return RxNodeImpl.tryUseSubTreeVariable(this)
+    return RxNodeImpl.tryUseNodeVariableValue(this)
   }
 }
 
@@ -327,21 +327,21 @@ class RxNodeImpl<T = any> implements RxNode<T> {
     return gCurrent
   }
 
-  static tryUseSubTreeVariable<T extends Object>(variable: RxNodeVariable<T>): T | undefined {
+  static tryUseNodeVariableValue<T extends Object>(variable: RxNodeVariable<T>): T | undefined {
     let node = RxNodeImpl.current.instance
     while (node.context?.variable !== variable && node.owner !== node)
       node = node.outer.slot!.instance
     return node.context?.value as any // TODO: to get rid of any
   }
 
-  static useSubTreeVariableValue<T extends Object>(variable: RxNodeVariable<T>): T {
-    const result = RxNodeImpl.tryUseSubTreeVariable(variable) ?? variable.defaultValue
+  static useNodeVariableValue<T extends Object>(variable: RxNodeVariable<T>): T {
+    const result = RxNodeImpl.tryUseNodeVariableValue(variable) ?? variable.defaultValue
     if (!result)
-      throw new Error("context doesn't exist")
+      throw new Error("node variable doesn't exist")
     return result
   }
 
-  static setSubTreeVariableValue<T extends Object>(variable: RxNodeVariable<T>, value: T | undefined): void {
+  static setNodeVariableValue<T extends Object>(variable: RxNodeVariable<T>, value: T | undefined): void {
     const node = RxNodeImpl.current.instance
     const owner = node.owner
     const hostCtx = unobs(() => owner.context?.value)
