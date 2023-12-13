@@ -60,6 +60,8 @@ export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends 
   }
 
   update(element: El<T, M, C>): void | Promise<void> {
+    if (element instanceof ElImpl)
+      element.prepareForUpdate()
     const result = super.update(element)
     if (element.area === undefined) {
       const oel = element.node.owner.element
