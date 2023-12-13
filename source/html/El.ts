@@ -175,7 +175,7 @@ export class ElImpl<T extends Element = any, M = any, C = any, R = any> implemen
     if (!driver.isPartitionSeparator) {
       const owner = node.owner
       const ownerEl = owner.element
-      const prevEl = node.slot!.prev?.instance.element as ElImpl
+      const prevEl = node.seat!.prev?.instance.element as ElImpl
       const cursorPosition = prevEl?.cursorPosition ?? InitialCursorPosition
       const newCursorPosition = this.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
       const isCursorElement = driver instanceof CursorCommandDriver
@@ -280,7 +280,7 @@ export class ElImpl<T extends Element = any, M = any, C = any, R = any> implemen
 
   private rowBreak(): void {
     const node = this.node
-    const prevEl = node.slot!.prev?.instance.element as ElImpl
+    const prevEl = node.seat!.prev?.instance.element as ElImpl
     const cursorPosition = prevEl?.cursorPosition ?? InitialCursorPosition
     const newCursorPosition = this.cursorPosition = new CursorPosition(cursorPosition)
     newCursorPosition.x = 1
@@ -506,7 +506,7 @@ export class Apply {
       const hostDriver = bNode.host.driver
       if (hostDriver.isPartitionSeparator) {
         Apply.elementAlignment(element, Align.ToBounds)
-        Apply.heightGrowth(bNode.host.slot!.instance.element, value)
+        Apply.heightGrowth(bNode.host.seat!.instance.element, value)
       }
     }
   }
@@ -617,14 +617,14 @@ export class Apply {
 
   // static findEffectiveHtmlElementHost(node: RxNode): RxNode<El<HTMLElement | SVGElement>> {
   //   let p = node.host
-  //   while (p.slot!.instance.element.native instanceof HTMLElement === false &&
-  //     p.slot!.instance.element.native instanceof SVGElement === false && p !== node)
+  //   while (p.seat!.instance.element.native instanceof HTMLElement === false &&
+  //     p.seat!.instance.element.native instanceof SVGElement === false && p !== node)
   //     p = p.host
-  //   return p.slot!.instance as RxNode<El<HTMLElement | SVGElement>>
+  //   return p.seat!.instance as RxNode<El<HTMLElement | SVGElement>>
   // }
 
-  // static findPrevSiblingHtmlElement(slot: MergedItem<RxNode>): MergedItem<RxNode<El<HTMLElement | SVGElement>>> | undefined {
-  //   let p = slot.prev
+  // static findPrevSiblingHtmlElement(seat: MergedItem<RxNode>): MergedItem<RxNode<El<HTMLElement | SVGElement>>> | undefined {
+  //   let p = seat.prev
   //   while (p && !(p.instance.element.native instanceof HTMLElement) && !(p.instance.element.native instanceof SVGElement))
   //     p = p.prev
   //   return p
