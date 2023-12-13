@@ -438,17 +438,10 @@ export class CursorCommand {
   rowShift?: number
 }
 
-export class CursorCommandDriver
-  extends ElDriver<Element, unknown, void> {
-
+export class CursorCommandDriver extends ElDriver<Element, unknown, void> {
   constructor() {
     super("cursor", false, el => el.kind = ElKind.Cursor)
   }
-
-  // assign(element: El<CursorCommand, unknown, void, void>): void {
-  //   // element.native = new CursorCommand()
-  //   super.assign(element)
-  // }
 }
 
 export class Apply {

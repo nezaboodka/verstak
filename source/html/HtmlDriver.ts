@@ -102,8 +102,9 @@ export class StaticDriver<T extends HTMLElement> extends VerstakDriver<T> {
     this.native = native
   }
 
-  assign(element: El<T>): void {
+  initialize(element: El<T>): void {
     element.native = this.native
+    super.initialize(element)
   }
 }
 
@@ -113,18 +114,18 @@ export class HtmlDriver<T extends HTMLElement, M = any, C = any> extends Verstak
   public static readonly group = new HtmlDriver<any, any, any>(
     "group", false, el => el.kind = ElKind.Group)
 
-  assign(element: El<T, any, C, void>): void {
+  initialize(element: El<T, any, C, void>): void {
     element.native = document.createElement(element.node.driver.name) as T
-    super.assign(element)
+    super.initialize(element)
   }
 }
 
 // SvgDriver
 
 export class SvgDriver<T extends SVGElement, M = any, C = any> extends VerstakDriver<T, M, C> {
-  assign(element: El<T, any, C, void>): void {
+  initialize(element: El<T, any, C, void>): void {
     element.native = document.createElementNS("http://www.w3.org/2000/svg", element.node.driver.name) as T
-    super.assign(element)
+    super.initialize(element)
   }
 }
 
