@@ -59,10 +59,6 @@ export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends 
     }
   }
 
-  relocate(element: El<T, M, C>): void {
-    // nothing to do by default
-  }
-
   update(element: El<T, M, C>): void | Promise<void> {
     const result = super.update(element)
     if (element.area === undefined) {
