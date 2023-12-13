@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/nezaboodka/verstak/blob/master/README.md#readme",
   "dependencies": {
-    "reactronic": "^0.24.111"
+    "reactronic": "^0.24.112"
   },
   "devDependencies": {
     "@types/node": "20.10.4",

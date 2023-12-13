@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxTree, RxNode, SimpleDelegate, BaseDriver } from "reactronic"
+import { RxTree, RxNode, SimpleDelegate, BaseDriver, RxElement } from "reactronic"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // ElDriver
@@ -18,7 +18,7 @@ export class ElDriver<T extends Element, M = unknown, C = unknown> extends BaseD
 
 // BaseEl
 
-export interface BaseEl<T = any, M = any, C = any, R = void> {
+export interface BaseEl<T = any, M = any, C = any, R = void> extends RxElement {
   // System-managed properties
   readonly node: RxNode<El<T, M, C, R>>
 
