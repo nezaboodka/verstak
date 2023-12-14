@@ -114,9 +114,15 @@ export class HtmlDriver<T extends HTMLElement, M = any, C = any> extends Verstak
   public static readonly group = new HtmlDriver<any, any, any>(
     "group", false, el => el.kind = ElKind.Group)
 
-  initialize(element: El<T, any, C, void>): void {
+  initialize(element: El<T, M, C, void>): void {
     element.native = document.createElement(element.node.driver.name) as T
     super.initialize(element)
+  }
+
+  finalize(element: El<T, M, C, void>, isLeader: boolean): boolean {
+    const result = super.finalize(element, isLeader)
+    element.native = null as any
+    return result
   }
 }
 
