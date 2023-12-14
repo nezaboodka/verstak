@@ -8,13 +8,16 @@
 import { RxSystem, RxTree, Priority, SimpleDelegate, RxNode } from "reactronic"
 import { Constants, El, ElDriver, ElImpl, ElKind } from "./El.js"
 
-// VerstakDriver
+// WebDriver
 
-export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends ElDriver<T, M, C> {
+export abstract class WebDriver<T extends Element, M = unknown, C = unknown> extends ElDriver<T, M, C> {
+
+  abstract acquireNativeElement(element: El<T, M, C>): T
 
   initialize(element: El<T, M, C>): void {
+    const native = element.native = this.acquireNativeElement(element)
     if (RxSystem.isLogging && !element.node.driver.isPartitionSeparator)
-      element.native.setAttribute(Constants.keyAttrName, element.node.key)
+      native.setAttribute(Constants.keyAttrName, element.node.key)
     super.initialize(element)
   }
 
@@ -26,6 +29,7 @@ export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends 
         native.remove()
     }
     super.finalize(element, isLeader)
+    element.native = null as any
     return false // children elements having native HTML elements are not treated as leaders
   }
 
@@ -94,7 +98,8 @@ export class VerstakDriver<T extends Element, M = unknown, C = unknown> extends 
 
 // StaticDriver
 
-export class StaticDriver<T extends HTMLElement> extends VerstakDriver<T> {
+export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
+
   readonly native: T
 
   constructor(native: T, name: string, isRow: boolean, predefine?: SimpleDelegate<El<T>>) {
@@ -102,36 +107,27 @@ export class StaticDriver<T extends HTMLElement> extends VerstakDriver<T> {
     this.native = native
   }
 
-  initialize(element: El<T>): void {
-    element.native = this.native
-    super.initialize(element)
+  acquireNativeElement(): T {
+    return this.native
   }
 }
 
 // HtmlDriver
 
-export class HtmlDriver<T extends HTMLElement, M = any, C = any> extends VerstakDriver<T, M, C> {
+export class HtmlDriver<T extends HTMLElement, M = any, C = any> extends WebDriver<T, M, C> {
   public static readonly group = new HtmlDriver<any, any, any>(
     "group", false, el => el.kind = ElKind.Group)
 
-  initialize(element: El<T, M, C, void>): void {
-    element.native = document.createElement(element.node.driver.name) as T
-    super.initialize(element)
-  }
-
-  finalize(element: El<T, M, C, void>, isLeader: boolean): boolean {
-    const result = super.finalize(element, isLeader)
-    element.native = null as any
-    return result
+  acquireNativeElement(element: El<T, M, C>): T {
+    return document.createElement(element.node.driver.name) as T
   }
 }
 
 // SvgDriver
 
-export class SvgDriver<T extends SVGElement, M = any, C = any> extends VerstakDriver<T, M, C> {
-  initialize(element: El<T, M, C, void>): void {
-    element.native = document.createElementNS("http://www.w3.org/2000/svg", element.node.driver.name) as T
-    super.initialize(element)
+export class SvgDriver<T extends SVGElement, M = any, C = any> extends WebDriver<T, M, C> {
+  acquireNativeElement(element: El<T, M, C>): T {
+    return document.createElementNS("http://www.w3.org/2000/svg", element.node.driver.name) as T
   }
 }
 
