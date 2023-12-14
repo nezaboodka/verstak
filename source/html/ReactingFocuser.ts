@@ -13,7 +13,7 @@ export function FocuserReaction(key: string, target: HTMLElement, model: FocusMo
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {
   Fragment({
     key,
-    mode: Mode.PinpointUpdate,
+    mode: Mode.IndependentUpdate,
     triggers: { target, model },
     initialize(b) {
       b.node.configureReactronic({ throttling: 0 })
