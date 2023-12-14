@@ -129,7 +129,7 @@ export class HtmlDriver<T extends HTMLElement, M = any, C = any> extends Verstak
 // SvgDriver
 
 export class SvgDriver<T extends SVGElement, M = any, C = any> extends VerstakDriver<T, M, C> {
-  initialize(element: El<T, any, C, void>): void {
+  initialize(element: El<T, M, C, void>): void {
     element.native = document.createElementNS("http://www.w3.org/2000/svg", element.node.driver.name) as T
     super.initialize(element)
   }
