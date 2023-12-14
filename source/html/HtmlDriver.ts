@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { RxSystem, RxTree, Priority, SimpleDelegate, RxNode } from "reactronic"
-import { Constants, El, ElDriver, ElImpl, ElKind } from "./El.js"
+import { Constants, El, ElDriver, ElImpl } from "./El.js"
 
 // WebDriver
 
@@ -115,9 +115,6 @@ export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
 // HtmlDriver
 
 export class HtmlDriver<T extends HTMLElement, M = any, C = any> extends WebDriver<T, M, C> {
-  public static readonly group = new HtmlDriver<any, any, any>(
-    "group", false, el => el.kind = ElKind.Group)
-
   acquireNativeElement(element: El<T, M, C>): T {
     return document.createElement(element.node.driver.name) as T
   }

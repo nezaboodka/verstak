@@ -641,6 +641,7 @@ export const Constants = {
   // kindAttrName: "вид",
   element: "element",
   partition: "partition",
+  group: "group",
   layouts: ["section", "table", "note", "group", "" /* partition */, "" /* cursor */],
   keyAttrName: "key",
   kindAttrName: "kind",

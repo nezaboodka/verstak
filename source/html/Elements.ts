@@ -5,8 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxTree, RxNodeDecl } from "reactronic"
-import { Constants, CursorCommandDriver, El, ElKind, ElArea } from "./El.js"
+import { RxTree, RxNodeDecl, RxNodeDriver } from "reactronic"
+import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver } from "./El.js"
 import { HtmlDriver } from "./HtmlDriver.js"
 
 // Verstak is based on two fundamental layout structures
@@ -91,12 +91,12 @@ export function Group<M = unknown, R = void>(
   return RxTree.declare(Drivers.group, declaration, preset)
 }
 
-// Fragment
+// PseudoElement
 
-export function Fragment<M = unknown, R = void>(
+export function PseudoElement<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<void, M, R>>,
   preset?: RxNodeDecl<El<void, M, R>>): El<void, M, R> {
-  return RxTree.declare(HtmlDriver.group, declaration, preset) as El<void, M, R>
+  return RxTree.declare(Drivers.pseudo, declaration, preset)
 }
 
 // VerstakHtmlDriver
@@ -121,11 +121,14 @@ const Drivers = {
   note: new VerstakHtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.Note),
 
   // display: contents
-  group: new VerstakHtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.Group),
+  group: new VerstakHtmlDriver<HTMLElement>(Constants.group, false, el => el.kind = ElKind.Group),
 
   // display: flex/row or contents
   partition: new VerstakHtmlDriver<HTMLElement>(Constants.partition, true, el => el.kind = ElKind.Part),
 
   // cursor control element
   cursor: new CursorCommandDriver(),
+
+  // (no element)
+  pseudo: new ElDriver<HTMLElement>("pseudo", false, el => el.kind = ElKind.Group) as unknown as RxNodeDriver<El<void, any, any, void>>,
 }
