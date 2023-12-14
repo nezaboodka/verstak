@@ -9,8 +9,10 @@ import { Mode } from "reactronic"
 import { PseudoElement } from "./Elements.js"
 import { FocusModel } from "./sensors/FocusSensor.js"
 
-export function FocuserReaction(key: string, target: HTMLElement, model: FocusModel,
+export function FocuserReaction(
+  key: string, target: HTMLElement, model: FocusModel,
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {
+
   PseudoElement({
     key,
     mode: Mode.IndependentUpdate,
@@ -28,4 +30,5 @@ export function FocuserReaction(key: string, target: HTMLElement, model: FocusMo
       }
     },
   })
+
 }
