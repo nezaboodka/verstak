@@ -116,17 +116,17 @@ export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
   }
 }
 
-// HtmlDriver
+// HtmlElementDriver
 
-export class HtmlDriver<T extends HTMLElement, M = any, C = any> extends WebDriver<T, M, C> {
+export class HtmlElementDriver<T extends HTMLElement, M = any, C = any> extends WebDriver<T, M, C> {
   acquireNativeElement(element: El<T, M, C>): T {
     return document.createElement(element.node.driver.name) as T
   }
 }
 
-// SvgDriver
+// SvgElementDriver
 
-export class SvgDriver<T extends SVGElement, M = any, C = any> extends WebDriver<T, M, C> {
+export class SvgElementDriver<T extends SVGElement, M = any, C = any> extends WebDriver<T, M, C> {
   acquireNativeElement(element: El<T, M, C>): T {
     return document.createElementNS("http://www.w3.org/2000/svg", element.node.driver.name) as T
   }

@@ -7,7 +7,7 @@
 
 import { RxNodeDecl, RxNodeDriver, RxNode } from "reactronic"
 import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver } from "./El.js"
-import { HtmlDriver } from "./HtmlDriver.js"
+import { HtmlElementDriver } from "./HtmlDriver.js"
 
 // Verstak is based on two fundamental layout structures
 // called section and table; and on two special non-visual
@@ -99,9 +99,9 @@ export function PseudoElement<M = unknown, R = void>(
   return RxNode.acquire(Drivers.pseudo, declaration, preset)
 }
 
-// VerstakHtmlDriver
+// VerstakElementDriver
 
-export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
+export class VerstakElementDriver<T extends HTMLElement> extends HtmlElementDriver<T> {
   update(node: RxNode<El<T>>): void | Promise<void> {
     const element = node.element
     // Add initial line feed automatically
@@ -113,19 +113,19 @@ export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 const Drivers = {
   // display: flex, flex-direction: column
-  section: new VerstakHtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.Section),
+  section: new VerstakElementDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.Section),
 
   // display: grid
-  table: new VerstakHtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.Table),
+  table: new VerstakElementDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.Table),
 
   // display: block
-  note: new VerstakHtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.Note),
+  note: new VerstakElementDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.Note),
 
   // display: contents
-  group: new VerstakHtmlDriver<HTMLElement>(Constants.group, false, el => el.kind = ElKind.Group),
+  group: new VerstakElementDriver<HTMLElement>(Constants.group, false, el => el.kind = ElKind.Group),
 
   // display: flex/row or contents
-  partition: new VerstakHtmlDriver<HTMLElement>(Constants.partition, true, el => el.kind = ElKind.Part),
+  partition: new VerstakElementDriver<HTMLElement>(Constants.partition, true, el => el.kind = ElKind.Part),
 
   // cursor control element
   cursor: new CursorCommandDriver(),
