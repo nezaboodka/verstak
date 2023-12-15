@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxTree, RxNode, SimpleDelegate, BaseDriver } from "reactronic"
+import { RxNode, SimpleDelegate, BaseDriver } from "reactronic"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // ElDriver
@@ -577,7 +577,7 @@ export class Apply {
     const e = element.native
     if (e instanceof HTMLElement) {
       const s = e.style
-      const host = RxTree.findMatchingHost<El, El>(element.node, n =>
+      const host = RxNode.findMatchingHost<El, El>(element.node, n =>
         n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
       const nativeHost = host?.element.native
       if (value === true) {

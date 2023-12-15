@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxSystem, RxTree, Priority, SimpleDelegate, RxNode } from "reactronic"
+import { RxSystem, RxNode, Priority, SimpleDelegate } from "reactronic"
 import { Constants, El, ElDriver, ElImpl } from "./El.js"
 
 // WebDriver
@@ -41,12 +41,12 @@ export abstract class WebDriver<T extends Element, M = unknown, C = unknown> ext
     if (native) {
       const node = element.node
       const sequential = node.owner.children.isStrict
-      const automaticHost = RxTree.findMatchingHost<El, El>(node, n =>
+      const automaticHost = RxNode.findMatchingHost<El, El>(node, n =>
         n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
       const automaticNativeHost = automaticHost?.element.native
       if (automaticNativeHost) {
         if (sequential && !node.driver.isPartitionSeparator) {
-          const after = RxTree.findMatchingPrevSibling<El, El>(element.node, n =>
+          const after = RxNode.findMatchingPrevSibling<El, El>(element.node, n =>
             n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
           if (after === undefined || after.driver.isPartitionSeparator) {
             if (automaticNativeHost !== native.parentNode || !native.previousSibling)
@@ -77,17 +77,17 @@ export abstract class WebDriver<T extends Element, M = unknown, C = unknown> ext
         element.area = undefined // automatic placement in table
     }
     if (gBlinkingEffectMarker)
-      blink(element.native, RxTree.currentUpdatePriority, element.node.stamp)
+      blink(element.native, RxNode.currentUpdatePriority, element.node.stamp)
     return result
   }
 
   static findBrotherlyHost<T, R>(node: RxNode<El<T>>): RxNode<El<R>> | undefined {
-    return RxTree.findMatchingHost<El, El>(node, n =>
+    return RxNode.findMatchingHost<El, El>(node, n =>
       n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
   }
 
   static findBrotherlyPrevSibling<T, R>(node: RxNode<El<T>>): RxNode<El<R>> | undefined {
-    return RxTree.findMatchingPrevSibling<El, El>(node, n =>
+    return RxNode.findMatchingPrevSibling<El, El>(node, n =>
       n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
   }
 
