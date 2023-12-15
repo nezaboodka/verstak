@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxTree, RxNodeDecl, RxNodeDriver } from "reactronic"
+import { RxTree, RxNodeDecl, RxNodeDriver, RxNode } from "reactronic"
 import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver } from "./El.js"
 import { HtmlDriver } from "./HtmlDriver.js"
 
@@ -32,7 +32,7 @@ import { HtmlDriver } from "./HtmlDriver.js"
 
 export function Section<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<HTMLElement, M, R>>,
-  preset?: RxNodeDecl<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
+  preset?: RxNodeDecl<El<HTMLElement, M, R>>): RxNode<El<HTMLElement, M, R>> {
   return RxTree.declare(Drivers.section, declaration, preset)
 }
 
@@ -40,7 +40,7 @@ export function Section<M = unknown, R = void>(
 
 export function Table<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<HTMLElement, M, R>>,
-  preset?: RxNodeDecl<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
+  preset?: RxNodeDecl<El<HTMLElement, M, R>>): RxNode<El<HTMLElement, M, R>> {
   return RxTree.declare(Drivers.table, declaration, preset)
 }
 
@@ -66,7 +66,7 @@ export function cursor(areaParams: ElArea): void {
 // Note (either plain or html)
 
 export function Note(content: string,
-  declaration?: RxNodeDecl<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
+  declaration?: RxNodeDecl<El<HTMLElement, void, void>>): RxNode<El<HTMLElement, void, void>> {
   return RxTree.declare(Drivers.note, declaration, {
     update(b) {
       b.native.innerText = content
@@ -75,7 +75,7 @@ export function Note(content: string,
 }
 
 export function HtmlNote(content: string,
-  declaration?: RxNodeDecl<El<HTMLElement, void, void>>): El<HTMLElement, void, void> {
+  declaration?: RxNodeDecl<El<HTMLElement, void, void>>): RxNode<El<HTMLElement, void, void>> {
   return RxTree.declare(Drivers.note, declaration, {
     update(b) {
       b.native.innerHTML = content
@@ -87,7 +87,7 @@ export function HtmlNote(content: string,
 
 export function Group<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<HTMLElement, M, R>>,
-  preset?: RxNodeDecl<El<HTMLElement, M, R>>): El<HTMLElement, M, R> {
+  preset?: RxNodeDecl<El<HTMLElement, M, R>>): RxNode<El<HTMLElement, M, R>> {
   return RxTree.declare(Drivers.group, declaration, preset)
 }
 
@@ -95,18 +95,19 @@ export function Group<M = unknown, R = void>(
 
 export function PseudoElement<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<void, M, R>>,
-  preset?: RxNodeDecl<El<void, M, R>>): El<void, M, R> {
+  preset?: RxNodeDecl<El<void, M, R>>): RxNode<El<void, M, R>> {
   return RxTree.declare(Drivers.pseudo, declaration, preset)
 }
 
 // VerstakHtmlDriver
 
 export class VerstakHtmlDriver<T extends HTMLElement> extends HtmlDriver<T> {
-  update(element: El<T>): void | Promise<void> {
+  update(node: RxNode<El<T>>): void | Promise<void> {
+    const element = node.element
     // Add initial line feed automatically
     if (element.kind === ElKind.Section)
       startNewRow()
-    return super.update(element)
+    return super.update(node)
   }
 }
 

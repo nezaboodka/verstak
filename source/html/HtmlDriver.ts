@@ -14,26 +14,29 @@ export abstract class WebDriver<T extends Element, M = unknown, C = unknown> ext
 
   abstract acquireNativeElement(element: El<T, M, C>): T
 
-  initialize(element: El<T, M, C>): void {
+  initialize(node: RxNode<El<T, M, C>>): void {
+    const element = node.element
     const native = element.native = this.acquireNativeElement(element)
     if (RxSystem.isLogging && !element.node.driver.isPartitionSeparator)
       native.setAttribute(Constants.keyAttrName, element.node.key)
-    super.initialize(element)
+    super.initialize(node)
   }
 
-  finalize(element: El<T, M, C>, isLeader: boolean): boolean {
+  finalize(node: RxNode<El<T, M, C>>, isLeader: boolean): boolean {
+    const element = node.element
     const native = element.native as T | undefined // hack
     if (native) {
       native.resizeObserver?.unobserve(native) // is it really needed or browser does this automatically?
       if (isLeader)
         native.remove()
     }
-    super.finalize(element, isLeader)
+    super.finalize(node, isLeader)
     element.native = null as any
     return false // children elements having native HTML elements are not treated as leaders
   }
 
-  mount(element: El<T, M, C>): void {
+  mount(node: RxNode<El<T, M, C>>): void {
+    const element = node.element
     const native = element.native as T | undefined // hack
     if (native) {
       const node = element.node
@@ -63,10 +66,11 @@ export abstract class WebDriver<T extends Element, M = unknown, C = unknown> ext
     }
   }
 
-  update(element: El<T, M, C>): void | Promise<void> {
+  update(node: RxNode<El<T, M, C>>): void | Promise<void> {
+    const element = node.element
     if (element instanceof ElImpl)
       element.prepareForUpdate()
-    const result = super.update(element)
+    const result = super.update(node)
     if (element.area === undefined) {
       const oel = element.node.owner.element
       if (oel instanceof ElImpl && oel.isTable)

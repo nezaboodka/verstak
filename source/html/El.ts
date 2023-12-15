@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxTree, RxNode, SimpleDelegate, BaseDriver, RxElement } from "reactronic"
+import { RxTree, RxNode, SimpleDelegate, BaseDriver } from "reactronic"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // ElDriver
@@ -18,7 +18,7 @@ export class ElDriver<T extends Element, M = unknown, C = unknown> extends BaseD
 
 // BaseEl
 
-export interface BaseEl<T = any, M = any, C = any, R = void> extends RxElement {
+export interface BaseEl<T = any, M = any, C = any, R = void> {
   // System-managed properties
   readonly node: RxNode<El<T, M, C, R>>
 
@@ -173,7 +173,7 @@ export class ElImpl<T extends Element = any, M = any, C = any, R = any> implemen
     const node = this.node
     const driver = node.driver
     if (!driver.isPartitionSeparator) {
-      const owner = node.owner
+      const owner = node.owner as RxNode<ElImpl>
       const ownerEl = owner.element
       const prevEl = node.seat!.prev?.instance.element as ElImpl
       const cursorPosition = prevEl?.cursorPosition ?? InitialCursorPosition
@@ -505,8 +505,9 @@ export class Apply {
     else {
       const hostDriver = bNode.host.driver
       if (hostDriver.isPartitionSeparator) {
+        const host = bNode.host.seat!.instance as RxNode<El<T, any, any, any>>
         Apply.elementAlignment(element, Align.ToBounds)
-        Apply.heightGrowth(bNode.host.seat!.instance.element, value)
+        Apply.heightGrowth(host.element, value)
       }
     }
   }
