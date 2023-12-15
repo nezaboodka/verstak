@@ -131,5 +131,5 @@ const Drivers = {
   cursor: new CursorCommandDriver(),
 
   // (no element)
-  pseudo: new ElDriver<HTMLElement>("pseudo", false, el => el.kind = ElKind.Group) as unknown as RxNodeDriver<El<void, any, any, void>>,
+  pseudo: new ElDriver<HTMLElement>("pseudo", false, el => el.kind = ElKind.Group) as unknown as RxNodeDriver<El<void, any, any>>,
 }

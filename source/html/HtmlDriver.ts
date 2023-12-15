@@ -10,7 +10,7 @@ import { Constants, El, ElDriver, ElImpl } from "./El.js"
 
 // WebDriver
 
-export abstract class WebDomDriver<T extends Element, M = unknown, C = unknown> extends ElDriver<T, M, C> {
+export abstract class WebDriver<T extends Element, M = unknown, C = unknown> extends ElDriver<T, M, C> {
 
   abstract acquireNativeElement(element: El<T, M, C>): T
 
@@ -102,7 +102,7 @@ export abstract class WebDomDriver<T extends Element, M = unknown, C = unknown> 
 
 // StaticDriver
 
-export class StaticDriver<T extends HTMLElement> extends WebDomDriver<T> {
+export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
 
   readonly native: T
 
@@ -118,7 +118,7 @@ export class StaticDriver<T extends HTMLElement> extends WebDomDriver<T> {
 
 // HtmlElementDriver
 
-export class HtmlElementDriver<T extends HTMLElement, M = any, C = any> extends WebDomDriver<T, M, C> {
+export class HtmlElementDriver<T extends HTMLElement, M = any, C = any> extends WebDriver<T, M, C> {
   acquireNativeElement(element: El<T, M, C>): T {
     return document.createElement(element.node.driver.name) as T
   }
@@ -126,7 +126,7 @@ export class HtmlElementDriver<T extends HTMLElement, M = any, C = any> extends 
 
 // SvgElementDriver
 
-export class SvgElementDriver<T extends SVGElement, M = any, C = any> extends WebDomDriver<T, M, C> {
+export class SvgElementDriver<T extends SVGElement, M = any, C = any> extends WebDriver<T, M, C> {
   acquireNativeElement(element: El<T, M, C>): T {
     return document.createElementNS("http://www.w3.org/2000/svg", element.node.driver.name) as T
   }
