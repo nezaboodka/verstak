@@ -33,7 +33,7 @@ import { HtmlDriver } from "./HtmlDriver.js"
 export function Section<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<HTMLElement, M, R>>,
   preset?: RxNodeDecl<El<HTMLElement, M, R>>): RxNode<El<HTMLElement, M, R>> {
-  return RxNode.declare(Drivers.section, declaration, preset)
+  return RxNode.acquire(Drivers.section, declaration, preset)
 }
 
 // Table
@@ -41,7 +41,7 @@ export function Section<M = unknown, R = void>(
 export function Table<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<HTMLElement, M, R>>,
   preset?: RxNodeDecl<El<HTMLElement, M, R>>): RxNode<El<HTMLElement, M, R>> {
-  return RxNode.declare(Drivers.table, declaration, preset)
+  return RxNode.acquire(Drivers.table, declaration, preset)
 }
 
 // Partition
@@ -52,11 +52,11 @@ export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: 
 }
 
 export function startNewRow(shiftCursorDown?: number): void {
-  RxNode.declare(Drivers.partition)
+  RxNode.acquire(Drivers.partition)
 }
 
 export function cursor(areaParams: ElArea): void {
-  RxNode.declare(Drivers.cursor, {
+  RxNode.acquire(Drivers.cursor, {
     update(b) {
       b.area = areaParams
     },
@@ -67,7 +67,7 @@ export function cursor(areaParams: ElArea): void {
 
 export function Note(content: string,
   declaration?: RxNodeDecl<El<HTMLElement, void, void>>): RxNode<El<HTMLElement, void, void>> {
-  return RxNode.declare(Drivers.note, declaration, {
+  return RxNode.acquire(Drivers.note, declaration, {
     update(b) {
       b.native.innerText = content
     }},
@@ -76,7 +76,7 @@ export function Note(content: string,
 
 export function HtmlNote(content: string,
   declaration?: RxNodeDecl<El<HTMLElement, void, void>>): RxNode<El<HTMLElement, void, void>> {
-  return RxNode.declare(Drivers.note, declaration, {
+  return RxNode.acquire(Drivers.note, declaration, {
     update(b) {
       b.native.innerHTML = content
     }},
@@ -88,7 +88,7 @@ export function HtmlNote(content: string,
 export function Group<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<HTMLElement, M, R>>,
   preset?: RxNodeDecl<El<HTMLElement, M, R>>): RxNode<El<HTMLElement, M, R>> {
-  return RxNode.declare(Drivers.group, declaration, preset)
+  return RxNode.acquire(Drivers.group, declaration, preset)
 }
 
 // PseudoElement
@@ -96,7 +96,7 @@ export function Group<M = unknown, R = void>(
 export function PseudoElement<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<void, M, R>>,
   preset?: RxNodeDecl<El<void, M, R>>): RxNode<El<void, M, R>> {
-  return RxNode.declare(Drivers.pseudo, declaration, preset)
+  return RxNode.acquire(Drivers.pseudo, declaration, preset)
 }
 
 // VerstakHtmlDriver
