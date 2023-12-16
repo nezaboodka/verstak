@@ -10,19 +10,23 @@ import { Constants, El, ElDriver, ElImpl } from "./El.js"
 
 // WebDriver
 
-export abstract class WebDriver<T extends Element, M = unknown, C = unknown> extends ElDriver<T, M, C> {
+export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
 
-  abstract acquireNativeElement(element: El<T, M, C>): T
-
-  initialize(node: RxNode<El<T, M, C>>): void {
-    const element = node.element
-    const native = element.native = this.acquireNativeElement(element)
-    if (RxSystem.isLogging && !element.node.driver.isPartitionSeparator)
-      native.setAttribute(Constants.keyAttrName, element.node.key)
-    super.initialize(node)
+  setNativeElement(node: RxNode<El<T, M>>): void {
+    // it's up to descendant class to define logic
   }
 
-  finalize(node: RxNode<El<T, M, C>>, isLeader: boolean): boolean {
+  initialize(node: RxNode<El<T, M>>): void {
+    this.setNativeElement(node)
+    const e = node.element.native
+    if (RxSystem.isLogging && e !== undefined && !node.driver.isPartitionSeparator)
+      e.setAttribute(Constants.keyAttrName, node.key)
+    super.initialize(node)
+    if (e == undefined && RxSystem.isLogging && !node.driver.isPartitionSeparator)
+      node.element.native.setAttribute(Constants.keyAttrName, node.key)
+  }
+
+  finalize(node: RxNode<El<T, M>>, isLeader: boolean): boolean {
     const element = node.element
     const native = element.native as T | undefined // hack
     if (native) {
@@ -35,7 +39,7 @@ export abstract class WebDriver<T extends Element, M = unknown, C = unknown> ext
     return false // children elements having native HTML elements are not treated as leaders
   }
 
-  mount(node: RxNode<El<T, M, C>>): void {
+  mount(node: RxNode<El<T, M>>): void {
     const element = node.element
     const native = element.native as T | undefined // hack
     if (native) {
@@ -66,7 +70,7 @@ export abstract class WebDriver<T extends Element, M = unknown, C = unknown> ext
     }
   }
 
-  update(node: RxNode<El<T, M, C>>): void | Promise<void> {
+  update(node: RxNode<El<T, M>>): void | Promise<void> {
     const element = node.element
     if (element instanceof ElImpl)
       element.prepareForUpdate()
@@ -111,24 +115,24 @@ export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
     this.native = native
   }
 
-  acquireNativeElement(): T {
-    return this.native
+  setNativeElement(node: RxNode<El<T>>): void {
+    node.element.native = this.native
   }
 }
 
 // HtmlElementDriver
 
-export class HtmlElementDriver<T extends HTMLElement, M = any, C = any> extends WebDriver<T, M, C> {
-  acquireNativeElement(element: El<T, M, C>): T {
-    return document.createElement(element.node.driver.name) as T
+export class HtmlElementDriver<T extends HTMLElement, M = any> extends WebDriver<T, M> {
+  setNativeElement(node: RxNode<El<T, M>>): void {
+    node.element.native = document.createElement(node.driver.name) as T
   }
 }
 
 // SvgElementDriver
 
-export class SvgElementDriver<T extends SVGElement, M = any, C = any> extends WebDriver<T, M, C> {
-  acquireNativeElement(element: El<T, M, C>): T {
-    return document.createElementNS("http://www.w3.org/2000/svg", element.node.driver.name) as T
+export class SvgElementDriver<T extends SVGElement, M = any> extends WebDriver<T, M> {
+  setNativeElement(node: RxNode<El<T, M>>): void {
+    node.element.native = document.createElementNS("http://www.w3.org/2000/svg", node.driver.name) as T
   }
 }
 

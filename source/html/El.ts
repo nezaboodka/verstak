@@ -10,26 +10,25 @@ import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // ElDriver
 
-export class ElDriver<T extends Element, M = unknown, C = unknown> extends BaseDriver<El<T, M, C>> {
-  allocate(node: RxNode<El<T, M, C>>): El<T, M, C> {
-    return new ElImpl<T, M, C, void>(node)
+export class ElDriver<T extends Element, M = unknown> extends BaseDriver<El<T, M>> {
+  allocate(node: RxNode<El<T, M>>): El<T, M> {
+    return new ElImpl<T, M>(node)
   }
 }
 
 // BaseEl
 
-export interface BaseEl<T = any, M = any, C = any> {
+export interface BaseEl<T = any, M = any> {
   // System-managed properties
-  readonly node: RxNode<El<T, M, C>>
+  readonly node: RxNode<El<T, M>>
 
   // User-manageable properties
   model: M
-  controller: C
 }
 
 // El
 
-export interface El<T = any, M = any, C = any> extends BaseEl<T, M, C> {
+export interface El<T = any, M = any> extends BaseEl<T, M> {
   // System-managed properties
   native: T
 
@@ -98,9 +97,9 @@ export type ElArea = undefined | string | {
 
 // ElImpl
 
-export class ElImpl<T extends Element = any, M = any, C = any, R = any> implements El<T, M, C> {
+export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   // System-managed properties
-  readonly node: RxNode<El<T, M, C>>
+  readonly node: RxNode<El<T, M>>
   maxColumnCount: number
   maxRowCount: number
   cursorPosition?: CursorPosition
@@ -108,7 +107,6 @@ export class ElImpl<T extends Element = any, M = any, C = any, R = any> implemen
 
   // User-defined properties
   model: M
-  controller: C
   private _kind: ElKind
   private _area: ElArea
   private _coords: ElCoords
@@ -124,7 +122,7 @@ export class ElImpl<T extends Element = any, M = any, C = any, R = any> implemen
   private _overlayVisible: boolean | undefined
   private _hasStyles: boolean
 
-  constructor(node: RxNode<El<T, M, C>>) {
+  constructor(node: RxNode<El<T, M>>) {
     // System-managed properties
     this.node = node
     this.maxColumnCount = 0
@@ -133,7 +131,6 @@ export class ElImpl<T extends Element = any, M = any, C = any, R = any> implemen
     this.native = undefined as any as T // hack
     // User-defined properties
     this.model = undefined as any
-    this.controller = undefined as any as C // hack
     this._kind = ElKind.Part
     this._area = undefined
     this._coords = UndefinedElCoords
@@ -438,20 +435,20 @@ export class CursorCommand {
   rowShift?: number
 }
 
-export class CursorCommandDriver extends ElDriver<Element, unknown, void> {
+export class CursorCommandDriver extends ElDriver<Element, unknown> {
   constructor() {
     super("cursor", false, el => el.kind = ElKind.Cursor)
   }
 }
 
 export class Apply {
-  static kind<T extends Element>(element: El<T, any, any>, value: ElKind): void {
+  static kind<T extends Element>(element: El<T, any>, value: ElKind): void {
     const kind = Constants.layouts[value]
     kind && element.native.setAttribute(Constants.kindAttrName, kind)
     VerstakDriversByLayout[value](element as any)
   }
 
-  static coords<T extends Element>(element: El<T, any, any>, value: ElCoords | undefined): void {
+  static coords<T extends Element>(element: El<T, any>, value: ElCoords | undefined): void {
     if (element.native instanceof HTMLElement) {
       const s = element.native.style
       if (value) {
@@ -466,7 +463,7 @@ export class Apply {
     }
   }
 
-  static widthGrowth<T extends Element>(element: El<T, any, any>, value: number): void {
+  static widthGrowth<T extends Element>(element: El<T, any>, value: number): void {
     if (element.native instanceof HTMLElement) {
       const s = element.native.style
       if (value > 0) {
@@ -480,17 +477,17 @@ export class Apply {
     }
   }
 
-  static minWidth<T extends Element>(element: El<T, any, any>, value: string): void {
+  static minWidth<T extends Element>(element: El<T, any>, value: string): void {
     if (element.native instanceof HTMLElement)
       element.native.style.minWidth = `${value}`
   }
 
-  static applyMaxWidth<T extends Element>(element: El<T, any, any>, value: string): void {
+  static applyMaxWidth<T extends Element>(element: El<T, any>, value: string): void {
     if (element.native instanceof HTMLElement)
       element.native.style.maxWidth = `${value}`
   }
 
-  static heightGrowth<T extends Element>(element: El<T, any, any>, value: number): void {
+  static heightGrowth<T extends Element>(element: El<T, any>, value: number): void {
     const bNode = element.node
     const driver = bNode.driver
     if (driver.isPartitionSeparator) {
@@ -505,24 +502,24 @@ export class Apply {
     else {
       const hostDriver = bNode.host.driver
       if (hostDriver.isPartitionSeparator) {
-        const host = bNode.host.seat!.instance as RxNode<El<T, any, any>>
+        const host = bNode.host.seat!.instance as RxNode<El<T, any>>
         Apply.elementAlignment(element, Align.ToBounds)
         Apply.heightGrowth(host.element, value)
       }
     }
   }
 
-  static minHeight<T extends Element>(element: El<T, any, any>, value: string): void {
+  static minHeight<T extends Element>(element: El<T, any>, value: string): void {
     if (element.native instanceof HTMLElement)
       element.native.style.minHeight = `${value}`
   }
 
-  static maxHeight<T extends Element>(element: El<T, any, any>, value: string): void {
+  static maxHeight<T extends Element>(element: El<T, any>, value: string): void {
     if (element.native instanceof HTMLElement)
       element.native.style.maxHeight = `${value}`
   }
 
-  static contentAlignment<T extends Element>(element: El<T, any, any>, value: Align): void {
+  static contentAlignment<T extends Element>(element: El<T, any>, value: Align): void {
     if (element.native instanceof HTMLElement) {
       const s = element.native.style
       if ((value & Align.Default) === 0) { // if not auto mode
@@ -538,7 +535,7 @@ export class Apply {
     }
   }
 
-  static elementAlignment<T extends Element>(element: El<T, any, any>, value: Align): void {
+  static elementAlignment<T extends Element>(element: El<T, any>, value: Align): void {
     if (element.native instanceof HTMLElement) {
       const s = element.native.style
       if ((value & Align.Default) === 0) { // if not auto mode
@@ -555,7 +552,7 @@ export class Apply {
     }
   }
 
-  static contentWrapping<T extends Element>(element: El<T, any, any>, value: boolean): void {
+  static contentWrapping<T extends Element>(element: El<T, any>, value: boolean): void {
     if (element.native instanceof HTMLElement) {
       const s = element.native.style
       if (value) {
@@ -573,7 +570,7 @@ export class Apply {
     }
   }
 
-  static overlayVisible<T extends Element>(element: El<T, any, any>, value: boolean | undefined): void {
+  static overlayVisible<T extends Element>(element: El<T, any>, value: boolean | undefined): void {
     const e = element.native
     if (e instanceof HTMLElement) {
       const s = e.style
@@ -607,7 +604,7 @@ export class Apply {
     }
   }
 
-  static style<T extends Element>(element: El<T, any, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
+  static style<T extends Element>(element: El<T, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
     const native = element.native
     enabled ??= true
     if (secondary)

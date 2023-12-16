@@ -30,17 +30,17 @@ import { HtmlElementDriver } from "./HtmlDriver.js"
 
 // Section
 
-export function Section<M = unknown, R = void>(
-  declaration?: RxNodeDecl<El<HTMLElement, M, R>>,
-  preset?: RxNodeDecl<El<HTMLElement, M, R>>): RxNode<El<HTMLElement, M, R>> {
+export function Section<M = unknown>(
+  declaration?: RxNodeDecl<El<HTMLElement, M>>,
+  preset?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
   return RxNode.acquire(Drivers.section, declaration, preset)
 }
 
 // Table
 
 export function Table<M = unknown, R = void>(
-  declaration?: RxNodeDecl<El<HTMLElement, M, R>>,
-  preset?: RxNodeDecl<El<HTMLElement, M, R>>): RxNode<El<HTMLElement, M, R>> {
+  declaration?: RxNodeDecl<El<HTMLElement, M>>,
+  preset?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
   return RxNode.acquire(Drivers.table, declaration, preset)
 }
 
@@ -66,7 +66,7 @@ export function cursor(areaParams: ElArea): void {
 // Note (either plain or html)
 
 export function Note(content: string,
-  declaration?: RxNodeDecl<El<HTMLElement, void, void>>): RxNode<El<HTMLElement, void, void>> {
+  declaration?: RxNodeDecl<El<HTMLElement, void>>): RxNode<El<HTMLElement, void>> {
   return RxNode.acquire(Drivers.note, declaration, {
     update(b) {
       b.native.innerText = content
@@ -75,7 +75,7 @@ export function Note(content: string,
 }
 
 export function HtmlNote(content: string,
-  declaration?: RxNodeDecl<El<HTMLElement, void, void>>): RxNode<El<HTMLElement, void, void>> {
+  declaration?: RxNodeDecl<El<HTMLElement, void>>): RxNode<El<HTMLElement, void>> {
   return RxNode.acquire(Drivers.note, declaration, {
     update(b) {
       b.native.innerHTML = content
@@ -86,16 +86,16 @@ export function HtmlNote(content: string,
 // Group
 
 export function Group<M = unknown, R = void>(
-  declaration?: RxNodeDecl<El<HTMLElement, M, R>>,
-  preset?: RxNodeDecl<El<HTMLElement, M, R>>): RxNode<El<HTMLElement, M, R>> {
+  declaration?: RxNodeDecl<El<HTMLElement, M>>,
+  preset?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
   return RxNode.acquire(Drivers.group, declaration, preset)
 }
 
 // PseudoElement
 
-export function PseudoElement<M = unknown, R = void>(
-  declaration?: RxNodeDecl<El<void, M, R>>,
-  preset?: RxNodeDecl<El<void, M, R>>): RxNode<El<void, M, R>> {
+export function PseudoElement<M = unknown>(
+  declaration?: RxNodeDecl<El<void, M>>,
+  preset?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>> {
   return RxNode.acquire(Drivers.pseudo, declaration, preset)
 }
 
@@ -131,5 +131,5 @@ const Drivers = {
   cursor: new CursorCommandDriver(),
 
   // (no element)
-  pseudo: new ElDriver<HTMLElement>("pseudo", false, el => el.kind = ElKind.Group) as unknown as RxNodeDriver<El<void, any, any>>,
+  pseudo: new ElDriver<HTMLElement>("pseudo", false, el => el.kind = ElKind.Group) as unknown as RxNodeDriver<El<void, any>>,
 }

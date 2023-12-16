@@ -30,7 +30,7 @@ export class ResizeSensor extends Sensor {
     this.doReset()
   }
 
-  observeResizing(element: El<any, any ,any>, value: boolean, boxSizing: ResizeObserverBoxOptions = "content-box"): void {
+  observeResizing(element: El<any, any>, value: boolean, boxSizing: ResizeObserverBoxOptions = "content-box"): void {
     const native = element.native
     if (native instanceof Element) {
       if (value) {
