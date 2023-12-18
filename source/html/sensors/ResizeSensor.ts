@@ -9,7 +9,7 @@ import { options, transactional, LoggingLevel } from "reactronic"
 import { El } from "../El.js"
 import { Sensor } from "./Sensor.js"
 
-export interface ResizedElement {
+export type ResizedElement = {
   readonly borderBoxSize: ReadonlyArray<ResizeObserverSize>
   readonly contentBoxSize: ReadonlyArray<ResizeObserverSize>
   readonly contentRect: DOMRectReadOnly

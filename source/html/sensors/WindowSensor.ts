@@ -9,7 +9,7 @@ import { ToggleRef, transactional } from "reactronic"
 import { objectHasMember } from "../ElUtils.js"
 import { Sensor } from "./Sensor.js"
 
-export interface WindowModel {
+export type WindowModel = {
   popupToggle?: ToggleRef
 }
 

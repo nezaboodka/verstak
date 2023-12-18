@@ -18,7 +18,7 @@ export class ElDriver<T extends Element, M = unknown> extends BaseDriver<El<T, M
 
 // BaseEl
 
-export interface BaseEl<T = any, M = any> {
+export type BaseEl<T = any, M = any> = {
   // System-managed properties
   readonly node: RxNode<El<T, M>>
 
@@ -28,7 +28,7 @@ export interface BaseEl<T = any, M = any> {
 
 // El
 
-export interface El<T = any, M = any> extends BaseEl<T, M> {
+export type El<T = any, M = any> = BaseEl<T, M> & {
   // System-managed properties
   native: T
 
@@ -60,7 +60,7 @@ export enum ElKind {
   Native = 6,
 }
 
-export interface ElCoords {
+export type ElCoords = {
   x1: number
   y1: number
   x2: number
@@ -79,14 +79,14 @@ export enum Align {
   ToCenter  = ToCenterX + ToCenterY,
 }
 
-export interface ElasticSize {
+export type ElasticSize = {
   cells?: number            // 1 (table only)
   min?: string              // min-content
   max?: string              // min-content
   growth?: number           // 0
 }
 
-export interface TrackSize extends ElasticSize {
+export type TrackSize = ElasticSize & {
   track?: string | number   // <current>
 }
 

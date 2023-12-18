@@ -11,13 +11,13 @@ import { grabElementDataList, SymDataForSensor } from "./DataForSensor.js"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
 import { WindowSensor } from "./WindowSensor.js"
 
-export interface FocusModel {
+export type FocusModel = {
   isEditMode: boolean
   onFocusIn?: (focus: FocusSensor) => void
   onFocusOut?: (focus: FocusSensor) => void
 }
 
-export interface ContextModel {
+export type ContextModel = {
   contextToggle?: ToggleRef
   onContextIn?: (focus: FocusSensor) => void
   onContextOut?: (focus: FocusSensor) => void
