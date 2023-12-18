@@ -43,14 +43,13 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     const element = node.element
     const native = element.native as T | undefined // hack
     if (native) {
-      const node = element.node
       const sequential = node.owner.children.isStrict
       const automaticHost = RxNode.findMatchingHost<El, El>(node, n =>
         n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
       const automaticNativeHost = automaticHost?.element.native
       if (automaticNativeHost) {
         if (sequential && !node.driver.isPartitionSeparator) {
-          const after = RxNode.findMatchingPrevSibling<El, El>(element.node, n =>
+          const after = RxNode.findMatchingPrevSibling<El, El>(node, n =>
             n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
           if (after === undefined || after.driver.isPartitionSeparator) {
             if (automaticNativeHost !== native.parentNode || !native.previousSibling)
@@ -76,12 +75,12 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
       element.prepareForUpdate()
     const result = super.update(node)
     if (element.area === undefined) {
-      const oel = element.node.owner.element
+      const oel = node.owner.element
       if (oel instanceof ElImpl && oel.isTable)
         element.area = undefined // automatic placement in table
     }
     if (gBlinkingEffectMarker)
-      blink(element.native, RxNode.currentUpdatePriority, element.node.stamp)
+      blink(element.native, RxNode.currentUpdatePriority, node.stamp)
     return result
   }
 
