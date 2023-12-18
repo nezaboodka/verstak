@@ -45,9 +45,9 @@
     "typescript": "5.3.2"
   },
   "scripts": {
-    "build": "eslint source/**/*.ts test/**/*.ts && tsc",
-    "fix": "eslint --fix source/**/*.ts test/**/*.ts",
-    "pack": "eslint source/**/*.ts test/**/*.ts && tsc --sourceMap false --removeComments true",
+    "build": "eslint source/**.ts test/**.ts && tsc",
+    "fix": "eslint --fix source/**.ts test/**.ts",
+    "pack": "eslint source/**.ts test/**.ts && tsc --sourceMap false --removeComments true",
     "test": "ava",
     "cover": "c8 ava && open build/coverage/index.html"
   }
