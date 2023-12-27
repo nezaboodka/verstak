@@ -16,23 +16,15 @@ export class ElDriver<T extends Element, M = unknown> extends BaseDriver<El<T, M
   }
 }
 
-// BaseEl
-
-export type BaseEl<T = any, M = any> = {
-  // System-managed properties
-  readonly node: RxNode<El<T, M>>
-
-  // User-manageable properties
-  model: M
-}
-
 // El
 
-export type El<T = any, M = any> = BaseEl<T, M> & {
+export type El<T = any, M = any> = {
   // System-managed properties
+  readonly node: RxNode<El<T, M>>
   native: T
 
   // User-manageable properties
+  model: M
   kind: ElKind
   area: ElArea
   widthGrowth: number

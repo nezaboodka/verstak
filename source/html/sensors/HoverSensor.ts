@@ -13,24 +13,20 @@ import { BasePointerSensor } from "./BasePointerSensor.js"
 export class HoverSensor extends BasePointerSensor {
   target: unknown = undefined
 
-  constructor() {
-    super()
+  constructor(element: HTMLElement | SVGElement) {
+    super(element)
     this.target = undefined
   }
 
-  @transactional
-  listen(element: HTMLElement | undefined, enabled: boolean = true): void {
-    const existing = this.sourceElement
-    if (element !== existing) {
-      if (existing) {
-        existing.removeEventListener("pointerover", this.onPointerOver.bind(this), { capture: true })
-        existing.removeEventListener("pointerout", this.onPointerOut.bind(this), { capture: true })
-      }
-      this.sourceElement = element
-      if (element && enabled) {
-        element.addEventListener("pointerover", this.onPointerOver.bind(this), { capture: true })
-        element.addEventListener("pointerout", this.onPointerOut.bind(this), { capture: true })
-      }
+  listen(enabled: boolean = true): void {
+    const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
+    if (enabled) {
+      element.addEventListener("pointerover", this.onPointerOver.bind(this), { capture: true })
+      element.addEventListener("pointerout", this.onPointerOut.bind(this), { capture: true })
+    }
+    else {
+      element.removeEventListener("pointerover", this.onPointerOver.bind(this), { capture: true })
+      element.removeEventListener("pointerout", this.onPointerOut.bind(this), { capture: true })
     }
   }
 

@@ -5,10 +5,12 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { DataForSensor, SymDataForSensor, SymResizeObserver } from "./sensors/DataForSensor.js"
+import { DataForSensor, SymDataForSensor, SymHtmlSensors, SymResizeObserver } from "./sensors/DataForSensor.js"
+import { HtmlSensors } from "./sensors/HtmlSensors.js"
 
 declare global {
   interface Element {
+    sensors: HtmlSensors
     dataForSensor: DataForSensor
     resizeObserver?: ResizeObserver
   }
@@ -17,6 +19,15 @@ declare global {
 const ElementType = global.Element
 
 if (ElementType !== undefined) {
+  Object.defineProperty(ElementType.prototype, "sensors", {
+    configurable: false, enumerable: false,
+    get(): HtmlSensors {
+      let result = this[SymHtmlSensors]
+      if (result === undefined)
+        result = this[SymHtmlSensors] = new HtmlSensors(this)
+      return result
+    },
+  })
   Object.defineProperty(ElementType.prototype, "dataForSensor", {
     configurable: false, enumerable: false,
     get(): DataForSensor {

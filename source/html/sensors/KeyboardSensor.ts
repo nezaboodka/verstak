@@ -32,26 +32,22 @@ export class KeyboardSensor extends HtmlElementSensor {
   up: string
   modifiers: KeyboardModifiers
 
-  constructor() {
-    super()
+  constructor(element: HTMLElement | SVGElement) {
+    super(element)
     this.down = ""
     this.up = ""
     this.modifiers = KeyboardModifiers.None
   }
 
-  @transactional
-  listen(element: HTMLElement | undefined, enabled: boolean = true): void {
-    const existing = this.sourceElement
-    if (element !== existing) {
-      if (existing) {
-        existing.removeEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
-        existing.removeEventListener("keyup", this.onKeyUp.bind(this), { capture: true })
-      }
-      this.sourceElement = element
-      if (element && enabled) {
-        element.addEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
-        element.addEventListener("keyup", this.onKeyUp.bind(this), { capture: true })
-      }
+  listen(enabled: boolean = true): void {
+    const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
+    if (enabled) {
+      element.addEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
+      element.addEventListener("keyup", this.onKeyUp.bind(this), { capture: true })
+    }
+    else {
+      element.removeEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
+      element.removeEventListener("keyup", this.onKeyUp.bind(this), { capture: true })
     }
   }
 

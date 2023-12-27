@@ -28,8 +28,8 @@ export class ButtonSensor extends BasePointerSensor {
   selectedY: number // position relative to browser's viewport
   selected: boolean
 
-  constructor(focusSensor: FocusSensor, windowSensor: WindowSensor) {
-    super(focusSensor, windowSensor)
+  constructor(element: HTMLElement | SVGElement, focusSensor: FocusSensor, windowSensor: WindowSensor) {
+    super(element, focusSensor, windowSensor)
     this.state = ButtonState.Released
     this.pointerButton = PointerButton.None
     this.originData = undefined
@@ -39,25 +39,21 @@ export class ButtonSensor extends BasePointerSensor {
     this.selected = false
   }
 
-  @transactional
-  listen(element: HTMLElement | undefined, enabled: boolean = true): void {
-    const existing = this.sourceElement
-    if (element !== existing) {
-      if (existing) {
-        existing.removeEventListener("pointerdown", this.onPointerDown.bind(this), { capture: true })
-        existing.removeEventListener("pointermove", this.onPointerMove.bind(this), { capture: true })
-        existing.removeEventListener("pointerup", this.onPointerUp.bind(this), { capture: true })
-        existing.removeEventListener("lostpointercapture", this.onLostPointerCapture.bind(this), { capture: true })
-        existing.removeEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
-      }
-      this.sourceElement = element
-      if (element && enabled) {
-        element.addEventListener("pointerdown", this.onPointerDown.bind(this), { capture: true })
-        element.addEventListener("pointermove", this.onPointerMove.bind(this), { capture: true })
-        element.addEventListener("pointerup", this.onPointerUp.bind(this), { capture: true })
-        element.addEventListener("lostpointercapture", this.onLostPointerCapture.bind(this), { capture: true })
-        element.addEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
-      }
+  listen(enabled: boolean = true): void {
+    const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
+    if (enabled) {
+      element.addEventListener("pointerdown", this.onPointerDown.bind(this), { capture: true })
+      element.addEventListener("pointermove", this.onPointerMove.bind(this), { capture: true })
+      element.addEventListener("pointerup", this.onPointerUp.bind(this), { capture: true })
+      element.addEventListener("lostpointercapture", this.onLostPointerCapture.bind(this), { capture: true })
+      element.addEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
+    }
+    else {
+      element.removeEventListener("pointerdown", this.onPointerDown.bind(this), { capture: true })
+      element.removeEventListener("pointermove", this.onPointerMove.bind(this), { capture: true })
+      element.removeEventListener("pointerup", this.onPointerUp.bind(this), { capture: true })
+      element.removeEventListener("lostpointercapture", this.onLostPointerCapture.bind(this), { capture: true })
+      element.removeEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
     }
   }
 

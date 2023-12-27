@@ -15,24 +15,20 @@ export class WheelSensor extends BasePointerSensor {
   deltaX: number
   deltaY: number
 
-  constructor() {
-    super()
+  constructor(element: HTMLElement | SVGElement) {
+    super(element)
     this.target = undefined
     this.deltaX = Infinity
     this.deltaY = Infinity
   }
 
-  @transactional
-  listen(element: HTMLElement | undefined, enabled: boolean = true): void {
-    const existing = this.sourceElement
-    if (element !== existing) {
-      if (existing) {
-        existing.removeEventListener("wheel", this.onWheel.bind(this), { capture: true })
-      }
-      this.sourceElement = element
-      if (element && enabled) {
-        element.addEventListener("wheel", this.onWheel.bind(this), { capture: true, passive: true })
-      }
+  listen(enabled: boolean = true): void {
+    const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
+    if (enabled) {
+      element.addEventListener("wheel", this.onWheel.bind(this), { capture: true, passive: true })
+    }
+    else {
+      element.removeEventListener("wheel", this.onWheel.bind(this), { capture: true })
     }
   }
 

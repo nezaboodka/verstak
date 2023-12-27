@@ -28,8 +28,8 @@ export class FocusSensor extends HtmlElementSensor {
   oldActiveData: unknown
   contextElementDataList: unknown[]
 
-  constructor(windowSensor: WindowSensor) {
-    super(undefined, windowSensor)
+  constructor(element: HTMLElement | SVGElement, windowSensor: WindowSensor) {
+    super(element, undefined, windowSensor)
     this.activeData = undefined
     this.oldActiveData = undefined
     this.contextElementDataList = []
@@ -57,20 +57,17 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   @transactional
-  listen(element: HTMLElement | undefined, enabled: boolean = true): void {
-    const existing = this.sourceElement
-    if (element !== existing) {
-      if (existing) {
-        existing.removeEventListener("focusin", this.onFocusIn.bind(this), { capture: true })
-        existing.removeEventListener("focusout", this.onFocusOut.bind(this), { capture: true })
-        existing.removeEventListener("mousedown", this.onMouseDown.bind(this), { capture: true })
-      }
-      this.sourceElement = element
-      if (element && enabled) {
-        element.addEventListener("focusin", this.onFocusIn.bind(this), { capture: true })
-        element.addEventListener("focusout", this.onFocusOut.bind(this), { capture: true })
-        element.addEventListener("mousedown", this.onMouseDown.bind(this), { capture: true })
-      }
+  listen(enabled: boolean = true): void {
+    const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
+    if (enabled) {
+      element.addEventListener("focusin", this.onFocusIn.bind(this), { capture: true })
+      element.addEventListener("focusout", this.onFocusOut.bind(this), { capture: true })
+      element.addEventListener("mousedown", this.onMouseDown.bind(this), { capture: true })
+    }
+    else {
+      element.removeEventListener("focusin", this.onFocusIn.bind(this), { capture: true })
+      element.removeEventListener("focusout", this.onFocusOut.bind(this), { capture: true })
+      element.removeEventListener("mousedown", this.onMouseDown.bind(this), { capture: true })
     }
   }
 

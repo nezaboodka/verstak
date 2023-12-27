@@ -45,8 +45,8 @@ export class HtmlDragSensor extends HtmlElementSensor {
   immediatePositionY: number // position relative to browser's viewport
   immediateModifiers: KeyboardModifiers
 
-  constructor(focusSensor: FocusSensor, windowSensor: WindowSensor) {
-    super(focusSensor, windowSensor)
+  constructor(element: HTMLElement | SVGElement, focusSensor: FocusSensor, windowSensor: WindowSensor) {
+    super(element, focusSensor, windowSensor)
     this.draggable = undefined
     this.dragSource = undefined
     this.dragTarget = undefined
@@ -98,29 +98,25 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.draggingImageY = y
   }
 
-  @transactional
-  listen(element: HTMLElement | undefined, enabled: boolean = true): void {
-    const existing = this.sourceElement
-    if (element !== existing) {
-      if (existing) {
-        existing.removeEventListener("dragstart", this.onDragStart.bind(this), { capture: true })
-        existing.removeEventListener("drag", this.onDrag.bind(this), { capture: true })
-        existing.removeEventListener("dragenter", this.onDragEnter.bind(this), { capture: false })
-        existing.removeEventListener("dragleave", this.onDragLeave.bind(this), { capture: false })
-        existing.removeEventListener("dragover", this.onDragOver.bind(this), { capture: true })
-        existing.removeEventListener("drop", this.onDrop.bind(this), { capture: true })
-        existing.removeEventListener("dragend", this.onDragEnd.bind(this), { capture: true })
-      }
-      this.sourceElement = element
-      if (element && enabled) {
-        element.addEventListener("dragstart", this.onDragStart.bind(this), { capture: true })
-        element.addEventListener("drag", this.onDrag.bind(this), { capture: true })
-        element.addEventListener("dragenter", this.onDragEnter.bind(this), { capture: false })
-        element.addEventListener("dragleave", this.onDragLeave.bind(this), { capture: false })
-        element.addEventListener("dragover", this.onDragOver.bind(this), { capture: true })
-        element.addEventListener("drop", this.onDrop.bind(this), { capture: true })
-        element.addEventListener("dragend", this.onDragEnd.bind(this), { capture: true })
-      }
+  listen(enabled: boolean = true): void {
+    const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
+    if (enabled) {
+      element.addEventListener("dragstart", this.onDragStart.bind(this), { capture: true })
+      element.addEventListener("drag", this.onDrag.bind(this), { capture: true })
+      element.addEventListener("dragenter", this.onDragEnter.bind(this), { capture: false })
+      element.addEventListener("dragleave", this.onDragLeave.bind(this), { capture: false })
+      element.addEventListener("dragover", this.onDragOver.bind(this), { capture: true })
+      element.addEventListener("drop", this.onDrop.bind(this), { capture: true })
+      element.addEventListener("dragend", this.onDragEnd.bind(this), { capture: true })
+    }
+    else {
+      element.removeEventListener("dragstart", this.onDragStart.bind(this), { capture: true })
+      element.removeEventListener("drag", this.onDrag.bind(this), { capture: true })
+      element.removeEventListener("dragenter", this.onDragEnter.bind(this), { capture: false })
+      element.removeEventListener("dragleave", this.onDragLeave.bind(this), { capture: false })
+      element.removeEventListener("dragover", this.onDragOver.bind(this), { capture: true })
+      element.removeEventListener("drop", this.onDrop.bind(this), { capture: true })
+      element.removeEventListener("dragend", this.onDragEnd.bind(this), { capture: true })
     }
   }
 

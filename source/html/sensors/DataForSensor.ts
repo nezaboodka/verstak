@@ -21,6 +21,7 @@ export type DataForSensor = {
   button?: unknown
 }
 
+export const SymHtmlSensors: unique symbol = Symbol("HtmlSensors")
 export const SymDataForSensor: unique symbol = Symbol("DataForSensor")
 export const SymResizeObserver: unique symbol = Symbol("ResizeObserver")
 

@@ -22,8 +22,8 @@ export class BasePointerSensor extends HtmlElementSensor {
   positionY: number // position relative to browser's viewport
   modifiers: KeyboardModifiers
 
-  constructor(focusSensor?: FocusSensor, windowSensor?: WindowSensor) {
-    super(focusSensor, windowSensor)
+  constructor(element: HTMLElement | SVGElement, focusSensor?: FocusSensor, windowSensor?: WindowSensor) {
+    super(element, focusSensor, windowSensor)
     this.positionX = Infinity
     this.positionY = Infinity
     this.modifiers = KeyboardModifiers.None

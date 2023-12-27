@@ -5,7 +5,6 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { transactional } from "reactronic"
 import { FocusSensor } from "./FocusSensor.js"
 import { HoverSensor } from "./HoverSensor.js"
 import { HtmlDragSensor } from "./HtmlDragSensor.js"
@@ -17,37 +16,97 @@ import { WindowSensor } from "./WindowSensor.js"
 import { PointerSensor } from "./PointerSensor.js"
 
 export class HtmlSensors {
-  readonly window: WindowSensor
-  readonly focus: FocusSensor
-  readonly hover: HoverSensor
-  readonly keyboard: KeyboardSensor
-  readonly wheel: WheelSensor
-  readonly resize: ResizeSensor
-  readonly htmlDrag: HtmlDragSensor
-  readonly button: ButtonSensor
-  readonly pointer: PointerSensor
+  private readonly _element: HTMLElement | SVGElement
 
-  constructor() {
-    this.window = new WindowSensor()
-    this.focus = new FocusSensor(this.window)
-    this.hover = new HoverSensor()
-    this.keyboard = new KeyboardSensor()
-    this.wheel = new WheelSensor()
-    this.resize = new ResizeSensor()
-    this.htmlDrag = new HtmlDragSensor(this.focus, this.window)
-    this.button = new ButtonSensor(this.focus, this.window)
-    this.pointer = new PointerSensor(this.focus, this.window)
+  private _window: WindowSensor | undefined
+  get window(): WindowSensor {
+    if (this._window === undefined) {
+      this._window = new WindowSensor()
+    }
+    return this._window
   }
 
-  @transactional
-  listen(element: HTMLElement | undefined, enabled: boolean = true): void {
-    this.focus.listen(element, enabled)
-    this.hover.listen(element, enabled)
-    this.keyboard.listen(element, enabled)
-    this.wheel.listen(element, enabled)
-    // this.resize doesn't have listen, this.resize.observeResizingOfCurrentElement is used instead
-    this.htmlDrag.listen(element, enabled)
-    this.button.listen(element, enabled)
-    this.pointer.listen(element, enabled)
+  private _focus: FocusSensor | undefined
+  get focus(): FocusSensor {
+    if (this._focus === undefined) {
+      this._focus = new FocusSensor(this._element, this.window)
+      this._focus.listen()
+    }
+    return this._focus
+  }
+
+  private _hover: HoverSensor | undefined
+  get hover(): HoverSensor {
+    if (this._hover === undefined) {
+      this._hover = new HoverSensor(this._element)
+      this._hover.listen()
+    }
+    return this._hover
+  }
+
+  private _keyboard: KeyboardSensor | undefined
+  get keyboard(): KeyboardSensor {
+    if (this._keyboard === undefined) {
+      this._keyboard = new KeyboardSensor(this._element)
+      this._keyboard.listen()
+    }
+    return this._keyboard
+  }
+
+  private _wheel: WheelSensor | undefined
+  get wheel(): WheelSensor {
+    if (this._wheel === undefined) {
+      this._wheel = new WheelSensor(this._element)
+      this._wheel.listen()
+    }
+    return this._wheel
+  }
+
+  private _resize: ResizeSensor | undefined
+  get resize(): ResizeSensor {
+    if (this._resize === undefined) {
+      this._resize = new ResizeSensor()
+    }
+    return this._resize
+  }
+
+  private _htmlDrag: HtmlDragSensor | undefined
+  get htmlDrag(): HtmlDragSensor {
+    if (this._htmlDrag === undefined) {
+      this._htmlDrag = new HtmlDragSensor(this._element, this.focus, this.window)
+      this._htmlDrag.listen()
+    }
+    return this._htmlDrag
+  }
+
+  private _button: ButtonSensor | undefined
+  get button(): ButtonSensor {
+    if (this._button === undefined) {
+      this._button = new ButtonSensor(this._element, this.focus, this.window)
+      this._button.listen()
+    }
+    return this._button
+  }
+
+  private _pointer: PointerSensor | undefined
+  get pointer(): PointerSensor {
+    if (this._pointer === undefined) {
+      this._pointer = new PointerSensor(this._element, this.focus, this.window)
+      this._pointer.listen()
+    }
+    return this._pointer
+  }
+
+  constructor(element: HTMLElement | SVGElement) {
+    this._element = element
+    this._window = undefined
+    this._focus = undefined
+    this._hover = undefined
+    this._keyboard = undefined
+    this._wheel = undefined
+    this._resize = undefined
+    this._htmlDrag = undefined
+    this._button = undefined
+    this._pointer = undefined
   }
 }
