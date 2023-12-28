@@ -12,6 +12,7 @@ import { KeyboardSensor } from "./KeyboardSensor.js"
 import { ButtonSensor } from "./ButtonSensor.js"
 import { ResizeSensor } from "./ResizeSensor.js"
 import { WheelSensor } from "./WheelSensor.js"
+import { ScrollSensor } from "./ScrollSensor.js"
 import { WindowSensor } from "./WindowSensor.js"
 import { PointerSensor } from "./PointerSensor.js"
 
@@ -62,6 +63,15 @@ export class HtmlSensors {
     return this._wheel
   }
 
+  private _scroll: ScrollSensor | undefined
+  get scroll(): ScrollSensor {
+    if (this._scroll === undefined) {
+      this._scroll = new ScrollSensor(this._element)
+      this._scroll.listen()
+    }
+    return this._scroll
+  }
+
   private _resize: ResizeSensor | undefined
   get resize(): ResizeSensor {
     if (this._resize === undefined) {
@@ -104,6 +114,7 @@ export class HtmlSensors {
     this._hover = undefined
     this._keyboard = undefined
     this._wheel = undefined
+    this._scroll = undefined
     this._resize = undefined
     this._htmlDrag = undefined
     this._button = undefined
