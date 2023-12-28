@@ -8,7 +8,7 @@
 import { Mode } from "reactronic"
 import { CustomFragment } from "./Elements.js"
 
-export function ClickFragment(target: HTMLElement, action: (() => void) | undefined, key?: string): void {
+export function OnClick(target: HTMLElement, action: (() => void) | undefined, key?: string): void {
 
   if (action) {
     CustomFragment({
