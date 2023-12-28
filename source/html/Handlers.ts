@@ -9,6 +9,24 @@ import { Mode } from "reactronic"
 import { SyntheticElement } from "./Elements.js"
 import { FocusModel } from "./sensors/FocusSensor.js"
 
+export function ClickHandler(target: HTMLElement, action: (() => void) | undefined, key?: string): void {
+
+  if (action) {
+    SyntheticElement({
+      key,
+      mode: Mode.IndependentUpdate,
+      triggers: { target },
+      update() {
+        const pointer = target.sensors.pointer
+        if (pointer.clicked) {
+          action()
+        }
+      },
+    })
+  }
+
+}
+
 export function TwoWayFocusHandler(
   key: string, target: HTMLElement, model: FocusModel,
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {
