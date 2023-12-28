@@ -6,12 +6,12 @@
 // automatically licensed under the license referred above.
 
 import { Mode } from "reactronic"
-import { CustomFragment } from "./Elements.js"
+import { SyntheticElement } from "./Elements.js"
 
 export function OnClick(target: HTMLElement, action: (() => void) | undefined, key?: string): void {
 
   if (action) {
-    CustomFragment({
+    SyntheticElement({
       key,
       mode: Mode.IndependentUpdate,
       triggers: { target },

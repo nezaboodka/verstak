@@ -93,12 +93,12 @@ export function Group<M = unknown, R = void>(
 
 // Fragment
 
-export function Fragment<M = unknown>(
+export function Handler<M = unknown>(
   update: Delegate<El<void, M>>): RxNode<El<void, M>> {
-  return CustomFragment({ mode: Mode.IndependentUpdate, update })
+  return SyntheticElement({ mode: Mode.IndependentUpdate, update })
 }
 
-export function CustomFragment<M = unknown>(
+export function SyntheticElement<M = unknown>(
   declaration?: RxNodeDecl<El<void, M>>,
   preset?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>> {
   return RxNode.acquire(Drivers.pseudo, declaration, preset)
