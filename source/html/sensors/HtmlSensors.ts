@@ -97,11 +97,6 @@ export class HtmlSensors {
     return this._pointer
   }
 
-  set click(action: ((pointer: PointerSensor) => void) | undefined) {
-    const pointer = this.pointer
-    this._element.onclick = action !== undefined ? () => action(pointer) : null
-  }
-
   constructor(element: HTMLElement | SVGElement) {
     this._element = element
     this._window = undefined
