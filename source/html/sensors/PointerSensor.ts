@@ -185,7 +185,7 @@ export class PointerSensor extends BasePointerSensor {
     const targetPath = e.composedPath()
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
     const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ["click", "draggable"])
-    const clickable = data?.click
+    const clickable = data?.click ?? this._getDefaultDataForSensor(e)
     const draggable = data?.draggable
     if (clickable || draggable) {
       this.clickable = clickable
@@ -308,7 +308,8 @@ export class PointerSensor extends BasePointerSensor {
   protected updateClicking(e: PointerEvent): boolean {
     const targetPath = e.composedPath()
     const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
-    const clickable = findTargetElementData(targetPath, underPointer, SymDataForSensor, ["click"]).data?.click
+    let clickable = findTargetElementData(targetPath, underPointer, SymDataForSensor, ["click"]).data?.click
+    clickable = clickable ?? this._getDefaultDataForSensor(e)
     const isSameClickable = this.clickable === clickable
     if (isSameClickable)
       this.clicking = clickable
@@ -316,6 +317,10 @@ export class PointerSensor extends BasePointerSensor {
     this.immediatePositionX = e.clientX
     this.immediatePositionY = e.clientY
     return isSameClickable
+  }
+
+  private _getDefaultDataForSensor(e: PointerEvent): EventTarget | undefined {
+    return e.currentTarget === this.sourceElement ? e.currentTarget : undefined
   }
 
   protected updateDragTarget(e: PointerEvent): void {
