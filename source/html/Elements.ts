@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNodeDecl, RxNodeDriver, RxNode } from "reactronic"
+import { RxNodeDecl, RxNodeDriver, RxNode, Delegate, Mode } from "reactronic"
 import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver } from "./El.js"
 import { HtmlElementDriver } from "./HtmlDriver.js"
 
@@ -91,9 +91,14 @@ export function Group<M = unknown, R = void>(
   return RxNode.acquire(Drivers.group, declaration, preset)
 }
 
-// PseudoElement
+// Fragment
 
-export function PseudoElement<M = unknown>(
+export function Fragment<M = unknown>(
+  update: Delegate<El<void, M>>): RxNode<El<void, M>> {
+  return CustomFragment({ mode: Mode.IndependentUpdate, update })
+}
+
+export function CustomFragment<M = unknown>(
   declaration?: RxNodeDecl<El<void, M>>,
   preset?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>> {
   return RxNode.acquire(Drivers.pseudo, declaration, preset)

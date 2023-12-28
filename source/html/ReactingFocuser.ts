@@ -6,14 +6,14 @@
 // automatically licensed under the license referred above.
 
 import { Mode } from "reactronic"
-import { PseudoElement } from "./Elements.js"
+import { CustomFragment } from "./Elements.js"
 import { FocusModel } from "./sensors/FocusSensor.js"
 
-export function FocuserReaction(
+export function FocusSyncFragment(
   key: string, target: HTMLElement, model: FocusModel,
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined): void {
 
-  PseudoElement({
+  CustomFragment({
     key,
     mode: Mode.IndependentUpdate,
     triggers: { target, model },
