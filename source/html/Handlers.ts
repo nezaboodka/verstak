@@ -5,22 +5,46 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Mode } from "reactronic"
+import { Mode, ToggleRef, unobs } from "reactronic"
 import { SyntheticElement } from "./Elements.js"
 import { FocusModel } from "./sensors/FocusSensor.js"
+import { ResizedElement } from "./sensors/ResizeSensor.js"
 
-export function OnClick(target: HTMLElement, action: (() => void) | undefined, key?: string): void {
+export function OnClick(target: HTMLElement, action: (() => void) | ToggleRef | undefined, key?: string): void {
+
+  if (action !== undefined) {
+    SyntheticElement({
+      key,
+      mode: Mode.IndependentUpdate,
+      triggers: { target/* , action */ },
+      update() {
+        const pointer = target.sensors.pointer
+        if (pointer.clicked) {
+          if (action instanceof Function) {
+            unobs(() => action())
+          }
+          else if (action instanceof ToggleRef) {
+            unobs(() => action.toggle())
+          }
+        }
+      },
+    })
+  }
+
+}
+
+export function OnResize(target: HTMLElement, action: ((element: ResizedElement) => void) | undefined, key?: string): void {
 
   if (action) {
     SyntheticElement({
       key,
       mode: Mode.IndependentUpdate,
-      triggers: { target },
+      triggers: { target/* , action */ },
       update() {
-        const pointer = target.sensors.pointer
-        if (pointer.clicked) {
-          action()
-        }
+        const resize = target.sensors.resize
+        resize.resizedElements.forEach(x => {
+          action(x)
+        })
       },
     })
   }
