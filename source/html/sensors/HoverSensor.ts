@@ -6,58 +6,54 @@
 // automatically licensed under the license referred above.
 
 import { options, transactional, LoggingLevel } from "reactronic"
-import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
-import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
-import { BasePointerSensor } from "./BasePointerSensor.js"
+import { HtmlElementSensor } from "./HtmlElementSensor.js"
 
-export class HoverSensor extends BasePointerSensor {
-  target: unknown = undefined
+export type IHoverable = {
+  isHovered: boolean
+  onHoverStart?: (hover: HoverSensor) => void
+  onHoverEnd?: (hover: HoverSensor) => void
+}
+
+export class HoverSensor extends HtmlElementSensor {
+  isHovered: boolean
 
   constructor(element: HTMLElement | SVGElement) {
     super(element)
-    this.target = undefined
+    this.isHovered = false
   }
 
   listen(enabled: boolean = true): void {
     const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
     if (enabled) {
-      element.addEventListener("pointerover", this.onPointerOver.bind(this), { capture: true })
-      element.addEventListener("pointerout", this.onPointerOut.bind(this), { capture: true })
+      element.addEventListener("pointerenter", this.onPointerEnter.bind(this))
+      element.addEventListener("pointerleave", this.onPointerLeave.bind(this))
     }
     else {
-      element.removeEventListener("pointerover", this.onPointerOver.bind(this), { capture: true })
-      element.removeEventListener("pointerout", this.onPointerOut.bind(this), { capture: true })
+      element.removeEventListener("pointerenter", this.onPointerEnter.bind(this), { capture: true })
+      element.removeEventListener("pointerleave", this.onPointerLeave.bind(this), { capture: true })
     }
   }
 
-  protected onPointerOver(e: PointerEvent): void {
-    this.doPointerOver(e)
+  protected onPointerEnter(e: PointerEvent): void {
+    this.doPointerEnter(e)
   }
 
-  protected onPointerOut(e: PointerEvent): void {
-    this.doPointerOut()
+  protected onPointerLeave(e: PointerEvent): void {
+    this.doPointerLeave(e)
   }
 
   @transactional @options({ logging: LoggingLevel.Off })
-  protected doPointerOver(e: PointerEvent): void {
+  protected doPointerEnter(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
-    const targetPath = e.composedPath()
-    const underPointer = document.elementsFromPoint(e.clientX, e.clientY)
-    this.target = findTargetElementData(targetPath, underPointer, SymDataForSensor, ["hover"]).data?.hover
-    this.modifiers = extractModifierKeys(e)
-    this.positionX = e.clientX
-    this.positionY = e.clientY
+    this.isHovered = true
     this.revision++
   }
 
   @transactional @options({ logging: LoggingLevel.Off })
-  protected doPointerOut(): void {
+  protected doPointerLeave(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
-    this.positionX = Infinity
-    this.positionY = Infinity
-    this.modifiers = KeyboardModifiers.None
-    this.target = undefined
+    this.isHovered = false
   }
 }

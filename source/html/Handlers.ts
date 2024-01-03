@@ -11,7 +11,6 @@ import { FocusModel } from "./sensors/FocusSensor.js"
 import { ResizedElement } from "./sensors/ResizeSensor.js"
 
 export function OnClick(target: HTMLElement, action: (() => void) | ToggleRef | undefined, key?: string): void {
-
   if (action !== undefined) {
     SyntheticElement({
       key,
@@ -30,11 +29,9 @@ export function OnClick(target: HTMLElement, action: (() => void) | ToggleRef | 
       },
     })
   }
-
 }
 
 export function OnResize(target: HTMLElement, action: ((element: ResizedElement) => void) | undefined, key?: string): void {
-
   if (action) {
     SyntheticElement({
       key,
@@ -48,14 +45,12 @@ export function OnResize(target: HTMLElement, action: ((element: ResizedElement)
       },
     })
   }
-
 }
 
 export function OnFocus(
   target: HTMLElement, model: FocusModel,
   switchEditMode: ((model?: FocusModel) => void) | undefined = undefined,
   key?: string): void {
-
   SyntheticElement({
     key,
     mode: Mode.IndependentUpdate,
@@ -73,5 +68,4 @@ export function OnFocus(
       }
     },
   })
-
 }
