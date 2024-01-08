@@ -9,7 +9,7 @@ export type DataForSensor = {
   context?: unknown
   window?: unknown
   focus?: unknown
-  // hover?: unknown
+  hover?: unknown
   keyboard?: unknown
   click?: unknown
   wheel?: unknown
