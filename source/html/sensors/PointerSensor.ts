@@ -50,7 +50,7 @@ export class PointerSensor extends BasePointerSensor {
     super(element, focusSensor, windowSensor)
     this.hotPositionX = Infinity
     this.hotPositionY = Infinity
-    this.pointerButton = PointerButton.None
+    this.pointerButton = PointerButton.none
     this.tryingDragging = false
     this.clickable = undefined
     this.clicking = undefined
@@ -71,13 +71,13 @@ export class PointerSensor extends BasePointerSensor {
     this.draggingOver = false
     this.positionX = Infinity
     this.positionY = Infinity
-    this.modifiers = KeyboardModifiers.None
+    this.modifiers = KeyboardModifiers.none
     this.dropX = Infinity
     this.dropY = Infinity
     this.dropped = false
     this.immediatePositionX = Infinity
     this.immediatePositionY = Infinity
-    this.immediateModifiers = KeyboardModifiers.None
+    this.immediateModifiers = KeyboardModifiers.none
   }
 
   getData(): unknown {
@@ -111,7 +111,7 @@ export class PointerSensor extends BasePointerSensor {
     // this.sourceElement?.setPointerCapture(e.pointerId)
     const button = extractPointerButton(e)
     if (!this.dragStarted && this.clickable === undefined &&
-      (button === PointerButton.Left || button === PointerButton.Right)) {
+      (button === PointerButton.left || button === PointerButton.right)) {
       this.tryClickingOrDragging(e)
     }
   }
@@ -274,7 +274,7 @@ export class PointerSensor extends BasePointerSensor {
 
   @transactional @options({ logging: LoggingLevel.Off })
   protected reset(): void {
-    this.pointerButton = PointerButton.None
+    this.pointerButton = PointerButton.none
     this.clickable = undefined
     this.clicking = undefined
     this.clicked = undefined
@@ -295,13 +295,13 @@ export class PointerSensor extends BasePointerSensor {
     this.draggingOver = false
     this.positionX = Infinity
     this.positionY = Infinity
-    this.modifiers = KeyboardModifiers.None
+    this.modifiers = KeyboardModifiers.none
     this.dropX = Infinity
     this.dropY = Infinity
     this.dropped = false
     this.immediatePositionX = Infinity
     this.immediatePositionY = Infinity
-    this.immediateModifiers = KeyboardModifiers.None
+    this.immediateModifiers = KeyboardModifiers.none
     this.revision++
   }
 

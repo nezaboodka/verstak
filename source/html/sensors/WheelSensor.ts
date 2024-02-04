@@ -50,7 +50,7 @@ export class WheelSensor extends BasePointerSensor {
   protected doReset(): void {
     this.preventDefault = false
     this.stopPropagation = false
-    this.modifiers = KeyboardModifiers.None
+    this.modifiers = KeyboardModifiers.none
     this.positionX = Infinity
     this.positionY = Infinity
     this.target = undefined

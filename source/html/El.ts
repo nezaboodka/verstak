@@ -43,13 +43,13 @@ export type El<T = any, M = any> = {
 // Other
 
 export enum ElKind {
-  Section = 0,
-  Table = 1,
-  Note = 2,
-  Group = 3,
-  Part = 4,
-  Cursor = 5,
-  Native = 6,
+  section = 0,
+  table = 1,
+  note = 2,
+  group = 3,
+  part = 4,
+  cursor = 5,
+  native = 6,
 }
 
 export type ElCoords = {
@@ -60,15 +60,15 @@ export type ElCoords = {
 }
 
 export enum Align {
-  Default   = 0b10000,
-  ToBounds  = 0b00000,
-  ToLeft    = 0b00001,
-  ToCenterX = 0b00010,
-  ToRight   = 0b00011,
-  ToTop     = 0b00100,
-  ToCenterY = 0b01000,
-  ToBottom  = 0b01100,
-  ToCenter  = ToCenterX + ToCenterY,
+  default   = 0b10000,
+  toBounds  = 0b00000,
+  toLeft    = 0b00001,
+  toCenterX = 0b00010,
+  toRight   = 0b00011,
+  toTop     = 0b00100,
+  toCenterY = 0b01000,
+  toBottom  = 0b01100,
+  toCenter  = toCenterX + toCenterY,
 }
 
 export type ElasticSize = {
@@ -123,7 +123,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this.native = undefined as any as T // hack
     // User-defined properties
     this.model = undefined as any
-    this._kind = ElKind.Part
+    this._kind = ElKind.part
     this._area = undefined
     this._coords = UndefinedElCoords
     this._widthGrowth = 0
@@ -132,8 +132,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._heightGrowth = 0
     this._minHeight = ""
     this._maxHeight = ""
-    this._contentAlignment = Align.Default
-    this._elementAlignment = Align.Default
+    this._contentAlignment = Align.default
+    this._elementAlignment = Align.default
     this._contentWrapping = true
     this._overlayVisible = undefined
     this._hasStyles = false
@@ -144,9 +144,9 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._hasStyles = false // reset
   }
 
-  get isSection(): boolean { return this.kind === ElKind.Section }
-  get isTable(): boolean { return this.kind === ElKind.Table }
-  get isAuxiliary(): boolean { return this.kind > ElKind.Note } // Part, Group, Cursor
+  get isSection(): boolean { return this.kind === ElKind.section }
+  get isTable(): boolean { return this.kind === ElKind.table }
+  get isAuxiliary(): boolean { return this.kind > ElKind.note } // Part, Group, Cursor
 
   get kind(): ElKind { return this._kind }
   set kind(value: ElKind) {
@@ -291,19 +291,19 @@ class CursorPosition {
     this.y = prev.y
     this.runningMaxX = prev.runningMaxX
     this.runningMaxY = prev.runningMaxY
-    this.flags = prev.flags & ~CursorFlags.OwnCursorPosition
+    this.flags = prev.flags & ~CursorFlags.ownCursorPosition
   }
 }
 
 enum CursorFlags {
-  None = 0,
-  OwnCursorPosition = 1,
-  UsesRunningColumnCount = 2,
-  UsesRunningRowCount = 4,
+  none = 0,
+  ownCursorPosition = 1,
+  usesRunningColumnCount = 2,
+  usesRunningRowCount = 4,
 }
 
 const UndefinedElCoords = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
-const InitialCursorPosition: CursorPosition = Object.freeze(new CursorPosition({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: CursorFlags.None }))
+const InitialCursorPosition: CursorPosition = Object.freeze(new CursorPosition({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: CursorFlags.none }))
 
 function getEffectiveElCoords(
   isRegularElement: boolean, area: ElArea, maxX: number, maxY: number,
@@ -317,7 +317,7 @@ function getEffectiveElCoords(
     if (newCursorPosition) {
       newCursorPosition.x = isRegularElement ? result.x2 + 1 : result.x1
       newCursorPosition.y = result.y1
-      newCursorPosition.flags = CursorFlags.OwnCursorPosition
+      newCursorPosition.flags = CursorFlags.ownCursorPosition
     }
   }
   else if (newCursorPosition) {
@@ -336,7 +336,7 @@ function getEffectiveElCoords(
     result = { x1: 0, y1: 0, x2: 0, y2: 0 }
     if (dx === 0 && isRegularElement) {
       dx = runningX || 1
-      newCursorPosition.flags = CursorFlags.UsesRunningColumnCount
+      newCursorPosition.flags = CursorFlags.usesRunningColumnCount
     }
     if (dx >= 0) {
       if (isRegularElement) {
@@ -362,7 +362,7 @@ function getEffectiveElCoords(
     }
     if (dy === 0 && isRegularElement) {
       dy = runningY || 1
-      newCursorPosition.flags |= CursorFlags.UsesRunningRowCount
+      newCursorPosition.flags |= CursorFlags.usesRunningRowCount
     }
     if (dy >= 0) {
       if (isRegularElement) {
@@ -429,7 +429,7 @@ export class CursorCommand {
 
 export class CursorCommandDriver extends ElDriver<Element, unknown> {
   constructor() {
-    super("cursor", false, el => el.kind = ElKind.Cursor)
+    super("cursor", false, el => el.kind = ElKind.cursor)
   }
 }
 
@@ -495,7 +495,7 @@ export class Apply {
       const hostDriver = bNode.host.driver
       if (hostDriver.isPartitionSeparator) {
         const host = bNode.host.seat!.instance as RxNode<El<T, any>>
-        Apply.elementAlignment(element, Align.ToBounds)
+        Apply.elementAlignment(element, Align.toBounds)
         Apply.heightGrowth(host.element, value)
       }
     }
@@ -514,7 +514,7 @@ export class Apply {
   static contentAlignment<T extends Element>(element: El<T, any>, value: Align): void {
     if (element.native instanceof HTMLElement) {
       const s = element.native.style
-      if ((value & Align.Default) === 0) { // if not auto mode
+      if ((value & Align.default) === 0) { // if not auto mode
         const v = AlignToCss[(value >> 2) & 0b11]
         const h = AlignToCss[value & 0b11]
         const t = TextAlignCss[value & 0b11]
@@ -530,7 +530,7 @@ export class Apply {
   static elementAlignment<T extends Element>(element: El<T, any>, value: Align): void {
     if (element.native instanceof HTMLElement) {
       const s = element.native.style
-      if ((value & Align.Default) === 0) { // if not auto mode
+      if ((value & Align.default) === 0) { // if not auto mode
         const v = AlignToCss[(value >> 2) & 0b11]
         const h = AlignToCss[value & 0b11]
         s.alignSelf = v

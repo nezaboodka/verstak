@@ -5,8 +5,8 @@
   "typescript.preferences.quoteStyle": "double",
   "files.exclude": {
     "**/node_modules/": true,
-    "**/build/": true,
-    "**/Build/": true,
+    // "**/build/": true,
+    // "**/Build/": true,
   },
   "files.watcherExclude": {
     "**/node_modules/": true,

@@ -11,10 +11,10 @@ import { KeyboardModifiers } from "./KeyboardSensor.js"
 import { WindowSensor } from "./WindowSensor.js"
 
 export enum PointerButton {
-  None = 0,
-  Left = 1,
-  Right = 2,
-  Middle = 4,
+  none = 0,
+  left = 1,
+  right = 2,
+  middle = 4,
 }
 
 export class BasePointerSensor extends HtmlElementSensor {
@@ -26,20 +26,20 @@ export class BasePointerSensor extends HtmlElementSensor {
     super(element, focusSensor, windowSensor)
     this.positionX = Infinity
     this.positionY = Infinity
-    this.modifiers = KeyboardModifiers.None
+    this.modifiers = KeyboardModifiers.none
   }
 }
 
 export function extractPointerButton(e: MouseEvent): PointerButton {
   switch (e.button) {
     case 0:
-      return PointerButton.Left
+      return PointerButton.left
     case 1:
-      return PointerButton.Middle
+      return PointerButton.middle
     case 2:
-      return PointerButton.Right
+      return PointerButton.right
     default:
-      return PointerButton.None
+      return PointerButton.none
   }
 }
 

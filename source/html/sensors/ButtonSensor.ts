@@ -13,10 +13,10 @@ import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
 import { WindowSensor } from "./WindowSensor.js"
 
 export enum ButtonState {
-  Pressed,
-  Selecting,
-  Selected,
-  Released,
+  pressed,
+  selecting,
+  selected,
+  released,
 }
 
 export class ButtonSensor extends BasePointerSensor {
@@ -30,8 +30,8 @@ export class ButtonSensor extends BasePointerSensor {
 
   constructor(element: HTMLElement | SVGElement, focusSensor: FocusSensor, windowSensor: WindowSensor) {
     super(element, focusSensor, windowSensor)
-    this.state = ButtonState.Released
-    this.pointerButton = PointerButton.None
+    this.state = ButtonState.released
+    this.pointerButton = PointerButton.none
     this.originData = undefined
     this.selectedData = undefined
     this.selectedX = Infinity
@@ -59,7 +59,7 @@ export class ButtonSensor extends BasePointerSensor {
 
   protected onPointerDown(e: PointerEvent): void {
     // this.sourceElement?.setPointerCapture(e.pointerId)
-    if (this.state === ButtonState.Released && (this.pointerButton === PointerButton.None))
+    if (this.state === ButtonState.released && (this.pointerButton === PointerButton.none))
       this.press(e)
     this.setPreventDefaultAndStopPropagation(e)
   }
@@ -67,10 +67,10 @@ export class ButtonSensor extends BasePointerSensor {
   protected onPointerMove(e: PointerEvent): void {
     const state = this.state
     if (isPointerButtonDown(this.pointerButton, e.buttons)) {
-      if (state === ButtonState.Pressed || state === ButtonState.Selecting)
+      if (state === ButtonState.pressed || state === ButtonState.selecting)
         this.selecting(e)
     }
-    else if (state !== ButtonState.Released) {
+    else if (state !== ButtonState.released) {
       this.cancel()
       this.reset()
     }
@@ -80,11 +80,11 @@ export class ButtonSensor extends BasePointerSensor {
   protected onPointerUp(e: PointerEvent): void {
     const button = extractPointerButton(e)
     if (button === this.pointerButton) {
-      if (this.state === ButtonState.Selecting) {
+      if (this.state === ButtonState.selecting) {
         this.select(e)
         this.release()
       }
-      else if (this.state === ButtonState.Pressed) {
+      else if (this.state === ButtonState.pressed) {
         this.release()
       }
     }
@@ -96,14 +96,14 @@ export class ButtonSensor extends BasePointerSensor {
   }
 
   protected onLostPointerCapture(e: PointerEvent): void {
-    if (this.state !== ButtonState.Released) {
+    if (this.state !== ButtonState.released) {
       this.cancel()
       this.reset()
     }
   }
 
   protected onKeyDown(e: KeyboardEvent): void {
-    if (e.key === "Escape" && this.state !== ButtonState.Released) {
+    if (e.key === "Escape" && this.state !== ButtonState.released) {
       this.cancel()
       this.reset()
     }
@@ -118,7 +118,7 @@ export class ButtonSensor extends BasePointerSensor {
     const { data, window } = findTargetElementData(targetPath, underPointer, SymDataForSensor, ["button"])
     const originData = data?.button
     if (originData) {
-      this.state = ButtonState.Pressed
+      this.state = ButtonState.pressed
       this.pointerButton = extractPointerButton(e)
       this.originData = originData
       this.modifiers = extractModifierKeys(e)
@@ -134,14 +134,14 @@ export class ButtonSensor extends BasePointerSensor {
   @transactional @options({ reentrance: Reentrance.cancelPrevious, logging: LoggingLevel.Off })
   protected selecting(e: PointerEvent): void {
     this.updateSensorData(e)
-    this.state = ButtonState.Selecting
+    this.state = ButtonState.selecting
     this.selected = false
   }
 
   @transactional @options({ logging: LoggingLevel.Off })
   protected select(e: PointerEvent): void {
     this.updateSensorData(e)
-    this.state = ButtonState.Selected
+    this.state = ButtonState.selected
     this.selectedX = e.clientX
     this.selectedY = e.clientY
     this.selected = true
@@ -151,13 +151,13 @@ export class ButtonSensor extends BasePointerSensor {
   protected release(): void {
     this.preventDefault = false
     this.stopPropagation = false
-    this.state = ButtonState.Released
+    this.state = ButtonState.released
     this.revision++
   }
 
   @transactional @options({ logging: LoggingLevel.Off })
   protected cancel(): void {
-    this.state = ButtonState.Released
+    this.state = ButtonState.released
     this.selected = false
     this.revision++
   }
@@ -166,15 +166,15 @@ export class ButtonSensor extends BasePointerSensor {
   protected reset(): void {
     this.preventDefault = false
     this.stopPropagation = false
-    this.state = ButtonState.Released
+    this.state = ButtonState.released
     this.originData = undefined
     this.selectedData = undefined
-    this.pointerButton = PointerButton.None
+    this.pointerButton = PointerButton.none
     this.positionX = Infinity
     this.positionY = Infinity
     this.selectedX = Infinity
     this.selectedY = Infinity
-    this.modifiers = KeyboardModifiers.None
+    this.modifiers = KeyboardModifiers.none
     this.selected = false
   }
 

@@ -68,13 +68,13 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.draggingDataTypes = []
     this.positionX = Infinity
     this.positionY = Infinity
-    this.modifiers = KeyboardModifiers.None
+    this.modifiers = KeyboardModifiers.none
     this.dropX = Infinity
     this.dropY = Infinity
     this.dropped = false
     this.immediatePositionX = Infinity
     this.immediatePositionY = Infinity
-    this.immediateModifiers = KeyboardModifiers.None
+    this.immediateModifiers = KeyboardModifiers.none
   }
 
   getData(format: string): unknown {
@@ -278,13 +278,13 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.draggingDataTypes = []
     this.positionX = Infinity
     this.positionY = Infinity
-    this.modifiers = KeyboardModifiers.None
+    this.modifiers = KeyboardModifiers.none
     this.dropX = Infinity
     this.dropY = Infinity
     this.dropped = false
     this.immediatePositionX = Infinity
     this.immediatePositionY = Infinity
-    this.immediateModifiers = KeyboardModifiers.None
+    this.immediateModifiers = KeyboardModifiers.none
     this.revision++
   }
 

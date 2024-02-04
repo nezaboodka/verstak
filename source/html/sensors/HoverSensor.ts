@@ -102,6 +102,6 @@ export class HoverSensor extends BasePointerSensor {
     this.target = undefined
     this.positionX = Infinity
     this.positionY = Infinity
-    this.modifiers = KeyboardModifiers.None
+    this.modifiers = KeyboardModifiers.none
   }
 }

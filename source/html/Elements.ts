@@ -110,7 +110,7 @@ export class VerstakElementDriver<T extends HTMLElement> extends HtmlElementDriv
   update(node: RxNode<El<T>>): void | Promise<void> {
     const element = node.element
     // Add initial line feed automatically
-    if (element.kind === ElKind.Section)
+    if (element.kind === ElKind.section)
       startNewRow()
     return super.update(node)
   }
@@ -118,23 +118,23 @@ export class VerstakElementDriver<T extends HTMLElement> extends HtmlElementDriv
 
 const Drivers = {
   // display: flex, flex-direction: column
-  section: new VerstakElementDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.Section),
+  section: new VerstakElementDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.section),
 
   // display: grid
-  table: new VerstakElementDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.Table),
+  table: new VerstakElementDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.table),
 
   // display: block
-  note: new VerstakElementDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.Note),
+  note: new VerstakElementDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.note),
 
   // display: contents
-  group: new VerstakElementDriver<HTMLElement>(Constants.group, false, el => el.kind = ElKind.Group),
+  group: new VerstakElementDriver<HTMLElement>(Constants.group, false, el => el.kind = ElKind.group),
 
   // display: flex/row or contents
-  partition: new VerstakElementDriver<HTMLElement>(Constants.partition, true, el => el.kind = ElKind.Part),
+  partition: new VerstakElementDriver<HTMLElement>(Constants.partition, true, el => el.kind = ElKind.part),
 
   // cursor control element
   cursor: new CursorCommandDriver(),
 
   // (no element)
-  pseudo: new ElDriver<HTMLElement>("pseudo", false, el => el.kind = ElKind.Group) as unknown as RxNodeDriver<El<void, any>>,
+  pseudo: new ElDriver<HTMLElement>("pseudo", false, el => el.kind = ElKind.group) as unknown as RxNodeDriver<El<void, any>>,
 }

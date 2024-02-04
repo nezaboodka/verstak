@@ -10,21 +10,21 @@ import { grabElementDataList, SymDataForSensor } from "./DataForSensor.js"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
 
 export enum KeyboardModifiers {
-  None = 0,
-  Ctrl = 1,
-  Shift = 2,
-  Alt = 4,
-  Meta = 8,
-  CtrlShift = 1 + 2,
-  CtrlAlt = 1 + 4,
-  CtrlMeta = 1 + 8,
-  CtrlShiftAlt = 1 + 2 + 4,
-  CtrlShiftAltMeta = 1 + 2 + 4 + 8,
-  CtrlShiftMeta = 1 + 2 + 8,
-  ShiftAlt = 2 + 4,
-  ShiftMeta = 2 + 8,
-  ShiftAltMeta = 2 + 4 + 8,
-  AltMeta = 4 + 8,
+  none = 0,
+  ctrl = 1,
+  shift = 2,
+  alt = 4,
+  meta = 8,
+  ctrlShift = 1 + 2,
+  ctrlAlt = 1 + 4,
+  ctrlMeta = 1 + 8,
+  ctrlShiftAlt = 1 + 2 + 4,
+  ctrlShiftAltMeta = 1 + 2 + 4 + 8,
+  ctrlShiftMeta = 1 + 2 + 8,
+  shiftAlt = 2 + 4,
+  shiftMeta = 2 + 8,
+  shiftAltMeta = 2 + 4 + 8,
+  altMeta = 4 + 8,
 }
 
 export class KeyboardSensor extends HtmlElementSensor {
@@ -36,7 +36,7 @@ export class KeyboardSensor extends HtmlElementSensor {
     super(element)
     this.down = ""
     this.up = ""
-    this.modifiers = KeyboardModifiers.None
+    this.modifiers = KeyboardModifiers.none
   }
 
   listen(enabled: boolean = true): void {
@@ -57,7 +57,7 @@ export class KeyboardSensor extends HtmlElementSensor {
     this.stopPropagation = false
     this.down = ""
     this.up = ""
-    this.modifiers = KeyboardModifiers.None
+    this.modifiers = KeyboardModifiers.none
   }
 
   protected onKeyDown(e: KeyboardEvent): void {
@@ -98,36 +98,36 @@ export class KeyboardSensor extends HtmlElementSensor {
   }
 
   protected static getKeyAsModifierIfAny(key: string): KeyboardModifiers {
-    let modifier = KeyboardModifiers.None
+    let modifier = KeyboardModifiers.none
     if (key === "Control")
-      modifier = KeyboardModifiers.Ctrl
+      modifier = KeyboardModifiers.ctrl
     else if (key === "Shift")
-      modifier = KeyboardModifiers.Shift
+      modifier = KeyboardModifiers.shift
     else if (key === "Alt")
-      modifier = KeyboardModifiers.Alt
+      modifier = KeyboardModifiers.alt
     else if (key === "Meta")
-      modifier = KeyboardModifiers.Meta
+      modifier = KeyboardModifiers.meta
     return modifier
   }
 }
 
 export function extractModifierKeys(e: MouseEvent | KeyboardEvent | WheelEvent): KeyboardModifiers {
-  let modifiers = KeyboardModifiers.None
+  let modifiers = KeyboardModifiers.none
   if (e.ctrlKey)
-    modifiers |= KeyboardModifiers.Ctrl
+    modifiers |= KeyboardModifiers.ctrl
   else
-    modifiers &= ~KeyboardModifiers.Ctrl
+    modifiers &= ~KeyboardModifiers.ctrl
   if (e.shiftKey)
-    modifiers |= KeyboardModifiers.Shift
+    modifiers |= KeyboardModifiers.shift
   else
-    modifiers &= ~KeyboardModifiers.Shift
+    modifiers &= ~KeyboardModifiers.shift
   if (e.altKey)
-    modifiers |= KeyboardModifiers.Alt
+    modifiers |= KeyboardModifiers.alt
   else
-    modifiers &= ~KeyboardModifiers.Alt
+    modifiers &= ~KeyboardModifiers.alt
   if (e.metaKey)
-    modifiers |= KeyboardModifiers.Meta
+    modifiers |= KeyboardModifiers.meta
   else
-    modifiers &= ~KeyboardModifiers.Meta
+    modifiers &= ~KeyboardModifiers.meta
   return modifiers
 }
