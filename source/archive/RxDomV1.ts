@@ -81,7 +81,7 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
   }
 
   @reactive @options({
-    reentrance: Reentrance.CancelPrevious,
+    reentrance: Reentrance.cancelPrevious,
     triggeringArgs: true,
     noSideEffects: true })
   rerender(node: RxNode<E, O>): void {

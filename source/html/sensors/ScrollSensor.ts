@@ -38,7 +38,7 @@ export class ScrollSensor extends HtmlElementSensor {
     // this.reset()
   }
 
-  @transactional @options({ reentrance: Reentrance.CancelPrevious, logging: LoggingLevel.Off })
+  @transactional @options({ reentrance: Reentrance.cancelPrevious, logging: LoggingLevel.Off })
   protected doScroll(e: Event): void {
     this.updateSensorData(e)
   }

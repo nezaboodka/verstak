@@ -131,7 +131,7 @@ export class ButtonSensor extends BasePointerSensor {
     })
   }
 
-  @transactional @options({ reentrance: Reentrance.CancelPrevious, logging: LoggingLevel.Off })
+  @transactional @options({ reentrance: Reentrance.cancelPrevious, logging: LoggingLevel.Off })
   protected selecting(e: PointerEvent): void {
     this.updateSensorData(e)
     this.state = ButtonState.Selecting

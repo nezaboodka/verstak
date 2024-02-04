@@ -95,7 +95,7 @@ export function Group<M = unknown, R = void>(
 
 export function Handler<M = unknown>(
   update: Delegate<El<void, M>>): RxNode<El<void, M>> {
-  return SyntheticElement({ mode: Mode.IndependentUpdate, update })
+  return SyntheticElement({ mode: Mode.independentUpdate, update })
 }
 
 export function SyntheticElement<M = unknown>(

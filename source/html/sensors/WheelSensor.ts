@@ -42,7 +42,7 @@ export class WheelSensor extends BasePointerSensor {
     // this.reset()
   }
 
-  @transactional @options({ reentrance: Reentrance.CancelPrevious, logging: LoggingLevel.Off })
+  @transactional @options({ reentrance: Reentrance.cancelPrevious, logging: LoggingLevel.Off })
   protected doWheel(e: WheelEvent): void {
     this.updateSensorData(e)
   }

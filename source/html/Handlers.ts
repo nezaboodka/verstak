@@ -14,7 +14,7 @@ export function OnClick(target: HTMLElement, action: (() => void) | ToggleRef | 
   if (action !== undefined) {
     SyntheticElement({
       key,
-      mode: Mode.IndependentUpdate,
+      mode: Mode.independentUpdate,
       triggers: { target/* , action */ },
       update() {
         const pointer = target.sensors.pointer
@@ -35,7 +35,7 @@ export function OnResize(target: HTMLElement, action: ((element: ResizedElement)
   if (action) {
     SyntheticElement({
       key,
-      mode: Mode.IndependentUpdate,
+      mode: Mode.independentUpdate,
       triggers: { target/* , action */ },
       update() {
         const resize = target.sensors.resize
@@ -53,7 +53,7 @@ export function OnFocus(
   key?: string): void {
   SyntheticElement({
     key,
-    mode: Mode.IndependentUpdate,
+    mode: Mode.independentUpdate,
     triggers: { target, model },
     initialize(b) {
       b.node.configureReactronic({ throttling: 0 })

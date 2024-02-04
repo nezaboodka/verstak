@@ -210,7 +210,7 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transactional @options({ reentrance: Reentrance.CancelPrevious, logging: LoggingLevel.Off })
+  @transactional @options({ reentrance: Reentrance.cancelPrevious, logging: LoggingLevel.Off })
   protected clickingOver(e: PointerEvent): void {
     this.updateClicking(e)
     this.revision++
