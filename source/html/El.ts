@@ -62,14 +62,14 @@ export type ElCoords = {
 
 export enum Align {
   default   = 0b10000,
-  toBounds  = 0b00000,
-  toLeft    = 0b00001,
-  toCenterX = 0b00010,
-  toRight   = 0b00011,
-  toTop     = 0b00100,
-  toCenterY = 0b01000,
-  toBottom  = 0b01100,
-  toCenter  = toCenterX + toCenterY,
+  fit  = 0b00000,
+  left    = 0b00001,
+  centerX = 0b00010,
+  right   = 0b00011,
+  top     = 0b00100,
+  centerY = 0b01000,
+  bottom  = 0b01100,
+  center  = centerX + centerY,
 }
 
 export type ElasticSize = {
@@ -498,7 +498,7 @@ export class Apply {
       const hostDriver = bNode.host.driver
       if (hostDriver.isPartitionSeparator) {
         const host = bNode.host.seat!.instance as RxNode<El<T, any>>
-        Apply.elementAlignment(element, Align.toBounds)
+        Apply.elementAlignment(element, Align.fit)
         Apply.heightGrowth(host.element, value)
       }
     }
