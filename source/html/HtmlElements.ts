@@ -9,8 +9,8 @@ import { RxNode, RxNodeDecl } from "reactronic"
 import { El, ElKind } from "./El.js"
 import { HtmlElementDriver, StaticDriver, SvgElementDriver } from "./HtmlDriver.js"
 
-export function Page(declaration?: RxNodeDecl<El<HTMLElement>>, preset?: RxNodeDecl<El<HTMLElement>>): RxNode<El<HTMLElement>> {
-  const driver = new StaticDriver(global.document.body, "Page", false, el => el.kind = ElKind.section)
+export function Page(declaration?: RxNodeDecl<El<HTMLBodyElement>>, preset?: RxNodeDecl<El<HTMLBodyElement>>): RxNode<El<HTMLBodyElement>> {
+  const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.section)
   return RxNode.acquire(driver, declaration, preset)
 }
 
