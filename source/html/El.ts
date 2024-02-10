@@ -61,8 +61,8 @@ export type ElCoords = {
 }
 
 export enum Align {
-  default   = 0b10000,
-  fit  = 0b00000,
+  default = 0b10000,
+  fit     = 0b00000,
   left    = 0b00001,
   centerX = 0b00010,
   right   = 0b00011,
@@ -72,15 +72,14 @@ export enum Align {
   center  = centerX + centerY,
 }
 
-export type ElasticSize = {
-  cells?: number            // 1 (table only)
-  min?: string              // min-content
-  max?: string              // min-content
-  growth?: number           // 0
+export type ElasticSize = string | {
+  readonly min?: string     // min-content
+  readonly max?: string     // min-content
+  readonly growth?: number  // 0
 }
 
-export type TrackSize = ElasticSize & {
-  track?: string | number   // <current>
+export type PartitionElasticSize = ElasticSize & {
+  readonly partition?: string | number  // <current>
 }
 
 export type ElArea = undefined | string | {
