@@ -37,7 +37,8 @@ export type El<T = any, M = any> = {
   elementAlignment: Align
   contentWrapping: boolean
   overlayVisible: boolean | undefined
-  useStyle(styleName: string, enabled?: boolean): void
+  readonly style: CSSStyleDeclaration
+  useStylingPreset(stylingPresetName: string, enabled?: boolean): void
 }
 
 // Other
@@ -112,7 +113,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _elementAlignment: Align
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
-  private _hasStyles: boolean
+  private _hasStylingPresets: boolean
 
   constructor(node: RxNode<El<T, M>>) {
     // System-managed properties
@@ -136,12 +137,12 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._elementAlignment = Align.default
     this._contentWrapping = true
     this._overlayVisible = undefined
-    this._hasStyles = false
+    this._hasStylingPresets = false
   }
 
   prepareForUpdate(): void {
     this._area = undefined // reset
-    this._hasStyles = false // reset
+    this._hasStylingPresets = false // reset
   }
 
   get isSection(): boolean { return this.kind === ElKind.section }
@@ -262,9 +263,11 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  useStyle(styleName: string, enabled?: boolean): void {
-    Apply.style(this, this._hasStyles, styleName, enabled)
-    this._hasStyles = true
+  get style(): CSSStyleDeclaration { return (this.native as any).style }
+
+  useStylingPreset(stylingPresetName: string, enabled?: boolean): void {
+    Apply.stylingPreset(this, this._hasStylingPresets, stylingPresetName, enabled)
+    this._hasStylingPresets = true
   }
 
   private rowBreak(): void {
@@ -596,7 +599,7 @@ export class Apply {
     }
   }
 
-  static style<T extends Element>(element: El<T, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
+  static stylingPreset<T extends Element>(element: El<T, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
     const native = element.native
     enabled ??= true
     if (secondary)
