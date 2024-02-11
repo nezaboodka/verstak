@@ -33,7 +33,7 @@ import { HtmlElementDriver } from "./HtmlDriver.js"
 export function Section<M = unknown>(
   declaration?: RxNodeDecl<El<HTMLElement, M>>,
   preset?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.acquire(Drivers.section, declaration, preset)
+  return RxNode.declare(Drivers.section, declaration, preset)
 }
 
 // Table
@@ -41,7 +41,7 @@ export function Section<M = unknown>(
 export function Table<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<HTMLElement, M>>,
   preset?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.acquire(Drivers.table, declaration, preset)
+  return RxNode.declare(Drivers.table, declaration, preset)
 }
 
 // Partition
@@ -52,11 +52,11 @@ export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: 
 }
 
 export function startNewRow(shiftCursorDown?: number): void {
-  RxNode.acquire(Drivers.partition)
+  RxNode.declare(Drivers.partition)
 }
 
 export function cursor(areaParams: ElArea): void {
-  RxNode.acquire(Drivers.cursor, {
+  RxNode.declare(Drivers.cursor, {
     content(b) {
       b.area = areaParams
     },
@@ -67,7 +67,7 @@ export function cursor(areaParams: ElArea): void {
 
 export function Note(content: string,
   declaration?: RxNodeDecl<El<HTMLElement, void>>): RxNode<El<HTMLElement, void>> {
-  return RxNode.acquire(Drivers.note, declaration, {
+  return RxNode.declare(Drivers.note, declaration, {
     content(b) {
       b.native.innerText = content
     }},
@@ -76,7 +76,7 @@ export function Note(content: string,
 
 export function HtmlNote(content: string,
   declaration?: RxNodeDecl<El<HTMLElement, void>>): RxNode<El<HTMLElement, void>> {
-  return RxNode.acquire(Drivers.note, declaration, {
+  return RxNode.declare(Drivers.note, declaration, {
     content(b) {
       b.native.innerHTML = content
     }},
@@ -88,7 +88,7 @@ export function HtmlNote(content: string,
 export function Group<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<HTMLElement, M>>,
   preset?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.acquire(Drivers.group, declaration, preset)
+  return RxNode.declare(Drivers.group, declaration, preset)
 }
 
 // Fragment
@@ -101,7 +101,7 @@ export function Handling<M = unknown>(
 export function SyntheticElement<M = unknown>(
   declaration?: RxNodeDecl<El<void, M>>,
   preset?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>> {
-  return RxNode.acquire(Drivers.pseudo, declaration, preset)
+  return RxNode.declare(Drivers.pseudo, declaration, preset)
 }
 
 // VerstakElementDriver
