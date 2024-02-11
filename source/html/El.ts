@@ -27,12 +27,10 @@ export type El<T = any, M = any> = {
   model: M
   kind: ElKind
   area: ElArea
-  widthGrowth: number
-  minWidth: string
-  maxWidth: string
-  heightGrowth: number
-  minHeight: string
-  maxHeight: string
+  width: string
+  widthRange: Range
+  height: string
+  heightRange: Range
   contentAlignment: Align
   elementAlignment: Align
   contentWrapping: boolean
@@ -72,14 +70,14 @@ export enum Align {
   center  = centerX + centerY,
 }
 
-export type ElasticSize = string | {
+export type Range = {
   readonly min?: string     // min-content
   readonly max?: string     // min-content
   readonly growth?: number  // 0
 }
 
-export type PartitionElasticSize = ElasticSize & {
-  readonly partition?: string | number  // <current>
+export type MarkedRange = Range & {
+  readonly marker?: string
 }
 
 export type ElArea = undefined | string | {
@@ -102,12 +100,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _kind: ElKind
   private _area: ElArea
   private _coords: ElCoords
-  private _widthGrowth: number
-  private _minWidth: string
-  private _maxWidth: string
-  private _heightGrowth: number
-  private _minHeight: string
-  private _maxHeight: string
+  private _widthRange: Range
+  private _heightRange: Range
   private _contentAlignment: Align
   private _elementAlignment: Align
   private _contentWrapping: boolean
@@ -126,12 +120,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._kind = ElKind.part
     this._area = undefined
     this._coords = UndefinedElCoords
-    this._widthGrowth = 0
-    this._minWidth = ""
-    this._maxWidth = ""
-    this._heightGrowth = 0
-    this._minHeight = ""
-    this._maxHeight = ""
+    this._widthRange = { min: "", max: "", growth: 0 }
+    this._heightRange = { min: "", max: "", growth: 0 }
     this._contentAlignment = Align.default
     this._elementAlignment = Align.default
     this._contentWrapping = true
@@ -182,53 +172,67 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       this.rowBreak()
   }
 
-  get widthGrowth(): number { return this._widthGrowth }
-  set widthGrowth(value: number) {
-    if (value !== this._widthGrowth) {
-      Apply.widthGrowth(this, value)
-      this._widthGrowth = value
+  get width(): string { return this._widthRange.min ?? "" }
+  set width(value: string) { this.widthRange = { min: value } }
+
+  get widthRange(): Range { return this._widthRange }
+  set widthRange(value: Range) {
+    const w = this._widthRange
+    let updated = false
+    if (value.min !== w.min) {
+      Apply.minWidth(this, value.min ?? "")
+      updated = true
     }
+    if (value.max !== w.max) {
+      Apply.maxWidth(this, value.max ?? "")
+      updated = true
+    }
+    if (value.growth !== w.growth) {
+      Apply.widthGrowth(this, value.growth ?? 0)
+      updated = true
+    }
+    if (updated)
+      this._widthRange = value
   }
 
-  get minWidth(): string { return this._minWidth }
-  set minWidth(value: string) {
-    if (value !== this._minWidth) {
-      Apply.minWidth(this, value)
-      this._minWidth = value
+  get height(): string { return this._heightRange.min ?? "" }
+  set height(value: string) { this.heightRange = { min: value } }
+
+  get heightRange(): Range { return this._heightRange }
+  set heightRange(value: Range) {
+    const w = this._heightRange
+    let updated = false
+    if (value.min !== w.min) {
+      Apply.minHeight(this, value.min ?? "")
+      updated = true
     }
+    if (value.max !== w.max) {
+      Apply.maxHeight(this, value.max ?? "")
+      updated = true
+    }
+    if (value.growth !== w.growth) {
+      Apply.heightGrowth(this, value.growth ?? 0)
+      updated = true
+    }
+    if (updated)
+      this._heightRange = value
   }
 
-  get maxWidth(): string { return this._maxWidth }
-  set maxWidth(value: string) {
-    if (value !== this._maxWidth) {
-      Apply.applyMaxWidth(this, value)
-      this._maxWidth = value
-    }
-  }
+  // get minHeight(): string { return this._minHeight }
+  // set minHeight(value: string) {
+  //   if (value !== this._minHeight) {
+  //     Apply.minHeight(this, value)
+  //     this._minHeight = value
+  //   }
+  // }
 
-  get heightGrowth(): number { return this._heightGrowth }
-  set heightGrowth(value: number) {
-    if (value !== this._heightGrowth) {
-      Apply.heightGrowth(this, value)
-      this._heightGrowth = value
-    }
-  }
-
-  get minHeight(): string { return this._minHeight }
-  set minHeight(value: string) {
-    if (value !== this._minHeight) {
-      Apply.minHeight(this, value)
-      this._minHeight = value
-    }
-  }
-
-  get maxHeight(): string { return this._maxHeight }
-  set maxHeight(value: string) {
-    if (value !== this._maxHeight) {
-      Apply.maxHeight(this, value)
-      this._maxHeight = value
-    }
-  }
+  // get maxHeight(): string { return this._maxHeight }
+  // set maxHeight(value: string) {
+  //   if (value !== this._maxHeight) {
+  //     Apply.maxHeight(this, value)
+  //     this._maxHeight = value
+  //   }
+  // }
 
   get contentAlignment(): Align { return this._contentAlignment }
   set contentAlignment(value: Align) {
@@ -476,7 +480,7 @@ export class Apply {
       element.native.style.minWidth = `${value}`
   }
 
-  static applyMaxWidth<T extends Element>(element: El<T, any>, value: string): void {
+  static maxWidth<T extends Element>(element: El<T, any>, value: string): void {
     if (element.native instanceof HTMLElement)
       element.native.style.maxWidth = `${value}`
   }
