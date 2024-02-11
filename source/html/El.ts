@@ -34,7 +34,7 @@ export type El<T = any, M = any> = {
   heightMerelyMin: string
   heightMerelyGrowth: number
   contentAlignment: Align
-  elementAlignment: Align
+  boundsAlignment: Align
   contentWrapping: boolean
   overlayVisible: boolean | undefined
   readonly style: CSSStyleDeclaration
@@ -62,7 +62,7 @@ export type ElCoords = {
 
 export enum Align {
   default = 0b10000,
-  fit     = 0b00000,
+  stretch = 0b00000,
   left    = 0b00001,
   centerX = 0b00010,
   right   = 0b00011,
@@ -105,7 +105,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _width: Range
   private _height: Range
   private _contentAlignment: Align
-  private _elementAlignment: Align
+  private _boundsAlignment: Align
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
   private _hasStylingPresets: boolean
@@ -125,7 +125,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._width = { min: "", max: "", growth: 0 }
     this._height = { min: "", max: "", growth: 0 }
     this._contentAlignment = Align.default
-    this._elementAlignment = Align.default
+    this._boundsAlignment = Align.default
     this._contentWrapping = true
     this._overlayVisible = undefined
     this._hasStylingPresets = false
@@ -234,11 +234,11 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  get elementAlignment(): Align { return this._elementAlignment }
-  set elementAlignment(value: Align) {
-    if (value !== this._elementAlignment) {
-      Apply.elementAlignment(this, value)
-      this._elementAlignment = value
+  get boundsAlignment(): Align { return this._boundsAlignment }
+  set boundsAlignment(value: Align) {
+    if (value !== this._boundsAlignment) {
+      Apply.boundsAlignment(this, value)
+      this._boundsAlignment = value
     }
   }
 
@@ -493,7 +493,7 @@ export class Apply {
       const hostDriver = bNode.host.driver
       if (hostDriver.isPartitionSeparator) {
         const host = bNode.host.seat!.instance as RxNode<El<T, any>>
-        Apply.elementAlignment(element, Align.fit)
+        Apply.boundsAlignment(element, Align.stretch)
         Apply.heightGrowth(host.element, value)
       }
     }
@@ -525,7 +525,7 @@ export class Apply {
     }
   }
 
-  static elementAlignment<T extends Element>(element: El<T, any>, value: Align): void {
+  static boundsAlignment<T extends Element>(element: El<T, any>, value: Align): void {
     if (element.native instanceof HTMLElement) {
       const s = element.native.style
       if ((value & Align.default) === 0) { // if not auto mode
