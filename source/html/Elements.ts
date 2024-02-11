@@ -57,7 +57,7 @@ export function startNewRow(shiftCursorDown?: number): void {
 
 export function cursor(areaParams: ElArea): void {
   RxNode.acquire(Drivers.cursor, {
-    update(b) {
+    content(b) {
       b.area = areaParams
     },
   })
@@ -68,7 +68,7 @@ export function cursor(areaParams: ElArea): void {
 export function Note(content: string,
   declaration?: RxNodeDecl<El<HTMLElement, void>>): RxNode<El<HTMLElement, void>> {
   return RxNode.acquire(Drivers.note, declaration, {
-    update(b) {
+    content(b) {
       b.native.innerText = content
     }},
   )
@@ -77,7 +77,7 @@ export function Note(content: string,
 export function HtmlNote(content: string,
   declaration?: RxNodeDecl<El<HTMLElement, void>>): RxNode<El<HTMLElement, void>> {
   return RxNode.acquire(Drivers.note, declaration, {
-    update(b) {
+    content(b) {
       b.native.innerHTML = content
     }},
   )
@@ -95,7 +95,7 @@ export function Group<M = unknown, R = void>(
 
 export function Handling<M = unknown>(
   update: Delegate<El<void, M>>): RxNode<El<void, M>> {
-  return SyntheticElement({ mode: Mode.independentUpdate, update })
+  return SyntheticElement({ mode: Mode.independentUpdate, content: update })
 }
 
 export function SyntheticElement<M = unknown>(

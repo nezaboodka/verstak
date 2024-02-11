@@ -31,12 +31,12 @@
   },
   "homepage": "https://github.com/nezaboodka/verstak/blob/master/README.md#readme",
   "dependencies": {
-    "reactronic": "^0.24.127"
+    "reactronic": "^0.24.200"
   },
   "devDependencies": {
-    "@types/node": "20.11.16",
-    "@typescript-eslint/eslint-plugin": "6.20.0",
-    "@typescript-eslint/parser": "6.20.0",
+    "@types/node": "20.11.17",
+    "@typescript-eslint/eslint-plugin": "6.21.0",
+    "@typescript-eslint/parser": "6.21.0",
     "ava": "6.1.1",
     "c8": "9.1.0",
     "eslint": "8.56.0",
