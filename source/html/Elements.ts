@@ -101,7 +101,7 @@ export function Handling<M = unknown>(
 export function SyntheticElement<M = unknown>(
   declaration?: RxNodeDecl<El<void, M>>,
   preset?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>> {
-  return RxNode.declare(Drivers.pseudo, declaration, preset)
+  return RxNode.declare(Drivers.synthetic, declaration, preset)
 }
 
 // VerstakElementDriver
@@ -136,5 +136,5 @@ const Drivers = {
   cursor: new CursorCommandDriver(),
 
   // (no element)
-  pseudo: new ElDriver<HTMLElement>("pseudo", false, el => el.kind = ElKind.group) as unknown as RxNodeDriver<El<void, any>>,
+  synthetic: new ElDriver<HTMLElement>("synthetic", false, el => el.kind = ElKind.group) as unknown as RxNodeDriver<El<void, any>>,
 }
