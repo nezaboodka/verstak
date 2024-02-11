@@ -27,10 +27,10 @@ export type El<T = any, M = any> = {
   model: M
   kind: ElKind
   area: ElArea
-  width: string
-  widthRange: Range
-  height: string
-  heightRange: Range
+  widthFixed: string
+  width: Range
+  heightFixed: string
+  height: Range
   contentAlignment: Align
   elementAlignment: Align
   contentWrapping: boolean
@@ -100,8 +100,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _kind: ElKind
   private _area: ElArea
   private _coords: ElCoords
-  private _widthRange: Range
-  private _heightRange: Range
+  private _width: Range
+  private _height: Range
   private _contentAlignment: Align
   private _elementAlignment: Align
   private _contentWrapping: boolean
@@ -120,8 +120,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._kind = ElKind.part
     this._area = undefined
     this._coords = UndefinedElCoords
-    this._widthRange = { min: "", max: "", growth: 0 }
-    this._heightRange = { min: "", max: "", growth: 0 }
+    this._width = { min: "", max: "", growth: 0 }
+    this._height = { min: "", max: "", growth: 0 }
     this._contentAlignment = Align.default
     this._elementAlignment = Align.default
     this._contentWrapping = true
@@ -172,12 +172,12 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       this.rowBreak()
   }
 
-  get width(): string { return this._widthRange.min ?? "" }
-  set width(value: string) { this.widthRange = { min: value } }
+  get widthFixed(): string { return this._width.min ?? "" }
+  set widthFixed(value: string) { this.width = { min: value } }
 
-  get widthRange(): Range { return this._widthRange }
-  set widthRange(value: Range) {
-    const w = this._widthRange
+  get width(): Range { return this._width }
+  set width(value: Range) {
+    const w = this._width
     let updated = false
     if (value.min !== w.min) {
       Apply.minWidth(this, value.min ?? "")
@@ -192,15 +192,15 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       updated = true
     }
     if (updated)
-      this._widthRange = value
+      this._width = value
   }
 
-  get height(): string { return this._heightRange.min ?? "" }
-  set height(value: string) { this.heightRange = { min: value } }
+  get heightFixed(): string { return this._height.min ?? "" }
+  set heightFixed(value: string) { this.height = { min: value } }
 
-  get heightRange(): Range { return this._heightRange }
-  set heightRange(value: Range) {
-    const w = this._heightRange
+  get height(): Range { return this._height }
+  set height(value: Range) {
+    const w = this._height
     let updated = false
     if (value.min !== w.min) {
       Apply.minHeight(this, value.min ?? "")
@@ -215,7 +215,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       updated = true
     }
     if (updated)
-      this._heightRange = value
+      this._height = value
   }
 
   // get minHeight(): string { return this._minHeight }
