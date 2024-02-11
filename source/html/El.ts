@@ -28,9 +28,11 @@ export type El<T = any, M = any> = {
   kind: ElKind
   area: ElArea
   width: Range
-  widthFixed: string
+  widthOnlyMin: string
+  widthOnlyGrowth: number
   height: Range
-  heightFixed: string
+  heightOnlyMin: string
+  heightOnlyGrowth: number
   contentAlignment: Align
   elementAlignment: Align
   contentWrapping: boolean
@@ -192,8 +194,11 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       this._width = value
   }
 
-  get widthFixed(): string { return this._width.min ?? "" }
-  set widthFixed(value: string) { this.width = { min: value } }
+  get widthOnlyMin(): string { return this._width.min ?? "" }
+  set widthOnlyMin(value: string) { this.width = { min: value } }
+
+  get widthOnlyGrowth(): number { return this._width.growth ?? 0 }
+  set widthOnlyGrowth(value: number) { this.width = { growth: value } }
 
   get height(): Range { return this._height }
   set height(value: Range) {
@@ -215,8 +220,11 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       this._height = value
   }
 
-  get heightFixed(): string { return this._height.min ?? "" }
-  set heightFixed(value: string) { this.height = { min: value } }
+  get heightOnlyMin(): string { return this._height.min ?? "" }
+  set heightOnlyMin(value: string) { this.height = { min: value } }
+
+  get heightOnlyGrowth(): number { return this._height.growth ?? 0 }
+  set heightOnlyGrowth(value: number) { this.height = { growth: value } }
 
   get contentAlignment(): Align { return this._contentAlignment }
   set contentAlignment(value: Align) {
