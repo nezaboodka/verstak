@@ -94,8 +94,8 @@ export function Group<M = unknown, R = void>(
 // Fragment
 
 export function Handling<M = unknown>(
-  update: Delegate<El<void, M>>): RxNode<El<void, M>> {
-  return SyntheticElement({ mode: Mode.independentUpdate, content: update })
+  content: Delegate<El<void, M>>): RxNode<El<void, M>> {
+  return SyntheticElement({ mode: Mode.independentUpdate, content })
 }
 
 export function SyntheticElement<M = unknown>(
