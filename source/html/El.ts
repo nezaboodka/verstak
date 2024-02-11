@@ -27,10 +27,10 @@ export type El<T = any, M = any> = {
   model: M
   kind: ElKind
   area: ElArea
-  widthFixed: string
   width: Range
-  heightFixed: string
+  widthFixed: string
   height: Range
+  heightFixed: string
   contentAlignment: Align
   elementAlignment: Align
   contentWrapping: boolean
@@ -172,9 +172,6 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       this.rowBreak()
   }
 
-  get widthFixed(): string { return this._width.min ?? "" }
-  set widthFixed(value: string) { this.width = { min: value } }
-
   get width(): Range { return this._width }
   set width(value: Range) {
     const w = this._width
@@ -195,8 +192,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       this._width = value
   }
 
-  get heightFixed(): string { return this._height.min ?? "" }
-  set heightFixed(value: string) { this.height = { min: value } }
+  get widthFixed(): string { return this._width.min ?? "" }
+  set widthFixed(value: string) { this.width = { min: value } }
 
   get height(): Range { return this._height }
   set height(value: Range) {
@@ -218,21 +215,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       this._height = value
   }
 
-  // get minHeight(): string { return this._minHeight }
-  // set minHeight(value: string) {
-  //   if (value !== this._minHeight) {
-  //     Apply.minHeight(this, value)
-  //     this._minHeight = value
-  //   }
-  // }
-
-  // get maxHeight(): string { return this._maxHeight }
-  // set maxHeight(value: string) {
-  //   if (value !== this._maxHeight) {
-  //     Apply.maxHeight(this, value)
-  //     this._maxHeight = value
-  //   }
-  // }
+  get heightFixed(): string { return this._height.min ?? "" }
+  set heightFixed(value: string) { this.height = { min: value } }
 
   get contentAlignment(): Align { return this._contentAlignment }
   set contentAlignment(value: Align) {
