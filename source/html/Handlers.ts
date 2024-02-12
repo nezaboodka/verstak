@@ -16,7 +16,7 @@ export function OnClick(target: HTMLElement, action: (() => void) | ToggleRef | 
       key,
       mode: Mode.independentUpdate,
       triggers: { target/* , action */ },
-      formula: el => {
+      autorun: el => {
         const pointer = target.sensors.pointer
         if (pointer.clicked) {
           if (action instanceof Function) {
@@ -37,7 +37,7 @@ export function OnResize(target: HTMLElement, action: ((element: ResizedElement)
       key,
       mode: Mode.independentUpdate,
       triggers: { target/* , action */ },
-      formula: el => {
+      autorun: el => {
         const resize = target.sensors.resize
         resize.resizedElements.forEach(x => {
           action(x)
@@ -58,7 +58,7 @@ export function OnFocus(
     activation: el => {
       el.node.configureReactronic({ throttling: 0 })
     },
-    formula: el => {
+    autorun: el => {
       if (switchEditMode !== undefined) {
         switchEditMode(model)
       }
