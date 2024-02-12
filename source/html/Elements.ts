@@ -57,8 +57,8 @@ export function startNewRow(shiftCursorDown?: number): void {
 
 export function cursor(areaParams: ElArea): void {
   RxNode.declare(Drivers.cursor, {
-    formula: b => {
-      b.area = areaParams
+    formula: el => {
+      el.area = areaParams
     },
   })
 }
@@ -68,11 +68,11 @@ export function cursor(areaParams: ElArea): void {
 export function Note(content: string, formatted?: boolean,
   declaration?: RxNodeDecl<El<HTMLElement, void>>): RxNode<El<HTMLElement, void>> {
   return RxNode.declare(Drivers.note, declaration, {
-    formula: b => {
+    formula: el => {
       if (formatted)
-        b.native.innerHTML = content
+        el.native.innerHTML = content
       else
-        b.native.innerText = content
+        el.native.innerText = content
     }},
   )
 }
