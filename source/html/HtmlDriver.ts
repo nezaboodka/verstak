@@ -16,17 +16,17 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     // it's up to descendant class to define logic
   }
 
-  activate(node: RxNode<El<T, M>>): void {
+  create(node: RxNode<El<T, M>>): void {
     this.setNativeElement(node)
     const e = node.element.native
     if (RxSystem.isLogging && e !== undefined && !node.driver.isPartitionSeparator)
       e.setAttribute(Constants.keyAttrName, node.key)
-    super.activate(node)
+    super.create(node)
     if (e == undefined && RxSystem.isLogging && !node.driver.isPartitionSeparator)
       node.element.native.setAttribute(Constants.keyAttrName, node.key)
   }
 
-  deactivate(node: RxNode<El<T, M>>, isLeader: boolean): boolean {
+  destroy(node: RxNode<El<T, M>>, isLeader: boolean): boolean {
     const element = node.element
     const native = element.native as T | undefined // hack
     if (native) {
@@ -34,7 +34,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
       if (isLeader)
         native.remove()
     }
-    super.deactivate(node, isLeader)
+    super.destroy(node, isLeader)
     element.native = null as any
     return false // children elements having native HTML elements are not treated as leaders
   }
