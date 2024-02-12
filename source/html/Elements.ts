@@ -65,20 +65,14 @@ export function cursor(areaParams: ElArea): void {
 
 // Note (either plain or html)
 
-export function Note(content: string,
+export function Note(content: string, formatted?: boolean,
   declaration?: RxNodeDecl<El<HTMLElement, void>>): RxNode<El<HTMLElement, void>> {
   return RxNode.declare(Drivers.note, declaration, {
     formula: b => {
-      b.native.innerText = content
-    }},
-  )
-}
-
-export function HtmlNote(content: string,
-  declaration?: RxNodeDecl<El<HTMLElement, void>>): RxNode<El<HTMLElement, void>> {
-  return RxNode.declare(Drivers.note, declaration, {
-    formula: b => {
-      b.native.innerHTML = content
+      if (formatted)
+        b.native.innerHTML = content
+      else
+        b.native.innerText = content
     }},
   )
 }
