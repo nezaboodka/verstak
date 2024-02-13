@@ -160,7 +160,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       const prevElLayoutInfo = prevEl?.layoutInfo ?? InitialElLayoutInfo
       const layoutInfo = this.layoutInfo = owner.children.isStrict ? new ElLayoutInfo(prevElLayoutInfo) : undefined
       const isCursorElement = driver instanceof CursorCommandDriver
-      const coords = getEffectiveElCoords(!isCursorElement,
+      const coords = getElCoordsAndAdjustLayoutInfo(!isCursorElement,
         value, ownerEl.maxColumnCount, ownerEl.maxRowCount,
         prevElLayoutInfo, layoutInfo)
       if (!equalElCoords(coords, this._coords)) {
@@ -303,22 +303,22 @@ enum ElLayoutInfoFlags {
 const UndefinedElCoords = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
 const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: ElLayoutInfoFlags.none }))
 
-function getEffectiveElCoords(
+function getElCoordsAndAdjustLayoutInfo(
   isRegularElement: boolean, area: ElArea, maxX: number, maxY: number,
-  cursorPosition: ElLayoutInfo, newCursorPosition?: ElLayoutInfo): ElCoords {
+  prevElLayoutInfo: ElLayoutInfo, layoutInfo?: ElLayoutInfo): ElCoords {
   let result: ElCoords // this comment just prevents syntax highlighting in VS code
   if (typeof(area) === "string") {
     // Absolute positioning
     result = parseElCoords(area, { x1: 0, y1: 0, x2: 0, y2: 0 })
-    absolutizeElCoords(result, cursorPosition.x, cursorPosition.y,
+    absolutizeElCoords(result, prevElLayoutInfo.x, prevElLayoutInfo.y,
       maxX || Infinity, maxY || Infinity, result)
-    if (newCursorPosition) {
-      newCursorPosition.x = isRegularElement ? result.x2 + 1 : result.x1
-      newCursorPosition.y = result.y1
-      newCursorPosition.flags = ElLayoutInfoFlags.ownCursorPosition
+    if (layoutInfo) {
+      layoutInfo.x = isRegularElement ? result.x2 + 1 : result.x1
+      layoutInfo.y = result.y1
+      layoutInfo.flags = ElLayoutInfoFlags.ownCursorPosition
     }
   }
-  else if (newCursorPosition) {
+  else if (layoutInfo) {
     // Relative positioning
     let dx: number
     let dy: number // this comment just prevents syntax highlighting in VS code
@@ -329,56 +329,56 @@ function getEffectiveElCoords(
     else // area === undefined
       dx = dy = 1
     // Arrange
-    const runningX = maxX !== 0 ? maxX : cursorPosition.runningMaxX
-    const runningY = maxY !== 0 ? maxY : cursorPosition.runningMaxY
+    const runningX = maxX !== 0 ? maxX : prevElLayoutInfo.runningMaxX
+    const runningY = maxY !== 0 ? maxY : prevElLayoutInfo.runningMaxY
     result = { x1: 0, y1: 0, x2: 0, y2: 0 }
     if (dx === 0 && isRegularElement) {
       dx = runningX || 1
-      newCursorPosition.flags = ElLayoutInfoFlags.usesRunningColumnCount
+      layoutInfo.flags = ElLayoutInfoFlags.usesRunningColumnCount
     }
     if (dx >= 0) {
       if (isRegularElement) {
-        result.x1 = cursorPosition.x
+        result.x1 = prevElLayoutInfo.x
         result.x2 = absolutizePosition(result.x1 + dx - 1, 0, maxX || Infinity)
-        newCursorPosition.x = result.x2 + 1
+        layoutInfo.x = result.x2 + 1
       }
       else {
-        result.x1 = result.x2 = cursorPosition.x + dx
-        newCursorPosition.x = result.x2
+        result.x1 = result.x2 = prevElLayoutInfo.x + dx
+        layoutInfo.x = result.x2
       }
     }
     else {
       if (isRegularElement) {
-        result.x1 = Math.max(cursorPosition.x + dx, 1)
-        result.x2 = cursorPosition.x
-        newCursorPosition.x = result.x2 + 1
+        result.x1 = Math.max(prevElLayoutInfo.x + dx, 1)
+        result.x2 = prevElLayoutInfo.x
+        layoutInfo.x = result.x2 + 1
       }
       else {
-        result.x1 = result.x2 = cursorPosition.x + dx
-        newCursorPosition.x = result.x2
+        result.x1 = result.x2 = prevElLayoutInfo.x + dx
+        layoutInfo.x = result.x2
       }
     }
     if (dy === 0 && isRegularElement) {
       dy = runningY || 1
-      newCursorPosition.flags |= ElLayoutInfoFlags.usesRunningRowCount
+      layoutInfo.flags |= ElLayoutInfoFlags.usesRunningRowCount
     }
     if (dy >= 0) {
       if (isRegularElement) {
-        result.y1 = cursorPosition.y
+        result.y1 = prevElLayoutInfo.y
         result.y2 = absolutizePosition(result.y1 + dy - 1, 0, maxY || Infinity)
-        if (result.y2 > newCursorPosition.runningMaxY)
-          newCursorPosition.runningMaxY = result.y2
+        if (result.y2 > layoutInfo.runningMaxY)
+          layoutInfo.runningMaxY = result.y2
       }
       else
-        result.y1 = result.y2 = cursorPosition.y + dy
+        result.y1 = result.y2 = prevElLayoutInfo.y + dy
     }
     else {
       if (isRegularElement) {
-        result.y1 = Math.max(cursorPosition.y + dy, 1)
-        result.y2 = cursorPosition.y
+        result.y1 = Math.max(prevElLayoutInfo.y + dy, 1)
+        result.y2 = prevElLayoutInfo.y
       }
       else
-        result.y1 = result.y2 = cursorPosition.y + dy
+        result.y1 = result.y2 = prevElLayoutInfo.y + dy
     }
   }
   else
