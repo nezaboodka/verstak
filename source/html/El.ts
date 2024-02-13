@@ -94,7 +94,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   readonly node: RxNode<El<T, M>>
   maxColumnCount: number
   maxRowCount: number
-  cursorPosition?: CursorPosition
+  layoutInfo?: ElLayoutInfo
   native: T
 
   // User-defined properties
@@ -115,7 +115,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this.node = node
     this.maxColumnCount = 0
     this.maxRowCount = 0
-    this.cursorPosition = undefined
+    this.layoutInfo = undefined
     this.native = undefined as any as T // hack
     // User-defined properties
     this.model = undefined as any
@@ -157,12 +157,12 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       const owner = node.owner as RxNode<ElImpl>
       const ownerEl = owner.element
       const prevEl = node.seat!.prev?.instance.element as ElImpl
-      const cursorPosition = prevEl?.cursorPosition ?? InitialCursorPosition
-      const newCursorPosition = this.cursorPosition = owner.children.isStrict ? new CursorPosition(cursorPosition) : undefined
+      const prevElLayoutInfo = prevEl?.layoutInfo ?? InitialElLayoutInfo
+      const layoutInfo = this.layoutInfo = owner.children.isStrict ? new ElLayoutInfo(prevElLayoutInfo) : undefined
       const isCursorElement = driver instanceof CursorCommandDriver
       const coords = getEffectiveElCoords(!isCursorElement,
         value, ownerEl.maxColumnCount, ownerEl.maxRowCount,
-        cursorPosition, newCursorPosition)
+        prevElLayoutInfo, layoutInfo)
       if (!equalElCoords(coords, this._coords)) {
         if (this.native !== undefined)
           Apply.coords(this, coords)
@@ -268,32 +268,32 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private rowBreak(): void {
     const node = this.node
     const prevEl = node.seat!.prev?.instance.element as ElImpl
-    const cursorPosition = prevEl?.cursorPosition ?? InitialCursorPosition
-    const newCursorPosition = this.cursorPosition = new CursorPosition(cursorPosition)
-    newCursorPosition.x = 1
-    newCursorPosition.y = newCursorPosition.runningMaxY + 1
+    const prevElLayoutInfo = prevEl?.layoutInfo ?? InitialElLayoutInfo
+    const layoutInfo = this.layoutInfo = new ElLayoutInfo(prevElLayoutInfo)
+    layoutInfo.x = 1
+    layoutInfo.y = layoutInfo.runningMaxY + 1
   }
 }
 
-// CursorPosition
+// ElLayoutInfo
 
-class CursorPosition {
+class ElLayoutInfo {
   x: number
   y: number
   runningMaxX: number
   runningMaxY: number
-  flags: CursorFlags
+  flags: ElLayoutInfoFlags
 
-  constructor(prev: CursorPosition) {
+  constructor(prev: ElLayoutInfo) {
     this.x = prev.x
     this.y = prev.y
     this.runningMaxX = prev.runningMaxX
     this.runningMaxY = prev.runningMaxY
-    this.flags = prev.flags & ~CursorFlags.ownCursorPosition
+    this.flags = prev.flags & ~ElLayoutInfoFlags.ownCursorPosition
   }
 }
 
-enum CursorFlags {
+enum ElLayoutInfoFlags {
   none = 0,
   ownCursorPosition = 1,
   usesRunningColumnCount = 2,
@@ -301,11 +301,11 @@ enum CursorFlags {
 }
 
 const UndefinedElCoords = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
-const InitialCursorPosition: CursorPosition = Object.freeze(new CursorPosition({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: CursorFlags.none }))
+const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: ElLayoutInfoFlags.none }))
 
 function getEffectiveElCoords(
   isRegularElement: boolean, area: ElArea, maxX: number, maxY: number,
-  cursorPosition: CursorPosition, newCursorPosition?: CursorPosition): ElCoords {
+  cursorPosition: ElLayoutInfo, newCursorPosition?: ElLayoutInfo): ElCoords {
   let result: ElCoords // this comment just prevents syntax highlighting in VS code
   if (typeof(area) === "string") {
     // Absolute positioning
@@ -315,7 +315,7 @@ function getEffectiveElCoords(
     if (newCursorPosition) {
       newCursorPosition.x = isRegularElement ? result.x2 + 1 : result.x1
       newCursorPosition.y = result.y1
-      newCursorPosition.flags = CursorFlags.ownCursorPosition
+      newCursorPosition.flags = ElLayoutInfoFlags.ownCursorPosition
     }
   }
   else if (newCursorPosition) {
@@ -334,7 +334,7 @@ function getEffectiveElCoords(
     result = { x1: 0, y1: 0, x2: 0, y2: 0 }
     if (dx === 0 && isRegularElement) {
       dx = runningX || 1
-      newCursorPosition.flags = CursorFlags.usesRunningColumnCount
+      newCursorPosition.flags = ElLayoutInfoFlags.usesRunningColumnCount
     }
     if (dx >= 0) {
       if (isRegularElement) {
@@ -360,7 +360,7 @@ function getEffectiveElCoords(
     }
     if (dy === 0 && isRegularElement) {
       dy = runningY || 1
-      newCursorPosition.flags |= CursorFlags.usesRunningRowCount
+      newCursorPosition.flags |= ElLayoutInfoFlags.usesRunningRowCount
     }
     if (dy >= 0) {
       if (isRegularElement) {
