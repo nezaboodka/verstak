@@ -29,10 +29,10 @@ export type El<T = any, M = any> = {
   area: ElArea
   width: Range
   widthJustMin: string
-  widthJustGrowth: number
+  widthGrowth: number | undefined
   height: Range
   heightJustMin: string
-  heightJustGrowth: number
+  heightGrowth: number | undefined
   contentAlignment: Align
   boundsAlignment: Align
   contentWrapping: boolean
@@ -75,7 +75,6 @@ export enum Align {
 export type Range = {
   readonly min?: string     // min-content
   readonly max?: string     // min-content
-  readonly growth?: number  // 0
 }
 
 export type MarkedRange = Range & {
@@ -103,7 +102,9 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _area: ElArea
   private _coords: ElCoords
   private _width: Range
+  private _widthGrowth: number | undefined
   private _height: Range
+  private _heightGrowth: number | undefined
   private _contentAlignment: Align
   private _boundsAlignment: Align
   private _contentWrapping: boolean
@@ -122,8 +123,10 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._kind = ElKind.part
     this._area = undefined
     this._coords = UndefinedElCoords
-    this._width = { min: "", max: "", growth: 0 }
-    this._height = { min: "", max: "", growth: 0 }
+    this._width = { min: "", max: "" }
+    this._widthGrowth = undefined
+    this._height = { min: "", max: "" }
+    this._heightGrowth = undefined
     this._contentAlignment = Align.default
     this._boundsAlignment = Align.default
     this._contentWrapping = true
@@ -186,10 +189,6 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       Apply.maxWidth(this, value.max ?? "")
       updated = true
     }
-    if (value.growth !== w.growth) {
-      Apply.widthGrowth(this, value.growth ?? 0)
-      updated = true
-    }
     if (updated)
       this._width = value
   }
@@ -197,8 +196,13 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   get widthJustMin(): string { return this._width.min ?? "" }
   set widthJustMin(value: string) { this.width = { min: value } }
 
-  get widthJustGrowth(): number { return this._width.growth ?? 0 }
-  set widthJustGrowth(value: number) { this.width = { growth: value } }
+  get widthGrowth(): number | undefined { return this._widthGrowth }
+  set widthGrowth(value: number | undefined) {
+    if (value !== this._widthGrowth) {
+      Apply.widthGrowth(this, value ?? 0)
+      this._widthGrowth = value
+    }
+  }
 
   get height(): Range { return this._height }
   set height(value: Range) {
@@ -212,10 +216,6 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       Apply.maxHeight(this, value.max ?? "")
       updated = true
     }
-    if (value.growth !== w.growth) {
-      Apply.heightGrowth(this, value.growth ?? 0)
-      updated = true
-    }
     if (updated)
       this._height = value
   }
@@ -223,8 +223,13 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   get heightJustMin(): string { return this._height.min ?? "" }
   set heightJustMin(value: string) { this.height = { min: value } }
 
-  get heightJustGrowth(): number { return this._height.growth ?? 0 }
-  set heightJustGrowth(value: number) { this.height = { growth: value } }
+  get heightGrowth(): number | undefined { return this._heightGrowth }
+  set heightGrowth(value: number | undefined) {
+    if (value !== this._heightGrowth) {
+      Apply.heightGrowth(this, value ?? 0)
+      this._heightGrowth = value
+    }
+  }
 
   get contentAlignment(): Align { return this._contentAlignment }
   set contentAlignment(value: Align) {
