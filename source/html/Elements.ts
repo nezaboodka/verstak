@@ -47,11 +47,11 @@ export function Table<M = unknown, R = void>(
 // Partition
 
 export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: number): void {
-  startNewRow(shiftCursorDown)
+  rowBreak(shiftCursorDown)
   builder?.()
 }
 
-export function startNewRow(shiftCursorDown?: number): void {
+export function rowBreak(shiftCursorDown?: number): void {
   RxNode.declare(Drivers.partition)
 }
 
@@ -105,7 +105,7 @@ export class VerstakElementDriver<T extends HTMLElement> extends HtmlElementDriv
     const element = node.element
     // Add initial line feed automatically
     if (element.kind === ElKind.section)
-      startNewRow()
+      rowBreak()
     return super.update(node)
   }
 }
