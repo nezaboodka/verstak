@@ -11,6 +11,10 @@ export function objectHasMember<T>(obj: any, member: string): obj is T {
   return obj === Object(obj) && !Array.isArray(obj) && member in obj
 }
 
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value))
+}
+
 export function emitLetters(n: number): string {
   if (n < 0)
     throw new Error(`emitLetters: argument (${n}) should not be negative or zero`)
