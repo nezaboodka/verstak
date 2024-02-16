@@ -19,10 +19,10 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
   create(node: RxNode<El<T, M>>): void {
     this.setNativeElement(node)
     const e = node.element.native
-    if (RxSystem.isLogging && e !== undefined && !node.driver.isPartitionSeparator)
+    if (RxSystem.isLogging && e !== undefined && !node.driver.isPartition)
       e.setAttribute(Constants.keyAttrName, node.key)
     super.create(node)
-    if (e == undefined && RxSystem.isLogging && !node.driver.isPartitionSeparator)
+    if (e == undefined && RxSystem.isLogging && !node.driver.isPartition)
       node.element.native.setAttribute(Constants.keyAttrName, node.key)
   }
 
@@ -48,10 +48,10 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
         n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
       const automaticNativeHost = automaticHost?.element.native
       if (automaticNativeHost) {
-        if (sequential && !node.driver.isPartitionSeparator) {
+        if (sequential && !node.driver.isPartition) {
           const after = RxNode.findMatchingPrevSibling<El, El>(node, n =>
             n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
-          if (after === undefined || after.driver.isPartitionSeparator) {
+          if (after === undefined || after.driver.isPartition) {
             if (automaticNativeHost !== native.parentNode || !native.previousSibling)
               automaticNativeHost.prepend(native)
           }

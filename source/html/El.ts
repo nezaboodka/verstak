@@ -153,7 +153,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   set area(value: ElArea) {
     const node = this.node
     const driver = node.driver
-    if (!driver.isPartitionSeparator) {
+    if (!driver.isPartition) {
       const owner = node.owner as RxNode<ElImpl>
       const ownerEl = owner.element
       const prevEl = node.seat!.prev?.instance.element as ElImpl
@@ -480,7 +480,7 @@ export class Apply {
   static heightGrowth<T extends Element>(element: El<T, any>, value: number): void {
     const bNode = element.node
     const driver = bNode.driver
-    if (driver.isPartitionSeparator) {
+    if (driver.isPartition) {
       if (element.native instanceof HTMLElement) {
         const s = element.native.style
         if (value > 0)
@@ -491,7 +491,7 @@ export class Apply {
     }
     else {
       const hostDriver = bNode.host.driver
-      if (hostDriver.isPartitionSeparator) {
+      if (hostDriver.isPartition) {
         const host = bNode.host.seat!.instance as RxNode<El<T, any>>
         Apply.boundsAlignment(element, Align.stretch)
         Apply.heightGrowth(host.element, value)
@@ -622,13 +622,13 @@ export class Apply {
 // Constants
 
 export const Constants = {
-  // element: "элемент",
-  // partition: "раздел",
+  // element: "эл",
+  // partition: "разд",
   // layouts: ["цепочка", "таблица", "" /* раздел */, "группа", "заметка"],
   // keyAttrName: "ключ",
   // kindAttrName: "вид",
-  element: "element",
-  partition: "partition",
+  element: "el",
+  partition: "part",
   group: "group",
   layouts: ["section", "table", "note", "group", "" /* partition */, "" /* cursor */],
   keyAttrName: "key",
