@@ -122,6 +122,13 @@ export class VerstakElementDriver<T extends HTMLElement> extends HtmlElementDriv
     const result = super.update(node)
     return result
   }
+
+  child(ownerNode: RxNode<El<T, any>>, childDriver: RxNodeDriver<any>, childDeclaration?: RxNodeDecl<any> | undefined, childPreset?: RxNodeDecl<any> | undefined): void {
+    const el = ownerNode.element
+    if (el.splitView !== undefined && !childDriver.isPartitionSeparator) {
+      startNewRow()
+    }
+  }
 }
 
 const Drivers = {

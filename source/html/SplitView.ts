@@ -182,7 +182,7 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
 
 export function layout(splitViewNode: RxNode<ElImpl>): void {
   for (const child of splitViewNode.children.items()) {
-    if (!child.instance.driver.isPartitionSeparator) {
+    if (child.instance.driver.isPartitionSeparator) {
       const el = child.instance.element as ElImpl
       if (el.native !== undefined) {
         const s = el.style

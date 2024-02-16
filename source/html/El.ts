@@ -198,9 +198,11 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
       el.layoutInfo.effectiveSizePx = clamp(el.layoutInfo.effectiveSizePx, value.min ? Number.parseInt(value.min) : 0, value.max ? Number.parseInt(value.max) : Number.POSITIVE_INFINITY)
       this._width = value
+      const hostEl = node.host.element as ElImpl
+      hostEl._width = value
       const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
       for (const child of owner.children.items()) {
-        if ((child.instance.element as ElImpl).native !== undefined && !child.instance.driver.isPartitionSeparator) {
+        if ((child.instance.element as ElImpl).native !== undefined && child.instance.driver.isPartitionSeparator) {
           sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
         }
       }
@@ -643,13 +645,23 @@ export class Apply {
     const e = element.native
     if (e instanceof HTMLElement) {
       const s = e.style
-      s.position = value !== undefined ? "relative" : ""
-      if (value === SplitView.horizontal)
-        s.overflow = "scroll hidden"
-      else if (value === SplitView.vertical)
-        s.overflow = "hidden scroll"
-      else
+      if (value !== undefined) {
+        s.display = "flex"
+        s.position = "relative"
+        if (value === SplitView.horizontal) {
+          s.flexDirection = "row"
+          s.overflow = "scroll hidden"
+        }
+        else {
+          s.flexDirection = "column"
+          s.overflow = "hidden scroll"
+        }
+      }
+      else {
+        s.display = ""
+        s.position = ""
         s.overflow = ""
+      }
     }
   }
 
@@ -706,6 +718,7 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     s.minWidth = "0"
     if (owner.splitView !== undefined) {
       s.overflow = "hidden"
+      s.flexGrow = "1"
     }
   },
   el => { // table
@@ -717,6 +730,10 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     s.gridAutoRows = "minmax(min-content, 1fr)"
     s.gridAutoColumns = "minmax(min-content, 1fr)"
     s.textAlign = "initial"
+    if (owner.splitView !== undefined) {
+      s.overflow = "hidden"
+      s.flexGrow = "1"
+    }
   },
   el => { // note
     const owner = el.node.owner.element as ElImpl
