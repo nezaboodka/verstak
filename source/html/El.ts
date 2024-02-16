@@ -193,12 +193,11 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       // if (ownerEl.layoutInfo === undefined)
       //   ownerEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
       // ownerEl.layoutInfo.flags |= ElLayoutInfoFlags.childrenRelayoutIsNeeded
-      const el = node.element as ElImpl
-      if (el.layoutInfo === undefined)
-        el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-      el.layoutInfo.effectiveSizePx = clamp(el.layoutInfo.effectiveSizePx, value.min ? Number.parseInt(value.min) : 0, value.max ? Number.parseInt(value.max) : Number.POSITIVE_INFINITY)
       this._width = value
       const hostEl = node.host.element as ElImpl
+      if (hostEl.layoutInfo === undefined)
+        hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+      hostEl.layoutInfo.effectiveSizePx = clamp(hostEl.layoutInfo.effectiveSizePx, value.min ? Number.parseInt(value.min) : 0, value.max ? Number.parseInt(value.max) : Number.POSITIVE_INFINITY)
       hostEl._width = value
       const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
       for (const child of owner.children.items()) {
