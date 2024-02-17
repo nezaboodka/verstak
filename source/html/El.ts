@@ -60,19 +60,19 @@ export type ElCoords = {
 
 export enum Align {
   // Horizontal .....xxx
-  left      = 0b00000001,
-  centerX   = 0b00000010,
-  right     = 0b00000011,
-  stretchX  = 0b00000100,
+  left      = 0b00000100,
+  centerX   = 0b00000101,
+  right     = 0b00000110,
+  stretchX  = 0b00000111,
   // Vertical   ..yyy...
-  top       = 0b00001000,
-  centerY   = 0b00010000,
-  bottom    = 0b00011000,
-  stretchY  = 0b00100000,
+  top       = 0b00100000,
+  centerY   = 0b00101000,
+  bottom    = 0b00110000,
+  stretchY  = 0b00111000,
   // Combined
-  center    = centerX + centerY,
-  stretch   = stretchX + stretchY,
-  default   = 0b0_00_00_00,
+  center    = centerX | centerY,
+  stretch   = stretchX | stretchY,
+  default   = 0b00000000,
 }
 
 export type Range = {
@@ -215,7 +215,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   get alignment(): Align { return this._alignment }
   set alignment(value: Align) {
     if (value !== this._alignment) {
-      Apply.alignment(this, value)
+      Apply.alignment(this, value, this._extraAlignment, this._stretchingStrengthX, this._stretchingStrengthY)
       this._alignment = value
     }
   }
@@ -223,7 +223,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   get extraAlignment(): Align { return this._extraAlignment }
   set extraAlignment(value: Align) {
     if (value !== this._extraAlignment) {
-      Apply.extraAlignment(this, value)
+      Apply.alignment(this, this._alignment, value, this._stretchingStrengthX, this._stretchingStrengthY)
       this._extraAlignment = value
     }
   }
@@ -231,7 +231,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   get stretchingStrengthX(): number | undefined { return this._stretchingStrengthX }
   set stretchingStrengthX(value: number | undefined) {
     if (value !== this._stretchingStrengthX) {
-      Apply.stretchFactorX(this, value ?? 0)
+      Apply.stretchingStrengthX(this, value ?? 0)
       this._stretchingStrengthX = value
     }
   }
@@ -239,7 +239,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   get stretchingStrengthY(): number | undefined { return this._stretchingStrengthY }
   set stretchingStrengthY(value: number | undefined) {
     if (value !== this._stretchingStrengthY) {
-      Apply.stretchFactorY(this, value ?? 0)
+      Apply.stretchingStrengthY(this, value ?? 0)
       this._stretchingStrengthY = value
     }
   }
@@ -434,13 +434,13 @@ export class CursorCommandDriver extends ElDriver<Element, unknown> {
 }
 
 export class Apply {
-  static kind<T extends Element>(element: El<T, any>, value: ElKind): void {
+  static kind<T extends Element>(element: ElImpl<T, any>, value: ElKind): void {
     const kind = Constants.layouts[value]
     kind && element.native.setAttribute(Constants.kindAttrName, kind)
     VerstakDriversByLayout[value](element as any)
   }
 
-  static coords<T extends Element>(element: El<T, any>, value: ElCoords | undefined): void {
+  static coords<T extends Element>(element: ElImpl<T, any>, value: ElCoords | undefined): void {
     if (element.native instanceof HTMLElement) {
       const s = element.native.style
       if (value) {
@@ -455,60 +455,65 @@ export class Apply {
     }
   }
 
-  static minWidth<T extends Element>(element: El<T, any>, value: string): void {
+  static minWidth<T extends Element>(element: ElImpl<T, any>, value: string): void {
     if (element.native instanceof HTMLElement)
       element.native.style.minWidth = `${value}`
   }
 
-  static maxWidth<T extends Element>(element: El<T, any>, value: string): void {
+  static maxWidth<T extends Element>(element: ElImpl<T, any>, value: string): void {
     if (element.native instanceof HTMLElement)
       element.native.style.maxWidth = `${value}`
   }
 
-  static minHeight<T extends Element>(element: El<T, any>, value: string): void {
+  static minHeight<T extends Element>(element: ElImpl<T, any>, value: string): void {
     if (element.native instanceof HTMLElement)
       element.native.style.minHeight = `${value}`
   }
 
-  static maxHeight<T extends Element>(element: El<T, any>, value: string): void {
+  static maxHeight<T extends Element>(element: ElImpl<T, any>, value: string): void {
     if (element.native instanceof HTMLElement)
       element.native.style.maxHeight = `${value}`
   }
 
-  static alignment<T extends Element>(element: El<T, any>, value: Align): void {
+  static alignment<T extends Element>(element: ElImpl<T, any>,
+    primary: Align, extra: Align,
+    strengthX: number | undefined,
+    strengthY: number | undefined): void {
     if (element.native instanceof HTMLElement) {
       const s = element.native.style
-      if (value !== Align.default) { // if not auto mode
-        const v = AlignToCss[(value >> 3) & 0b11]
-        const h = AlignToCss[value & 0b11]
-        s.alignSelf = v
-        s.justifySelf = h
+      // Primary
+      let v1 = ""; let h1 = ""; let t1 = ""
+      if (primary !== Align.default) { // if not auto mode
+        v1 = AlignToCss[(primary >> 3) & 0b11]
+        h1 = AlignToCss[primary & 0b11]
+        t1 = TextAlignCss[primary & 0b11]
       }
-      // else if (heightGrowth > 0) {
-      //   s.alignSelf = AlignToCss[Align.Stretch]
-      // }
-      else
-        s.alignSelf = s.justifySelf = ""
+      s.alignSelf = v1
+      s.justifySelf = h1
+      if ((primary & Align.left) !== 0 && strengthX === undefined)
+        Apply.stretchingStrengthX(element, 1)
+      if ((primary & Align.top) !== 0 && strengthY === undefined)
+        Apply.stretchingStrengthY(element, 1)
+      // Extra
+      let v2 = ""; let h2 = ""; let t2 = ""
+      if (extra !== Align.default) { // if not auto mode
+        v2 = AlignToCss[(extra >> 3) & 0b11]
+        h2 = AlignToCss[extra & 0b11]
+        t2 = TextAlignCss[extra & 0b11]
+      }
+      else {
+        v2 = v1
+        h2 = h1
+        t2 = t1
+      }
+      // Primary
+      s.justifyContent = v2
+      s.alignItems = h2
+      s.textAlign = t2
     }
   }
 
-  static extraAlignment<T extends Element>(element: El<T, any>, value: Align): void {
-    if (element.native instanceof HTMLElement) {
-      const s = element.native.style
-      if (value !== Align.default) { // if not auto mode
-        const v = AlignToCss[(value >> 3) & 0b11]
-        const h = AlignToCss[value & 0b11]
-        const t = TextAlignCss[value & 0b11]
-        s.justifyContent = v
-        s.alignItems = h
-        s.textAlign = t
-      }
-      else
-        s.justifyContent = s.alignContent = s.textAlign = ""
-    }
-  }
-
-  static stretchFactorX<T extends Element>(element: El<T, any>, value: number): void {
+  static stretchingStrengthX<T extends Element>(element: ElImpl<T, any>, value: number): void {
     if (element.native instanceof HTMLElement) {
       const s = element.native.style
       if (value > 0) {
@@ -522,7 +527,7 @@ export class Apply {
     }
   }
 
-  static stretchFactorY<T extends Element>(element: El<T, any>, value: number): void {
+  static stretchingStrengthY<T extends Element>(element: ElImpl<T, any>, value: number): void {
     const bNode = element.node
     const driver = bNode.driver
     if (driver.isPartition) {
@@ -538,13 +543,13 @@ export class Apply {
       const hostDriver = bNode.host.driver
       if (hostDriver.isPartition) {
         const host = bNode.host.seat!.instance as RxNode<El<T, any>>
-        Apply.alignment(element, Align.stretch)
-        Apply.stretchFactorY(host.element, value)
+        Apply.alignment(host.element as ElImpl, Align.stretch, Align.stretch, undefined, undefined)
+        Apply.stretchingStrengthY(host.element as ElImpl, value)
       }
     }
   }
 
-  static contentWrapping<T extends Element>(element: El<T, any>, value: boolean): void {
+  static contentWrapping<T extends Element>(element: ElImpl<T, any>, value: boolean): void {
     if (element.native instanceof HTMLElement) {
       const s = element.native.style
       if (value) {
@@ -562,7 +567,7 @@ export class Apply {
     }
   }
 
-  static overlayVisible<T extends Element>(element: El<T, any>, value: boolean | undefined): void {
+  static overlayVisible<T extends Element>(element: ElImpl<T, any>, value: boolean | undefined): void {
     const e = element.native
     if (e instanceof HTMLElement) {
       const s = e.style
@@ -596,7 +601,7 @@ export class Apply {
     }
   }
 
-  static stylingPreset<T extends Element>(element: El<T, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
+  static stylingPreset<T extends Element>(element: ElImpl<T, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
     const native = element.native
     enabled ??= true
     if (secondary)
@@ -682,5 +687,5 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
   // undefined // cursor
 ]
 
-const AlignToCss = ["stretch", "start", "center", "end"]
-const TextAlignCss = ["justify", "left", "center", "right"]
+const AlignToCss = ["start", "center", "end", "stretch"]
+const TextAlignCss = ["left", "center", "right", "justify"]
