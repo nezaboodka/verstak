@@ -29,12 +29,12 @@ export type El<T = any, M = any> = {
   area: ElArea
   width: Range
   widthJustMin: string
-  widthGrowth: number | undefined
   height: Range
   heightJustMin: string
-  heightGrowth: number | undefined
-  contentAlignment: Align
-  boundsAlignment: Align
+  alignment: Align
+  extraAlignment: Align
+  stretchFactorX: number | undefined
+  stretchFactorY: number | undefined
   contentWrapping: boolean
   overlayVisible: boolean | undefined
   readonly style: CSSStyleDeclaration
@@ -61,15 +61,20 @@ export type ElCoords = {
 }
 
 export enum Align {
-  default = 0b10000,
-  stretch = 0b00000,
-  left    = 0b00001,
-  centerX = 0b00010,
-  right   = 0b00011,
-  top     = 0b00100,
-  centerY = 0b01000,
-  bottom  = 0b01100,
-  center  = centerX + centerY,
+  // Horizontal .....xxx
+  left      = 0b00000001,
+  centerX   = 0b00000010,
+  right     = 0b00000011,
+  stretchX  = 0b00000100,
+  // Vertical   ..yyy...
+  top       = 0b00001000,
+  centerY   = 0b00010000,
+  bottom    = 0b00011000,
+  stretchY  = 0b00100000,
+  // Combined
+  center    = centerX + centerY,
+  stretch   = stretchX + stretchY,
+  default   = 0b0_00_00_00,
 }
 
 export type Range = {
@@ -102,11 +107,11 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _area: ElArea
   private _coords: ElCoords
   private _width: Range
-  private _widthGrowth: number | undefined
   private _height: Range
-  private _heightGrowth: number | undefined
-  private _contentAlignment: Align
-  private _boundsAlignment: Align
+  private _alignment: Align
+  private _extraAlignment: Align
+  private _stretchFactorX: number | undefined
+  private _stretchFactorY: number | undefined
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
   private _hasStylingPresets: boolean
@@ -124,11 +129,11 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._area = undefined
     this._coords = UndefinedElCoords
     this._width = { min: "", max: "" }
-    this._widthGrowth = undefined
     this._height = { min: "", max: "" }
-    this._heightGrowth = undefined
-    this._contentAlignment = Align.default
-    this._boundsAlignment = Align.default
+    this._alignment = Align.default
+    this._extraAlignment = Align.default
+    this._stretchFactorX = undefined
+    this._stretchFactorY = undefined
     this._contentWrapping = true
     this._overlayVisible = undefined
     this._hasStylingPresets = false
@@ -196,14 +201,6 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   get widthJustMin(): string { return this._width.min ?? "" }
   set widthJustMin(value: string) { this.width = { min: value } }
 
-  get widthGrowth(): number | undefined { return this._widthGrowth }
-  set widthGrowth(value: number | undefined) {
-    if (value !== this._widthGrowth) {
-      Apply.widthGrowth(this, value ?? 0)
-      this._widthGrowth = value
-    }
-  }
-
   get height(): Range { return this._height }
   set height(value: Range) {
     const w = this._height
@@ -223,27 +220,35 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   get heightJustMin(): string { return this._height.min ?? "" }
   set heightJustMin(value: string) { this.height = { min: value } }
 
-  get heightGrowth(): number | undefined { return this._heightGrowth }
-  set heightGrowth(value: number | undefined) {
-    if (value !== this._heightGrowth) {
-      Apply.heightGrowth(this, value ?? 0)
-      this._heightGrowth = value
+  get alignment(): Align { return this._alignment }
+  set alignment(value: Align) {
+    if (value !== this._alignment) {
+      Apply.alignment(this, value)
+      this._alignment = value
     }
   }
 
-  get contentAlignment(): Align { return this._contentAlignment }
-  set contentAlignment(value: Align) {
-    if (value !== this._contentAlignment) {
-      Apply.contentAlignment(this, value)
-      this._contentAlignment = value
+  get extraAlignment(): Align { return this._extraAlignment }
+  set extraAlignment(value: Align) {
+    if (value !== this._extraAlignment) {
+      Apply.extraAlignment(this, value)
+      this._extraAlignment = value
     }
   }
 
-  get boundsAlignment(): Align { return this._boundsAlignment }
-  set boundsAlignment(value: Align) {
-    if (value !== this._boundsAlignment) {
-      Apply.boundsAlignment(this, value)
-      this._boundsAlignment = value
+  get stretchFactorX(): number | undefined { return this._stretchFactorX }
+  set stretchFactorX(value: number | undefined) {
+    if (value !== this._stretchFactorX) {
+      Apply.stretchFactorX(this, value ?? 0)
+      this._stretchFactorX = value
+    }
+  }
+
+  get stretchFactorY(): number | undefined { return this._stretchFactorY }
+  set stretchFactorY(value: number | undefined) {
+    if (value !== this._stretchFactorY) {
+      Apply.stretchFactorY(this, value ?? 0)
+      this._stretchFactorY = value
     }
   }
 
@@ -458,7 +463,60 @@ export class Apply {
     }
   }
 
-  static widthGrowth<T extends Element>(element: El<T, any>, value: number): void {
+  static minWidth<T extends Element>(element: El<T, any>, value: string): void {
+    if (element.native instanceof HTMLElement)
+      element.native.style.minWidth = `${value}`
+  }
+
+  static maxWidth<T extends Element>(element: El<T, any>, value: string): void {
+    if (element.native instanceof HTMLElement)
+      element.native.style.maxWidth = `${value}`
+  }
+
+  static minHeight<T extends Element>(element: El<T, any>, value: string): void {
+    if (element.native instanceof HTMLElement)
+      element.native.style.minHeight = `${value}`
+  }
+
+  static maxHeight<T extends Element>(element: El<T, any>, value: string): void {
+    if (element.native instanceof HTMLElement)
+      element.native.style.maxHeight = `${value}`
+  }
+
+  static alignment<T extends Element>(element: El<T, any>, value: Align): void {
+    if (element.native instanceof HTMLElement) {
+      const s = element.native.style
+      if (value !== Align.default) { // if not auto mode
+        const v = AlignToCss[(value >> 3) & 0b11]
+        const h = AlignToCss[value & 0b11]
+        s.alignSelf = v
+        s.justifySelf = h
+      }
+      // else if (heightGrowth > 0) {
+      //   s.alignSelf = AlignToCss[Align.Stretch]
+      // }
+      else
+        s.alignSelf = s.justifySelf = ""
+    }
+  }
+
+  static extraAlignment<T extends Element>(element: El<T, any>, value: Align): void {
+    if (element.native instanceof HTMLElement) {
+      const s = element.native.style
+      if (value !== Align.default) { // if not auto mode
+        const v = AlignToCss[(value >> 3) & 0b11]
+        const h = AlignToCss[value & 0b11]
+        const t = TextAlignCss[value & 0b11]
+        s.justifyContent = v
+        s.alignItems = h
+        s.textAlign = t
+      }
+      else
+        s.justifyContent = s.alignContent = s.textAlign = ""
+    }
+  }
+
+  static stretchFactorX<T extends Element>(element: El<T, any>, value: number): void {
     if (element.native instanceof HTMLElement) {
       const s = element.native.style
       if (value > 0) {
@@ -472,17 +530,7 @@ export class Apply {
     }
   }
 
-  static minWidth<T extends Element>(element: El<T, any>, value: string): void {
-    if (element.native instanceof HTMLElement)
-      element.native.style.minWidth = `${value}`
-  }
-
-  static maxWidth<T extends Element>(element: El<T, any>, value: string): void {
-    if (element.native instanceof HTMLElement)
-      element.native.style.maxWidth = `${value}`
-  }
-
-  static heightGrowth<T extends Element>(element: El<T, any>, value: number): void {
+  static stretchFactorY<T extends Element>(element: El<T, any>, value: number): void {
     const bNode = element.node
     const driver = bNode.driver
     if (driver.isPartition) {
@@ -498,52 +546,9 @@ export class Apply {
       const hostDriver = bNode.host.driver
       if (hostDriver.isPartition) {
         const host = bNode.host.seat!.instance as RxNode<El<T, any>>
-        Apply.boundsAlignment(element, Align.stretch)
-        Apply.heightGrowth(host.element, value)
+        Apply.alignment(element, Align.stretch)
+        Apply.stretchFactorY(host.element, value)
       }
-    }
-  }
-
-  static minHeight<T extends Element>(element: El<T, any>, value: string): void {
-    if (element.native instanceof HTMLElement)
-      element.native.style.minHeight = `${value}`
-  }
-
-  static maxHeight<T extends Element>(element: El<T, any>, value: string): void {
-    if (element.native instanceof HTMLElement)
-      element.native.style.maxHeight = `${value}`
-  }
-
-  static contentAlignment<T extends Element>(element: El<T, any>, value: Align): void {
-    if (element.native instanceof HTMLElement) {
-      const s = element.native.style
-      if ((value & Align.default) === 0) { // if not auto mode
-        const v = AlignToCss[(value >> 2) & 0b11]
-        const h = AlignToCss[value & 0b11]
-        const t = TextAlignCss[value & 0b11]
-        s.justifyContent = v
-        s.alignItems = h
-        s.textAlign = t
-      }
-      else
-        s.justifyContent = s.alignContent = s.textAlign = ""
-    }
-  }
-
-  static boundsAlignment<T extends Element>(element: El<T, any>, value: Align): void {
-    if (element.native instanceof HTMLElement) {
-      const s = element.native.style
-      if ((value & Align.default) === 0) { // if not auto mode
-        const v = AlignToCss[(value >> 2) & 0b11]
-        const h = AlignToCss[value & 0b11]
-        s.alignSelf = v
-        s.justifySelf = h
-      }
-      // else if (heightGrowth > 0) {
-      //   s.alignSelf = AlignToCss[Align.Stretch]
-      // }
-      else
-        s.alignSelf = s.justifySelf = ""
     }
   }
 
