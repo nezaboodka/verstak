@@ -332,21 +332,15 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     if ((primary & Align.top) !== 0 && strengthY === undefined)
       ElImpl.applyStretchingStrengthY(element, 0, 1)
     // Extra
-    let v2 = ""; let h2 = ""; let t2 = ""
     if (extra !== Align.default) { // if not auto mode
-      v2 = AlignToCss[(extra >> 3) & 0b11]
-      h2 = AlignToCss[extra & 0b11]
-      t2 = TextAlignCss[extra & 0b11]
+      s.justifyContent = AlignToCss[(extra >> 3) & 0b11]
+      s.alignItems = AlignToCss[extra & 0b11]
+      s.textAlign = TextAlignCss[extra & 0b11]
     }
     else {
-      v2 = v1
-      h2 = h1
-      t2 = t1
+      s.justifyContent = v1
+      s.textAlign = t1
     }
-    // Primary
-    s.justifyContent = v2
-    s.alignItems = h2
-    s.textAlign = t2
   }
 
   private static applyStretchingStrengthX<T extends Element>(
@@ -374,8 +368,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
           delta = -1
       }
       if (delta !== 0) {
-        const hostElement = host.element as ElImpl
-        const count = hostElement._stretchingStrengthX ?? 0 + delta
+        const hostEl = host.element as ElImpl
+        const count = hostEl._stretchingStrengthX ?? 0 + delta
         if (count === 1)
           s.alignSelf = "stretch"
         else if (count === 0)
