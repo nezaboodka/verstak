@@ -317,17 +317,20 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     primary: Align, extra: Align,
     strengthX: number | undefined,
     strengthY: number | undefined): void {
-    const s = element.style
+    const h: CSSStyleDeclaration = element.style
+    let v: CSSStyleDeclaration | undefined = undefined
+    if (element.node.host.driver.isPartition)
+      v = (element.node.host.element as ElImpl).style
     // Primary alignment
-    VerticalAlignToCss[(primary >> 3) & 0b11](s)
-    HorizontalAlignToCss[primary & 0b11](s)
+    v && VerticalAlignToCss[(primary >> 3) & 0b11](h, v)
+    HorizontalAlignToCss[primary & 0b11](h)
     if (extra === Align.default) { // if auto mode
-      VerticalExtraAlignToCss[(primary >> 3) & 0b11](s)
-      HorizontalExtraAlignToCss[primary & 0b11](s)
+      v && VerticalExtraAlignToCss[(primary >> 3) & 0b11](h, v)
+      HorizontalExtraAlignToCss[primary & 0b11](h)
     }
     else { // if auto mode
-      VerticalExtraAlignToCss[(extra >> 3) & 0b11](s)
-      HorizontalExtraAlignToCss[extra & 0b11](s)
+      v && VerticalExtraAlignToCss[(extra >> 3) & 0b11](h, v)
+      HorizontalExtraAlignToCss[extra & 0b11](h)
     }
     if ((primary & Align.stretchWidth) === Align.stretchWidth && strengthX === undefined)
       ElImpl.applyStretchingStrengthX(element, 0, 1)
@@ -709,33 +712,36 @@ const HorizontalExtraAlignToCss: Array<(css: CSSStyleDeclaration) => void> = [
   },
 ]
 
-const VerticalAlignToCss: Array<(css: CSSStyleDeclaration) => void> = [
-  css => { // left
-    css.alignSelf = "start"
+const VerticalAlignToCss: Array<(elem: CSSStyleDeclaration, host: CSSStyleDeclaration) => void> = [
+  (elem, host) => { // left
+    elem.alignSelf = "start"
+    host.marginTop = host.marginBottom = ""
   },
-  css => { // center
-    css.alignSelf = "center"
-    css.marginTop = css.marginBottom = "auto"
+  (elem, host) => { // center
+    elem.alignSelf = "center"
+    host.marginTop = host.marginBottom = "auto"
   },
-  css => { // right
-    css.alignSelf = "end"
+  (elem, host) => { // right
+    elem.alignSelf = "end"
+    host.marginTop = host.marginBottom = ""
   },
-  css => { // stretch
-    css.alignSelf = "stretch"
+  (elem, host) => { // stretch
+    elem.alignSelf = "stretch"
+    host.marginTop = host.marginBottom = ""
   },
 ]
 
-const VerticalExtraAlignToCss: Array<(css: CSSStyleDeclaration) => void> = [
-  css => { // left
-    css.justifyContent = "start"
+const VerticalExtraAlignToCss: Array<(elem: CSSStyleDeclaration, host: CSSStyleDeclaration) => void> = [
+  (elem, host) => { // left
+    elem.justifyContent = "start"
   },
-  css => { // center
-    css.justifyContent = "center"
+  (elem, host) => { // center
+    elem.justifyContent = "center"
   },
-  css => { // right
-    css.justifyContent = "end"
+  (elem, host) => { // right
+    elem.justifyContent = "end"
   },
-  css => { // stretch
-    css.justifyContent = "stretch"
+  (elem, host) => { // stretch
+    elem.justifyContent = "stretch"
   },
 ]
