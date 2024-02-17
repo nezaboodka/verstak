@@ -441,81 +441,79 @@ export class Apply {
   }
 
   static coords<T extends Element>(element: ElImpl<T, any>, value: ElCoords | undefined): void {
-    if (element.native instanceof HTMLElement) {
-      const s = element.native.style
-      if (value) {
-        const x1 = value.x1 || 1
-        const y1 = value.y1 || 1
-        const x2 = value.x2 || x1
-        const y2 = value.y2 || y1
-        s.gridArea = `${y1} / ${x1} / span ${y2 - y1 + 1} / span ${x2 - x1 + 1}`
-      }
-      else
-        s.gridArea = ""
+    const s = element.style
+    if (value) {
+      const x1 = value.x1 || 1
+      const y1 = value.y1 || 1
+      const x2 = value.x2 || x1
+      const y2 = value.y2 || y1
+      s.gridArea = `${y1} / ${x1} / span ${y2 - y1 + 1} / span ${x2 - x1 + 1}`
     }
+    else
+      s.gridArea = ""
   }
 
   static minWidth<T extends Element>(element: ElImpl<T, any>, value: string): void {
-    if (element.native instanceof HTMLElement)
-      element.native.style.minWidth = `${value}`
+    element.style.minWidth = `${value}`
   }
 
   static maxWidth<T extends Element>(element: ElImpl<T, any>, value: string): void {
-    if (element.native instanceof HTMLElement)
-      element.native.style.maxWidth = `${value}`
+    element.style.maxWidth = `${value}`
   }
 
   static minHeight<T extends Element>(element: ElImpl<T, any>, value: string): void {
-    if (element.native instanceof HTMLElement)
-      element.native.style.minHeight = `${value}`
+    element.style.minHeight = `${value}`
   }
 
   static maxHeight<T extends Element>(element: ElImpl<T, any>, value: string): void {
-    if (element.native instanceof HTMLElement)
-      element.native.style.maxHeight = `${value}`
+    element.style.maxHeight = `${value}`
   }
 
   static alignment<T extends Element>(element: ElImpl<T, any>,
     primary: Align, extra: Align,
     strengthX: number | undefined,
     strengthY: number | undefined): void {
-    if (element.native instanceof HTMLElement) {
-      const s = element.native.style
-      // Primary
-      let v1 = ""; let h1 = ""; let t1 = ""
-      if (primary !== Align.default) { // if not auto mode
-        v1 = AlignToCss[(primary >> 3) & 0b11]
-        h1 = AlignToCss[primary & 0b11]
-        t1 = TextAlignCss[primary & 0b11]
-      }
-      s.alignSelf = v1
-      s.justifySelf = h1
-      if ((primary & Align.left) !== 0 && strengthX === undefined)
-        Apply.stretchingStrengthX(element, 1)
-      if ((primary & Align.top) !== 0 && strengthY === undefined)
-        Apply.stretchingStrengthY(element, 1)
-      // Extra
-      let v2 = ""; let h2 = ""; let t2 = ""
-      if (extra !== Align.default) { // if not auto mode
-        v2 = AlignToCss[(extra >> 3) & 0b11]
-        h2 = AlignToCss[extra & 0b11]
-        t2 = TextAlignCss[extra & 0b11]
-      }
-      else {
-        v2 = v1
-        h2 = h1
-        t2 = t1
-      }
-      // Primary
-      s.justifyContent = v2
-      s.alignItems = h2
-      s.textAlign = t2
+    const s = element.style
+    // Primary
+    let v1 = ""; let h1 = ""; let t1 = ""
+    if (primary !== Align.default) { // if not auto mode
+      v1 = AlignToCss[(primary >> 3) & 0b11]
+      h1 = AlignToCss[primary & 0b11]
+      t1 = TextAlignCss[primary & 0b11]
     }
+    s.alignSelf = v1
+    s.justifySelf = h1
+    if ((primary & Align.left) !== 0 && strengthX === undefined)
+      Apply.stretchingStrengthX(element, 1)
+    if ((primary & Align.top) !== 0 && strengthY === undefined)
+      Apply.stretchingStrengthY(element, 1)
+    // Extra
+    let v2 = ""; let h2 = ""; let t2 = ""
+    if (extra !== Align.default) { // if not auto mode
+      v2 = AlignToCss[(extra >> 3) & 0b11]
+      h2 = AlignToCss[extra & 0b11]
+      t2 = TextAlignCss[extra & 0b11]
+    }
+    else {
+      v2 = v1
+      h2 = h1
+      t2 = t1
+    }
+    // Primary
+    s.justifyContent = v2
+    s.alignItems = h2
+    s.textAlign = t2
   }
 
   static stretchingStrengthX<T extends Element>(element: ElImpl<T, any>, value: number): void {
-    if (element.native instanceof HTMLElement) {
-      const s = element.native.style
+    const bNode = element.node
+    const driver = bNode.driver
+    if (driver.isPartition) {
+      const s = element.style
+      s.alignSelf = value > 0 ? "stretch" : ""
+    }
+    else {
+      const s = element.style
       if (value > 0) {
         s.flexGrow = `${value}`
         s.flexBasis = "0"
@@ -524,6 +522,11 @@ export class Apply {
         s.flexGrow = ""
         s.flexBasis = ""
       }
+      const hostDriver = bNode.host.driver
+      if (hostDriver.isPartition) {
+        const host = bNode.host.seat!.instance as RxNode<El<T, any>>
+        Apply.stretchingStrengthX(host.element as ElImpl, 1)
+      }
     }
   }
 
@@ -531,13 +534,8 @@ export class Apply {
     const bNode = element.node
     const driver = bNode.driver
     if (driver.isPartition) {
-      if (element.native instanceof HTMLElement) {
-        const s = element.native.style
-        if (value > 0)
-          s.flexGrow = `${value}`
-        else
-          s.flexGrow = ""
-      }
+      const s = element.style
+      s.flexGrow = value > 0 ? `${value}` : ""
     }
     else {
       const hostDriver = bNode.host.driver
@@ -550,54 +548,49 @@ export class Apply {
   }
 
   static contentWrapping<T extends Element>(element: ElImpl<T, any>, value: boolean): void {
-    if (element.native instanceof HTMLElement) {
-      const s = element.native.style
-      if (value) {
-        s.flexFlow = "wrap"
-        s.overflow = ""
-        s.textOverflow = ""
-        s.whiteSpace = ""
-      }
-      else {
-        s.flexFlow = ""
-        s.overflow = "hidden"
-        s.textOverflow = "ellipsis"
-        s.whiteSpace = "nowrap"
-      }
+    const s = element.style
+    if (value) {
+      s.flexFlow = "wrap"
+      s.overflow = ""
+      s.textOverflow = ""
+      s.whiteSpace = ""
+    }
+    else {
+      s.flexFlow = ""
+      s.overflow = "hidden"
+      s.textOverflow = "ellipsis"
+      s.whiteSpace = "nowrap"
     }
   }
 
   static overlayVisible<T extends Element>(element: ElImpl<T, any>, value: boolean | undefined): void {
-    const e = element.native
-    if (e instanceof HTMLElement) {
-      const s = e.style
-      const host = RxNode.findMatchingHost<El, El>(element.node, n =>
-        n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
-      const nativeHost = host?.element.native
-      if (value === true) {
-        const doc = document.body
-        const rect = nativeHost.getBoundingClientRect()
-        if (doc.offsetWidth - rect.left > rect.right) // rightward
-          s.left = "0", s.right = ""
-        else // leftward
-          s.left = "", s.right = "0"
-        if (doc.clientHeight - rect.top > rect.bottom) // downward
-          s.top = "100%", s.bottom = ""
-        else // upward
-          s.top = "", s.bottom = "100%"
-        s.display = ""
-        s.position = "absolute"
-        s.minWidth = "100%"
-        s.boxSizing = "border-box"
-        nativeHost.style.position = "relative"
-      }
-      else {
-        nativeHost.style.position = ""
-        if (value === false)
-          s.display = "none"
-        else // overlayVisible === undefined
-          s.position = s.display = s.left = s.right = s.top = s.bottom = "" // clear
-      }
+    const s = element.style
+    const host = RxNode.findMatchingHost<El, El>(element.node, n =>
+      n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
+    const nativeHost = host?.element.native
+    if (value === true) {
+      const doc = document.body
+      const rect = nativeHost.getBoundingClientRect()
+      if (doc.offsetWidth - rect.left > rect.right) // rightward
+        s.left = "0", s.right = ""
+      else // leftward
+        s.left = "", s.right = "0"
+      if (doc.clientHeight - rect.top > rect.bottom) // downward
+        s.top = "100%", s.bottom = ""
+      else // upward
+        s.top = "", s.bottom = "100%"
+      s.display = ""
+      s.position = "absolute"
+      s.minWidth = "100%"
+      s.boxSizing = "border-box"
+      nativeHost.style.position = "relative"
+    }
+    else {
+      nativeHost.style.position = ""
+      if (value === false)
+        s.display = "none"
+      else // overlayVisible === undefined
+        s.position = s.display = s.left = s.right = s.top = s.bottom = "" // clear
     }
   }
 
