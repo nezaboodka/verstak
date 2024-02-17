@@ -70,8 +70,8 @@ export enum Align {
   bottom    = 0b00110000,
   stretchY  = 0b00111000,
   // Combined
-  center    = centerX | centerY,
-  stretch   = stretchX | stretchY,
+  centerXY  = centerX | centerY,
+  stretchXY = stretchX | stretchY,
   default   = 0b00000000,
 }
 
@@ -543,7 +543,7 @@ export class Apply {
       const hostDriver = bNode.host.driver
       if (hostDriver.isPartition) {
         const host = bNode.host.seat!.instance as RxNode<El<T, any>>
-        Apply.alignment(host.element as ElImpl, Align.stretch, Align.stretch, undefined, undefined)
+        Apply.alignment(host.element as ElImpl, Align.stretchXY, Align.stretchXY, undefined, undefined)
         Apply.stretchingStrengthY(host.element as ElImpl, value)
       }
     }
