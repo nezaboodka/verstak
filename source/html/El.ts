@@ -28,9 +28,7 @@ export type El<T = any, M = any> = {
   kind: ElKind
   area: ElArea
   width: Range
-  widthJustMin: string
   height: Range
-  heightJustMin: string
   alignment: Align
   extraAlignment: Align
   stretchFactorX: number | undefined
@@ -198,9 +196,6 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       this._width = value
   }
 
-  get widthJustMin(): string { return this._width.min ?? "" }
-  set widthJustMin(value: string) { this.width = { min: value } }
-
   get height(): Range { return this._height }
   set height(value: Range) {
     const w = this._height
@@ -216,9 +211,6 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     if (updated)
       this._height = value
   }
-
-  get heightJustMin(): string { return this._height.min ?? "" }
-  set heightJustMin(value: string) { this.height = { min: value } }
 
   get alignment(): Align { return this._alignment }
   set alignment(value: Align) {
