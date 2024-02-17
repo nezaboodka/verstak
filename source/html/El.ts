@@ -670,6 +670,7 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     const s = el.native.style
     s.display = owner.isTable ? "contents" : "flex"
     s.flexDirection = "row"
+    s.gap = "inherit"
   },
   el => { // cursor
   },
