@@ -318,7 +318,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     strengthX: number | undefined,
     strengthY: number | undefined): void {
     const s = element.style
-    // Primary
+    // Primary alignment
     let v1 = ""; let h1 = ""; let t1 = ""
     if (primary !== Align.default) { // if not auto mode
       v1 = AlignToCss[(primary >> 3) & 0b11]
@@ -331,7 +331,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       ElImpl.applyStretchingStrengthX(element, 0, 1)
     if ((primary & Align.top) !== 0 && strengthY === undefined)
       ElImpl.applyStretchingStrengthY(element, 0, 1)
-    // Extra
+    // Extra alignment
     if (extra !== Align.default) { // if not auto mode
       s.justifyContent = AlignToCss[(extra >> 3) & 0b11]
       s.alignItems = AlignToCss[extra & 0b11]
