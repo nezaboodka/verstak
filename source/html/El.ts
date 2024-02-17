@@ -31,8 +31,8 @@ export type El<T = any, M = any> = {
   height: Range
   alignment: Align
   extraAlignment: Align
-  stretchFactorX: number | undefined
-  stretchFactorY: number | undefined
+  stretchingStrengthX: number | undefined
+  stretchingStrengthY: number | undefined
   contentWrapping: boolean
   overlayVisible: boolean | undefined
   readonly style: CSSStyleDeclaration
@@ -108,8 +108,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _height: Range
   private _alignment: Align
   private _extraAlignment: Align
-  private _stretchFactorX: number | undefined
-  private _stretchFactorY: number | undefined
+  private _stretchingStrengthX: number | undefined
+  private _stretchingStrengthY: number | undefined
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
   private _hasStylingPresets: boolean
@@ -130,8 +130,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._height = { min: "", max: "" }
     this._alignment = Align.default
     this._extraAlignment = Align.default
-    this._stretchFactorX = undefined
-    this._stretchFactorY = undefined
+    this._stretchingStrengthX = undefined
+    this._stretchingStrengthY = undefined
     this._contentWrapping = true
     this._overlayVisible = undefined
     this._hasStylingPresets = false
@@ -228,19 +228,19 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  get stretchFactorX(): number | undefined { return this._stretchFactorX }
-  set stretchFactorX(value: number | undefined) {
-    if (value !== this._stretchFactorX) {
+  get stretchingStrengthX(): number | undefined { return this._stretchingStrengthX }
+  set stretchingStrengthX(value: number | undefined) {
+    if (value !== this._stretchingStrengthX) {
       Apply.stretchFactorX(this, value ?? 0)
-      this._stretchFactorX = value
+      this._stretchingStrengthX = value
     }
   }
 
-  get stretchFactorY(): number | undefined { return this._stretchFactorY }
-  set stretchFactorY(value: number | undefined) {
-    if (value !== this._stretchFactorY) {
+  get stretchingStrengthY(): number | undefined { return this._stretchingStrengthY }
+  set stretchingStrengthY(value: number | undefined) {
+    if (value !== this._stretchingStrengthY) {
       Apply.stretchFactorY(this, value ?? 0)
-      this._stretchFactorY = value
+      this._stretchingStrengthY = value
     }
   }
 
