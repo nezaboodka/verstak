@@ -59,20 +59,20 @@ export type ElCoords = {
 }
 
 export enum Align {
-  // Horizontal .....xxx
-  left      = 0b00000100,
-  centerX   = 0b00000101,
-  right     = 0b00000110,
-  stretchX  = 0b00000111,
-  // Vertical   ..yyy...
-  top       = 0b00100000,
-  centerY   = 0b00101000,
-  bottom    = 0b00110000,
-  stretchY  = 0b00111000,
+  default       = 0b00000000,
+  // Horizontal     .....xxx
+  left          = 0b00000100,
+  centerWidth   = 0b00000101,
+  right         = 0b00000110,
+  stretchWidth  = 0b00000111,
+  // Vertical        ..yyy...
+  top            = 0b00100000,
+  centerHeight   = 0b00101000,
+  bottom         = 0b00110000,
+  stretchHeight  = 0b00111000,
   // Combined
-  centerXY  = centerX | centerY,
-  stretchXY = stretchX | stretchY,
-  default   = 0b00000000,
+  center         = centerWidth | centerHeight,
+  stretch        = stretchWidth | stretchHeight,
 }
 
 export type Range = {
@@ -543,7 +543,7 @@ export class Apply {
       const hostDriver = bNode.host.driver
       if (hostDriver.isPartition) {
         const host = bNode.host.seat!.instance as RxNode<El<T, any>>
-        Apply.alignment(host.element as ElImpl, Align.stretchXY, Align.stretchXY, undefined, undefined)
+        Apply.alignment(host.element as ElImpl, Align.stretchHeight, Align.default, undefined, undefined)
         Apply.stretchingStrengthY(host.element as ElImpl, value)
       }
     }
