@@ -339,6 +339,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
     else {
       s.justifyContent = v1
+      s.alignItems = h1
       s.textAlign = t1
     }
   }
