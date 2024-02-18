@@ -125,6 +125,15 @@ export class HtmlElementDriver<T extends HTMLElement, M = any> extends WebDriver
   setNativeElement(node: RxNode<El<T, M>>): void {
     node.element.native = document.createElement(node.driver.name) as T
   }
+
+  update(node: RxNode<El<T>>): void | Promise<void> {
+    const element = node.element
+    const result = super.update(node)
+    if (element.splitView !== undefined) {
+      // declareSplitters(node)
+    }
+    return result
+  }
 }
 
 // SvgElementDriver

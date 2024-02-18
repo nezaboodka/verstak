@@ -55,6 +55,19 @@ export function rowBreak(shiftCursorDown?: number): void {
   RxNode.declare(Drivers.partition)
 }
 
+// export function declareSplitters<T>(splitViewNode: RxNode<El<T>>): RxNode<El<HTMLElement>> {
+//   return (
+//     Group({
+//       onChange: el => {
+//         for (const child of splitViewNode.children.items()) {
+
+//         }
+//       },
+//     })
+//   )
+//   // Splitters()
+// }
+
 export function cursor(areaParams: ElArea): void {
   RxNode.declare(Drivers.cursor, {
     onChange: el => {
@@ -73,8 +86,8 @@ export function Note(content: string, formatted?: boolean,
         el.native.innerHTML = content
       else
         el.native.innerText = content
-    }},
-  )
+    },
+  })
 }
 
 // Group
@@ -106,7 +119,15 @@ export class VerstakElementDriver<T extends HTMLElement> extends HtmlElementDriv
     // Add initial line feed automatically
     if (element.kind === ElKind.section)
       rowBreak()
-    return super.update(node)
+    const result = super.update(node)
+    return result
+  }
+
+  child(ownerNode: RxNode<El<T, any>>, childDriver: RxNodeDriver<any>, childDeclaration?: RxNodeDecl<any> | undefined, childPreset?: RxNodeDecl<any> | undefined): void {
+    const el = ownerNode.element
+    if (el.splitView !== undefined && !childDriver.isPartition) {
+      rowBreak()
+    }
   }
 }
 

@@ -5,8 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNode, SimpleDelegate, BaseDriver, MergedItem } from "reactronic"
-import { equalElCoords, parseElCoords } from "./ElUtils.js"
+import { RxNode, SimpleDelegate, BaseDriver, MergedItem, MergeList } from "reactronic"
+import { clamp, equalElCoords, parseElCoords } from "./ElUtils.js"
+import { createPrioritiesForSizeChanging, relayout } from "./SplitView.js"
 
 // ElDriver
 
@@ -36,6 +37,7 @@ export type El<T = any, M = any> = {
   stretchingStrengthY: number | undefined
   contentWrapping: boolean
   overlayVisible: boolean | undefined
+  splitView: SplitView | undefined
   readonly style: CSSStyleDeclaration
   useStylingPreset(stylingPresetName: string, enabled?: boolean): void
 }
@@ -90,6 +92,11 @@ export type ElArea = undefined | string | {
   cellsOverHeight?: number  // 1 (table only)
 }
 
+export enum SplitView {
+  horizontal = 0,
+  vertical = 1,
+}
+
 // ElImpl
 
 export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
@@ -113,6 +120,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _stretchingStrengthY: number | undefined
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
+  private _splitView: SplitView | undefined
   private _hasStylingPresets: boolean
 
   constructor(node: RxNode<El<T, M>>) {
@@ -135,6 +143,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._stretchingStrengthY = undefined
     this._contentWrapping = true
     this._overlayVisible = undefined
+    this._splitView = undefined
     this._hasStylingPresets = false
   }
 
@@ -176,7 +185,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
           ElImpl.applyCoords(this, coords)
         this._coords = coords
       }
-      this._area = value ?? { }
+      this._area = value ?? {}
     }
     else
       this.rowBreak()
@@ -185,17 +194,41 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   get width(): Range { return this._width }
   set width(value: Range) {
     const w = this._width
-    let updated = false
-    if (value.min !== w.min) {
-      ElImpl.applyMinWidth(this, value.min ?? "")
-      updated = true
-    }
-    if (value.max !== w.max) {
-      ElImpl.applyMaxWidth(this, value.max ?? "")
-      updated = true
-    }
-    if (updated)
+    const node = this.node
+    const owner = node.owner as RxNode<ElImpl>
+    const ownerEl = owner.element
+    if (ownerEl.splitView === SplitView.horizontal) {
+      // if (ownerEl.layoutInfo === undefined)
+      //   ownerEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+      // ownerEl.layoutInfo.flags |= ElLayoutInfoFlags.childrenRelayoutIsNeeded
       this._width = value
+      const hostEl = node.host.element as ElImpl
+      if (hostEl.layoutInfo === undefined)
+        hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+      hostEl.layoutInfo.effectiveSizePx = clamp(hostEl.layoutInfo.effectiveSizePx, value.min ? Number.parseInt(value.min) : 0, value.max ? Number.parseInt(value.max) : Number.POSITIVE_INFINITY)
+      hostEl._width = value
+      const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
+      for (const child of owner.children.items()) {
+        if ((child.instance.element as ElImpl).native !== undefined && child.instance.driver.isPartition) {
+          sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
+        }
+      }
+      console.log(sizesPx)
+      relayout(owner, createPrioritiesForSizeChanging(node.seat!, owner.children as MergeList<RxNode<ElImpl>>), sizesPx)
+    }
+    else {
+      let updated = false
+      if (value.min !== w.min) {
+        ElImpl.applyMinWidth(this, value.min ?? "")
+        updated = true
+      }
+      if (value.max !== w.max) {
+        ElImpl.applyMaxWidth(this, value.max ?? "")
+        updated = true
+      }
+      if (updated)
+        this._width = value
+    }
   }
 
   get height(): Range { return this._height }
@@ -267,6 +300,14 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     if (value !== this._overlayVisible) {
       ElImpl.applyOverlayVisible(this, value)
       this._overlayVisible = value
+    }
+  }
+
+  get splitView(): SplitView | undefined { return this._splitView }
+  set splitView(value: SplitView | undefined) {
+    if (value !== this._splitView) {
+      ElImpl.applySplitView(this, value)
+      this._splitView = value
     }
   }
 
@@ -419,7 +460,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         break
       case Align.stretchX:
         css.alignItems = "stretch"
-        css.textAlign = "justify"        
+        css.textAlign = "justify"
         break
     }
     // Vertical
@@ -432,7 +473,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       if (hostLayout.alignerY === element) {
         if (!isEffectiveAlignerY) {
           hostCss!.marginTop = "" // remove "auto"
-          throw new Error("changing alignment leader is not implemented yet")
+          // throw new Error("changing alignment leader is not implemented yet")
           // hostLayout.alignerX = ... find new leader
         }
       }
@@ -587,6 +628,30 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
+  static applySplitView<T extends Element>(element: El<T, any>, value: SplitView | undefined): void {
+    const e = element.native
+    if (e instanceof HTMLElement) {
+      const s = e.style
+      if (value !== undefined) {
+        s.display = "flex"
+        s.position = "relative"
+        if (value === SplitView.horizontal) {
+          s.flexDirection = "row"
+          s.overflow = "scroll hidden"
+        }
+        else {
+          s.flexDirection = "column"
+          s.overflow = "hidden scroll"
+        }
+      }
+      else {
+        s.display = ""
+        s.position = ""
+        s.overflow = ""
+      }
+    }
+  }
+
   private static applyStylingPreset<T extends Element>(element: ElImpl<T, any>, secondary: boolean, styleName: string, enabled?: boolean): void {
     const native = element.native
     enabled ??= true
@@ -599,7 +664,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
 // ElLayoutInfo
 
-class ElLayoutInfo {
+export class ElLayoutInfo {
   x: number
   y: number
   runningMaxX: number
@@ -607,6 +672,8 @@ class ElLayoutInfo {
   alignerX?: ElImpl
   alignerY?: ElImpl
   flags: ElLayoutInfoFlags
+
+  effectiveSizePx: number
 
   constructor(prev: ElLayoutInfo) {
     this.x = prev.x
@@ -616,6 +683,8 @@ class ElLayoutInfo {
     this.alignerX = undefined
     this.alignerY = undefined
     this.flags = prev.flags & ~ElLayoutInfoFlags.ownCursorPosition
+
+    this.effectiveSizePx = 0
   }
 }
 
@@ -624,16 +693,17 @@ enum ElLayoutInfoFlags {
   ownCursorPosition = 1,
   usesRunningColumnCount = 2,
   usesRunningRowCount = 4,
+  childrenRelayoutIsNeeded = 8,
 }
 
 const UndefinedElCoords = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
-const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: ElLayoutInfoFlags.none }))
+export const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: ElLayoutInfoFlags.none, effectiveSizePx: 0 }))
 
 function getElCoordsAndAdjustLayoutInfo(
   isRegularElement: boolean, area: ElArea, maxX: number, maxY: number,
   prevElLayoutInfo: ElLayoutInfo, layoutInfo?: ElLayoutInfo): ElCoords {
   let result: ElCoords // this comment just prevents syntax highlighting in VS code
-  if (typeof(area) === "string") {
+  if (typeof (area) === "string") {
     // Absolute positioning
     result = parseElCoords(area, { x1: 0, y1: 0, x2: 0, y2: 0 })
     absolutizeElCoords(result, prevElLayoutInfo.x, prevElLayoutInfo.y,
@@ -783,6 +853,10 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     s.textAlign = "initial"
     s.flexShrink = "1"
     s.minWidth = "0"
+    if (owner.splitView !== undefined) {
+      s.overflow = "hidden"
+      s.flexGrow = "1"
+    }
   },
   el => { // table
     const owner = el.node.owner.element as ElImpl
@@ -793,6 +867,10 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     s.gridAutoRows = "minmax(min-content, 1fr)"
     s.gridAutoColumns = "minmax(min-content, 1fr)"
     s.textAlign = "initial"
+    if (owner.splitView !== undefined) {
+      s.overflow = "hidden"
+      s.flexGrow = "1"
+    }
   },
   el => { // note
     const owner = el.node.owner.element as ElImpl
