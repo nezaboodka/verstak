@@ -66,14 +66,14 @@ export enum Align {
   centerWidth   = 0b00000101,
   right         = 0b00000110,
   stretchWidth  = 0b00000111,
-  // Vertical        ..yyy...
-  top            = 0b00100000,
-  centerHeight   = 0b00101000,
-  bottom         = 0b00110000,
-  stretchHeight  = 0b00111000,
+  // Vertical       ..yyy...
+  top           = 0b00100000,
+  centerHeight  = 0b00101000,
+  bottom        = 0b00110000,
+  stretchHeight = 0b00111000,
   // Combined
-  centerBoth     = centerWidth | centerHeight,
-  stretchBoth    = stretchWidth | stretchHeight,
+  centerBoth    = centerWidth | centerHeight,
+  stretchBoth   = stretchWidth | stretchHeight,
 }
 
 export type Range = {
