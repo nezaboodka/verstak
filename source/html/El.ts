@@ -329,14 +329,14 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       v = (element.node.host.element as ElImpl).style
     // Primary alignment
     v && VerticalAlignToCss[(primary >> 3) & 0b11](h, v)
-    HorizontalAlignToCss[primary & 0b11](h)
+    HorizontalAlignToCss[primary & 0b11](h, v)
     if (extra === Align.default) { // if auto mode
       v && VerticalExtraAlignToCss[(primary >> 3) & 0b11](h, v)
-      HorizontalExtraAlignToCss[primary & 0b11](h)
+      HorizontalExtraAlignToCss[primary & 0b11](h, v)
     }
     else { // if auto mode
       v && VerticalExtraAlignToCss[(extra >> 3) & 0b11](h, v)
-      HorizontalExtraAlignToCss[extra & 0b11](h)
+      HorizontalExtraAlignToCss[extra & 0b11](h, v)
     }
     if ((primary & Align.stretchWidth) === Align.stretchWidth && strengthX === undefined)
       ElImpl.applyStretchingStrengthX(element, 0, 1)
@@ -683,42 +683,42 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
   // undefined // cursor
 ]
 
-const HorizontalAlignToCss: Array<(css: CSSStyleDeclaration) => void> = [
-  css => { // left
-    css.justifySelf = "start"
-    css.textAlign = "left"
+const HorizontalAlignToCss: Array<(elem: CSSStyleDeclaration, host?: CSSStyleDeclaration) => void> = [
+  (elem, host) => { // left
+    elem.justifySelf = "start"
+    elem.textAlign = "left"
   },
-  css => { // center
-    css.justifySelf = "center"
-    css.marginLeft = css.marginRight = "auto"
-    css.textAlign = "center"
+  (elem, host) => { // center
+    elem.justifySelf = "center"
+    elem.marginLeft = elem.marginRight = "auto"
+    elem.textAlign = "center"
   },
-  css => { // right
-    css.justifySelf = "end"
-    css.textAlign = "right"
+  (elem, host) => { // right
+    elem.justifySelf = "end"
+    elem.textAlign = "right"
   },
-  css => { // stretch
-    css.justifySelf = "stretch"
-    css.textAlign = "justify"
+  (elem, host) => { // stretch
+    elem.justifySelf = "stretch"
+    elem.textAlign = "justify"
   },
 ]
 
-const HorizontalExtraAlignToCss: Array<(css: CSSStyleDeclaration) => void> = [
-  css => { // left
-    css.alignItems = "start"
-    css.textAlign = "left"
+const HorizontalExtraAlignToCss: Array<(elem: CSSStyleDeclaration, host?: CSSStyleDeclaration) => void> = [
+  (elem, host) => { // left
+    elem.alignItems = "start"
+    elem.textAlign = "left"
   },
-  css => { // center
-    css.alignItems = "center"
-    css.textAlign = "center"
+  (elem, host) => { // center
+    elem.alignItems = "center"
+    elem.textAlign = "center"
   },
-  css => { // right
-    css.alignItems = "end"
-    css.textAlign = "right"
+  (elem, host) => { // right
+    elem.alignItems = "end"
+    elem.textAlign = "right"
   },
-  css => { // stretch
-    css.alignItems = "stretch"
-    css.textAlign = "justify"
+  (elem, host) => { // stretch
+    elem.alignItems = "stretch"
+    elem.textAlign = "justify"
   },
 ]
 
