@@ -63,17 +63,17 @@ export enum Align {
   default       = 0b00000000,
   // Horizontal     .....xxx
   left          = 0b00000100,
-  centerWidth   = 0b00000101,
+  centerX       = 0b00000101,
   right         = 0b00000110,
-  stretchWidth  = 0b00000111,
+  stretchX      = 0b00000111,
   // Vertical       ..yyy...
   top           = 0b00100000,
-  centerHeight  = 0b00101000,
+  centerY       = 0b00101000,
   bottom        = 0b00110000,
-  stretchHeight = 0b00111000,
+  stretchY      = 0b00111000,
   // Combined
-  centerBoth    = centerWidth | centerHeight,
-  stretchBoth   = stretchWidth | stretchHeight,
+  centerXY      = centerX | centerY,
+  stretchXY     = stretchX | stretchY,
 }
 
 export type Range = {
@@ -348,7 +348,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     // Horizontal
     let isEffectiveAlignerX = false
     if (hostLayout) {
-      const isAligner = alignIs(newPrimary, Align.centerWidth) ||
+      const isAligner = alignIs(newPrimary, Align.centerX) ||
         alignIs(newPrimary, Align.right)
       isEffectiveAlignerX = isAligner && (hostLayout.alignerX === undefined ||
         element.index <= hostLayout.alignerX.index)
@@ -373,14 +373,14 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       default:
       case Align.left:
         css.justifySelf = "start"
-        if (alignIs(oldPrimary, Align.centerWidth)) {
+        if (alignIs(oldPrimary, Align.centerX)) {
           css.marginLeft = "" // remove "auto"
           css.marginRight = "" // remove "auto"
         }
         else if ((oldPrimary & Align.right) === Align.right)
           css.marginLeft = "" // remove "auto"
         break
-      case Align.centerWidth:
+      case Align.centerX:
         css.justifySelf = "center"
         if (hostLayout)
           css.marginLeft = isEffectiveAlignerX ? "auto" : ""
@@ -390,12 +390,12 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         css.justifySelf = "end"
         if (hostLayout)
           css.marginLeft = isEffectiveAlignerX ? "auto" : ""
-        if (alignIs(oldPrimary, Align.centerWidth))
+        if (alignIs(oldPrimary, Align.centerX))
           css.marginRight = "" // remove "auto"
         break
-      case Align.stretchWidth:
+      case Align.stretchX:
         css.justifySelf = "stretch"
-        if (alignIs(oldPrimary, Align.centerWidth)) {
+        if (alignIs(oldPrimary, Align.centerX)) {
           css.marginLeft = "" // remove "auto"
           css.marginRight = "" // remove "auto"
         }
@@ -409,7 +409,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         css.alignItems = "start"
         css.textAlign = "left"
         break
-      case Align.centerWidth:
+      case Align.centerX:
         css.alignItems = "center"
         css.textAlign = "center"
         break
@@ -417,7 +417,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         css.alignItems = "end"
         css.textAlign = "right"
         break
-      case Align.stretchWidth:
+      case Align.stretchX:
         css.alignItems = "stretch"
         css.textAlign = "justify"        
         break
@@ -425,10 +425,10 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     // Vertical
     let isEffectiveAlignerY = false
     if (hostLayout) {
-      const isAligner = alignIs(newPrimary, Align.centerHeight) ||
+      const isAligner = alignIs(newPrimary, Align.centerY) ||
         alignIs(newPrimary, Align.bottom)
       isEffectiveAlignerY = isAligner && (hostLayout.alignerY === undefined ||
-        !alignIs(hostLayout.alignerY.alignment, Align.centerHeight))
+        !alignIs(hostLayout.alignerY.alignment, Align.centerY))
       if (hostLayout.alignerY === element) {
         if (!isEffectiveAlignerY) {
           hostCss!.marginTop = "" // remove "auto"
@@ -449,13 +449,13 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       case Align.top:
         css.alignSelf = "start"
         break
-      case Align.centerHeight:
+      case Align.centerY:
         css.alignSelf = "center"
         break
       case Align.bottom:
         css.alignSelf = "end"
         break
-      case Align.stretchHeight:
+      case Align.stretchY:
         css.alignSelf = "stretch"
         break
     }
@@ -464,19 +464,19 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       case Align.top:
         css.justifyContent = "start"
         break
-      case Align.centerHeight:
+      case Align.centerY:
         css.justifyContent = "center"
         break
       case Align.bottom:
         css.justifyContent = "end"
         break
-      case Align.stretchHeight:
+      case Align.stretchY:
         css.justifyContent = "stretch"
         break
     }
-    if (alignIs(newPrimary, Align.stretchWidth) && strengthX === undefined)
+    if (alignIs(newPrimary, Align.stretchX) && strengthX === undefined)
       ElImpl.applyStretchingStrengthX(element, 0, 1)
-    if (alignIs(newPrimary, Align.stretchHeight) && strengthY === undefined)
+    if (alignIs(newPrimary, Align.stretchY) && strengthY === undefined)
       ElImpl.applyStretchingStrengthY(element, 0, 1)
   }
 
