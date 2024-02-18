@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNode, SimpleDelegate, BaseDriver } from "reactronic"
+import { RxNode, SimpleDelegate, BaseDriver, MergedItem } from "reactronic"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // ElDriver
@@ -269,6 +269,12 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._hasStylingPresets = true
   }
 
+  protected *children(onlyAfter?: ElImpl): Generator<ElImpl> {
+    const after: MergedItem<RxNode<any>> | undefined = onlyAfter?.node.seat
+    for (const child of this.node.children.items(after))
+      yield child.instance.element as ElImpl
+  }
+
   private rowBreak(): void {
     const node = this.node
     const prevEl = node.seat!.prev?.instance.element as ElImpl
@@ -462,6 +468,8 @@ class ElLayoutInfo {
   y: number
   runningMaxX: number
   runningMaxY: number
+  alignerX?: ElImpl
+  alignerY?: ElImpl
   flags: ElLayoutInfoFlags
 
   constructor(prev: ElLayoutInfo) {
@@ -469,6 +477,8 @@ class ElLayoutInfo {
     this.y = prev.y
     this.runningMaxX = prev.runningMaxX
     this.runningMaxY = prev.runningMaxY
+    this.alignerX = undefined
+    this.alignerY = undefined
     this.flags = prev.flags & ~ElLayoutInfoFlags.ownCursorPosition
   }
 }
