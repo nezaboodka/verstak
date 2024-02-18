@@ -21,6 +21,7 @@ export class ElDriver<T extends Element, M = unknown> extends BaseDriver<El<T, M
 export type El<T = any, M = any> = {
   // System-managed properties
   readonly node: RxNode<El<T, M>>
+  readonly index: number
   native: T
 
   // User-manageable properties
@@ -71,8 +72,8 @@ export enum Align {
   bottom         = 0b00110000,
   stretchHeight  = 0b00111000,
   // Combined
-  center         = centerWidth | centerHeight,
-  stretch        = stretchWidth | stretchHeight,
+  centerBoth     = centerWidth | centerHeight,
+  stretchBoth    = stretchWidth | stretchHeight,
 }
 
 export type Range = {
@@ -142,6 +143,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._hasStylingPresets = false // reset
   }
 
+  get index(): number { return this.node.seat!.index }
   get isSection(): boolean { return this.kind === ElKind.section }
   get isTable(): boolean { return this.kind === ElKind.table }
   get isAuxiliary(): boolean { return this.kind > ElKind.note } // Part, Group, Cursor
@@ -214,16 +216,22 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
   get alignment(): Align { return this._alignment }
   set alignment(value: Align) {
-    if (value !== this._alignment) {
-      ElImpl.applyAlignment(this, value, this._extraAlignment, this._stretchingStrengthX, this._stretchingStrengthY)
+    const existing = this._alignment
+    if (value !== existing) {
+      ElImpl.applyAlignment(this,
+        existing, value, this._extraAlignment, this._extraAlignment,
+        this._stretchingStrengthX, this._stretchingStrengthY)
       this._alignment = value
     }
   }
 
   get extraAlignment(): Align { return this._extraAlignment }
   set extraAlignment(value: Align) {
-    if (value !== this._extraAlignment) {
-      ElImpl.applyAlignment(this, this._alignment, value, this._stretchingStrengthX, this._stretchingStrengthY)
+    const existing = this._extraAlignment
+    if (value !== existing) {
+      ElImpl.applyAlignment(this,
+        this._alignment, this._alignment, existing, value,
+        this._stretchingStrengthX, this._stretchingStrengthY)
       this._extraAlignment = value
     }
   }
@@ -320,27 +328,134 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   private static applyAlignment<T extends Element>(element: ElImpl<T, any>,
-    primary: Align, extra: Align,
+    oldPrimary: Align, newPrimary: Align,
+    oldExtra: Align, newExtra: Align,
     strengthX: number | undefined,
     strengthY: number | undefined): void {
-    const h: CSSStyleDeclaration = element.style
-    let v: CSSStyleDeclaration | undefined = undefined
-    if (element.node.host.driver.isPartition)
-      v = (element.node.host.element as ElImpl).style
-    // Primary alignment
-    v && VerticalAlignToCss[(primary >> 3) & 0b11](h, v)
-    HorizontalAlignToCss[primary & 0b11](h, v)
-    if (extra === Align.default) { // if auto mode
-      v && VerticalExtraAlignToCss[(primary >> 3) & 0b11](h, v)
-      HorizontalExtraAlignToCss[primary & 0b11](h, v)
+    // Prepare
+    const css: CSSStyleDeclaration = element.style
+    let hostLayout: ElLayoutInfo | undefined = undefined
+    let hostCss: CSSStyleDeclaration | undefined = undefined
+    if (element.node.host.driver.isPartition) {
+      const hostEl = element.node.host.element as ElImpl
+      hostCss = hostEl.style
+      hostLayout = hostEl.layoutInfo
+      if (hostLayout === undefined)
+        hostLayout = hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
     }
-    else { // if auto mode
-      v && VerticalExtraAlignToCss[(extra >> 3) & 0b11](h, v)
-      HorizontalExtraAlignToCss[extra & 0b11](h, v)
+    // Horizontal
+    let isEffectiveAlignerX = false
+    if (hostLayout) {
+      const isAligner = alignIs(newPrimary, Align.centerWidth) ||
+        alignIs(newPrimary, Align.right)
+      isEffectiveAlignerX = isAligner && (hostLayout.alignerX === undefined ||
+        element.index <= hostLayout.alignerX.index)
+      if (hostLayout.alignerX === element) {
+        if (!isEffectiveAlignerX) {
+          css.marginLeft = "" // remove "auto"
+        }
+        throw new Error("changing alignment leader is not implemented yet")
+        // hostLayout.alignerX = ... find new leader
+      }
+      else {
+        if (isEffectiveAlignerX) {
+          const existingAlignerCss = hostLayout.alignerX?.style
+          if (existingAlignerCss)
+            existingAlignerCss.marginLeft = "" // remove "auto"
+          // cleanup old leading element
+          hostLayout.alignerX = element
+        }
+      }
     }
-    if ((primary & Align.stretchWidth) === Align.stretchWidth && strengthX === undefined)
+    switch (newPrimary & 0b00000111) {
+      default:
+      case Align.left:
+        css.justifySelf = "start"
+        css.textAlign = "left"
+        if (alignIs(oldPrimary, Align.centerWidth)) {
+          css.marginLeft = "" // remove "auto"
+          css.marginRight = "" // remove "auto"
+        }
+        else if ((oldPrimary & Align.right) === Align.right)
+          css.marginLeft = "" // remove "auto"
+        break
+      case Align.centerWidth:
+        css.justifySelf = "center"
+        if (hostLayout)
+          css.marginLeft = isEffectiveAlignerX ? "auto" : ""
+        css.marginRight = "auto"
+        css.textAlign = "center"
+        break
+      case Align.right:
+        css.justifySelf = "end"
+        css.textAlign = "right"
+        if (hostLayout)
+          css.marginLeft = isEffectiveAlignerX ? "auto" : ""
+        if (alignIs(oldPrimary, Align.centerWidth))
+          css.marginRight = "" // remove "auto"
+        break
+      case Align.stretchWidth:
+        css.justifySelf = "stretch"
+        css.textAlign = "justify"
+        if (alignIs(oldPrimary, Align.centerWidth)) {
+          css.marginLeft = "" // remove "auto"
+          css.marginRight = "" // remove "auto"
+        }
+        else if (alignIs(oldPrimary, Align.right))
+          css.marginLeft = "" // remove "auto"
+        break
+    }
+    // Vertical
+    let isEffectiveAlignerY = false
+    if (hostLayout) {
+      const isAligner = alignIs(newPrimary, Align.centerHeight) ||
+        alignIs(newPrimary, Align.bottom)
+      isEffectiveAlignerY = isAligner && (hostLayout.alignerY === undefined ||
+        !alignIs(hostLayout.alignerY.alignment, Align.centerHeight))
+      if (hostLayout.alignerY === element) {
+        if (!isEffectiveAlignerY) {
+          hostCss!.marginTop = "" // remove "auto"
+        }
+        throw new Error("changing alignment leader is not implemented yet")
+        // hostLayout.alignerX = ... find new leader
+      }
+      else {
+        if (isEffectiveAlignerY) {
+          hostCss!.marginTop = "auto"
+          // cleanup old leading element
+          hostLayout.alignerY = element
+        }
+      }
+    }
+    switch (newPrimary & 0b00111000) {
+      default:
+      case Align.top:
+        css.alignSelf = "start"
+        break
+      case Align.centerHeight:
+        css.alignSelf = "center"
+        break
+      case Align.bottom:
+        css.alignSelf = "end"
+        break
+      case Align.stretchHeight:
+        css.alignSelf = "stretch"
+        break
+    }
+    // // Primary alignment
+    // hostCss && VerticalAlignToCss[(primary >> 3) & 0b11](css, hostCss)
+    // HorizontalAlignToCss[primary & 0b11](css, hostCss)
+    // if (extra === Align.default) { // if auto mode
+    //   hostCss && VerticalExtraAlignToCss[(primary >> 3) & 0b11](css, hostCss)
+    //   HorizontalExtraAlignToCss[primary & 0b11](css, hostCss)
+    // }
+    // else { // if auto mode
+    //   hostCss && VerticalExtraAlignToCss[(extra >> 3) & 0b11](css, hostCss)
+    //   HorizontalExtraAlignToCss[extra & 0b11](css, hostCss)
+    // }
+    if (alignIs(newPrimary, Align.stretchWidth) && strengthX === undefined)
       ElImpl.applyStretchingStrengthX(element, 0, 1)
-    if ((primary & Align.stretchHeight) === Align.stretchHeight && strengthY === undefined)
+    if (alignIs(newPrimary, Align.stretchHeight) && strengthY === undefined)
       ElImpl.applyStretchingStrengthY(element, 0, 1)
   }
 
@@ -723,35 +838,39 @@ const HorizontalExtraAlignToCss: Array<(elem: CSSStyleDeclaration, host?: CSSSty
 ]
 
 const VerticalAlignToCss: Array<(elem: CSSStyleDeclaration, host: CSSStyleDeclaration) => void> = [
-  (elem, host) => { // left
+  (elem, host) => { // top
     elem.alignSelf = "start"
     host.marginTop = host.marginBottom = ""
   },
-  (elem, host) => { // center
+  (elem, host) => { // centerHeight
     elem.alignSelf = "center"
     host.marginTop = host.marginBottom = "auto"
   },
-  (elem, host) => { // right
+  (elem, host) => { // bottom
     elem.alignSelf = "end"
     host.marginTop = host.marginBottom = ""
   },
-  (elem, host) => { // stretch
+  (elem, host) => { // stretchHeight
     elem.alignSelf = "stretch"
     host.marginTop = host.marginBottom = ""
   },
 ]
 
 const VerticalExtraAlignToCss: Array<(elem: CSSStyleDeclaration, host: CSSStyleDeclaration) => void> = [
-  (elem, host) => { // left
+  (elem, host) => { // top
     elem.justifyContent = "start"
   },
-  (elem, host) => { // center
+  (elem, host) => { // centerHeight
     elem.justifyContent = "center"
   },
-  (elem, host) => { // right
+  (elem, host) => { // bottom
     elem.justifyContent = "end"
   },
-  (elem, host) => { // stretch
+  (elem, host) => { // stretchHeight
     elem.justifyContent = "stretch"
   },
 ]
+
+function alignIs(align: Align, like: Align): boolean {
+  return (align & like) == like
+}
