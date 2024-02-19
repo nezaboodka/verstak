@@ -7,7 +7,7 @@
 
 import { RxNodeDecl, RxNodeDriver, RxNode, Delegate, Mode } from "reactronic"
 import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver, ElImpl, SplitView } from "./El.js"
-import { HtmlElementDriver } from "./HtmlDriver.js"
+import { HtmlDriver } from "./HtmlDriver.js"
 import { relayoutUsingSplitter } from "./SplitViewMath.js"
 
 // Verstak is based on two fundamental layout structures
@@ -161,16 +161,12 @@ export function SyntheticElement<M = unknown>(
   return RxNode.declare(Drivers.synthetic, declaration, preset)
 }
 
-// VerstakElementDriver
+// SectionDriver
 
-export class VerstakElementDriver<T extends HTMLElement> extends HtmlElementDriver<T> {
+export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
   update(node: RxNode<El<T>>): void | Promise<void> {
-    const element = node.element
-    // Add initial line feed automatically
-    if (element.kind === ElKind.section)
-      rowBreak()
-    const result = super.update(node)
-    return result
+    rowBreak()
+    return super.update(node)
   }
 
   child(ownerNode: RxNode<El<T, any>>, childDriver: RxNodeDriver<any>, childDeclaration?: RxNodeDecl<any> | undefined, childPreset?: RxNodeDecl<any> | undefined): void {
@@ -192,22 +188,22 @@ export class VerstakElementDriver<T extends HTMLElement> extends HtmlElementDriv
 
 const Drivers = {
   // display: flex, flex-direction: column
-  section: new VerstakElementDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.section),
+  section: new SectionDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.section),
 
   // display: grid
-  table: new VerstakElementDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.table),
+  table: new HtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.table),
 
   // display: block
-  note: new VerstakElementDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.note),
+  note: new HtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.note),
 
   // display: contents
-  group: new VerstakElementDriver<HTMLElement>(Constants.group, false, el => el.kind = ElKind.group),
+  group: new HtmlDriver<HTMLElement>(Constants.group, false, el => el.kind = ElKind.group),
 
   // display: flex/row or contents
-  partition: new VerstakElementDriver<HTMLElement>(Constants.partition, true, el => el.kind = ElKind.part),
+  partition: new HtmlDriver<HTMLElement>(Constants.partition, true, el => el.kind = ElKind.part),
 
   // position: absolute
-  splitter: new HtmlElementDriver<HTMLElement>(Constants.splitter, false, el => el.kind = ElKind.splitter),
+  splitter: new HtmlDriver<HTMLElement>(Constants.splitter, false, el => el.kind = ElKind.splitter),
 
   // cursor control element
   cursor: new CursorCommandDriver(),
