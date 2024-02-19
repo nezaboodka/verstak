@@ -7,7 +7,7 @@
 
 import { RxNode, SimpleDelegate, BaseDriver, MergedItem, MergeList } from "reactronic"
 import { clamp, equalElCoords, parseElCoords } from "./ElUtils.js"
-import { createPrioritiesForSizeChanging, relayout } from "./SplitView.js"
+import { createPrioritiesForSizeChanging, relayout } from "./SplitViewMath.js"
 
 // ElDriver
 

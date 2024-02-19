@@ -8,7 +8,7 @@
 import { RxNodeDecl, RxNodeDriver, RxNode, Delegate, Mode } from "reactronic"
 import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver, ElImpl, SplitView } from "./El.js"
 import { HtmlElementDriver } from "./HtmlDriver.js"
-import { relayoutUsingSplitter } from "./SplitView.js"
+import { relayoutUsingSplitter } from "./SplitViewMath.js"
 
 // Verstak is based on two fundamental layout structures
 // called section and table; and on two special non-visual
