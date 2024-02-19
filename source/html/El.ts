@@ -275,6 +275,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     if (value !== existing) {
       ElImpl.applyStretchingStrengthX(this, existing ?? 0, value ?? 0)
       this._stretchingStrengthX = value
+      if (this.node.host.driver.isPartition)
+        (this.node.host.element as ElImpl)._stretchingStrengthX = value
     }
   }
 
@@ -284,6 +286,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     if (value !== existing) {
       ElImpl.applyStretchingStrengthY(this, existing ?? 0, value ?? 0)
       this._stretchingStrengthY = value
+      if (this.node.host.driver.isPartition)
+        (this.node.host.element as ElImpl)._stretchingStrengthY = value
     }
   }
 
