@@ -125,11 +125,6 @@ export class HtmlDriver<T extends HTMLElement, M = any> extends WebDriver<T, M> 
   setNativeElement(node: RxNode<El<T, M>>): void {
     node.element.native = document.createElement(node.driver.name) as T
   }
-
-  update(node: RxNode<El<T>>): void | Promise<void> {
-    const result = super.update(node)
-    return result
-  }
 }
 
 // SvgDriver
