@@ -9,14 +9,6 @@ import { RxNode, SimpleDelegate, BaseDriver, MergedItem, MergeList } from "react
 import { clamp, equalElCoords, parseElCoords } from "./ElUtils.js"
 import { createPrioritiesForSizeChanging, relayout } from "./SplitViewMath.js"
 
-// ElDriver
-
-export class ElDriver<T extends Element, M = unknown> extends BaseDriver<El<T, M>> {
-  allocate(node: RxNode<El<T, M>>): El<T, M> {
-    return new ElImpl<T, M>(node)
-  }
-}
-
 // El
 
 export type El<T = any, M = any> = {
@@ -41,8 +33,6 @@ export type El<T = any, M = any> = {
   readonly style: CSSStyleDeclaration
   useStylingPreset(stylingPresetName: string, enabled?: boolean): void
 }
-
-// Other
 
 export enum ElKind {
   section = 0,
@@ -96,6 +86,14 @@ export type ElArea = undefined | string | {
 export enum SplitView {
   horizontal = 0,
   vertical = 1,
+}
+
+// ElDriver
+
+export class ElDriver<T extends Element, M = unknown> extends BaseDriver<El<T, M>> {
+  allocate(node: RxNode<El<T, M>>): El<T, M> {
+    return new ElImpl<T, M>(node)
+  }
 }
 
 // ElImpl
