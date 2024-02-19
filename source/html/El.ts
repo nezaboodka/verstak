@@ -236,8 +236,6 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     if (value !== existing) {
       ElImpl.applyStretchingStrengthX(this, existing ?? 0, value ?? 0)
       this._stretchingStrengthX = value
-      if (this.node.host.driver.isPartition)
-        (this.node.host.element as ElImpl)._stretchingStrengthX = value
     }
   }
 
@@ -245,10 +243,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   set stretchingStrengthY(value: number | undefined) {
     const existing = this._stretchingStrengthY
     if (value !== existing) {
-      ElImpl.applyStretchingStrengthY(this, existing ?? 0, value ?? 0)
+      ElImpl.applyStretchingStrengthY(this, existing, value)
       this._stretchingStrengthY = value
-      if (this.node.host.driver.isPartition)
-        (this.node.host.element as ElImpl)._stretchingStrengthY = value
     }
   }
 
@@ -535,9 +531,35 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   private static applyStretchingStrengthX<T extends Element>(
-    element: ElImpl<T, any>, existing: number, value: number): void {
-    // Apply strength for element itself
+    element: ElImpl<T, any>, existing: number | undefined,
+    value: number | undefined): void {
+    // Maintain strength for hosting partition (if any)
     const s = element.style
+    const host = element.node.host
+    if (host.driver.isPartition) {
+      const hostEl = host.element as ElImpl
+      hostEl._stretchingStrengthX = value
+      let delta = 0
+      existing ??= 0
+      value ??= 0
+      if (existing === 0) {
+        if (value !== 0)
+          delta = 1
+      }
+      else if (value === 0) {
+        if (existing !== 0)
+          delta = -1
+      }
+      if (delta !== 0) {
+        const count = hostEl._stretchingStrengthX ?? 0 + delta
+        if (count === 1)
+          s.alignSelf = "stretch"
+        else if (count === 0)
+          s.alignSelf = ""
+      }
+    }
+    // Apply strength for element itself
+    value ??= 0
     if (value > 0) {
       s.flexGrow = `${value}`
       s.flexBasis = "0"
@@ -546,34 +568,19 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       s.flexGrow = ""
       s.flexBasis = ""
     }
-    // Maintain strength for hosting partition (if any)
-    const host = element.node.host
-    if (host.driver.isPartition) {
-      let delta = 0
-      if (existing === 0) {
-        if (value !== 0)
-          delta = 1
-      }
-      else if (value === 0) {
-        if (existing !== 0)
-          delta = -1
-      }
-      if (delta !== 0) {
-        const hostEl = host.element as ElImpl
-        const count = hostEl._stretchingStrengthX ?? 0 + delta
-        if (count === 1)
-          s.alignSelf = "stretch"
-        else if (count === 0)
-          s.alignSelf = ""
-      }
-    }
   }
 
-  private static applyStretchingStrengthY<T extends Element>(element: ElImpl<T, any>, existing: number, value: number): void {
+  private static applyStretchingStrengthY<T extends Element>(
+    element: ElImpl<T, any>, existing: number | undefined,
+    value: number | undefined): void {
     // Maintain strength for hosting partition (if any)
     const host = element.node.host
     if (host.driver.isPartition) {
+      const hostElement = host.element as ElImpl
+      hostElement._stretchingStrengthY = value
       let delta = 0
+      existing ??= 0
+      value ??= 0
       if (existing === 0) {
         if (value !== 0)
           delta = 1
@@ -583,7 +590,6 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
           delta = -1
       }
       if (delta !== 0) {
-        const hostElement = host.element as ElImpl
         const count = hostElement._stretchingStrengthY ?? 0 + delta
         const s = hostElement.style
         if (count === 1)
