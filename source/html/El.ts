@@ -193,78 +193,18 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   get width(): Range { return this._width }
   set width(value: Range) {
     const w = this._width
-    const node = this.node
-    const owner = node.owner as RxNode<ElImpl>
-    const ownerEl = owner.element
-    if (ownerEl.splitView === SplitView.horizontal) {
-      // if (ownerEl.layoutInfo === undefined)
-      //   ownerEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-      // ownerEl.layoutInfo.flags |= ElLayoutInfoFlags.childrenRelayoutIsNeeded
+    if (value.min !== w.min || value.max !== w.max) {
+      ElImpl.applyWidth(this, value)
       this._width = value
-      const hostEl = node.host.element as ElImpl
-      if (hostEl.layoutInfo === undefined)
-        hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-      hostEl.layoutInfo.effectiveSizePx = clamp(hostEl.layoutInfo.effectiveSizePx, value.min ? Number.parseInt(value.min) : 0, value.max ? Number.parseInt(value.max) : Number.POSITIVE_INFINITY)
-      hostEl._width = value
-      const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
-      for (const child of owner.children.items()) {
-        if ((child.instance.element as ElImpl).native !== undefined && child.instance.driver.isPartition) {
-          sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
-        }
-      }
-      relayout(owner, createPrioritiesForSizeChanging(node.seat!, owner.children as MergeList<RxNode<ElImpl>>), sizesPx)
-    }
-    else {
-      let updated = false
-      if (value.min !== w.min) {
-        ElImpl.applyMinWidth(this, value.min ?? "")
-        updated = true
-      }
-      if (value.max !== w.max) {
-        ElImpl.applyMaxWidth(this, value.max ?? "")
-        updated = true
-      }
-      if (updated)
-        this._width = value
     }
   }
 
   get height(): Range { return this._height }
   set height(value: Range) {
     const h = this._height
-    const node = this.node
-    const owner = node.owner as RxNode<ElImpl>
-    const ownerEl = owner.element
-    if (ownerEl.splitView === SplitView.vertical) {
-      // if (ownerEl.layoutInfo === undefined)
-      //   ownerEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-      // ownerEl.layoutInfo.flags |= ElLayoutInfoFlags.childrenRelayoutIsNeeded
+    if (value.min !== h.min || value.max !== h.max) {
+      ElImpl.applyHeight(this, value)
       this._height = value
-      const hostEl = node.host.element as ElImpl
-      if (hostEl.layoutInfo === undefined)
-        hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-      hostEl.layoutInfo.effectiveSizePx = clamp(hostEl.layoutInfo.effectiveSizePx, value.min ? Number.parseInt(value.min) : 0, value.max ? Number.parseInt(value.max) : Number.POSITIVE_INFINITY)
-      hostEl._height = value
-      const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
-      for (const child of owner.children.items()) {
-        if ((child.instance.element as ElImpl).native !== undefined && child.instance.driver.isPartition) {
-          sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
-        }
-      }
-      relayout(owner, createPrioritiesForSizeChanging(node.seat!, owner.children as MergeList<RxNode<ElImpl>>), sizesPx)
-    }
-    else {
-      let updated = false
-      if (value.min !== h.min) {
-        ElImpl.applyMinHeight(this, value.min ?? "")
-        updated = true
-      }
-      if (value.max !== h.max) {
-        ElImpl.applyMaxHeight(this, value.max ?? "")
-        updated = true
-      }
-      if (updated)
-        this._height = value
     }
   }
 
@@ -381,20 +321,64 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       s.gridArea = ""
   }
 
-  private static applyMinWidth<T extends Element>(element: ElImpl<T, any>, value: string): void {
-    element.style.minWidth = `${value}`
+  private static applyWidth<T extends Element>(element: ElImpl<T, any>, value: Range): void {
+    const s = element.style
+    const node = element.node
+    const owner = node.owner as RxNode<ElImpl>
+    const ownerEl = owner.element
+    if (ownerEl.splitView === SplitView.horizontal) {
+      s.minWidth = "" // clear
+      s.maxWidth = "" // clear
+      // if (ownerEl.layoutInfo === undefined)
+      //   ownerEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+      // ownerEl.layoutInfo.flags |= ElLayoutInfoFlags.childrenRelayoutIsNeeded
+      const hostEl = node.host.element as ElImpl
+      if (hostEl.layoutInfo === undefined)
+        hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+      hostEl.layoutInfo.effectiveSizePx = clamp(hostEl.layoutInfo.effectiveSizePx, value.min ? Number.parseInt(value.min) : 0, value.max ? Number.parseInt(value.max) : Number.POSITIVE_INFINITY)
+      hostEl._width = value
+      const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
+      for (const child of owner.children.items()) {
+        if ((child.instance.element as ElImpl).native !== undefined && child.instance.driver.isPartition) {
+          sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
+        }
+      }
+      relayout(owner, createPrioritiesForSizeChanging(node.seat!, owner.children as MergeList<RxNode<ElImpl>>), sizesPx)
+    }
+    else {
+      s.minWidth = value.min ?? ""
+      s.maxWidth = value.max ?? ""
+    }
   }
 
-  private static applyMaxWidth<T extends Element>(element: ElImpl<T, any>, value: string): void {
-    element.style.maxWidth = `${value}`
-  }
-
-  private static applyMinHeight<T extends Element>(element: ElImpl<T, any>, value: string): void {
-    element.style.minHeight = `${value}`
-  }
-
-  private static applyMaxHeight<T extends Element>(element: ElImpl<T, any>, value: string): void {
-    element.style.maxHeight = `${value}`
+  private static applyHeight<T extends Element>(element: ElImpl<T, any>, value: Range): void {
+    const s = element.style
+    const node = element.node
+    const owner = node.owner as RxNode<ElImpl>
+    const ownerEl = owner.element
+    if (ownerEl.splitView === SplitView.vertical) {
+      s.minHeight = "" // clear
+      s.maxHeight = "" // clear
+      // if (ownerEl.layoutInfo === undefined)
+      //   ownerEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+      // ownerEl.layoutInfo.flags |= ElLayoutInfoFlags.childrenRelayoutIsNeeded
+      const hostEl = node.host.element as ElImpl
+      if (hostEl.layoutInfo === undefined)
+        hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+      hostEl.layoutInfo.effectiveSizePx = clamp(hostEl.layoutInfo.effectiveSizePx, value.min ? Number.parseInt(value.min) : 0, value.max ? Number.parseInt(value.max) : Number.POSITIVE_INFINITY)
+      hostEl._height = value
+      const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
+      for (const child of owner.children.items()) {
+        if ((child.instance.element as ElImpl).native !== undefined && child.instance.driver.isPartition) {
+          sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
+        }
+      }
+      relayout(owner, createPrioritiesForSizeChanging(node.seat!, owner.children as MergeList<RxNode<ElImpl>>), sizesPx)
+    }
+    else {
+      s.minHeight = value.min ?? ""
+      s.maxHeight = value.max ?? ""
+    }
   }
 
   private static applyAlignment<T extends Element>(element: ElImpl<T, any>,
