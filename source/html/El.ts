@@ -50,8 +50,9 @@ export enum ElKind {
   note = 2,
   group = 3,
   part = 4,
-  cursor = 5,
-  native = 6,
+  splitter = 5,
+  cursor = 6,
+  native = 7,
 }
 
 export type ElCoords = {
@@ -326,6 +327,10 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     const after: MergedItem<RxNode<any>> | undefined = onlyAfter?.node.seat
     for (const child of this.node.children.items(after))
       yield child.instance.element as ElImpl
+  }
+
+  static *childrenOf(node: RxNode<El>, onlyAfter?: El): Generator<ElImpl> {
+    return (node.element as ElImpl).children(onlyAfter as ElImpl)
   }
 
   private rowBreak(): void {
@@ -841,8 +846,9 @@ export const Constants = {
   // kindAttrName: "вид",
   element: "el",
   partition: "part",
+  splitter: "splitter",
   group: "group",
-  layouts: ["section", "table", "note", "group", "" /* partition */, "" /* cursor */],
+  layouts: ["section", "table", "note", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
   keyAttrName: "key",
   kindAttrName: "kind",
 }
@@ -893,6 +899,22 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     s.display = owner.isTable ? "contents" : "flex"
     s.flexDirection = "row"
     s.gap = "inherit"
+  },
+  el => { // splitter
+    const s = el.native.style
+    const owner = el.node.owner.element as ElImpl
+    s.position = "absolute"
+    s.backgroundColor = "#00BB00"
+    if (owner.splitView === SplitView.horizontal) {
+      s.width = "4px"
+      s.top = s.bottom = "0"
+      s.cursor = "col-resize"
+    }
+    else {
+      s.height = "4px"
+      s.left = s.right = "0"
+      s.cursor = "row-resize"
+    }
   },
   el => { // cursor
   },

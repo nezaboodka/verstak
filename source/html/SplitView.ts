@@ -21,7 +21,7 @@ export function getFractionCount(isHorizontal: boolean, children: Array<RxNode<E
   return result
 }
 
-export function* indexes(vector: number, index: number): Generator<number> {
+export function *indexes(vector: number, index: number): Generator<number> {
   let i = 0
   if (index < 0) { // go left (after)
     i = -index
@@ -45,9 +45,38 @@ export function* indexes(vector: number, index: number): Generator<number> {
   }
 }
 
-export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>): void {
-  const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
+export function calculatePrioritiesForSplitter(index: number, size: number): ReadonlyArray<number> {
+  const result = []
+  let i = index - 1
+  let j = index
+  while (i >= 0 || j < size) {
+    if (i >= 0 && j < size) {
+      result.push((1 << i--) | (1 << j++))
+    }
+    else if (i >= 0) {
+      result.push(1 << i--)
+    }
+    else {
+      result.push(1 << j++)
+    }
+  }
+  return result
+}
+
+export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: number, index: number, initialSizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, priorities?: ReadonlyArray<number>): void {
+  if (priorities === undefined) {
+    priorities = calculatePrioritiesForSplitter(index + 1, initialSizesPx.length)
+  }
   const native = splitViewNode.element.native as HTMLElement
+  const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
+  const containerSizePx = isHorizontal ? native.clientWidth : native.clientHeight
+  resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, index + 1, priorities, initialSizesPx, true)
+  layout(splitViewNode)
+}
+
+export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>): void {
+  const native = splitViewNode.element.native as HTMLElement
+  const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
   const containerSizePx = isHorizontal ? native.clientWidth : native.clientHeight
   const deltaPx = containerSizePx - sizesPx.reduce((p, c) => p + c.sizePx, 0)
   console.log(`delta = ${deltaPx} px, container = ${containerSizePx} px`)
@@ -109,7 +138,7 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
               const minSizePx = size.min ? Number.parseInt(size.min) : 0
               const maxSizePx = size.max ? Number.parseInt(size.max) : Number.POSITIVE_INFINITY
               const sizePx = clamp(flooredNewSizePx, minSizePx, maxSizePx)
-              console.log(`[${i}]: min = ${minSizePx}, max = ${maxSizePx}, growth = ${growth}, flooredNewSizePx = ${flooredNewSizePx}, size = ${sizePx} px`)
+              // console.log(`[${i}]: min = ${minSizePx}, max = ${maxSizePx}, growth = ${growth}, flooredNewSizePx = ${flooredNewSizePx}, size = ${sizePx} px`)
               beforeDeltaPx -= sizePx - initialSizePx
               sizesPx[i].sizePx = sizePx
               if (sizesPx[i].sizePx > minSizePx && sizesPx[i].sizePx < maxSizePx) {

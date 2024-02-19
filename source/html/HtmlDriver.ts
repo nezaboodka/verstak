@@ -127,11 +127,7 @@ export class HtmlElementDriver<T extends HTMLElement, M = any> extends WebDriver
   }
 
   update(node: RxNode<El<T>>): void | Promise<void> {
-    const element = node.element
     const result = super.update(node)
-    if (element.splitView !== undefined) {
-      // declareSplitters(node)
-    }
     return result
   }
 }

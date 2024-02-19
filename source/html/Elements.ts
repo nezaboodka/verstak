@@ -6,8 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { RxNodeDecl, RxNodeDriver, RxNode, Delegate, Mode } from "reactronic"
-import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver } from "./El.js"
+import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver, ElImpl, SplitView } from "./El.js"
 import { HtmlElementDriver } from "./HtmlDriver.js"
+import { relayoutUsingSplitter } from "./SplitView.js"
 
 // Verstak is based on two fundamental layout structures
 // called section and table; and on two special non-visual
@@ -51,22 +52,71 @@ export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: 
   builder?.()
 }
 
+// Splitter
+
+export function Splitter<M = unknown, R = void>(
+  declaration?: RxNodeDecl<El<HTMLElement, M>>,
+  preset?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
+  return RxNode.declare(Drivers.splitter, declaration, preset)
+}
+
 export function rowBreak(shiftCursorDown?: number): void {
   RxNode.declare(Drivers.partition)
 }
 
-// export function declareSplitters<T>(splitViewNode: RxNode<El<T>>): RxNode<El<HTMLElement>> {
-//   return (
-//     Group({
-//       onChange: el => {
-//         for (const child of splitViewNode.children.items()) {
+export function declareSplitter<T>(index: number, splitViewNode: RxNode<El<T>>): RxNode<El<HTMLElement>> {
+  const key = `splitter-${index}`
+  return (
+    Splitter({
+      key,
+      mode: Mode.independentUpdate,
+      onChange: b => {
+        const e = b.native
+        const model = b.model
+        const dataForSensor = e.dataForSensor
+        dataForSensor.draggable = key
+        dataForSensor.drag = key
+        Handling(() => {
+          const pointer = e.sensors.pointer
+          if (pointer.dragSource === key) {
+            if (pointer.dragStarted) {
+              if (pointer.draggingOver) {
+                // pointer.dropAllowed = true
+                pointer.dropAllowed = true
+                const initialSizesPx = pointer.getData() as Array<{ node: RxNode<ElImpl>, sizePx: number }>
+                const deltaPx = Math.floor(splitViewNode.element.splitView === SplitView.horizontal
+                  ? pointer.positionX - pointer.startX : pointer.positionY - pointer.startY)
 
-//         }
-//       },
-//     })
-//   )
-//   // Splitters()
-// }
+                const clonedSizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
+                for (const item of initialSizesPx) {
+                  clonedSizesPx.push({ node: item.node, sizePx: item.sizePx })
+                }
+
+                relayoutUsingSplitter(splitViewNode as any as RxNode<ElImpl>, deltaPx, index, clonedSizesPx)
+                if (pointer.dropped) {
+                  model?.droppedAction?.(pointer)
+                }
+              }
+              else { // drag started
+                e.setAttribute("rx-dragging", "true")
+                const initialSizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
+                for (const child of splitViewNode.children.items()) {
+                  if (child.instance.driver.isPartition)
+                    initialSizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
+                }
+                pointer.setData(initialSizesPx)
+              }
+              if (pointer.dragFinished) {
+                model?.dragFinishedAction?.(pointer)
+                e.setAttribute("rx-dragging", "false")
+              }
+            }
+          }
+        })
+      },
+    })
+  )
+}
 
 export function cursor(areaParams: ElArea): void {
   RxNode.declare(Drivers.cursor, {
@@ -125,8 +175,17 @@ export class VerstakElementDriver<T extends HTMLElement> extends HtmlElementDriv
 
   child(ownerNode: RxNode<El<T, any>>, childDriver: RxNodeDriver<any>, childDeclaration?: RxNodeDecl<any> | undefined, childPreset?: RxNodeDecl<any> | undefined): void {
     const el = ownerNode.element
-    if (el.splitView !== undefined && !childDriver.isPartition) {
+    if (el.splitView !== undefined && !childDriver.isPartition && childDriver !== Drivers.splitter) {
       rowBreak()
+
+      let partCount = 0
+      for (const child of ownerNode.children.items()) {
+        if (child.instance.driver.isPartition)
+          partCount++
+      }
+
+      if (partCount > 1)
+        declareSplitter(partCount - 2, ownerNode)
     }
   }
 }
@@ -146,6 +205,9 @@ const Drivers = {
 
   // display: flex/row or contents
   partition: new VerstakElementDriver<HTMLElement>(Constants.partition, true, el => el.kind = ElKind.part),
+
+  // position: absolute
+  splitter: new HtmlElementDriver<HTMLElement>(Constants.splitter, false, el => el.kind = ElKind.splitter),
 
   // cursor control element
   cursor: new CursorCommandDriver(),
