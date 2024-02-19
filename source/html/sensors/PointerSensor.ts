@@ -108,7 +108,7 @@ export class PointerSensor extends BasePointerSensor {
 
   protected onPointerDown(e: PointerEvent): void {
     // console.log(`pointer down -> ${(e.target as HTMLElement).id}`)
-    // this.sourceElement?.setPointerCapture(e.pointerId)
+    this.sourceElement?.setPointerCapture(e.pointerId)
     const button = extractPointerButton(e)
     if (!this.dragStarted && this.clickable === undefined &&
       (button === PointerButton.left || button === PointerButton.right)) {
@@ -144,7 +144,7 @@ export class PointerSensor extends BasePointerSensor {
   }
 
   protected onPointerUp(e: PointerEvent): void {
-    // this.sourceElement?.releasePointerCapture(e.pointerId)
+    this.sourceElement?.releasePointerCapture(e.pointerId)
     if (this.draggingOver) {
       this.drop(e)
       this.finishDragging()
