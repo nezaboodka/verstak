@@ -389,8 +389,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     // Horizontal
     let isEffectiveAlignerX = false
     if (hostLayout) {
-      const isAligner = alignIs(newPrimary, Align.centerX) ||
-        alignIs(newPrimary, Align.right)
+      const isAligner = alignedX(newPrimary, Align.centerX) ||
+        alignedX(newPrimary, Align.right)
       isEffectiveAlignerX = isAligner && (hostLayout.alignerX === undefined ||
         element.index <= hostLayout.alignerX.index)
       if (hostLayout.alignerX === element) {
@@ -414,7 +414,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       default:
       case Align.left:
         css.justifySelf = "start"
-        if (alignIs(oldPrimary, Align.centerX)) {
+        if (alignedX(oldPrimary, Align.centerX)) {
           css.marginLeft = "" // remove "auto"
           css.marginRight = "" // remove "auto"
         }
@@ -431,16 +431,16 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         css.justifySelf = "end"
         if (hostLayout)
           css.marginLeft = isEffectiveAlignerX ? "auto" : ""
-        if (alignIs(oldPrimary, Align.centerX))
+        if (alignedX(oldPrimary, Align.centerX))
           css.marginRight = "" // remove "auto"
         break
       case Align.stretchX:
         css.justifySelf = "stretch"
-        if (alignIs(oldPrimary, Align.centerX)) {
+        if (alignedX(oldPrimary, Align.centerX)) {
           css.marginLeft = "" // remove "auto"
           css.marginRight = "" // remove "auto"
         }
-        else if (alignIs(oldPrimary, Align.right))
+        else if (alignedX(oldPrimary, Align.right))
           css.marginLeft = "" // remove "auto"
         break
     }
@@ -466,10 +466,10 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     // Vertical
     let isEffectiveAlignerY = false
     if (hostLayout) {
-      const isAligner = alignIs(newPrimary, Align.centerY) ||
-        alignIs(newPrimary, Align.bottom)
+      const isAligner = alignedY(newPrimary, Align.centerY) ||
+        alignedY(newPrimary, Align.bottom)
       isEffectiveAlignerY = isAligner && (hostLayout.alignerY === undefined ||
-        !alignIs(hostLayout.alignerY.alignment, Align.centerY))
+        !alignedY(hostLayout.alignerY.alignment, Align.centerY))
       if (hostLayout.alignerY === element) {
         if (!isEffectiveAlignerY) {
           hostCss!.marginTop = "" // remove "auto"
@@ -515,9 +515,9 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         css.justifyContent = "stretch"
         break
     }
-    if (alignIs(newPrimary, Align.stretchX) && strengthX === undefined)
+    if (alignedX(newPrimary, Align.stretchX) && strengthX === undefined)
       ElImpl.applyStretchingStrengthX(element, 0, 1)
-    if (alignIs(newPrimary, Align.stretchY) && strengthY === undefined)
+    if (alignedY(newPrimary, Align.stretchY) && strengthY === undefined)
       ElImpl.applyStretchingStrengthY(element, 0, 1)
   }
 
@@ -897,6 +897,10 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
   // undefined // cursor
 ]
 
-function alignIs(align: Align, like: Align): boolean {
-  return (align & like) == like
+function alignedX(align: Align, like: Align): boolean {
+  return (align & 0b00000011) == (like & 0b00000011)
+}
+
+function alignedY(align: Align, like: Align): boolean {
+  return (align & 0b00011000) == (like & 0b00011000)
 }
