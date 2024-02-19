@@ -850,7 +850,7 @@ export class CursorCommandDriver extends ElDriver<Element, unknown> {
 export const Constants = {
   // element: "эл",
   // partition: "разд",
-  // layouts: ["цепочка", "таблица", "" /* раздел */, "группа", "заметка"],
+  // layouts: ["секция", "таблица", "заметка", "группа", "" /* раздел */, "" /* разделитель */, "" /* курсор */],
   // keyAttrName: "ключ",
   // kindAttrName: "вид",
   element: "el",
