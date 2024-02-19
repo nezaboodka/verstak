@@ -212,8 +212,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   set alignment(value: Align) {
     const existing = this._alignment
     if (value !== existing) {
-      ElImpl.applyAlignment(this,
-        existing, value, this._extraAlignment, this._extraAlignment,
+      ElImpl.applyAlignment(this, existing, value,
+        this._extraAlignment, this._extraAlignment,
         this._stretchingStrengthX, this._stretchingStrengthY)
       this._alignment = value
     }
@@ -223,9 +223,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   set extraAlignment(value: Align) {
     const existing = this._extraAlignment
     if (value !== existing) {
-      ElImpl.applyAlignment(this,
-        this._alignment, this._alignment, existing, value,
-        this._stretchingStrengthX, this._stretchingStrengthY)
+      ElImpl.applyAlignment(this, this._alignment, this._alignment,
+        existing, value, this._stretchingStrengthX, this._stretchingStrengthY)
       this._extraAlignment = value
     }
   }
@@ -234,7 +233,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   set stretchingStrengthX(value: number | undefined) {
     const existing = this._stretchingStrengthX
     if (value !== existing) {
-      ElImpl.applyStretchingStrengthX(this, existing ?? 0, value ?? 0)
+      ElImpl.applyStretchingStrengthX(this, existing, value)
       this._stretchingStrengthX = value
     }
   }
