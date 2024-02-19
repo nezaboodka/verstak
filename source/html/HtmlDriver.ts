@@ -135,6 +135,8 @@ export class SvgDriver<T extends SVGElement, M = any> extends WebDriver<T, M> {
   }
 }
 
+// Blinking Rendering Effect
+
 function blink(element: Element | undefined, priority: Priority, revision: number): void {
   if (element !== undefined) {
     const n1 = revision % 2
