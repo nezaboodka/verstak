@@ -174,13 +174,28 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
         const el = node.element as ElImpl
         if (el.layoutInfo === undefined)
           el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-        el.layoutInfo.effectiveSizePx = Math.floor(node.element.splitView === SplitView.horizontal ? e.inlineSize : e.blockSize)
+        const s = getComputedStyle(el.native)
+        let sizePx = 0
+        let marginSizePx = 0
+        let paddingSizePx = 0
+        if (node.element.splitView === SplitView.horizontal) {
+          sizePx = Math.floor(e.inlineSize)
+          marginSizePx = Number.parseFloat(s.marginLeft) + Number.parseFloat(s.marginRight)
+          paddingSizePx = Number.parseFloat(s.paddingLeft) + Number.parseFloat(s.paddingRight)
+        }
+        else {
+          sizePx = Math.floor(e.blockSize)
+          marginSizePx = Number.parseFloat(s.marginTop) + Number.parseFloat(s.marginBottom)
+          paddingSizePx = Number.parseFloat(s.paddingTop) + Number.parseFloat(s.paddingBottom)
+        }
+        el.layoutInfo.effectiveSizePx = sizePx - marginSizePx - paddingSizePx
         const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
         for (const child of node.children.items()) {
           if ((child.instance.element as ElImpl).native !== undefined && child.instance.driver.isPartition) {
             sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
           }
         }
+        console.log(`%c[${SplitView[node.element.splitView!]}]: size = ${el.layoutInfo.effectiveSizePx}`, "color: blue")
         relayout(node as any, getPrioritiesForSizeChanging(node.seat!, node.children as MergeList<RxNode<ElImpl>>), sizesPx)
       })
     }

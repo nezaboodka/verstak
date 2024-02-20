@@ -160,10 +160,10 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
       if (el.native !== undefined) {
         const s = el.style
         if (splitViewNode.element.splitView === SplitView.horizontal) {
-          s.minWidth = s.maxWidth = `${el.layoutInfo?.effectiveSizePx ?? 0}px`
+          s.width = `${el.layoutInfo?.effectiveSizePx ?? 0}px`
         }
         else {
-          s.minHeight = s.maxHeight = `${el.layoutInfo?.effectiveSizePx ?? 0}px`
+          s.height = `${el.layoutInfo?.effectiveSizePx ?? 0}px`
         }
         console.log(`(layout) ${el.index}: size = ${el.layoutInfo?.effectiveSizePx}px`)
         // Splitter Visibility
