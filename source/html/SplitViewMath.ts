@@ -9,64 +9,9 @@ import { MergeList, MergedItem, RxNode } from "reactronic"
 import { clamp } from "./ElUtils.js"
 import { ElImpl, ElLayoutInfo, InitialElLayoutInfo, SplitView } from "./El.js"
 
-export function getFractionSizePx(spacePx: number, fractionCount: number): number {
-  return fractionCount > 0 ? spacePx / fractionCount : 0
-}
-
-export function getFractionCount(isHorizontal: boolean, children: Array<RxNode<ElImpl>>, vector: number, index: number, force: boolean = false): number {
-  let result = 0
-  for (const i of indexes(vector, index)) {
-    const growth = (isHorizontal ? children[i].element.stretchingStrengthX : children[i].element.stretchingStrengthY) ?? 0
-    result += growth > 0 ? growth : (force ? 1 : 0)
-  }
-  return result
-}
-
-export function *indexes(vector: number, index: number): Generator<number> {
-  let i = 0
-  if (index < 0) { // go left (after)
-    i = -index
-    vector >>>= i
-    while (vector > 0) {
-      if (vector & 1) {
-        yield i
-      }
-      vector >>>= 1
-      i++
-    }
-  }
-  else { // go right (before)
-    while (i < index) {
-      if (vector & 1) {
-        yield i
-      }
-      vector >>>= 1
-      i++
-    }
-  }
-}
-
-export function calculatePrioritiesForSplitter(index: number, size: number): ReadonlyArray<number> {
-  const result = []
-  let i = index - 1
-  let j = index
-  while (i >= 0 || j < size) {
-    if (i >= 0 && j < size) {
-      result.push((1 << i--) | (1 << j++))
-    }
-    else if (i >= 0) {
-      result.push(1 << i--)
-    }
-    else {
-      result.push(1 << j++)
-    }
-  }
-  return result
-}
-
 export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: number, index: number, initialSizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, priorities?: ReadonlyArray<number>): void {
   if (priorities === undefined) {
-    priorities = calculatePrioritiesForSplitter(index + 1, initialSizesPx.length)
+    priorities = getPrioritiesForSplitter(index + 1, initialSizesPx.length)
   }
   const native = splitViewNode.element.native as HTMLElement
   const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
@@ -83,7 +28,7 @@ export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArra
   const containerSizePx = isHorizontal ? native.clientWidth : native.clientHeight
   const deltaPx = containerSizePx - sizesPx.reduce((p, c) => p + c.sizePx, 0)
   const freeSpacePx = Math.max(0, deltaPx)
-  console.log(`delta = ${deltaPx} px, container = ${containerSizePx} px`)
+  // console.log(`delta = ${deltaPx} px, container = ${containerSizePx} px`)
   resizeUsingDelta(splitViewNode, containerSizePx, freeSpacePx, deltaPx, sizesPx.length, priorities, sizesPx)
   layout(splitViewNode)
   // this._saveProportions()
@@ -114,7 +59,7 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
     const maxDeltaPx = Math.min(maxBeforeDeltaPx, maxAfterDeltaPx + freeSpacePx)
     const clampedDeltaPx = clamp(deltaPx, minDeltaPx, maxDeltaPx)
 
-    // console.log(`[${hasAfter}] min = ${minDeltaPx} (${minBeforeDeltaPx}, ${minAfterDeltaPx}), ${deltaPx} -> ${clampedDeltaPx}, max = ${maxDeltaPx} (${maxBeforeDeltaPx}, ${maxAfterDeltaPx})`)
+    console.log(`[${Array.from({ length: index }).map((x, i) => i).join(",")} | ${Array.from({ length: Math.max(0, sizesPx.length - index) }).map((x, i) => index + i).join(",")}] min = ${minDeltaPx} (${minBeforeDeltaPx}, ${minAfterDeltaPx}), ${deltaPx} -> ${clampedDeltaPx}, max = ${maxDeltaPx} (${maxBeforeDeltaPx}, ${maxAfterDeltaPx})`)
 
     if (clampedDeltaPx !== 0) {
       let lastGrowingElementIndex = undefined
@@ -212,7 +157,6 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
     const el = sizesPx[i].node.element
     if (el.layoutInfo === undefined)
       el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-    console.log(`set size: ${sizesPx[i].sizePx} px`)
     el.layoutInfo.effectiveSizePx = sizesPx[i].sizePx
   }
 }
@@ -229,38 +173,45 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
         else {
           s.minHeight = s.maxHeight = `${el.layoutInfo?.effectiveSizePx ?? 0}px`
         }
-        console.log(el.layoutInfo?.effectiveSizePx)
+        console.log(`(layout) ${el.index}: size = ${el.layoutInfo?.effectiveSizePx}px`)
+        // Splitter Visibility
+        // let canBeResizedBefore = false
+        // for (let j = 0; !canBeResizedBefore && j < i; j++) {
+        //   canBeResizedBefore = partitions[j].minSizePx !== partitions[j].maxSizePx
+        // }
+        // let canBeResizedAfter = false
+        // for (let j = i; !canBeResizedAfter && j < partitions.length; j++) {
+        //   canBeResizedAfter = partitions[j].minSizePx !== partitions[j].maxSizePx
+        // }
+        // splitter.isVisible = canBeResizedBefore && canBeResizedAfter
       }
     }
   }
+  // const sizePx = posPx + (partitions.length > 0 ? partitions[partitions.length - 1].sizePx : 0)
+  // this._isOverflowing = sizePx > this._sizePx
 }
 
-// export function layout(): void {
-//   const partitions = this._partitions
-//   const splitters = this._splitters
-//   let posPx = 0
-//   for (let i = 1; i < partitions.length; i++) {
-//     const partition = partitions[i]
-//     posPx += partitions[i - 1].sizePx
-//     partition.posPx = posPx
-//     const splitter = splitters[i - 1]
-//     splitter.posPx = posPx - Math.floor(splitter.sizePx / 2)
-//     // Splitter Visibility
-//     let canBeResizedBefore = false
-//     for (let j = 0; !canBeResizedBefore && j < i; j++) {
-//       canBeResizedBefore = partitions[j].minSizePx !== partitions[j].maxSizePx
-//     }
-//     let canBeResizedAfter = false
-//     for (let j = i; !canBeResizedAfter && j < partitions.length; j++) {
-//       canBeResizedAfter = partitions[j].minSizePx !== partitions[j].maxSizePx
-//     }
-//     splitter.isVisible = canBeResizedBefore && canBeResizedAfter
-//   }
-//   const sizePx = posPx + (partitions.length > 0 ? partitions[partitions.length - 1].sizePx : 0)
-//   this._isOverflowing = sizePx > this._sizePx
-// }
+// Split View Part Priorities
 
-export function createPrioritiesForSizeChanging(item: MergedItem<any>, children: MergeList<RxNode<ElImpl>>): ReadonlyArray<number> {
+export function getPrioritiesForSplitter(index: number, size: number): ReadonlyArray<number> {
+  const result = []
+  let i = index - 1
+  let j = index
+  while (i >= 0 || j < size) {
+    if (i >= 0 && j < size) {
+      result.push((1 << i--) | (1 << j++))
+    }
+    else if (i >= 0) {
+      result.push(1 << i--)
+    }
+    else {
+      result.push(1 << j++)
+    }
+  }
+  return result
+}
+
+export function getPrioritiesForSizeChanging(item: MergedItem<any>, children: MergeList<RxNode<ElImpl>>): ReadonlyArray<number> {
   const result = []
   let i = 0
   let changedItemIndex = -1
@@ -274,4 +225,41 @@ export function createPrioritiesForSizeChanging(item: MergedItem<any>, children:
   if (changedItemIndex !== -1)
     result.push(1 << changedItemIndex)
   return result
+}
+
+function getFractionCount(isHorizontal: boolean, children: Array<RxNode<ElImpl>>, vector: number, index: number, force: boolean = false): number {
+  let result = 0
+  for (const i of indexes(vector, index)) {
+    const growth = (isHorizontal ? children[i].element.stretchingStrengthX : children[i].element.stretchingStrengthY) ?? 0
+    result += growth > 0 ? growth : (force ? 1 : 0)
+  }
+  return result
+}
+
+function getFractionSizePx(spacePx: number, fractionCount: number): number {
+  return fractionCount > 0 ? spacePx / fractionCount : 0
+}
+
+function* indexes(vector: number, index: number): Generator<number> {
+  let i = 0
+  if (index < 0) { // go left (after)
+    i = -index
+    vector >>>= i
+    while (vector > 0) {
+      if (vector & 1) {
+        yield i
+      }
+      vector >>>= 1
+      i++
+    }
+  }
+  else { // go right (before)
+    while (i < index) {
+      if (vector & 1) {
+        yield i
+      }
+      vector >>>= 1
+      i++
+    }
+  }
 }

@@ -7,7 +7,7 @@
 
 import { RxNode, SimpleDelegate, BaseDriver, MergedItem, MergeList } from "reactronic"
 import { clamp, equalElCoords, parseElCoords } from "./ElUtils.js"
-import { createPrioritiesForSizeChanging, relayout } from "./SplitViewMath.js"
+import { getPrioritiesForSizeChanging, relayout } from "./SplitViewMath.js"
 
 // El
 
@@ -338,7 +338,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
           sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
         }
       }
-      relayout(owner, createPrioritiesForSizeChanging(node.seat!, owner.children as MergeList<RxNode<ElImpl>>), sizesPx)
+      relayout(owner, getPrioritiesForSizeChanging(node.seat!, owner.children as MergeList<RxNode<ElImpl>>), sizesPx)
     }
     else {
       s.minWidth = value.min ?? ""
@@ -368,7 +368,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
           sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
         }
       }
-      relayout(owner, createPrioritiesForSizeChanging(node.seat!, owner.children as MergeList<RxNode<ElImpl>>), sizesPx)
+      relayout(owner, getPrioritiesForSizeChanging(node.seat!, owner.children as MergeList<RxNode<ElImpl>>), sizesPx)
     }
     else {
       s.minHeight = value.min ?? ""
