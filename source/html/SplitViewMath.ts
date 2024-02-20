@@ -8,6 +8,7 @@
 import { MergeList, MergedItem, RxNode } from "reactronic"
 import { clamp } from "./ElUtils.js"
 import { ElImpl, ElLayoutInfo, InitialElLayoutInfo, SplitView } from "./El.js"
+
 export function getFractionSizePx(spacePx: number, fractionCount: number): number {
   return fractionCount > 0 ? spacePx / fractionCount : 0
 }
