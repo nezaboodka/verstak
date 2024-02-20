@@ -35,17 +35,17 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
     let minBeforeDeltaPx = 0
     let maxBeforeDeltaPx = 0
     for (let i = 0; i < index; i++) {
-      const size = isHorizontal ? sizesPx[i].node.element.width : sizesPx[i].node.element.height
-      minBeforeDeltaPx += (size.min ? Number.parseInt(size.min) : 0) - sizesPx[i].sizePx
-      maxBeforeDeltaPx += (size.max ? Number.parseInt(size.max) : Number.POSITIVE_INFINITY) - sizesPx[i].sizePx
+      const size = isHorizontal ? sizesPx[i].node.element.widthPx : sizesPx[i].node.element.heightPx
+      minBeforeDeltaPx += size.minPx - sizesPx[i].sizePx
+      maxBeforeDeltaPx += size.maxPx - sizesPx[i].sizePx
     }
     const hasAfter = index < sizesPx.length
     let minAfterDeltaPx = hasAfter ? 0 : Number.NEGATIVE_INFINITY
     let maxAfterDeltaPx = hasAfter ? 0 : Number.POSITIVE_INFINITY
     for (let i = index; i < sizesPx.length; i++) {
-      const size = isHorizontal ? sizesPx[i].node.element.width : sizesPx[i].node.element.height
-      minAfterDeltaPx += sizesPx[i].sizePx - (size.max ? Number.parseInt(size.max) : Number.POSITIVE_INFINITY)
-      maxAfterDeltaPx += sizesPx[i].sizePx - (size.min ? Number.parseInt(size.min) : 0)
+      const size = isHorizontal ? sizesPx[i].node.element.widthPx : sizesPx[i].node.element.heightPx
+      minAfterDeltaPx += sizesPx[i].sizePx - size.maxPx
+      maxAfterDeltaPx += sizesPx[i].sizePx - size.minPx
     }
     const minDeltaPx = Math.max(minBeforeDeltaPx, minAfterDeltaPx)
     const maxDeltaPx = Math.min(maxBeforeDeltaPx, maxAfterDeltaPx)
@@ -79,14 +79,12 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
                 runningReminderPx -= 1
                 flooredNewSizePx += 1
               }
-              const size = isHorizontal ? sizesPx[i].node.element.width : sizesPx[i].node.element.height
-              const minSizePx = size.min ? Number.parseInt(size.min) : 0
-              const maxSizePx = size.max ? Number.parseInt(size.max) : Number.POSITIVE_INFINITY
-              const sizePx = clamp(flooredNewSizePx, minSizePx, maxSizePx)
-              // console.log(`[${i}]: min = ${minSizePx}, max = ${maxSizePx}, growth = ${growth}, flooredNewSizePx = ${flooredNewSizePx}, size = ${sizePx} px`)
+              const size = isHorizontal ? sizesPx[i].node.element.widthPx : sizesPx[i].node.element.heightPx
+              const sizePx = clamp(flooredNewSizePx, size.minPx, size.maxPx)
+              // console.log(`[${i}]: min = ${size.minPx}, max = ${size.maxPx}, growth = ${growth}, flooredNewSizePx = ${flooredNewSizePx}, size = ${sizePx} px`)
               beforeDeltaPx -= sizePx - initialSizePx
               sizesPx[i].sizePx = sizePx
-              if (sizesPx[i].sizePx > minSizePx && sizesPx[i].sizePx < maxSizePx) {
+              if (sizesPx[i].sizePx > size.minPx && sizesPx[i].sizePx < size.maxPx) {
                 fractionCount += growth
               }
             }
@@ -119,13 +117,11 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
                   runningReminderPx -= 1
                   flooredNewSizePx += 1
                 }
-                const size = isHorizontal ? sizesPx[i].node.element.width : sizesPx[i].node.element.height
-                const minSizePx = size.min ? Number.parseInt(size.min) : 0
-                const maxSizePx = size.max ? Number.parseInt(size.max) : Number.POSITIVE_INFINITY
-                const sizePx = clamp(flooredNewSizePx, minSizePx, maxSizePx)
+                const size = isHorizontal ? sizesPx[i].node.element.widthPx : sizesPx[i].node.element.heightPx
+                const sizePx = clamp(flooredNewSizePx, size.minPx, size.maxPx)
                 afterDeltaPx += sizePx - initialSizePx
                 sizesPx[i].sizePx = sizePx
-                if (sizesPx[i].sizePx > minSizePx && sizesPx[i].sizePx < maxSizePx) {
+                if (sizesPx[i].sizePx > size.minPx && sizesPx[i].sizePx < size.maxPx) {
                   fractionCount += growth
                 }
               }

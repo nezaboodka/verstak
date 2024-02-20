@@ -189,13 +189,14 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           paddingSizePx = Number.parseFloat(s.paddingTop) + Number.parseFloat(s.paddingBottom)
         }
         el.layoutInfo.effectiveSizePx = sizePx - marginSizePx - paddingSizePx
+        // TODO: reconvert part sizes (e.g. % -> px)
         const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
         for (const child of node.children.items()) {
           if ((child.instance.element as ElImpl).native !== undefined && child.instance.driver.isPartition) {
             sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
           }
         }
-        console.log(`%c[${SplitView[node.element.splitView!]}]: size = ${el.layoutInfo.effectiveSizePx}`, "color: blue")
+        // console.log(`%c[${SplitView[node.element.splitView!]}]: size = ${el.layoutInfo.effectiveSizePx}`, "color: blue")
         relayout(node as any, getPrioritiesForSizeChanging(node.seat!, node.children as MergeList<RxNode<ElImpl>>), sizesPx)
       })
     }
