@@ -13,20 +13,16 @@ export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: nu
   if (priorities === undefined) {
     priorities = getPrioritiesForSplitter(index + 1, initialSizesPx.length)
   }
-  const native = splitViewNode.element.native as HTMLElement
-  const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
-  const containerSizePx = isHorizontal ? native.clientWidth : native.clientHeight
-  // console.log(`delta = ${deltaPx}, container = ${containerSizePx}, size = ${initialSizesPx.reduce((p, c) => p + c.sizePx, 0)}, free space = ${freeSpacePx}, index = ${index}`)
+  const containerSizePx = splitViewNode.element.layoutInfo?.effectiveSizePx ?? 0
+  // console.log(`delta = ${deltaPx}, container = ${containerSizePx}, size = ${initialSizesPx.reduce((p, c) => p + c.sizePx, 0)}, index = ${index}`)
   resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, index + 1, priorities, initialSizesPx, true)
   layout(splitViewNode)
 }
 
 export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>): void {
-  const native = splitViewNode.element.native as HTMLElement
-  const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
-  const containerSizePx = isHorizontal ? native.clientWidth : native.clientHeight
+  const containerSizePx = splitViewNode.element.layoutInfo?.effectiveSizePx ?? 0
   const deltaPx = containerSizePx - sizesPx.reduce((p, c) => p + c.sizePx, 0)
-  // console.log(`delta = ${deltaPx} px, container = ${containerSizePx} px`)
+  // console.log(`delta = ${deltaPx}px, container = ${containerSizePx}px`)
   resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, sizesPx.length, priorities, sizesPx)
   layout(splitViewNode)
   // this._saveProportions()

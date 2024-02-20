@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNode, SimpleDelegate, BaseDriver, MergedItem, MergeList } from "reactronic"
+import { RxNode, SimpleDelegate, BaseDriver, MergedItem, MergeList, Transaction } from "reactronic"
 import { clamp, equalElCoords, parseElCoords } from "./ElUtils.js"
 import { getPrioritiesForSizeChanging, relayout } from "./SplitViewMath.js"
 
@@ -667,6 +667,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         s.position = ""
         s.overflow = ""
       }
+      Transaction.separate(() => e.sensors.resize.observeResizing(element, value !== undefined))
     }
   }
 

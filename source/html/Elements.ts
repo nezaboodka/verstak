@@ -5,10 +5,11 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNodeDecl, RxNodeDriver, RxNode, Delegate, Mode } from "reactronic"
-import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver, ElImpl, SplitView } from "./El.js"
+import { RxNodeDecl, RxNodeDriver, RxNode, Delegate, Mode, MergeList } from "reactronic"
+import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver, ElImpl, SplitView, ElLayoutInfo, InitialElLayoutInfo } from "./El.js"
+import { getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
 import { HtmlDriver } from "./HtmlDriver.js"
-import { relayoutUsingSplitter } from "./SplitViewMath.js"
+import { OnResize } from "./Handlers.js"
 
 // Verstak is based on two fundamental layout structures
 // called section and table; and on two special non-visual
@@ -166,12 +167,29 @@ export function SyntheticElement<M = unknown>(
 export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
   update(node: RxNode<El<T>>): void | Promise<void> {
     rowBreak()
-    return super.update(node)
+    const result = super.update(node)
+    if (node.element.splitView !== undefined) {
+      OnResize(node.element.native, x => {
+        const e = x.borderBoxSize[0]
+        const el = node.element as ElImpl
+        if (el.layoutInfo === undefined)
+          el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+        el.layoutInfo.effectiveSizePx = Math.floor(node.element.splitView === SplitView.horizontal ? e.inlineSize : e.blockSize)
+        const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
+        for (const child of node.children.items()) {
+          if ((child.instance.element as ElImpl).native !== undefined && child.instance.driver.isPartition) {
+            sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
+          }
+        }
+        relayout(node as any, getPrioritiesForSizeChanging(node.seat!, node.children as MergeList<RxNode<ElImpl>>), sizesPx)
+      })
+    }
+    return result
   }
 
   child(ownerNode: RxNode<El<T, any>>, childDriver: RxNodeDriver<any>, childDeclaration?: RxNodeDecl<any> | undefined, childPreset?: RxNodeDecl<any> | undefined): void {
     const el = ownerNode.element
-    if (el.splitView !== undefined && !childDriver.isPartition && childDriver !== Drivers.splitter) {
+    if (el.splitView !== undefined && !childDriver.isPartition&& childDriver !== Drivers.splitter && childDriver !== Drivers.synthetic) {
       rowBreak()
 
       let partCount = 0
