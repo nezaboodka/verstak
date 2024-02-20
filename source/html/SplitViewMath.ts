@@ -16,9 +16,8 @@ export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: nu
   const native = splitViewNode.element.native as HTMLElement
   const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
   const containerSizePx = isHorizontal ? native.clientWidth : native.clientHeight
-  const freeSpacePx = containerSizePx - initialSizesPx.reduce((p, c) => p + c.sizePx, 0)
   // console.log(`delta = ${deltaPx}, container = ${containerSizePx}, size = ${initialSizesPx.reduce((p, c) => p + c.sizePx, 0)}, free space = ${freeSpacePx}, index = ${index}`)
-  resizeUsingDelta(splitViewNode, containerSizePx, freeSpacePx, deltaPx, index + 1, priorities, initialSizesPx, true)
+  resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, index + 1, priorities, initialSizesPx, true)
   layout(splitViewNode)
 }
 
@@ -27,14 +26,13 @@ export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArra
   const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
   const containerSizePx = isHorizontal ? native.clientWidth : native.clientHeight
   const deltaPx = containerSizePx - sizesPx.reduce((p, c) => p + c.sizePx, 0)
-  const freeSpacePx = Math.max(0, deltaPx)
   // console.log(`delta = ${deltaPx} px, container = ${containerSizePx} px`)
-  resizeUsingDelta(splitViewNode, containerSizePx, freeSpacePx, deltaPx, sizesPx.length, priorities, sizesPx)
+  resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, sizesPx.length, priorities, sizesPx)
   layout(splitViewNode)
   // this._saveProportions()
 }
 
-export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx: number, freeSpacePx: number, deltaPx: number, index: number, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, force: boolean = false): void {
+export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx: number, deltaPx: number, index: number, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, force: boolean = false): void {
   const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
   if (sizesPx.length > 0 && deltaPx !== 0) {
 
@@ -46,17 +44,15 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
       maxBeforeDeltaPx += (size.max ? Number.parseInt(size.max) : Number.POSITIVE_INFINITY) - sizesPx[i].sizePx
     }
     const hasAfter = index < sizesPx.length
-    let sizeAfterPx = 0
     let minAfterDeltaPx = hasAfter ? 0 : Number.NEGATIVE_INFINITY
     let maxAfterDeltaPx = hasAfter ? 0 : Number.POSITIVE_INFINITY
     for (let i = index; i < sizesPx.length; i++) {
       const size = isHorizontal ? sizesPx[i].node.element.width : sizesPx[i].node.element.height
-      sizeAfterPx += sizesPx[i].sizePx
       minAfterDeltaPx += sizesPx[i].sizePx - (size.max ? Number.parseInt(size.max) : Number.POSITIVE_INFINITY)
       maxAfterDeltaPx += sizesPx[i].sizePx - (size.min ? Number.parseInt(size.min) : 0)
     }
     const minDeltaPx = Math.max(minBeforeDeltaPx, minAfterDeltaPx)
-    const maxDeltaPx = Math.min(maxBeforeDeltaPx, maxAfterDeltaPx + freeSpacePx)
+    const maxDeltaPx = Math.min(maxBeforeDeltaPx, maxAfterDeltaPx)
     const clampedDeltaPx = clamp(deltaPx, minDeltaPx, maxDeltaPx)
 
     console.log(`[${Array.from({ length: index }).map((x, i) => i).join(",")} | ${Array.from({ length: Math.max(0, sizesPx.length - index) }).map((x, i) => index + i).join(",")}] min = ${minDeltaPx} (${minBeforeDeltaPx}, ${minAfterDeltaPx}), ${deltaPx} -> ${clampedDeltaPx}, max = ${maxDeltaPx} (${maxBeforeDeltaPx}, ${maxAfterDeltaPx})`)
@@ -103,7 +99,7 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
             break
           }
         }
-        if (hasAfter && maxAfterDeltaPx > 0) {
+        if (hasAfter) {
           let runningReminderPx = 0
           let afterDeltaPx = clampedDeltaPx
           for (let priority = 0; priority < priorities.length; priority++) {
