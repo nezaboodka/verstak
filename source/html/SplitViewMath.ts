@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { MergeList, MergedItem, RxNode } from "reactronic"
-import { clamp } from "./ElUtils.js"
 import { ElImpl, ElLayoutInfo, InitialElLayoutInfo, SplitView } from "./El.js"
+import { clamp } from "./ElUtils.js"
 
 export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: number, index: number, initialSizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, priorities?: ReadonlyArray<number>): void {
   if (priorities === undefined) {
