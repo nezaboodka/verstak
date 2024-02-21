@@ -176,19 +176,13 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
         const s = getComputedStyle(el.native)
         let sizePx = 0
-        let marginSizePx = 0
-        let paddingSizePx = 0
-        if (node.element.splitView === SplitView.horizontal) {
-          sizePx = Math.floor(e.inlineSize)
-          marginSizePx = Number.parseFloat(s.marginLeft) + Number.parseFloat(s.marginRight)
-          paddingSizePx = Number.parseFloat(s.paddingLeft) + Number.parseFloat(s.paddingRight)
-        }
-        else {
-          sizePx = Math.floor(e.blockSize)
-          marginSizePx = Number.parseFloat(s.marginTop) + Number.parseFloat(s.marginBottom)
-          paddingSizePx = Number.parseFloat(s.paddingTop) + Number.parseFloat(s.paddingBottom)
-        }
-        el.layoutInfo.effectiveSizePx = sizePx - marginSizePx - paddingSizePx
+        if (node.element.splitView === SplitView.horizontal)
+          sizePx = Math.floor(e.inlineSize) - Number.parseFloat(s.marginLeft) - Number.parseFloat(s.marginRight)
+            - Number.parseFloat(s.paddingLeft) - Number.parseFloat(s.paddingRight)
+        else
+          sizePx = Math.floor(e.blockSize) - Number.parseFloat(s.marginTop) + Number.parseFloat(s.marginBottom)
+            - Number.parseFloat(s.paddingTop) - Number.parseFloat(s.paddingBottom)
+        el.layoutInfo.effectiveSizePx = sizePx
         // TODO: reconvert part sizes (e.g. % -> px)
         const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
         for (const child of node.children.items()) {
