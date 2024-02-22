@@ -7,9 +7,11 @@
 
 import { RxNodeDecl, RxNodeDriver, RxNode, Delegate, Mode, MergeList } from "reactronic"
 import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver, ElImpl, SplitView, ElLayoutInfo, InitialElLayoutInfo } from "./El.js"
-import { getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
+import { getPrioritiesForEmptySpaceDistribution, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
+import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
 import { HtmlDriver } from "./HtmlDriver.js"
 import { OnResize } from "./Handlers.js"
+import { clamp } from "./ElUtils.js"
 
 // Verstak is based on two fundamental layout structures
 // called section and table; and on two special non-visual
@@ -101,9 +103,14 @@ export function declareSplitter<T>(index: number, splitViewNode: RxNode<El<T>>):
               else { // drag started
                 e.setAttribute("rx-dragging", "true")
                 const initialSizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
+                const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
                 for (const child of splitViewNode.children.items()) {
-                  if (child.instance.driver.isPartition)
-                    initialSizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
+                  if (child.instance.driver.isPartition) {
+                    const sizePx = isHorizontal
+                      ? (child.instance.element as ElImpl).layoutInfo?.effectiveSizeXpx ?? 0
+                      : (child.instance.element as ElImpl).layoutInfo?.effectiveSizeYpx ?? 0
+                    initialSizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx })
+                  }
                 }
                 pointer.setData(initialSizesPx)
               }
@@ -170,28 +177,46 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     const result = super.update(node)
     if (node.element.splitView !== undefined) {
       OnResize(node.element.native, x => {
-        const e = x.borderBoxSize[0]
+        const e = x.contentBoxSize[0]
         const el = node.element as ElImpl
         if (el.layoutInfo === undefined)
           el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-        const s = getComputedStyle(el.native)
-        let sizePx = 0
-        if (node.element.splitView === SplitView.horizontal)
-          sizePx = Math.floor(e.inlineSize) - Number.parseFloat(s.marginLeft) - Number.parseFloat(s.marginRight)
-            - Number.parseFloat(s.paddingLeft) - Number.parseFloat(s.paddingRight)
-        else
-          sizePx = Math.floor(e.blockSize) - Number.parseFloat(s.marginTop) + Number.parseFloat(s.marginBottom)
-            - Number.parseFloat(s.paddingTop) - Number.parseFloat(s.paddingBottom)
-        el.layoutInfo.effectiveSizePx = sizePx
-        // TODO: reconvert part sizes (e.g. % -> px)
+        const sizeXpx = Math.floor(e.inlineSize)
+        const sizeYpx = Math.floor(e.blockSize)
+        el.layoutInfo.effectiveSizeXpx = sizeXpx
+        el.layoutInfo.effectiveSizeYpx = sizeYpx
+
+        const isHorizontal = el.splitView === SplitView.horizontal
+
+        const options: SizeConverterOptions = {
+          axis: isHorizontal ? Axis.X : Axis.Y, lineSizePx: Dimension.lineSizePx, fontSizePx: BodyFontSize,
+          containerSizeXpx: el.layoutInfo?.effectiveSizeXpx ?? 0, containerSizeYpx: el.layoutInfo?.effectiveSizeYpx ?? 0,
+        }
+
         const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
         for (const child of node.children.items()) {
-          if ((child.instance.element as ElImpl).native !== undefined && child.instance.driver.isPartition) {
-            sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
+          const partEl = child.instance.element as ElImpl
+          if (partEl.native !== undefined && child.instance.driver.isPartition) {
+            // Convert sizes to "px"
+            const size = isHorizontal ? partEl.width : partEl.height
+            const minPx = size.min ? toPx(Dimension.parse(size.min), options) : 0
+            const maxPx = size.max ? toPx(Dimension.parse(size.max), options) : Number.POSITIVE_INFINITY
+            if (partEl.layoutInfo === undefined)
+              partEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+            let sizePx = 0
+            if (isHorizontal) {
+              partEl.widthPx = { minPx, maxPx }
+              sizePx = partEl.layoutInfo.effectiveSizeXpx = clamp(partEl.layoutInfo.effectiveSizeXpx, minPx, maxPx)
+            }
+            else {
+              partEl.heightPx = { minPx, maxPx }
+              sizePx = partEl.layoutInfo.effectiveSizeYpx = clamp(partEl.layoutInfo.effectiveSizeYpx, minPx, maxPx)
+            }
+            sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx })
           }
         }
-        // console.log(`%c[${SplitView[node.element.splitView!]}]: size = ${el.layoutInfo.effectiveSizePx}`, "color: blue")
-        relayout(node as any, getPrioritiesForSizeChanging(node.seat!, node.children as MergeList<RxNode<ElImpl>>), sizesPx)
+        console.log(options)
+        relayout(node as any as RxNode<ElImpl>, getPrioritiesForEmptySpaceDistribution(node.children as MergeList<RxNode<ElImpl>>), sizesPx)
       })
     }
     return result
@@ -199,7 +224,7 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   child(ownerNode: RxNode<El<T, any>>, childDriver: RxNodeDriver<any>, childDeclaration?: RxNodeDecl<any> | undefined, childPreset?: RxNodeDecl<any> | undefined): void {
     const el = ownerNode.element
-    if (el.splitView !== undefined && !childDriver.isPartition&& childDriver !== Drivers.splitter && childDriver !== Drivers.synthetic) {
+    if (el.splitView !== undefined && !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.synthetic) {
       rowBreak()
 
       let partCount = 0

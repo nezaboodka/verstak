@@ -5,6 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
+import { RxNodeVariable } from "reactronic"
+
 export enum Axis { X, Y }
 
 export type NoUnit = void
@@ -37,6 +39,17 @@ export class Dimension<T = NoUnit> {
 
   static emit<T>(value: Dimension<T>): string {
     return `${value.num}${value.unit ?? ""}`
+  }
+
+  private static readonly gLineSizePx = new RxNodeVariable<number>()
+  static get lineSizePx(): number {
+    return Dimension.gLineSizePx.value
+  }
+  static set lineSizePx(value: number) {
+    Dimension.gLineSizePx.value = value
+  }
+  static getLineSizePx(): RxNodeVariable<number> {
+    return Dimension.gLineSizePx
   }
 }
 

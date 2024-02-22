@@ -5,10 +5,8 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNode, SimpleDelegate, BaseDriver, MergedItem, MergeList, Transaction } from "reactronic"
-import { clamp, equalElCoords, parseElCoords } from "./ElUtils.js"
-import { getPrioritiesForSizeChanging, relayout } from "./SplitViewMath.js"
-import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
+import { RxNode, SimpleDelegate, BaseDriver, MergedItem, Transaction } from "reactronic"
+import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // El
 
@@ -199,7 +197,15 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       this._width.raw = value
     }
   }
+
   get widthPx(): { minPx: number, maxPx: number } { return this._width }
+  set widthPx(value: { minPx: number, maxPx: number }) {
+    const w = this._width
+    if (value.minPx !== w.minPx)
+      this._width.minPx = value.minPx
+    if (value.maxPx !== w.maxPx)
+      this._width.maxPx = value.maxPx
+  }
 
   get height(): Range { return this._height.raw }
   set height(value: Range) {
@@ -209,7 +215,15 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       this._height.raw = value
     }
   }
+
   get heightPx(): { minPx: number, maxPx: number } { return this._height }
+  set heightPx(value: { minPx: number, maxPx: number }) {
+    const w = this._height
+    if (value.minPx !== w.minPx)
+      this._height.minPx = value.minPx
+    if (value.maxPx !== w.maxPx)
+      this._height.maxPx = value.maxPx
+  }
 
   get alignment(): Align { return this._alignment }
   set alignment(value: Align) {
@@ -330,25 +344,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       // if (ownerEl.layoutInfo === undefined)
       //   ownerEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
       // ownerEl.layoutInfo.flags |= ElLayoutInfoFlags.childrenRelayoutIsNeeded
-      const options: SizeConverterOptions = { axis: Axis.X, lineSizePx: BodyFontSize, fontSizePx: BodyFontSize,
-        containerSizeXpx: ownerEl.native.clientWidth, containerSizeYpx: ownerEl.native.clientHeight }
-      const minWidthPx = value.min ? toPx(Dimension.parse(value.min), options) : 0
-      const maxWidthPx = value.max ? toPx(Dimension.parse(value.max), options) : Number.POSITIVE_INFINITY
       const hostEl = node.host.element as ElImpl
-      if (hostEl.layoutInfo === undefined)
-        hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-      hostEl.layoutInfo.effectiveSizePx = clamp(hostEl.layoutInfo.effectiveSizePx, minWidthPx, maxWidthPx)
       hostEl._width.raw = value
-      hostEl._width.minPx = minWidthPx
-      hostEl._width.maxPx = maxWidthPx
-      // console.log(`WIDTH: min = ${minWidthPx}px, ${hostEl.layoutInfo.effectiveSizePx}px, max = ${maxWidthPx}px`)
-      const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
-      for (const child of owner.children.items()) {
-        if ((child.instance.element as ElImpl).native !== undefined && child.instance.driver.isPartition) {
-          sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
-        }
-      }
-      relayout(owner, getPrioritiesForSizeChanging(node.seat!, owner.children as MergeList<RxNode<ElImpl>>), sizesPx)
     }
     else {
       s.minWidth = value.min ?? ""
@@ -367,25 +364,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       // if (ownerEl.layoutInfo === undefined)
       //   ownerEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
       // ownerEl.layoutInfo.flags |= ElLayoutInfoFlags.childrenRelayoutIsNeeded
-      const options: SizeConverterOptions = { axis: Axis.Y, lineSizePx: BodyFontSize, fontSizePx: BodyFontSize,
-        containerSizeXpx: ownerEl.native.clientWidth, containerSizeYpx: ownerEl.native.clientHeight }
-      const minHeightPx = value.min ? toPx(Dimension.parse(value.min), options) : 0
-      const maxHeightPx = value.max ? toPx(Dimension.parse(value.max), options) : Number.POSITIVE_INFINITY
       const hostEl = node.host.element as ElImpl
-      if (hostEl.layoutInfo === undefined)
-        hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-      hostEl.layoutInfo.effectiveSizePx = clamp(hostEl.layoutInfo.effectiveSizePx, minHeightPx, maxHeightPx)
       hostEl._height.raw = value
-      hostEl._height.minPx = minHeightPx
-      hostEl._height.maxPx = maxHeightPx
-      // console.log(`HEIGHT: min = ${minHeightPx}px, ${hostEl.layoutInfo.effectiveSizePx}px, max = ${maxHeightPx}px`)
-      const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
-      for (const child of owner.children.items()) {
-        if ((child.instance.element as ElImpl).native !== undefined && child.instance.driver.isPartition) {
-          sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx: (child.instance.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0 })
-        }
-      }
-      relayout(owner, getPrioritiesForSizeChanging(node.seat!, owner.children as MergeList<RxNode<ElImpl>>), sizesPx)
     }
     else {
       s.minHeight = value.min ?? ""
@@ -709,7 +689,8 @@ export class ElLayoutInfo {
   alignerY?: ElImpl
   flags: ElLayoutInfoFlags
 
-  effectiveSizePx: number
+  effectiveSizeXpx: number
+  effectiveSizeYpx: number
 
   constructor(prev: ElLayoutInfo) {
     this.x = prev.x
@@ -720,7 +701,8 @@ export class ElLayoutInfo {
     this.alignerY = undefined
     this.flags = prev.flags & ~ElLayoutInfoFlags.ownCursorPosition
 
-    this.effectiveSizePx = 0
+    this.effectiveSizeXpx = 0
+    this.effectiveSizeYpx = 0
   }
 }
 
@@ -733,7 +715,7 @@ enum ElLayoutInfoFlags {
 }
 
 const UndefinedElCoords = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
-export const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: ElLayoutInfoFlags.none, effectiveSizePx: 0 }))
+export const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: ElLayoutInfoFlags.none, effectiveSizeXpx: 0, effectiveSizeYpx: 0 }))
 
 function getElCoordsAndAdjustLayoutInfo(
   isRegularElement: boolean, area: ElArea, maxX: number, maxY: number,

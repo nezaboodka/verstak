@@ -13,16 +13,20 @@ export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: nu
   if (priorities === undefined) {
     priorities = getPrioritiesForSplitter(index + 1, initialSizesPx.length)
   }
-  const containerSizePx = splitViewNode.element.layoutInfo?.effectiveSizePx ?? 0
+  const containerSizePx = splitViewNode.element.splitView === SplitView.horizontal
+    ? splitViewNode.element.layoutInfo?.effectiveSizeXpx ?? 0
+    : splitViewNode.element.layoutInfo?.effectiveSizeYpx ?? 0
   // console.log(`delta = ${deltaPx}, container = ${containerSizePx}, size = ${initialSizesPx.reduce((p, c) => p + c.sizePx, 0)}, index = ${index}`)
   resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, index + 1, priorities, initialSizesPx, true)
   layout(splitViewNode)
 }
 
 export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>): void {
-  const containerSizePx = splitViewNode.element.layoutInfo?.effectiveSizePx ?? 0
+  const containerSizePx = splitViewNode.element.splitView === SplitView.horizontal
+    ? splitViewNode.element.layoutInfo?.effectiveSizeXpx ?? 0
+    : splitViewNode.element.layoutInfo?.effectiveSizeYpx ?? 0
   const deltaPx = containerSizePx - sizesPx.reduce((p, c) => p + c.sizePx, 0)
-  // console.log(`delta = ${deltaPx}px, container = ${containerSizePx}px`)
+  console.log(`delta = ${deltaPx}px, container = ${containerSizePx}px, priorities = ${priorities.map(x => `0x${x.toString(2)}`).join(",")}`)
   resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, sizesPx.length, priorities, sizesPx)
   layout(splitViewNode)
   // this._saveProportions()
@@ -145,23 +149,25 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
     const el = sizesPx[i].node.element
     if (el.layoutInfo === undefined)
       el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-    el.layoutInfo.effectiveSizePx = sizesPx[i].sizePx
+    if (isHorizontal)
+      el.layoutInfo.effectiveSizeXpx = sizesPx[i].sizePx
+    else
+      el.layoutInfo.effectiveSizeYpx = sizesPx[i].sizePx
   }
 }
 
 export function layout(splitViewNode: RxNode<ElImpl>): void {
+  const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
   for (const child of splitViewNode.children.items()) {
     if (child.instance.driver.isPartition) {
       const el = child.instance.element as ElImpl
       if (el.native !== undefined) {
         const s = el.style
-        if (splitViewNode.element.splitView === SplitView.horizontal) {
-          s.width = `${el.layoutInfo?.effectiveSizePx ?? 0}px`
-        }
-        else {
-          s.height = `${el.layoutInfo?.effectiveSizePx ?? 0}px`
-        }
-        console.log(`(layout) ${el.index}: size = ${el.layoutInfo?.effectiveSizePx}px`)
+        if (isHorizontal)
+          s.width = `${el.layoutInfo?.effectiveSizeXpx ?? 0}px`
+        else
+          s.height = `${el.layoutInfo?.effectiveSizeYpx ?? 0}px`
+        console.log(`(layout) ${el.index}: size = ${isHorizontal ? el.layoutInfo?.effectiveSizeXpx : el.layoutInfo?.effectiveSizeYpx}px`)
         // Splitter Visibility
         // let canBeResizedBefore = false
         // for (let j = 0; !canBeResizedBefore && j < i; j++) {
@@ -204,15 +210,27 @@ export function getPrioritiesForSizeChanging(item: MergedItem<any>, children: Me
   let i = 0
   let changedItemIndex = -1
   for (const child of children.items()) {
-    if (child !== item)
-      result.push(1 << i)
-    else
-      changedItemIndex = i
-    i++
+    if (child.instance.driver.isPartition) {
+      if (child !== item)
+        result.push(1 << i)
+      else
+        changedItemIndex = i
+      i++
+    }
   }
   if (changedItemIndex !== -1)
     result.push(1 << changedItemIndex)
   return result
+}
+
+export function getPrioritiesForEmptySpaceDistribution(children: MergeList<RxNode<ElImpl>>): ReadonlyArray<number> {
+  let result = 0
+  let i = 0
+  for (const child of children.items()) {
+    if (child.instance.driver.isPartition)
+      result |= 1 << i++
+  }
+  return [result]
 }
 
 function getFractionCount(isHorizontal: boolean, children: Array<RxNode<ElImpl>>, vector: number, index: number, force: boolean = false): number {
