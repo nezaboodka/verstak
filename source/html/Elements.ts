@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNodeDecl, RxNodeDriver, RxNode, Delegate, Mode, MergeList } from "reactronic"
+import { RxNodeDecl, RxNodeDriver, RxNode, Delegate, Mode, MergeList, MergedItem } from "reactronic"
 import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver, ElImpl, SplitView, ElLayoutInfo, InitialElLayoutInfo } from "./El.js"
 import { getPrioritiesForEmptySpaceDistribution, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
 import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
@@ -222,7 +222,8 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     return result
   }
 
-  child(ownerNode: RxNode<El<T, any>>, childDriver: RxNodeDriver<any>, childDeclaration?: RxNodeDecl<any> | undefined, childPreset?: RxNodeDecl<any> | undefined): void {
+  child(ownerNode: RxNode<El<T, any>>, childDriver: RxNodeDriver<any>, childDeclaration?: RxNodeDecl<any> | undefined, childPreset?: RxNodeDecl<any> | undefined): MergedItem<RxNode> | undefined {
+    let result: MergedItem<RxNode> | undefined = undefined
     const el = ownerNode.element
     if (el.splitView !== undefined && !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.synthetic) {
       rowBreak()
@@ -236,6 +237,15 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
       if (partCount > 1)
         declareSplitter(partCount - 2, ownerNode)
     }
+    else {
+      if (childDriver.isPartition) {
+        // Coalesce multiple separators into single one, if any
+        const last = ownerNode.children.lastMergedItem()
+        if (last?.instance?.driver === childDriver)
+          result = last
+      }
+    }
+    return result
   }
 }
 
