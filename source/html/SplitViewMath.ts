@@ -8,25 +8,26 @@
 import { MergeList, MergedItem, RxNode } from "reactronic"
 import { ElImpl, ElLayoutInfo, InitialElLayoutInfo, SplitView } from "./El.js"
 import { clamp } from "./ElUtils.js"
+import { Drivers } from "./Elements.js"
 
 export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: number, index: number, initialSizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, priorities?: ReadonlyArray<number>): void {
   if (priorities === undefined) {
     priorities = getPrioritiesForSplitter(index + 1, initialSizesPx.length)
   }
   const containerSizePx = splitViewNode.element.splitView === SplitView.horizontal
-    ? splitViewNode.element.layoutInfo?.effectiveSizeXpx ?? 0
-    : splitViewNode.element.layoutInfo?.effectiveSizeYpx ?? 0
-  // console.log(`delta = ${deltaPx}, container = ${containerSizePx}, size = ${initialSizesPx.reduce((p, c) => p + c.sizePx, 0)}, index = ${index}`)
+    ? splitViewNode.element.layoutInfo?.containerSizeXpx ?? 0
+    : splitViewNode.element.layoutInfo?.containerSizeYpx ?? 0
+  console.log(`(splitter) delta = ${deltaPx}, container = ${containerSizePx}, size = ${initialSizesPx.reduce((p, c) => p + c.sizePx, 0)}, index = ${index}`)
   resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, index + 1, priorities, initialSizesPx, true)
   layout(splitViewNode)
 }
 
 export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>): void {
   const containerSizePx = splitViewNode.element.splitView === SplitView.horizontal
-    ? splitViewNode.element.layoutInfo?.effectiveSizeXpx ?? 0
-    : splitViewNode.element.layoutInfo?.effectiveSizeYpx ?? 0
+    ? splitViewNode.element.layoutInfo?.containerSizeXpx ?? 0
+    : splitViewNode.element.layoutInfo?.containerSizeYpx ?? 0
   const deltaPx = containerSizePx - sizesPx.reduce((p, c) => p + c.sizePx, 0)
-  console.log(`delta = ${deltaPx}px, container = ${containerSizePx}px, priorities = ${priorities.map(x => `0x${x.toString(2)}`).join(",")}`)
+  console.log(`(relayout) delta = ${deltaPx}px, container = ${containerSizePx}px, priorities = ${priorities.map(x => `0x${x.toString(2)}`).join(",")}`)
   resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, sizesPx.length, priorities, sizesPx)
   layout(splitViewNode)
   // this._saveProportions()
@@ -55,6 +56,7 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
     const maxDeltaPx = Math.min(maxBeforeDeltaPx, maxAfterDeltaPx)
     const clampedDeltaPx = clamp(deltaPx, minDeltaPx, maxDeltaPx)
 
+    console.log(sizesPx.map(x => x.sizePx).join(", "))
     console.log(`[${Array.from({ length: index }).map((x, i) => i).join(",")} | ${Array.from({ length: Math.max(0, sizesPx.length - index) }).map((x, i) => index + i).join(",")}] min = ${minDeltaPx} (${minBeforeDeltaPx}, ${minAfterDeltaPx}), ${deltaPx} -> ${clampedDeltaPx}, max = ${maxDeltaPx} (${maxBeforeDeltaPx}, ${maxAfterDeltaPx})`)
 
     if (clampedDeltaPx !== 0) {
@@ -85,7 +87,7 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
               }
               const size = isHorizontal ? sizesPx[i].node.element.widthPx : sizesPx[i].node.element.heightPx
               const sizePx = clamp(flooredNewSizePx, size.minPx, size.maxPx)
-              // console.log(`[${i}]: min = ${size.minPx}, max = ${size.maxPx}, growth = ${growth}, flooredNewSizePx = ${flooredNewSizePx}, size = ${sizePx} px`)
+              console.log(`[${i}]: min = ${size.minPx}, max = ${size.maxPx}, growth = ${growth}, flooredNewSizePx = ${flooredNewSizePx}, size = ${sizePx} px`)
               beforeDeltaPx -= sizePx - initialSizePx
               sizesPx[i].sizePx = sizePx
               if (sizesPx[i].sizePx > size.minPx && sizesPx[i].sizePx < size.maxPx) {
@@ -149,25 +151,24 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
     const el = sizesPx[i].node.element
     if (el.layoutInfo === undefined)
       el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-    if (isHorizontal)
-      el.layoutInfo.effectiveSizeXpx = sizesPx[i].sizePx
-    else
-      el.layoutInfo.effectiveSizeYpx = sizesPx[i].sizePx
+    el.layoutInfo.effectiveSizePx = sizesPx[i].sizePx
+    console.log(`[${i}]: set size = ${sizesPx[i].sizePx}px`)
   }
 }
 
 export function layout(splitViewNode: RxNode<ElImpl>): void {
   const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
-  for (const child of splitViewNode.children.items()) {
-    if (child.instance.driver.isPartition) {
-      const el = child.instance.element as ElImpl
+  let posPx = 0
+  const sizesPx = []
+  const offsetXpx = splitViewNode.element.layoutInfo?.offsetXpx ?? 0
+  const offsetYpx = splitViewNode.element.layoutInfo?.offsetYpx ?? 0
+  for (const item of splitViewNode.children.items()) {
+    const child = item.instance
+    if (!child.driver.isPartition && child.driver !== Drivers.splitter && child.driver !== Drivers.synthetic) {
+      const el = child.element as ElImpl
       if (el.native !== undefined) {
-        const s = el.style
-        if (isHorizontal)
-          s.width = `${el.layoutInfo?.effectiveSizeXpx ?? 0}px`
-        else
-          s.height = `${el.layoutInfo?.effectiveSizeYpx ?? 0}px`
-        console.log(`(layout) ${el.index}: size = ${isHorizontal ? el.layoutInfo?.effectiveSizeXpx : el.layoutInfo?.effectiveSizeYpx}px`)
+        posPx += el.layoutInfo?.effectiveSizePx ?? 0
+        sizesPx.push(el.layoutInfo?.effectiveSizePx ?? 0)
         // Splitter Visibility
         // let canBeResizedBefore = false
         // for (let j = 0; !canBeResizedBefore && j < i; j++) {
@@ -180,6 +181,23 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
         // splitter.isVisible = canBeResizedBefore && canBeResizedAfter
       }
     }
+    else if (child.driver === Drivers.splitter) {
+      const el = child.element as ElImpl
+      if (el.native !== undefined) {
+        // console.log(`(${isHorizontal ? "horizontal" : "vertical"}) pos = ${posPx}px`)
+        if (isHorizontal)
+          el.style.left = `${offsetXpx + posPx}px`
+        else
+          el.style.top = `${offsetYpx + posPx}px`
+      }
+    }
+  }
+  const wrapper = splitViewNode.children.firstMergedItem()?.instance as RxNode<ElImpl> | undefined
+  if (wrapper !== undefined) {
+    if (isHorizontal)
+      wrapper.element.style.gridTemplateColumns = sizesPx.map(x => `${x}px`).join(" ")
+    else
+      wrapper.element.style.gridTemplateRows = sizesPx.map(x => `${x}px`).join(" ")
   }
   // const sizePx = posPx + (partitions.length > 0 ? partitions[partitions.length - 1].sizePx : 0)
   // this._isOverflowing = sizePx > this._sizePx
@@ -205,12 +223,12 @@ export function getPrioritiesForSplitter(index: number, size: number): ReadonlyA
   return result
 }
 
-export function getPrioritiesForSizeChanging(item: MergedItem<any>, children: MergeList<RxNode<ElImpl>>): ReadonlyArray<number> {
+export function getPrioritiesForSizeChanging(item: MergedItem<any>, children: MergeList<RxNode>): ReadonlyArray<number> {
   const result = []
   let i = 0
   let changedItemIndex = -1
   for (const child of children.items()) {
-    if (child.instance.driver.isPartition) {
+    if (!child.instance.driver.isPartition && child.instance.driver !== Drivers.splitter && child.instance.driver !== Drivers.synthetic) {
       if (child !== item)
         result.push(1 << i)
       else
@@ -223,11 +241,11 @@ export function getPrioritiesForSizeChanging(item: MergedItem<any>, children: Me
   return result
 }
 
-export function getPrioritiesForEmptySpaceDistribution(children: MergeList<RxNode<ElImpl>>): ReadonlyArray<number> {
+export function getPrioritiesForEmptySpaceDistribution(children: MergeList<RxNode>): ReadonlyArray<number> {
   let result = 0
   let i = 0
   for (const child of children.items()) {
-    if (child.instance.driver.isPartition)
+    if (!child.instance.driver.isPartition && child.instance.driver !== Drivers.splitter && child.instance.driver !== Drivers.synthetic)
       result |= 1 << i++
   }
   return [result]
