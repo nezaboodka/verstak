@@ -215,19 +215,19 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           }
         }
 
-        const surroundingXpx = x.borderBoxSize[0].inlineSize - containerSizeXpx
-        const surroundingYpx = x.borderBoxSize[0].blockSize - containerSizeYpx
-        const options: SizeConverterOptions = {
-          axis: isHorizontal ? Axis.X : Axis.Y, lineSizePx: Dimension.lineSizePx, fontSizePx: BodyFontSize,
-          containerSizeXpx: native.scrollWidth - surroundingXpx, containerSizeYpx: native.scrollHeight - surroundingYpx,
-        }
 
         // Get split view elements' sizes converting them to "px"
+        const surroundingXpx = x.borderBoxSize[0].inlineSize - containerSizeXpx
+        const surroundingYpx = x.borderBoxSize[0].blockSize - containerSizeYpx
         const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
         for (const child of node.children.items()) {
           const partEl = child.instance.element as ElImpl
           if (isSplitViewPartition(child.instance.driver) && partEl !== undefined) {
             const size = isHorizontal ? partEl.width : partEl.height
+            const options: SizeConverterOptions = {
+              axis: isHorizontal ? Axis.X : Axis.Y, lineSizePx: Dimension.lineSizePx, fontSizePx: BodyFontSize,
+              containerSizeXpx: native.scrollWidth - surroundingXpx, containerSizeYpx: native.scrollHeight - surroundingYpx,
+            }
             const minPx = size.min ? toPx(Dimension.parse(size.min), options) : 0
             const maxPx = size.max ? toPx(Dimension.parse(size.max), options) : Number.POSITIVE_INFINITY
             if (partEl.layoutInfo === undefined)
