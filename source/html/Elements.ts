@@ -215,7 +215,6 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           }
         }
 
-
         // Get split view elements' sizes converting them to "px"
         const surroundingXpx = x.borderBoxSize[0].inlineSize - containerSizeXpx
         const surroundingYpx = x.borderBoxSize[0].blockSize - containerSizeYpx
@@ -268,7 +267,7 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
             el.style.gridRow = `${partCount + 1}`
         }
       }
-      console.log(`partCount = ${partCount}`)
+      // console.log(`partCount = ${partCount}`)
       if (partCount > 0)
         declareSplitter(partCount - 1, ownerNode)
     }
