@@ -23,7 +23,7 @@ export type El<T = any, M = any> = {
   width: Range
   height: Range
   alignment: Align
-  extraAlignment: Align
+  alignmentInside: Align
   stretchingStrengthX: number | undefined
   stretchingStrengthY: number | undefined
   contentWrapping: boolean
@@ -113,7 +113,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _width: { raw: Range, minPx: number, maxPx: number }
   private _height: { raw: Range, minPx: number, maxPx: number }
   private _alignment: Align
-  private _extraAlignment: Align
+  private _alignmentInside: Align
   private _stretchingStrengthX: number | undefined
   private _stretchingStrengthY: number | undefined
   private _contentWrapping: boolean
@@ -136,7 +136,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._width = { raw: { min: "", max: "" }, minPx: 0, maxPx: Number.POSITIVE_INFINITY }
     this._height = { raw: { min: "", max: "" }, minPx: 0, maxPx: Number.POSITIVE_INFINITY }
     this._alignment = Align.default
-    this._extraAlignment = Align.default
+    this._alignmentInside = Align.default
     this._stretchingStrengthX = undefined
     this._stretchingStrengthY = undefined
     this._contentWrapping = true
@@ -230,19 +230,19 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     const existing = this._alignment
     if (value !== existing) {
       ElImpl.applyAlignment(this, existing, value,
-        this._extraAlignment, this._extraAlignment,
+        this._alignmentInside, this._alignmentInside,
         this._stretchingStrengthX, this._stretchingStrengthY)
       this._alignment = value
     }
   }
 
-  get extraAlignment(): Align { return this._extraAlignment }
-  set extraAlignment(value: Align) {
-    const existing = this._extraAlignment
+  get alignmentInside(): Align { return this._alignmentInside }
+  set alignmentInside(value: Align) {
+    const existing = this._alignmentInside
     if (value !== existing) {
       ElImpl.applyAlignment(this, this._alignment, this._alignment,
         existing, value, this._stretchingStrengthX, this._stretchingStrengthY)
-      this._extraAlignment = value
+      this._alignmentInside = value
     }
   }
 
@@ -371,7 +371,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
   private static applyAlignment<T extends Element>(element: ElImpl<T, any>,
     oldPrimary: Align, newPrimary: Align,
-    oldExtra: Align, newExtra: Align,
+    oldInside: Align, newInside: Align,
     strengthX: number | undefined,
     strengthY: number | undefined): void {
     // Prepare
@@ -385,8 +385,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       if (hostLayout === undefined)
         hostLayout = hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
     }
-    if (newExtra === Align.default)
-      newExtra = newPrimary
+    if (newInside === Align.default)
+      newInside = newPrimary
     // Horizontal
     let isEffectiveAlignerX = false
     if (hostLayout) {
@@ -445,7 +445,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
           css.marginLeft = "" // remove "auto"
         break
     }
-    switch (newExtra & 0b00000111) {
+    switch (newInside & 0b00000111) {
       default:
       case Align.left:
         css.alignItems = "start"
@@ -501,7 +501,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         css.alignSelf = "stretch"
         break
     }
-    switch (newExtra & 0b00111000) {
+    switch (newInside & 0b00111000) {
       default:
       case Align.top:
         css.justifyContent = "start"
