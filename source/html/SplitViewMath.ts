@@ -56,8 +56,8 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
     const maxDeltaPx = Math.min(maxBeforeDeltaPx, maxAfterDeltaPx)
     const clampedDeltaPx = clamp(deltaPx, minDeltaPx, maxDeltaPx)
 
-    console.log(sizesPx.map(x => x.sizePx).join(", "))
-    console.log(`[${Array.from({ length: index }).map((x, i) => i).join(",")} | ${Array.from({ length: Math.max(0, sizesPx.length - index) }).map((x, i) => index + i).join(",")}] min = ${minDeltaPx} (${minBeforeDeltaPx}, ${minAfterDeltaPx}), ${deltaPx} -> ${clampedDeltaPx}, max = ${maxDeltaPx} (${maxBeforeDeltaPx}, ${maxAfterDeltaPx})`)
+    // console.log(`%c${sizesPx.map(x => x.sizePx).join(", ")}`, "color: red")
+    // console.log(`[${Array.from({ length: index }).map((x, i) => i).join(",")} | ${Array.from({ length: Math.max(0, sizesPx.length - index) }).map((x, i) => index + i).join(",")}] min = ${minDeltaPx} (${minBeforeDeltaPx}, ${minAfterDeltaPx}), ${deltaPx} -> ${clampedDeltaPx}, max = ${maxDeltaPx} (${maxBeforeDeltaPx}, ${maxAfterDeltaPx})`)
 
     if (clampedDeltaPx !== 0) {
       let lastGrowingElementIndex = undefined

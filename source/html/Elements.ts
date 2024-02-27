@@ -198,6 +198,8 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
         el.layoutInfo.containerSizeXpx = containerSizeXpx
         el.layoutInfo.containerSizeYpx = containerSizeYpx
 
+        // console.log(`%cleft = ${rect.left}, top = ${rect.top}, x = ${containerSizeXpx}, y = ${containerSizeYpx}`, "color: lime")
+
         const isHorizontal = el.splitView === SplitView.horizontal
         const wrapper = node.children.firstMergedItem()?.instance
         if (wrapper !== undefined) {
@@ -209,9 +211,11 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           }
         }
 
+        const surroundingXpx = x.borderBoxSize[0].inlineSize - x.contentBoxSize[0].inlineSize
+        const surroundingYpx = x.borderBoxSize[0].blockSize - x.contentBoxSize[0].blockSize
         const options: SizeConverterOptions = {
           axis: isHorizontal ? Axis.X : Axis.Y, lineSizePx: Dimension.lineSizePx, fontSizePx: BodyFontSize,
-          containerSizeXpx, containerSizeYpx,
+          containerSizeXpx: (el.native as HTMLElement).scrollWidth - surroundingXpx, containerSizeYpx: (el.native as HTMLElement).scrollHeight - surroundingYpx,
         }
 
         const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
@@ -224,15 +228,16 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
             const maxPx = size.max ? toPx(Dimension.parse(size.max), options) : Number.POSITIVE_INFINITY
             if (partEl.layoutInfo === undefined)
               partEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-            const sizePx = partEl.layoutInfo.effectiveSizePx = clamp(partEl.layoutInfo.effectiveSizePx, minPx, maxPx)
             if (isHorizontal)
               partEl.widthPx = { minPx, maxPx }
             else
               partEl.heightPx = { minPx, maxPx }
+            const sizePx = partEl.layoutInfo.effectiveSizePx = clamp(partEl.layoutInfo.effectiveSizePx, minPx, maxPx)
+            // console.log(`%c[${child.index}]: min = ${minPx}px, size = ${sizePx}px, max = ${maxPx}px`, "color: yellow")
             sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx })
           }
         }
-        console.log(options)
+        // console.log(options)
         relayout(node as any as RxNode<ElImpl>, getPrioritiesForEmptySpaceDistribution(node.children as MergeList<RxNode>), sizesPx)
       })
     }
