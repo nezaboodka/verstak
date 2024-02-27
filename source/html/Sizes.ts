@@ -41,6 +41,10 @@ export class Dimension<T = NoUnit> {
     return `${value.num}${value.unit ?? ""}`
   }
 
+  // Font Size Px
+  static readonly gFontSizePx = new RxNodeVariable<number>()
+
+  // Line Size Px
   private static readonly gLineSizePx = new RxNodeVariable<number>()
   static get lineSizePx(): number {
     return Dimension.gLineSizePx.value

@@ -64,7 +64,17 @@ export function Splitter<M = unknown, R = void>(
 }
 
 export function rowBreak(shiftCursorDown?: number): void {
-  RxNode.declare(Drivers.partition)
+  RxNode.declare(Drivers.partition, {
+    onChange: el => {
+      const ownerEl = el.node.owner.element as ElImpl
+      if (ownerEl.splitView !== undefined) {
+        el.style.display = "grid"
+      }
+      else {
+        // el.style.display = ""
+      }
+    },
+  })
 }
 
 export function declareSplitter<T>(index: number, splitViewNode: RxNode<El<T>>): RxNode<El<HTMLElement>> {
@@ -103,15 +113,14 @@ export function declareSplitter<T>(index: number, splitViewNode: RxNode<El<T>>):
               else { // drag started
                 e.setAttribute("rx-dragging", "true")
                 const initialSizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
-                const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
-                for (const child of splitViewNode.children.items()) {
-                  if (child.instance.driver.isPartition) {
-                    const sizePx = isHorizontal
-                      ? (child.instance.element as ElImpl).layoutInfo?.effectiveSizeXpx ?? 0
-                      : (child.instance.element as ElImpl).layoutInfo?.effectiveSizeYpx ?? 0
-                    initialSizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx })
+                for (const item of splitViewNode.children.items()) {
+                  const child = item.instance
+                  if (isSplitViewPartition(child.driver)) {
+                    const sizePx = (child.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0
+                    initialSizesPx.push({ node: child as RxNode<ElImpl>, sizePx })
                   }
                 }
+                console.log("initial", initialSizesPx.map(x => x.sizePx).join(", "))
                 pointer.setData(initialSizesPx)
               }
               if (pointer.dragFinished) {
@@ -175,48 +184,64 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
   update(node: RxNode<El<T>>): void | Promise<void> {
     rowBreak()
     const result = super.update(node)
-    if (node.element.splitView !== undefined) {
-      OnResize(node.element.native, x => {
-        const e = x.contentBoxSize[0]
-        const el = node.element as ElImpl
+    const el = node.element as ElImpl
+    if (el.splitView !== undefined) {
+      const native = el.native as HTMLElement
+      OnResize(native, x => {
         if (el.layoutInfo === undefined)
           el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-        const sizeXpx = Math.floor(e.inlineSize)
-        const sizeYpx = Math.floor(e.blockSize)
-        el.layoutInfo.effectiveSizeXpx = sizeXpx
-        el.layoutInfo.effectiveSizeYpx = sizeYpx
+
+        const rect = x.contentRect
+        const contentBoxPx = x.contentBoxSize[0]
+        const containerSizeXpx = contentBoxPx.inlineSize
+        const containerSizeYpx = contentBoxPx.blockSize
+        el.layoutInfo.offsetXpx = rect.left
+        el.layoutInfo.offsetYpx = rect.top
+        el.layoutInfo.containerSizeXpx = containerSizeXpx
+        el.layoutInfo.containerSizeYpx = containerSizeYpx
+
+        // console.log(`%cleft = ${rect.left}, top = ${rect.top}, x = ${containerSizeXpx}, y = ${containerSizeYpx}`, "color: lime")
 
         const isHorizontal = el.splitView === SplitView.horizontal
 
-        const options: SizeConverterOptions = {
-          axis: isHorizontal ? Axis.X : Axis.Y, lineSizePx: Dimension.lineSizePx, fontSizePx: BodyFontSize,
-          containerSizeXpx: el.layoutInfo?.effectiveSizeXpx ?? 0, containerSizeYpx: el.layoutInfo?.effectiveSizeYpx ?? 0,
+        // Set fixed width/height to wrapper
+        const wrapper = node.children.firstMergedItem()?.instance
+        if (wrapper !== undefined) {
+          const wrapperEl = wrapper.element as El
+          if (isHorizontal)
+            wrapperEl.style.width = wrapperEl.style.maxWidth = `${containerSizeXpx}px`
+          else {
+            wrapperEl.style.height = wrapperEl.style.maxHeight = `${containerSizeYpx}px`
+          }
         }
 
+        // Get split view elements' sizes converting them to "px"
+        const surroundingXpx = x.borderBoxSize[0].inlineSize - containerSizeXpx
+        const surroundingYpx = x.borderBoxSize[0].blockSize - containerSizeYpx
         const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
         for (const child of node.children.items()) {
           const partEl = child.instance.element as ElImpl
-          if (partEl.native !== undefined && child.instance.driver.isPartition) {
-            // Convert sizes to "px"
+          if (isSplitViewPartition(child.instance.driver) && partEl !== undefined) {
             const size = isHorizontal ? partEl.width : partEl.height
+            const options: SizeConverterOptions = {
+              axis: isHorizontal ? Axis.X : Axis.Y, lineSizePx: Dimension.lineSizePx, fontSizePx: BodyFontSize,
+              containerSizeXpx: native.scrollWidth - surroundingXpx, containerSizeYpx: native.scrollHeight - surroundingYpx,
+            }
             const minPx = size.min ? toPx(Dimension.parse(size.min), options) : 0
             const maxPx = size.max ? toPx(Dimension.parse(size.max), options) : Number.POSITIVE_INFINITY
             if (partEl.layoutInfo === undefined)
               partEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-            let sizePx = 0
-            if (isHorizontal) {
+            if (isHorizontal)
               partEl.widthPx = { minPx, maxPx }
-              sizePx = partEl.layoutInfo.effectiveSizeXpx = clamp(partEl.layoutInfo.effectiveSizeXpx, minPx, maxPx)
-            }
-            else {
+            else
               partEl.heightPx = { minPx, maxPx }
-              sizePx = partEl.layoutInfo.effectiveSizeYpx = clamp(partEl.layoutInfo.effectiveSizeYpx, minPx, maxPx)
-            }
+            const sizePx = partEl.layoutInfo.effectiveSizePx = clamp(partEl.layoutInfo.effectiveSizePx, minPx, maxPx)
+            // console.log(`%c[${child.index}]: min = ${minPx}px, size = ${sizePx}px, max = ${maxPx}px`, "color: yellow")
             sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx })
           }
         }
-        console.log(options)
-        relayout(node as any as RxNode<ElImpl>, getPrioritiesForEmptySpaceDistribution(node.children as MergeList<RxNode<ElImpl>>), sizesPx)
+        // console.log(options)
+        relayout(node as any as RxNode<ElImpl>, getPrioritiesForEmptySpaceDistribution(node.children as MergeList<RxNode>), sizesPx)
       })
     }
     return result
@@ -225,17 +250,26 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
   child(ownerNode: RxNode<El<T, any>>, childDriver: RxNodeDriver<any>, childDeclaration?: RxNodeDecl<any> | undefined, childPreset?: RxNodeDecl<any> | undefined): MergedItem<RxNode> | undefined {
     let result: MergedItem<RxNode> | undefined = undefined
     const el = ownerNode.element
-    if (el.splitView !== undefined && !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.synthetic) {
-      rowBreak()
-
+    if (el.splitView !== undefined && isSplitViewPartition(childDriver)) {
       let partCount = 0
       for (const child of ownerNode.children.items()) {
-        if (child.instance.driver.isPartition)
+        if (isSplitViewPartition(child.instance.driver))
           partCount++
       }
-
-      if (partCount > 1)
-        declareSplitter(partCount - 2, ownerNode)
+      const isHorizontal = el.splitView === SplitView.horizontal
+      if (childDeclaration !== undefined) {
+        const onCreate = childDeclaration.onCreate
+        childDeclaration.onCreate = (el, basis) => {
+          onCreate?.(el, basis)
+          if (isHorizontal)
+            el.style.gridColumn = `${partCount + 1}`
+          else
+            el.style.gridRow = `${partCount + 1}`
+        }
+      }
+      // console.log(`partCount = ${partCount}`)
+      if (partCount > 0)
+        declareSplitter(partCount - 1, ownerNode)
     }
     else {
       if (childDriver.isPartition) {
@@ -249,7 +283,11 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 }
 
-const Drivers = {
+export function isSplitViewPartition(childDriver: RxNodeDriver): boolean {
+  return !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.synthetic
+}
+
+export const Drivers = {
   // display: flex, flex-direction: column
   section: new SectionDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.section),
 

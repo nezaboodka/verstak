@@ -339,13 +339,11 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     const owner = node.owner as RxNode<ElImpl>
     const ownerEl = owner.element
     if (ownerEl.splitView === SplitView.horizontal) {
-      s.minWidth = "" // clear
-      s.maxWidth = "" // clear
+      // s.minWidth = "" // clear
+      // s.maxWidth = "" // clear
       // if (ownerEl.layoutInfo === undefined)
       //   ownerEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
       // ownerEl.layoutInfo.flags |= ElLayoutInfoFlags.childrenRelayoutIsNeeded
-      const hostEl = node.host.element as ElImpl
-      hostEl._width.raw = value
     }
     else {
       s.minWidth = value.min ?? ""
@@ -359,13 +357,11 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     const owner = node.owner as RxNode<ElImpl>
     const ownerEl = owner.element
     if (ownerEl.splitView === SplitView.vertical) {
-      s.minHeight = "" // clear
-      s.maxHeight = "" // clear
+      // s.minHeight = "" // clear
+      // s.maxHeight = "" // clear
       // if (ownerEl.layoutInfo === undefined)
       //   ownerEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
       // ownerEl.layoutInfo.flags |= ElLayoutInfoFlags.childrenRelayoutIsNeeded
-      const hostEl = node.host.element as ElImpl
-      hostEl._height.raw = value
     }
     else {
       s.minHeight = value.min ?? ""
@@ -532,7 +528,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     // Maintain strength for hosting partition (if any)
     const s = element.style
     const host = element.node.host
-    if (host.driver.isPartition) {
+    if (host.driver.isPartition && element.splitView === undefined) {
       const hostEl = host.element as ElImpl
       hostEl._stretchingStrengthX = value
       let delta = 0
@@ -571,7 +567,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     value: number | undefined): void {
     // Maintain strength for hosting partition (if any)
     const host = element.node.host
-    if (host.driver.isPartition) {
+    if (host.driver.isPartition && element.splitView === undefined) {
       const hostElement = host.element as ElImpl
       hostElement._stretchingStrengthY = value
       let delta = 0
@@ -689,8 +685,12 @@ export class ElLayoutInfo {
   alignerY?: ElImpl
   flags: ElLayoutInfoFlags
 
-  effectiveSizeXpx: number
-  effectiveSizeYpx: number
+  effectiveSizePx: number
+
+  offsetXpx: number
+  offsetYpx: number
+  containerSizeXpx: number
+  containerSizeYpx: number
 
   constructor(prev: ElLayoutInfo) {
     this.x = prev.x
@@ -701,8 +701,12 @@ export class ElLayoutInfo {
     this.alignerY = undefined
     this.flags = prev.flags & ~ElLayoutInfoFlags.ownCursorPosition
 
-    this.effectiveSizeXpx = 0
-    this.effectiveSizeYpx = 0
+    this.effectiveSizePx = 0
+
+    this.offsetXpx = 0
+    this.offsetYpx = 0
+    this.containerSizeXpx = 0
+    this.containerSizeYpx = 0
   }
 }
 
@@ -715,7 +719,7 @@ enum ElLayoutInfoFlags {
 }
 
 const UndefinedElCoords = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
-export const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: ElLayoutInfoFlags.none, effectiveSizeXpx: 0, effectiveSizeYpx: 0 }))
+export const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: ElLayoutInfoFlags.none, effectiveSizePx: 0, offsetXpx: 0, offsetYpx: 0, containerSizeXpx: 0, containerSizeYpx: 0 }))
 
 function getElCoordsAndAdjustLayoutInfo(
   isRegularElement: boolean, area: ElArea, maxX: number, maxY: number,
