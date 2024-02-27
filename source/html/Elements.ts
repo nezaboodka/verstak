@@ -228,7 +228,8 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
               containerSizeXpx: native.scrollWidth - surroundingXpx, containerSizeYpx: native.scrollHeight - surroundingYpx,
             }
             const minPx = size.min ? toPx(Dimension.parse(size.min), options) : 0
-            const maxPx = size.max ? toPx(Dimension.parse(size.max), options) : Number.POSITIVE_INFINITY
+            let maxPx = size.max ? toPx(Dimension.parse(size.max), options) : Number.POSITIVE_INFINITY
+            maxPx = Math.max(minPx, maxPx)
             if (partEl.layoutInfo === undefined)
               partEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
             if (isHorizontal)

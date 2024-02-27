@@ -56,10 +56,14 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
     const maxDeltaPx = Math.min(maxBeforeDeltaPx, maxAfterDeltaPx)
     const clampedDeltaPx = clamp(deltaPx, minDeltaPx, maxDeltaPx)
 
-    // console.log(`%c${sizesPx.map(x => x.sizePx).join(", ")}`, "color: red")
-    // console.log(`[${Array.from({ length: index }).map((x, i) => i).join(",")} | ${Array.from({ length: Math.max(0, sizesPx.length - index) }).map((x, i) => index + i).join(",")}] min = ${minDeltaPx} (${minBeforeDeltaPx}, ${minAfterDeltaPx}), ${deltaPx} -> ${clampedDeltaPx}, max = ${maxDeltaPx} (${maxBeforeDeltaPx}, ${maxAfterDeltaPx})`)
+    console.log(`%c${sizesPx.map((x, i) => {
+      const size = isHorizontal ? x.node.element.widthPx : x.node.element.heightPx
+      return `${i}: ${size.minPx}..${x.sizePx}..${size.maxPx} (px)`
+    }).join("\n")}`, "color: orangered")
+    console.log(`[${Array.from({ length: index }).map((x, i) => i).join(",")} | ${Array.from({ length: Math.max(0, sizesPx.length - index) }).map((x, i) => index + i).join(",")}] min = ${minDeltaPx.toFixed(2)} (${minBeforeDeltaPx.toFixed(2)}, ${minAfterDeltaPx.toFixed(2)}), ${deltaPx.toFixed(2)} -> ${clampedDeltaPx.toFixed(2)}, max = ${maxDeltaPx.toFixed(2)} (${maxBeforeDeltaPx.toFixed(2)}, ${maxAfterDeltaPx.toFixed(2)})`)
 
     if (clampedDeltaPx !== 0) {
+      const res = 1 / devicePixelRatio
       let lastGrowingElementIndex = undefined
       if (index > 0) {
         let runningReminderPx = 0
@@ -81,9 +85,9 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
               const newSizePx = initialSizePx + appendagePx
               let flooredNewSizePx = Math.floor(newSizePx * devicePixelRatio) / devicePixelRatio
               runningReminderPx += newSizePx - flooredNewSizePx
-              if (runningReminderPx >= 1) {
-                runningReminderPx -= 1
-                flooredNewSizePx += 1
+              if (runningReminderPx >= res) {
+                runningReminderPx -= res
+                flooredNewSizePx += res
               }
               const size = isHorizontal ? sizesPx[i].node.element.widthPx : sizesPx[i].node.element.heightPx
               const sizePx = clamp(flooredNewSizePx, size.minPx, size.maxPx)
@@ -119,9 +123,9 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
                 const newSizePx = initialSizePx - appendagePx
                 let flooredNewSizePx = Math.floor(newSizePx * devicePixelRatio) / devicePixelRatio
                 runningReminderPx += newSizePx - flooredNewSizePx
-                if (runningReminderPx >= 1) {
-                  runningReminderPx -= 1
-                  flooredNewSizePx += 1
+                if (runningReminderPx >= res) {
+                  runningReminderPx -= res
+                  flooredNewSizePx += res
                 }
                 const size = isHorizontal ? sizesPx[i].node.element.widthPx : sizesPx[i].node.element.heightPx
                 const sizePx = clamp(flooredNewSizePx, size.minPx, size.maxPx)
