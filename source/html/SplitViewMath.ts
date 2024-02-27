@@ -8,7 +8,7 @@
 import { MergeList, MergedItem, RxNode } from "reactronic"
 import { ElImpl, ElLayoutInfo, InitialElLayoutInfo, SplitView } from "./El.js"
 import { clamp } from "./ElUtils.js"
-import { Drivers } from "./Elements.js"
+import { Drivers, isSplitViewPartition } from "./Elements.js"
 
 export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: number, index: number, initialSizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, priorities?: ReadonlyArray<number>): void {
   if (priorities === undefined) {
@@ -164,7 +164,7 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
   const offsetYpx = splitViewNode.element.layoutInfo?.offsetYpx ?? 0
   for (const item of splitViewNode.children.items()) {
     const child = item.instance
-    if (!child.driver.isPartition && child.driver !== Drivers.splitter && child.driver !== Drivers.synthetic) {
+    if (isSplitViewPartition(child.driver)) {
       const el = child.element as ElImpl
       if (el.native !== undefined) {
         posPx += el.layoutInfo?.effectiveSizePx ?? 0
@@ -228,7 +228,7 @@ export function getPrioritiesForSizeChanging(item: MergedItem<any>, children: Me
   let i = 0
   let changedItemIndex = -1
   for (const child of children.items()) {
-    if (!child.instance.driver.isPartition && child.instance.driver !== Drivers.splitter && child.instance.driver !== Drivers.synthetic) {
+    if (isSplitViewPartition(child.instance.driver)) {
       if (child !== item)
         result.push(1 << i)
       else
@@ -245,7 +245,7 @@ export function getPrioritiesForEmptySpaceDistribution(children: MergeList<RxNod
   let result = 0
   let i = 0
   for (const child of children.items()) {
-    if (!child.instance.driver.isPartition && child.instance.driver !== Drivers.splitter && child.instance.driver !== Drivers.synthetic)
+    if (isSplitViewPartition(child.instance.driver))
       result |= 1 << i++
   }
   return [result]
