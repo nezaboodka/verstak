@@ -83,6 +83,7 @@ export function declareSplitter<T>(index: number, splitViewNode: RxNode<El<T>>):
     Splitter({
       key,
       mode: Mode.independentUpdate,
+      onCreate: el => el.native.className = `splitter ${key}`,
       onChange: b => {
         const e = b.native
         const model = b.model

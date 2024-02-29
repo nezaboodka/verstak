@@ -917,7 +917,6 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     const owner = el.node.owner.element as ElImpl
     s.position = "absolute"
     s.zIndex = `${Number.MAX_SAFE_INTEGER}`
-    s.backgroundColor = "#00BB00"
     if (owner.splitView === SplitView.horizontal) {
       s.width = "4px"
       s.marginLeft = "-2px"
