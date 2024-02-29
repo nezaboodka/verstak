@@ -646,13 +646,12 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       if (value !== undefined) {
         s.display = "flex"
         s.position = "relative"
+        s.overflow = "hidden"
         if (value === SplitView.horizontal) {
           s.flexDirection = "row"
-          s.overflow = "scroll hidden"
         }
         else {
           s.flexDirection = "column"
-          s.overflow = "hidden scroll"
         }
       }
       else {

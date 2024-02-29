@@ -91,8 +91,9 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
   const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
   let posPx = 0
   const sizesPx = []
-  const offsetXpx = splitViewNode.element.layoutInfo?.offsetXpx ?? 0
-  const offsetYpx = splitViewNode.element.layoutInfo?.offsetYpx ?? 0
+  const layoutInfo = splitViewNode.element.layoutInfo
+  const offsetXpx = layoutInfo?.offsetXpx ?? 0
+  const offsetYpx = layoutInfo?.offsetYpx ?? 0
   for (const item of splitViewNode.children.items()) {
     const child = item.instance
     if (isSplitViewPartition(child.driver)) {
@@ -130,8 +131,16 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
     else
       wrapper.element.style.gridTemplateRows = sizesPx.map(x => `${x}px`).join(" ")
   }
-  // const sizePx = posPx + (partitions.length > 0 ? partitions[partitions.length - 1].sizePx : 0)
-  // this._isOverflowing = sizePx > this._sizePx
+  // Is Overflowing
+  const containerSizePx = (isHorizontal ? layoutInfo?.containerSizeXpx : layoutInfo?.containerSizeYpx) ?? 0
+  if (posPx > containerSizePx) {
+    if (isHorizontal)
+      splitViewNode.element.style.overflow = "scroll hidden"
+    else
+      splitViewNode.element.style.overflow = "hidden scroll"
+  }
+  else
+    splitViewNode.element.style.overflow = "hidden"
 }
 
 // Split View Part Priorities
