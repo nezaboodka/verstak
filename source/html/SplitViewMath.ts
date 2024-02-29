@@ -7,8 +7,8 @@
 
 import { MergeList, MergedItem, RxNode } from "reactronic"
 import { ElImpl, ElLayoutInfo, InitialElLayoutInfo, SplitView } from "./El.js"
-import { clamp } from "./ElUtils.js"
 import { Drivers, isSplitViewPartition } from "./Elements.js"
+import { clamp } from "./ElUtils.js"
 
 const DEBUG = false
 
@@ -71,12 +71,10 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, deltaPx: number,
     DEBUG && console.log(`[${Array.from({ length: index }).map((x, i) => i).join(",")} | ${Array.from({ length: Math.max(0, sizesPx.length - index) }).map((x, i) => index + i).join(",")}] min = ${n(minDeltaPx)}, ${n(deltaPx)} -> ${n(clampedDeltaPx)}, max = ${n(maxDeltaPx)}`)
 
     if (clampedDeltaPx !== 0) {
-      if (index > 0) {
+      if (index > 0)
         beforeDeltaPx = distribute(1, clampedDeltaPx, index, priorities, sizesPx, isHorizontal, force)
-      }
-      if (hasAfter) {
+      if (hasAfter)
         distribute(-1, clampedDeltaPx, index, priorities, sizesPx, isHorizontal, force)
-      }
     }
   }
   for (let i = 0; i < sizesPx.length; i++) {
