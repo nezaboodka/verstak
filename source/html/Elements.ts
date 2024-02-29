@@ -120,7 +120,7 @@ export function declareSplitter<T>(index: number, splitViewNode: RxNode<El<T>>):
                     initialSizesPx.push({ node: child as RxNode<ElImpl>, sizePx })
                   }
                 }
-                console.log("initial", initialSizesPx.map(x => x.sizePx).join(", "))
+                // console.log("initial", initialSizesPx.map(x => x.sizePx).join(", "))
                 pointer.setData(initialSizesPx)
               }
               if (pointer.dragFinished) {
@@ -242,7 +242,8 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           }
         }
         // console.log(options)
-        relayout(node as any as RxNode<ElImpl>, getPrioritiesForEmptySpaceDistribution(node.children as MergeList<RxNode>), sizesPx)
+        const priorities = getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as MergeList<RxNode>)
+        relayout(node as any as RxNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx)
       })
     }
     return result

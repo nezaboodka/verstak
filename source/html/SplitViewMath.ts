@@ -10,6 +10,8 @@ import { ElImpl, ElLayoutInfo, InitialElLayoutInfo, SplitView } from "./El.js"
 import { clamp } from "./ElUtils.js"
 import { Drivers, isSplitViewPartition } from "./Elements.js"
 
+const DEBUG = false
+
 export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: number, index: number, initialSizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, priorities?: ReadonlyArray<number>): void {
   if (priorities === undefined) {
     priorities = getPrioritiesForSplitter(index + 1, initialSizesPx.length)
@@ -17,24 +19,31 @@ export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: nu
   const containerSizePx = splitViewNode.element.splitView === SplitView.horizontal
     ? splitViewNode.element.layoutInfo?.containerSizeXpx ?? 0
     : splitViewNode.element.layoutInfo?.containerSizeYpx ?? 0
-  console.log(`(splitter) delta = ${deltaPx}, container = ${containerSizePx}, size = ${initialSizesPx.reduce((p, c) => p + c.sizePx, 0)}, index = ${index}`)
+  DEBUG && console.log(`(splitter) delta = ${deltaPx}, container = ${containerSizePx}, size = ${initialSizesPx.reduce((p, c) => p + c.sizePx, 0)}, index = ${index}`)
   resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, index + 1, priorities, initialSizesPx, true)
   layout(splitViewNode)
 }
 
-export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>): void {
+export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArray<number>, manuallyResizablePriorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>): void {
+  DEBUG && console.clear()
   const containerSizePx = splitViewNode.element.splitView === SplitView.horizontal
     ? splitViewNode.element.layoutInfo?.containerSizeXpx ?? 0
     : splitViewNode.element.layoutInfo?.containerSizeYpx ?? 0
-  const deltaPx = containerSizePx - sizesPx.reduce((p, c) => p + c.sizePx, 0)
-  console.log(`(relayout) delta = ${deltaPx}px, container = ${containerSizePx}px, priorities = ${priorities.map(x => `0x${x.toString(2)}`).join(",")}`)
-  resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, sizesPx.length, priorities, sizesPx)
+  let deltaPx = containerSizePx - sizesPx.reduce((p, c) => p + c.sizePx, 0)
+  DEBUG && console.log(`(relayout) ∆ = ${n(deltaPx)}px, container = ${n(containerSizePx)}px, priorities = ${priorities.map(x => `0x${x.toString(2)}`).join(",")}`)
+  deltaPx = resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, sizesPx.length, priorities, sizesPx)
+  DEBUG && console.log(`(relayout) ~∆ = ${n(deltaPx)}, container = ${n(containerSizePx, 3)}px, total = ${n(sizesPx.reduce((p, c) => p + c.sizePx, 0), 3)}px`)
+  if (deltaPx < -(1 / devicePixelRatio)) {
+    DEBUG && console.log(`%c${deltaPx}px`, "color: lime")
+    resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, sizesPx.length, manuallyResizablePriorities, sizesPx, true)
+  }
   layout(splitViewNode)
   // this._saveProportions()
 }
 
-export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx: number, deltaPx: number, index: number, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, force: boolean = false): void {
+export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx: number, deltaPx: number, index: number, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, force: boolean = false): number {
   const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
+  let beforeDeltaPx = 0
   if (sizesPx.length > 0 && deltaPx !== 0) {
 
     let minBeforeDeltaPx = 0
@@ -56,18 +65,16 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
     const maxDeltaPx = Math.min(maxBeforeDeltaPx, maxAfterDeltaPx)
     const clampedDeltaPx = clamp(deltaPx, minDeltaPx, maxDeltaPx)
 
-    console.log(`%c${sizesPx.map((x, i) => {
+    DEBUG && console.log(`%c${sizesPx.map((x, i) => {
       const size = isHorizontal ? x.node.element.widthPx : x.node.element.heightPx
       return `${i}: ${size.minPx}..${x.sizePx}..${size.maxPx} (px)`
-    }).join("\n")}`, "color: orangered")
-    console.log(`[${Array.from({ length: index }).map((x, i) => i).join(",")} | ${Array.from({ length: Math.max(0, sizesPx.length - index) }).map((x, i) => index + i).join(",")}] min = ${minDeltaPx.toFixed(2)} (${minBeforeDeltaPx.toFixed(2)}, ${minAfterDeltaPx.toFixed(2)}), ${deltaPx.toFixed(2)} -> ${clampedDeltaPx.toFixed(2)}, max = ${maxDeltaPx.toFixed(2)} (${maxBeforeDeltaPx.toFixed(2)}, ${maxAfterDeltaPx.toFixed(2)})`)
+    }).join("\n")}`, "color: skyblue")
+    DEBUG && console.log(`[${Array.from({ length: index }).map((x, i) => i).join(",")} | ${Array.from({ length: Math.max(0, sizesPx.length - index) }).map((x, i) => index + i).join(",")}] min = ${n(minDeltaPx)}, ${n(deltaPx)} -> ${n(clampedDeltaPx)}, max = ${n(maxDeltaPx)}`)
 
     if (clampedDeltaPx !== 0) {
-      const res = 1 / devicePixelRatio
-      let lastGrowingElementIndex = undefined
+      const eps = 0.0001
       if (index > 0) {
-        let runningReminderPx = 0
-        let beforeDeltaPx = clampedDeltaPx
+        beforeDeltaPx = clampedDeltaPx
         for (let priority = 0; priority < priorities.length; priority++) {
           const vector = priorities[priority]
           let fractionCount = getFractionCount(isHorizontal, sizesPx.map(x => x.node), vector, index, force)
@@ -77,34 +84,24 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
             for (const i of indexes(vector, index)) {
               const child = sizesPx[i].node
               const initialSizePx = sizesPx[i].sizePx
-              const g = isHorizontal ? (child.element.stretchingStrengthX ?? 0) : (child.element.stretchingStrengthY ?? 0)
-              const growth = g > 0 ? g : (force ? 1 : 0)
-              if (growth > 0)
-                lastGrowingElementIndex = i
-              const appendagePx = growth * fractionSizePx
-              const newSizePx = initialSizePx + appendagePx
-              let flooredNewSizePx = Math.floor(newSizePx * devicePixelRatio) / devicePixelRatio
-              runningReminderPx += newSizePx - flooredNewSizePx
-              if (runningReminderPx >= res) {
-                runningReminderPx -= res
-                flooredNewSizePx += res
-              }
+              const strength = isHorizontal ? (child.element.stretchingStrengthX ?? 1) : (child.element.stretchingStrengthY ?? 1)
+              const growth = strength > 0 ? strength : (force ? 1 : 0)
+              const newSizePx = initialSizePx + growth * fractionSizePx
               const size = isHorizontal ? sizesPx[i].node.element.widthPx : sizesPx[i].node.element.heightPx
-              const sizePx = clamp(flooredNewSizePx, size.minPx, size.maxPx)
-              console.log(`[${i}]: min = ${size.minPx}, max = ${size.maxPx}, growth = ${growth}, flooredNewSizePx = ${flooredNewSizePx}, size = ${sizePx} px`)
+              const sizePx = clamp(newSizePx, size.minPx, size.maxPx)
+              DEBUG && console.log(`[${i}]: ${size.minPx}..(${sizesPx[i].sizePx.toFixed(2)} -> ${sizePx.toFixed(2)})..${size.maxPx} (px)`)
               beforeDeltaPx -= sizePx - initialSizePx
               sizesPx[i].sizePx = sizePx
               if (sizesPx[i].sizePx > size.minPx && sizesPx[i].sizePx < size.maxPx) {
                 fractionCount += growth
               }
             }
-          } while (beforeDeltaPx > 0 && fractionCount > 0 && Math.abs(beforeDeltaPx) >= devicePixelRatio)
-          if (Math.abs(beforeDeltaPx) < devicePixelRatio) {
+          } while (Math.abs(beforeDeltaPx) > eps && fractionCount > 0)
+          if (Math.abs(beforeDeltaPx) <= eps) {
             break
           }
         }
         if (hasAfter) {
-          let runningReminderPx = 0
           let afterDeltaPx = clampedDeltaPx
           for (let priority = 0; priority < priorities.length; priority++) {
             const vector = priorities[priority]
@@ -115,38 +112,22 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
               for (const i of indexes(vector, -index)) {
                 const child = sizesPx[i].node
                 const initialSizePx = sizesPx[i].sizePx
-                const g = isHorizontal ? (child.element.stretchingStrengthX ?? 0) : (child.element.stretchingStrengthY ?? 0)
-                const growth = g > 0 ? g : (force ? 1 : 0)
-                if (growth > 0)
-                  lastGrowingElementIndex = i
-                const appendagePx = growth * fractionSizePx
-                const newSizePx = initialSizePx - appendagePx
-                let flooredNewSizePx = Math.floor(newSizePx * devicePixelRatio) / devicePixelRatio
-                runningReminderPx += newSizePx - flooredNewSizePx
-                if (runningReminderPx >= res) {
-                  runningReminderPx -= res
-                  flooredNewSizePx += res
-                }
+                const strength = isHorizontal ? (child.element.stretchingStrengthX ?? 1) : (child.element.stretchingStrengthY ?? 1)
+                const growth = strength > 0 ? strength : (force ? 1 : 0)
+                const newSizePx = initialSizePx - growth * fractionSizePx
                 const size = isHorizontal ? sizesPx[i].node.element.widthPx : sizesPx[i].node.element.heightPx
-                const sizePx = clamp(flooredNewSizePx, size.minPx, size.maxPx)
+                const sizePx = clamp(newSizePx, size.minPx, size.maxPx)
                 afterDeltaPx += sizePx - initialSizePx
                 sizesPx[i].sizePx = sizePx
                 if (sizesPx[i].sizePx > size.minPx && sizesPx[i].sizePx < size.maxPx) {
                   fractionCount += growth
                 }
               }
-            } while (afterDeltaPx > 0 && fractionCount > 0 && Math.abs(containerSizePx - sizesPx.reduce((p, c) => p + c.sizePx, 0)) >= devicePixelRatio)
-            if (Math.abs(containerSizePx - sizesPx.reduce((p, c) => p + c.sizePx, 0)) < devicePixelRatio) {
+            } while (Math.abs(afterDeltaPx) > eps && fractionCount > 0)
+            if (Math.abs(afterDeltaPx) <= eps) {
               break
             }
           }
-        }
-        if (lastGrowingElementIndex !== undefined) {
-          // const last = sizesPx[lastGrowingElementIndex].node
-          // const lastSize = isHorizontal ? last.element.width : last.element.height
-          // const lastMinSizePx = lastSize.min ? Number.parseInt(lastSize.min) : 0
-          // const lastMaxSizePx = lastSize.max ? Number.parseInt(lastSize.max) : Number.POSITIVE_INFINITY
-          // sizesPx[lastGrowingElementIndex].sizePx = clamp(sizesPx[lastGrowingElementIndex].sizePx + containerSizePx - sizesPx.reduce((p, c) => p + c.sizePx, 0), lastMinSizePx, lastMaxSizePx)
         }
       }
     }
@@ -156,8 +137,9 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx:
     if (el.layoutInfo === undefined)
       el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
     el.layoutInfo.effectiveSizePx = sizesPx[i].sizePx
-    console.log(`[${i}]: set size = ${sizesPx[i].sizePx}px`)
+    DEBUG && console.log(`[${i}]: set size = ${sizesPx[i].sizePx}px`)
   }
+  return beforeDeltaPx
 }
 
 export function layout(splitViewNode: RxNode<ElImpl>): void {
@@ -188,7 +170,7 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
     else if (child.driver === Drivers.splitter) {
       const el = child.element as ElImpl
       if (el.native !== undefined) {
-        // console.log(`(${isHorizontal ? "horizontal" : "vertical"}) pos = ${posPx}px`)
+        // DEBUG && console.log(`(${isHorizontal ? "horizontal" : "vertical"}) pos = ${posPx}px`)
         if (isHorizontal)
           el.style.left = `${offsetXpx + posPx}px`
         else
@@ -245,20 +227,28 @@ export function getPrioritiesForSizeChanging(item: MergedItem<any>, children: Me
   return result
 }
 
-export function getPrioritiesForEmptySpaceDistribution(children: MergeList<RxNode>): ReadonlyArray<number> {
-  let result = 0
+export function getPrioritiesForEmptySpaceDistribution(isHorizontal: boolean, children: MergeList<RxNode>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
+  let r = 0
+  let mr = 0
   let i = 0
   for (const child of children.items()) {
-    if (isSplitViewPartition(child.instance.driver))
-      result |= 1 << i++
+    if (isSplitViewPartition(child.instance.driver)) {
+      const el = child.instance.element as ElImpl
+      const strength = (isHorizontal ? el.stretchingStrengthX : el.stretchingStrengthY) ?? 1
+      if (strength > 0)
+        r |= 1 << i
+      else
+        mr |= 1 << i
+      i++
+    }
   }
-  return [result]
+  return { resizable: [r], manuallyResizable: [mr] }
 }
 
 function getFractionCount(isHorizontal: boolean, children: Array<RxNode<ElImpl>>, vector: number, index: number, force: boolean = false): number {
   let result = 0
   for (const i of indexes(vector, index)) {
-    const growth = (isHorizontal ? children[i].element.stretchingStrengthX : children[i].element.stretchingStrengthY) ?? 0
+    const growth = (isHorizontal ? children[i].element.stretchingStrengthX : children[i].element.stretchingStrengthY) ?? 1
     result += growth > 0 ? growth : (force ? 1 : 0)
   }
   return result
@@ -290,4 +280,8 @@ function* indexes(vector: number, index: number): Generator<number> {
       i++
     }
   }
+}
+
+function n(value: number, fractionDigits: number = 2): string {
+  return value === 0 ? "0" : value.toFixed(fractionDigits)
 }
