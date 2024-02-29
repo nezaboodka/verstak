@@ -45,7 +45,6 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, deltaPx: number,
   const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
   let beforeDeltaPx = 0
   if (sizesPx.length > 0 && deltaPx !== 0) {
-
     let minBeforeDeltaPx = 0
     let maxBeforeDeltaPx = 0
     for (let i = 0; i < index; i++) {
@@ -72,63 +71,11 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, deltaPx: number,
     DEBUG && console.log(`[${Array.from({ length: index }).map((x, i) => i).join(",")} | ${Array.from({ length: Math.max(0, sizesPx.length - index) }).map((x, i) => index + i).join(",")}] min = ${n(minDeltaPx)}, ${n(deltaPx)} -> ${n(clampedDeltaPx)}, max = ${n(maxDeltaPx)}`)
 
     if (clampedDeltaPx !== 0) {
-      const eps = 0.0001
       if (index > 0) {
-        beforeDeltaPx = clampedDeltaPx
-        for (let priority = 0; priority < priorities.length; priority++) {
-          const vector = priorities[priority]
-          let fractionCount = getFractionCount(isHorizontal, sizesPx.map(x => x.node), vector, index, force)
-          do {
-            const fractionSizePx = getFractionSizePx(beforeDeltaPx, fractionCount)
-            fractionCount = 0
-            for (const i of indexes(vector, index)) {
-              const child = sizesPx[i].node
-              const initialSizePx = sizesPx[i].sizePx
-              const strength = isHorizontal ? (child.element.stretchingStrengthX ?? 1) : (child.element.stretchingStrengthY ?? 1)
-              const growth = strength > 0 ? strength : (force ? 1 : 0)
-              const newSizePx = initialSizePx + growth * fractionSizePx
-              const size = isHorizontal ? sizesPx[i].node.element.widthPx : sizesPx[i].node.element.heightPx
-              const sizePx = clamp(newSizePx, size.minPx, size.maxPx)
-              DEBUG && console.log(`[${i}]: ${size.minPx}..(${sizesPx[i].sizePx.toFixed(2)} -> ${sizePx.toFixed(2)})..${size.maxPx} (px)`)
-              beforeDeltaPx -= sizePx - initialSizePx
-              sizesPx[i].sizePx = sizePx
-              if (sizesPx[i].sizePx > size.minPx && sizesPx[i].sizePx < size.maxPx) {
-                fractionCount += growth
-              }
-            }
-          } while (Math.abs(beforeDeltaPx) > eps && fractionCount > 0)
-          if (Math.abs(beforeDeltaPx) <= eps) {
-            break
-          }
-        }
-        if (hasAfter) {
-          let afterDeltaPx = clampedDeltaPx
-          for (let priority = 0; priority < priorities.length; priority++) {
-            const vector = priorities[priority]
-            let fractionCount = getFractionCount(isHorizontal, sizesPx.map(x => x.node), vector, -index, force)
-            do {
-              const fractionSizePx = getFractionSizePx(afterDeltaPx, fractionCount)
-              fractionCount = 0
-              for (const i of indexes(vector, -index)) {
-                const child = sizesPx[i].node
-                const initialSizePx = sizesPx[i].sizePx
-                const strength = isHorizontal ? (child.element.stretchingStrengthX ?? 1) : (child.element.stretchingStrengthY ?? 1)
-                const growth = strength > 0 ? strength : (force ? 1 : 0)
-                const newSizePx = initialSizePx - growth * fractionSizePx
-                const size = isHorizontal ? sizesPx[i].node.element.widthPx : sizesPx[i].node.element.heightPx
-                const sizePx = clamp(newSizePx, size.minPx, size.maxPx)
-                afterDeltaPx += sizePx - initialSizePx
-                sizesPx[i].sizePx = sizePx
-                if (sizesPx[i].sizePx > size.minPx && sizesPx[i].sizePx < size.maxPx) {
-                  fractionCount += growth
-                }
-              }
-            } while (Math.abs(afterDeltaPx) > eps && fractionCount > 0)
-            if (Math.abs(afterDeltaPx) <= eps) {
-              break
-            }
-          }
-        }
+        beforeDeltaPx = distribute(1, clampedDeltaPx, index, priorities, sizesPx, isHorizontal, force)
+      }
+      if (hasAfter) {
+        distribute(-1, clampedDeltaPx, index, priorities, sizesPx, isHorizontal, force)
       }
     }
   }
@@ -284,4 +231,34 @@ function* indexes(vector: number, index: number): Generator<number> {
 
 function n(value: number, fractionDigits: number = 2): string {
   return value === 0 ? "0" : value.toFixed(fractionDigits)
+}
+
+function distribute(sign: number, deltaPx: number, index: number, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, isHorizontal: boolean, force: boolean): number {
+  const eps = 0.0001
+  for (let priority = 0; priority < priorities.length; priority++) {
+    const vector = priorities[priority]
+    let fractionCount = getFractionCount(isHorizontal, sizesPx.map(x => x.node), vector, sign * index, force)
+    do {
+      const fractionSizePx = getFractionSizePx(deltaPx, fractionCount)
+      fractionCount = 0
+      for (const i of indexes(vector, sign * index)) {
+        const child = sizesPx[i].node
+        const initialSizePx = sizesPx[i].sizePx
+        const strength = isHorizontal ? (child.element.stretchingStrengthX ?? 1) : (child.element.stretchingStrengthY ?? 1)
+        const growth = strength > 0 ? strength : (force ? 1 : 0)
+        const newSizePx = initialSizePx + sign * (growth * fractionSizePx)
+        const size = isHorizontal ? sizesPx[i].node.element.widthPx : sizesPx[i].node.element.heightPx
+        const sizePx = clamp(newSizePx, size.minPx, size.maxPx)
+        deltaPx = deltaPx - sign * (sizePx - initialSizePx)
+        sizesPx[i].sizePx = sizePx
+        if (sizesPx[i].sizePx > size.minPx && sizesPx[i].sizePx < size.maxPx) {
+          fractionCount += growth
+        }
+      }
+    } while (Math.abs(deltaPx) > eps && fractionCount > 0)
+    if (Math.abs(deltaPx) <= eps) {
+      break
+    }
+  }
+  return deltaPx
 }
