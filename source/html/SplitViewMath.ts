@@ -20,7 +20,7 @@ export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: nu
     ? splitViewNode.element.layoutInfo?.containerSizeXpx ?? 0
     : splitViewNode.element.layoutInfo?.containerSizeYpx ?? 0
   DEBUG && console.log(`(splitter) delta = ${deltaPx}, container = ${containerSizePx}, size = ${initialSizesPx.reduce((p, c) => p + c.sizePx, 0)}, index = ${index}`)
-  resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, index + 1, priorities, initialSizesPx, true)
+  resizeUsingDelta(splitViewNode, deltaPx, index + 1, priorities, initialSizesPx, true)
   layout(splitViewNode)
 }
 
@@ -31,17 +31,17 @@ export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArra
     : splitViewNode.element.layoutInfo?.containerSizeYpx ?? 0
   let deltaPx = containerSizePx - sizesPx.reduce((p, c) => p + c.sizePx, 0)
   DEBUG && console.log(`(relayout) ∆ = ${n(deltaPx)}px, container = ${n(containerSizePx)}px, priorities = ${priorities.map(x => `0x${x.toString(2)}`).join(",")}`)
-  deltaPx = resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, sizesPx.length, priorities, sizesPx)
+  deltaPx = resizeUsingDelta(splitViewNode, deltaPx, sizesPx.length, priorities, sizesPx)
   DEBUG && console.log(`(relayout) ~∆ = ${n(deltaPx)}, container = ${n(containerSizePx, 3)}px, total = ${n(sizesPx.reduce((p, c) => p + c.sizePx, 0), 3)}px`)
   if (deltaPx < -(1 / devicePixelRatio)) {
     DEBUG && console.log(`%c${deltaPx}px`, "color: lime")
-    resizeUsingDelta(splitViewNode, containerSizePx, deltaPx, sizesPx.length, manuallyResizablePriorities, sizesPx, true)
+    resizeUsingDelta(splitViewNode, deltaPx, sizesPx.length, manuallyResizablePriorities, sizesPx, true)
   }
   layout(splitViewNode)
   // this._saveProportions()
 }
 
-export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, containerSizePx: number, deltaPx: number, index: number, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, force: boolean = false): number {
+export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, deltaPx: number, index: number, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, force: boolean = false): number {
   const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
   let beforeDeltaPx = 0
   if (sizesPx.length > 0 && deltaPx !== 0) {
