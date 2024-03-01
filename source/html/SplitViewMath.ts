@@ -12,6 +12,23 @@ import { clamp } from "./ElUtils.js"
 
 const DEBUG = false
 
+const eps = 0.0001
+
+// a === b
+export function equal(a: number, b: number): boolean {
+  return Math.abs(a - b) <= eps
+}
+
+// a < b
+export function less(a: number, b: number): boolean {
+  return b - a > eps
+}
+
+// a > b
+export function greater(a: number, b: number): boolean {
+  return a - b > eps
+}
+
 export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: number, index: number, initialSizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, priorities?: ReadonlyArray<number>): void {
   if (priorities === undefined) {
     priorities = getPrioritiesForSplitter(index + 1, initialSizesPx.length)
@@ -90,6 +107,9 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, deltaPx: number,
 export function layout(splitViewNode: RxNode<ElImpl>): void {
   const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
   let posPx = 0
+  let shrinkBefore = false
+  let growBefore = false
+  let isSplitterEnabled = false
   const sizesPx = []
   const layoutInfo = splitViewNode.element.layoutInfo
   const offsetXpx = layoutInfo?.offsetXpx ?? 0
@@ -99,24 +119,38 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
     if (isSplitViewPartition(child.driver)) {
       const el = child.element as ElImpl
       if (el.native !== undefined) {
-        posPx += el.layoutInfo?.effectiveSizePx ?? 0
-        sizesPx.push(el.layoutInfo?.effectiveSizePx ?? 0)
+        const current = item
+        const sizePx = isHorizontal ? el.widthPx : el.heightPx
+        const effectiveSizePx = el.layoutInfo?.effectiveSizePx ?? 0
+        posPx += effectiveSizePx
+        sizesPx.push(effectiveSizePx)
         // Splitter Visibility
-        // let canBeResizedBefore = false
-        // for (let j = 0; !canBeResizedBefore && j < i; j++) {
-        //   canBeResizedBefore = partitions[j].minSizePx !== partitions[j].maxSizePx
-        // }
-        // let canBeResizedAfter = false
-        // for (let j = i; !canBeResizedAfter && j < partitions.length; j++) {
-        //   canBeResizedAfter = partitions[j].minSizePx !== partitions[j].maxSizePx
-        // }
-        // splitter.isVisible = canBeResizedBefore && canBeResizedAfter
+        shrinkBefore ||= greater(effectiveSizePx - sizePx.minPx, 0)
+        growBefore ||= greater(sizePx.maxPx - effectiveSizePx, 0)
+        let shrinkAfter = false
+        let growAfter = false
+        for (const item of splitViewNode.children.items(current)) {
+          const child = item.instance
+          if (isSplitViewPartition(child.driver)) {
+            const el = child.element as ElImpl
+            if (el.native !== undefined) {
+              const sizePx = isHorizontal ? el.widthPx : el.heightPx
+              const effectiveSizePx = el.layoutInfo?.effectiveSizePx ?? 0
+              shrinkAfter ||= greater(effectiveSizePx - sizePx.minPx, 0)
+              growAfter ||= greater(sizePx.maxPx - effectiveSizePx, 0)
+              isSplitterEnabled = growBefore && shrinkAfter || growAfter && shrinkBefore
+              if (isSplitterEnabled)
+                break
+            }
+          }
+        }
       }
     }
     else if (child.driver === Drivers.splitter) {
       const el = child.element as ElImpl
       if (el.native !== undefined) {
         // DEBUG && console.log(`(${isHorizontal ? "horizontal" : "vertical"}) pos = ${posPx}px`)
+        el.style.display = isSplitterEnabled ? "block" : "none"
         if (isHorizontal)
           el.style.left = `${offsetXpx + posPx}px`
         else
@@ -133,7 +167,7 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
   }
   // Is Overflowing
   const containerSizePx = (isHorizontal ? layoutInfo?.containerSizeXpx : layoutInfo?.containerSizeYpx) ?? 0
-  if (posPx > containerSizePx) {
+  if (greater(posPx, containerSizePx)) {
     if (isHorizontal)
       splitViewNode.element.style.overflow = "scroll hidden"
     else
@@ -241,7 +275,6 @@ function n(value: number, fractionDigits: number = 2): string {
 }
 
 function distribute(sign: number, deltaPx: number, index: number, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, isHorizontal: boolean, force: boolean): number {
-  const eps = 0.0001
   for (let priority = 0; priority < priorities.length; priority++) {
     const vector = priorities[priority]
     let fractionCount = getFractionCount(isHorizontal, sizesPx.map(x => x.node), vector, sign * index, force)
