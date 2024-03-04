@@ -44,10 +44,14 @@ export class KeyboardSensor extends HtmlElementSensor {
     if (enabled) {
       element.addEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
       element.addEventListener("keyup", this.onKeyUp.bind(this), { capture: true })
+
+      window.addEventListener("blur", this.doWindowBlur.bind(this), { capture: true })
     }
     else {
       element.removeEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
       element.removeEventListener("keyup", this.onKeyUp.bind(this), { capture: true })
+
+      window.removeEventListener("blur", this.doWindowBlur.bind(this), { capture: true })
     }
   }
 
@@ -68,6 +72,10 @@ export class KeyboardSensor extends HtmlElementSensor {
   protected onKeyUp(e: KeyboardEvent): void {
     this.keyUp(e)
     this.setPreventDefaultAndStopPropagation(e)
+  }
+
+  protected doWindowBlur(e: FocusEvent): void {
+    this.reset()
   }
 
   @transactional @options({ logging: LoggingLevel.Off })
