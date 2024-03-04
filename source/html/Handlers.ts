@@ -49,7 +49,7 @@ export function OnResize(target: HTMLElement, action: ((element: ResizedElement)
 
 export function OnFocus(
   target: HTMLElement, model: FocusModel,
-  switchEditMode: ((model?: FocusModel) => void) | undefined = undefined,
+  switchEditMode: ((model: FocusModel) => void) | undefined = undefined,
   key?: string): void {
   SyntheticElement({
     key,
