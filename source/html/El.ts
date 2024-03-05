@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNode, SimpleDelegate, BaseDriver, MergedItem, Transaction } from "reactronic"
+import { RxNode, SimpleDelegate, BaseDriver, MergedItem, Transaction, obs } from "reactronic"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // El
@@ -29,6 +29,7 @@ export type El<T = any, M = any> = {
   contentWrapping: boolean
   overlayVisible: boolean | undefined
   splitView: SplitView | undefined
+  partitionSizeInSplitViewPx: number
   readonly style: CSSStyleDeclaration
   useStylingPreset(stylingPresetName: string, enabled?: boolean): void
 }
@@ -286,6 +287,12 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       ElImpl.applySplitView(this, value)
       this._splitView = value
     }
+  }
+
+  get partitionSizeInSplitViewPx(): number {
+    if (this.layoutInfo === undefined)
+      this.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+    return this.layoutInfo.effectiveSizePx ?? 0
   }
 
   get style(): CSSStyleDeclaration { return (this.native as any).style }
@@ -684,7 +691,7 @@ export class ElLayoutInfo {
   alignerY?: ElImpl
   flags: ElLayoutInfoFlags
 
-  effectiveSizePx: number
+  @obs effectiveSizePx: number
 
   offsetXpx: number
   offsetYpx: number
