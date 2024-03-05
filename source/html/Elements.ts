@@ -263,7 +263,10 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
       if (childDeclaration !== undefined) {
         const onCreate = childDeclaration.onCreate
         childDeclaration.onCreate = (el, basis) => {
-          onCreate?.(el, basis)
+          if (onCreate)
+            onCreate(el, basis)
+          else
+            basis()
           if (isHorizontal)
             el.style.gridColumn = `${partCount + 1}`
           else
