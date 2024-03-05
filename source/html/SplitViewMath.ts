@@ -124,6 +124,9 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
         const effectiveSizePx = el.layoutInfo?.effectiveSizePx ?? 0
         posPx += effectiveSizePx
         sizesPx.push(effectiveSizePx)
+        // Set Attributes
+        el.native.setAttribute("rx-max", equal(effectiveSizePx, sizePx.maxPx) ? "true" : "false")
+        el.native.setAttribute("rx-min", equal(effectiveSizePx, sizePx.minPx) ? "true" : "false")
         // Splitter Visibility
         shrinkBefore ||= greater(effectiveSizePx - sizePx.minPx, 0)
         growBefore ||= greater(sizePx.maxPx - effectiveSizePx, 0)

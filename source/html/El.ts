@@ -28,8 +28,12 @@ export type El<T = any, M = any> = {
   stretchingStrengthY: number | undefined
   contentWrapping: boolean
   overlayVisible: boolean | undefined
+
   splitView: SplitView | undefined
+  widthPx: { minPx: number, maxPx: number }
+  heightPx: { minPx: number, maxPx: number }
   partitionSizeInSplitViewPx: number
+
   readonly style: CSSStyleDeclaration
   useStylingPreset(stylingPresetName: string, enabled?: boolean): void
 }
