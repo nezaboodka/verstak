@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNode, SimpleDelegate, BaseDriver, MergedItem, Transaction, obs } from "reactronic"
+import { RxNode, SimpleDelegate, BaseDriver, MergedItem, Transaction, obs, ObservableObject } from "reactronic"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // El
@@ -92,6 +92,19 @@ export enum SplitView {
   vertical = 1,
 }
 
+class Size extends ObservableObject {
+  raw: Range
+  minPx: number
+  maxPx: number
+
+  constructor() {
+    super()
+    this.raw = { min: "", max: "" }
+    this.minPx = 0
+    this.maxPx = Number.POSITIVE_INFINITY
+  }
+}
+
 // ElDriver
 
 export class ElDriver<T extends Element, M = unknown> extends BaseDriver<El<T, M>> {
@@ -115,8 +128,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _kind: ElKind
   private _area: ElArea
   private _coords: ElCoords
-  private _width: { raw: Range, minPx: number, maxPx: number }
-  private _height: { raw: Range, minPx: number, maxPx: number }
+  private _width: Size
+  private _height: Size
   private _alignment: Align
   private _alignmentInside: Align
   private _stretchingStrengthX: number | undefined
@@ -138,8 +151,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._kind = ElKind.part
     this._area = undefined
     this._coords = UndefinedElCoords
-    this._width = { raw: { min: "", max: "" }, minPx: 0, maxPx: Number.POSITIVE_INFINITY }
-    this._height = { raw: { min: "", max: "" }, minPx: 0, maxPx: Number.POSITIVE_INFINITY }
+    this._width = Transaction.separate(() => new Size())
+    this._height = Transaction.separate(() => new Size())
     this._alignment = Align.default
     this._alignmentInside = Align.default
     this._stretchingStrengthX = undefined
@@ -697,10 +710,12 @@ export class ElLayoutInfo {
 
   @obs effectiveSizePx: number
 
-  offsetXpx: number
-  offsetYpx: number
-  containerSizeXpx: number
-  containerSizeYpx: number
+  @obs offsetXpx: number
+  @obs offsetYpx: number
+  @obs contentSizeXpx: number
+  @obs contentSizeYpx: number
+  @obs borderSizeYpx: number
+  @obs borderSizeXpx: number
 
   constructor(prev: ElLayoutInfo) {
     this.x = prev.x
@@ -715,8 +730,10 @@ export class ElLayoutInfo {
 
     this.offsetXpx = 0
     this.offsetYpx = 0
-    this.containerSizeXpx = 0
-    this.containerSizeYpx = 0
+    this.contentSizeXpx = 0
+    this.contentSizeYpx = 0
+    this.borderSizeXpx = 0
+    this.borderSizeYpx = 0
   }
 }
 
@@ -729,7 +746,7 @@ enum ElLayoutInfoFlags {
 }
 
 const UndefinedElCoords = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
-export const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: ElLayoutInfoFlags.none, effectiveSizePx: 0, offsetXpx: 0, offsetYpx: 0, containerSizeXpx: 0, containerSizeYpx: 0 }))
+export const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: ElLayoutInfoFlags.none, effectiveSizePx: 0, offsetXpx: 0, offsetYpx: 0, contentSizeXpx: 0, contentSizeYpx: 0, borderSizeXpx: 0, borderSizeYpx: 0 }))
 
 function getElCoordsAndAdjustLayoutInfo(
   isRegularElement: boolean, area: ElArea, maxX: number, maxY: number,

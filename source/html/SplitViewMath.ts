@@ -34,8 +34,8 @@ export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: nu
     priorities = getPrioritiesForSplitter(index + 1, initialSizesPx.length)
   }
   const containerSizePx = splitViewNode.element.splitView === SplitView.horizontal
-    ? splitViewNode.element.layoutInfo?.containerSizeXpx ?? 0
-    : splitViewNode.element.layoutInfo?.containerSizeYpx ?? 0
+    ? splitViewNode.element.layoutInfo?.contentSizeXpx ?? 0
+    : splitViewNode.element.layoutInfo?.contentSizeYpx ?? 0
   DEBUG && console.log(`(splitter) delta = ${deltaPx}, container = ${containerSizePx}, size = ${initialSizesPx.reduce((p, c) => p + c.sizePx, 0)}, index = ${index}`)
   resizeUsingDelta(splitViewNode, deltaPx, index + 1, priorities, initialSizesPx, true)
   layout(splitViewNode)
@@ -44,8 +44,8 @@ export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: nu
 export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArray<number>, manuallyResizablePriorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>): void {
   // DEBUG && console.clear()
   const containerSizePx = splitViewNode.element.splitView === SplitView.horizontal
-    ? splitViewNode.element.layoutInfo?.containerSizeXpx ?? 0
-    : splitViewNode.element.layoutInfo?.containerSizeYpx ?? 0
+    ? splitViewNode.element.layoutInfo?.contentSizeXpx ?? 0
+    : splitViewNode.element.layoutInfo?.contentSizeYpx ?? 0
   let deltaPx = containerSizePx - sizesPx.reduce((p, c) => p + c.sizePx, 0)
   DEBUG && console.log(`(relayout) ∆ = ${n(deltaPx)}px, container = ${n(containerSizePx)}px, priorities = ${priorities.map(x => `0x${x.toString(2)}`).join(",")}`)
   deltaPx = resizeUsingDelta(splitViewNode, deltaPx, sizesPx.length, priorities, sizesPx)
@@ -169,7 +169,7 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
       wrapper.element.style.gridTemplateRows = sizesPx.map(x => `${x}px`).join(" ")
   }
   // Is Overflowing
-  const containerSizePx = (isHorizontal ? layoutInfo?.containerSizeXpx : layoutInfo?.containerSizeYpx) ?? 0
+  const containerSizePx = (isHorizontal ? layoutInfo?.contentSizeXpx : layoutInfo?.contentSizeYpx) ?? 0
   if (greater(posPx, containerSizePx)) {
     if (isHorizontal)
       splitViewNode.element.style.overflow = "scroll hidden"

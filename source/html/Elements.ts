@@ -5,12 +5,11 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNodeDecl, RxNodeDriver, RxNode, Delegate, Mode, MergeList, MergedItem } from "reactronic"
+import { RxNodeDecl, RxNodeDriver, RxNode, Delegate, Mode, MergeList, MergedItem, unobs } from "reactronic"
 import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver, ElImpl, SplitView, ElLayoutInfo, InitialElLayoutInfo } from "./El.js"
 import { getPrioritiesForEmptySpaceDistribution, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
 import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
 import { HtmlDriver } from "./HtmlDriver.js"
-import { OnResize } from "./Handlers.js"
 import { clamp } from "./ElUtils.js"
 
 // Verstak is based on two fundamental layout structures
@@ -106,7 +105,7 @@ export function declareSplitter<T>(index: number, splitViewNode: RxNode<El<T>>):
                   clonedSizesPx.push({ node: item.node, sizePx: item.sizePx })
                 }
 
-                relayoutUsingSplitter(splitViewNode as any as RxNode<ElImpl>, deltaPx, index, clonedSizesPx)
+                unobs(() => relayoutUsingSplitter(splitViewNode as any as RxNode<ElImpl>, deltaPx, index, clonedSizesPx))
                 if (pointer.dropped) {
                   model?.droppedAction?.(pointer)
                 }
@@ -187,38 +186,45 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     const result = super.update(node)
     const el = node.element as ElImpl
     if (el.splitView !== undefined) {
-      const native = el.native as HTMLElement
-      OnResize(native, x => {
-        if (el.layoutInfo === undefined)
-          el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+      Handling(() => {
+        const native = el.native as HTMLElement
+        const resize = native.sensors.resize
+        for (const x of resize.resizedElements) {
+          if (el.layoutInfo === undefined)
+            el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+          const rect = x.contentRect
+          const contentBoxPx = x.contentBoxSize[0]
+          const containerSizeXpx = contentBoxPx.inlineSize
+          const containerSizeYpx = contentBoxPx.blockSize
+          el.layoutInfo.offsetXpx = rect.left
+          el.layoutInfo.offsetYpx = rect.top
+          el.layoutInfo.contentSizeXpx = containerSizeXpx
+          el.layoutInfo.contentSizeYpx = containerSizeYpx
+          el.layoutInfo.borderSizeXpx = x.borderBoxSize[0].inlineSize
+          el.layoutInfo.borderSizeYpx = x.borderBoxSize[0].blockSize
 
-        const rect = x.contentRect
-        const contentBoxPx = x.contentBoxSize[0]
-        const containerSizeXpx = contentBoxPx.inlineSize
-        const containerSizeYpx = contentBoxPx.blockSize
-        el.layoutInfo.offsetXpx = rect.left
-        el.layoutInfo.offsetYpx = rect.top
-        el.layoutInfo.containerSizeXpx = containerSizeXpx
-        el.layoutInfo.containerSizeYpx = containerSizeYpx
+          // console.log(`%cleft = ${rect.left}, top = ${rect.top}, x = ${containerSizeXpx}, y = ${containerSizeYpx}`, "color: lime")
 
-        // console.log(`%cleft = ${rect.left}, top = ${rect.top}, x = ${containerSizeXpx}, y = ${containerSizeYpx}`, "color: lime")
-
-        const isHorizontal = el.splitView === SplitView.horizontal
-
-        // Set fixed width/height to wrapper
-        const wrapper = node.children.firstMergedItem()?.instance
-        if (wrapper !== undefined) {
-          const wrapperEl = wrapper.element as El
-          if (isHorizontal)
-            wrapperEl.style.width = wrapperEl.style.maxWidth = `${containerSizeXpx}px`
-          else {
-            wrapperEl.style.height = wrapperEl.style.maxHeight = `${containerSizeYpx}px`
+          // Set fixed width/height to wrapper
+          const isHorizontal = el.splitView === SplitView.horizontal
+          const wrapper = node.children.firstMergedItem()?.instance
+          if (wrapper !== undefined) {
+            const wrapperEl = wrapper.element as El
+            if (isHorizontal)
+              wrapperEl.style.width = wrapperEl.style.maxWidth = `${containerSizeXpx}px`
+            else {
+              wrapperEl.style.height = wrapperEl.style.maxHeight = `${containerSizeYpx}px`
+            }
           }
         }
-
-        // Get split view elements' sizes converting them to "px"
-        const surroundingXpx = x.borderBoxSize[0].inlineSize - containerSizeXpx
-        const surroundingYpx = x.borderBoxSize[0].blockSize - containerSizeYpx
+      })
+      Handling(() => {
+        const native = el.native as HTMLElement
+        const isHorizontal = el.splitView === SplitView.horizontal
+        if (el.layoutInfo === undefined)
+          el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+        const surroundingXpx = el.layoutInfo.borderSizeXpx - el.layoutInfo.contentSizeXpx
+        const surroundingYpx = el.layoutInfo.borderSizeYpx - el.layoutInfo.contentSizeYpx
         const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
         for (const child of node.children.items()) {
           const partEl = child.instance.element as ElImpl
@@ -242,9 +248,8 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
             sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx })
           }
         }
-        // console.log(options)
         const priorities = getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as MergeList<RxNode>)
-        relayout(node as any as RxNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx)
+        unobs(() => relayout(node as any as RxNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx))
       })
     }
     return result
