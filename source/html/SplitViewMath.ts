@@ -42,7 +42,7 @@ export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: nu
 }
 
 export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArray<number>, manuallyResizablePriorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>): void {
-  DEBUG && console.clear()
+  // DEBUG && console.clear()
   const containerSizePx = splitViewNode.element.splitView === SplitView.horizontal
     ? splitViewNode.element.layoutInfo?.containerSizeXpx ?? 0
     : splitViewNode.element.layoutInfo?.containerSizeYpx ?? 0
@@ -99,7 +99,7 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, deltaPx: number,
     if (el.layoutInfo === undefined)
       el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
     el.layoutInfo.effectiveSizePx = sizesPx[i].sizePx
-    DEBUG && console.log(`[${i}]: set size = ${sizesPx[i].sizePx}px`)
+    DEBUG && console.log(`[${i}]: set size = ${n(sizesPx[i].sizePx)}px`)
   }
   return beforeDeltaPx
 }
