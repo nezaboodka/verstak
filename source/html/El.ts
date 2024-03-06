@@ -720,6 +720,8 @@ export class ElLayoutInfo {
   @obs borderSizeYpx: number
   @obs borderSizeXpx: number
 
+  @obs constrained: boolean
+
   constructor(prev: ElLayoutInfo) {
     this.x = prev.x
     this.y = prev.y
@@ -737,6 +739,8 @@ export class ElLayoutInfo {
     this.contentSizeYpx = 0
     this.borderSizeXpx = 0
     this.borderSizeYpx = 0
+
+    this.constrained = false
   }
 }
 
@@ -749,7 +753,7 @@ enum ElLayoutInfoFlags {
 }
 
 const UndefinedElCoords = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
-export const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: ElLayoutInfoFlags.none, effectiveSizePx: 0, offsetXpx: 0, offsetYpx: 0, contentSizeXpx: 0, contentSizeYpx: 0, borderSizeXpx: 0, borderSizeYpx: 0 }))
+export const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: ElLayoutInfoFlags.none, effectiveSizePx: 0, offsetXpx: 0, offsetYpx: 0, contentSizeXpx: 0, contentSizeYpx: 0, borderSizeXpx: 0, borderSizeYpx: 0, constrained: false }))
 
 function getElCoordsAndAdjustLayoutInfo(
   isRegularElement: boolean, area: ElArea, maxX: number, maxY: number,

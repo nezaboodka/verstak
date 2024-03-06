@@ -210,11 +210,11 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           const wrapper = node.children.firstMergedItem()?.instance
           if (wrapper !== undefined) {
             const wrapperEl = wrapper.element as El
+            el.layoutInfo.constrained = true
             if (isHorizontal)
               wrapperEl.style.width = wrapperEl.style.maxWidth = `${containerSizeXpx}px`
-            else {
+            else
               wrapperEl.style.height = wrapperEl.style.maxHeight = `${containerSizeYpx}px`
-            }
           }
         }
       })
@@ -223,51 +223,53 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
         const isHorizontal = el.splitView === SplitView.horizontal
         if (el.layoutInfo === undefined)
           el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-        const surroundingXpx = el.layoutInfo.borderSizeXpx - el.layoutInfo.contentSizeXpx
-        const surroundingYpx = el.layoutInfo.borderSizeYpx - el.layoutInfo.contentSizeYpx
-        let i = 0
-        const preferred: Array<number> = []
-        const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
-        for (const child of node.children.items()) {
-          const partEl = child.instance.element as ElImpl
-          if (isSplitViewPartition(child.instance.driver) && partEl !== undefined) {
-            const size = isHorizontal ? partEl.width : partEl.height
-            const options: SizeConverterOptions = {
-              axis: isHorizontal ? Axis.X : Axis.Y, lineSizePx: Dimension.lineSizePx, fontSizePx: BodyFontSize,
-              containerSizeXpx: native.scrollWidth - surroundingXpx, containerSizeYpx: native.scrollHeight - surroundingYpx,
-            }
-            const minPx = size.min ? toPx(Dimension.parse(size.min), options) : 0
-            let maxPx = size.max ? toPx(Dimension.parse(size.max), options) : Number.POSITIVE_INFINITY
-            maxPx = Math.max(minPx, maxPx)
-            if (partEl.layoutInfo === undefined)
-              partEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-            if (isHorizontal)
-              partEl.widthPx = { minPx, maxPx }
-            else
-              partEl.heightPx = { minPx, maxPx }
-            const preferredUsed = isHorizontal ? partEl.preferredWidthUsed : partEl.preferredHeightUsed
-            let preferredPx = 0
-            if (!preferredUsed) {
-              preferredPx = size.preferred ? toPx(Dimension.parse(size.preferred), options) : 0
-              if (preferredPx > 0) {
-                partEl.layoutInfo.effectiveSizePx = preferredPx
-                preferred.push(i)
+        if (el.layoutInfo.constrained) {
+          const surroundingXpx = el.layoutInfo.borderSizeXpx - el.layoutInfo.contentSizeXpx
+          const surroundingYpx = el.layoutInfo.borderSizeYpx - el.layoutInfo.contentSizeYpx
+          let i = 0
+          const preferred: Array<number> = []
+          const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
+          for (const child of node.children.items()) {
+            const partEl = child.instance.element as ElImpl
+            if (isSplitViewPartition(child.instance.driver) && partEl !== undefined) {
+              const size = isHorizontal ? partEl.width : partEl.height
+              const options: SizeConverterOptions = {
+                axis: isHorizontal ? Axis.X : Axis.Y, lineSizePx: Dimension.lineSizePx, fontSizePx: BodyFontSize,
+                containerSizeXpx: native.scrollWidth - surroundingXpx, containerSizeYpx: native.scrollHeight - surroundingYpx,
               }
+              const minPx = size.min ? toPx(Dimension.parse(size.min), options) : 0
+              let maxPx = size.max ? toPx(Dimension.parse(size.max), options) : Number.POSITIVE_INFINITY
+              maxPx = Math.max(minPx, maxPx)
+              if (partEl.layoutInfo === undefined)
+                partEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
               if (isHorizontal)
-                partEl.preferredWidthUsed = true
+                partEl.widthPx = { minPx, maxPx }
               else
-                partEl.preferredHeightUsed = true
+                partEl.heightPx = { minPx, maxPx }
+              const preferredUsed = isHorizontal ? partEl.preferredWidthUsed : partEl.preferredHeightUsed
+              let preferredPx = 0
+              if (!preferredUsed) {
+                preferredPx = size.preferred ? toPx(Dimension.parse(size.preferred), options) : 0
+                if (preferredPx > 0) {
+                  partEl.layoutInfo.effectiveSizePx = preferredPx
+                  preferred.push(i)
+                }
+                if (isHorizontal)
+                  partEl.preferredWidthUsed = true
+                else
+                  partEl.preferredHeightUsed = true
+              }
+              const sizePx = partEl.layoutInfo.effectiveSizePx = clamp(partEl.layoutInfo.effectiveSizePx, minPx, maxPx)
+              // console.log(`%c[${i}]: ${minPx}px..${sizePx}px (${preferredPx}px)..${maxPx}px`, "color: yellow")
+              sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx })
+              i++
             }
-            const sizePx = partEl.layoutInfo.effectiveSizePx = clamp(partEl.layoutInfo.effectiveSizePx, minPx, maxPx)
-            // console.log(`%c[${i}]: ${minPx}px..${sizePx}px (${preferredPx}px)..${maxPx}px`, "color: yellow")
-            sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx })
-            i++
           }
+          const priorities = preferred.length > 0
+            ? getPrioritiesForSizeChanging(isHorizontal, node.children as MergeList<RxNode>, preferred)
+            : getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as MergeList<RxNode>)
+          unobs(() => relayout(node as any as RxNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx))
         }
-        const priorities = preferred.length > 0
-          ? getPrioritiesForSizeChanging(isHorizontal, node.children as MergeList<RxNode>, preferred)
-          : getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as MergeList<RxNode>)
-        unobs(() => relayout(node as any as RxNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx))
       })
     }
     return result

@@ -162,23 +162,24 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
       }
     }
   }
+  const containerSizePx = (isHorizontal ? layoutInfo?.contentSizeXpx : layoutInfo?.contentSizeYpx) ?? 0
+  const isOverflowing = greater(posPx, containerSizePx)
   const wrapper = splitViewNode.children.firstMergedItem()?.instance as RxNode<ElImpl> | undefined
   if (wrapper !== undefined) {
     if (isHorizontal)
       wrapper.element.style.gridTemplateColumns = sizesPx.map(x => `${x}px`).join(" ")
     else
       wrapper.element.style.gridTemplateRows = sizesPx.map(x => `${x}px`).join(" ")
+    if (isOverflowing) {
+      if (isHorizontal)
+        wrapper.element.style.overflow = "scroll hidden"
+      else
+        wrapper.element.style.overflow = "hidden scroll"
+    }
+    else {
+      wrapper.element.style.overflow = "hidden"
+    }
   }
-  // Is Overflowing
-  const containerSizePx = (isHorizontal ? layoutInfo?.contentSizeXpx : layoutInfo?.contentSizeYpx) ?? 0
-  if (greater(posPx, containerSizePx)) {
-    if (isHorizontal)
-      splitViewNode.element.style.overflow = "scroll hidden"
-    else
-      splitViewNode.element.style.overflow = "hidden scroll"
-  }
-  else
-    splitViewNode.element.style.overflow = "hidden"
 }
 
 // Split View Part Priorities
