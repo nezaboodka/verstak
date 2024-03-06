@@ -47,7 +47,8 @@ export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArra
     ? splitViewNode.element.layoutInfo?.contentSizeXpx ?? 0
     : splitViewNode.element.layoutInfo?.contentSizeYpx ?? 0
   let deltaPx = containerSizePx - sizesPx.reduce((p, c) => p + c.sizePx, 0)
-  DEBUG && console.log(`(relayout) ∆ = ${n(deltaPx)}px, container = ${n(containerSizePx)}px, priorities = ${priorities.map(x => `0x${x.toString(2)}`).join(",")}`)
+  DEBUG && console.log(printPriorities(priorities, manuallyResizablePriorities), "color: grey", "color:", "color: grey", "color:")
+  DEBUG && console.log(`(relayout) ∆ = ${n(deltaPx)}px, container = ${n(containerSizePx)}px`)
   deltaPx = resizeUsingDelta(splitViewNode, deltaPx, sizesPx.length, priorities, sizesPx)
   DEBUG && console.log(`(relayout) ~∆ = ${n(deltaPx)}, container = ${n(containerSizePx, 3)}px, total = ${n(sizesPx.reduce((p, c) => p + c.sizePx, 0), 3)}px`)
   if (deltaPx < -(1 / devicePixelRatio)) {
@@ -219,12 +220,10 @@ export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: Me
     const item = items[i]
     const el = item.instance.element as ElImpl
     const strength = (isHorizontal ? el.stretchingStrengthX : el.stretchingStrengthY) ?? 1
-    if (!indexes.includes(i)) {
-      if (strength > 0)
-        resizable.push(1 << i)
-      else
-        manuallyResizable.push(1 << i)
-    }
+    if (strength > 0)
+      resizable.push(1 << i)
+    else
+      manuallyResizable.push(1 << i)
   }
   return { resizable, manuallyResizable }
 }
@@ -315,4 +314,41 @@ function distribute(sign: number, deltaPx: number, index: number, priorities: Re
     }
   }
   return deltaPx
+}
+
+// Debugging
+
+function printPriorities(priorities: ReadonlyArray<number>, manuallyResizablePriorities: ReadonlyArray<number>): string {
+  let text = ""
+  if (priorities.length > 0) {
+    text += `Automatically Resizable:\n%c(${priorities.map(x => `0x${x.toString(2)}`).join(", ")})%c\n`
+    for (let i = 0; i < priorities.length; i++) {
+      let vector = priorities[i]
+      const parts = []
+      let j = 0
+      while (vector) {
+        if (vector & 1)
+          parts.push(j)
+        j++
+        vector >>= 1
+      }
+      text += `${i}: ${parts.join(", ")}\n`
+    }
+  }
+  if (manuallyResizablePriorities.length > 0) {
+    text += `Manually Resizable:\n%c(${manuallyResizablePriorities.map(x => `0x${x.toString(2)}`).join(", ")})%c\n`
+    for (let i = 0; i < manuallyResizablePriorities.length; i++) {
+      let vector = manuallyResizablePriorities[i]
+      const parts = []
+      let j = 0
+      while (vector) {
+        if (vector & 1)
+          parts.push(j)
+        j++
+        vector >>= 1
+      }
+      text += `${i}: ${parts.join(", ")}\n`
+    }
+  }
+  return text
 }
