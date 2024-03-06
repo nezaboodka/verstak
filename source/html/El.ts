@@ -685,23 +685,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   static applySplitView<T extends Element>(element: El<T, any>, value: SplitView | undefined): void {
     const e = element.native
     if (e instanceof HTMLElement) {
-      const s = e.style
-      if (value !== undefined) {
-        s.display = "flex"
-        s.position = "relative"
-        s.overflow = "hidden"
-        if (value === SplitView.horizontal) {
-          s.flexDirection = "row"
-        }
-        else {
-          s.flexDirection = "column"
-        }
-      }
-      else {
-        s.display = ""
-        s.position = ""
-        s.overflow = ""
-      }
+      e.style.position = value !== undefined ? "relative" : ""
       Transaction.separate(() => e.sensors.resize.observeResizing(element, value !== undefined))
     }
   }
