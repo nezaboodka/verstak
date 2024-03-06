@@ -7,7 +7,7 @@
 
 import { RxNodeDecl, RxNodeDriver, RxNode, Delegate, Mode, MergeList, MergedItem, unobs } from "reactronic"
 import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver, ElImpl, SplitView, ElLayoutInfo, InitialElLayoutInfo } from "./El.js"
-import { getPrioritiesForEmptySpaceDistribution, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
+import { getPrioritiesForEmptySpaceDistribution, getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
 import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
 import { HtmlDriver } from "./HtmlDriver.js"
 import { clamp } from "./ElUtils.js"
@@ -225,6 +225,8 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
         const surroundingXpx = el.layoutInfo.borderSizeXpx - el.layoutInfo.contentSizeXpx
         const surroundingYpx = el.layoutInfo.borderSizeYpx - el.layoutInfo.contentSizeYpx
+        let i = 0
+        const preferred: Array<number> = []
         const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
         for (const child of node.children.items()) {
           const partEl = child.instance.element as ElImpl
@@ -243,12 +245,28 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
               partEl.widthPx = { minPx, maxPx }
             else
               partEl.heightPx = { minPx, maxPx }
+            const preferredUsed = isHorizontal ? partEl.preferredWidthUsed : partEl.preferredHeightUsed
+            let preferredPx = 0
+            if (!preferredUsed) {
+              preferredPx = size.preferred ? toPx(Dimension.parse(size.preferred), options) : 0
+              if (preferredPx > 0) {
+                partEl.layoutInfo.effectiveSizePx = preferredPx
+                preferred.push(i)
+              }
+              if (isHorizontal)
+                partEl.preferredWidthUsed = true
+              else
+                partEl.preferredHeightUsed = true
+            }
             const sizePx = partEl.layoutInfo.effectiveSizePx = clamp(partEl.layoutInfo.effectiveSizePx, minPx, maxPx)
-            // console.log(`%c[${child.index}]: min = ${minPx}px, size = ${sizePx}px, max = ${maxPx}px`, "color: yellow")
+            // console.log(`%c[${i}]: ${minPx}px..${sizePx}px (${preferredPx}px)..${maxPx}px`, "color: yellow")
             sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx })
+            i++
           }
         }
-        const priorities = getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as MergeList<RxNode>)
+        const priorities = preferred.length > 0
+          ? getPrioritiesForSizeChanging(isHorizontal, node.children as MergeList<RxNode>, preferred)
+          : getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as MergeList<RxNode>)
         unobs(() => relayout(node as any as RxNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx))
       })
     }

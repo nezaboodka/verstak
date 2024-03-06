@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { MergeList, MergedItem, RxNode } from "reactronic"
+import { MergeList, RxNode } from "reactronic"
 import { ElImpl, ElLayoutInfo, InitialElLayoutInfo, SplitView } from "./El.js"
 import { Drivers, isSplitViewPartition } from "./Elements.js"
 import { clamp } from "./ElUtils.js"
@@ -85,7 +85,7 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, deltaPx: number,
       const size = isHorizontal ? x.node.element.widthPx : x.node.element.heightPx
       return `${i}: ${size.minPx}..${x.sizePx}..${size.maxPx} (px)`
     }).join("\n")}`, "color: skyblue")
-    DEBUG && console.log(`[${Array.from({ length: index }).map((x, i) => i).join(",")} | ${Array.from({ length: Math.max(0, sizesPx.length - index) }).map((x, i) => index + i).join(",")}] min = ${n(minDeltaPx)}, ${n(deltaPx)} -> ${n(clampedDeltaPx)}, max = ${n(maxDeltaPx)}`)
+    DEBUG && console.log(`[%c${Array.from({ length: index }).map((x, i) => i).join(",")}%c | %c${Array.from({ length: Math.max(0, sizesPx.length - index) }).map((x, i) => index + i).join(",")}%c]\n∆ = ${n(minDeltaPx)}px..${n(deltaPx)}px -> %c${n(clampedDeltaPx)}px%c..${n(maxDeltaPx)}px`, "color: #00BB00", "color:", "color: orange", "color:", "color: yellow", "color:")
 
     if (clampedDeltaPx !== 0) {
       if (index > 0)
@@ -200,22 +200,33 @@ export function getPrioritiesForSplitter(index: number, size: number): ReadonlyA
   return result
 }
 
-export function getPrioritiesForSizeChanging(item: MergedItem<any>, children: MergeList<RxNode>): ReadonlyArray<number> {
-  const result = []
-  let i = 0
-  let changedItemIndex = -1
-  for (const child of children.items()) {
-    if (isSplitViewPartition(child.instance.driver)) {
-      if (child !== item)
-        result.push(1 << i)
+export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: MergeList<RxNode>, indexes: Array<number>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
+  const resizable = []
+  const manuallyResizable = []
+  const items = Array.from(children.items()).filter(x => isSplitViewPartition(x.instance.driver))
+  for (let i = items.length - 1; i >= 0; i--) {
+    const item = items[i]
+    const el = item.instance.element as ElImpl
+    const strength = (isHorizontal ? el.stretchingStrengthX : el.stretchingStrengthY) ?? 1
+    if (!indexes.includes(i)) {
+      if (strength > 0)
+        resizable.push(1 << i)
       else
-        changedItemIndex = i
-      i++
+        manuallyResizable.push(1 << i)
     }
   }
-  if (changedItemIndex !== -1)
-    result.push(1 << changedItemIndex)
-  return result
+  for (const i of indexes) {
+    const item = items[i]
+    const el = item.instance.element as ElImpl
+    const strength = (isHorizontal ? el.stretchingStrengthX : el.stretchingStrengthY) ?? 1
+    if (!indexes.includes(i)) {
+      if (strength > 0)
+        resizable.push(1 << i)
+      else
+        manuallyResizable.push(1 << i)
+    }
+  }
+  return { resizable, manuallyResizable }
 }
 
 export function getPrioritiesForEmptySpaceDistribution(isHorizontal: boolean, children: MergeList<RxNode>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
