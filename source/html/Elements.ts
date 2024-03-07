@@ -203,7 +203,7 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           el.layoutInfo.borderSizeXpx = x.borderBoxSize[0].inlineSize
           el.layoutInfo.borderSizeYpx = x.borderBoxSize[0].blockSize
 
-          console.log(`%cleft = ${rect.left}, top = ${rect.top}, x = ${containerSizeXpx}, y = ${containerSizeYpx}`, "color: lime")
+          // console.log(`%cleft = ${rect.left}, top = ${rect.top}, x = ${containerSizeXpx}, y = ${containerSizeYpx}`, "color: lime")
 
           // Set fixed width/height to wrapper
           const isHorizontal = el.splitView === SplitView.horizontal
@@ -271,7 +271,7 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
                   partEl.preferredHeightUsed = true
               }
               const sizePx = partEl.layoutInfo.effectiveSizePx = clamp(partEl.layoutInfo.effectiveSizePx, minPx, maxPx)
-              console.log(`%c[${i}]: ${minPx}px..${sizePx}px..${maxPx}px (pref = ${preferredPx}px)`, "color: yellow")
+              // console.log(`%c[${i}]: ${minPx}px..${sizePx}px..${maxPx}px (pref = ${preferredPx}px)`, "color: yellow")
               sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx })
               i++
             }
