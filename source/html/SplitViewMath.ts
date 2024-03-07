@@ -46,9 +46,10 @@ export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArra
   const containerSizePx = splitViewNode.element.splitView === SplitView.horizontal
     ? splitViewNode.element.layoutInfo?.contentSizeXpx ?? 0
     : splitViewNode.element.layoutInfo?.contentSizeYpx ?? 0
-  let deltaPx = containerSizePx - sizesPx.reduce((p, c) => p + c.sizePx, 0)
+  const totalSizePx = sizesPx.reduce((p, c) => p + c.sizePx, 0)
+  let deltaPx = containerSizePx - totalSizePx
   DEBUG && console.log(printPriorities(priorities, manuallyResizablePriorities), "color: grey", "color:", "color: grey", "color:")
-  DEBUG && console.log(`(relayout) ∆ = ${n(deltaPx)}px, container = ${n(containerSizePx)}px`)
+  DEBUG && console.log(`(relayout) ∆ = ${n(deltaPx)}px, container = ${n(containerSizePx)}px, total = ${totalSizePx}`)
   deltaPx = resizeUsingDelta(splitViewNode, deltaPx, sizesPx.length, priorities, sizesPx)
   DEBUG && console.log(`(relayout) ~∆ = ${n(deltaPx)}, container = ${n(containerSizePx, 3)}px, total = ${n(sizesPx.reduce((p, c) => p + c.sizePx, 0), 3)}px`)
   if (deltaPx < -(1 / devicePixelRatio)) {
