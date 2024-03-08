@@ -22,8 +22,10 @@ export type El<T = any, M = any> = {
   area: ElArea
   width: Range
   height: Range
-  alignment: Align
-  alignmentInside: Align
+  alignment: Alignment | undefined
+  alignmentInside: Alignment | undefined
+  verticalAlignment: VerticalAlignment | undefined
+  verticalAlignmentInside: VerticalAlignment | undefined
   stretchingStrengthX: number | undefined
   stretchingStrengthY: number | undefined
   contentWrapping: boolean
@@ -56,21 +58,18 @@ export type ElCoords = {
   y2: number
 }
 
-export enum Align {
-  default       = 0b00000000,
-  // Horizontal     .....xxx
-  left          = 0b00000100,
-  centerX       = 0b00000101,
-  right         = 0b00000110,
-  stretchX      = 0b00000111,
-  // Vertical       ..yyy...
-  top           = 0b00100000,
-  centerY       = 0b00101000,
-  bottom        = 0b00110000,
-  stretchY      = 0b00111000,
-  // Combined
-  centerXY      = centerX | centerY,
-  stretchXY     = stretchX | stretchY,
+export enum Alignment {
+  left         = 0,
+  center       = 1,
+  right        = 2,
+  stretch      = 3,
+}
+
+export enum VerticalAlignment {
+  top          = 0,
+  center       = 1,
+  bottom       = 2,
+  stretch      = 3,
 }
 
 export type Range = {
@@ -133,8 +132,10 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _coords: ElCoords
   private _width: Size
   private _height: Size
-  private _alignment: Align
-  private _alignmentInside: Align
+  private _alignment: Alignment | undefined
+  private _verticalAlignment: VerticalAlignment | undefined
+  private _alignmentInside: Alignment | undefined
+  private _verticalAlignmentInside: VerticalAlignment | undefined
   private _stretchingStrengthX: number | undefined
   private _stretchingStrengthY: number | undefined
   private _contentWrapping: boolean
@@ -156,8 +157,10 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._coords = UndefinedElCoords
     this._width = Transaction.separate(() => new Size())
     this._height = Transaction.separate(() => new Size())
-    this._alignment = Align.default
-    this._alignmentInside = Align.default
+    this._alignment = undefined
+    this._verticalAlignment = undefined
+    this._alignmentInside = undefined
+    this._verticalAlignmentInside = undefined
     this._stretchingStrengthX = undefined
     this._stretchingStrengthY = undefined
     this._contentWrapping = true
@@ -262,24 +265,45 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._height.preferredUsed = value
   }
 
-  get alignment(): Align { return this._alignment }
-  set alignment(value: Align) {
+  get alignment(): Alignment | undefined { return this._alignment }
+  set alignment(value: Alignment | undefined) {
     const existing = this._alignment
     if (value !== existing) {
       ElImpl.applyAlignment(this, existing, value,
         this._alignmentInside, this._alignmentInside,
-        this._stretchingStrengthX, this._stretchingStrengthY)
+        this._stretchingStrengthX)
       this._alignment = value
     }
   }
 
-  get alignmentInside(): Align { return this._alignmentInside }
-  set alignmentInside(value: Align) {
+  get verticalAlignment(): VerticalAlignment | undefined { return this._verticalAlignment }
+  set verticalAlignment(value: VerticalAlignment | undefined) {
+    const existing = this._verticalAlignment
+    if (value !== existing) {
+      ElImpl.applyVerticalAlignment(this, existing, value,
+        this._verticalAlignmentInside, this._verticalAlignmentInside,
+        this._stretchingStrengthY)
+      this._verticalAlignment = value
+    }
+  }
+
+  get alignmentInside(): Alignment | undefined { return this._alignmentInside }
+  set alignmentInside(value: Alignment | undefined) {
     const existing = this._alignmentInside
     if (value !== existing) {
       ElImpl.applyAlignment(this, this._alignment, this._alignment,
-        existing, value, this._stretchingStrengthX, this._stretchingStrengthY)
+        existing, value, this._stretchingStrengthX)
       this._alignmentInside = value
+    }
+  }
+
+  get verticalAlignmentInside(): VerticalAlignment | undefined { return this._verticalAlignmentInside }
+  set verticalAlignmentInside(value: VerticalAlignment | undefined) {
+    const existing = this._verticalAlignmentInside
+    if (value !== existing) {
+      ElImpl.applyVerticalAlignment(this, this._verticalAlignment, this._verticalAlignment,
+        existing, value, this._stretchingStrengthY)
+      this._verticalAlignmentInside = value
     }
   }
 
@@ -413,28 +437,27 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   private static applyAlignment<T extends Element>(element: ElImpl<T, any>,
-    oldPrimary: Align, newPrimary: Align,
-    oldInside: Align, newInside: Align,
-    strengthX: number | undefined,
-    strengthY: number | undefined): void {
+    oldPrimary: Alignment | undefined, newPrimary: Alignment | undefined,
+    oldInside: Alignment | undefined, newInside: Alignment | undefined,
+    strength: number | undefined): void {
     // Prepare
+    oldPrimary ??= Alignment.left
+    newPrimary ??= Alignment.left
+    oldInside ??= oldPrimary
+    newInside ??= newPrimary
     const css: CSSStyleDeclaration = element.style
     let hostLayout: ElLayoutInfo | undefined = undefined
-    let hostCss: CSSStyleDeclaration | undefined = undefined
     if (element.node.host.driver.isPartition) {
       const hostEl = element.node.host.element as ElImpl
-      hostCss = hostEl.style
       hostLayout = hostEl.layoutInfo
       if (hostLayout === undefined)
         hostLayout = hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
     }
-    if (newInside === Align.default)
-      newInside = newPrimary
     // Horizontal
     let isEffectiveAlignerX = false
     if (hostLayout) {
-      const isAligner = alignedX(newPrimary, Align.centerX) ||
-        alignedX(newPrimary, Align.right)
+      const isAligner = newPrimary === Alignment.center ||
+        newPrimary === Alignment.right
       isEffectiveAlignerX = isAligner && (hostLayout.alignerX === undefined ||
         element.index <= hostLayout.alignerX.index)
       if (hostLayout.alignerX === element) {
@@ -454,66 +477,89 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         }
       }
     }
-    switch (newPrimary & 0b00000111) {
+    switch (newPrimary) {
       default:
-      case Align.left:
+      case Alignment.left:
         css.justifySelf = "start"
-        if (alignedX(oldPrimary, Align.centerX)) {
+        if (oldPrimary === Alignment.center) {
           css.marginLeft = "" // remove "auto"
           css.marginRight = "" // remove "auto"
         }
-        else if ((oldPrimary & Align.right) === Align.right)
+        else if (oldPrimary === Alignment.right)
           css.marginLeft = "" // remove "auto"
         break
-      case Align.centerX:
+      case Alignment.center:
         css.justifySelf = "center"
         if (hostLayout)
           css.marginLeft = isEffectiveAlignerX ? "auto" : ""
         css.marginRight = "auto"
         break
-      case Align.right:
+      case Alignment.right:
         css.justifySelf = "end"
         if (hostLayout)
           css.marginLeft = isEffectiveAlignerX ? "auto" : ""
-        if (alignedX(oldPrimary, Align.centerX))
+        if (oldPrimary === Alignment.center)
           css.marginRight = "" // remove "auto"
         break
-      case Align.stretchX:
+      case Alignment.stretch:
         css.justifySelf = "stretch"
-        if (alignedX(oldPrimary, Align.centerX)) {
+        if (oldPrimary === Alignment.center) {
           css.marginLeft = "" // remove "auto"
           css.marginRight = "" // remove "auto"
         }
-        else if (alignedX(oldPrimary, Align.right))
+        else if (oldPrimary === Alignment.right)
           css.marginLeft = "" // remove "auto"
         break
     }
-    switch (newInside & 0b00000111) {
+    switch (newInside) {
       default:
-      case Align.left:
+      case Alignment.left:
         css.alignItems = "start"
         css.textAlign = "left"
         break
-      case Align.centerX:
+      case Alignment.center:
         css.alignItems = "center"
         css.textAlign = "center"
         break
-      case Align.right:
+      case Alignment.right:
         css.alignItems = "end"
         css.textAlign = "right"
         break
-      case Align.stretchX:
+      case Alignment.stretch:
         css.alignItems = "stretch"
         css.textAlign = "justify"
         break
     }
+    if (newPrimary === Alignment.stretch && strength === undefined)
+      ElImpl.applyStretchingStrengthX(element, 0, 1)
+  }
+
+  private static applyVerticalAlignment<T extends Element>(element: ElImpl<T, any>,
+    oldPrimary: VerticalAlignment | undefined, newPrimary: VerticalAlignment | undefined,
+    oldInside: VerticalAlignment | undefined, newInside: VerticalAlignment | undefined,
+    strength: number | undefined): void {
+    // Prepare
+    oldPrimary ??= VerticalAlignment.top
+    newPrimary ??= VerticalAlignment.top
+    oldInside ??= oldPrimary
+    newInside ??= newPrimary
+    const css: CSSStyleDeclaration = element.style
+    let hostLayout: ElLayoutInfo | undefined = undefined
+    let hostCss: CSSStyleDeclaration | undefined = undefined
+    if (element.node.host.driver.isPartition) {
+      const hostEl = element.node.host.element as ElImpl
+      hostCss = hostEl.style
+      hostLayout = hostEl.layoutInfo
+      if (hostLayout === undefined)
+        hostLayout = hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+    }
     // Vertical
     let isEffectiveAlignerY = false
     if (hostLayout) {
-      const isAligner = alignedY(newPrimary, Align.centerY) ||
-        alignedY(newPrimary, Align.bottom)
+      const isAligner = newPrimary === VerticalAlignment.center ||
+        newPrimary === VerticalAlignment.bottom
       isEffectiveAlignerY = isAligner && (hostLayout.alignerY === undefined ||
-        !alignedY(hostLayout.alignerY.alignment, Align.centerY))
+        hostLayout.alignerY.verticalAlignment !== VerticalAlignment.center)
       if (hostLayout.alignerY === element) {
         if (!isEffectiveAlignerY) {
           hostCss!.marginTop = "" // remove "auto"
@@ -529,39 +575,37 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         }
       }
     }
-    switch (newPrimary & 0b00111000) {
+    switch (newPrimary) {
       default:
-      case Align.top:
+      case VerticalAlignment.top:
         css.alignSelf = "start"
         break
-      case Align.centerY:
+      case VerticalAlignment.center:
         css.alignSelf = "center"
         break
-      case Align.bottom:
+      case VerticalAlignment.bottom:
         css.alignSelf = "end"
         break
-      case Align.stretchY:
+      case VerticalAlignment.stretch:
         css.alignSelf = "stretch"
         break
     }
-    switch (newInside & 0b00111000) {
+    switch (newInside) {
       default:
-      case Align.top:
+      case VerticalAlignment.top:
         css.justifyContent = "start"
         break
-      case Align.centerY:
+      case VerticalAlignment.center:
         css.justifyContent = "center"
         break
-      case Align.bottom:
+      case VerticalAlignment.bottom:
         css.justifyContent = "end"
         break
-      case Align.stretchY:
+      case VerticalAlignment.stretch:
         css.justifyContent = "stretch"
         break
     }
-    if (alignedX(newPrimary, Align.stretchX) && strengthX === undefined)
-      ElImpl.applyStretchingStrengthX(element, 0, 1)
-    if (alignedY(newPrimary, Align.stretchY) && strengthY === undefined)
+    if (newPrimary === VerticalAlignment.stretch && strength === undefined)
       ElImpl.applyStretchingStrengthY(element, 0, 1)
   }
 
@@ -972,10 +1016,10 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
   // undefined // cursor
 ]
 
-function alignedX(align: Align, like: Align): boolean {
-  return (align & 0b00000011) == (like & 0b00000011)
-}
+// function alignedX(align: Align, like: Align): boolean {
+//   return (align & 0b00000011) == (like & 0b00000011)
+// }
 
-function alignedY(align: Align, like: Align): boolean {
-  return (align & 0b00011000) == (like & 0b00011000)
-}
+// function alignedY(align: Align, like: Align): boolean {
+//   return (align & 0b00011000) == (like & 0b00011000)
+// }
