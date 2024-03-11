@@ -245,7 +245,7 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
             if (isSplitViewPartition(child.instance.driver) && partEl !== undefined) {
               const size = isHorizontal ? partEl.width : partEl.height
               const options: SizeConverterOptions = {
-                axis: isHorizontal ? Axis.X : Axis.Y, lineSizePx: Dimension.lineSizePx, fontSizePx: BodyFontSize,
+                axis: isHorizontal ? Axis.X : Axis.Y, lineSizePx: BodyFontSize/* Dimension.lineSizePx */, fontSizePx: BodyFontSize,
                 containerSizeXpx: native.scrollWidth - surroundingXpx, containerSizeYpx: native.scrollHeight - surroundingYpx,
               }
               const minPx = size.min ? toPx(Dimension.parse(size.min), options) : 0
