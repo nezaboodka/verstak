@@ -31,6 +31,7 @@ export type El<T = any, M = any> = {
   contentWrapping: boolean
   overlayVisible: boolean | undefined
 
+  sealed: boolean
   splitView: SplitView | undefined
   widthPx: { minPx: number, maxPx: number }
   heightPx: { minPx: number, maxPx: number }
@@ -140,6 +141,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _stretchingStrengthY: number | undefined
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
+  private _sealed: boolean
   private _splitView: SplitView | undefined
   private _hasStylingPresets: boolean
 
@@ -165,6 +167,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._stretchingStrengthY = undefined
     this._contentWrapping = true
     this._overlayVisible = undefined
+    this._sealed = false
     this._splitView = undefined
     this._hasStylingPresets = false
   }
@@ -338,6 +341,14 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     if (value !== this._overlayVisible) {
       ElImpl.applyOverlayVisible(this, value)
       this._overlayVisible = value
+    }
+  }
+
+  get sealed(): boolean { return this._sealed }
+  set sealed(value: boolean) {
+    if (value !== this._sealed) {
+      ElImpl.applySealed(this, value)
+      this._sealed = value
     }
   }
 
@@ -726,11 +737,18 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
+  static applySealed<T extends Element>(element: El<T, any>, value: boolean): void {
+    const e = element.native
+    if (e instanceof HTMLElement) {
+      Transaction.separate(() => e.sensors.resize.observeResizing(element, value !== undefined))
+    }
+  }
+
   static applySplitView<T extends Element>(element: El<T, any>, value: SplitView | undefined): void {
     const e = element.native
     if (e instanceof HTMLElement) {
+      element.sealed = true
       e.style.position = value !== undefined ? "relative" : ""
-      Transaction.separate(() => e.sensors.resize.observeResizing(element, value !== undefined))
     }
   }
 

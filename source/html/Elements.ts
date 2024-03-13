@@ -185,7 +185,7 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     rowBreak()
     const result = super.update(node)
     const el = node.element as ElImpl
-    if (el.splitView !== undefined) {
+    if (el.sealed) {
       Handling(h => {
         const native = el.native as HTMLElement
         const resize = native.sensors.resize
@@ -229,6 +229,8 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           }
         }
       })
+    }
+    if (el.splitView !== undefined) {
       Handling(() => {
         const native = el.native as HTMLElement
         const isHorizontal = el.splitView === SplitView.horizontal
