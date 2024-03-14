@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { MergeList, RxNode } from "reactronic"
-import { ElImpl, ElLayoutInfo, InitialElLayoutInfo, SplitView } from "./El.js"
+import { ElImpl, ElLayoutInfo, InitialElLayoutInfo, Direction } from "./El.js"
 import { Drivers, isSplitViewPartition } from "./Elements.js"
 import { clamp } from "./ElUtils.js"
 
@@ -33,7 +33,7 @@ export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: nu
   if (priorities === undefined) {
     priorities = getPrioritiesForSplitter(index + 1, initialSizesPx.length)
   }
-  const containerSizePx = splitViewNode.element.splitView === SplitView.horizontal
+  const containerSizePx = splitViewNode.element.splitView === Direction.horizontal
     ? splitViewNode.element.layoutInfo?.contentSizeXpx ?? 0
     : splitViewNode.element.layoutInfo?.contentSizeYpx ?? 0
   DEBUG && console.log(`(splitter) delta = ${deltaPx}, container = ${containerSizePx}, size = ${initialSizesPx.reduce((p, c) => p + c.sizePx, 0)}, index = ${index}`)
@@ -43,7 +43,7 @@ export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: nu
 
 export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArray<number>, manuallyResizablePriorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>): void {
   // DEBUG && console.clear()
-  const containerSizePx = splitViewNode.element.splitView === SplitView.horizontal
+  const containerSizePx = splitViewNode.element.splitView === Direction.horizontal
     ? splitViewNode.element.layoutInfo?.contentSizeXpx ?? 0
     : splitViewNode.element.layoutInfo?.contentSizeYpx ?? 0
   const totalSizePx = sizesPx.reduce((p, c) => p + c.sizePx, 0)
@@ -61,7 +61,7 @@ export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArra
 }
 
 export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, deltaPx: number, index: number, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, force: boolean = false): number {
-  const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
+  const isHorizontal = splitViewNode.element.splitView === Direction.horizontal
   let beforeDeltaPx = 0
   if (sizesPx.length > 0 && deltaPx !== 0) {
     let minBeforeDeltaPx = 0
@@ -107,7 +107,7 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, deltaPx: number,
 }
 
 export function layout(splitViewNode: RxNode<ElImpl>): void {
-  const isHorizontal = splitViewNode.element.splitView === SplitView.horizontal
+  const isHorizontal = splitViewNode.element.splitView === Direction.horizontal
   let posPx = 0
   let shrinkBefore = false
   let growBefore = false

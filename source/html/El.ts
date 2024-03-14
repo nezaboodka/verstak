@@ -31,8 +31,8 @@ export type El<T = any, M = any> = {
   contentWrapping: boolean
   overlayVisible: boolean | undefined
 
-  sealed: boolean
-  splitView: SplitView | undefined
+  sealed: Direction | undefined
+  splitView: Direction | undefined
   widthPx: { minPx: number, maxPx: number }
   heightPx: { minPx: number, maxPx: number }
   partitionSizeInSplitViewPx: number
@@ -88,7 +88,7 @@ export type ElArea = undefined | string | {
   cellsOverHeight?: number  // 1 (table only)
 }
 
-export enum SplitView {
+export enum Direction {
   horizontal = 0,
   vertical = 1,
 }
@@ -141,8 +141,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _stretchingStrengthY: number | undefined
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
-  private _sealed: boolean
-  private _splitView: SplitView | undefined
+  private _sealed: Direction | undefined
+  private _splitView: Direction | undefined
   private _hasStylingPresets: boolean
 
   constructor(node: RxNode<El<T, M>>) {
@@ -167,7 +167,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._stretchingStrengthY = undefined
     this._contentWrapping = true
     this._overlayVisible = undefined
-    this._sealed = false
+    this._sealed = undefined
     this._splitView = undefined
     this._hasStylingPresets = false
   }
@@ -344,16 +344,16 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  get sealed(): boolean { return this._sealed }
-  set sealed(value: boolean) {
+  get sealed(): Direction | undefined { return this._sealed }
+  set sealed(value: Direction | undefined) {
     if (value !== this._sealed) {
       ElImpl.applySealed(this, value)
       this._sealed = value
     }
   }
 
-  get splitView(): SplitView | undefined { return this._splitView }
-  set splitView(value: SplitView | undefined) {
+  get splitView(): Direction | undefined { return this._splitView }
+  set splitView(value: Direction | undefined) {
     if (value !== this._splitView) {
       ElImpl.applySplitView(this, value)
       this._splitView = value
@@ -416,7 +416,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     const node = element.node
     const owner = node.owner as RxNode<ElImpl>
     const ownerEl = owner.element
-    if (ownerEl.splitView === SplitView.horizontal) {
+    if (ownerEl.splitView === Direction.horizontal) {
       // s.minWidth = "" // clear
       // s.maxWidth = "" // clear
       // if (ownerEl.layoutInfo === undefined)
@@ -434,7 +434,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     const node = element.node
     const owner = node.owner as RxNode<ElImpl>
     const ownerEl = owner.element
-    if (ownerEl.splitView === SplitView.vertical) {
+    if (ownerEl.splitView === Direction.vertical) {
       // s.minHeight = "" // clear
       // s.maxHeight = "" // clear
       // if (ownerEl.layoutInfo === undefined)
@@ -737,17 +737,17 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  static applySealed<T extends Element>(element: El<T, any>, value: boolean): void {
+  static applySealed<T extends Element>(element: El<T, any>, value: Direction | undefined): void {
     const e = element.native
     if (e instanceof HTMLElement) {
       Transaction.separate(() => e.sensors.resize.observeResizing(element, value !== undefined))
     }
   }
 
-  static applySplitView<T extends Element>(element: El<T, any>, value: SplitView | undefined): void {
+  static applySplitView<T extends Element>(element: El<T, any>, value: Direction | undefined): void {
     const e = element.native
     if (e instanceof HTMLElement) {
-      element.sealed = true
+      element.sealed = value
       e.style.position = value !== undefined ? "relative" : ""
     }
   }
@@ -1014,7 +1014,7 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     const owner = el.node.owner.element as ElImpl
     s.position = "absolute"
     s.zIndex = `${Number.MAX_SAFE_INTEGER}`
-    if (owner.splitView === SplitView.horizontal) {
+    if (owner.splitView === Direction.horizontal) {
       s.width = "4px"
       s.marginLeft = "-2px"
       s.top = s.bottom = "0"

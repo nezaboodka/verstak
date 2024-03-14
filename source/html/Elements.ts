@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { RxNodeDecl, RxNodeDriver, RxNode, Delegate, Mode, MergeList, MergedItem, unobs } from "reactronic"
-import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver, ElImpl, SplitView, ElLayoutInfo, InitialElLayoutInfo } from "./El.js"
+import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver, ElImpl, Direction, ElLayoutInfo, InitialElLayoutInfo } from "./El.js"
 import { getPrioritiesForEmptySpaceDistribution, getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
 import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
 import { HtmlDriver } from "./HtmlDriver.js"
@@ -97,7 +97,7 @@ export function declareSplitter<T>(index: number, splitViewNode: RxNode<El<T>>):
                 // pointer.dropAllowed = true
                 pointer.dropAllowed = true
                 const initialSizesPx = pointer.getData() as Array<{ node: RxNode<ElImpl>, sizePx: number }>
-                const deltaPx = Math.floor(splitViewNode.element.splitView === SplitView.horizontal
+                const deltaPx = Math.floor(splitViewNode.element.splitView === Direction.horizontal
                   ? pointer.positionX - pointer.startX : pointer.positionY - pointer.startY)
 
                 const clonedSizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
@@ -185,10 +185,11 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     rowBreak()
     const result = super.update(node)
     const el = node.element as ElImpl
-    if (el.sealed) {
+    if (el.sealed !== undefined) {
       Handling(h => {
         const native = el.native as HTMLElement
         const resize = native.sensors.resize
+        const isHorizontal = el.sealed === Direction.horizontal
         for (const x of resize.resizedElements) {
           if (el.layoutInfo === undefined)
             el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
@@ -206,7 +207,6 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           // console.log(`%cleft = ${rect.left}, top = ${rect.top}, x = ${containerSizeXpx}, y = ${containerSizeYpx}`, "color: lime")
 
           // Set fixed width/height to wrapper
-          const isHorizontal = el.splitView === SplitView.horizontal
           const wrapper = node.children.firstMergedItem()?.instance
           if (wrapper !== undefined) {
             const wrapperEl = wrapper.element as El
@@ -218,7 +218,6 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           }
         }
         if (h.node.stamp === 1) {
-          const isHorizontal = el.splitView === SplitView.horizontal
           const wrapper = node.children.firstMergedItem()?.instance
           if (wrapper !== undefined) {
             const wrapperEl = wrapper.element as El
@@ -233,7 +232,7 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     if (el.splitView !== undefined) {
       Handling(() => {
         const native = el.native as HTMLElement
-        const isHorizontal = el.splitView === SplitView.horizontal
+        const isHorizontal = el.splitView === Direction.horizontal
         if (el.layoutInfo === undefined)
           el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
         if (el.layoutInfo.isConstrained) {
@@ -298,7 +297,7 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           if (isSplitViewPartition(child.instance.driver))
             partCount++
         }
-        const isHorizontal = el.splitView === SplitView.horizontal
+        const isHorizontal = el.splitView === Direction.horizontal
         if (childDeclaration !== undefined) {
           overrideOnCreate(childDeclaration, el => {
             if (isHorizontal)
