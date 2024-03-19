@@ -230,58 +230,62 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
       })
     }
     if (el.splitView !== undefined) {
-      Handling(() => {
-        const native = el.native as HTMLElement
-        const isHorizontal = el.splitView === Direction.horizontal
-        if (el.layoutInfo === undefined)
-          el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-        if (el.layoutInfo.isConstrained) {
-          const surroundingXpx = el.layoutInfo.borderSizeXpx - el.layoutInfo.contentSizeXpx
-          const surroundingYpx = el.layoutInfo.borderSizeYpx - el.layoutInfo.contentSizeYpx
-          let i = 0
-          const preferred: Array<number> = []
-          const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
-          for (const child of node.children.items()) {
-            const partEl = child.instance.element as ElImpl
-            if (isSplitViewPartition(child.instance.driver) && partEl !== undefined) {
-              const size = isHorizontal ? partEl.width : partEl.height
-              const options: SizeConverterOptions = {
-                axis: isHorizontal ? Axis.X : Axis.Y, lineSizePx: BodyFontSize/* Dimension.lineSizePx */, fontSizePx: BodyFontSize,
-                containerSizeXpx: native.scrollWidth - surroundingXpx, containerSizeYpx: native.scrollHeight - surroundingYpx,
-              }
-              const minPx = size.min ? toPx(Dimension.parse(size.min), options) : 0
-              let maxPx = size.max ? toPx(Dimension.parse(size.max), options) : Number.POSITIVE_INFINITY
-              maxPx = Math.max(minPx, maxPx)
-              if (partEl.layoutInfo === undefined)
-                partEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-              if (isHorizontal)
-                partEl.widthPx = { minPx, maxPx }
-              else
-                partEl.heightPx = { minPx, maxPx }
-              const preferredUsed = isHorizontal ? partEl.preferredWidthUsed : partEl.preferredHeightUsed
-              let preferredPx = 0
-              if (!preferredUsed) {
-                preferredPx = size.preferred ? toPx(Dimension.parse(size.preferred), options) : 0
-                if (preferredPx > 0) {
-                  partEl.layoutInfo.effectiveSizePx = preferredPx
-                  preferred.push(i)
+      SyntheticElement({
+        mode: Mode.independentUpdate,
+        triggers: { count: el.node.children.count },
+        onChange: () => {
+          const native = el.native as HTMLElement
+          const isHorizontal = el.splitView === Direction.horizontal
+          if (el.layoutInfo === undefined)
+            el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+          if (el.layoutInfo.isConstrained) {
+            const surroundingXpx = el.layoutInfo.borderSizeXpx - el.layoutInfo.contentSizeXpx
+            const surroundingYpx = el.layoutInfo.borderSizeYpx - el.layoutInfo.contentSizeYpx
+            let i = 0
+            const preferred: Array<number> = []
+            const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
+            for (const child of node.children.items()) {
+              const partEl = child.instance.element as ElImpl
+              if (isSplitViewPartition(child.instance.driver) && partEl !== undefined) {
+                const size = isHorizontal ? partEl.width : partEl.height
+                const options: SizeConverterOptions = {
+                  axis: isHorizontal ? Axis.X : Axis.Y, lineSizePx: BodyFontSize/* Dimension.lineSizePx */, fontSizePx: BodyFontSize,
+                  containerSizeXpx: native.scrollWidth - surroundingXpx, containerSizeYpx: native.scrollHeight - surroundingYpx,
                 }
+                const minPx = size.min ? toPx(Dimension.parse(size.min), options) : 0
+                let maxPx = size.max ? toPx(Dimension.parse(size.max), options) : Number.POSITIVE_INFINITY
+                maxPx = Math.max(minPx, maxPx)
+                if (partEl.layoutInfo === undefined)
+                  partEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
                 if (isHorizontal)
-                  partEl.preferredWidthUsed = true
+                  partEl.widthPx = { minPx, maxPx }
                 else
-                  partEl.preferredHeightUsed = true
+                  partEl.heightPx = { minPx, maxPx }
+                const preferredUsed = isHorizontal ? partEl.preferredWidthUsed : partEl.preferredHeightUsed
+                let preferredPx = 0
+                if (!preferredUsed) {
+                  preferredPx = size.preferred ? toPx(Dimension.parse(size.preferred), options) : 0
+                  if (preferredPx > 0) {
+                    partEl.layoutInfo.effectiveSizePx = preferredPx
+                    preferred.push(i)
+                  }
+                  if (isHorizontal)
+                    partEl.preferredWidthUsed = true
+                  else
+                    partEl.preferredHeightUsed = true
+                }
+                const sizePx = partEl.layoutInfo.effectiveSizePx = clamp(partEl.layoutInfo.effectiveSizePx, minPx, maxPx)
+                // console.log(`%c[${i}]: ${minPx}px..${sizePx}px..${maxPx}px (pref = ${preferredPx}px)`, "color: yellow")
+                sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx })
+                i++
               }
-              const sizePx = partEl.layoutInfo.effectiveSizePx = clamp(partEl.layoutInfo.effectiveSizePx, minPx, maxPx)
-              // console.log(`%c[${i}]: ${minPx}px..${sizePx}px..${maxPx}px (pref = ${preferredPx}px)`, "color: yellow")
-              sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx })
-              i++
             }
+            const priorities = preferred.length > 0
+              ? getPrioritiesForSizeChanging(isHorizontal, node.children as MergeList<RxNode>, preferred)
+              : getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as MergeList<RxNode>)
+            unobs(() => relayout(node as any as RxNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx))
           }
-          const priorities = preferred.length > 0
-            ? getPrioritiesForSizeChanging(isHorizontal, node.children as MergeList<RxNode>, preferred)
-            : getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as MergeList<RxNode>)
-          unobs(() => relayout(node as any as RxNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx))
-        }
+        },
       })
     }
     return result
@@ -299,7 +303,10 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
         }
         const isHorizontal = el.splitView === Direction.horizontal
         if (childDeclaration !== undefined) {
-          overrideOnCreate(childDeclaration, el => {
+          if (childDeclaration.triggers === undefined)
+            childDeclaration.triggers = {}
+          Object.defineProperty(childDeclaration.triggers, "index", { value: partCount } )
+          overrideMethod(childDeclaration, "onChange", el => {
             if (isHorizontal)
               el.style.gridColumn = `${partCount + 1}`
             else
@@ -327,10 +334,10 @@ export function isSplitViewPartition(childDriver: RxNodeDriver): boolean {
   return !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.synthetic
 }
 
-function overrideOnCreate(declaration: RxNodeDecl<El>, func: (el: El) => void): void {
-  const baseOnCreate = declaration.onCreate
-  declaration.onCreate = baseOnCreate !== undefined
-    ? (el, base) => { baseOnCreate(el, base); func(el) }
+function overrideMethod(declaration: RxNodeDecl<El>, method: "onCreate" | "onChange", func: (el: El) => void): void {
+  const baseOnChange = declaration[method]
+  declaration[method] = baseOnChange !== undefined
+    ? (el, base) => { baseOnChange(el, base); func(el) }
     : (el, base) => { base(); func(el) }
 }
 
