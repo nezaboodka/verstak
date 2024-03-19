@@ -640,13 +640,14 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         if (existing !== 0)
           delta = -1
       }
-      if (delta !== 0) {
-        const count = hostEl._stretchingStrengthX ?? 0 + delta
-        if (count === 1)
-          s.alignSelf = "stretch"
-        else if (count === 0)
-          s.alignSelf = ""
-      }
+      // TODO: to fix
+      // if (delta !== 0) {
+      //   const count = hostEl._stretchingStrengthX ?? 0 + delta
+      //   if (count === 1)
+      //     s.alignSelf = "stretch"
+      //   else if (count === 0)
+      //     s.alignSelf = ""
+      // }
     }
     // Apply strength for element itself
     value ??= 0
