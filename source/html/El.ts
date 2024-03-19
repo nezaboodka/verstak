@@ -626,7 +626,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     // Maintain strength for hosting partition (if any)
     const s = element.style
     const host = element.node.host
-    if (host.driver.isPartition && element.splitView === undefined) {
+    if (host.driver.isPartition) {
       const hostEl = host.element as ElImpl
       hostEl._stretchingStrengthX = value
       let delta = 0
@@ -666,7 +666,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     value: number | undefined): void {
     // Maintain strength for hosting partition (if any)
     const host = element.node.host
-    if (host.driver.isPartition && element.splitView === undefined) {
+    if (host.driver.isPartition) {
       const hostElement = host.element as ElImpl
       hostElement._stretchingStrengthY = value
       let delta = 0
