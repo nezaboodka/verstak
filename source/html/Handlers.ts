@@ -64,7 +64,7 @@ export function OnFocus(
       }
       else {
         model.isEditMode ? target.focus() : target.blur()
-        console.log(`${model.isEditMode ? "🟢" : "🔴"} RxFocuser [${name}]: ${model.isEditMode ? "focus()" : "blur()"}`)
+        // console.log(`${model.isEditMode ? "🟢" : "🔴"} RxFocuser [${name}]: ${model.isEditMode ? "focus()" : "blur()"}`)
       }
     },
   })
