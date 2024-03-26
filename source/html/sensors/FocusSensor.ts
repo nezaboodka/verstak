@@ -40,13 +40,13 @@ export class FocusSensor extends HtmlElementSensor {
     if (data !== this.activeData) {
       const activeData = this.activeData
       if (activeData !== undefined && objectHasMember<FocusModel>(activeData, "isEditMode")) {
-        // console.log(`${activeData.constructor.name}.isEditMode = %cfalse`, 'color: #BB0000')
+        // console.log(`${activeData.constructor.name}.isEditMode = %cfalse`, "color: #BB0000")
         activeData.isEditMode = false
         activeData.onFocusOut?.(this)
       }
       if (data !== undefined) {
         if (objectHasMember<FocusModel>(data, "isEditMode")) {
-          // console.log(`${data.constructor.name}.isEditMode = %ctrue`, 'color: #00BB00')
+          // console.log(`${data.constructor.name}.isEditMode = %ctrue`, "color: #00BB00")
           data.isEditMode = true
           data.onFocusIn?.(this)
         }
@@ -78,21 +78,21 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   protected onFocusIn(e: FocusEvent): void {
-    // console.group(`focusin [%c${(e.target as HTMLElement).id}%c]`, 'color: #44AAAA', 'color:')
+    // console.group(`focusin [%c${(e.target as HTMLElement).id}%c]`, "color: #44AAAA", "color:")
     this.doFocusIn(e)
     this.setPreventDefaultAndStopPropagation(e)
     // console.groupEnd()
   }
 
   protected onFocusOut(e: FocusEvent): void {
-    // console.group(`focusout [%c${(e.target as HTMLElement).id}%c]`, 'color: #44AAAA', 'color:')
+    // console.group(`focusout [%c${(e.target as HTMLElement).id}%c]`, "color: #44AAAA", "color:")
     this.doFocusOut(e)
     this.setPreventDefaultAndStopPropagation(e)
     // console.groupEnd()
   }
 
   protected onMouseDown(e: MouseEvent): void {
-    // console.group(`mousedown [%c${(e.target as HTMLElement).id}%c]`, 'color: #44AAAA', 'color:')
+    // console.group(`mousedown [%c${(e.target as HTMLElement).id}%c]`, "color: #44AAAA", "color:")
     this.doMouseDown(e)
     // console.groupEnd()
   }
@@ -103,6 +103,7 @@ export class FocusSensor extends HtmlElementSensor {
     // Focus
     const { dataList: focusDataList, activeData: focusActiveData, window } = grabElementDataList(path, SymDataForSensor, "focus", this.elementDataList, false, e => document.activeElement === e)
     this.elementDataList = focusDataList
+    // console.log("[info]: active data =", focusActiveData)
     this.setActiveData(focusActiveData)
     this.windowSensor?.setActiveWindow(window)
     // Context
@@ -115,25 +116,26 @@ export class FocusSensor extends HtmlElementSensor {
   protected doFocusOut(e: FocusEvent): void {
     const isLosingFocus = e.relatedTarget === null
     if (isLosingFocus) {
-      // console.log('[info]: browser is losing focus')
+      // console.log("[info]: browser is losing focus")
       const path = e.composedPath()
       // Focus
       const { dataList } = grabElementDataList(path, SymDataForSensor, "focus", this.elementDataList, true)
       this.elementDataList = dataList
-      const filteredElementDataList = dataList.filter(x => x !== this.activeData)
+      const filteredElementDataList = dataList.filter(x => x !== this.activeData && x !== this.oldActiveData)
+      // console.log(filteredElementDataList)
       if (filteredElementDataList.length > 0) {
-        // console.log('└─ [info]: focus data found')
+        // console.log("└─ [info]: focus data found")
         this.trySetEditMode(filteredElementDataList[0], "  └─")
       }
       else {
-        // console.log('├─ [info]: no focus data found')
+        // console.log("├─ [info]: no focus data found")
         const defaultData = this.getDefaultSensorData()
         if (defaultData?.focus !== undefined) {
-          // console.log('└─ [info]: default data is used')
+          // console.log("└─ [info]: default data is used")
           this.trySetEditMode(defaultData.focus, "    └─")
         }
         else {
-          // console.log('└─ [skip]: no default data found')
+          // console.log("└─ [skip]: no default data found")
           this.setActiveData(undefined)
         }
         this.windowSensor?.setActiveWindow(defaultData?.window)
@@ -143,7 +145,7 @@ export class FocusSensor extends HtmlElementSensor {
       this.reset()
     }
     else {
-      // console.log('[skip]: focus is not lost')
+      // console.log("[skip]: focus is not lost")
     }
   }
 
@@ -153,7 +155,7 @@ export class FocusSensor extends HtmlElementSensor {
     const isClickInsideTabIndexedElement =
       path.find(el => el !== document.body && el.tabIndex >= 0) !== undefined
     if (path.length > 0 && !isClickInsideTabIndexedElement) {
-      // console.log('[info]: a path does not contain any editable elements')
+      // console.log("[info]: a path does not contain any editable elements")
       // Focus
       const { dataList } = grabElementDataList(path, SymDataForSensor, "focus", this.elementDataList, true)
       this.elementDataList = dataList
@@ -167,13 +169,13 @@ export class FocusSensor extends HtmlElementSensor {
       this.reset()
     }
     else {
-      // console.log('[skip]: editable element found')
+      // console.log("[skip]: editable element found")
     }
   }
 
   private trySetEditMode(candidateData: unknown, indent: string = ""): void {
     if (candidateData !== undefined && objectHasMember<FocusModel>(candidateData, "isEditMode")) {
-      // console.log(`${indent}try focus: ${candidateData.constructor.name}.isEditMode = %ctrue`, 'color: #00BB00')
+      // console.log(`${indent}try focus: ${candidateData.constructor.name}.isEditMode = %ctrue`, "color: #00BB00")
       candidateData.isEditMode = true
     }
   }
