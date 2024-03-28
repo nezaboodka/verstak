@@ -15,6 +15,10 @@ export function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value))
 }
 
+export function parseLetters(value: string): number {
+  return value.split("").reduce((p, c) => p * 26 + parseInt(c, 36) - 9, 0)
+}
+
 export function emitLetters(n: number): string {
   if (n < 0)
     throw new Error(`emitLetters: argument (${n}) should not be negative or zero`)
@@ -25,6 +29,39 @@ export function emitLetters(n: number): string {
     result = String.fromCharCode(65 + r) + result
   }
   return result
+}
+
+export function parseSignedLetters(letters: string): number {
+  const { sign, value } = parseSign(letters)
+  return sign * parseLetters(value)
+}
+
+/** @param num Starts with 1 */
+export function emitSignedLetters(num: number): string {
+  const letters = emitLetters(Math.abs(num) - 1)
+  return emitSign(Math.sign(num), letters)
+}
+
+export function parseSignedNumber(number: string): number {
+  const { sign, value } = parseSign(number)
+  return sign * Number.parseInt(value)
+}
+
+export function emitSignedNumber(num: number): string {
+  return emitSign(Math.sign(num), Math.abs(num))
+}
+
+export function parseSign(value: string): { sign: number, value: string } {
+  const openBraceIndex = value.indexOf("(")
+  const closeBraceIndex = value.indexOf(")")
+  const sign = ~openBraceIndex && ~closeBraceIndex ? -1 : 1
+  if (sign < 0)
+    value = value.substring(openBraceIndex + 1, closeBraceIndex)
+  return { sign, value }
+}
+
+export function emitSign(sign: number, num: number | string): string {
+  return sign < 0 ? `(${num})` : `${num}`
 }
 
 export function parseElCoords(text: string, result: ElCoords): ElCoords {
@@ -38,14 +75,14 @@ export function parseElCoords(text: string, result: ElCoords): ElCoords {
       if (component % 2 === 0)
         value = value * 26 + charCode - 64
       else
-        console.error(`Digit is expected, but letter ('${text[i]}') was read`)
+        console.error(`Digit is expected, but letter ("${text[i]}") was read`)
     }
     else if (isLowercaseLetter(charCode)) {
       if (component % 2 === 0) {
         value = value * 26 + charCode - 96
       }
       else {
-        console.error(`Digit is expected, but letter ('${text[i]}') was read`)
+        console.error(`Digit is expected, but letter ("${text[i]}") was read`)
       }
     }
     else if (isDigit(charCode)) {
@@ -91,11 +128,11 @@ export function parseElCoords(text: string, result: ElCoords): ElCoords {
     }
     else if (charCode === 58) { // :
       if (sign < 0)
-        console.error(`area '${text}': e1`)
+        console.error(`area "${text}": e1`)
       if (component === 1)
         result.y1 = value * sign
       else if (component !== 2)
-        console.error(`area '${text}': [e2] component = ${component}`)
+        console.error(`area "${text}": [e2] component = ${component}`)
       component = 2
       value = 0
     }
@@ -103,7 +140,7 @@ export function parseElCoords(text: string, result: ElCoords): ElCoords {
       /* nop */
     }
     else {
-      console.error(`Unknown symbol '${text[i]}' in '${text}'`)
+      console.error(`Unknown symbol "${text[i]}" in "${text}"`)
     }
     i++
   }
@@ -177,19 +214,19 @@ export function equalElCoords(a: ElCoords, b: ElCoords): boolean {
   return a.x1 === b.x1 && a.y1 === b.y1 && a.x2 === b.x2 && a.y1 === b.y2
 }
 
-function isWhitespace(char: number): boolean {
+export function isWhitespace(char: number): boolean {
   // only latin white spaces are supported
   return char === 32 || (char >= 9 && char <= 13) || char === 133 || char === 160
 }
 
-function isDigit(input: number, index?: number): boolean {
+export function isDigit(input: number, index?: number): boolean {
   return 48 <= input && input <= 57
 }
 
-function isCapitalLetter(ch: number): boolean {
+export function isCapitalLetter(ch: number): boolean {
   return 65 <= ch && ch <= 90
 }
 
-function isLowercaseLetter(ch: number): boolean {
+export function isLowercaseLetter(ch: number): boolean {
   return 97 <= ch && ch <= 122
 }
