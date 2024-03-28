@@ -5,7 +5,6 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { FocusSensor } from "./FocusSensor.js"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
 import { KeyboardModifiers } from "./KeyboardSensor.js"
 import { WindowSensor } from "./WindowSensor.js"
@@ -22,8 +21,8 @@ export class BasePointerSensor extends HtmlElementSensor {
   positionY: number // position relative to browser's viewport
   modifiers: KeyboardModifiers
 
-  constructor(element: HTMLElement | SVGElement, focusSensor?: FocusSensor, windowSensor?: WindowSensor) {
-    super(element, focusSensor, windowSensor)
+  constructor(element: HTMLElement | SVGElement, windowSensor?: WindowSensor) {
+    super(element, windowSensor)
     this.positionX = Infinity
     this.positionY = Infinity
     this.modifiers = KeyboardModifiers.none

@@ -7,21 +7,18 @@
 
 import { raw } from "reactronic"
 import { DataForSensor, SymDataForSensor } from "./DataForSensor.js"
-// import { FocusSensor } from './FocusSensor.js'
 import { Sensor } from "./Sensor.js"
 import { WindowSensor } from "./WindowSensor.js"
 
 export class HtmlElementSensor extends Sensor {
   @raw readonly sourceElement: HTMLElement | SVGElement
-  @raw readonly focusSensor?: any
   @raw readonly windowSensor?: WindowSensor
   @raw preventDefault: boolean
   @raw stopPropagation: boolean
 
-  constructor(sourceElement: HTMLElement | SVGElement, focusSensor?: any, windowSensor?: WindowSensor) {
+  constructor(sourceElement: HTMLElement | SVGElement, windowSensor?: WindowSensor) {
     super()
     this.sourceElement = sourceElement
-    this.focusSensor = focusSensor
     this.windowSensor = windowSensor
     this.preventDefault = false
     this.stopPropagation = false

@@ -8,7 +8,6 @@
 import { options, reactive, Reentrance, transactional, raw, Transaction, LoggingLevel } from "reactronic"
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from "./BasePointerSensor.js"
 import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
-import { FocusSensor } from "./FocusSensor.js"
 import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
 import { WindowSensor } from "./WindowSensor.js"
 
@@ -46,8 +45,8 @@ export class PointerSensor extends BasePointerSensor {
 
   static readonly DraggingThreshold = 4
 
-  constructor(element: HTMLElement | SVGElement, focusSensor: FocusSensor, windowSensor: WindowSensor) {
-    super(element, focusSensor, windowSensor)
+  constructor(element: HTMLElement | SVGElement, windowSensor: WindowSensor) {
+    super(element, windowSensor)
     this.hotPositionX = Infinity
     this.hotPositionY = Infinity
     this.pointerButton = PointerButton.none

@@ -9,6 +9,7 @@ export type DataForSensor = {
   context?: unknown
   window?: unknown
   focus?: unknown
+  catchChildrenFocus?: boolean
   hover?: unknown
   keyboard?: unknown
   click?: unknown
@@ -73,8 +74,8 @@ export function grabElementDataList(targetPath: any[], sym: symbol,
     if (candidateData !== undefined) {
       if (!ignoreWindow) {
         if (window === undefined)
-          window = candidateData["window"]
-        else if (window !== candidateData["window"])
+          window = candidateData.window
+        else if (window !== candidateData.window)
           break
       }
       payload = candidateData[payloadKey]
@@ -92,7 +93,7 @@ export function grabElementDataList(targetPath: any[], sym: symbol,
         }
       }
     }
-    if (activeData === undefined && predicate(candidate)) {
+    if (payloadKey === "focus" && activeData === undefined && (predicate(candidate) || candidateData?.catchChildrenFocus)) {
       activeData = payload
     }
     i++

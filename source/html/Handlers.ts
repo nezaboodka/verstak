@@ -59,13 +59,16 @@ export function OnFocus(
       el.node.configureReactronic({ throttling: 0 })
     },
     onChange: el => {
+      // console.log(`-> ${model.isEditMode ? "🟢" : "🔴"} RxFocuser [${key}]: ${model.isEditMode ? "focus()" : "blur()"}`)
+      if (switchEditMode === undefined && !target.hasAttribute("tabindex"))
+        console.warn(`"${key ?? "noname"}" element must have "tabindex" attribute set in order to be focusable`)
       if (switchEditMode !== undefined) {
         switchEditMode(model)
       }
       else {
         model.isEditMode ? target.focus() : target.blur()
-        // console.log(`${model.isEditMode ? "🟢" : "🔴"} RxFocuser [${key}]: ${model.isEditMode ? "focus()" : "blur()"}`)
       }
+      // console.log(`<- ${model.isEditMode ? "🟢" : "🔴"} RxFocuser [${key}]: ${model.isEditMode ? "focus()" : "blur()"}`)
     },
   })
 }

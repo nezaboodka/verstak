@@ -83,7 +83,7 @@ export class HtmlSensors {
   private _htmlDrag: HtmlDragSensor | undefined
   get htmlDrag(): HtmlDragSensor {
     if (this._htmlDrag === undefined) {
-      this._htmlDrag = new HtmlDragSensor(this._element, this.focus, this.window)
+      this._htmlDrag = new HtmlDragSensor(this._element, this.window)
       this._htmlDrag.listen()
     }
     return this._htmlDrag
@@ -92,7 +92,7 @@ export class HtmlSensors {
   private _button: ButtonSensor | undefined
   get button(): ButtonSensor {
     if (this._button === undefined) {
-      this._button = new ButtonSensor(this._element, this.focus, this.window)
+      this._button = new ButtonSensor(this._element, this.window)
       this._button.listen()
     }
     return this._button
@@ -101,7 +101,7 @@ export class HtmlSensors {
   private _pointer: PointerSensor | undefined
   get pointer(): PointerSensor {
     if (this._pointer === undefined) {
-      this._pointer = new PointerSensor(this._element, this.focus, this.window)
+      this._pointer = new PointerSensor(this._element, this.window)
       this._pointer.listen()
     }
     return this._pointer

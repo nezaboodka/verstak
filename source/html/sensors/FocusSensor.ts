@@ -29,7 +29,7 @@ export class FocusSensor extends HtmlElementSensor {
   contextElementDataList: unknown[]
 
   constructor(element: HTMLElement | SVGElement, windowSensor: WindowSensor) {
-    super(element, undefined, windowSensor)
+    super(element, windowSensor)
     this.activeData = undefined
     this.oldActiveData = undefined
     this.contextElementDataList = []
@@ -78,27 +78,28 @@ export class FocusSensor extends HtmlElementSensor {
   }
 
   protected onFocusIn(e: FocusEvent): void {
-    // console.group(`focusin [%c${(e.target as HTMLElement).id}%c]`, "color: #44AAAA", "color:")
+    // console.group(`focusin [%c${(e.target as any).key}%c]`, "color: #44AAAA", "color:")
     this.doFocusIn(e)
     this.setPreventDefaultAndStopPropagation(e)
     // console.groupEnd()
   }
 
   protected onFocusOut(e: FocusEvent): void {
-    // console.group(`focusout [%c${(e.target as HTMLElement).id}%c]`, "color: #44AAAA", "color:")
+    // console.group(`focusout [%c${(e.target as any).key}%c]`, "color: #44AAAA", "color:")
     this.doFocusOut(e)
     this.setPreventDefaultAndStopPropagation(e)
     // console.groupEnd()
   }
 
   protected onMouseDown(e: MouseEvent): void {
-    // console.group(`mousedown [%c${(e.target as HTMLElement).id}%c]`, "color: #44AAAA", "color:")
+    // console.group(`mousedown [%c${(e.target as any).key}%c]`, "color: #44AAAA", "color:")
     this.doMouseDown(e)
     // console.groupEnd()
   }
 
   @transactional @options({ logging: LoggingLevel.Off })
   protected doFocusIn(e: FocusEvent): void {
+    // console.log(e)
     const path = e.composedPath()
     // Focus
     const { dataList: focusDataList, activeData: focusActiveData, window } = grabElementDataList(path, SymDataForSensor, "focus", this.elementDataList, false, e => document.activeElement === e)
@@ -114,6 +115,7 @@ export class FocusSensor extends HtmlElementSensor {
 
   @transactional
   protected doFocusOut(e: FocusEvent): void {
+    // console.log(e)
     const isLosingFocus = e.relatedTarget === null
     if (isLosingFocus) {
       // console.log("[info]: browser is losing focus")
@@ -121,7 +123,7 @@ export class FocusSensor extends HtmlElementSensor {
       // Focus
       const { dataList } = grabElementDataList(path, SymDataForSensor, "focus", this.elementDataList, true)
       this.elementDataList = dataList
-      const filteredElementDataList = dataList.filter(x => x !== this.activeData && x !== this.oldActiveData)
+      const filteredElementDataList = dataList.filter(x => x !== this.activeData /* && x !== this.oldActiveData */)
       // console.log(filteredElementDataList)
       if (filteredElementDataList.length > 0) {
         // console.log("└─ [info]: focus data found")
@@ -151,6 +153,7 @@ export class FocusSensor extends HtmlElementSensor {
 
   @transactional @options({ logging: LoggingLevel.Off })
   protected doMouseDown(e: MouseEvent): void {
+    // console.log(this)
     const path = e.composedPath() as Array<HTMLElement>
     const isClickInsideTabIndexedElement =
       path.find(el => el !== document.body && el.tabIndex >= 0) !== undefined

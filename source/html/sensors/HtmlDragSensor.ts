@@ -7,7 +7,6 @@
 
 import { options, reactive, transactional, raw, Transaction, LoggingLevel } from "reactronic"
 import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
-import { FocusSensor } from "./FocusSensor.js"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
 import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
 import { WindowSensor } from "./WindowSensor.js"
@@ -45,8 +44,8 @@ export class HtmlDragSensor extends HtmlElementSensor {
   immediatePositionY: number // position relative to browser's viewport
   immediateModifiers: KeyboardModifiers
 
-  constructor(element: HTMLElement | SVGElement, focusSensor: FocusSensor, windowSensor: WindowSensor) {
-    super(element, focusSensor, windowSensor)
+  constructor(element: HTMLElement | SVGElement, windowSensor: WindowSensor) {
+    super(element, windowSensor)
     this.draggable = undefined
     this.dragSource = undefined
     this.dragTarget = undefined

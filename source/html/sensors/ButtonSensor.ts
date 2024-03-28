@@ -8,7 +8,6 @@
 import { options, Reentrance, transactional, Transaction, LoggingLevel } from "reactronic"
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from "./BasePointerSensor.js"
 import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
-import { FocusSensor } from "./FocusSensor.js"
 import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
 import { WindowSensor } from "./WindowSensor.js"
 
@@ -28,8 +27,8 @@ export class ButtonSensor extends BasePointerSensor {
   selectedY: number // position relative to browser's viewport
   selected: boolean
 
-  constructor(element: HTMLElement | SVGElement, focusSensor: FocusSensor, windowSensor: WindowSensor) {
-    super(element, focusSensor, windowSensor)
+  constructor(element: HTMLElement | SVGElement, windowSensor: WindowSensor) {
+    super(element, windowSensor)
     this.state = ButtonState.released
     this.pointerButton = PointerButton.none
     this.originData = undefined
