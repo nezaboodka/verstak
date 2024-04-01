@@ -480,7 +480,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       }
       else {
         if (isEffectiveAlignerX) {
-          const existingAlignerCss = hostLayout.alignerX?.style
+          const existingAlignerCss = hostLayout.alignerX?.native?.style
           if (existingAlignerCss)
             existingAlignerCss.marginLeft = "" // remove "auto"
           // cleanup old leading element
