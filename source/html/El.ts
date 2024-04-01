@@ -629,18 +629,18 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     if (host.driver.isPartition) {
       const hostEl = host.element as ElImpl
       hostEl._stretchingStrengthX = value
-      let delta = 0
       existing ??= 0
       value ??= 0
-      if (existing === 0) {
-        if (value !== 0)
-          delta = 1
-      }
-      else if (value === 0) {
-        if (existing !== 0)
-          delta = -1
-      }
       // TODO: to fix
+      // let delta = 0
+      // if (existing === 0) {
+      //   if (value !== 0)
+      //     delta = 1
+      // }
+      // else if (value === 0) {
+      //   if (existing !== 0)
+      //     delta = -1
+      // }
       // if (delta !== 0) {
       //   const count = hostEl._stretchingStrengthX ?? 0 + delta
       //   if (count === 1)
