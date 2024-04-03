@@ -60,7 +60,7 @@ export function OnFocus(
     },
     onChange: el => {
       // console.log(`-> ${model.isEditMode ? "🟢" : "🔴"} RxFocuser [${key}]: ${model.isEditMode ? "focus()" : "blur()"}`)
-      if (switchEditMode === undefined && !target.hasAttribute("tabindex"))
+      if (switchEditMode === undefined && !(target instanceof HTMLInputElement || target.hasAttribute("tabindex")))
         console.warn(`"${key ?? "noname"}" element must have "tabindex" attribute set in order to be focusable`)
       if (switchEditMode !== undefined) {
         switchEditMode(model)
