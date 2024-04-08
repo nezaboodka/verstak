@@ -9,8 +9,9 @@ import { Mode, ToggleRef, unobs } from "reactronic"
 import { SyntheticElement } from "./Elements.js"
 import { FocusModel } from "./sensors/FocusSensor.js"
 import { ResizedElement } from "./sensors/ResizeSensor.js"
+import { PointerSensor } from "./sensors/PointerSensor.js"
 
-export function OnClick(target: HTMLElement, action: (() => void) | ToggleRef | undefined, key?: string): void {
+export function OnClick(target: HTMLElement, action: ((pointer: PointerSensor) => void) | ToggleRef | undefined, key?: string): void {
   if (action !== undefined) {
     SyntheticElement({
       key,
@@ -18,9 +19,9 @@ export function OnClick(target: HTMLElement, action: (() => void) | ToggleRef | 
       triggers: { target/* , action */ },
       onChange: el => {
         const pointer = target.sensors.pointer
-        if (pointer.clicked) {
+        if (target.dataForSensor.click !== undefined && pointer.clicked === target.dataForSensor.click || target.dataForSensor.click === undefined && pointer.clicked) {
           if (action instanceof Function) {
-            unobs(() => action())
+            unobs(() => action(pointer))
           }
           else if (action instanceof ToggleRef) {
             unobs(() => action.toggle())
