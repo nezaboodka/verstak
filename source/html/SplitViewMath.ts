@@ -208,8 +208,7 @@ export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: Me
   const manuallyResizable = []
   const items = Array.from(children.items()).filter(x => isSplitViewPartition(x.instance.driver))
   for (let i = items.length - 1; i >= 0; i--) {
-    const item = items[i]
-    const el = item.instance.element as ElImpl
+    const el = items[i].instance.element as ElImpl
     const strength = (isHorizontal ? el.stretchingStrengthX : el.stretchingStrengthY) ?? 1
     if (!indexes.includes(i)) {
       if (strength > 0)
@@ -218,15 +217,20 @@ export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: Me
         manuallyResizable.push(1 << i)
     }
   }
+  let r = 0
+  let mr = 0
   for (const i of indexes) {
-    const item = items[i]
-    const el = item.instance.element as ElImpl
+    const el = items[i].instance.element as ElImpl
     const strength = (isHorizontal ? el.stretchingStrengthX : el.stretchingStrengthY) ?? 1
     if (strength > 0)
-      resizable.push(1 << i)
+      r |= 1 << i
     else
-      manuallyResizable.push(1 << i)
+      mr |= 1 << i
   }
+  if (r > 0)
+    resizable.push(r)
+  if (mr > 0)
+    manuallyResizable.push(mr)
   return { resizable, manuallyResizable }
 }
 

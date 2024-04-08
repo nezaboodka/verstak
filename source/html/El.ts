@@ -219,7 +219,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   get width(): Range { return this._width.raw }
   set width(value: Range) {
     const w = this._width.raw
-    if (value.min !== w.min || value.max !== w.max) {
+    if (value.min !== w.min || value.max !== w.max || value.preferred !== undefined) {
       ElImpl.applyWidth(this, value)
       this._width.raw = value
       this._width.preferredUsed = false
@@ -245,7 +245,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   get height(): Range { return this._height.raw }
   set height(value: Range) {
     const h = this._height.raw
-    if (value.min !== h.min || value.max !== h.max) {
+    if (value.min !== h.min || value.max !== h.max || value.preferred !== undefined) {
       ElImpl.applyHeight(this, value)
       this._height.raw = value
       this._height.preferredUsed = false

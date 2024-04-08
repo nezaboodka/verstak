@@ -232,7 +232,6 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     if (el.splitView !== undefined) {
       SyntheticElement({
         mode: Mode.independentUpdate,
-        triggers: { count: el.node.stamp },
         onChange: () => {
           const native = el.native as HTMLElement
           const isHorizontal = el.splitView === Direction.horizontal
