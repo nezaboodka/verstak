@@ -232,6 +232,7 @@ export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     if (el.splitView !== undefined) {
       SyntheticElement({
         mode: Mode.independentUpdate,
+        triggers: { stamp: el.node.stamp }, // TODO: call this handler when all children are already rendered
         onChange: () => {
           const native = el.native as HTMLElement
           const isHorizontal = el.splitView === Direction.horizontal
