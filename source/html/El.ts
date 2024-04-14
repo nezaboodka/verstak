@@ -60,17 +60,19 @@ export type ElCoords = {
 }
 
 export enum PosH {
-  left         = 0,
-  center       = 1,
-  right        = 2,
-  stretch      = 3,
+  left          = 0,
+  center        = 1,
+  right         = 2,
+  stretch       = 3,
+  stretchAndFix = 4,
 }
 
 export enum PosV {
-  top          = 0,
-  center       = 1,
-  bottom       = 2,
-  stretch      = 3,
+  top           = 0,
+  center        = 1,
+  bottom        = 2,
+  stretch       = 3,
+  stretchAndFix = 4,
 }
 
 export type Range = {
@@ -513,6 +515,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
           css.marginRight = "" // remove "auto"
         break
       case PosH.stretch:
+      case PosH.stretchAndFix:
         css.justifySelf = "stretch"
         if (oldPrimary === PosH.center) {
           css.marginLeft = "" // remove "auto"
@@ -537,11 +540,12 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         css.textAlign = "right"
         break
       case PosH.stretch:
+      case PosH.stretchAndFix:
         css.alignItems = "stretch"
         css.textAlign = "justify"
         break
     }
-    if (newPrimary === PosH.stretch && strength === undefined)
+    if (newPrimary >= PosH.stretch && strength === undefined)
       ElImpl.applyStretchingStrengthH(element, 0, 1)
   }
 
@@ -598,6 +602,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         css.alignSelf = "end"
         break
       case PosV.stretch:
+      case PosV.stretchAndFix:
         css.alignSelf = "stretch"
         break
     }
@@ -613,10 +618,11 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         css.justifyContent = "end"
         break
       case PosV.stretch:
+      case PosV.stretchAndFix:
         css.justifyContent = "stretch"
         break
     }
-    if (newPrimary === PosV.stretch && strength === undefined)
+    if (newPrimary >= PosV.stretch && strength === undefined)
       ElImpl.applyStretchingStrengthV(element, 0, 1)
   }
 
