@@ -13,30 +13,30 @@ import { HtmlDriver } from "./HtmlDriver.js"
 import { clamp } from "./ElUtils.js"
 
 // Verstak is based on two fundamental layout structures
-// called section and table; and on two special non-visual
+// called panel and table; and on two special non-visual
 // elements called partition and group.
 
-// Section is a layout structure, which children are layed
+// Panel is a layout structure, which children are layed
 // out naturally: rightwards-downwards.
 
 // Table is layout structure, which children are layed out
 // over table cells.
 
 // Partition is a special non-visual element, which begins
-// new layout partition inside section or table.
+// new layout partition inside panel or table.
 
 // Note is either plain or markdown-formatted text
 // supporting syntax highlighting for code blocks.
 
 // Group is a special non-visual element for logical
-// grouping of sections, tables and other groups.
+// grouping of panels, tables and other groups.
 
-// Section
+// Panel
 
-export function Section<M = unknown>(
+export function Panel<M = unknown>(
   declaration?: RxNodeDecl<El<HTMLElement, M>>,
   preset?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.section, declaration, preset)
+  return RxNode.declare(Drivers.panel, declaration, preset)
 }
 
 // Table
@@ -178,9 +178,9 @@ export function SyntheticElement<M = unknown>(
   return RxNode.declare(Drivers.synthetic, declaration, preset)
 }
 
-// SectionDriver
+// PanelDriver
 
-export class SectionDriver<T extends HTMLElement> extends HtmlDriver<T> {
+export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
   update(node: RxNode<El<T>>): void | Promise<void> {
     rowBreak()
     const result = super.update(node)
@@ -343,7 +343,7 @@ function overrideMethod(declaration: RxNodeDecl<El>, method: "onCreate" | "onCha
 
 export const Drivers = {
   // display: flex, flex-direction: column
-  section: new SectionDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.section),
+  panel: new PanelDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.panel),
 
   // display: grid
   table: new HtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.table),

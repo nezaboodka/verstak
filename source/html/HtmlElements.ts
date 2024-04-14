@@ -10,7 +10,7 @@ import { El, ElKind } from "./El.js"
 import { StaticDriver, HtmlDriver, SvgDriver } from "./HtmlDriver.js"
 
 export function Page(declaration?: RxNodeDecl<El<HTMLBodyElement>>, preset?: RxNodeDecl<El<HTMLBodyElement>>): RxNode<El<HTMLBodyElement>> {
-  const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.section)
+  const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.panel)
   return RxNode.declare(driver, declaration, preset)
 }
 
