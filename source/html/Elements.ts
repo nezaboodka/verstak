@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { RxNodeDecl, RxNodeDriver, RxNode, Delegate, Mode, MergeList, MergedItem, unobs } from "reactronic"
-import { Constants, CursorCommandDriver, El, ElKind, ElArea, ElDriver, ElImpl, Direction, ElLayoutInfo, InitialElLayoutInfo } from "./El.js"
+import { Constants, CursorCommandDriver, El, ElKind, ElPlace, ElDriver, ElImpl, Direction, ElLayoutInfo, InitialElLayoutInfo } from "./El.js"
 import { getPrioritiesForEmptySpaceDistribution, getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
 import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
 import { HtmlDriver } from "./HtmlDriver.js"
@@ -135,10 +135,10 @@ export function declareSplitter<T>(index: number, splitViewNode: RxNode<El<T>>):
   )
 }
 
-export function cursor(areaParams: ElArea): void {
+export function cursor(areaParams: ElPlace): void {
   RxNode.declare(Drivers.cursor, {
     onChange: el => {
-      el.area = areaParams
+      el.place = areaParams
     },
   })
 }

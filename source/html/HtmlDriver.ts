@@ -74,10 +74,10 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     if (element instanceof ElImpl)
       element.prepareForUpdate()
     const result = super.update(node)
-    if (element.area === undefined) {
+    if (element.place === undefined) {
       const oel = node.owner.element
       if (oel instanceof ElImpl && oel.isTable)
-        element.area = undefined // automatic placement in table
+        element.place = undefined // automatic placement in table
     }
     if (gBlinkingEffectMarker)
       blink(element.native, RxNode.currentUpdatePriority, node.stamp)

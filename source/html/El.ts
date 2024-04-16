@@ -19,7 +19,7 @@ export type El<T = any, M = any> = {
   // User-manageable properties
   model: M
   kind: ElKind
-  area: ElArea
+  place: ElPlace
   width: Range
   height: Range
   horizontal: PosH | undefined
@@ -85,7 +85,7 @@ export type MarkedRange = Range & {
   readonly marker?: string
 }
 
-export type ElArea = undefined | string | {
+export type ElPlace = undefined | string | {
   cellsOverWidth?: number   // 1 (table only)
   cellsOverHeight?: number  // 1 (table only)
 }
@@ -131,7 +131,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   // User-defined properties
   model: M
   private _kind: ElKind
-  private _area: ElArea
+  private _place: ElPlace
   private _coords: ElCoords
   private _width: Size
   private _height: Size
@@ -157,7 +157,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     // User-defined properties
     this.model = undefined as any
     this._kind = ElKind.part
-    this._area = undefined
+    this._place = undefined
     this._coords = UndefinedElCoords
     this._width = Transaction.separate(() => new Size())
     this._height = Transaction.separate(() => new Size())
@@ -175,7 +175,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   prepareForUpdate(): void {
-    this._area = undefined // reset
+    this._place = undefined // reset
     this._hasStylingPresets = false // reset
   }
 
@@ -193,8 +193,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  get area(): ElArea { return this._area }
-  set area(value: ElArea) {
+  get place(): ElPlace { return this._place }
+  set place(value: ElPlace) {
     const node = this.node
     const driver = node.driver
     if (!driver.isPartition) {
@@ -212,7 +212,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
           ElImpl.applyCoords(this, coords)
         this._coords = coords
       }
-      this._area = value ?? {}
+      this._place = value ?? {}
     }
     else
       this.rowBreak()
@@ -825,12 +825,12 @@ const UndefinedElCoords = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
 export const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: ElLayoutInfoFlags.none, effectiveSizePx: 0, offsetXpx: 0, offsetYpx: 0, contentSizeXpx: 0, contentSizeYpx: 0, borderSizeXpx: 0, borderSizeYpx: 0, isConstrained: false }))
 
 function getElCoordsAndAdjustLayoutInfo(
-  isRegularElement: boolean, area: ElArea, maxX: number, maxY: number,
+  isRegularElement: boolean, place: ElPlace, maxX: number, maxY: number,
   prevElLayoutInfo: ElLayoutInfo, layoutInfo?: ElLayoutInfo): ElCoords {
   let result: ElCoords // this comment just prevents syntax highlighting in VS code
-  if (typeof (area) === "string") {
+  if (typeof (place) === "string") {
     // Absolute positioning
-    result = parseElCoords(area, { x1: 0, y1: 0, x2: 0, y2: 0 })
+    result = parseElCoords(place, { x1: 0, y1: 0, x2: 0, y2: 0 })
     absolutizeElCoords(result, prevElLayoutInfo.x, prevElLayoutInfo.y,
       maxX || Infinity, maxY || Infinity, result)
     if (layoutInfo) {
@@ -843,11 +843,11 @@ function getElCoordsAndAdjustLayoutInfo(
     // Relative positioning
     let dx: number
     let dy: number // this comment just prevents syntax highlighting in VS code
-    if (area) {
-      dx = area.cellsOverWidth ?? 1
-      dy = area.cellsOverHeight ?? 1
+    if (place) {
+      dx = place.cellsOverWidth ?? 1
+      dy = place.cellsOverHeight ?? 1
     }
-    else // area === undefined
+    else // place === undefined
       dx = dy = 1
     // Arrange
     const runningX = maxX !== 0 ? maxX : prevElLayoutInfo.runningMaxX
@@ -907,20 +907,20 @@ function getElCoordsAndAdjustLayoutInfo(
   return result
 }
 
-function absolutizeElCoords(area: ElCoords,
+function absolutizeElCoords(place: ElCoords,
   cursorX: number, cursorY: number,
   maxWidth: number, maxHeight: number,
   result: ElCoords): ElCoords {
   // X1, X2
-  const x1 = absolutizePosition(area.x1, cursorX, maxWidth)
-  const x2 = absolutizePosition(area.x2, x1, maxWidth)
+  const x1 = absolutizePosition(place.x1, cursorX, maxWidth)
+  const x2 = absolutizePosition(place.x2, x1, maxWidth)
   if (x1 <= x2)
     result.x1 = x1, result.x2 = x2
   else
     result.x1 = x2, result.x2 = x1
   // Y1, Y2
-  const y1 = absolutizePosition(area.y1, cursorY, maxHeight)
-  const y2 = absolutizePosition(area.y2, y1, maxHeight)
+  const y1 = absolutizePosition(place.y1, cursorY, maxHeight)
+  const y2 = absolutizePosition(place.y2, y1, maxHeight)
   if (y1 <= y2)
     result.y1 = y1, result.y2 = y2
   else
