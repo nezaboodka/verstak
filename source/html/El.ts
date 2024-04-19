@@ -964,13 +964,13 @@ export const Constants = {
   partition: "part",
   splitter: "splitter",
   group: "group",
-  layouts: ["section", "table", "note", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
+  layouts: ["panel", "table", "note", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
   keyAttrName: "key",
   kindAttrName: "kind",
 }
 
 const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
-  el => { // section
+  el => { // panel
     const owner = el.node.owner.element as ElImpl
     const s = el.style
     s.display = "flex"
@@ -1014,6 +1014,7 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     const s = el.style
     s.display = owner.isTable ? "contents" : "flex"
     s.flexDirection = "row"
+    s.alignItems = "center" // is it good idea?..
     s.gap = "inherit"
   },
   el => { // splitter
