@@ -64,7 +64,7 @@ export function Splitter<M = unknown, R = void>(
 
 export function rowBreak(shiftCursorDown?: number): void {
   RxNode.declare(Drivers.partition, {
-    onChange: el => {
+    script: el => {
       const ownerEl = el.node.owner.element as ElImpl
       if (ownerEl.splitView !== undefined) {
         el.style.display = "grid"
@@ -82,8 +82,8 @@ export function declareSplitter<T>(index: number, splitViewNode: RxNode<El<T>>):
     Splitter({
       key,
       mode: Mode.independentUpdate,
-      onCreate: el => el.native.className = `splitter ${key}`,
-      onChange: b => {
+      creation: el => el.native.className = `splitter ${key}`,
+      script: b => {
         const e = b.native
         const model = b.model
         const dataForSensor = e.dataForSensor
@@ -137,7 +137,7 @@ export function declareSplitter<T>(index: number, splitViewNode: RxNode<El<T>>):
 
 export function cursor(areaParams: ElPlace): void {
   RxNode.declare(Drivers.cursor, {
-    onChange: el => {
+    script: el => {
       el.place = areaParams
     },
   })
@@ -148,7 +148,7 @@ export function cursor(areaParams: ElPlace): void {
 export function Note(content: string, formatted?: boolean,
   declaration?: RxNodeDecl<El<HTMLElement, void>>): RxNode<El<HTMLElement, void>> {
   return RxNode.declare(Drivers.note, declaration, {
-    onChange: el => {
+    script: el => {
       if (formatted)
         el.native.innerHTML = content
       else
@@ -168,8 +168,8 @@ export function Group<M = unknown, R = void>(
 // Fragment
 
 export function Handling<M = unknown>(
-  onChange: Delegate<El<void, M>>): RxNode<El<void, M>> {
-  return SyntheticElement({ mode: Mode.independentUpdate, onChange })
+  script: Delegate<El<void, M>>): RxNode<El<void, M>> {
+  return SyntheticElement({ mode: Mode.independentUpdate, script })
 }
 
 export function SyntheticElement<M = unknown>(
@@ -233,7 +233,7 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
       SyntheticElement({
         mode: Mode.independentUpdate,
         triggers: { stamp: el.node.stamp }, // TODO: call this handler when all children are already rendered
-        onChange: () => {
+        script: () => {
           const native = el.native as HTMLElement
           const isHorizontal = el.splitView === Direction.horizontal
           if (el.layoutInfo === undefined)
@@ -306,7 +306,7 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
           if (childDeclaration.triggers === undefined)
             childDeclaration.triggers = {}
           Object.defineProperty(childDeclaration.triggers, "index", { value: partCount } )
-          overrideMethod(childDeclaration, "onChange", el => {
+          overrideMethod(childDeclaration, "script", el => {
             if (isHorizontal)
               el.style.gridColumn = `${partCount + 1}`
             else
@@ -334,10 +334,10 @@ export function isSplitViewPartition(childDriver: RxNodeDriver): boolean {
   return !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.synthetic
 }
 
-function overrideMethod(declaration: RxNodeDecl<El>, method: "onCreate" | "onChange", func: (el: El) => void): void {
-  const baseOnChange = declaration[method]
-  declaration[method] = baseOnChange !== undefined
-    ? (el, base) => { baseOnChange(el, base); func(el) }
+function overrideMethod(declaration: RxNodeDecl<El>, method: "creation" | "script", func: (el: El) => void): void {
+  const baseScript = declaration[method]
+  declaration[method] = baseScript !== undefined
+    ? (el, base) => { baseScript(el, base); func(el) }
     : (el, base) => { base(); func(el) }
 }
 
