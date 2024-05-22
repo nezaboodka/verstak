@@ -46,7 +46,9 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
       const sequential = node.owner.children.isStrict
       const automaticHost = RxNode.findMatchingHost<El, El>(node, n =>
         n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
-      const automaticNativeHost = automaticHost?.element.native
+      const automaticNativeHost = automaticHost !== node.owner
+        ? automaticHost?.driver.getHost(automaticHost).element.native
+        : automaticHost?.element.native
       if (automaticNativeHost) {
         if (sequential && !node.driver.isPartition) {
           const after = RxNode.findMatchingPrevSibling<El, El>(node, n =>

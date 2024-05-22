@@ -114,8 +114,6 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
   let isSplitterEnabled = false
   const sizesPx = []
   const layoutInfo = splitViewNode.element.layoutInfo
-  const offsetXpx = layoutInfo?.offsetXpx ?? 0
-  const offsetYpx = layoutInfo?.offsetYpx ?? 0
   for (const item of splitViewNode.children.items()) {
     const child = item.instance
     if (isSplitViewPartition(child.driver)) {
@@ -157,15 +155,15 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
         // DEBUG && console.log(`(${isHorizontal ? "horizontal" : "vertical"}) pos = ${posPx}px`)
         el.style.display = isSplitterEnabled ? "block" : "none"
         if (isHorizontal)
-          el.style.left = `${offsetXpx + posPx}px`
+          el.style.left = `${posPx}px`
         else
-          el.style.top = `${offsetYpx + posPx}px`
+          el.style.top = `${posPx}px`
       }
     }
   }
   const containerSizePx = (isHorizontal ? layoutInfo?.contentSizeXpx : layoutInfo?.contentSizeYpx) ?? 0
   const isOverflowing = greater(posPx, containerSizePx)
-  const wrapper = splitViewNode.children.firstMergedItem()?.instance as RxNode<ElImpl> | undefined
+  const wrapper = splitViewNode.children.firstMergedItem()?.instance.children.firstMergedItem()?.instance as RxNode<ElImpl> | undefined
   if (wrapper !== undefined) {
     if (isHorizontal)
       wrapper.element.style.gridTemplateColumns = sizesPx.map(x => `${x}px`).join(" ")
@@ -173,12 +171,12 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
       wrapper.element.style.gridTemplateRows = sizesPx.map(x => `${x}px`).join(" ")
     if (isOverflowing) {
       if (isHorizontal)
-        wrapper.element.style.overflow = "scroll hidden"
+        wrapper.element.style.overflow = "scroll visible"
       else
-        wrapper.element.style.overflow = "hidden scroll"
+        wrapper.element.style.overflow = "visible scroll"
     }
     else {
-      wrapper.element.style.overflow = "hidden"
+      wrapper.element.style.overflow = "visible"
     }
   }
 }

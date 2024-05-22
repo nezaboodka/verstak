@@ -747,7 +747,6 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   static applySealed<T extends Element>(element: El<T, any>, value: Direction | undefined): void {
     const e = element.native
     if (e instanceof HTMLElement) {
-      Transaction.separate(() => e.sensors.resize.observeResizing(element, value !== undefined))
     }
   }
 
@@ -755,7 +754,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     const e = element.native
     if (e instanceof HTMLElement) {
       element.sealed = value
-      e.style.position = value !== undefined ? "relative" : ""
+      Transaction.separate(() => e.sensors.resize.observeResizing(element, value !== undefined))
     }
   }
 
@@ -782,14 +781,10 @@ export class ElLayoutInfo {
 
   @obs effectiveSizePx: number
 
-  @obs offsetXpx: number
-  @obs offsetYpx: number
   @obs contentSizeXpx: number
   @obs contentSizeYpx: number
   @obs borderSizeYpx: number
   @obs borderSizeXpx: number
-
-  @obs isConstrained: boolean
 
   constructor(prev: ElLayoutInfo) {
     this.x = prev.x
@@ -802,14 +797,10 @@ export class ElLayoutInfo {
 
     this.effectiveSizePx = 0
 
-    this.offsetXpx = 0
-    this.offsetYpx = 0
     this.contentSizeXpx = 0
     this.contentSizeYpx = 0
     this.borderSizeXpx = 0
     this.borderSizeYpx = 0
-
-    this.isConstrained = false
   }
 }
 
@@ -822,7 +813,7 @@ enum ElLayoutInfoFlags {
 }
 
 const UndefinedElCoords = Object.freeze({ x1: 0, y1: 0, x2: 0, y2: 0 })
-export const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: ElLayoutInfoFlags.none, effectiveSizePx: 0, offsetXpx: 0, offsetYpx: 0, contentSizeXpx: 0, contentSizeYpx: 0, borderSizeXpx: 0, borderSizeYpx: 0, isConstrained: false }))
+export const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo({ x: 1, y: 1, runningMaxX: 0, runningMaxY: 0, flags: ElLayoutInfoFlags.none, effectiveSizePx: 0, contentSizeXpx: 0, contentSizeYpx: 0, borderSizeXpx: 0, borderSizeYpx: 0 }))
 
 function getElCoordsAndAdjustLayoutInfo(
   isRegularElement: boolean, place: ElPlace, maxX: number, maxY: number,
@@ -962,6 +953,7 @@ export const Constants = {
   // kindAttrName: "вид",
   element: "el",
   partition: "part",
+  wrapper: "wrapper",
   splitter: "splitter",
   group: "group",
   layouts: ["panel", "table", "note", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
@@ -979,10 +971,6 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     s.textAlign = "initial"
     s.flexShrink = "1"
     s.minWidth = "0"
-    if (owner.splitView !== undefined) {
-      s.overflow = "hidden"
-      s.flexGrow = "1"
-    }
   },
   el => { // table
     const owner = el.node.owner.element as ElImpl
@@ -993,10 +981,6 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     s.gridAutoRows = "minmax(min-content, 1fr)"
     s.gridAutoColumns = "minmax(min-content, 1fr)"
     s.textAlign = "initial"
-    if (owner.splitView !== undefined) {
-      s.overflow = "hidden"
-      s.flexGrow = "1"
-    }
   },
   el => { // note
     const owner = el.node.owner.element as ElImpl
@@ -1016,6 +1000,7 @@ const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
     s.flexDirection = "row"
     s.alignItems = "center" // is it good idea?..
     s.gap = "inherit"
+    s.position = owner.sealed !== undefined ? "relative" : ""
   },
   el => { // splitter
     const s = el.style
