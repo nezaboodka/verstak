@@ -36,8 +36,9 @@ export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: nu
   const containerSizePx = splitViewNode.element.splitView === Direction.horizontal
     ? splitViewNode.element.layoutInfo?.contentSizeXpx ?? 0
     : splitViewNode.element.layoutInfo?.contentSizeYpx ?? 0
-  DEBUG && console.log(`(splitter) delta = ${deltaPx}, container = ${containerSizePx}, size = ${initialSizesPx.reduce((p, c) => p + c.sizePx, 0)}, index = ${index}`)
+  DEBUG && console.group(`(splitter) delta = ${deltaPx}, container = ${containerSizePx}, size = ${initialSizesPx.reduce((p, c) => p + c.sizePx, 0)}, index = ${index}`)
   resizeUsingDelta(splitViewNode, deltaPx, index + 1, priorities, initialSizesPx, true)
+  DEBUG && console.groupEnd()
   layout(splitViewNode)
 }
 
@@ -49,13 +50,15 @@ export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArra
   const totalSizePx = sizesPx.reduce((p, c) => p + c.sizePx, 0)
   let deltaPx = containerSizePx - totalSizePx
   DEBUG && console.log(printPriorities(priorities, manuallyResizablePriorities), "color: grey", "color:", "color: grey", "color:")
-  DEBUG && console.log(`(relayout) ∆ = ${n(deltaPx)}px, container = ${n(containerSizePx)}px, total = ${totalSizePx}`)
+  DEBUG && console.group(`(relayout) ∆ = ${n(deltaPx)}px, container = ${n(containerSizePx)}px, total = ${totalSizePx}`)
   deltaPx = resizeUsingDelta(splitViewNode, deltaPx, sizesPx.length, priorities, sizesPx)
-  DEBUG && console.log(`(relayout) ~∆ = ${n(deltaPx)}, container = ${n(containerSizePx, 3)}px, total = ${n(sizesPx.reduce((p, c) => p + c.sizePx, 0), 3)}px`)
+  DEBUG && console.groupEnd()
+  DEBUG && console.group(`(relayout) ~∆ = ${n(deltaPx)}, container = ${n(containerSizePx, 3)}px, total = ${n(sizesPx.reduce((p, c) => p + c.sizePx, 0), 3)}px`)
   if (deltaPx < -(1 / devicePixelRatio)) {
     DEBUG && console.log(`%c${deltaPx}px`, "color: lime")
     resizeUsingDelta(splitViewNode, deltaPx, sizesPx.length, manuallyResizablePriorities, sizesPx, true)
   }
+  DEBUG && console.groupEnd()
   layout(splitViewNode)
   // this._saveProportions()
 }
@@ -83,25 +86,29 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, deltaPx: number,
     const maxDeltaPx = Math.min(maxBeforeDeltaPx, maxAfterDeltaPx)
     const clampedDeltaPx = clamp(deltaPx, minDeltaPx, maxDeltaPx)
 
-    DEBUG && console.log(`%c${sizesPx.map((x, i) => {
+    DEBUG && console.log("Initial sizes:")
+    DEBUG && sizesPx.map((x, i) => {
       const size = isHorizontal ? x.node.element.widthPx : x.node.element.heightPx
-      return `${i}: ${size.minPx}..${x.sizePx}..${size.maxPx} (px)`
-    }).join("\n")}`, "color: skyblue")
-    DEBUG && console.log(`[%c${Array.from({ length: index }).map((x, i) => i).join(",")}%c | %c${Array.from({ length: Math.max(0, sizesPx.length - index) }).map((x, i) => index + i).join(",")}%c]\n∆ = ${n(minDeltaPx)}px..${n(deltaPx)}px -> %c${n(clampedDeltaPx)}px%c..${n(maxDeltaPx)}px`, "color: #00BB00", "color:", "color: orange", "color:", "color: yellow", "color:")
+      return console.log(`%c  ${i}: ${size.minPx}..${x.sizePx}..${size.maxPx} (px)`, "color: skyblue")
+    })
+    DEBUG && console.log(`[%c${Array.from({ length: index }).map((x, i) => i).join(",")}%c | %c${Array.from({ length: Math.max(0, sizesPx.length - index) }).map((x, i) => index + i).join(",")}%c] ∆ = ${n(minDeltaPx)}px..${n(deltaPx)}px -> %c${n(clampedDeltaPx)}px%c..${n(maxDeltaPx)}px`, "color: #00BB00", "color:", "color: #00BB00", "color:", "color: yellow", "color:")
 
     if (clampedDeltaPx !== 0) {
+      DEBUG && console.log("distribution: start")
       if (index > 0)
         beforeDeltaPx = distribute(1, clampedDeltaPx, index, priorities, sizesPx, isHorizontal, force)
       if (hasAfter)
         distribute(-1, clampedDeltaPx, index, priorities, sizesPx, isHorizontal, force)
+      DEBUG && console.log("distribution: end")
     }
   }
+  DEBUG && console.log("Set new sizes:")
   for (let i = 0; i < sizesPx.length; i++) {
     const el = sizesPx[i].node.element
     if (el.layoutInfo === undefined)
       el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+    DEBUG && console.log(`%c  ${i}: ${n(el.layoutInfo.effectiveSizePx)} -> ${n(sizesPx[i].sizePx)} (px)`, "color: skyblue")
     el.layoutInfo.effectiveSizePx = sizesPx[i].sizePx
-    DEBUG && console.log(`[${i}]: set size = ${n(sizesPx[i].sizePx)}px`)
   }
   return beforeDeltaPx
 }
@@ -312,8 +319,8 @@ function distribute(sign: number, deltaPx: number, index: number, priorities: Re
           fractionCount += growth
         }
       }
-    } while (Math.abs(deltaPx) > eps && fractionCount > 0)
-    if (Math.abs(deltaPx) <= eps) {
+    } while (!equal(deltaPx, 0) && fractionCount > 0)
+    if (equal(deltaPx, 0)) {
       break
     }
   }
@@ -325,7 +332,7 @@ function distribute(sign: number, deltaPx: number, index: number, priorities: Re
 function printPriorities(priorities: ReadonlyArray<number>, manuallyResizablePriorities: ReadonlyArray<number>): string {
   let text = ""
   if (priorities.length > 0) {
-    text += `Automatically Resizable:\n%c(${priorities.map(x => `0x${x.toString(2)}`).join(", ")})%c\n`
+    text += `Automatically Resizable:\n%c(${priorities.map(x => `0b${x.toString(2)}`).join(", ")})%c\n`
     for (let i = 0; i < priorities.length; i++) {
       let vector = priorities[i]
       const parts = []
@@ -340,7 +347,7 @@ function printPriorities(priorities: ReadonlyArray<number>, manuallyResizablePri
     }
   }
   if (manuallyResizablePriorities.length > 0) {
-    text += `Manually Resizable:\n%c(${manuallyResizablePriorities.map(x => `0x${x.toString(2)}`).join(", ")})%c\n`
+    text += `Manually Resizable:\n%c(${manuallyResizablePriorities.map(x => `0b${x.toString(2)}`).join(", ")})%c\n`
     for (let i = 0; i < manuallyResizablePriorities.length; i++) {
       let vector = manuallyResizablePriorities[i]
       const parts = []
