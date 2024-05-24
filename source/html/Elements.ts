@@ -309,25 +309,23 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
   update(node: RxNode<El<T>>): void | Promise<void> {
     const result = super.update(node)
     const ownerEl = node.owner.element as ElImpl
-    if (ownerEl.sealed !== undefined)
+    if (ownerEl.sealed !== undefined) {
+      node.element.style.flexGrow = "1"
       RxNode.declare(Drivers.wrapper, {
         script: el => {
           const ownerEl = el.node.owner.owner.element as ElImpl
           if (ownerEl.splitView !== undefined) {
             el.style.display = "grid"
             el.style.flexDirection = ""
-            el.style.alignItems = ""
           }
           else {
             if (ownerEl.isTable) {
               el.style.display = "contents"
               el.style.flexDirection = ""
-              el.style.alignItems = ""
             }
             else {
               el.style.display = "flex"
               el.style.flexDirection = "row"
-              el.style.alignItems = "center" // is it good idea?..
             }
           }
           el.style.position = "absolute"
@@ -336,6 +334,7 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           el.style.gap = "inherit"
         },
       })
+    }
     return result
   }
 
