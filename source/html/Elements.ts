@@ -330,7 +330,7 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           }
           el.style.position = "absolute"
           el.style.inset = "0"
-          el.style.overflow = "scroll" // TODO: should be user-defined
+          el.style.overflow = "auto" // TODO: should be user-defined
           el.style.gap = "inherit"
         },
       })
