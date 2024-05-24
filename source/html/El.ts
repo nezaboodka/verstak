@@ -78,7 +78,7 @@ export enum PosV {
 export type Range = {
   readonly min?: string     // min-content
   readonly max?: string     // min-content
-  readonly preferred?: string
+  preferred?: string
 }
 
 export type MarkedRange = Range & {
@@ -99,14 +99,12 @@ class Size extends ObservableObject {
   raw: Range
   minPx: number
   maxPx: number
-  preferredUsed: boolean
 
   constructor() {
     super()
     this.raw = { min: "", max: "" }
     this.minPx = 0
     this.maxPx = Number.POSITIVE_INFINITY
-    this.preferredUsed = false
   }
 }
 
@@ -224,7 +222,6 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     if (value.min !== w.min || value.max !== w.max || value.preferred !== undefined) {
       ElImpl.applyWidth(this, value)
       this._width.raw = value
-      this._width.preferredUsed = false
     }
   }
 
@@ -237,20 +234,12 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       this._width.maxPx = value.maxPx
   }
 
-  get preferredWidthUsed(): boolean {
-    return this._width.preferredUsed
-  }
-  set preferredWidthUsed(value: boolean) {
-    this._width.preferredUsed = value
-  }
-
   get height(): Range { return this._height.raw }
   set height(value: Range) {
     const h = this._height.raw
     if (value.min !== h.min || value.max !== h.max || value.preferred !== undefined) {
       ElImpl.applyHeight(this, value)
       this._height.raw = value
-      this._height.preferredUsed = false
     }
   }
 
@@ -261,13 +250,6 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       this._height.minPx = value.minPx
     if (value.maxPx !== w.maxPx)
       this._height.maxPx = value.maxPx
-  }
-
-  get preferredHeightUsed(): boolean {
-    return this._height.preferredUsed
-  }
-  set preferredHeightUsed(value: boolean) {
-    this._height.preferredUsed = value
   }
 
   get horizontal(): PosH | undefined { return this._horizontal }

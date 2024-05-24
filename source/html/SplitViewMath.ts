@@ -36,10 +36,12 @@ export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: nu
   const containerSizePx = splitViewNode.element.splitView === Direction.horizontal
     ? splitViewNode.element.layoutInfo?.contentSizeXpx ?? 0
     : splitViewNode.element.layoutInfo?.contentSizeYpx ?? 0
-  DEBUG && console.group(`(splitter) delta = ${deltaPx}, container = ${containerSizePx}, size = ${initialSizesPx.reduce((p, c) => p + c.sizePx, 0)}, index = ${index}`)
-  resizeUsingDelta(splitViewNode, deltaPx, index + 1, priorities, initialSizesPx, true)
-  DEBUG && console.groupEnd()
-  layout(splitViewNode)
+  if (containerSizePx > 0) {
+    DEBUG && console.group(`(splitter) delta = ${deltaPx}, container = ${containerSizePx}, size = ${initialSizesPx.reduce((p, c) => p + c.sizePx, 0)}, index = ${index}`)
+    resizeUsingDelta(splitViewNode, deltaPx, index + 1, priorities, initialSizesPx, true)
+    DEBUG && console.groupEnd()
+    layout(splitViewNode)
+  }
 }
 
 export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArray<number>, manuallyResizablePriorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>): void {
@@ -47,20 +49,22 @@ export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArra
   const containerSizePx = splitViewNode.element.splitView === Direction.horizontal
     ? splitViewNode.element.layoutInfo?.contentSizeXpx ?? 0
     : splitViewNode.element.layoutInfo?.contentSizeYpx ?? 0
-  const totalSizePx = sizesPx.reduce((p, c) => p + c.sizePx, 0)
-  let deltaPx = containerSizePx - totalSizePx
-  DEBUG && console.log(printPriorities(priorities, manuallyResizablePriorities), "color: grey", "color:", "color: grey", "color:")
-  DEBUG && console.group(`(relayout) ∆ = ${n(deltaPx)}px, container = ${n(containerSizePx)}px, total = ${totalSizePx}`)
-  deltaPx = resizeUsingDelta(splitViewNode, deltaPx, sizesPx.length, priorities, sizesPx)
-  DEBUG && console.groupEnd()
-  DEBUG && console.group(`(relayout) ~∆ = ${n(deltaPx)}, container = ${n(containerSizePx, 3)}px, total = ${n(sizesPx.reduce((p, c) => p + c.sizePx, 0), 3)}px`)
-  if (deltaPx < -(1 / devicePixelRatio)) {
-    DEBUG && console.log(`%c${deltaPx}px`, "color: lime")
-    resizeUsingDelta(splitViewNode, deltaPx, sizesPx.length, manuallyResizablePriorities, sizesPx, true)
+  if (containerSizePx > 0) {
+    const totalSizePx = sizesPx.reduce((p, c) => p + c.sizePx, 0)
+    let deltaPx = containerSizePx - totalSizePx
+    DEBUG && console.log(printPriorities(priorities, manuallyResizablePriorities), "color: grey", "color:", "color: grey", "color:")
+    DEBUG && console.group(`(relayout) ∆ = ${n(deltaPx)}px, container = ${n(containerSizePx)}px, total = ${totalSizePx}`)
+    deltaPx = resizeUsingDelta(splitViewNode, deltaPx, sizesPx.length, priorities, sizesPx)
+    DEBUG && console.groupEnd()
+    DEBUG && console.group(`(relayout) ~∆ = ${n(deltaPx)}, container = ${n(containerSizePx, 3)}px, total = ${n(sizesPx.reduce((p, c) => p + c.sizePx, 0), 3)}px`)
+    if (deltaPx < -(1 / devicePixelRatio)) {
+      DEBUG && console.log(`%c${deltaPx}px`, "color: lime")
+      resizeUsingDelta(splitViewNode, deltaPx, sizesPx.length, manuallyResizablePriorities, sizesPx, true)
+    }
+    DEBUG && console.groupEnd()
+    layout(splitViewNode)
+    // this._saveProportions()
   }
-  DEBUG && console.groupEnd()
-  layout(splitViewNode)
-  // this._saveProportions()
 }
 
 export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, deltaPx: number, index: number, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, force: boolean = false): number {

@@ -187,12 +187,12 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
         for (const x of resize.resizedElements) {
           if (el.layoutInfo === undefined)
             el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-          const contentBoxPx = x.contentBoxSize[0]
           const borderBoxPx = x.borderBoxSize[0]
-          el.layoutInfo.contentSizeXpx = contentBoxPx.inlineSize
-          el.layoutInfo.contentSizeYpx = contentBoxPx.blockSize
+          const contentBoxPx = x.contentBoxSize[0]
           el.layoutInfo.borderSizeXpx = borderBoxPx.inlineSize
           el.layoutInfo.borderSizeYpx = borderBoxPx.blockSize
+          el.layoutInfo.contentSizeXpx = contentBoxPx.inlineSize
+          el.layoutInfo.contentSizeYpx = contentBoxPx.blockSize
         }
       })
       SyntheticElement({
@@ -225,21 +225,14 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
                   partEl.widthPx = { minPx, maxPx }
                 else
                   partEl.heightPx = { minPx, maxPx }
-                const preferredUsed = isHorizontal ? partEl.preferredWidthUsed : partEl.preferredHeightUsed
-                let preferredPx = 0
-                if (!preferredUsed) {
-                  preferredPx = size.preferred ? toPx(Dimension.parse(size.preferred), options) : 0
-                  if (preferredPx > 0) {
-                    partEl.layoutInfo.effectiveSizePx = preferredPx
-                    preferred.push(i)
-                  }
-                  if (isHorizontal)
-                    partEl.preferredWidthUsed = true
-                  else
-                    partEl.preferredHeightUsed = true
+                const preferredPx = size.preferred ? toPx(Dimension.parse(size.preferred), options) : 0
+                if (preferredPx > 0) {
+                  partEl.layoutInfo.effectiveSizePx = preferredPx
+                  size.preferred = undefined
+                  preferred.push(i)
                 }
+                // console.log(`%c[${i}]: ${minPx}..%c${partEl.layoutInfo.effectiveSizePx} -> ${clamp(partEl.layoutInfo!.effectiveSizePx, minPx, maxPx)}%c..${maxPx} (pref = ${preferredPx}) (px)`, "color: yellow", "color: #00BB00", "color: yellow")
                 const sizePx = unobs(() => partEl.layoutInfo!.effectiveSizePx = clamp(partEl.layoutInfo!.effectiveSizePx, minPx, maxPx))
-                // console.log(`%c[${i}]: ${minPx}px..${sizePx}px..${maxPx}px (pref = ${preferredPx}px)`, "color: yellow")
                 sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx })
                 i++
               }
