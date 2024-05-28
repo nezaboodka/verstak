@@ -174,25 +174,22 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
   update(node: RxNode<El<T>>): void | Promise<void> {
     rowBreak()
     const el = node.element as ElImpl
+    const result = super.update(node)
     if (el.splitView !== undefined) {
       if (el.layoutInfo === undefined)
         el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-      el.layoutInfo.isUpdateFinished = false
-    }
-    const result = super.update(node)
-    if (el.splitView !== undefined) {
+      const layoutInfo = el.layoutInfo
+      layoutInfo.isUpdateFinished = false
       Handling(h => {
         const native = el.native as HTMLElement
         const resize = native.sensors.resize
         for (const x of resize.resizedElements) {
-          if (el.layoutInfo === undefined)
-            el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
           const borderBoxPx = x.borderBoxSize[0]
           const contentBoxPx = x.contentBoxSize[0]
-          el.layoutInfo.borderSizeXpx = borderBoxPx.inlineSize
-          el.layoutInfo.borderSizeYpx = borderBoxPx.blockSize
-          el.layoutInfo.contentSizeXpx = contentBoxPx.inlineSize
-          el.layoutInfo.contentSizeYpx = contentBoxPx.blockSize
+          layoutInfo.borderSizeXpx = borderBoxPx.inlineSize
+          layoutInfo.borderSizeYpx = borderBoxPx.blockSize
+          layoutInfo.contentSizeXpx = contentBoxPx.inlineSize
+          layoutInfo.contentSizeYpx = contentBoxPx.blockSize
         }
       })
       SyntheticElement({
@@ -200,11 +197,9 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
         script: () => {
           const native = el.native as HTMLElement
           const isHorizontal = el.splitView === Direction.horizontal
-          if (el.layoutInfo === undefined)
-            el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-          if (el.layoutInfo.isUpdateFinished) {
-            const surroundingXpx = el.layoutInfo.borderSizeXpx - el.layoutInfo.contentSizeXpx
-            const surroundingYpx = el.layoutInfo.borderSizeYpx - el.layoutInfo.contentSizeYpx
+          if (layoutInfo.isUpdateFinished) {
+            const surroundingXpx = layoutInfo.borderSizeXpx - layoutInfo.contentSizeXpx
+            const surroundingYpx = layoutInfo.borderSizeYpx - layoutInfo.contentSizeYpx
             let i = 0
             const preferred: Array<number> = []
             const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
@@ -245,9 +240,7 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
         },
       })
       RxNode.updateNestedNodesThenDo(() => {
-        if (el.layoutInfo === undefined)
-          el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-        el.layoutInfo.isUpdateFinished = true
+        layoutInfo.isUpdateFinished = true
       })
     }
     return result

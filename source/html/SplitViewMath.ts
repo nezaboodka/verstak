@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { MergeList, RxNode } from "reactronic"
-import { ElImpl, ElLayoutInfo, InitialElLayoutInfo, Direction } from "./El.js"
+import { ElImpl, Direction } from "./El.js"
 import { Drivers, isSplitViewPartition } from "./Elements.js"
 import { clamp } from "./ElUtils.js"
 
@@ -109,10 +109,8 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, deltaPx: number,
   DEBUG && console.log("Set new sizes:")
   for (let i = 0; i < sizesPx.length; i++) {
     const el = sizesPx[i].node.element
-    if (el.layoutInfo === undefined)
-      el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-    DEBUG && console.log(`%c  ${i}: ${n(el.layoutInfo.effectiveSizePx)} -> ${n(sizesPx[i].sizePx)} (px)`, "color: skyblue")
-    el.layoutInfo.effectiveSizePx = sizesPx[i].sizePx
+    DEBUG && console.log(`%c  ${i}: ${n(el.layoutInfo!.effectiveSizePx)} -> ${n(sizesPx[i].sizePx)} (px)`, "color: skyblue")
+    el.layoutInfo!.effectiveSizePx = sizesPx[i].sizePx
   }
   return beforeDeltaPx
 }
