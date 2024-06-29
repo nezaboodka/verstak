@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNodeDecl, RxNodeDriver, RxNode, Delegate, Mode, MergeList, MergedItem, unobs } from "reactronic"
+import { RxNodeDecl, RxNodeDriver, RxNode, Script, Mode, MergeList, MergedItem, unobs } from "reactronic"
 import { Constants, CursorCommandDriver, El, ElKind, ElPlace, ElDriver, ElImpl, Direction, ElLayoutInfo, InitialElLayoutInfo } from "./El.js"
 import { getPrioritiesForEmptySpaceDistribution, getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
 import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
@@ -158,7 +158,7 @@ export function Group<M = unknown, R = void>(
 // Fragment
 
 export function Handling<M = unknown>(
-  script: Delegate<El<void, M>>): RxNode<El<void, M>> {
+  script: Script<El<void, M>>): RxNode<El<void, M>> {
   return SyntheticElement({ mode: Mode.independentUpdate, script })
 }
 

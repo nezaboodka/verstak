@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNode, SimpleDelegate, BaseDriver, MergedItem, Transaction, obs, ObservableObject } from "reactronic"
+import { RxNode, Handler, BaseDriver, MergedItem, Transaction, obs, ObservableObject } from "reactronic"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // El
@@ -947,7 +947,7 @@ export const Constants = {
   kindAttrName: "kind",
 }
 
-const VerstakDriversByLayout: Array<SimpleDelegate<El<HTMLElement>>> = [
+const VerstakDriversByLayout: Array<Handler<El<HTMLElement>>> = [
   el => { // panel
     const owner = el.node.owner.element as ElImpl
     const s = el.style

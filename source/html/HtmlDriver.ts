@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxSystem, RxNode, Priority, SimpleDelegate } from "reactronic"
+import { RxSystem, RxNode, Priority, Handler } from "reactronic"
 import { Constants, El, ElDriver, ElImpl } from "./El.js"
 
 // WebDriver
@@ -111,8 +111,8 @@ export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
 
   readonly native: T
 
-  constructor(native: T, name: string, isRow: boolean, predefine?: SimpleDelegate<El<T>>) {
-    super(name, isRow, predefine)
+  constructor(native: T, name: string, isRow: boolean, initialize?: Handler<El<T>>) {
+    super(name, isRow, initialize)
     this.native = native
   }
 
