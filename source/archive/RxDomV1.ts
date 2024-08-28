@@ -52,7 +52,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
     if (inst) {
       inst.native = undefined
       if (!node.inline && node.instance) // TODO: Consider creating one transaction for all finalizations at once
-        Transaction.separate(() => RxSystem.dispose(node.instance))
+        Transaction.isolate(() => RxSystem.dispose(node.instance))
       for (const x of inst.children)
         tryToFinalize(x, initiator)
       for (const x of inst.guests)

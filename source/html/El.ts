@@ -157,8 +157,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._kind = ElKind.part
     this._place = undefined
     this._coords = UndefinedElCoords
-    this._width = Transaction.separate(() => new Size())
-    this._height = Transaction.separate(() => new Size())
+    this._width = Transaction.isolate(() => new Size())
+    this._height = Transaction.isolate(() => new Size())
     this._horizontal = undefined
     this._vertical = undefined
     this._contentHorizontal = undefined
@@ -736,7 +736,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     const e = element.native
     if (e instanceof HTMLElement) {
       element.sealed = value
-      Transaction.separate(() => e.sensors.resize.observeResizing(element, value !== undefined))
+      Transaction.isolate(() => e.sensors.resize.observeResizing(element, value !== undefined))
     }
   }
 
