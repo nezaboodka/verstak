@@ -42,7 +42,7 @@
     "eslint": "8.56.0",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
-    "typescript": "5.3.2"
+    "typescript": "5.5.4"
   },
   "scripts": {
     "build": "eslint source/**.ts test/**.ts && tsc",
