@@ -35,16 +35,16 @@ import { clamp } from "./ElUtils.js"
 
 export function Panel<M = unknown>(
   declaration?: RxNodeDecl<El<HTMLElement, M>>,
-  preset?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.panel, declaration, preset)
+  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
+  return RxNode.declare(Drivers.panel, declaration, basis)
 }
 
 // Table
 
 export function Table<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<HTMLElement, M>>,
-  preset?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.table, declaration, preset)
+  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
+  return RxNode.declare(Drivers.table, declaration, basis)
 }
 
 // Partition
@@ -58,8 +58,8 @@ export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: 
 
 export function Splitter<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<HTMLElement, M>>,
-  preset?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.splitter, declaration, preset)
+  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
+  return RxNode.declare(Drivers.splitter, declaration, basis)
 }
 
 export function rowBreak(shiftCursorDown?: number): void {
@@ -151,8 +151,8 @@ export function Note(content: string, formatted?: boolean,
 
 export function Group<M = unknown, R = void>(
   declaration?: RxNodeDecl<El<HTMLElement, M>>,
-  preset?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.group, declaration, preset)
+  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
+  return RxNode.declare(Drivers.group, declaration, basis)
 }
 
 // Fragment
@@ -164,8 +164,8 @@ export function Handling<M = unknown>(
 
 export function SyntheticElement<M = unknown>(
   declaration?: RxNodeDecl<El<void, M>>,
-  preset?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>> {
-  return RxNode.declare(Drivers.synthetic, declaration, preset)
+  basis?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>> {
+  return RxNode.declare(Drivers.synthetic, declaration, basis)
 }
 
 // PanelDriver
@@ -246,7 +246,7 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
     return result
   }
 
-  child(ownerNode: RxNode<El<T, any>>, childDriver: RxNodeDriver<any>, childDeclaration?: RxNodeDecl<any> | undefined, childPreset?: RxNodeDecl<any> | undefined): MergedItem<RxNode> | undefined {
+  child(ownerNode: RxNode<El<T, any>>, childDriver: RxNodeDriver<any>, childDeclaration?: RxNodeDecl<any> | undefined, childBasis?: RxNodeDecl<any> | undefined): MergedItem<RxNode> | undefined {
     let result: MergedItem<RxNode> | undefined = undefined
     const el = ownerNode.element as ElImpl
     if (el.splitView !== undefined) {
