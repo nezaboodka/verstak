@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxSystem, RxNode, Priority, Handler } from "reactronic"
+import { RxSystem, RxNode, Priority, Handler, proceed } from "reactronic"
 import { Constants, El, ElDriver, ElImpl } from "./El.js"
 
 // WebDriver
@@ -16,14 +16,15 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     // it's up to descendant class to define logic
   }
 
-  create(node: RxNode<El<T, M>>): void {
+  create(node: RxNode<El<T, M>>): void | Promise<void> {
     this.setNativeElement(node)
     const e = node.element.native
     if (RxSystem.isLogging && e !== undefined && !node.driver.isPartition)
       e.setAttribute(Constants.keyAttrName, node.key)
-    super.create(node)
+    const result = super.create(node)
     if (e == undefined && RxSystem.isLogging && !node.driver.isPartition)
       node.element.native.setAttribute(Constants.keyAttrName, node.key)
+    return result
   }
 
   destroy(node: RxNode<El<T, M>>, isLeader: boolean): boolean {
@@ -75,14 +76,19 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     const element = node.element
     if (element instanceof ElImpl)
       element.prepareForUpdate()
-    const result = super.update(node)
-    if (element.place === undefined) {
-      const oel = node.owner.element
-      if (oel instanceof ElImpl && oel.isTable)
-        element.place = undefined // automatic placement in table
-    }
-    if (gBlinkingEffectMarker)
-      blink(element.native, RxNode.currentUpdatePriority, node.stamp)
+    let result = super.update(node)
+    result = proceed(result,
+      v => {
+        if (element.place === undefined) {
+          const oel = node.owner.element
+          if (oel instanceof ElImpl && oel.isTable)
+            element.place = undefined // automatic placement in table
+        }
+        if (gBlinkingEffectMarker)
+          blink(element.native, RxNode.currentUpdatePriority, node.stamp)
+      },
+      e => {
+      })
     return result
   }
 
