@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxSystem, RxNode, Priority, Handler, proceed } from "reactronic"
+import { RxSystem, RxNode, Priority, Handler, proceedSyncOrAsync } from "reactronic"
 import { Constants, El, ElDriver, ElImpl } from "./El.js"
 
 // WebDriver
@@ -77,7 +77,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     if (element instanceof ElImpl)
       element.prepareForUpdate()
     let result = super.update(node)
-    result = proceed(result,
+    result = proceedSyncOrAsync(result,
       v => {
         if (element.place === undefined) {
           const oel = node.owner.element
