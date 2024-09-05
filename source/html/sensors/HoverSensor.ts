@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, transactional, LoggingLevel } from "reactronic"
+import { options, transactional, LoggingLevel, Transaction } from "reactronic"
 import { SymDataForSensor, findTargetElementData } from "./DataForSensor.js"
 import { BasePointerSensor } from "./BasePointerSensor.js"
 import { KeyboardModifiers, extractModifierKeys } from "./KeyboardSensor.js"
@@ -27,19 +27,24 @@ export class HoverSensor extends BasePointerSensor {
   }
 
   listen(enabled: boolean = true): void {
-    const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
-    if (enabled) {
-      element.addEventListener("pointerenter", this.onPointerEnter.bind(this))
-      element.addEventListener("pointerover", this.onPointerOver.bind(this), { capture: true })
-      element.addEventListener("pointermove", this.onPointerMove.bind(this), { capture: true })
-      element.addEventListener("pointerleave", this.onPointerLeave.bind(this))
-    }
-    else {
-      element.removeEventListener("pointerenter", this.onPointerEnter.bind(this))
-      element.removeEventListener("pointerover", this.onPointerOver.bind(this), { capture: true })
-      element.removeEventListener("pointermove", this.onPointerMove.bind(this), { capture: true })
-      element.removeEventListener("pointerleave", this.onPointerLeave.bind(this))
-    }
+    const t = Transaction.current
+    Transaction.outside(() => {
+      t.whenFinished(true).then(() => {
+        const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
+        if (enabled) {
+          element.addEventListener("pointerenter", this.onPointerEnter.bind(this))
+          element.addEventListener("pointerover", this.onPointerOver.bind(this), { capture: true })
+          element.addEventListener("pointermove", this.onPointerMove.bind(this), { capture: true })
+          element.addEventListener("pointerleave", this.onPointerLeave.bind(this))
+        }
+        else {
+          element.removeEventListener("pointerenter", this.onPointerEnter.bind(this))
+          element.removeEventListener("pointerover", this.onPointerOver.bind(this), { capture: true })
+          element.removeEventListener("pointermove", this.onPointerMove.bind(this), { capture: true })
+          element.removeEventListener("pointerleave", this.onPointerLeave.bind(this))
+        }
+      }, e => { /* nop */ })
+    })
   }
 
   protected onPointerEnter(e: PointerEvent): void {

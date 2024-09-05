@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, sensitive, transactional, LoggingLevel } from "reactronic"
+import { options, sensitive, transactional, LoggingLevel, reactive, Transaction } from "reactronic"
 import { grabElementDataList, SymDataForSensor } from "./DataForSensor.js"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
 
@@ -40,19 +40,24 @@ export class KeyboardSensor extends HtmlElementSensor {
   }
 
   listen(enabled: boolean = true): void {
-    const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
-    if (enabled) {
-      element.addEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
-      element.addEventListener("keyup", this.onKeyUp.bind(this), { capture: true })
+    const t = Transaction.current
+    Transaction.outside(() => {
+      t.whenFinished(true).then(() => {
+        const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
+        if (enabled) {
+          element.addEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
+          element.addEventListener("keyup", this.onKeyUp.bind(this), { capture: true })
 
-      window.addEventListener("blur", this.doWindowBlur.bind(this), { capture: true })
-    }
-    else {
-      element.removeEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
-      element.removeEventListener("keyup", this.onKeyUp.bind(this), { capture: true })
+          window.addEventListener("blur", this.doWindowBlur.bind(this), { capture: true })
+        }
+        else {
+          element.removeEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
+          element.removeEventListener("keyup", this.onKeyUp.bind(this), { capture: true })
 
-      window.removeEventListener("blur", this.doWindowBlur.bind(this), { capture: true })
-    }
+          window.removeEventListener("blur", this.doWindowBlur.bind(this), { capture: true })
+        }
+      }, e => { /* nop */ })
+    })
   }
 
   @transactional

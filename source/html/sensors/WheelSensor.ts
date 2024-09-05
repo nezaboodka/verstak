@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, transactional, LoggingLevel } from "reactronic"
+import { options, Reentrance, transactional, LoggingLevel, Transaction } from "reactronic"
 import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
 import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
 import { BasePointerSensor } from "./BasePointerSensor.js"
@@ -23,13 +23,18 @@ export class WheelSensor extends BasePointerSensor {
   }
 
   listen(enabled: boolean = true): void {
-    const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
-    if (enabled) {
-      element.addEventListener("wheel", this.onWheel.bind(this), { capture: true, passive: true })
-    }
-    else {
-      element.removeEventListener("wheel", this.onWheel.bind(this), { capture: true })
-    }
+    const t = Transaction.current
+    Transaction.outside(() => {
+      t.whenFinished(true).then(() => {
+        const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
+        if (enabled) {
+          element.addEventListener("wheel", this.onWheel.bind(this), { capture: true, passive: true })
+        }
+        else {
+          element.removeEventListener("wheel", this.onWheel.bind(this), { capture: true })
+        }
+      }, e => { /* nop */ })
+    })
   }
 
   @transactional

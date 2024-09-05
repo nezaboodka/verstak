@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, transactional, LoggingLevel } from "reactronic"
+import { options, Reentrance, transactional, LoggingLevel, Transaction } from "reactronic"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
 
 export class ScrollSensor extends HtmlElementSensor {
@@ -19,13 +19,18 @@ export class ScrollSensor extends HtmlElementSensor {
   }
 
   listen(enabled: boolean = true): void {
-    const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
-    if (enabled) {
-      element.addEventListener("scroll", this.onScroll.bind(this), { capture: true, passive: true })
-    }
-    else {
-      element.removeEventListener("scroll", this.onScroll.bind(this), { capture: true })
-    }
+    const t = Transaction.current
+    Transaction.outside(() => {
+      t.whenFinished(true).then(() => {
+        const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
+        if (enabled) {
+          element.addEventListener("scroll", this.onScroll.bind(this), { capture: true, passive: true })
+        }
+        else {
+          element.removeEventListener("scroll", this.onScroll.bind(this), { capture: true })
+        }
+      }, e => { /* nop */ })
+    })
   }
 
   @transactional

@@ -736,7 +736,12 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     const e = element.native
     if (e instanceof HTMLElement) {
       element.sealed = value
-      Transaction.isolate(() => e.sensors.resize.observeResizing(element, value !== undefined))
+      const t = Transaction.current
+      Transaction.outside(() => {
+        t.whenFinished(true).then(() => {
+          e.sensors.resize.observeResizing(element, value !== undefined)
+        }, e => { /* nop */ })
+      })
     }
   }
 

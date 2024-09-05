@@ -39,21 +39,26 @@ export class ButtonSensor extends BasePointerSensor {
   }
 
   listen(enabled: boolean = true): void {
-    const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
-    if (enabled) {
-      element.addEventListener("pointerdown", this.onPointerDown.bind(this), { capture: true })
-      element.addEventListener("pointermove", this.onPointerMove.bind(this), { capture: true })
-      element.addEventListener("pointerup", this.onPointerUp.bind(this), { capture: true })
-      element.addEventListener("lostpointercapture", this.onLostPointerCapture.bind(this), { capture: true })
-      element.addEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
-    }
-    else {
-      element.removeEventListener("pointerdown", this.onPointerDown.bind(this), { capture: true })
-      element.removeEventListener("pointermove", this.onPointerMove.bind(this), { capture: true })
-      element.removeEventListener("pointerup", this.onPointerUp.bind(this), { capture: true })
-      element.removeEventListener("lostpointercapture", this.onLostPointerCapture.bind(this), { capture: true })
-      element.removeEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
-    }
+    const t = Transaction.current
+    Transaction.outside(() => {
+      t.whenFinished(true).then(() => {
+        const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
+        if (enabled) {
+          element.addEventListener("pointerdown", this.onPointerDown.bind(this), { capture: true })
+          element.addEventListener("pointermove", this.onPointerMove.bind(this), { capture: true })
+          element.addEventListener("pointerup", this.onPointerUp.bind(this), { capture: true })
+          element.addEventListener("lostpointercapture", this.onLostPointerCapture.bind(this), { capture: true })
+          element.addEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
+        }
+        else {
+          element.removeEventListener("pointerdown", this.onPointerDown.bind(this), { capture: true })
+          element.removeEventListener("pointermove", this.onPointerMove.bind(this), { capture: true })
+          element.removeEventListener("pointerup", this.onPointerUp.bind(this), { capture: true })
+          element.removeEventListener("lostpointercapture", this.onLostPointerCapture.bind(this), { capture: true })
+          element.removeEventListener("keydown", this.onKeyDown.bind(this), { capture: true })
+        }
+      }, e => { /* nop */ })
+    })
   }
 
   protected onPointerDown(e: PointerEvent): void {

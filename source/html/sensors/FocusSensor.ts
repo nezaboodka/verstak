@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, transactional, LoggingLevel, ToggleRef } from "reactronic"
+import { options, transactional, LoggingLevel, ToggleRef, Transaction } from "reactronic"
 import { objectHasMember } from "../ElUtils.js"
 import { grabElementDataList, SymDataForSensor } from "./DataForSensor.js"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
@@ -58,17 +58,22 @@ export class FocusSensor extends HtmlElementSensor {
 
   @transactional
   listen(enabled: boolean = true): void {
-    const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
-    if (enabled) {
-      element.addEventListener("focusin", this.onFocusIn.bind(this), { capture: true })
-      element.addEventListener("focusout", this.onFocusOut.bind(this), { capture: true })
-      element.addEventListener("mousedown", this.onMouseDown.bind(this), { capture: true })
-    }
-    else {
-      element.removeEventListener("focusin", this.onFocusIn.bind(this), { capture: true })
-      element.removeEventListener("focusout", this.onFocusOut.bind(this), { capture: true })
-      element.removeEventListener("mousedown", this.onMouseDown.bind(this), { capture: true })
-    }
+    const t = Transaction.current
+    Transaction.outside(() => {
+      t.whenFinished(true).then(() => {
+        const element = this.sourceElement as HTMLElement // WORKAROUND (covers SVGElement cases)
+        if (enabled) {
+          element.addEventListener("focusin", this.onFocusIn.bind(this), { capture: true })
+          element.addEventListener("focusout", this.onFocusOut.bind(this), { capture: true })
+          element.addEventListener("mousedown", this.onMouseDown.bind(this), { capture: true })
+        }
+        else {
+          element.removeEventListener("focusin", this.onFocusIn.bind(this), { capture: true })
+          element.removeEventListener("focusout", this.onFocusOut.bind(this), { capture: true })
+          element.removeEventListener("mousedown", this.onMouseDown.bind(this), { capture: true })
+        }
+      }, e => { /* nop */ })
+    })
   }
 
   reset(): void {
