@@ -157,8 +157,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._kind = ElKind.part
     this._place = undefined
     this._coords = UndefinedElCoords
-    this._width = Transaction.isolate(() => new Size())
-    this._height = Transaction.isolate(() => new Size())
+    this._width = new Size()
+    this._height = new Size()
     this._horizontal = undefined
     this._vertical = undefined
     this._contentHorizontal = undefined
