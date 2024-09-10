@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, sensitive, transactional, LoggingLevel, reactive, Transaction } from "reactronic"
+import { options, sensitive, transactional, LoggingLevel, Transaction } from "reactronic"
 import { grabElementDataList, SymDataForSensor } from "./DataForSensor.js"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
 
