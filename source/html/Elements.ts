@@ -192,7 +192,7 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
           layoutInfo.contentSizeYpx = contentBoxPx.blockSize
         }
       })
-      SyntheticElement({
+      const relayoutEl = SyntheticElement({
         mode: Mode.independentUpdate,
         script: () => {
           const native = el.native as HTMLElement
@@ -241,6 +241,10 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
       })
       RxNode.updateNestedNodesThenDo(() => {
         layoutInfo.isUpdateFinished = true
+        // WORKAROUND: As long as "isUpdateFinished = true" does not trigger relaunch of
+        // "update" of SyntheticElement (such a relaunch requires subscriptions on values
+        // of variables rather than variables themselves), we do it manually.
+        RxNode.triggerUpdate(relayoutEl, { stamp: node.stamp })
       })
     }
     return result
