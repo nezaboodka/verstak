@@ -11,17 +11,19 @@ import { FocusModel } from "./sensors/FocusSensor.js"
 import { ResizedElement } from "./sensors/ResizeSensor.js"
 import { PointerSensor } from "./sensors/PointerSensor.js"
 
-export function OnClick(target: HTMLElement, action: ((pointer: PointerSensor) => void) | ToggleRef | undefined, key?: string): void {
+export function OnClick(target: HTMLElement, action: ((pointer: PointerSensor) => (void | Promise<void>)) | ToggleRef | undefined, key?: string): void {
   if (action !== undefined) {
     SyntheticElement({
       key,
       mode: Mode.independentUpdate,
       triggers: { target/* , action */ },
-      script: el => {
+      scriptAsync: async (el) => {
         const pointer = target.sensors.pointer
         if (target.dataForSensor.click !== undefined && pointer.clicked === target.dataForSensor.click || target.dataForSensor.click === undefined && pointer.clicked) {
           if (action instanceof Function) {
-            unobs(() => action(pointer))
+            const result = unobs(() => action(pointer))
+            if (result instanceof Promise)
+              await result
           }
           else if (action instanceof ToggleRef) {
             unobs(() => action.toggle())
