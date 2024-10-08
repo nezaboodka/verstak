@@ -227,7 +227,7 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
                   preferred.push(i)
                 }
                 // console.log(`%c[${i}]: ${minPx}..%c${partEl.layoutInfo.effectiveSizePx} -> ${clamp(partEl.layoutInfo!.effectiveSizePx, minPx, maxPx)}%c..${maxPx} (pref = ${preferredPx}) (px)`, "color: yellow", "color: #00BB00", "color: yellow")
-                const sizePx = unobs(() => partEl.layoutInfo!.effectiveSizePx = clamp(partEl.layoutInfo!.effectiveSizePx, minPx, maxPx))
+                const sizePx = partEl.layoutInfo!.effectiveSizePx = clamp(partEl.layoutInfo!.effectiveSizePx, minPx, maxPx)
                 sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx })
                 i++
               }
