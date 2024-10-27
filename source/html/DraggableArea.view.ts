@@ -25,7 +25,7 @@ export function DraggableArea(
   builder: RxNodeDecl<El<HTMLDivElement, DraggableAreaModel>>): RxNode<El<HTMLDivElement>> {
   // triggers = triggers ? { ...triggers, draggingId } : { draggingId }
   return (
-    Div<DraggableAreaModel>(builder, {
+    Div<DraggableAreaModel>(RxNode.rebased(builder, {
       mode: Mode.independentUpdate,
       script: b => {
         const e = b.native
@@ -56,6 +56,6 @@ export function DraggableArea(
           }
         })
       },
-    })
+    }))
   )
 }

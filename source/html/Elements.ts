@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNodeDecl, RxNodeDriver, RxNode, Script, Mode, MergeList, MergedItem, unobs } from "reactronic"
+import { RxNodeDecl, RxNodeDriver, RxNode, Script, Mode, MergeList, MergedItem, unobs, ScriptAsync } from "reactronic"
 import { Constants, CursorCommandDriver, El, ElKind, ElPlace, ElDriver, ElImpl, Direction, ElLayoutInfo, InitialElLayoutInfo } from "./El.js"
 import { getPrioritiesForEmptySpaceDistribution, getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
 import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
@@ -33,18 +33,40 @@ import { clamp } from "./ElUtils.js"
 
 // Panel
 
+
 export function Panel<M = unknown>(
-  declaration?: RxNodeDecl<El<HTMLElement, M>>,
+  script?: Script<El<HTMLElement, M>>,
+  scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
+  key?: string,
+  mode?: Mode,
+  creation?: Script<El<HTMLElement, M>>,
+  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  destruction?: Script<El<HTMLElement, M>>,
+  triggers?: unknown,
+  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+
+export function Panel<M = unknown>(
+  declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+
+export function Panel<M = unknown>(
+  scriptOrDeclaration?: Script<El<HTMLElement, M>> | RxNodeDecl<El<HTMLElement, M>>,
+  scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
+  key?: string,
+  mode?: Mode,
+  creation?: Script<El<HTMLElement, M>>,
+  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  destruction?: Script<El<HTMLElement, M>>,
+  triggers?: unknown,
   basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.panel, declaration, basis)
+  return RxNode.declare(Drivers.panel, scriptOrDeclaration, scriptAsync,
+    key, mode, creation, creationAsync, destruction, triggers, basis)
 }
 
 // Table
 
 export function Table<M = unknown, R = void>(
-  declaration?: RxNodeDecl<El<HTMLElement, M>>,
-  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.table, declaration, basis)
+  declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
+  return RxNode.declare(Drivers.table, declaration)
 }
 
 // Partition
@@ -57,9 +79,8 @@ export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: 
 // Splitter
 
 export function Splitter<M = unknown, R = void>(
-  declaration?: RxNodeDecl<El<HTMLElement, M>>,
-  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.splitter, declaration, basis)
+  declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
+  return RxNode.declare(Drivers.splitter, declaration)
 }
 
 export function rowBreak(shiftCursorDown?: number): void {
@@ -137,22 +158,21 @@ export function cursor(areaParams: ElPlace): void {
 
 export function Note(content: string, formatted?: boolean,
   declaration?: RxNodeDecl<El<HTMLElement, void>>): RxNode<El<HTMLElement, void>> {
-  return RxNode.declare(Drivers.note, declaration, {
+  return RxNode.declare(Drivers.note, RxNode.rebased(declaration, {
     script: el => {
       if (formatted)
         el.native.innerHTML = content
       else
         el.native.innerText = content
     },
-  })
+  }))
 }
 
 // Group
 
 export function Group<M = unknown, R = void>(
-  declaration?: RxNodeDecl<El<HTMLElement, M>>,
-  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.group, declaration, basis)
+  declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
+  return RxNode.declare(Drivers.group, declaration)
 }
 
 // Fragment
@@ -163,9 +183,8 @@ export function Handling<M = unknown>(
 }
 
 export function SyntheticElement<M = unknown>(
-  declaration?: RxNodeDecl<El<void, M>>,
-  basis?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>> {
-  return RxNode.declare(Drivers.synthetic, declaration, basis)
+  declaration?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>> {
+  return RxNode.declare(Drivers.synthetic, declaration)
 }
 
 // PanelDriver
