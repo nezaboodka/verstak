@@ -5,13 +5,37 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNode, RxNodeDecl } from "reactronic"
+import { RxNode, RxNodeDecl, Script as Scr, ScriptAsync as ScrAsync, Mode } from "reactronic"
 import { El, ElKind } from "./El.js"
 import { StaticDriver, HtmlDriver, SvgDriver } from "./HtmlDriver.js"
 
-export function Page(declaration?: RxNodeDecl<El<HTMLBodyElement>>): RxNode<El<HTMLBodyElement>> {
+export function Page(
+  script?: Scr<El<HTMLBodyElement>>,
+  scriptAsync?: ScrAsync<El<HTMLBodyElement>>,
+  key?: string,
+  mode?: Mode,
+  creation?: Scr<El<HTMLBodyElement>>,
+  creationAsync?: ScrAsync<El<HTMLBodyElement>>,
+  destruction?: Scr<El<HTMLBodyElement>>,
+  triggers?: unknown,
+  basis?: RxNodeDecl<El<HTMLBodyElement>>): RxNode<El<HTMLBodyElement>>
+
+export function Page(
+  declaration?: RxNodeDecl<El<HTMLBodyElement>>): RxNode<El<HTMLBodyElement>>
+
+export function Page(
+  scriptOrDeclaration?: Scr<El<HTMLBodyElement>> | RxNodeDecl<El<HTMLBodyElement>>,
+  scriptAsync?: ScrAsync<El<HTMLBodyElement>>,
+  key?: string,
+  mode?: Mode,
+  creation?: Scr<El<HTMLBodyElement>>,
+  creationAsync?: ScrAsync<El<HTMLBodyElement>>,
+  destruction?: Scr<El<HTMLBodyElement>>,
+  triggers?: unknown,
+  basis?: RxNodeDecl<El<HTMLBodyElement>>): RxNode<El<HTMLBodyElement>> {
   const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.panel)
-  return RxNode.declare(driver, declaration)
+  return RxNode.declare(driver, scriptOrDeclaration, scriptAsync,
+    key, mode, creation, creationAsync, destruction, triggers, basis)
 }
 
 export function A<M = unknown>(declaration?: RxNodeDecl<El<HTMLAnchorElement, M>>): RxNode<El<HTMLAnchorElement, M>> { return RxNode.declare(HtmlTags.a, declaration) }
