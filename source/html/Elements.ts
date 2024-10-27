@@ -33,7 +33,6 @@ import { clamp } from "./ElUtils.js"
 
 // Panel
 
-
 export function Panel<M = unknown>(
   script?: Script<El<HTMLElement, M>>,
   scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
@@ -64,9 +63,32 @@ export function Panel<M = unknown>(
 
 // Table
 
-export function Table<M = unknown, R = void>(
-  declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.table, declaration)
+export function Table<M = unknown>(
+  script?: Script<El<HTMLElement, M>>,
+  scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
+  key?: string,
+  mode?: Mode,
+  creation?: Script<El<HTMLElement, M>>,
+  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  destruction?: Script<El<HTMLElement, M>>,
+  triggers?: unknown,
+  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+
+export function Table<M = unknown>(
+  declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+
+export function Table<M = unknown>(
+  scriptOrDeclaration?: Script<El<HTMLElement, M>> | RxNodeDecl<El<HTMLElement, M>>,
+  scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
+  key?: string,
+  mode?: Mode,
+  creation?: Script<El<HTMLElement, M>>,
+  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  destruction?: Script<El<HTMLElement, M>>,
+  triggers?: unknown,
+  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
+  return RxNode.declare(Drivers.table, scriptOrDeclaration, scriptAsync,
+    key, mode, creation, creationAsync, destruction, triggers, basis)
 }
 
 // Partition
@@ -78,9 +100,32 @@ export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: 
 
 // Splitter
 
-export function Splitter<M = unknown, R = void>(
-  declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.splitter, declaration)
+export function Splitter<M = unknown>(
+  script?: Script<El<HTMLElement, M>>,
+  scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
+  key?: string,
+  mode?: Mode,
+  creation?: Script<El<HTMLElement, M>>,
+  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  destruction?: Script<El<HTMLElement, M>>,
+  triggers?: unknown,
+  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+
+export function Splitter<M = unknown>(
+  declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+
+export function Splitter<M = unknown>(
+  scriptOrDeclaration?: Script<El<HTMLElement, M>> | RxNodeDecl<El<HTMLElement, M>>,
+  scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
+  key?: string,
+  mode?: Mode,
+  creation?: Script<El<HTMLElement, M>>,
+  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  destruction?: Script<El<HTMLElement, M>>,
+  triggers?: unknown,
+  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
+  return RxNode.declare(Drivers.splitter, scriptOrDeclaration, scriptAsync,
+    key, mode, creation, creationAsync, destruction, triggers, basis)
 }
 
 export function rowBreak(shiftCursorDown?: number): void {
@@ -170,9 +215,32 @@ export function Note(content: string, formatted?: boolean,
 
 // Group
 
-export function Group<M = unknown, R = void>(
-  declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.group, declaration)
+export function Group<M = unknown>(
+  script?: Script<El<HTMLElement, M>>,
+  scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
+  key?: string,
+  mode?: Mode,
+  creation?: Script<El<HTMLElement, M>>,
+  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  destruction?: Script<El<HTMLElement, M>>,
+  triggers?: unknown,
+  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+
+export function Group<M = unknown>(
+  declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+
+export function Group<M = unknown>(
+  scriptOrDeclaration?: Script<El<HTMLElement, M>> | RxNodeDecl<El<HTMLElement, M>>,
+  scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
+  key?: string,
+  mode?: Mode,
+  creation?: Script<El<HTMLElement, M>>,
+  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  destruction?: Script<El<HTMLElement, M>>,
+  triggers?: unknown,
+  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
+  return RxNode.declare(Drivers.group, scriptOrDeclaration, scriptAsync,
+    key, mode, creation, creationAsync, destruction, triggers, basis)
 }
 
 // Fragment
@@ -183,8 +251,31 @@ export function Handling<M = unknown>(
 }
 
 export function SyntheticElement<M = unknown>(
-  declaration?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>> {
-  return RxNode.declare(Drivers.synthetic, declaration)
+  script?: Script<El<void, M>>,
+  scriptAsync?: ScriptAsync<El<void, M>>,
+  key?: string,
+  mode?: Mode,
+  creation?: Script<El<void, M>>,
+  creationAsync?: ScriptAsync<El<void, M>>,
+  destruction?: Script<El<void, M>>,
+  triggers?: unknown,
+  basis?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>>
+
+export function SyntheticElement<M = unknown>(
+  declaration?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>>
+
+export function SyntheticElement<M = unknown>(
+  scriptOrDeclaration?: Script<El<void, M>> | RxNodeDecl<El<void, M>>,
+  scriptAsync?: ScriptAsync<El<void, M>>,
+  key?: string,
+  mode?: Mode,
+  creation?: Script<El<void, M>>,
+  creationAsync?: ScriptAsync<El<void, M>>,
+  destruction?: Script<El<void, M>>,
+  triggers?: unknown,
+  basis?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>> {
+  return RxNode.declare(Drivers.synthetic, scriptOrDeclaration, scriptAsync,
+    key, mode, creation, creationAsync, destruction, triggers, basis)
 }
 
 // PanelDriver
