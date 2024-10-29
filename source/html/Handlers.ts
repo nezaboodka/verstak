@@ -94,3 +94,22 @@ export function OnFocus(
     },
   })
 }
+
+export type ResizeCallback = (width: number, height: number) => void
+
+export class ResizeData {
+  constructor(
+    public id: string,
+    public handler?: ResizeCallback,
+  ) {}
+}
+
+export function prepareResizeHandler(action: ((width: number, height: number) => void) | ResizeData): (element: ResizedElement) => void {
+  return (element: ResizedElement): void => {
+    const size = element.borderBoxSize[0]
+    if (action instanceof Function)
+      unobs(() => action(size.inlineSize, size.blockSize))
+    else if (action instanceof ResizeData && action.handler !== undefined)
+      unobs(() => action.handler!(size.inlineSize, size.blockSize))
+  }
+}
