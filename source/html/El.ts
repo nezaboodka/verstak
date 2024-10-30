@@ -22,10 +22,10 @@ export type El<T = any, M = any> = {
   place: ElPlace
   width: Range
   height: Range
-  horizontal: PosH | undefined
-  contentHorizontal: PosH | undefined
-  vertical: PosV | undefined
-  contentVertical: PosV | undefined
+  horizontal: Horizontal | undefined
+  contentHorizontal: Horizontal | undefined
+  vertical: Vertical | undefined
+  contentVertical: Vertical | undefined
   stretchingStrengthH: number | undefined
   stretchingStrengthV: number | undefined
   contentWrapping: boolean
@@ -59,7 +59,7 @@ export type ElCoords = {
   y2: number
 }
 
-export enum PosH {
+export enum Horizontal {
   left          = 0,
   center        = 1,
   right         = 2,
@@ -67,7 +67,7 @@ export enum PosH {
   stretchAndFix = 4,
 }
 
-export enum PosV {
+export enum Vertical {
   top           = 0,
   center        = 1,
   bottom        = 2,
@@ -133,10 +133,10 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _coords: ElCoords
   private _width: Size
   private _height: Size
-  private _horizontal: PosH | undefined
-  private _vertical: PosV | undefined
-  private _contentHorizontal: PosH | undefined
-  private _contentVertical: PosV | undefined
+  private _horizontal: Horizontal | undefined
+  private _vertical: Vertical | undefined
+  private _contentHorizontal: Horizontal | undefined
+  private _contentVertical: Vertical | undefined
   private _stretchingStrengthH: number | undefined
   private _stretchingStrengthV: number | undefined
   private _contentWrapping: boolean
@@ -252,8 +252,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       this._height.maxPx = value.maxPx
   }
 
-  get horizontal(): PosH | undefined { return this._horizontal }
-  set horizontal(value: PosH | undefined) {
+  get horizontal(): Horizontal | undefined { return this._horizontal }
+  set horizontal(value: Horizontal | undefined) {
     const existing = this._horizontal
     if (value !== existing) {
       ElImpl.applyHorizontal(this, existing, value,
@@ -263,8 +263,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  get vertical(): PosV | undefined { return this._vertical }
-  set vertical(value: PosV | undefined) {
+  get vertical(): Vertical | undefined { return this._vertical }
+  set vertical(value: Vertical | undefined) {
     const existing = this._vertical
     if (value !== existing) {
       ElImpl.applyVertical(this, existing, value,
@@ -274,8 +274,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  get contentHorizontal(): PosH | undefined { return this._contentHorizontal }
-  set contentHorizontal(value: PosH | undefined) {
+  get contentHorizontal(): Horizontal | undefined { return this._contentHorizontal }
+  set contentHorizontal(value: Horizontal | undefined) {
     const existing = this._contentHorizontal
     if (value !== existing) {
       ElImpl.applyHorizontal(this, this._horizontal, this._horizontal,
@@ -284,8 +284,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  get contentVertical(): PosV | undefined { return this._contentVertical }
-  set contentVertical(value: PosV | undefined) {
+  get contentVertical(): Vertical | undefined { return this._contentVertical }
+  set contentVertical(value: Vertical | undefined) {
     const existing = this._contentVertical
     if (value !== existing) {
       ElImpl.applyVertical(this, this._vertical, this._vertical,
@@ -432,12 +432,12 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   private static applyHorizontal<T extends Element>(element: ElImpl<T, any>,
-    oldPrimary: PosH | undefined, newPrimary: PosH | undefined,
-    oldInside: PosH | undefined, newInside: PosH | undefined,
+    oldPrimary: Horizontal | undefined, newPrimary: Horizontal | undefined,
+    oldInside: Horizontal | undefined, newInside: Horizontal | undefined,
     strength: number | undefined): void {
     // Prepare
-    oldPrimary ??= PosH.left
-    newPrimary ??= PosH.left
+    oldPrimary ??= Horizontal.left
+    newPrimary ??= Horizontal.left
     oldInside ??= oldPrimary
     newInside ??= newPrimary
     const css: CSSStyleDeclaration = element.style
@@ -451,8 +451,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     // Horizontal
     let isEffectiveAlignerX = false
     if (hostLayout) {
-      const isAligner = newPrimary === PosH.center ||
-        newPrimary === PosH.right
+      const isAligner = newPrimary === Horizontal.center ||
+        newPrimary === Horizontal.right
       isEffectiveAlignerX = isAligner && (hostLayout.alignerX === undefined ||
         element.index <= hostLayout.alignerX.index)
       if (hostLayout.alignerX === element) {
@@ -474,70 +474,70 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
     switch (newPrimary) {
       default:
-      case PosH.left:
+      case Horizontal.left:
         css.justifySelf = "start"
-        if (oldPrimary === PosH.center) {
+        if (oldPrimary === Horizontal.center) {
           css.marginLeft = "" // remove "auto"
           css.marginRight = "" // remove "auto"
         }
-        else if (oldPrimary === PosH.right)
+        else if (oldPrimary === Horizontal.right)
           css.marginLeft = "" // remove "auto"
         break
-      case PosH.center:
+      case Horizontal.center:
         css.justifySelf = "center"
         if (hostLayout)
           css.marginLeft = isEffectiveAlignerX ? "auto" : ""
         css.marginRight = "auto"
         break
-      case PosH.right:
+      case Horizontal.right:
         css.justifySelf = "end"
         if (hostLayout)
           css.marginLeft = isEffectiveAlignerX ? "auto" : ""
-        if (oldPrimary === PosH.center)
+        if (oldPrimary === Horizontal.center)
           css.marginRight = "" // remove "auto"
         break
-      case PosH.stretch:
-      case PosH.stretchAndFix:
+      case Horizontal.stretch:
+      case Horizontal.stretchAndFix:
         css.justifySelf = "stretch"
-        if (oldPrimary === PosH.center) {
+        if (oldPrimary === Horizontal.center) {
           css.marginLeft = "" // remove "auto"
           css.marginRight = "" // remove "auto"
         }
-        else if (oldPrimary === PosH.right)
+        else if (oldPrimary === Horizontal.right)
           css.marginLeft = "" // remove "auto"
         break
     }
     switch (newInside) {
       default:
-      case PosH.left:
+      case Horizontal.left:
         css.alignItems = "start"
         css.textAlign = "left"
         break
-      case PosH.center:
+      case Horizontal.center:
         css.alignItems = "center"
         css.textAlign = "center"
         break
-      case PosH.right:
+      case Horizontal.right:
         css.alignItems = "end"
         css.textAlign = "right"
         break
-      case PosH.stretch:
-      case PosH.stretchAndFix:
+      case Horizontal.stretch:
+      case Horizontal.stretchAndFix:
         css.alignItems = "stretch"
         css.textAlign = "justify"
         break
     }
-    if (newPrimary >= PosH.stretch && strength === undefined)
+    if (newPrimary >= Horizontal.stretch && strength === undefined)
       ElImpl.applyStretchingStrengthH(element, 0, 1)
   }
 
   private static applyVertical<T extends Element>(element: ElImpl<T, any>,
-    oldPrimary: PosV | undefined, newPrimary: PosV | undefined,
-    oldInside: PosV | undefined, newInside: PosV | undefined,
+    oldPrimary: Vertical | undefined, newPrimary: Vertical | undefined,
+    oldInside: Vertical | undefined, newInside: Vertical | undefined,
     strength: number | undefined): void {
     // Prepare
-    oldPrimary ??= PosV.top
-    newPrimary ??= PosV.top
+    oldPrimary ??= Vertical.top
+    newPrimary ??= Vertical.top
     oldInside ??= oldPrimary
     newInside ??= newPrimary
     const css: CSSStyleDeclaration = element.style
@@ -553,10 +553,10 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     // Vertical
     let isEffectiveAlignerY = false
     if (hostLayout) {
-      const isAligner = newPrimary === PosV.center ||
-        newPrimary === PosV.bottom
+      const isAligner = newPrimary === Vertical.center ||
+        newPrimary === Vertical.bottom
       isEffectiveAlignerY = isAligner && (hostLayout.alignerY === undefined ||
-        hostLayout.alignerY.vertical !== PosV.center)
+        hostLayout.alignerY.vertical !== Vertical.center)
       if (hostLayout.alignerY === element) {
         if (!isEffectiveAlignerY) {
           hostCss!.marginTop = "" // remove "auto"
@@ -574,37 +574,37 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
     switch (newPrimary) {
       default:
-      case PosV.top:
+      case Vertical.top:
         css.alignSelf = "start"
         break
-      case PosV.center:
+      case Vertical.center:
         css.alignSelf = "center"
         break
-      case PosV.bottom:
+      case Vertical.bottom:
         css.alignSelf = "end"
         break
-      case PosV.stretch:
-      case PosV.stretchAndFix:
+      case Vertical.stretch:
+      case Vertical.stretchAndFix:
         css.alignSelf = "stretch"
         break
     }
     switch (newInside) {
       default:
-      case PosV.top:
+      case Vertical.top:
         css.justifyContent = "start"
         break
-      case PosV.center:
+      case Vertical.center:
         css.justifyContent = "center"
         break
-      case PosV.bottom:
+      case Vertical.bottom:
         css.justifyContent = "end"
         break
-      case PosV.stretch:
-      case PosV.stretchAndFix:
+      case Vertical.stretch:
+      case Vertical.stretchAndFix:
         css.justifyContent = "stretch"
         break
     }
-    if (newPrimary >= PosV.stretch && strength === undefined)
+    if (newPrimary >= Vertical.stretch && strength === undefined)
       ElImpl.applyStretchingStrengthV(element, 0, 1)
   }
 
