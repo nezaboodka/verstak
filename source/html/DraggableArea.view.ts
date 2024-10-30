@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNodeDecl, Mode, RxNode } from "reactronic"
+import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
 import { El } from "./El.js"
 import { Div } from "./HtmlElements.js"
 import { Handling } from "./Elements.js"
@@ -22,10 +22,10 @@ export interface DraggableAreaModel {
 
 export function DraggableArea(
   draggingId: string,
-  builder: RxNodeDecl<El<HTMLDivElement, DraggableAreaModel>>): RxNode<El<HTMLDivElement>> {
+  builder: ReactiveNodeDecl<El<HTMLDivElement, DraggableAreaModel>>): ReactiveNode<El<HTMLDivElement>> {
   // triggers = triggers ? { ...triggers, draggingId } : { draggingId }
   return (
-    Div<DraggableAreaModel>(RxNode.rebased(builder, {
+    Div<DraggableAreaModel>(ReactiveNode.withBasis(builder, {
       mode: Mode.independentUpdate,
       script: b => {
         const e = b.native

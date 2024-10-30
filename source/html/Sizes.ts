@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNodeVariable } from "reactronic"
+import { ReactiveNodeVariable } from "reactronic"
 
 export enum Axis { X, Y }
 
@@ -42,17 +42,17 @@ export class Dimension<T = NoUnit> {
   }
 
   // Font Size Px
-  static readonly gFontSizePx = new RxNodeVariable<number>()
+  static readonly gFontSizePx = new ReactiveNodeVariable<number>()
 
   // Line Size Px
-  private static readonly gLineSizePx = new RxNodeVariable<number>()
+  private static readonly gLineSizePx = new ReactiveNodeVariable<number>()
   static get lineSizePx(): number {
     return Dimension.gLineSizePx.value
   }
   static set lineSizePx(value: number) {
     Dimension.gLineSizePx.value = value
   }
-  static getLineSizePx(): RxNodeVariable<number> {
+  static getLineSizePx(): ReactiveNodeVariable<number> {
     return Dimension.gLineSizePx
   }
 }

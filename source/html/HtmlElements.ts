@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNode, RxNodeDecl, Script as Scr, ScriptAsync as ScrAsync, Mode } from "reactronic"
+import { ReactiveNode, ReactiveNodeDecl, Script as Scr, ScriptAsync as ScrAsync, Mode } from "reactronic"
 import { El, ElKind } from "./El.js"
 import { StaticDriver, HtmlDriver, SvgDriver } from "./HtmlDriver.js"
 
@@ -18,13 +18,13 @@ export function Page(
   creationAsync?: ScrAsync<El<HTMLBodyElement>>,
   destruction?: Scr<El<HTMLBodyElement>>,
   triggers?: unknown,
-  basis?: RxNodeDecl<El<HTMLBodyElement>>): RxNode<El<HTMLBodyElement>>
+  basis?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>>
 
 export function Page(
-  declaration?: RxNodeDecl<El<HTMLBodyElement>>): RxNode<El<HTMLBodyElement>>
+  declaration?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>>
 
 export function Page(
-  scriptOrDeclaration?: Scr<El<HTMLBodyElement>> | RxNodeDecl<El<HTMLBodyElement>>,
+  scriptOrDeclaration?: Scr<El<HTMLBodyElement>> | ReactiveNodeDecl<El<HTMLBodyElement>>,
   scriptAsync?: ScrAsync<El<HTMLBodyElement>>,
   key?: string,
   mode?: Mode,
@@ -32,186 +32,186 @@ export function Page(
   creationAsync?: ScrAsync<El<HTMLBodyElement>>,
   destruction?: Scr<El<HTMLBodyElement>>,
   triggers?: unknown,
-  basis?: RxNodeDecl<El<HTMLBodyElement>>): RxNode<El<HTMLBodyElement>> {
+  basis?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>> {
   const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.panel)
-  return RxNode.declare(driver, scriptOrDeclaration, scriptAsync,
+  return ReactiveNode.declare(driver, scriptOrDeclaration, scriptAsync,
     key, mode, creation, creationAsync, destruction, triggers, basis)
 }
 
-export function A<M = unknown>(declaration?: RxNodeDecl<El<HTMLAnchorElement, M>>): RxNode<El<HTMLAnchorElement, M>> { return RxNode.declare(HtmlTags.a, declaration) }
-export function Abbr<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.abbr, declaration) }
-export function Address<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.address, declaration) }
-export function Area<M = unknown>(declaration?: RxNodeDecl<El<HTMLAreaElement, M>>): RxNode<El<HTMLAreaElement, M>> { return RxNode.declare(HtmlTags.area, declaration) }
-export function Article<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.article, declaration) }
-export function Aside<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.aside, declaration) }
-export function Audio<M = unknown>(declaration?: RxNodeDecl<El<HTMLAudioElement, M>>): RxNode<El<HTMLAudioElement, M>> { return RxNode.declare(HtmlTags.audio, declaration) }
-export function B<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.b, declaration) }
-export function Base<M = unknown>(declaration?: RxNodeDecl<El<HTMLBaseElement, M>>): RxNode<El<HTMLBaseElement, M>> { return RxNode.declare(HtmlTags.base, declaration) }
-export function Bdi<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.bdi, declaration) }
-export function Bdo<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.bdo, declaration) }
-export function Big<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.big, declaration) }
-export function BlockQuote<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.blockquote, declaration) }
-export function Body<M = unknown>(declaration?: RxNodeDecl<El<HTMLBodyElement, M>>): RxNode<El<HTMLBodyElement, M>> { return RxNode.declare(HtmlTags.body, declaration) }
-export function BR<M = unknown>(declaration?: RxNodeDecl<El<HTMLBRElement, M>>): RxNode<El<HTMLBRElement, M>> { return RxNode.declare(HtmlTags.br, declaration) }
-export function Button<M = unknown>(declaration?: RxNodeDecl<El<HTMLButtonElement, M>>): RxNode<El<HTMLButtonElement, M>> { return RxNode.declare(HtmlTags.button, declaration) }
-export function Canvas<M = unknown>(declaration?: RxNodeDecl<El<HTMLCanvasElement, M>>): RxNode<El<HTMLCanvasElement, M>> { return RxNode.declare(HtmlTags.canvas, declaration) }
-export function Caption<M = unknown>(declaration?: RxNodeDecl<El<HTMLTableCaptionElement, M>>): RxNode<El<HTMLTableCaptionElement, M>> { return RxNode.declare(HtmlTags.caption, declaration) }
-export function Cite<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.cite, declaration) }
-export function Code<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.code, declaration) }
-export function Col<M = unknown>(declaration?: RxNodeDecl<El<HTMLTableColElement, M>>): RxNode<El<HTMLTableColElement, M>> { return RxNode.declare(HtmlTags.col, declaration) }
-export function ColGroup<M = unknown>(declaration?: RxNodeDecl<El<HTMLTableColElement, M>>): RxNode<El<HTMLTableColElement, M>> { return RxNode.declare(HtmlTags.colgroup, declaration) }
-export function Data<M = unknown>(declaration?: RxNodeDecl<El<HTMLDataElement, M>>): RxNode<El<HTMLDataElement, M>> { return RxNode.declare(HtmlTags.data, declaration) }
-export function DataList<M = unknown>(declaration?: RxNodeDecl<El<HTMLDataListElement, M>>): RxNode<El<HTMLDataListElement, M>> { return RxNode.declare(HtmlTags.datalist, declaration) }
-export function DD<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.dd, declaration) }
-export function Del<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.del, declaration) }
-export function Details<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.details, declaration) }
-export function Dfn<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.dfn, declaration) }
-export function Div<M = unknown>(declaration?: RxNodeDecl<El<HTMLDivElement, M>>): RxNode<El<HTMLDivElement, M>> { return RxNode.declare(HtmlTags.div, declaration) }
-export function DL<M = unknown>(declaration?: RxNodeDecl<El<HTMLDListElement, M>>): RxNode<El<HTMLDListElement, M>> { return RxNode.declare(HtmlTags.dl, declaration) }
-export function DT<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.dt, declaration) }
-export function EM<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.em, declaration) }
-export function Embed<M = unknown>(declaration?: RxNodeDecl<El<HTMLEmbedElement, M>>): RxNode<El<HTMLEmbedElement, M>> { return RxNode.declare(HtmlTags.embed, declaration) }
-export function FieldSet<M = unknown>(declaration?: RxNodeDecl<El<HTMLFieldSetElement, M>>): RxNode<El<HTMLFieldSetElement, M>> { return RxNode.declare(HtmlTags.fieldset, declaration) }
-export function FigCaption<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.figcaption, declaration) }
-export function Figure<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.figure, declaration) }
-export function Footer<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.footer, declaration) }
-export function Form<M = unknown>(declaration?: RxNodeDecl<El<HTMLFormElement, M>>): RxNode<El<HTMLFormElement, M>> { return RxNode.declare(HtmlTags.form, declaration) }
-export function H1<M = unknown>(declaration?: RxNodeDecl<El<HTMLHeadingElement, M>>): RxNode<El<HTMLHeadingElement, M>> { return RxNode.declare(HtmlTags.h1, declaration) }
-export function H2<M = unknown>(declaration?: RxNodeDecl<El<HTMLHeadingElement, M>>): RxNode<El<HTMLHeadingElement, M>> { return RxNode.declare(HtmlTags.h2, declaration) }
-export function H3<M = unknown>(declaration?: RxNodeDecl<El<HTMLHeadingElement, M>>): RxNode<El<HTMLHeadingElement, M>> { return RxNode.declare(HtmlTags.h3, declaration) }
-export function H4<M = unknown>(declaration?: RxNodeDecl<El<HTMLHeadingElement, M>>): RxNode<El<HTMLHeadingElement, M>> { return RxNode.declare(HtmlTags.h4, declaration) }
-export function H5<M = unknown>(declaration?: RxNodeDecl<El<HTMLHeadingElement, M>>): RxNode<El<HTMLHeadingElement, M>> { return RxNode.declare(HtmlTags.h5, declaration) }
-export function H6<M = unknown>(declaration?: RxNodeDecl<El<HTMLHeadingElement, M>>): RxNode<El<HTMLHeadingElement, M>> { return RxNode.declare(HtmlTags.h6, declaration) }
-export function Head<M = unknown>(declaration?: RxNodeDecl<El<HTMLHeadElement, M>>): RxNode<El<HTMLHeadElement, M>> { return RxNode.declare(HtmlTags.head, declaration) }
-export function Header<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.header, declaration) }
-export function HGroup<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.hgroup, declaration) }
-export function HR<M = unknown>(declaration?: RxNodeDecl<El<HTMLHRElement, M>>): RxNode<El<HTMLHRElement, M>> { return RxNode.declare(HtmlTags.hr, declaration) }
-export function Html<M = unknown>(declaration?: RxNodeDecl<El<HTMLHtmlElement, M>>): RxNode<El<HTMLHtmlElement, M>> { return RxNode.declare(HtmlTags.html, declaration) }
-export function I<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.i, declaration) }
-export function IFrame<M = unknown>(declaration?: RxNodeDecl<El<HTMLIFrameElement, M>>): RxNode<El<HTMLIFrameElement, M>> { return RxNode.declare(HtmlTags.iframe, declaration) }
-export function Img<M = unknown>(declaration?: RxNodeDecl<El<HTMLImageElement, M>>): RxNode<El<HTMLImageElement, M>> { return RxNode.declare(HtmlTags.img, declaration) }
-export function Input<M = unknown>(declaration?: RxNodeDecl<El<HTMLInputElement, M>>): RxNode<El<HTMLInputElement, M>> { return RxNode.declare(HtmlTags.input, declaration) }
-export function Ins<M = unknown>(declaration?: RxNodeDecl<El<HTMLModElement, M>>): RxNode<El<HTMLModElement, M>> { return RxNode.declare(HtmlTags.ins, declaration) }
-export function Kbd<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.kbd, declaration) }
-export function KeyGen<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.keygen, declaration) }
-export function Label<M = unknown>(declaration?: RxNodeDecl<El<HTMLLabelElement, M>>): RxNode<El<HTMLLabelElement, M>> { return RxNode.declare(HtmlTags.label, declaration) }
-export function Legend<M = unknown>(declaration?: RxNodeDecl<El<HTMLLegendElement, M>>): RxNode<El<HTMLLegendElement, M>> { return RxNode.declare(HtmlTags.legend, declaration) }
-export function LI<M = unknown>(declaration?: RxNodeDecl<El<HTMLLIElement, M>>): RxNode<El<HTMLLIElement, M>> { return RxNode.declare(HtmlTags.li, declaration) }
-export function Link<M = unknown>(declaration?: RxNodeDecl<El<HTMLLinkElement, M>>): RxNode<El<HTMLLinkElement, M>> { return RxNode.declare(HtmlTags.link, declaration) }
-export function Main<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.main, declaration) }
-export function Map<M = unknown>(declaration?: RxNodeDecl<El<HTMLMapElement, M>>): RxNode<El<HTMLMapElement, M>> { return RxNode.declare(HtmlTags.map, declaration) }
-export function Mark<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.mark, declaration) }
-export function Menu<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.menu, declaration) }
-export function MenuItem<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.menuitem, declaration) }
-export function Meta<M = unknown>(declaration?: RxNodeDecl<El<HTMLMetaElement, M>>): RxNode<El<HTMLMetaElement, M>> { return RxNode.declare(HtmlTags.meta, declaration) }
-export function Meter<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.meter, declaration) }
-export function Nav<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.nav, declaration) }
-export function NoIndex<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.noindex, declaration) }
-export function NoScript<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.noscript, declaration) }
-export function Obj<M = unknown>(declaration?: RxNodeDecl<El<HTMLObjectElement, M>>): RxNode<El<HTMLObjectElement, M>> { return RxNode.declare(HtmlTags.object, declaration) }
-export function OL<M = unknown>(declaration?: RxNodeDecl<El<HTMLOListElement, M>>): RxNode<El<HTMLOListElement, M>> { return RxNode.declare(HtmlTags.ol, declaration) }
-export function OptGroup<M = unknown>(declaration?: RxNodeDecl<El<HTMLOptGroupElement, M>>): RxNode<El<HTMLOptGroupElement, M>> { return RxNode.declare(HtmlTags.optgroup, declaration) }
-export function Option<M = unknown>(declaration?: RxNodeDecl<El<HTMLOptionElement, M>>): RxNode<El<HTMLOptionElement, M>> { return RxNode.declare(HtmlTags.option, declaration) }
-export function Output<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.output, declaration) }
-export function P<M = unknown>(declaration?: RxNodeDecl<El<HTMLParagraphElement, M>>): RxNode<El<HTMLParagraphElement, M>> { return RxNode.declare(HtmlTags.p, declaration) }
-export function Param<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.param, declaration) }
-export function Picture<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.picture, declaration) }
-export function Pre<M = unknown>(declaration?: RxNodeDecl<El<HTMLPreElement, M>>): RxNode<El<HTMLPreElement, M>> { return RxNode.declare(HtmlTags.pre, declaration) }
-export function Progress<M = unknown>(declaration?: RxNodeDecl<El<HTMLProgressElement, M>>): RxNode<El<HTMLProgressElement, M>> { return RxNode.declare(HtmlTags.progress, declaration) }
-export function Q<M = unknown>(declaration?: RxNodeDecl<El<HTMLQuoteElement, M>>): RxNode<El<HTMLQuoteElement, M>> { return RxNode.declare(HtmlTags.q, declaration) }
-export function RP<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.rp, declaration) }
-export function RT<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.rt, declaration) }
-export function Ruby<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.ruby, declaration) }
-export function S<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.s, declaration) }
-export function Samp<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.samp, declaration) }
-export function Script<M = unknown>(declaration?: RxNodeDecl<El<HTMLScriptElement, M>>): RxNode<El<HTMLScriptElement, M>> { return RxNode.declare(HtmlTags.script, declaration) }
-export function Sctn<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.section, declaration) }
-export function Select<M = unknown>(declaration?: RxNodeDecl<El<HTMLSelectElement, M>>): RxNode<El<HTMLSelectElement, M>> { return RxNode.declare(HtmlTags.select, declaration) }
-export function Small<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.small, declaration) }
-export function Source<M = unknown>(declaration?: RxNodeDecl<El<HTMLSourceElement, M>>): RxNode<El<HTMLSourceElement, M>> { return RxNode.declare(HtmlTags.source, declaration) }
-export function Span<M = unknown>(declaration?: RxNodeDecl<El<HTMLSpanElement, M>>): RxNode<El<HTMLSpanElement, M>> { return RxNode.declare(HtmlTags.span, declaration) }
-export function Strong<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.strong, declaration) }
-export function Style<M = unknown>(declaration?: RxNodeDecl<El<HTMLStyleElement, M>>): RxNode<El<HTMLStyleElement, M>> { return RxNode.declare(HtmlTags.style, declaration) }
-export function Sub<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.sub, declaration) }
-export function Summary<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.summary, declaration) }
-export function Sup<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.sup, declaration) }
-export function Tbl<M = unknown>(declaration?: RxNodeDecl<El<HTMLTableElement, M>>): RxNode<El<HTMLTableElement, M>> { return RxNode.declare(HtmlTags.table, declaration) }
-export function Template<M = unknown>(declaration?: RxNodeDecl<El<HTMLTemplateElement, M>>): RxNode<El<HTMLTemplateElement, M>> { return RxNode.declare(HtmlTags.template, declaration) }
-export function TBody<M = unknown>(declaration?: RxNodeDecl<El<HTMLTableSectionElement, M>>): RxNode<El<HTMLTableSectionElement, M>> { return RxNode.declare(HtmlTags.tbody, declaration) }
-export function TD<M = unknown>(declaration?: RxNodeDecl<El<HTMLTableCellElement, M>>): RxNode<El<HTMLTableCellElement, M>> { return RxNode.declare(HtmlTags.td, declaration) }
-export function TextArea<M = unknown>(declaration?: RxNodeDecl<El<HTMLTextAreaElement, M>>): RxNode<El<HTMLTextAreaElement, M>> { return RxNode.declare(HtmlTags.textarea, declaration) }
-export function TFoot<M = unknown>(declaration?: RxNodeDecl<El<HTMLTableSectionElement, M>>): RxNode<El<HTMLTableSectionElement, M>> { return RxNode.declare(HtmlTags.tfoot, declaration) }
-export function TH<M = unknown>(declaration?: RxNodeDecl<El<HTMLTableCellElement, M>>): RxNode<El<HTMLTableCellElement, M>> { return RxNode.declare(HtmlTags.th, declaration) }
-export function THead<M = unknown>(declaration?: RxNodeDecl<El<HTMLTableSectionElement, M>>): RxNode<El<HTMLTableSectionElement, M>> { return RxNode.declare(HtmlTags.thead, declaration) }
-export function Time<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.time, declaration) }
-export function Title<M = unknown>(declaration?: RxNodeDecl<El<HTMLTitleElement, M>>): RxNode<El<HTMLTitleElement, M>> { return RxNode.declare(HtmlTags.title, declaration) }
-export function TR<M = unknown>(declaration?: RxNodeDecl<El<HTMLTableRowElement, M>>): RxNode<El<HTMLTableRowElement, M>> { return RxNode.declare(HtmlTags.tr, declaration) }
-export function Track<M = unknown>(declaration?: RxNodeDecl<El<HTMLTrackElement, M>>): RxNode<El<HTMLTrackElement, M>> { return RxNode.declare(HtmlTags.track, declaration) }
-export function U<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.u, declaration) }
-export function UL<M = unknown>(declaration?: RxNodeDecl<El<HTMLUListElement, M>>): RxNode<El<HTMLUListElement, M>> { return RxNode.declare(HtmlTags.ul, declaration) }
-export function Var<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.var, declaration) }
-export function Video<M = unknown>(declaration?: RxNodeDecl<El<HTMLVideoElement, M>>): RxNode<El<HTMLVideoElement, M>> { return RxNode.declare(HtmlTags.video, declaration) }
-export function Wbr<M = unknown>(declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> { return RxNode.declare(HtmlTags.wbr, declaration) }
+export function A<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLAnchorElement, M>>): ReactiveNode<El<HTMLAnchorElement, M>> { return ReactiveNode.declare(HtmlTags.a, declaration) }
+export function Abbr<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.abbr, declaration) }
+export function Address<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.address, declaration) }
+export function Area<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLAreaElement, M>>): ReactiveNode<El<HTMLAreaElement, M>> { return ReactiveNode.declare(HtmlTags.area, declaration) }
+export function Article<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.article, declaration) }
+export function Aside<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.aside, declaration) }
+export function Audio<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLAudioElement, M>>): ReactiveNode<El<HTMLAudioElement, M>> { return ReactiveNode.declare(HtmlTags.audio, declaration) }
+export function B<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.b, declaration) }
+export function Base<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLBaseElement, M>>): ReactiveNode<El<HTMLBaseElement, M>> { return ReactiveNode.declare(HtmlTags.base, declaration) }
+export function Bdi<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.bdi, declaration) }
+export function Bdo<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.bdo, declaration) }
+export function Big<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.big, declaration) }
+export function BlockQuote<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.blockquote, declaration) }
+export function Body<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLBodyElement, M>>): ReactiveNode<El<HTMLBodyElement, M>> { return ReactiveNode.declare(HtmlTags.body, declaration) }
+export function BR<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLBRElement, M>>): ReactiveNode<El<HTMLBRElement, M>> { return ReactiveNode.declare(HtmlTags.br, declaration) }
+export function Button<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLButtonElement, M>>): ReactiveNode<El<HTMLButtonElement, M>> { return ReactiveNode.declare(HtmlTags.button, declaration) }
+export function Canvas<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLCanvasElement, M>>): ReactiveNode<El<HTMLCanvasElement, M>> { return ReactiveNode.declare(HtmlTags.canvas, declaration) }
+export function Caption<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLTableCaptionElement, M>>): ReactiveNode<El<HTMLTableCaptionElement, M>> { return ReactiveNode.declare(HtmlTags.caption, declaration) }
+export function Cite<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.cite, declaration) }
+export function Code<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.code, declaration) }
+export function Col<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLTableColElement, M>>): ReactiveNode<El<HTMLTableColElement, M>> { return ReactiveNode.declare(HtmlTags.col, declaration) }
+export function ColGroup<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLTableColElement, M>>): ReactiveNode<El<HTMLTableColElement, M>> { return ReactiveNode.declare(HtmlTags.colgroup, declaration) }
+export function Data<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLDataElement, M>>): ReactiveNode<El<HTMLDataElement, M>> { return ReactiveNode.declare(HtmlTags.data, declaration) }
+export function DataList<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLDataListElement, M>>): ReactiveNode<El<HTMLDataListElement, M>> { return ReactiveNode.declare(HtmlTags.datalist, declaration) }
+export function DD<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.dd, declaration) }
+export function Del<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.del, declaration) }
+export function Details<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.details, declaration) }
+export function Dfn<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.dfn, declaration) }
+export function Div<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLDivElement, M>>): ReactiveNode<El<HTMLDivElement, M>> { return ReactiveNode.declare(HtmlTags.div, declaration) }
+export function DL<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLDListElement, M>>): ReactiveNode<El<HTMLDListElement, M>> { return ReactiveNode.declare(HtmlTags.dl, declaration) }
+export function DT<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.dt, declaration) }
+export function EM<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.em, declaration) }
+export function Embed<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLEmbedElement, M>>): ReactiveNode<El<HTMLEmbedElement, M>> { return ReactiveNode.declare(HtmlTags.embed, declaration) }
+export function FieldSet<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLFieldSetElement, M>>): ReactiveNode<El<HTMLFieldSetElement, M>> { return ReactiveNode.declare(HtmlTags.fieldset, declaration) }
+export function FigCaption<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.figcaption, declaration) }
+export function Figure<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.figure, declaration) }
+export function Footer<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.footer, declaration) }
+export function Form<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLFormElement, M>>): ReactiveNode<El<HTMLFormElement, M>> { return ReactiveNode.declare(HtmlTags.form, declaration) }
+export function H1<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLHeadingElement, M>>): ReactiveNode<El<HTMLHeadingElement, M>> { return ReactiveNode.declare(HtmlTags.h1, declaration) }
+export function H2<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLHeadingElement, M>>): ReactiveNode<El<HTMLHeadingElement, M>> { return ReactiveNode.declare(HtmlTags.h2, declaration) }
+export function H3<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLHeadingElement, M>>): ReactiveNode<El<HTMLHeadingElement, M>> { return ReactiveNode.declare(HtmlTags.h3, declaration) }
+export function H4<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLHeadingElement, M>>): ReactiveNode<El<HTMLHeadingElement, M>> { return ReactiveNode.declare(HtmlTags.h4, declaration) }
+export function H5<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLHeadingElement, M>>): ReactiveNode<El<HTMLHeadingElement, M>> { return ReactiveNode.declare(HtmlTags.h5, declaration) }
+export function H6<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLHeadingElement, M>>): ReactiveNode<El<HTMLHeadingElement, M>> { return ReactiveNode.declare(HtmlTags.h6, declaration) }
+export function Head<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLHeadElement, M>>): ReactiveNode<El<HTMLHeadElement, M>> { return ReactiveNode.declare(HtmlTags.head, declaration) }
+export function Header<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.header, declaration) }
+export function HGroup<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.hgroup, declaration) }
+export function HR<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLHRElement, M>>): ReactiveNode<El<HTMLHRElement, M>> { return ReactiveNode.declare(HtmlTags.hr, declaration) }
+export function Html<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLHtmlElement, M>>): ReactiveNode<El<HTMLHtmlElement, M>> { return ReactiveNode.declare(HtmlTags.html, declaration) }
+export function I<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.i, declaration) }
+export function IFrame<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLIFrameElement, M>>): ReactiveNode<El<HTMLIFrameElement, M>> { return ReactiveNode.declare(HtmlTags.iframe, declaration) }
+export function Img<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLImageElement, M>>): ReactiveNode<El<HTMLImageElement, M>> { return ReactiveNode.declare(HtmlTags.img, declaration) }
+export function Input<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLInputElement, M>>): ReactiveNode<El<HTMLInputElement, M>> { return ReactiveNode.declare(HtmlTags.input, declaration) }
+export function Ins<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLModElement, M>>): ReactiveNode<El<HTMLModElement, M>> { return ReactiveNode.declare(HtmlTags.ins, declaration) }
+export function Kbd<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.kbd, declaration) }
+export function KeyGen<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.keygen, declaration) }
+export function Label<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLLabelElement, M>>): ReactiveNode<El<HTMLLabelElement, M>> { return ReactiveNode.declare(HtmlTags.label, declaration) }
+export function Legend<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLLegendElement, M>>): ReactiveNode<El<HTMLLegendElement, M>> { return ReactiveNode.declare(HtmlTags.legend, declaration) }
+export function LI<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLLIElement, M>>): ReactiveNode<El<HTMLLIElement, M>> { return ReactiveNode.declare(HtmlTags.li, declaration) }
+export function Link<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLLinkElement, M>>): ReactiveNode<El<HTMLLinkElement, M>> { return ReactiveNode.declare(HtmlTags.link, declaration) }
+export function Main<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.main, declaration) }
+export function Map<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLMapElement, M>>): ReactiveNode<El<HTMLMapElement, M>> { return ReactiveNode.declare(HtmlTags.map, declaration) }
+export function Mark<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.mark, declaration) }
+export function Menu<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.menu, declaration) }
+export function MenuItem<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.menuitem, declaration) }
+export function Meta<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLMetaElement, M>>): ReactiveNode<El<HTMLMetaElement, M>> { return ReactiveNode.declare(HtmlTags.meta, declaration) }
+export function Meter<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.meter, declaration) }
+export function Nav<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.nav, declaration) }
+export function NoIndex<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.noindex, declaration) }
+export function NoScript<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.noscript, declaration) }
+export function Obj<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLObjectElement, M>>): ReactiveNode<El<HTMLObjectElement, M>> { return ReactiveNode.declare(HtmlTags.object, declaration) }
+export function OL<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLOListElement, M>>): ReactiveNode<El<HTMLOListElement, M>> { return ReactiveNode.declare(HtmlTags.ol, declaration) }
+export function OptGroup<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLOptGroupElement, M>>): ReactiveNode<El<HTMLOptGroupElement, M>> { return ReactiveNode.declare(HtmlTags.optgroup, declaration) }
+export function Option<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLOptionElement, M>>): ReactiveNode<El<HTMLOptionElement, M>> { return ReactiveNode.declare(HtmlTags.option, declaration) }
+export function Output<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.output, declaration) }
+export function P<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLParagraphElement, M>>): ReactiveNode<El<HTMLParagraphElement, M>> { return ReactiveNode.declare(HtmlTags.p, declaration) }
+export function Param<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.param, declaration) }
+export function Picture<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.picture, declaration) }
+export function Pre<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLPreElement, M>>): ReactiveNode<El<HTMLPreElement, M>> { return ReactiveNode.declare(HtmlTags.pre, declaration) }
+export function Progress<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLProgressElement, M>>): ReactiveNode<El<HTMLProgressElement, M>> { return ReactiveNode.declare(HtmlTags.progress, declaration) }
+export function Q<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLQuoteElement, M>>): ReactiveNode<El<HTMLQuoteElement, M>> { return ReactiveNode.declare(HtmlTags.q, declaration) }
+export function RP<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.rp, declaration) }
+export function RT<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.rt, declaration) }
+export function Ruby<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.ruby, declaration) }
+export function S<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.s, declaration) }
+export function Samp<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.samp, declaration) }
+export function Script<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLScriptElement, M>>): ReactiveNode<El<HTMLScriptElement, M>> { return ReactiveNode.declare(HtmlTags.script, declaration) }
+export function Sctn<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.section, declaration) }
+export function Select<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLSelectElement, M>>): ReactiveNode<El<HTMLSelectElement, M>> { return ReactiveNode.declare(HtmlTags.select, declaration) }
+export function Small<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.small, declaration) }
+export function Source<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLSourceElement, M>>): ReactiveNode<El<HTMLSourceElement, M>> { return ReactiveNode.declare(HtmlTags.source, declaration) }
+export function Span<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLSpanElement, M>>): ReactiveNode<El<HTMLSpanElement, M>> { return ReactiveNode.declare(HtmlTags.span, declaration) }
+export function Strong<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.strong, declaration) }
+export function Style<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLStyleElement, M>>): ReactiveNode<El<HTMLStyleElement, M>> { return ReactiveNode.declare(HtmlTags.style, declaration) }
+export function Sub<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.sub, declaration) }
+export function Summary<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.summary, declaration) }
+export function Sup<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.sup, declaration) }
+export function Tbl<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLTableElement, M>>): ReactiveNode<El<HTMLTableElement, M>> { return ReactiveNode.declare(HtmlTags.table, declaration) }
+export function Template<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLTemplateElement, M>>): ReactiveNode<El<HTMLTemplateElement, M>> { return ReactiveNode.declare(HtmlTags.template, declaration) }
+export function TBody<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLTableSectionElement, M>>): ReactiveNode<El<HTMLTableSectionElement, M>> { return ReactiveNode.declare(HtmlTags.tbody, declaration) }
+export function TD<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLTableCellElement, M>>): ReactiveNode<El<HTMLTableCellElement, M>> { return ReactiveNode.declare(HtmlTags.td, declaration) }
+export function TextArea<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLTextAreaElement, M>>): ReactiveNode<El<HTMLTextAreaElement, M>> { return ReactiveNode.declare(HtmlTags.textarea, declaration) }
+export function TFoot<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLTableSectionElement, M>>): ReactiveNode<El<HTMLTableSectionElement, M>> { return ReactiveNode.declare(HtmlTags.tfoot, declaration) }
+export function TH<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLTableCellElement, M>>): ReactiveNode<El<HTMLTableCellElement, M>> { return ReactiveNode.declare(HtmlTags.th, declaration) }
+export function THead<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLTableSectionElement, M>>): ReactiveNode<El<HTMLTableSectionElement, M>> { return ReactiveNode.declare(HtmlTags.thead, declaration) }
+export function Time<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.time, declaration) }
+export function Title<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLTitleElement, M>>): ReactiveNode<El<HTMLTitleElement, M>> { return ReactiveNode.declare(HtmlTags.title, declaration) }
+export function TR<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLTableRowElement, M>>): ReactiveNode<El<HTMLTableRowElement, M>> { return ReactiveNode.declare(HtmlTags.tr, declaration) }
+export function Track<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLTrackElement, M>>): ReactiveNode<El<HTMLTrackElement, M>> { return ReactiveNode.declare(HtmlTags.track, declaration) }
+export function U<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.u, declaration) }
+export function UL<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLUListElement, M>>): ReactiveNode<El<HTMLUListElement, M>> { return ReactiveNode.declare(HtmlTags.ul, declaration) }
+export function Var<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.var, declaration) }
+export function Video<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLVideoElement, M>>): ReactiveNode<El<HTMLVideoElement, M>> { return ReactiveNode.declare(HtmlTags.video, declaration) }
+export function Wbr<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.wbr, declaration) }
 
-export function Svg<M = unknown>(declaration?: RxNodeDecl<El<SVGSVGElement, M>>): RxNode<El<SVGSVGElement, M>> { return RxNode.declare(SvgTags.svg, declaration) }
-export function SvgA<M = unknown>(declaration?: RxNodeDecl<El<SVGAElement, M>>): RxNode<El<SVGAElement, M>> { return RxNode.declare(SvgTags.a, declaration) }
-export function Animate<M = unknown>(declaration?: RxNodeDecl<El<SVGAnimateElement, M>>): RxNode<El<SVGAnimateElement, M>> { return RxNode.declare(SvgTags.animate, declaration) }
-export function AnimateMotion<M = unknown>(declaration?: RxNodeDecl<El<SVGAnimateMotionElement, M>>): RxNode<El<SVGAnimateMotionElement, M>> { return RxNode.declare(SvgTags.animateMotion, declaration) }
-export function AnimateTransform<M = unknown>(declaration?: RxNodeDecl<El<SVGAnimateTransformElement, M>>): RxNode<El<SVGAnimateTransformElement, M>> { return RxNode.declare(SvgTags.animateTransform, declaration) }
-export function Circle<M = unknown>(declaration?: RxNodeDecl<El<SVGCircleElement, M>>): RxNode<El<SVGCircleElement, M>> { return RxNode.declare(SvgTags.circle, declaration) }
-export function ClipPath<M = unknown>(declaration?: RxNodeDecl<El<SVGClipPathElement, M>>): RxNode<El<SVGClipPathElement, M>> { return RxNode.declare(SvgTags.clipPath, declaration) }
-export function Defs<M = unknown>(declaration?: RxNodeDecl<El<SVGDefsElement, M>>): RxNode<El<SVGDefsElement, M>> { return RxNode.declare(SvgTags.defs, declaration) }
-export function Desc<M = unknown>(declaration?: RxNodeDecl<El<SVGDescElement, M>>): RxNode<El<SVGDescElement, M>> { return RxNode.declare(SvgTags.desc, declaration) }
-export function Ellipse<M = unknown>(declaration?: RxNodeDecl<El<SVGEllipseElement, M>>): RxNode<El<SVGEllipseElement, M>> { return RxNode.declare(SvgTags.ellipse, declaration) }
-export function FeBlend<M = unknown>(declaration?: RxNodeDecl<El<SVGFEBlendElement, M>>): RxNode<El<SVGFEBlendElement, M>> { return RxNode.declare(SvgTags.feBlend, declaration) }
-export function FeColorMatrix<M = unknown>(declaration?: RxNodeDecl<El<SVGFEColorMatrixElement, M>>): RxNode<El<SVGFEColorMatrixElement, M>> { return RxNode.declare(SvgTags.feColorMatrix, declaration) }
-export function FeComponentTransfer<M = unknown>(declaration?: RxNodeDecl<El<SVGFEComponentTransferElement, M>>): RxNode<El<SVGFEComponentTransferElement, M>> { return RxNode.declare(SvgTags.feComponentTransfer, declaration) }
-export function FeComposite<M = unknown>(declaration?: RxNodeDecl<El<SVGFECompositeElement, M>>): RxNode<El<SVGFECompositeElement, M>> { return RxNode.declare(SvgTags.feComposite, declaration) }
-export function FeConvolveMatrix<M = unknown>(declaration?: RxNodeDecl<El<SVGFEConvolveMatrixElement, M>>): RxNode<El<SVGFEConvolveMatrixElement, M>> { return RxNode.declare(SvgTags.feConvolveMatrix, declaration) }
-export function FeDiffuseLighting<M = unknown>(declaration?: RxNodeDecl<El<SVGFEDiffuseLightingElement, M>>): RxNode<El<SVGFEDiffuseLightingElement, M>> { return RxNode.declare(SvgTags.feDiffuseLighting, declaration) }
-export function FeDisplacementMap<M = unknown>(declaration?: RxNodeDecl<El<SVGFEDisplacementMapElement, M>>): RxNode<El<SVGFEDisplacementMapElement, M>> { return RxNode.declare(SvgTags.feDisplacementMap, declaration) }
-export function FeDistantLight<M = unknown>(declaration?: RxNodeDecl<El<SVGFEDistantLightElement, M>>): RxNode<El<SVGFEDistantLightElement, M>> { return RxNode.declare(SvgTags.feDistantLight, declaration) }
-export function FeDropShadow<M = unknown>(declaration?: RxNodeDecl<El<SVGFEDropShadowElement, M>>): RxNode<El<SVGFEDropShadowElement, M>> { return RxNode.declare(SvgTags.feDropShadow, declaration) }
-export function FeFlood<M = unknown>(declaration?: RxNodeDecl<El<SVGFEFloodElement, M>>): RxNode<El<SVGFEFloodElement, M>> { return RxNode.declare(SvgTags.feFlood, declaration) }
-export function FeFuncA<M = unknown>(declaration?: RxNodeDecl<El<SVGFEFuncAElement, M>>): RxNode<El<SVGFEFuncAElement, M>> { return RxNode.declare(SvgTags.feFuncA, declaration) }
-export function FeFuncB<M = unknown>(declaration?: RxNodeDecl<El<SVGFEFuncBElement, M>>): RxNode<El<SVGFEFuncBElement, M>> { return RxNode.declare(SvgTags.feFuncB, declaration) }
-export function FeFuncG<M = unknown>(declaration?: RxNodeDecl<El<SVGFEFuncGElement, M>>): RxNode<El<SVGFEFuncGElement, M>> { return RxNode.declare(SvgTags.feFuncG, declaration) }
-export function FeFuncR<M = unknown>(declaration?: RxNodeDecl<El<SVGFEFuncRElement, M>>): RxNode<El<SVGFEFuncRElement, M>> { return RxNode.declare(SvgTags.feFuncR, declaration) }
-export function FeGaussianBlur<M = unknown>(declaration?: RxNodeDecl<El<SVGFEGaussianBlurElement, M>>): RxNode<El<SVGFEGaussianBlurElement, M>> { return RxNode.declare(SvgTags.feGaussianBlur, declaration) }
-export function FeImage<M = unknown>(declaration?: RxNodeDecl<El<SVGFEImageElement, M>>): RxNode<El<SVGFEImageElement, M>> { return RxNode.declare(SvgTags.feImage, declaration) }
-export function FeMerge<M = unknown>(declaration?: RxNodeDecl<El<SVGFEMergeElement, M>>): RxNode<El<SVGFEMergeElement, M>> { return RxNode.declare(SvgTags.feMerge, declaration) }
-export function FeMergeNode<M = unknown>(declaration?: RxNodeDecl<El<SVGFEMergeNodeElement, M>>): RxNode<El<SVGFEMergeNodeElement, M>> { return RxNode.declare(SvgTags.feMergeNode, declaration) }
-export function FeMorphology<M = unknown>(declaration?: RxNodeDecl<El<SVGFEMorphologyElement, M>>): RxNode<El<SVGFEMorphologyElement, M>> { return RxNode.declare(SvgTags.feMorphology, declaration) }
-export function FeOffset<M = unknown>(declaration?: RxNodeDecl<El<SVGFEOffsetElement, M>>): RxNode<El<SVGFEOffsetElement, M>> { return RxNode.declare(SvgTags.feOffset, declaration) }
-export function FePointLight<M = unknown>(declaration?: RxNodeDecl<El<SVGFEPointLightElement, M>>): RxNode<El<SVGFEPointLightElement, M>> { return RxNode.declare(SvgTags.fePointLight, declaration) }
-export function FeSpecularLighting<M = unknown>(declaration?: RxNodeDecl<El<SVGFESpecularLightingElement, M>>): RxNode<El<SVGFESpecularLightingElement, M>> { return RxNode.declare(SvgTags.feSpecularLighting, declaration) }
-export function FeSpotLight<M = unknown>(declaration?: RxNodeDecl<El<SVGFESpotLightElement, M>>): RxNode<El<SVGFESpotLightElement, M>> { return RxNode.declare(SvgTags.feSpotLight, declaration) }
-export function FeTile<M = unknown>(declaration?: RxNodeDecl<El<SVGFETileElement, M>>): RxNode<El<SVGFETileElement, M>> { return RxNode.declare(SvgTags.feTile, declaration) }
-export function FeTurbulence<M = unknown>(declaration?: RxNodeDecl<El<SVGFETurbulenceElement, M>>): RxNode<El<SVGFETurbulenceElement, M>> { return RxNode.declare(SvgTags.feTurbulence, declaration) }
-export function Filter<M = unknown>(declaration?: RxNodeDecl<El<SVGFilterElement, M>>): RxNode<El<SVGFilterElement, M>> { return RxNode.declare(SvgTags.filter, declaration) }
-export function ForeignObject<M = unknown>(declaration?: RxNodeDecl<El<SVGForeignObjectElement, M>>): RxNode<El<SVGForeignObjectElement, M>> { return RxNode.declare(SvgTags.foreignObject, declaration) }
-export function G<M = unknown>(declaration?: RxNodeDecl<El<SVGGElement, M>>): RxNode<El<SVGGElement, M>> { return RxNode.declare(SvgTags.g, declaration) }
-export function SvgImage<M = unknown>(declaration?: RxNodeDecl<El<SVGImageElement, M>>): RxNode<El<SVGImageElement, M>> { return RxNode.declare(SvgTags.image, declaration) }
-export function SvgLine<M = unknown>(declaration?: RxNodeDecl<El<SVGLineElement, M>>): RxNode<El<SVGLineElement, M>> { return RxNode.declare(SvgTags.line, declaration) }
-export function LinearGradient<M = unknown>(declaration?: RxNodeDecl<El<SVGLinearGradientElement, M>>): RxNode<El<SVGLinearGradientElement, M>> { return RxNode.declare(SvgTags.linearGradient, declaration) }
-export function Marker<M = unknown>(declaration?: RxNodeDecl<El<SVGMarkerElement, M>>): RxNode<El<SVGMarkerElement, M>> { return RxNode.declare(SvgTags.marker, declaration) }
-export function Mask<M = unknown>(declaration?: RxNodeDecl<El<SVGMaskElement, M>>): RxNode<El<SVGMaskElement, M>> { return RxNode.declare(SvgTags.mask, declaration) }
-export function MetaData<M = unknown>(declaration?: RxNodeDecl<El<SVGMetadataElement, M>>): RxNode<El<SVGMetadataElement, M>> { return RxNode.declare(SvgTags.metadata, declaration) }
-export function MPath<M = unknown>(declaration?: RxNodeDecl<El<SVGElement, M>>): RxNode<El<SVGElement, M>> { return RxNode.declare(SvgTags.mpath, declaration) }
-export function Path<M = unknown>(declaration?: RxNodeDecl<El<SVGPathElement, M>>): RxNode<El<SVGPathElement, M>> { return RxNode.declare(SvgTags.path, declaration) }
-export function Pattern<M = unknown>(declaration?: RxNodeDecl<El<SVGPatternElement, M>>): RxNode<El<SVGPatternElement, M>> { return RxNode.declare(SvgTags.pattern, declaration) }
-export function Polygon<M = unknown>(declaration?: RxNodeDecl<El<SVGPolygonElement, M>>): RxNode<El<SVGPolygonElement, M>> { return RxNode.declare(SvgTags.polygon, declaration) }
-export function PolyLine<M = unknown>(declaration?: RxNodeDecl<El<SVGPolylineElement, M>>): RxNode<El<SVGPolylineElement, M>> { return RxNode.declare(SvgTags.polyline, declaration) }
-export function RadialGradient<M = unknown>(declaration?: RxNodeDecl<El<SVGRadialGradientElement, M>>): RxNode<El<SVGRadialGradientElement, M>> { return RxNode.declare(SvgTags.radialGradient, declaration) }
-export function Rect<M = unknown>(declaration?: RxNodeDecl<El<SVGRectElement, M>>): RxNode<El<SVGRectElement, M>> { return RxNode.declare(SvgTags.rect, declaration) }
-export function Stop<M = unknown>(declaration?: RxNodeDecl<El<SVGStopElement, M>>): RxNode<El<SVGStopElement, M>> { return RxNode.declare(SvgTags.stop, declaration) }
-export function SvgSwitch<M = unknown>(declaration?: RxNodeDecl<El<SVGSwitchElement, M>>): RxNode<El<SVGSwitchElement, M>> { return RxNode.declare(SvgTags.switch, declaration) }
-export function Symbol<M = unknown>(declaration?: RxNodeDecl<El<SVGSymbolElement, M>>): RxNode<El<SVGSymbolElement, M>> { return RxNode.declare(SvgTags.symbol, declaration) }
-export function Text<M = unknown>(declaration?: RxNodeDecl<El<SVGTextElement, M>>): RxNode<El<SVGTextElement, M>> { return RxNode.declare(SvgTags.text, declaration) }
-export function TextPath<M = unknown>(declaration?: RxNodeDecl<El<SVGTextPathElement, M>>): RxNode<El<SVGTextPathElement, M>> { return RxNode.declare(SvgTags.textPath, declaration) }
-export function TSpan<M = unknown>(declaration?: RxNodeDecl<El<SVGTSpanElement, M>>): RxNode<El<SVGTSpanElement, M>> { return RxNode.declare(SvgTags.tspan, declaration) }
-export function Use<M = unknown>(declaration?: RxNodeDecl<El<SVGUseElement, M>>): RxNode<El<SVGUseElement, M>> { return RxNode.declare(SvgTags.use, declaration) }
-export function View<M = unknown>(declaration?: RxNodeDecl<El<SVGViewElement, M>>): RxNode<El<SVGViewElement, M>> { return RxNode.declare(SvgTags.view, declaration) }
+export function Svg<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGSVGElement, M>>): ReactiveNode<El<SVGSVGElement, M>> { return ReactiveNode.declare(SvgTags.svg, declaration) }
+export function SvgA<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGAElement, M>>): ReactiveNode<El<SVGAElement, M>> { return ReactiveNode.declare(SvgTags.a, declaration) }
+export function Animate<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGAnimateElement, M>>): ReactiveNode<El<SVGAnimateElement, M>> { return ReactiveNode.declare(SvgTags.animate, declaration) }
+export function AnimateMotion<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGAnimateMotionElement, M>>): ReactiveNode<El<SVGAnimateMotionElement, M>> { return ReactiveNode.declare(SvgTags.animateMotion, declaration) }
+export function AnimateTransform<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGAnimateTransformElement, M>>): ReactiveNode<El<SVGAnimateTransformElement, M>> { return ReactiveNode.declare(SvgTags.animateTransform, declaration) }
+export function Circle<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGCircleElement, M>>): ReactiveNode<El<SVGCircleElement, M>> { return ReactiveNode.declare(SvgTags.circle, declaration) }
+export function ClipPath<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGClipPathElement, M>>): ReactiveNode<El<SVGClipPathElement, M>> { return ReactiveNode.declare(SvgTags.clipPath, declaration) }
+export function Defs<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGDefsElement, M>>): ReactiveNode<El<SVGDefsElement, M>> { return ReactiveNode.declare(SvgTags.defs, declaration) }
+export function Desc<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGDescElement, M>>): ReactiveNode<El<SVGDescElement, M>> { return ReactiveNode.declare(SvgTags.desc, declaration) }
+export function Ellipse<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGEllipseElement, M>>): ReactiveNode<El<SVGEllipseElement, M>> { return ReactiveNode.declare(SvgTags.ellipse, declaration) }
+export function FeBlend<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEBlendElement, M>>): ReactiveNode<El<SVGFEBlendElement, M>> { return ReactiveNode.declare(SvgTags.feBlend, declaration) }
+export function FeColorMatrix<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEColorMatrixElement, M>>): ReactiveNode<El<SVGFEColorMatrixElement, M>> { return ReactiveNode.declare(SvgTags.feColorMatrix, declaration) }
+export function FeComponentTransfer<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEComponentTransferElement, M>>): ReactiveNode<El<SVGFEComponentTransferElement, M>> { return ReactiveNode.declare(SvgTags.feComponentTransfer, declaration) }
+export function FeComposite<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFECompositeElement, M>>): ReactiveNode<El<SVGFECompositeElement, M>> { return ReactiveNode.declare(SvgTags.feComposite, declaration) }
+export function FeConvolveMatrix<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEConvolveMatrixElement, M>>): ReactiveNode<El<SVGFEConvolveMatrixElement, M>> { return ReactiveNode.declare(SvgTags.feConvolveMatrix, declaration) }
+export function FeDiffuseLighting<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEDiffuseLightingElement, M>>): ReactiveNode<El<SVGFEDiffuseLightingElement, M>> { return ReactiveNode.declare(SvgTags.feDiffuseLighting, declaration) }
+export function FeDisplacementMap<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEDisplacementMapElement, M>>): ReactiveNode<El<SVGFEDisplacementMapElement, M>> { return ReactiveNode.declare(SvgTags.feDisplacementMap, declaration) }
+export function FeDistantLight<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEDistantLightElement, M>>): ReactiveNode<El<SVGFEDistantLightElement, M>> { return ReactiveNode.declare(SvgTags.feDistantLight, declaration) }
+export function FeDropShadow<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEDropShadowElement, M>>): ReactiveNode<El<SVGFEDropShadowElement, M>> { return ReactiveNode.declare(SvgTags.feDropShadow, declaration) }
+export function FeFlood<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEFloodElement, M>>): ReactiveNode<El<SVGFEFloodElement, M>> { return ReactiveNode.declare(SvgTags.feFlood, declaration) }
+export function FeFuncA<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEFuncAElement, M>>): ReactiveNode<El<SVGFEFuncAElement, M>> { return ReactiveNode.declare(SvgTags.feFuncA, declaration) }
+export function FeFuncB<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEFuncBElement, M>>): ReactiveNode<El<SVGFEFuncBElement, M>> { return ReactiveNode.declare(SvgTags.feFuncB, declaration) }
+export function FeFuncG<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEFuncGElement, M>>): ReactiveNode<El<SVGFEFuncGElement, M>> { return ReactiveNode.declare(SvgTags.feFuncG, declaration) }
+export function FeFuncR<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEFuncRElement, M>>): ReactiveNode<El<SVGFEFuncRElement, M>> { return ReactiveNode.declare(SvgTags.feFuncR, declaration) }
+export function FeGaussianBlur<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEGaussianBlurElement, M>>): ReactiveNode<El<SVGFEGaussianBlurElement, M>> { return ReactiveNode.declare(SvgTags.feGaussianBlur, declaration) }
+export function FeImage<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEImageElement, M>>): ReactiveNode<El<SVGFEImageElement, M>> { return ReactiveNode.declare(SvgTags.feImage, declaration) }
+export function FeMerge<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEMergeElement, M>>): ReactiveNode<El<SVGFEMergeElement, M>> { return ReactiveNode.declare(SvgTags.feMerge, declaration) }
+export function FeMergeNode<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEMergeNodeElement, M>>): ReactiveNode<El<SVGFEMergeNodeElement, M>> { return ReactiveNode.declare(SvgTags.feMergeNode, declaration) }
+export function FeMorphology<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEMorphologyElement, M>>): ReactiveNode<El<SVGFEMorphologyElement, M>> { return ReactiveNode.declare(SvgTags.feMorphology, declaration) }
+export function FeOffset<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEOffsetElement, M>>): ReactiveNode<El<SVGFEOffsetElement, M>> { return ReactiveNode.declare(SvgTags.feOffset, declaration) }
+export function FePointLight<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFEPointLightElement, M>>): ReactiveNode<El<SVGFEPointLightElement, M>> { return ReactiveNode.declare(SvgTags.fePointLight, declaration) }
+export function FeSpecularLighting<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFESpecularLightingElement, M>>): ReactiveNode<El<SVGFESpecularLightingElement, M>> { return ReactiveNode.declare(SvgTags.feSpecularLighting, declaration) }
+export function FeSpotLight<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFESpotLightElement, M>>): ReactiveNode<El<SVGFESpotLightElement, M>> { return ReactiveNode.declare(SvgTags.feSpotLight, declaration) }
+export function FeTile<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFETileElement, M>>): ReactiveNode<El<SVGFETileElement, M>> { return ReactiveNode.declare(SvgTags.feTile, declaration) }
+export function FeTurbulence<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFETurbulenceElement, M>>): ReactiveNode<El<SVGFETurbulenceElement, M>> { return ReactiveNode.declare(SvgTags.feTurbulence, declaration) }
+export function Filter<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGFilterElement, M>>): ReactiveNode<El<SVGFilterElement, M>> { return ReactiveNode.declare(SvgTags.filter, declaration) }
+export function ForeignObject<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGForeignObjectElement, M>>): ReactiveNode<El<SVGForeignObjectElement, M>> { return ReactiveNode.declare(SvgTags.foreignObject, declaration) }
+export function G<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGGElement, M>>): ReactiveNode<El<SVGGElement, M>> { return ReactiveNode.declare(SvgTags.g, declaration) }
+export function SvgImage<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGImageElement, M>>): ReactiveNode<El<SVGImageElement, M>> { return ReactiveNode.declare(SvgTags.image, declaration) }
+export function SvgLine<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGLineElement, M>>): ReactiveNode<El<SVGLineElement, M>> { return ReactiveNode.declare(SvgTags.line, declaration) }
+export function LinearGradient<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGLinearGradientElement, M>>): ReactiveNode<El<SVGLinearGradientElement, M>> { return ReactiveNode.declare(SvgTags.linearGradient, declaration) }
+export function Marker<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGMarkerElement, M>>): ReactiveNode<El<SVGMarkerElement, M>> { return ReactiveNode.declare(SvgTags.marker, declaration) }
+export function Mask<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGMaskElement, M>>): ReactiveNode<El<SVGMaskElement, M>> { return ReactiveNode.declare(SvgTags.mask, declaration) }
+export function MetaData<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGMetadataElement, M>>): ReactiveNode<El<SVGMetadataElement, M>> { return ReactiveNode.declare(SvgTags.metadata, declaration) }
+export function MPath<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGElement, M>>): ReactiveNode<El<SVGElement, M>> { return ReactiveNode.declare(SvgTags.mpath, declaration) }
+export function Path<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGPathElement, M>>): ReactiveNode<El<SVGPathElement, M>> { return ReactiveNode.declare(SvgTags.path, declaration) }
+export function Pattern<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGPatternElement, M>>): ReactiveNode<El<SVGPatternElement, M>> { return ReactiveNode.declare(SvgTags.pattern, declaration) }
+export function Polygon<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGPolygonElement, M>>): ReactiveNode<El<SVGPolygonElement, M>> { return ReactiveNode.declare(SvgTags.polygon, declaration) }
+export function PolyLine<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGPolylineElement, M>>): ReactiveNode<El<SVGPolylineElement, M>> { return ReactiveNode.declare(SvgTags.polyline, declaration) }
+export function RadialGradient<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGRadialGradientElement, M>>): ReactiveNode<El<SVGRadialGradientElement, M>> { return ReactiveNode.declare(SvgTags.radialGradient, declaration) }
+export function Rect<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGRectElement, M>>): ReactiveNode<El<SVGRectElement, M>> { return ReactiveNode.declare(SvgTags.rect, declaration) }
+export function Stop<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGStopElement, M>>): ReactiveNode<El<SVGStopElement, M>> { return ReactiveNode.declare(SvgTags.stop, declaration) }
+export function SvgSwitch<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGSwitchElement, M>>): ReactiveNode<El<SVGSwitchElement, M>> { return ReactiveNode.declare(SvgTags.switch, declaration) }
+export function Symbol<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGSymbolElement, M>>): ReactiveNode<El<SVGSymbolElement, M>> { return ReactiveNode.declare(SvgTags.symbol, declaration) }
+export function Text<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGTextElement, M>>): ReactiveNode<El<SVGTextElement, M>> { return ReactiveNode.declare(SvgTags.text, declaration) }
+export function TextPath<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGTextPathElement, M>>): ReactiveNode<El<SVGTextPathElement, M>> { return ReactiveNode.declare(SvgTags.textPath, declaration) }
+export function TSpan<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGTSpanElement, M>>): ReactiveNode<El<SVGTSpanElement, M>> { return ReactiveNode.declare(SvgTags.tspan, declaration) }
+export function Use<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGUseElement, M>>): ReactiveNode<El<SVGUseElement, M>> { return ReactiveNode.declare(SvgTags.use, declaration) }
+export function View<M = unknown>(declaration?: ReactiveNodeDecl<El<SVGViewElement, M>>): ReactiveNode<El<SVGViewElement, M>> { return ReactiveNode.declare(SvgTags.view, declaration) }
 
 const HtmlTags = {
   a: new HtmlDriver<HTMLAnchorElement>("a", false, el => el.kind = ElKind.native),

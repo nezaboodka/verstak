@@ -4,7 +4,7 @@
 // License: https://raw.githubusercontent.com/nezaboodka/verstak/master/LICENSE
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
-import { reactive, unobs, Transaction, RxSystem, options, Reentrance } from "reactronic"
+import { reactive, unobs, Transaction, ReactiveSystem, options, Reentrance } from "reactronic"
 import { Render, SuperRender, RxNodeType, RxNodeInstance, RxNode } from "./RxDomV1.Types.js"
 
 // BasicNodeType
@@ -17,7 +17,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
 
   initialize(node: RxNode<E, O>): void {
     if (!node.inline)
-      RxSystem.setLoggingHint(node, node.id)
+      ReactiveSystem.setLoggingHint(node, node.id)
   }
 
   render(node: RxNode<E, O>, args: unknown): void {
@@ -52,7 +52,7 @@ export class BasicNodeType<E, O> implements RxNodeType<E, O> {
     if (inst) {
       inst.native = undefined
       if (!node.inline && node.instance) // TODO: Consider creating one transaction for all finalizations at once
-        Transaction.isolate(() => RxSystem.dispose(node.instance))
+        Transaction.isolate(() => ReactiveSystem.dispose(node.instance))
       for (const x of inst.children)
         tryToFinalize(x, initiator)
       for (const x of inst.guests)
@@ -86,7 +86,7 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
     noSideEffects: true })
   rerender(node: RxNode<E, O>): void {
     invokeRender(node, node.args)
-    RxSystem.configureCurrentOperation({ order: this.level })
+    ReactiveSystem.configureCurrentOperation({ order: this.level })
   }
 }
 
@@ -468,7 +468,7 @@ function tryToInitialize(node: RxNode): RxNodeInstanceImpl {
   type.initialize?.(node)
   type.mount?.(node)
   if (!node.inline)
-    RxSystem.setLoggingHint(inst, node.id)
+    ReactiveSystem.setLoggingHint(inst, node.id)
   return inst
 }
 

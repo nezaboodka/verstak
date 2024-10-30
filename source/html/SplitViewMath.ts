@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { MergeList, RxNode } from "reactronic"
+import { MergeList, ReactiveNode } from "reactronic"
 import { ElImpl, Direction } from "./El.js"
 import { Drivers, isSplitViewPartition } from "./Elements.js"
 import { clamp } from "./ElUtils.js"
@@ -29,7 +29,7 @@ export function greater(a: number, b: number): boolean {
   return a - b > eps
 }
 
-export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: number, index: number, initialSizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, priorities?: ReadonlyArray<number>): void {
+export function relayoutUsingSplitter(splitViewNode: ReactiveNode<ElImpl>, deltaPx: number, index: number, initialSizesPx: Array<{ node: ReactiveNode<ElImpl>, sizePx: number }>, priorities?: ReadonlyArray<number>): void {
   if (priorities === undefined) {
     priorities = getPrioritiesForSplitter(index + 1, initialSizesPx.length)
   }
@@ -44,7 +44,7 @@ export function relayoutUsingSplitter(splitViewNode: RxNode<ElImpl>, deltaPx: nu
   }
 }
 
-export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArray<number>, manuallyResizablePriorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>): void {
+export function relayout(splitViewNode: ReactiveNode<ElImpl>, priorities: ReadonlyArray<number>, manuallyResizablePriorities: ReadonlyArray<number>, sizesPx: Array<{ node: ReactiveNode<ElImpl>, sizePx: number }>): void {
   // DEBUG && console.clear()
   const containerSizePx = splitViewNode.element.splitView === Direction.horizontal
     ? splitViewNode.element.layoutInfo?.contentSizeXpx ?? 0
@@ -67,7 +67,7 @@ export function relayout(splitViewNode: RxNode<ElImpl>, priorities: ReadonlyArra
   }
 }
 
-export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, deltaPx: number, index: number, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, force: boolean = false): number {
+export function resizeUsingDelta(splitViewNode: ReactiveNode<ElImpl>, deltaPx: number, index: number, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: ReactiveNode<ElImpl>, sizePx: number }>, force: boolean = false): number {
   const isHorizontal = splitViewNode.element.splitView === Direction.horizontal
   let beforeDeltaPx = 0
   if (sizesPx.length > 0 && deltaPx !== 0) {
@@ -115,7 +115,7 @@ export function resizeUsingDelta(splitViewNode: RxNode<ElImpl>, deltaPx: number,
   return beforeDeltaPx
 }
 
-export function layout(splitViewNode: RxNode<ElImpl>): void {
+export function layout(splitViewNode: ReactiveNode<ElImpl>): void {
   const isHorizontal = splitViewNode.element.splitView === Direction.horizontal
   let posPx = 0
   let shrinkBefore = false
@@ -172,7 +172,7 @@ export function layout(splitViewNode: RxNode<ElImpl>): void {
   }
   const containerSizePx = (isHorizontal ? layoutInfo?.contentSizeXpx : layoutInfo?.contentSizeYpx) ?? 0
   const isOverflowing = greater(posPx, containerSizePx)
-  const wrapper = splitViewNode.children.firstMergedItem()?.instance.children.firstMergedItem()?.instance as RxNode<ElImpl> | undefined
+  const wrapper = splitViewNode.children.firstMergedItem()?.instance.children.firstMergedItem()?.instance as ReactiveNode<ElImpl> | undefined
   if (wrapper !== undefined) {
     if (isHorizontal)
       wrapper.element.style.gridTemplateColumns = sizesPx.map(x => `${x}px`).join(" ")
@@ -210,7 +210,7 @@ export function getPrioritiesForSplitter(index: number, size: number): ReadonlyA
   return result
 }
 
-export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: MergeList<RxNode>, indexes: Array<number>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
+export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: MergeList<ReactiveNode>, indexes: Array<number>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
   const resizable = []
   const manuallyResizable = []
   const items = Array.from(children.items()).filter(x => isSplitViewPartition(x.instance.driver))
@@ -241,7 +241,7 @@ export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: Me
   return { resizable, manuallyResizable }
 }
 
-export function getPrioritiesForEmptySpaceDistribution(isHorizontal: boolean, children: MergeList<RxNode>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
+export function getPrioritiesForEmptySpaceDistribution(isHorizontal: boolean, children: MergeList<ReactiveNode>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
   let r = 0
   let mr = 0
   let i = 0
@@ -259,7 +259,7 @@ export function getPrioritiesForEmptySpaceDistribution(isHorizontal: boolean, ch
   return { resizable: [r], manuallyResizable: [mr] }
 }
 
-function getFractionCount(isHorizontal: boolean, children: Array<RxNode<ElImpl>>, vector: number, index: number, force: boolean = false): number {
+function getFractionCount(isHorizontal: boolean, children: Array<ReactiveNode<ElImpl>>, vector: number, index: number, force: boolean = false): number {
   let result = 0
   for (const i of indexes(vector, index)) {
     const growth = (isHorizontal ? children[i].element.stretchingStrengthH : children[i].element.stretchingStrengthV) ?? 1
@@ -300,7 +300,7 @@ function n(value: number, fractionDigits: number = 2): string {
   return value === 0 ? "0" : value.toFixed(fractionDigits)
 }
 
-function distribute(sign: number, deltaPx: number, index: number, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }>, isHorizontal: boolean, force: boolean): number {
+function distribute(sign: number, deltaPx: number, index: number, priorities: ReadonlyArray<number>, sizesPx: Array<{ node: ReactiveNode<ElImpl>, sizePx: number }>, isHorizontal: boolean, force: boolean): number {
   for (let priority = 0; priority < priorities.length; priority++) {
     const vector = priorities[priority]
     let fractionCount = getFractionCount(isHorizontal, sizesPx.map(x => x.node), vector, sign * index, force)

@@ -5,14 +5,14 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNode, Handler, BaseDriver, MergedItem, Transaction, obs, ObservableObject } from "reactronic"
+import { ReactiveNode, Handler, BaseDriver, MergedItem, Transaction, obs, ObservableObject } from "reactronic"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // El
 
 export type El<T = any, M = any> = {
   // System-managed properties
-  readonly node: RxNode<El<T, M>>
+  readonly node: ReactiveNode<El<T, M>>
   readonly index: number
   native: T
 
@@ -111,7 +111,7 @@ class Size extends ObservableObject {
 // ElDriver
 
 export class ElDriver<T extends Element, M = unknown> extends BaseDriver<El<T, M>> {
-  allocate(node: RxNode<El<T, M>>): El<T, M> {
+  allocate(node: ReactiveNode<El<T, M>>): El<T, M> {
     return new ElImpl<T, M>(node)
   }
 }
@@ -120,7 +120,7 @@ export class ElDriver<T extends Element, M = unknown> extends BaseDriver<El<T, M
 
 export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   // System-managed properties
-  readonly node: RxNode<El<T, M>>
+  readonly node: ReactiveNode<El<T, M>>
   maxColumnCount: number
   maxRowCount: number
   layoutInfo?: ElLayoutInfo
@@ -145,7 +145,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _splitView: Direction | undefined
   private _hasStylingPresets: boolean
 
-  constructor(node: RxNode<El<T, M>>) {
+  constructor(node: ReactiveNode<El<T, M>>) {
     // System-managed properties
     this.node = node
     this.maxColumnCount = 0
@@ -196,7 +196,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     const node = this.node
     const driver = node.driver
     if (!driver.isPartition) {
-      const owner = node.owner as RxNode<ElImpl>
+      const owner = node.owner as ReactiveNode<ElImpl>
       const ownerEl = owner.element
       const prevEl = node.seat!.prev?.instance.element as ElImpl
       const prevElLayoutInfo = prevEl?.layoutInfo ?? InitialElLayoutInfo
@@ -358,12 +358,12 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   protected *children(onlyAfter?: ElImpl): Generator<ElImpl> {
-    const after: MergedItem<RxNode<any>> | undefined = onlyAfter?.node.seat
+    const after: MergedItem<ReactiveNode<any>> | undefined = onlyAfter?.node.seat
     for (const child of this.node.children.items(after))
       yield child.instance.element as ElImpl
   }
 
-  static *childrenOf(node: RxNode<El>, onlyAfter?: El): Generator<ElImpl> {
+  static *childrenOf(node: ReactiveNode<El>, onlyAfter?: El): Generator<ElImpl> {
     return (node.element as ElImpl).children(onlyAfter as ElImpl)
   }
 
@@ -398,7 +398,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private static applyWidth<T extends Element>(element: ElImpl<T, any>, value: Range): void {
     const s = element.style
     const node = element.node
-    const owner = node.owner as RxNode<ElImpl>
+    const owner = node.owner as ReactiveNode<ElImpl>
     const ownerEl = owner.element
     if (ownerEl.splitView === Direction.horizontal) {
       // s.minWidth = "" // clear
@@ -416,7 +416,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private static applyHeight<T extends Element>(element: ElImpl<T, any>, value: Range): void {
     const s = element.style
     const node = element.node
-    const owner = node.owner as RxNode<ElImpl>
+    const owner = node.owner as ReactiveNode<ElImpl>
     const ownerEl = owner.element
     if (ownerEl.splitView === Direction.vertical) {
       // s.minHeight = "" // clear
@@ -697,7 +697,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
   private static applyOverlayVisible<T extends Element>(element: ElImpl<T, any>, value: boolean | undefined): void {
     const s = element.style
-    const host = RxNode.findMatchingHost<El, El>(element.node, n =>
+    const host = ReactiveNode.findMatchingHost<El, El>(element.node, n =>
       n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
     const nativeHost = host?.element.native
     if (value === true) {

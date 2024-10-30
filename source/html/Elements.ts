@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxNodeDecl, RxNodeDriver, RxNode, Script, Mode, MergeList, MergedItem, unobs, ScriptAsync } from "reactronic"
+import { ReactiveNodeDecl, ReactiveNodeDriver, ReactiveNode, Script, Mode, MergeList, MergedItem, unobs, ScriptAsync } from "reactronic"
 import { Constants, CursorCommandDriver, El, ElKind, ElPlace, ElDriver, ElImpl, Direction, ElLayoutInfo, InitialElLayoutInfo } from "./El.js"
 import { getPrioritiesForEmptySpaceDistribution, getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
 import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
@@ -42,13 +42,13 @@ export function Panel<M = unknown>(
   creationAsync?: ScriptAsync<El<HTMLElement, M>>,
   destruction?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
-  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+  basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>>
 
 export function Panel<M = unknown>(
-  declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+  declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>>
 
 export function Panel<M = unknown>(
-  scriptOrDeclaration?: Script<El<HTMLElement, M>> | RxNodeDecl<El<HTMLElement, M>>,
+  scriptOrDeclaration?: Script<El<HTMLElement, M>> | ReactiveNodeDecl<El<HTMLElement, M>>,
   scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
@@ -56,8 +56,8 @@ export function Panel<M = unknown>(
   creationAsync?: ScriptAsync<El<HTMLElement, M>>,
   destruction?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
-  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.panel, scriptOrDeclaration, scriptAsync,
+  basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> {
+  return ReactiveNode.declare(Drivers.panel, scriptOrDeclaration, scriptAsync,
     key, mode, creation, creationAsync, destruction, triggers, basis)
 }
 
@@ -72,13 +72,13 @@ export function Table<M = unknown>(
   creationAsync?: ScriptAsync<El<HTMLElement, M>>,
   destruction?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
-  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+  basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>>
 
 export function Table<M = unknown>(
-  declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+  declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>>
 
 export function Table<M = unknown>(
-  scriptOrDeclaration?: Script<El<HTMLElement, M>> | RxNodeDecl<El<HTMLElement, M>>,
+  scriptOrDeclaration?: Script<El<HTMLElement, M>> | ReactiveNodeDecl<El<HTMLElement, M>>,
   scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
@@ -86,8 +86,8 @@ export function Table<M = unknown>(
   creationAsync?: ScriptAsync<El<HTMLElement, M>>,
   destruction?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
-  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.table, scriptOrDeclaration, scriptAsync,
+  basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> {
+  return ReactiveNode.declare(Drivers.table, scriptOrDeclaration, scriptAsync,
     key, mode, creation, creationAsync, destruction, triggers, basis)
 }
 
@@ -109,13 +109,13 @@ export function Splitter<M = unknown>(
   creationAsync?: ScriptAsync<El<HTMLElement, M>>,
   destruction?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
-  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+  basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>>
 
 export function Splitter<M = unknown>(
-  declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+  declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>>
 
 export function Splitter<M = unknown>(
-  scriptOrDeclaration?: Script<El<HTMLElement, M>> | RxNodeDecl<El<HTMLElement, M>>,
+  scriptOrDeclaration?: Script<El<HTMLElement, M>> | ReactiveNodeDecl<El<HTMLElement, M>>,
   scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
@@ -123,16 +123,16 @@ export function Splitter<M = unknown>(
   creationAsync?: ScriptAsync<El<HTMLElement, M>>,
   destruction?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
-  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.splitter, scriptOrDeclaration, scriptAsync,
+  basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> {
+  return ReactiveNode.declare(Drivers.splitter, scriptOrDeclaration, scriptAsync,
     key, mode, creation, creationAsync, destruction, triggers, basis)
 }
 
 export function rowBreak(shiftCursorDown?: number): void {
-  RxNode.declare(Drivers.partition)
+  ReactiveNode.declare(Drivers.partition)
 }
 
-export function declareSplitter<T>(index: number, splitViewNode: RxNode<El<T>>): RxNode<El<HTMLElement>> {
+export function declareSplitter<T>(index: number, splitViewNode: ReactiveNode<El<T>>): ReactiveNode<El<HTMLElement>> {
   const key = `splitter-${index}`
   return (
     Splitter({
@@ -152,28 +152,28 @@ export function declareSplitter<T>(index: number, splitViewNode: RxNode<El<T>>):
               if (pointer.draggingOver) {
                 // pointer.dropAllowed = true
                 pointer.dropAllowed = true
-                const initialSizesPx = pointer.getData() as Array<{ node: RxNode<ElImpl>, sizePx: number }>
+                const initialSizesPx = pointer.getData() as Array<{ node: ReactiveNode<ElImpl>, sizePx: number }>
                 const deltaPx = Math.floor(splitViewNode.element.splitView === Direction.horizontal
                   ? pointer.positionX - pointer.startX : pointer.positionY - pointer.startY)
 
-                const clonedSizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
+                const clonedSizesPx: Array<{ node: ReactiveNode<ElImpl>, sizePx: number }> = []
                 for (const item of initialSizesPx) {
                   clonedSizesPx.push({ node: item.node, sizePx: item.sizePx })
                 }
 
-                unobs(() => relayoutUsingSplitter(splitViewNode as any as RxNode<ElImpl>, deltaPx, index, clonedSizesPx))
+                unobs(() => relayoutUsingSplitter(splitViewNode as any as ReactiveNode<ElImpl>, deltaPx, index, clonedSizesPx))
                 if (pointer.dropped) {
                   model?.droppedAction?.(pointer)
                 }
               }
               else { // drag started
                 e.setAttribute("rx-dragging", "true")
-                const initialSizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
+                const initialSizesPx: Array<{ node: ReactiveNode<ElImpl>, sizePx: number }> = []
                 for (const item of splitViewNode.children.items()) {
                   const child = item.instance
                   if (isSplitViewPartition(child.driver)) {
                     const sizePx = (child.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0
-                    initialSizesPx.push({ node: child as RxNode<ElImpl>, sizePx })
+                    initialSizesPx.push({ node: child as ReactiveNode<ElImpl>, sizePx })
                   }
                 }
                 // console.log("initial", initialSizesPx.map(x => x.sizePx).join(", "))
@@ -192,7 +192,7 @@ export function declareSplitter<T>(index: number, splitViewNode: RxNode<El<T>>):
 }
 
 export function cursor(areaParams: ElPlace): void {
-  RxNode.declare(Drivers.cursor, {
+  ReactiveNode.declare(Drivers.cursor, {
     script: el => {
       el.place = areaParams
     },
@@ -202,8 +202,8 @@ export function cursor(areaParams: ElPlace): void {
 // Note (either plain or html)
 
 export function Note(content: string, formatted?: boolean,
-  declaration?: RxNodeDecl<El<HTMLElement, void>>): RxNode<El<HTMLElement, void>> {
-  return RxNode.declare(Drivers.note, RxNode.rebased(declaration, {
+  declaration?: ReactiveNodeDecl<El<HTMLElement, void>>): ReactiveNode<El<HTMLElement, void>> {
+  return ReactiveNode.declare(Drivers.note, ReactiveNode.withBasis(declaration, {
     script: el => {
       if (formatted)
         el.native.innerHTML = content
@@ -224,13 +224,13 @@ export function Group<M = unknown>(
   creationAsync?: ScriptAsync<El<HTMLElement, M>>,
   destruction?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
-  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+  basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>>
 
 export function Group<M = unknown>(
-  declaration?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>>
+  declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>>
 
 export function Group<M = unknown>(
-  scriptOrDeclaration?: Script<El<HTMLElement, M>> | RxNodeDecl<El<HTMLElement, M>>,
+  scriptOrDeclaration?: Script<El<HTMLElement, M>> | ReactiveNodeDecl<El<HTMLElement, M>>,
   scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
@@ -238,15 +238,15 @@ export function Group<M = unknown>(
   creationAsync?: ScriptAsync<El<HTMLElement, M>>,
   destruction?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
-  basis?: RxNodeDecl<El<HTMLElement, M>>): RxNode<El<HTMLElement, M>> {
-  return RxNode.declare(Drivers.group, scriptOrDeclaration, scriptAsync,
+  basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> {
+  return ReactiveNode.declare(Drivers.group, scriptOrDeclaration, scriptAsync,
     key, mode, creation, creationAsync, destruction, triggers, basis)
 }
 
 // Fragment
 
 export function Handling<M = unknown>(
-  script: Script<El<void, M>>): RxNode<El<void, M>> {
+  script: Script<El<void, M>>): ReactiveNode<El<void, M>> {
   return SyntheticElement({ mode: Mode.independentUpdate, script })
 }
 
@@ -259,13 +259,13 @@ export function SyntheticElement<M = unknown>(
   creationAsync?: ScriptAsync<El<void, M>>,
   destruction?: Script<El<void, M>>,
   triggers?: unknown,
-  basis?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>>
+  basis?: ReactiveNodeDecl<El<void, M>>): ReactiveNode<El<void, M>>
 
 export function SyntheticElement<M = unknown>(
-  declaration?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>>
+  declaration?: ReactiveNodeDecl<El<void, M>>): ReactiveNode<El<void, M>>
 
 export function SyntheticElement<M = unknown>(
-  scriptOrDeclaration?: Script<El<void, M>> | RxNodeDecl<El<void, M>>,
+  scriptOrDeclaration?: Script<El<void, M>> | ReactiveNodeDecl<El<void, M>>,
   scriptAsync?: ScriptAsync<El<void, M>>,
   key?: string,
   mode?: Mode,
@@ -273,15 +273,15 @@ export function SyntheticElement<M = unknown>(
   creationAsync?: ScriptAsync<El<void, M>>,
   destruction?: Script<El<void, M>>,
   triggers?: unknown,
-  basis?: RxNodeDecl<El<void, M>>): RxNode<El<void, M>> {
-  return RxNode.declare(Drivers.synthetic, scriptOrDeclaration, scriptAsync,
+  basis?: ReactiveNodeDecl<El<void, M>>): ReactiveNode<El<void, M>> {
+  return ReactiveNode.declare(Drivers.synthetic, scriptOrDeclaration, scriptAsync,
     key, mode, creation, creationAsync, destruction, triggers, basis)
 }
 
 // PanelDriver
 
 export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
-  update(node: RxNode<El<T>>): void | Promise<void> {
+  update(node: ReactiveNode<El<T>>): void | Promise<void> {
     rowBreak()
     const el = node.element as ElImpl
     const result = super.update(node)
@@ -312,7 +312,7 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
             const surroundingYpx = layoutInfo.borderSizeYpx - layoutInfo.contentSizeYpx
             let i = 0
             const preferred: Array<number> = []
-            const sizesPx: Array<{ node: RxNode<ElImpl>, sizePx: number }> = []
+            const sizesPx: Array<{ node: ReactiveNode<ElImpl>, sizePx: number }> = []
             for (const child of node.children.items()) {
               const partEl = child.instance.element as ElImpl
               if (isSplitViewPartition(child.instance.driver) && partEl !== undefined) {
@@ -338,30 +338,30 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
                 }
                 // console.log(`%c[${i}]: ${minPx}..%c${partEl.layoutInfo.effectiveSizePx} -> ${clamp(partEl.layoutInfo!.effectiveSizePx, minPx, maxPx)}%c..${maxPx} (pref = ${preferredPx}) (px)`, "color: yellow", "color: #00BB00", "color: yellow")
                 const sizePx = partEl.layoutInfo!.effectiveSizePx = clamp(partEl.layoutInfo!.effectiveSizePx, minPx, maxPx)
-                sizesPx.push({ node: child.instance as RxNode<ElImpl>, sizePx })
+                sizesPx.push({ node: child.instance as ReactiveNode<ElImpl>, sizePx })
                 i++
               }
             }
             const priorities = preferred.length > 0
-              ? getPrioritiesForSizeChanging(isHorizontal, node.children as MergeList<RxNode>, preferred)
-              : getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as MergeList<RxNode>)
-            unobs(() => relayout(node as any as RxNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx))
+              ? getPrioritiesForSizeChanging(isHorizontal, node.children as MergeList<ReactiveNode>, preferred)
+              : getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as MergeList<ReactiveNode>)
+            unobs(() => relayout(node as any as ReactiveNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx))
           }
         },
       })
-      RxNode.updateNestedNodesThenDo(() => {
+      ReactiveNode.updateNestedNodesThenDo(() => {
         layoutInfo.isUpdateFinished = true
         // WORKAROUND: As long as "isUpdateFinished = true" does not trigger relaunch of
         // "update" of SyntheticElement (such a relaunch requires subscriptions on values
         // of variables rather than variables themselves), we do it manually.
-        RxNode.triggerUpdate(relayoutEl, { stamp: node.stamp })
+        ReactiveNode.triggerUpdate(relayoutEl, { stamp: node.stamp })
       })
     }
     return result
   }
 
-  child(ownerNode: RxNode<El<T, any>>, childDriver: RxNodeDriver<any>, childDeclaration?: RxNodeDecl<any> | undefined, childBasis?: RxNodeDecl<any> | undefined): MergedItem<RxNode> | undefined {
-    let result: MergedItem<RxNode> | undefined = undefined
+  child(ownerNode: ReactiveNode<El<T, any>>, childDriver: ReactiveNodeDriver<any>, childDeclaration?: ReactiveNodeDecl<any> | undefined, childBasis?: ReactiveNodeDecl<any> | undefined): MergedItem<ReactiveNode> | undefined {
+    let result: MergedItem<ReactiveNode> | undefined = undefined
     const el = ownerNode.element as ElImpl
     if (el.splitView !== undefined) {
       if (isSplitViewPartition(childDriver)) {
@@ -399,11 +399,11 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
   }
 }
 
-export function isSplitViewPartition(childDriver: RxNodeDriver): boolean {
+export function isSplitViewPartition(childDriver: ReactiveNodeDriver): boolean {
   return !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.synthetic
 }
 
-function overrideMethod(declaration: RxNodeDecl<El>, method: "creation" | "script", func: (el: El) => void): void {
+function overrideMethod(declaration: ReactiveNodeDecl<El>, method: "creation" | "script", func: (el: El) => void): void {
   const baseScript = declaration[method]
   declaration[method] = baseScript !== undefined
     ? (el, base) => { baseScript(el, base); func(el) }
@@ -413,12 +413,12 @@ function overrideMethod(declaration: RxNodeDecl<El>, method: "creation" | "scrip
 // PartitionDriver
 
 export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
-  update(node: RxNode<El<T>>): void | Promise<void> {
+  update(node: ReactiveNode<El<T>>): void | Promise<void> {
     const result = super.update(node)
     const ownerEl = node.owner.element as ElImpl
     if (ownerEl.sealed !== undefined) {
       node.element.style.flexGrow = "1"
-      RxNode.declare(Drivers.wrapper, {
+      ReactiveNode.declare(Drivers.wrapper, {
         script: el => {
           const ownerEl = el.node.owner.owner.element as ElImpl
           if (ownerEl.splitView !== undefined) {
@@ -445,11 +445,11 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     return result
   }
 
-  getHost(node: RxNode<El<T, any>>): RxNode<El<T, any>> {
-    let host: RxNode<El<T, any>>
+  getHost(node: ReactiveNode<El<T, any>>): ReactiveNode<El<T, any>> {
+    let host: ReactiveNode<El<T, any>>
     const ownerEl = node.owner.element as ElImpl
     if (ownerEl.sealed !== undefined)
-      host = node.children.firstMergedItem()!.instance as RxNode<El<T, any>>
+      host = node.children.firstMergedItem()!.instance as ReactiveNode<El<T, any>>
     else
       host = node
     return host
@@ -481,5 +481,5 @@ export const Drivers = {
   cursor: new CursorCommandDriver(),
 
   // (no element)
-  synthetic: new ElDriver<HTMLElement>("synthetic", false, el => el.kind = ElKind.group) as unknown as RxNodeDriver<El<void, any>>,
+  synthetic: new ElDriver<HTMLElement>("synthetic", false, el => el.kind = ElKind.group) as unknown as ReactiveNodeDriver<El<void, any>>,
 }
