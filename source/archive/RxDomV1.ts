@@ -124,7 +124,7 @@ export class RxDom {
       host = gHost
     const node = new RxNode<E, O>(id, args, render, superRender, 0, false, type, inline ?? false, o, host)
     if (inst.buffer === undefined)
-      throw new Error("children are rendered already") // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      throw new Error("children are rendered already")
     const rev = host.instance?.revision ?? ~1
     if (rev >= ~0) // emit only if host is alive
       inst.buffer.push(node)
