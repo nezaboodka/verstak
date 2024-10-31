@@ -22,12 +22,12 @@ export type El<T = any, M = any> = {
   place: ElPlace
   width: Range
   height: Range
-  horizontal: Horizontal | undefined
-  contentHorizontal: Horizontal | undefined
-  vertical: Vertical | undefined
-  contentVertical: Vertical | undefined
-  stretchingStrengthH: number | undefined
-  stretchingStrengthV: number | undefined
+  horizontally: Horizontal | undefined
+  contentHorizontally: Horizontal | undefined
+  vertically: Vertical | undefined
+  contentVertically: Vertical | undefined
+  stretchingStrengthHorizontally: number | undefined
+  stretchingStrengthVertically: number | undefined
   contentWrapping: boolean
   overlayVisible: boolean | undefined
 
@@ -252,8 +252,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       this._height.maxPx = value.maxPx
   }
 
-  get horizontal(): Horizontal | undefined { return this._horizontal }
-  set horizontal(value: Horizontal | undefined) {
+  get horizontally(): Horizontal | undefined { return this._horizontal }
+  set horizontally(value: Horizontal | undefined) {
     const existing = this._horizontal
     if (value !== existing) {
       ElImpl.applyHorizontal(this, existing, value,
@@ -263,8 +263,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  get vertical(): Vertical | undefined { return this._vertical }
-  set vertical(value: Vertical | undefined) {
+  get vertically(): Vertical | undefined { return this._vertical }
+  set vertically(value: Vertical | undefined) {
     const existing = this._vertical
     if (value !== existing) {
       ElImpl.applyVertical(this, existing, value,
@@ -274,8 +274,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  get contentHorizontal(): Horizontal | undefined { return this._contentHorizontal }
-  set contentHorizontal(value: Horizontal | undefined) {
+  get contentHorizontally(): Horizontal | undefined { return this._contentHorizontal }
+  set contentHorizontally(value: Horizontal | undefined) {
     const existing = this._contentHorizontal
     if (value !== existing) {
       ElImpl.applyHorizontal(this, this._horizontal, this._horizontal,
@@ -284,8 +284,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  get contentVertical(): Vertical | undefined { return this._contentVertical }
-  set contentVertical(value: Vertical | undefined) {
+  get contentVertically(): Vertical | undefined { return this._contentVertical }
+  set contentVertically(value: Vertical | undefined) {
     const existing = this._contentVertical
     if (value !== existing) {
       ElImpl.applyVertical(this, this._vertical, this._vertical,
@@ -294,8 +294,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  get stretchingStrengthH(): number | undefined { return this._stretchingStrengthH }
-  set stretchingStrengthH(value: number | undefined) {
+  get stretchingStrengthHorizontally(): number | undefined { return this._stretchingStrengthH }
+  set stretchingStrengthHorizontally(value: number | undefined) {
     const existing = this._stretchingStrengthH
     if (value !== existing) {
       ElImpl.applyStretchingStrengthH(this, existing, value)
@@ -303,8 +303,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  get stretchingStrengthV(): number | undefined { return this._stretchingStrengthV }
-  set stretchingStrengthV(value: number | undefined) {
+  get stretchingStrengthVertically(): number | undefined { return this._stretchingStrengthV }
+  set stretchingStrengthVertically(value: number | undefined) {
     const existing = this._stretchingStrengthV
     if (value !== existing) {
       ElImpl.applyStretchingStrengthV(this, existing, value)
@@ -556,7 +556,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       const isAligner = newPrimary === Vertical.center ||
         newPrimary === Vertical.bottom
       isEffectiveAlignerY = isAligner && (hostLayout.alignerY === undefined ||
-        hostLayout.alignerY.vertical !== Vertical.center)
+        hostLayout.alignerY.vertically !== Vertical.center)
       if (hostLayout.alignerY === element) {
         if (!isEffectiveAlignerY) {
           hostCss!.marginTop = "" // remove "auto"
