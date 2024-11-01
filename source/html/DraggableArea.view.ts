@@ -26,8 +26,8 @@ export function DraggableArea(
   // triggers = triggers ? { ...triggers, draggingId } : { draggingId }
   return (
     Div<DraggableAreaModel>(ReactiveNode.withBasis(builder, {
-      mode: Mode.independentUpdate,
-      script: b => {
+      mode: Mode.autonomous,
+      content: b => {
         const e = b.native
         const model = b.model
         const dataForSensor = e.dataForSensor

@@ -54,6 +54,7 @@ export default [{
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-unused-expressions": "off",
       "@typescript-eslint/no-inferrable-types": "off",
       "@typescript-eslint/no-use-before-define": "off",
       "@typescript-eslint/no-this-alias": "off",
@@ -65,7 +66,6 @@ export default [{
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/ban-types": "off",
-
       "@typescript-eslint/strict-boolean-expressions": ["error", {
         allowNullableObject: true,
         allowNullableString: true,

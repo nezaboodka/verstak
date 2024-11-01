@@ -10,8 +10,8 @@ import { El, ElKind } from "./El.js"
 import { StaticDriver, HtmlDriver, SvgDriver } from "./HtmlDriver.js"
 
 export function Page(
-  script?: Scr<El<HTMLBodyElement>>,
-  scriptAsync?: ScrAsync<El<HTMLBodyElement>>,
+  content?: Scr<El<HTMLBodyElement>>,
+  contentAsync?: ScrAsync<El<HTMLBodyElement>>,
   key?: string,
   mode?: Mode,
   creation?: Scr<El<HTMLBodyElement>>,
@@ -24,8 +24,8 @@ export function Page(
   declaration?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>>
 
 export function Page(
-  scriptOrDeclaration?: Scr<El<HTMLBodyElement>> | ReactiveNodeDecl<El<HTMLBodyElement>>,
-  scriptAsync?: ScrAsync<El<HTMLBodyElement>>,
+  contentOrDeclaration?: Scr<El<HTMLBodyElement>> | ReactiveNodeDecl<El<HTMLBodyElement>>,
+  contentAsync?: ScrAsync<El<HTMLBodyElement>>,
   key?: string,
   mode?: Mode,
   creation?: Scr<El<HTMLBodyElement>>,
@@ -34,7 +34,7 @@ export function Page(
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>> {
   const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.panel)
-  return ReactiveNode.declare(driver, scriptOrDeclaration, scriptAsync,
+  return ReactiveNode.declare(driver, contentOrDeclaration, contentAsync,
     key, mode, creation, creationAsync, destruction, triggers, basis)
 }
 
