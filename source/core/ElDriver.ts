@@ -9,18 +9,6 @@ import { ReactiveNode, Handler, BaseDriver, MergedItem, Transaction, obs, Observ
 import { El, ElKind, ElCoords, Horizontal, Vertical, Range, ElPlace, Direction } from "./El.js"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
-class Size extends ObservableObject {
-  raw: Range
-  minPx: number
-  maxPx: number
-
-  constructor() {
-    super()
-    this.raw = { min: "", max: "" }
-    this.minPx = 0
-    this.maxPx = Number.POSITIVE_INFINITY
-  }
-}
 
 // ElDriver
 
@@ -666,6 +654,21 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       native.classList.toggle(styleName, enabled)
     else
       native.className = enabled ? styleName : ""
+  }
+}
+
+// Size
+
+class Size extends ObservableObject {
+  raw: Range
+  minPx: number
+  maxPx: number
+
+  constructor() {
+    super()
+    this.raw = { min: "", max: "" }
+    this.minPx = 0
+    this.maxPx = Number.POSITIVE_INFINITY
   }
 }
 

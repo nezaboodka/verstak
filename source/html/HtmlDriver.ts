@@ -7,7 +7,7 @@
 
 import { ReactiveSystem, ReactiveNode, Priority, Handler, proceedSyncOrAsync } from "reactronic"
 import { El } from "../core/El.js"
-import { Constants, ElDriver, ElImpl } from "../core/ElImpl.js"
+import { Constants, ElDriver, ElImpl } from "../core/ElDriver.js"
 
 // WebDriver
 
