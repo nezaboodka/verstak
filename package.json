@@ -56,7 +56,7 @@
     "typescript": "5.5.4"
   },
   "scripts": {
-    "build": "eslint source/**.ts test/**.ts && tsc",
+    "build": "eslint source/**.ts test/**.ts && tsc --rootDir .",
     "fix": "eslint --fix source/**.ts test/**.ts",
     "pack": "eslint source/**.ts test/**.ts && tsc --sourceMap false --removeComments true --rootDir .",
     "test": "ava",
