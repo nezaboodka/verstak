@@ -111,7 +111,7 @@ class Size extends ObservableObject {
 // ElDriver
 
 export class ElDriver<T extends Element, M = unknown> extends BaseDriver<El<T, M>> {
-  allocate(node: ReactiveNode<El<T, M>>): El<T, M> {
+  create(node: ReactiveNode<El<T, M>>): El<T, M> {
     return new ElImpl<T, M>(node)
   }
 }
