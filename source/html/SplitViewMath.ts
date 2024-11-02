@@ -8,7 +8,7 @@
 import { MergeList, ReactiveNode } from "reactronic"
 import { Direction } from "../core/El.js"
 import { clamp } from "../core/ElUtils.js"
-import { ElImpl } from "./ElImpl.js"
+import { ElImpl } from "../core/ElImpl.js"
 import { Drivers, isSplitViewPartition } from "./Elements.js"
 
 const DEBUG = false

@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveNode, Handler, BaseDriver, MergedItem, Transaction, obs, ObservableObject } from "reactronic"
-import { El, ElKind, ElCoords, Horizontal, Vertical, Range, ElPlace, Direction } from "../core/El.js"
-import { equalElCoords, parseElCoords } from "../core/ElUtils.js"
+import { El, ElKind, ElCoords, Horizontal, Vertical, Range, ElPlace, Direction } from "./El.js"
+import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 class Size extends ObservableObject {
   raw: Range
