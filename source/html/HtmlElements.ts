@@ -9,7 +9,7 @@ import { ReactiveNode, ReactiveNodeDecl, Script as Scr, ScriptAsync as ScrAsync,
 import { El, ElKind } from "./El.js"
 import { StaticDriver, HtmlDriver, SvgDriver } from "./HtmlDriver.js"
 
-export function Page(
+export function Window(
   content?: Scr<El<HTMLBodyElement>>,
   contentAsync?: ScrAsync<El<HTMLBodyElement>>,
   key?: string,
@@ -20,10 +20,10 @@ export function Page(
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>>
 
-export function Page(
+export function Window(
   declaration?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>>
 
-export function Page(
+export function Window(
   contentOrDeclaration?: Scr<El<HTMLBodyElement>> | ReactiveNodeDecl<El<HTMLBodyElement>>,
   contentAsync?: ScrAsync<El<HTMLBodyElement>>,
   key?: string,
