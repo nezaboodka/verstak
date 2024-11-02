@@ -77,7 +77,7 @@ export function OnFocus(
     key,
     mode: Mode.autonomous,
     triggers: { target, model },
-    creation: el => {
+    preparation: el => {
       el.node.configureReactronic({ throttling: 0 })
     },
     content: el => {

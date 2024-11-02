@@ -14,9 +14,9 @@ export function Page(
   contentAsync?: ScrAsync<El<HTMLBodyElement>>,
   key?: string,
   mode?: Mode,
-  creation?: Scr<El<HTMLBodyElement>>,
-  creationAsync?: ScrAsync<El<HTMLBodyElement>>,
-  destruction?: Scr<El<HTMLBodyElement>>,
+  preparation?: Scr<El<HTMLBodyElement>>,
+  preparationAsync?: ScrAsync<El<HTMLBodyElement>>,
+  finalization?: Scr<El<HTMLBodyElement>>,
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>>
 
@@ -28,14 +28,14 @@ export function Page(
   contentAsync?: ScrAsync<El<HTMLBodyElement>>,
   key?: string,
   mode?: Mode,
-  creation?: Scr<El<HTMLBodyElement>>,
-  creationAsync?: ScrAsync<El<HTMLBodyElement>>,
-  destruction?: Scr<El<HTMLBodyElement>>,
+  preparation?: Scr<El<HTMLBodyElement>>,
+  preparationAsync?: ScrAsync<El<HTMLBodyElement>>,
+  finalization?: Scr<El<HTMLBodyElement>>,
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>> {
   const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.panel)
   return ReactiveNode.declare(driver, contentOrDeclaration, contentAsync,
-    key, mode, creation, creationAsync, destruction, triggers, basis)
+    key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
 export function A<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLAnchorElement, M>>): ReactiveNode<El<HTMLAnchorElement, M>> { return ReactiveNode.declare(HtmlTags.a, declaration) }

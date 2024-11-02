@@ -38,9 +38,9 @@ export function Panel<M = unknown>(
   contentAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
-  creation?: Script<El<HTMLElement, M>>,
-  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  preparation?: Script<El<HTMLElement, M>>,
+  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>>
 
@@ -52,13 +52,13 @@ export function Panel<M = unknown>(
   contentAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
-  creation?: Script<El<HTMLElement, M>>,
-  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  preparation?: Script<El<HTMLElement, M>>,
+  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> {
   return ReactiveNode.declare(Drivers.panel, contentOrDeclaration, contentAsync,
-    key, mode, creation, creationAsync, destruction, triggers, basis)
+    key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
 // Table
@@ -68,9 +68,9 @@ export function Table<M = unknown>(
   contentAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
-  creation?: Script<El<HTMLElement, M>>,
-  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  preparation?: Script<El<HTMLElement, M>>,
+  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>>
 
@@ -82,13 +82,13 @@ export function Table<M = unknown>(
   contentAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
-  creation?: Script<El<HTMLElement, M>>,
-  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  preparation?: Script<El<HTMLElement, M>>,
+  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> {
   return ReactiveNode.declare(Drivers.table, contentOrDeclaration, contentAsync,
-    key, mode, creation, creationAsync, destruction, triggers, basis)
+    key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
 // Partition
@@ -105,9 +105,9 @@ export function Splitter<M = unknown>(
   contentAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
-  creation?: Script<El<HTMLElement, M>>,
-  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  preparation?: Script<El<HTMLElement, M>>,
+  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>>
 
@@ -119,13 +119,13 @@ export function Splitter<M = unknown>(
   contentAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
-  creation?: Script<El<HTMLElement, M>>,
-  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  preparation?: Script<El<HTMLElement, M>>,
+  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> {
   return ReactiveNode.declare(Drivers.splitter, contentOrDeclaration, contentAsync,
-    key, mode, creation, creationAsync, destruction, triggers, basis)
+    key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
 export function rowBreak(shiftCursorDown?: number): void {
@@ -138,7 +138,7 @@ export function declareSplitter<T>(index: number, splitViewNode: ReactiveNode<El
     Splitter({
       key,
       mode: Mode.autonomous,
-      creation: el => el.native.className = `splitter ${key}`,
+      preparation: el => el.native.className = `splitter ${key}`,
       content: b => {
         const e = b.native
         const model = b.model
@@ -220,9 +220,9 @@ export function Group<M = unknown>(
   contentAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
-  creation?: Script<El<HTMLElement, M>>,
-  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  preparation?: Script<El<HTMLElement, M>>,
+  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>>
 
@@ -234,13 +234,13 @@ export function Group<M = unknown>(
   contentAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
-  creation?: Script<El<HTMLElement, M>>,
-  creationAsync?: ScriptAsync<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  preparation?: Script<El<HTMLElement, M>>,
+  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> {
   return ReactiveNode.declare(Drivers.group, contentOrDeclaration, contentAsync,
-    key, mode, creation, creationAsync, destruction, triggers, basis)
+    key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
 // Fragment
@@ -255,9 +255,9 @@ export function SyntheticElement<M = unknown>(
   contentAsync?: ScriptAsync<El<void, M>>,
   key?: string,
   mode?: Mode,
-  creation?: Script<El<void, M>>,
-  creationAsync?: ScriptAsync<El<void, M>>,
-  destruction?: Script<El<void, M>>,
+  preparation?: Script<El<void, M>>,
+  preparationAsync?: ScriptAsync<El<void, M>>,
+  finalization?: Script<El<void, M>>,
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<void, M>>): ReactiveNode<El<void, M>>
 
@@ -269,13 +269,13 @@ export function SyntheticElement<M = unknown>(
   contentAsync?: ScriptAsync<El<void, M>>,
   key?: string,
   mode?: Mode,
-  creation?: Script<El<void, M>>,
-  creationAsync?: ScriptAsync<El<void, M>>,
-  destruction?: Script<El<void, M>>,
+  preparation?: Script<El<void, M>>,
+  preparationAsync?: ScriptAsync<El<void, M>>,
+  finalization?: Script<El<void, M>>,
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<void, M>>): ReactiveNode<El<void, M>> {
   return ReactiveNode.declare(Drivers.synthetic, contentOrDeclaration, contentAsync,
-    key, mode, creation, creationAsync, destruction, triggers, basis)
+    key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
 // PanelDriver
@@ -403,7 +403,7 @@ export function isSplitViewPartition(childDriver: ReactiveNodeDriver): boolean {
   return !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.synthetic
 }
 
-function overrideMethod(declaration: ReactiveNodeDecl<El>, method: "creation" | "content", func: (el: El) => void): void {
+function overrideMethod(declaration: ReactiveNodeDecl<El>, method: "preparation" | "content", func: (el: El) => void): void {
   const baseScript = declaration[method]
   declaration[method] = baseScript !== undefined
     ? (el, base) => { baseScript(el, base); func(el) }
@@ -445,7 +445,7 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     return result
   }
 
-  getHost(node: ReactiveNode<El<T, any>>): ReactiveNode<El<T, any>> {
+  provideHost(node: ReactiveNode<El<T, any>>): ReactiveNode<El<T, any>> {
     let host: ReactiveNode<El<T, any>>
     const ownerEl = node.owner.element as ElImpl
     if (ownerEl.sealed !== undefined)

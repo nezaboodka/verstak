@@ -16,18 +16,18 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     // it's up to descendant class to define logic
   }
 
-  create(node: ReactiveNode<El<T, M>>): void | Promise<void> {
+  prepare(node: ReactiveNode<El<T, M>>): void | Promise<void> {
     this.setNativeElement(node)
     const e = node.element.native
     if (ReactiveSystem.isLogging && e !== undefined && !node.driver.isPartition)
       e.setAttribute(Constants.keyAttrName, node.key)
-    const result = super.create(node)
+    const result = super.prepare(node)
     if (e == undefined && ReactiveSystem.isLogging && !node.driver.isPartition)
       node.element.native.setAttribute(Constants.keyAttrName, node.key)
     return result
   }
 
-  destroy(node: ReactiveNode<El<T, M>>, isLeader: boolean): boolean {
+  finalize(node: ReactiveNode<El<T, M>>, isLeader: boolean): boolean {
     const element = node.element
     const native = element.native as T | undefined // hack
     if (native) {
@@ -35,7 +35,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
       if (isLeader)
         native.remove()
     }
-    super.destroy(node, isLeader)
+    super.finalize(node, isLeader)
     element.native = null as any
     return false // children elements having native HTML elements are not treated as leaders
   }
@@ -48,7 +48,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
       const automaticHost = ReactiveNode.findMatchingHost<El, El>(node, n =>
         n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
       const automaticNativeHost = automaticHost !== node.owner
-        ? automaticHost?.driver.getHost(automaticHost).element.native
+        ? automaticHost?.driver.provideHost(automaticHost).element.native
         : automaticHost?.element.native
       if (automaticNativeHost) {
         if (sequential && !node.driver.isPartition) {
