@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { options, transactional, LoggingLevel } from "reactronic"
-import { El } from "../../core/El.js"
+import { El } from "../core/El.js"
 import { Sensor } from "./Sensor.js"
 
 export type ResizedElement = {

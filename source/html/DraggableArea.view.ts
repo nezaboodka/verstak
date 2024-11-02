@@ -9,7 +9,7 @@ import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
 import { El } from "../core/El.js"
 import { Div } from "./HtmlElements.js"
 import { Handling } from "../Elements.js"
-import { PointerSensor } from "./sensors/PointerSensor.js"
+import { PointerSensor } from "../sensors/PointerSensor.js"
 
 export type DragAndDropHandler = (pointer: PointerSensor) => void
 

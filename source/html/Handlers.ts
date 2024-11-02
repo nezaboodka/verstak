@@ -7,9 +7,9 @@
 
 import { Mode, ToggleRef, unobs } from "reactronic"
 import { SyntheticElement } from "../Elements.js"
-import { FocusModel } from "./sensors/FocusSensor.js"
-import { ResizedElement } from "./sensors/ResizeSensor.js"
-import { PointerSensor } from "./sensors/PointerSensor.js"
+import { FocusModel } from "../sensors/FocusSensor.js"
+import { ResizedElement } from "../sensors/ResizeSensor.js"
+import { PointerSensor } from "../sensors/PointerSensor.js"
 
 export function OnClick(target: HTMLElement, action: ((pointer: PointerSensor) => void) | ToggleRef | undefined, key?: string): void {
   if (action !== undefined) {
