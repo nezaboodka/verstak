@@ -1,12 +1,13 @@
 {
   "name": "verstak",
-  "version": "0.24.503",
+  "version": "0.24.504",
   "description": "Verstak - Front-End Library",
   "publisher": "Nezaboodka Software",
   "license": "Apache-2.0",
   "type": "module",
   "main": "build/dist/source/api.js",
   "types": "build/dist/source/api.d.ts",
+  "rootDir": ".",
   "exports": {
     ".": "./build/dist/source/api.js",
     "./html": "./build/dist/source/html/api.js",
