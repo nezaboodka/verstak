@@ -11,7 +11,7 @@ import { clamp } from "../core/ElUtils.js"
 import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "../core/ElDriver.js"
 import { getPrioritiesForEmptySpaceDistribution, getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
 import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
-import { HtmlDriver } from "./HtmlDriver.js"
+import { HtmlDriver } from "../core/WebDriver.js"
 
 // Verstak is based on two fundamental layout structures
 // called panel and table; and on two special non-visual

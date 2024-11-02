@@ -6,8 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveSystem, ReactiveNode, Priority, Handler, proceedSyncOrAsync } from "reactronic"
-import { El } from "../core/El.js"
-import { Constants, ElDriver, ElImpl } from "../core/ElDriver.js"
+import { El } from "./El.js"
+import { Constants, ElDriver, ElImpl } from "./ElDriver.js"
 
 // WebDriver
 

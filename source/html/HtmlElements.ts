@@ -7,7 +7,7 @@
 
 import { ReactiveNode, ReactiveNodeDecl, Script as Scr, ScriptAsync as ScrAsync, Mode } from "reactronic"
 import { El, ElKind } from "../core/El.js"
-import { StaticDriver, HtmlDriver, SvgDriver } from "./HtmlDriver.js"
+import { StaticDriver, HtmlDriver, SvgDriver } from "../core/WebDriver.js"
 
 export function Window(
   content?: Scr<El<HTMLBodyElement>>,
