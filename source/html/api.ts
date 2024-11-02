@@ -7,9 +7,7 @@
 
 export * from "./HtmlElements.js"
 export * from "./HtmlApiExt.js"
-export * from "./Elements.js"
 export * from "./Handlers.js"
-export * from "./Sizes.js"
 export * from "./SplitViewMath.js"
 export * from "./sensors/Sensor.js"
 export * from "./sensors/PointerSensor.js"

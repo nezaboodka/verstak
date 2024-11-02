@@ -6,4 +6,5 @@
 // automatically licensed under the license referred above.
 
 export * from "./core/api.js"
+export * from "./Elements.js"
 export * from "./html/api.js"
