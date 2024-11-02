@@ -177,7 +177,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._hasStylingPresets = false // reset
   }
 
-  get index(): number { return this.node.seat!.index }
+  get index(): number { return this.node.slot!.index }
   get isPanel(): boolean { return this.kind === ElKind.panel }
   get isTable(): boolean { return this.kind === ElKind.table }
   get isAuxiliary(): boolean { return this.kind > ElKind.note } // Part, Group, Cursor
@@ -198,7 +198,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     if (!driver.isPartition) {
       const owner = node.owner as ReactiveNode<ElImpl>
       const ownerEl = owner.element
-      const prevEl = node.seat!.prev?.instance.element as ElImpl
+      const prevEl = node.slot!.prev?.instance.element as ElImpl
       const prevElLayoutInfo = prevEl?.layoutInfo ?? InitialElLayoutInfo
       const layoutInfo = this.layoutInfo = owner.children.isStrict ? new ElLayoutInfo(prevElLayoutInfo) : undefined
       const isCursorElement = driver instanceof CursorCommandDriver
@@ -358,7 +358,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   protected *children(onlyAfter?: ElImpl): Generator<ElImpl> {
-    const after: MergedItem<ReactiveNode<any>> | undefined = onlyAfter?.node.seat
+    const after: MergedItem<ReactiveNode<any>> | undefined = onlyAfter?.node.slot
     for (const child of this.node.children.items(after))
       yield child.instance.element as ElImpl
   }
@@ -369,7 +369,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
   private rowBreak(): void {
     const node = this.node
-    const prevEl = node.seat!.prev?.instance.element as ElImpl
+    const prevEl = node.slot!.prev?.instance.element as ElImpl
     const prevElLayoutInfo = prevEl?.layoutInfo ?? InitialElLayoutInfo
     const layoutInfo = this.layoutInfo = new ElLayoutInfo(prevElLayoutInfo)
     layoutInfo.x = 1
