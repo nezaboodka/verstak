@@ -7,5 +7,4 @@
 
 export * from "./core/api.js"
 export * from "./sensors/api.js"
-export * from "./html/api.js"
 export * from "./Elements.js"
