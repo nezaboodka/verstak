@@ -7,7 +7,6 @@
   "type": "module",
   "main": "build/dist/source/api.js",
   "types": "build/dist/source/api.d.ts",
-  "rootDir": ".",
   "exports": {
     ".": "./build/dist/source/api.js",
     "./html": "./build/dist/source/html/api.js",
