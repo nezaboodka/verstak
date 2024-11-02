@@ -6,10 +6,10 @@
 // automatically licensed under the license referred above.
 
 import { MergeList, ReactiveNode } from "reactronic"
-import { Direction } from "../core/El.js"
-import { clamp } from "../core/ElUtils.js"
-import { ElImpl } from "../core/ElDriver.js"
-import { Drivers, isSplitViewPartition } from "../Elements.js"
+import { Direction } from "./El.js"
+import { clamp } from "./ElUtils.js"
+import { ElImpl } from "./ElDriver.js"
+import { Drivers, isSplitViewPartition } from "./Elements.js"
 
 const DEBUG = false
 

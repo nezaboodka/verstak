@@ -6,12 +6,12 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveNodeDecl, ReactiveNodeDriver, ReactiveNode, Script, Mode, MergeList, MergedItem, unobs, ScriptAsync } from "reactronic"
-import { El, ElKind, ElPlace, Direction } from "./core/El.js"
-import { clamp } from "./core/ElUtils.js"
-import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "./core/ElDriver.js"
-import { getPrioritiesForEmptySpaceDistribution, getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./html/SplitViewMath.js"
-import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./core/Sizes.js"
-import { HtmlDriver, StaticDriver } from "./core/WebDriver.js"
+import { El, ElKind, ElPlace, Direction } from "./El.js"
+import { clamp } from "./ElUtils.js"
+import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "./ElDriver.js"
+import { getPrioritiesForEmptySpaceDistribution, getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
+import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
+import { HtmlDriver, StaticDriver } from "./WebDriver.js"
 
 // Verstak is based on two fundamental layout structures
 // called panel and table; and on two special non-visual
