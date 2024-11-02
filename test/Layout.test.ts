@@ -7,7 +7,7 @@
 
 import test from "ava"
 import { ElCoords } from "../source/api.js"
-import { emitElCoords, parseElCoords } from "../source/html/ElUtils.js"
+import { emitElCoords, parseElCoords } from "../source/core/ElUtils.js"
 
 function parse(text: string): ElCoords {
   const result: ElCoords = { x1: 0, y1: 0, x2: 0, y2: 0 }

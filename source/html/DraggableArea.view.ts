@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
-import { El } from "./El.js"
+import { El } from "../core/El.js"
 import { Div } from "./HtmlElements.js"
 import { Handling } from "./Elements.js"
 import { PointerSensor } from "./sensors/PointerSensor.js"

@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveNode, ReactiveNodeDecl, Script as Scr, ScriptAsync as ScrAsync, Mode } from "reactronic"
-import { El, ElKind } from "./El.js"
+import { El, ElKind } from "../core/El.js"
 import { StaticDriver, HtmlDriver, SvgDriver } from "./HtmlDriver.js"
 
 export function Window(
