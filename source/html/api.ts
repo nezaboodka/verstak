@@ -7,7 +7,6 @@
 
 export * from "./HtmlElements.js"
 export * from "./HtmlApiExt.js"
-export * from "./Handlers.js"
 export * from "./SplitViewMath.js"
 
 import "./HtmlApiExt.js"

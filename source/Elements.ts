@@ -11,11 +11,14 @@ import { clamp } from "./core/ElUtils.js"
 import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "./core/ElDriver.js"
 import { getPrioritiesForEmptySpaceDistribution, getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./html/SplitViewMath.js"
 import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./core/Sizes.js"
-import { HtmlDriver } from "./core/WebDriver.js"
+import { HtmlDriver, StaticDriver } from "./core/WebDriver.js"
 
 // Verstak is based on two fundamental layout structures
 // called panel and table; and on two special non-visual
 // elements called partition and group.
+
+// Window is a root element, which element tree starts
+// from.
 
 // Panel is a layout structure, which children are layed
 // out naturally: rightwards-downwards.
@@ -31,6 +34,37 @@ import { HtmlDriver } from "./core/WebDriver.js"
 
 // Group is a special non-visual element for logical
 // grouping of panels, tables and other groups.
+
+// Window
+
+export function Window(
+  content?: Script<El<HTMLBodyElement>>,
+  contentAsync?: ScriptAsync<El<HTMLBodyElement>>,
+  key?: string,
+  mode?: Mode,
+  preparation?: Script<El<HTMLBodyElement>>,
+  preparationAsync?: ScriptAsync<El<HTMLBodyElement>>,
+  finalization?: Script<El<HTMLBodyElement>>,
+  triggers?: unknown,
+  basis?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>>
+
+export function Window(
+  declaration?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>>
+
+export function Window(
+  contentOrDeclaration?: Script<El<HTMLBodyElement>> | ReactiveNodeDecl<El<HTMLBodyElement>>,
+  contentAsync?: ScriptAsync<El<HTMLBodyElement>>,
+  key?: string,
+  mode?: Mode,
+  preparation?: Script<El<HTMLBodyElement>>,
+  preparationAsync?: ScriptAsync<El<HTMLBodyElement>>,
+  finalization?: Script<El<HTMLBodyElement>>,
+  triggers?: unknown,
+  basis?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>> {
+  const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.panel)
+  return ReactiveNode.declare(driver, contentOrDeclaration, contentAsync,
+    key, mode, preparation, preparationAsync, finalization, triggers, basis)
+}
 
 // Panel
 

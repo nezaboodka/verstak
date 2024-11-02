@@ -5,38 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveNode, ReactiveNodeDecl, Script as Scr, ScriptAsync as ScrAsync, Mode } from "reactronic"
+import { ReactiveNode, ReactiveNodeDecl } from "reactronic"
 import { El, ElKind } from "../core/El.js"
-import { StaticDriver, HtmlDriver, SvgDriver } from "../core/WebDriver.js"
-
-export function Window(
-  content?: Scr<El<HTMLBodyElement>>,
-  contentAsync?: ScrAsync<El<HTMLBodyElement>>,
-  key?: string,
-  mode?: Mode,
-  preparation?: Scr<El<HTMLBodyElement>>,
-  preparationAsync?: ScrAsync<El<HTMLBodyElement>>,
-  finalization?: Scr<El<HTMLBodyElement>>,
-  triggers?: unknown,
-  basis?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>>
-
-export function Window(
-  declaration?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>>
-
-export function Window(
-  contentOrDeclaration?: Scr<El<HTMLBodyElement>> | ReactiveNodeDecl<El<HTMLBodyElement>>,
-  contentAsync?: ScrAsync<El<HTMLBodyElement>>,
-  key?: string,
-  mode?: Mode,
-  preparation?: Scr<El<HTMLBodyElement>>,
-  preparationAsync?: ScrAsync<El<HTMLBodyElement>>,
-  finalization?: Scr<El<HTMLBodyElement>>,
-  triggers?: unknown,
-  basis?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>> {
-  const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.panel)
-  return ReactiveNode.declare(driver, contentOrDeclaration, contentAsync,
-    key, mode, preparation, preparationAsync, finalization, triggers, basis)
-}
+import { HtmlDriver, SvgDriver } from "../core/WebDriver.js"
 
 export function A<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLAnchorElement, M>>): ReactiveNode<El<HTMLAnchorElement, M>> { return ReactiveNode.declare(HtmlTags.a, declaration) }
 export function Abbr<M = unknown>(declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> { return ReactiveNode.declare(HtmlTags.abbr, declaration) }
