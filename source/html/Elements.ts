@@ -6,7 +6,8 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveNodeDecl, ReactiveNodeDriver, ReactiveNode, Script, Mode, MergeList, MergedItem, unobs, ScriptAsync } from "reactronic"
-import { Constants, CursorCommandDriver, El, ElKind, ElPlace, ElDriver, ElImpl, Direction, ElLayoutInfo, InitialElLayoutInfo } from "./El.js"
+import { El, ElKind, ElPlace, Direction } from "./El.js"
+import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "./ElImpl.js"
 import { getPrioritiesForEmptySpaceDistribution, getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
 import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
 import { HtmlDriver } from "./HtmlDriver.js"
