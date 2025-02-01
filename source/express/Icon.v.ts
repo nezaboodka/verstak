@@ -15,7 +15,7 @@ export function Icon(name: string,
     Panel(ReactiveNode.withBasis(declaration, {
       mode: Mode.autonomous,
       triggers: { name },
-      content: el => {
+      script: el => {
         const theme = Theme.current.icon
         el.useStylingPreset(name)
         el.useStylingPreset(theme.main)

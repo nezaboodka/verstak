@@ -20,7 +20,7 @@ export function Image(declaration?: ReactiveNodeDecl<El<HTMLElement, ImageModel>
       preparation: el => {
         el.model ??= observableModel({ source: undefined })
       },
-      content: el => {
+      script: el => {
         const m = el.model
         el.style.backgroundImage = `url(${m.source})`
         el.style.backgroundSize = "contain"

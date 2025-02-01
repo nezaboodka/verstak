@@ -21,7 +21,7 @@ export function Spinner(declaration?: ReactiveNodeDecl<El<HTMLElement, SpinnerMo
       preparation: el => {
         el.model ??= composeSpinnerModel()
       },
-      content: el => {
+      script: el => {
         const m = el.model
         m.active && Note("loading...")
       },

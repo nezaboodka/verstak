@@ -27,7 +27,7 @@ export function DraggableArea(
   return (
     Div<DraggableAreaModel>(ReactiveNode.withBasis(builder, {
       mode: Mode.autonomous,
-      content: b => {
+      script: b => {
         const e = b.native
         const model = b.model
         const dataForSensor = e.dataForSensor

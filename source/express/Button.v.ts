@@ -27,13 +27,13 @@ export function Button(declaration?: ReactiveNodeDecl<El<HTMLElement, ButtonMode
           label: ReactiveNode.key,
         })
       },
-      content: el => {
+      script: el => {
         const m = el.model
         const theme = Theme.current.button
         el.useStylingPreset(theme.main)
         if (m.icon) {
           Icon(m.icon, {
-            content: (el, base) => {
+            script: (el, base) => {
               base()
               el.useStylingPreset(theme.icon)
             },
@@ -41,7 +41,7 @@ export function Button(declaration?: ReactiveNodeDecl<El<HTMLElement, ButtonMode
         }
         if (m.label) {
           Note(m.label, false, {
-            content: (el, base) => {
+            script: (el, base) => {
               base()
               el.useStylingPreset(theme.label)
             },

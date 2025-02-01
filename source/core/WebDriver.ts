@@ -17,18 +17,18 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     // it's up to descendant class to define logic
   }
 
-  prepare(node: ReactiveNode<El<T, M>>): void | Promise<void> {
+  runPreparation(node: ReactiveNode<El<T, M>>): void | Promise<void> {
     this.setNativeElement(node)
     const e = node.element.native
     if (ReactiveSystem.isLogging && e !== undefined && !node.driver.isPartition)
       e.setAttribute(Constants.keyAttrName, node.key)
-    const result = super.prepare(node)
+    const result = super.runPreparation(node)
     if (e == undefined && ReactiveSystem.isLogging && !node.driver.isPartition)
       node.element.native.setAttribute(Constants.keyAttrName, node.key)
     return result
   }
 
-  finalize(node: ReactiveNode<El<T, M>>, isLeader: boolean): boolean {
+  runFinalization(node: ReactiveNode<El<T, M>>, isLeader: boolean): boolean {
     const element = node.element
     const native = element.native as T | undefined // hack
     if (native) {
@@ -36,12 +36,12 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
       if (isLeader)
         native.remove()
     }
-    super.finalize(node, isLeader)
+    super.runFinalization(node, isLeader)
     element.native = null as any
     return false // children elements having native HTML elements are not treated as leaders
   }
 
-  mount(node: ReactiveNode<El<T, M>>): void {
+  runMount(node: ReactiveNode<El<T, M>>): void {
     const element = node.element
     const native = element.native as T | undefined // hack
     if (native) {
@@ -73,11 +73,11 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     }
   }
 
-  update(node: ReactiveNode<El<T, M>>): void | Promise<void> {
+  runScript(node: ReactiveNode<El<T, M>>): void | Promise<void> {
     const element = node.element
     if (element instanceof ElImpl)
       element.prepareForUpdate()
-    let result = super.update(node)
+    let result = super.runScript(node)
     result = proceedSyncOrAsync(result,
       v => {
         if (element.place === undefined) {
