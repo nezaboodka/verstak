@@ -20,10 +20,10 @@ import { HtmlDriver, StaticDriver } from "./WebDriver.js"
 // Window is a root element, which element tree starts
 // from.
 
-// Panel is a layout structure, which children are layed
+// Panel is a layout structure, which children are laid
 // out naturally: rightwards-downwards.
 
-// Table is layout structure, which children are layed out
+// Table is layout structure, which children are laid out
 // over table cells.
 
 // Partition is a special non-visual element, which begins
