@@ -61,6 +61,7 @@ export default [{
       "@typescript-eslint/member-delimiter-style": "off",
       "@typescript-eslint/explicit-function-return-type": ["error", {
         allowExpressions: true,
+        allowFunctionsWithoutTypeParameters: true,
       }],
       "@typescript-eslint/no-var-requires": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
