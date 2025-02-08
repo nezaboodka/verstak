@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, transactional, LoggingLevel, Transaction } from "reactronic"
+import { options, action, LoggingLevel, Transaction } from "reactronic"
 import { SymDataForSensor, findTargetElementData } from "./DataForSensor.js"
 import { BasePointerSensor } from "./BasePointerSensor.js"
 import { KeyboardModifiers, extractModifierKeys } from "./KeyboardSensor.js"
@@ -63,7 +63,7 @@ export class HoverSensor extends BasePointerSensor {
     this.doPointerLeave(e)
   }
 
-  @transactional @options({ logging: LoggingLevel.Off })
+  @action @options({ logging: LoggingLevel.Off })
   protected doPointerEnter(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -71,7 +71,7 @@ export class HoverSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transactional @options({ logging: LoggingLevel.Off })
+  @action @options({ logging: LoggingLevel.Off })
   protected doPointerOver(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -84,7 +84,7 @@ export class HoverSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transactional @options({ logging: LoggingLevel.Off })
+  @action @options({ logging: LoggingLevel.Off })
   protected doPointerMove(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -94,12 +94,12 @@ export class HoverSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @transactional @options({ logging: LoggingLevel.Off })
+  @action @options({ logging: LoggingLevel.Off })
   protected doPointerLeave(e: PointerEvent): void {
     this.reset()
   }
 
-  @transactional @options({ logging: LoggingLevel.Off })
+  @action @options({ logging: LoggingLevel.Off })
   protected reset(): void {
     this.preventDefault = false
     this.stopPropagation = false

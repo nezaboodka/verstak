@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, transactional, LoggingLevel, Transaction } from "reactronic"
+import { options, Reentrance, action, LoggingLevel, Transaction } from "reactronic"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
 
 export class ScrollSensor extends HtmlElementSensor {
@@ -33,7 +33,7 @@ export class ScrollSensor extends HtmlElementSensor {
     })
   }
 
-  @transactional
+  @action
   reset(): void {
     this.doReset()
   }
@@ -43,7 +43,7 @@ export class ScrollSensor extends HtmlElementSensor {
     // this.reset()
   }
 
-  @transactional @options({ reentrance: Reentrance.cancelPrevious, logging: LoggingLevel.Off })
+  @action @options({ reentrance: Reentrance.cancelPrevious, logging: LoggingLevel.Off })
   protected doScroll(e: Event): void {
     this.updateSensorData(e)
   }

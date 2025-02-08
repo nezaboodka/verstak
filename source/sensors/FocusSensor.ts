@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, transactional, LoggingLevel, ToggleRef, Transaction } from "reactronic"
+import { options, action, LoggingLevel, ToggleRef, Transaction } from "reactronic"
 import { objectHasMember } from "../core/ElUtils.js"
 import { grabElementDataList, SymDataForSensor } from "./DataForSensor.js"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
@@ -35,7 +35,7 @@ export class FocusSensor extends HtmlElementSensor {
     this.contextElementDataList = []
   }
 
-  @transactional
+  @action
   setActiveData(data: unknown, debugHint: string = ""): void {
     if (data !== this.activeData) {
       const activeData = this.activeData
@@ -56,7 +56,7 @@ export class FocusSensor extends HtmlElementSensor {
     }
   }
 
-  @transactional
+  @action
   listen(enabled: boolean = true): void {
     const t = Transaction.current
     Transaction.outside(() => {
@@ -102,7 +102,7 @@ export class FocusSensor extends HtmlElementSensor {
     // console.groupEnd()
   }
 
-  @transactional @options({ logging: LoggingLevel.Off })
+  @action @options({ logging: LoggingLevel.Off })
   protected doFocusIn(e: FocusEvent): void {
     // console.log(e)
     const path = e.composedPath()
@@ -118,7 +118,7 @@ export class FocusSensor extends HtmlElementSensor {
     this.reset()
   }
 
-  @transactional
+  @action
   protected doFocusOut(e: FocusEvent): void {
     // console.log(e)
     const isLosingFocus = e.relatedTarget === null
@@ -156,7 +156,7 @@ export class FocusSensor extends HtmlElementSensor {
     }
   }
 
-  @transactional @options({ logging: LoggingLevel.Off })
+  @action @options({ logging: LoggingLevel.Off })
   protected doMouseDown(e: MouseEvent): void {
     // console.log(this)
     const path = e.composedPath() as Array<HTMLElement>

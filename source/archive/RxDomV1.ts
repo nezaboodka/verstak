@@ -4,7 +4,7 @@
 // License: https://raw.githubusercontent.com/nezaboodka/verstak/master/LICENSE
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
-import { reactive, unobs, Transaction, ReactiveSystem, options, Reentrance } from "reactronic"
+import { reaction, unobs, Transaction, ReactiveSystem, options, Reentrance } from "reactronic"
 import { Render, SuperRender, RxNodeType, RxNodeInstance, RxNode } from "./RxDomV1.Types.js"
 
 // BasicNodeType
@@ -80,7 +80,7 @@ export class RxNodeInstanceImpl<E = unknown, O = void> implements RxNodeInstance
     this.level = level
   }
 
-  @reactive @options({
+  @reaction @options({
     reentrance: Reentrance.cancelPrevious,
     triggeringArgs: true,
     noSideEffects: true })
