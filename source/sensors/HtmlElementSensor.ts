@@ -5,16 +5,16 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { raw } from "reactronic"
+import { unobservable } from "reactronic"
 import { DataForSensor, SymDataForSensor } from "./DataForSensor.js"
 import { Sensor } from "./Sensor.js"
 import { WindowSensor } from "./WindowSensor.js"
 
 export class HtmlElementSensor extends Sensor {
-  @raw readonly sourceElement: HTMLElement | SVGElement
-  @raw readonly windowSensor?: WindowSensor
-  @raw preventDefault: boolean
-  @raw stopPropagation: boolean
+  @unobservable readonly sourceElement: HTMLElement | SVGElement
+  @unobservable readonly windowSensor?: WindowSensor
+  @unobservable preventDefault: boolean
+  @unobservable stopPropagation: boolean
 
   constructor(sourceElement: HTMLElement | SVGElement, windowSensor?: WindowSensor) {
     super()

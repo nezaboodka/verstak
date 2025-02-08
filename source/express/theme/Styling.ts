@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ObservableObject, raw } from "reactronic"
+import { ObservableObject, unobservable } from "reactronic"
 
 export type AbstractTheme = {
   fillColor: string
@@ -20,7 +20,7 @@ export type AbstractTheme = {
 }
 
 export class Styling extends ObservableObject {
-  @raw protected readonly $: AbstractTheme
+  @unobservable protected readonly $: AbstractTheme
 
   constructor($: AbstractTheme) {
     super()

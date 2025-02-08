@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, Reentrance, action, raw, Transaction, LoggingLevel } from "reactronic"
+import { options, reaction, Reentrance, action, unobservable, Transaction, LoggingLevel } from "reactronic"
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from "./BasePointerSensor.js"
 import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
 import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
@@ -13,14 +13,14 @@ import { WindowSensor } from "./WindowSensor.js"
 
 export class PointerSensor extends BasePointerSensor {
   pointerButton: PointerButton
-  @raw private clickable: unknown
+  @unobservable private clickable: unknown
   hotPositionX: number
   hotPositionY: number
   clicking: unknown
   clicked: unknown
   clickX: number // position relative to browser's viewport
   clickY: number // position relative to browser's viewport
-  @raw private tryingDragging: boolean
+  @unobservable private tryingDragging: boolean
   draggableData: unknown
   dragSource: unknown
   dragTarget: unknown
@@ -30,8 +30,8 @@ export class PointerSensor extends BasePointerSensor {
   dragFinished: boolean
   startX: number // position relative to browser's viewport
   startY: number // position relative to browser's viewport
-  @raw private draggingData: unknown
-  @raw dropAllowed: boolean
+  @unobservable private draggingData: unknown
+  @unobservable dropAllowed: boolean
   draggingOver: boolean
   positionX: number // position relative to browser's viewport
   positionY: number // position relative to browser's viewport

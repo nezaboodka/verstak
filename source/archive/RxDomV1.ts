@@ -4,7 +4,7 @@
 // License: https://raw.githubusercontent.com/nezaboodka/verstak/master/LICENSE
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
-import { reaction, unobs, Transaction, ReactiveSystem, options, Reentrance } from "reactronic"
+import { reaction, nonreactive, Transaction, ReactiveSystem, options, Reentrance } from "reactronic"
 import { Render, SuperRender, RxNodeType, RxNodeInstance, RxNode } from "./RxDomV1.Types.js"
 
 // BasicNodeType
@@ -459,7 +459,7 @@ function tryToRender(node: RxNode): void {
   if (node.inline) // inline elements are always rendered
     invokeRender(node, node.args)
   else // rendering of reactive elements is cached to avoid redundant calls
-    unobs(inst.rerender, node)
+    nonreactive(inst.rerender, node)
 }
 
 function tryToInitialize(node: RxNode): RxNodeInstanceImpl {
