@@ -5,14 +5,14 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ObservableObject, Ref, Transaction, Isolation } from "reactronic"
+import { ObservableObject, Ref, impact, Isolation } from "reactronic"
 
 export type ValuesOrRefs<T> = {
   [K in keyof T]: T[K] | Ref<T[K]>
 }
 
 export function observableModel<T extends Object>(modelProps: ValuesOrRefs<T>): T {
-  return Transaction.run({ isolation: Isolation.disjoinFromOuterTransaction }, () =>
+  return impact({ isolation: Isolation.disjoinFromOuterTransaction }, () =>
     new ObservableComposition(modelProps) as unknown as T)
 }
 
