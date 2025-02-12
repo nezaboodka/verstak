@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { apply, ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
+import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
 import { Panel, Note, El, OnClick } from "verstak"
 import { observableModel } from "./common/Utils.js"
 import { Theme } from "./Theme.js"
