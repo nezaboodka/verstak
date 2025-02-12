@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ToggleRef, impact } from "reactronic"
+import { ToggleRef, apply } from "reactronic"
 import { objectHasMember } from "../core/ElUtils.js"
 import { Sensor } from "./Sensor.js"
 
@@ -17,7 +17,7 @@ export class WindowSensor extends Sensor {
   activeData: unknown = undefined
   previousActiveData: unknown = undefined
 
-  @impact
+  @apply
   setActiveWindow(window: unknown, debugHint: string = ""): void {
 
     // console.log(`====> setActiveWindow, ${debugHint}`)

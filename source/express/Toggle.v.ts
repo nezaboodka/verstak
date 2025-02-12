@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { impact, ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
+import { apply, ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
 import { Panel, Note, El } from "verstak"
 import { observableModel } from "./common/Utils.js"
 import { Theme } from "./Theme.js"
@@ -26,7 +26,7 @@ export function Toggle(declaration?: ReactiveNodeDecl<El<HTMLElement, ToggleMode
           label: ReactiveNode.key,
           checked: true,
           color: "green" }) // model is either taken from parameter or created internally
-        el.native.onclick = () => impact(() => el.model.checked = !el.model.checked)
+        el.native.onclick = () => apply(() => el.model.checked = !el.model.checked)
       },
       script: el => {
         const m = el.model
