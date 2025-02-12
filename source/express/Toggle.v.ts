@@ -47,6 +47,7 @@ export function Toggle(declaration?: ReactiveNodeDecl<El<HTMLElement, ToggleMode
             },
           })
         }
+
         OnClick(el.native, () => {
           el.model.checked = !el.model.checked
         })

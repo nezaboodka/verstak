@@ -47,6 +47,7 @@ export function Button(declaration?: ReactiveNodeDecl<El<HTMLElement, ButtonMode
             },
           })
         }
+
         OnClick(el.native, m.action)
       },
     }))
