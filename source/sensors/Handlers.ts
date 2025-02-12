@@ -11,7 +11,7 @@ import { FocusModel } from "./FocusSensor.js"
 import { ResizedElement } from "./ResizeSensor.js"
 import { PointerSensor } from "./PointerSensor.js"
 
-export function OnClick(target: HTMLElement, action: ((pointer: PointerSensor) => void) | ToggleRef | undefined, key?: string): void {
+export function OnClick(target: Element, action: ((pointer: PointerSensor) => void) | ToggleRef | undefined, key?: string): void {
   if (action !== undefined) {
     SyntheticElement({
       key,
