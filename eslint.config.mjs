@@ -67,6 +67,7 @@ export default [{
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/ban-types": "off",
+      "@typescript-eslint/no-wrapper-object-types": "off",
       "@typescript-eslint/strict-boolean-expressions": ["error", {
         allowNullableObject: true,
         allowNullableString: true,
