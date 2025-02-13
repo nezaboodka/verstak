@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { cache, atomicAction } from "reactronic"
+import { cachedResult, atomicAction } from "reactronic"
 
 export function restyler<T>(restyle: () => T): ObservablesStyles<T> {
   return atomicAction(() => new ObservablesStyles<T>(restyle))
@@ -15,7 +15,7 @@ export class ObservablesStyles<T> {
   constructor(private readonly restyle: () => T) {
   }
 
-  @cache
+  @cachedResult
   protected cache(): T {
     return this.restyle()
   }

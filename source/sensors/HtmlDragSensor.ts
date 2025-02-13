@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, atomicAction, unobservable, Transaction, LoggingLevel } from "reactronic"
+import { options, reactiveProcess, atomicAction, unobservable, Transaction, LoggingLevel } from "reactronic"
 import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
 import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
@@ -317,7 +317,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.draggingOver = true
   }
 
-  @reaction @options({ throttling: 0 })
+  @reactiveProcess @options({ throttling: 0 })
   protected whenDragging(): void {
     if (this.draggingOver) {
       this.positionX = this.immediatePositionX

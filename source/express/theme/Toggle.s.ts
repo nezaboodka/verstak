@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { cache } from "reactronic"
+import { cachedResult } from "reactronic"
 import { css } from "@emotion/css"
 import { Styling } from "./Styling.js"
 
@@ -17,18 +17,18 @@ export type ToggleStyling = {
 
 export class DefaultToggleStyling extends Styling implements ToggleStyling {
 
-  @cache get main(): string { return css`
+  @cachedResult get main(): string { return css`
     cursor: pointer;
     user-select: none;
   `}
 
-  @cache get icon(): string { return css`
+  @cachedResult get icon(): string { return css`
     min-width: auto;
     margin-left: ${this.$.outlinePadding};
     margin-right: ${this.$.outlinePadding};
   `}
 
-  @cache get label(): string { return css`
+  @cachedResult get label(): string { return css`
     margin-left: ${this.$.outlinePadding};
     margin-right: ${this.$.outlinePadding};
   `}

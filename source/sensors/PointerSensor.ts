@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, unobservable, atomicAction, reaction, Reentrance, Transaction, LoggingLevel } from "reactronic"
+import { options, unobservable, atomicAction, reactiveProcess, Reentrance, Transaction, LoggingLevel } from "reactronic"
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from "./BasePointerSensor.js"
 import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
 import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
@@ -342,7 +342,7 @@ export class PointerSensor extends BasePointerSensor {
     this.immediatePositionY = e.clientY
   }
 
-  @reaction @options({ throttling: 0 })
+  @reactiveProcess @options({ throttling: 0 })
   protected whenClickingOrDragging(): void {
     if (this.draggingOver || this.clickable) {
       this.positionX = this.immediatePositionX
@@ -351,7 +351,7 @@ export class PointerSensor extends BasePointerSensor {
     }
   }
 
-  @reaction @options({ throttling: 0 })
+  @reactiveProcess @options({ throttling: 0 })
   protected whenMoving(): void {
     if (Number.isFinite(this.immediatePositionX) && Number.isFinite(this.immediatePositionY)) {
       this.hotPositionX = this.immediatePositionX

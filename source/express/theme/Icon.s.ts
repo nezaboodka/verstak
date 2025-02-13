@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { cache } from "reactronic"
+import { cachedResult } from "reactronic"
 import { css } from "@emotion/css"
 import { Styling } from "./Styling.js"
 
@@ -14,7 +14,7 @@ export type IconStyling = {
 }
 
 export class DefaultIconStyling extends Styling implements IconStyling {
-  @cache get main(): string { return css`
+  @cachedResult get main(): string { return css`
     min-width: 1.25em;
     min-height: auto;
     text-align: center;
