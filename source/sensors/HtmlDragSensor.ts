@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reactiveProcess, atomicAction, unobservable, Transaction, LoggingLevel } from "reactronic"
+import { options, reactive, atomic, unobservable, Transaction, LoggingLevel } from "reactronic"
 import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
 import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
@@ -156,7 +156,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.reset()
   }
 
-  @atomicAction @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected startDragging(e: DragEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -182,39 +182,39 @@ export class HtmlDragSensor extends HtmlElementSensor {
     })
   }
 
-  @atomicAction @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected dragging(e: DragEvent): void {
     this.dragStarted = true
     this.dragFinished = false
     this.revision++
   }
 
-  @atomicAction @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected finishDragging(e: DragEvent): void {
     this.dragFinished = true
     this.revision++
   }
 
-  @atomicAction @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected enterTarget(e: DragEvent): void {
     this.updateDragTarget(e)
     this.dropped = false
     this.revision++
   }
 
-  @atomicAction @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected leaveTarget(e: DragEvent): void {
     // Nothing to do
   }
 
-  @atomicAction @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected dragOver(e: DragEvent): void {
     this.updateDragTarget(e)
     this.dropped = false
     this.revision++
   }
 
-  @atomicAction @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected drop(e: DragEvent): void {
     this.updateDragTarget(e)
     this.modifiers = this.immediateModifiers
@@ -237,7 +237,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.revision++
   }
 
-  @atomicAction @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected updateEventOnDragStart(e: DragEvent): void {
     const dt = e.dataTransfer
     if (dt) {
@@ -253,13 +253,13 @@ export class HtmlDragSensor extends HtmlElementSensor {
     }
   }
 
-  @atomicAction @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected updateEventOnDropAllowed(e: DragEvent): void {
     if (this.dropAllowed)
       e.preventDefault()
   }
 
-  @atomicAction @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected reset(): void {
     this.draggable = undefined
     this.dragSource = undefined
@@ -317,7 +317,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.draggingOver = true
   }
 
-  @reactiveProcess @options({ throttling: 0 })
+  @reactive @options({ throttling: 0 })
   protected whenDragging(): void {
     if (this.draggingOver) {
       this.positionX = this.immediatePositionX

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, sensitive, atomicAction, LoggingLevel, Transaction } from "reactronic"
+import { options, sensitiveRun, atomic, LoggingLevel, Transaction } from "reactronic"
 import { grabElementDataList, SymDataForSensor } from "./DataForSensor.js"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
 
@@ -60,7 +60,7 @@ export class KeyboardSensor extends HtmlElementSensor {
     })
   }
 
-  @atomicAction
+  @atomic
   reset(): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -83,18 +83,18 @@ export class KeyboardSensor extends HtmlElementSensor {
     this.reset()
   }
 
-  @atomicAction @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected keyDown(e: KeyboardEvent): void {
     this.updateSensorData(e)
     this.up = ""
-    sensitive(true, () => this.down = e.key)
+    sensitiveRun(true, () => this.down = e.key)
   }
 
-  @atomicAction @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected keyUp(e: KeyboardEvent): void {
     this.updateSensorData(e)
     this.down = ""
-    sensitive(true, () => this.up = e.key)
+    sensitiveRun(true, () => this.up = e.key)
   }
 
   protected updateSensorData(e: KeyboardEvent): void {

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Mode, ToggleRef, nonreactive } from "reactronic"
+import { Mode, ToggleRef, nonReactiveRun } from "reactronic"
 import { SyntheticElement } from "../core/Elements.js"
 import { FocusModel } from "./FocusSensor.js"
 import { ResizedElement } from "./ResizeSensor.js"
@@ -21,10 +21,10 @@ export function OnClick(target: Element, action: ((pointer: PointerSensor) => vo
         const pointer = target.sensors.pointer
         if (target.dataForSensor.click !== undefined && pointer.clicked === target.dataForSensor.click || target.dataForSensor.click === undefined && pointer.clicked) {
           if (action instanceof Function) {
-            nonreactive(() => action(pointer))
+            nonReactiveRun(() => action(pointer))
           }
           else if (action instanceof ToggleRef) {
-            nonreactive(() => action.toggle())
+            nonReactiveRun(() => action.toggle())
           }
         }
       },
@@ -42,10 +42,10 @@ export function OnClickAsync(target: HTMLElement, action: ((pointer: PointerSens
         const pointer = target.sensors.pointer
         if (target.dataForSensor.click !== undefined && pointer.clicked === target.dataForSensor.click || target.dataForSensor.click === undefined && pointer.clicked) {
           if (action instanceof Function) {
-            await nonreactive(() => action(pointer))
+            await nonReactiveRun(() => action(pointer))
           }
           else if (action instanceof ToggleRef) {
-            nonreactive(() => action.toggle())
+            nonReactiveRun(() => action.toggle())
           }
         }
       },
@@ -108,8 +108,8 @@ export function prepareResizeHandler(action: ((width: number, height: number) =>
   return (element: ResizedElement): void => {
     const size = element.borderBoxSize[0]
     if (action instanceof Function)
-      nonreactive(() => action(size.inlineSize, size.blockSize))
+      nonReactiveRun(() => action(size.inlineSize, size.blockSize))
     else if (action instanceof ResizeData && action.handler !== undefined)
-      nonreactive(() => action.handler!(size.inlineSize, size.blockSize))
+      nonReactiveRun(() => action.handler!(size.inlineSize, size.blockSize))
   }
 }

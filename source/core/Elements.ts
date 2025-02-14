@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveNodeDecl, ReactiveNodeDriver, ReactiveNode, Script, Mode, MergeList, MergedItem, nonreactive, ScriptAsync } from "reactronic"
+import { ReactiveNodeDecl, ReactiveNodeDriver, ReactiveNode, Script, Mode, MergeList, MergedItem, nonReactiveRun, ScriptAsync } from "reactronic"
 import { El, ElKind, ElPlace, Direction } from "./El.js"
 import { clamp } from "./ElUtils.js"
 import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "./ElDriver.js"
@@ -196,7 +196,7 @@ export function declareSplitter<T>(index: number, splitViewNode: ReactiveNode<El
                   clonedSizesPx.push({ node: item.node, sizePx: item.sizePx })
                 }
 
-                nonreactive(() => relayoutUsingSplitter(splitViewNode as any as ReactiveNode<ElImpl>, deltaPx, index, clonedSizesPx))
+                nonReactiveRun(() => relayoutUsingSplitter(splitViewNode as any as ReactiveNode<ElImpl>, deltaPx, index, clonedSizesPx))
                 if (pointer.dropped) {
                   model?.droppedAction?.(pointer)
                 }
@@ -380,7 +380,7 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
             const priorities = preferred.length > 0
               ? getPrioritiesForSizeChanging(isHorizontal, node.children as MergeList<ReactiveNode>, preferred)
               : getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as MergeList<ReactiveNode>)
-            nonreactive(() => relayout(node as any as ReactiveNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx))
+            nonReactiveRun(() => relayout(node as any as ReactiveNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx))
           }
         },
       })

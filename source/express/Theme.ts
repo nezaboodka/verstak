@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { atomically, ReactiveNodeVariable, Isolation } from "reactronic"
+import { atomicRun, ReactiveNodeVariable, Isolation } from "reactronic"
 import { AbstractTheme } from "./theme/Styling.js"
 import { ButtonStyling, DefaultButtonStyling } from "./theme/Button.s.js"
 import { FieldStyling, DefaultFieldStyling  } from "./theme/Field.s.js"
@@ -26,7 +26,7 @@ export type VerstakExpressTheme = AbstractTheme & {
 
 export class Theme implements VerstakExpressTheme {
   private static readonly gCurrent = new ReactiveNodeVariable<VerstakExpressTheme>(
-    atomically({ isolation: Isolation.disjoinFromOuterTransaction }, () => new Theme()))
+    atomicRun({ isolation: Isolation.disjoinFromOuterTransaction }, () => new Theme()))
 
   static get current(): VerstakExpressTheme {
     return Theme.gCurrent.value
