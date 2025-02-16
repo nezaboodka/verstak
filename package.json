@@ -1,6 +1,6 @@
 {
   "name": "verstak",
-  "version": "0.92.25009",
+  "version": "0.92.25010",
   "description": "Verstak - Front-End Library",
   "publisher": "Nezaboodka Software",
   "license": "Apache-2.0",
@@ -11,7 +11,7 @@
     ".": "./build/dist/source/api.js",
     "./core": "./build/dist/source/core/api.js",
     "./html": "./build/dist/source/html/api.js",
-    "./svg": "./build/dist/source/svg/api.js",
+    "./svg": "./build/dist/source/svg/api.js"
   },
   "files": [
     "build/dist/source/**/*.*"
