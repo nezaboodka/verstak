@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { Mode, ToggleRef, nonReactiveRun } from "reactronic"
-import { SyntheticElement } from "../core/Elements.js"
+import { SyntheticElement } from "../Elements.js"
 import { FocusModel } from "./FocusSensor.js"
 import { ResizedElement } from "./ResizeSensor.js"
 import { PointerSensor } from "./PointerSensor.js"

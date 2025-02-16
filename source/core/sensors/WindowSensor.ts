@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ToggleRef, atomic } from "reactronic"
-import { objectHasMember } from "../core/ElUtils.js"
+import { objectHasMember } from "../ElUtils.js"
 import { Sensor } from "./Sensor.js"
 
 export type WindowModel = {
