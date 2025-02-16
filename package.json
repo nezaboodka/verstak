@@ -10,6 +10,7 @@
   "exports": {
     ".": "./build/dist/source/api.js",
     "./html": "./build/dist/source/html/api.js",
+    "./svg": "./build/dist/source/svg/api.js",
     "./express": "./build/dist/source/express/api.js"
   },
   "files": [
