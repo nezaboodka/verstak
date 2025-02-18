@@ -33,9 +33,9 @@ export class PointerSensor extends BasePointerSensor {
   @unobservable private draggingData: unknown
   @unobservable dropAllowed: boolean
   draggingOver: boolean
-  positionX: number // position relative to browser's viewport
-  positionY: number // position relative to browser's viewport
-  modifiers: KeyboardModifiers
+  // positionX: number // position relative to browser's viewport
+  // positionY: number // position relative to browser's viewport
+  // modifiers: KeyboardModifiers
   dropX: number // position relative to browser's viewport
   dropY: number // position relative to browser's viewport
   dropped: boolean

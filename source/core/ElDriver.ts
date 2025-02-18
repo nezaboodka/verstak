@@ -13,7 +13,7 @@ import { equalElCoords, parseElCoords } from "./ElUtils.js"
 // ElDriver
 
 export class ElDriver<T extends Element, M = unknown> extends BaseDriver<El<T, M>> {
-  create(node: ReactiveNode<El<T, M>>): El<T, M> {
+  override create(node: ReactiveNode<El<T, M>>): El<T, M> {
     return new ElImpl<T, M>(node)
   }
 }

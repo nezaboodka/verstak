@@ -316,7 +316,7 @@ export function SyntheticElement<M = unknown>(
 // PanelDriver
 
 export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
-  runScript(node: ReactiveNode<El<T>>): void | Promise<void> {
+  override runScript(node: ReactiveNode<El<T>>): void | Promise<void> {
     rowBreak()
     const el = node.element as ElImpl
     const result = super.runScript(node)
@@ -395,7 +395,7 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
     return result
   }
 
-  declareChild(ownerNode: ReactiveNode<El<T, any>>, childDriver: ReactiveNodeDriver<any>, childDeclaration?: ReactiveNodeDecl<any> | undefined, childBasis?: ReactiveNodeDecl<any> | undefined): MergedItem<ReactiveNode> | undefined {
+  override declareChild(ownerNode: ReactiveNode<El<T, any>>, childDriver: ReactiveNodeDriver<any>, childDeclaration?: ReactiveNodeDecl<any> | undefined, childBasis?: ReactiveNodeDecl<any> | undefined): MergedItem<ReactiveNode> | undefined {
     let result: MergedItem<ReactiveNode> | undefined = undefined
     const el = ownerNode.element as ElImpl
     if (el.splitView !== undefined) {
@@ -448,7 +448,7 @@ function overrideMethod(declaration: ReactiveNodeDecl<El>, method: "preparation"
 // PartitionDriver
 
 export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
-  runScript(node: ReactiveNode<El<T>>): void | Promise<void> {
+  override runScript(node: ReactiveNode<El<T>>): void | Promise<void> {
     const result = super.runScript(node)
     const ownerEl = node.owner.element as ElImpl
     if (ownerEl.sealed !== undefined) {
@@ -480,7 +480,7 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     return result
   }
 
-  provideHost(node: ReactiveNode<El<T, any>>): ReactiveNode<El<T, any>> {
+  override provideHost(node: ReactiveNode<El<T, any>>): ReactiveNode<El<T, any>> {
     let host: ReactiveNode<El<T, any>>
     const ownerEl = node.owner.element as ElImpl
     if (ownerEl.sealed !== undefined)

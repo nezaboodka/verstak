@@ -17,7 +17,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     // it's up to descendant class to define logic
   }
 
-  runPreparation(node: ReactiveNode<El<T, M>>): void | Promise<void> {
+  override runPreparation(node: ReactiveNode<El<T, M>>): void | Promise<void> {
     this.setNativeElement(node)
     const e = node.element.native
     if (ReactiveSystem.isLogging && e !== undefined && !node.driver.isPartition)
@@ -28,7 +28,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     return result
   }
 
-  runFinalization(node: ReactiveNode<El<T, M>>, isLeader: boolean): boolean {
+  override runFinalization(node: ReactiveNode<El<T, M>>, isLeader: boolean): boolean {
     const element = node.element
     const native = element.native as T | undefined // hack
     if (native) {
@@ -41,7 +41,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     return false // children elements having native HTML elements are not treated as leaders
   }
 
-  runMount(node: ReactiveNode<El<T, M>>): void {
+  override runMount(node: ReactiveNode<El<T, M>>): void {
     const element = node.element
     const native = element.native as T | undefined // hack
     if (native) {
@@ -73,7 +73,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     }
   }
 
-  runScript(node: ReactiveNode<El<T, M>>): void | Promise<void> {
+  override runScript(node: ReactiveNode<El<T, M>>): void | Promise<void> {
     const element = node.element
     if (element instanceof ElImpl)
       element.prepareForUpdate()
@@ -123,7 +123,7 @@ export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
     this.native = native
   }
 
-  setNativeElement(node: ReactiveNode<El<T>>): void {
+  override setNativeElement(node: ReactiveNode<El<T>>): void {
     node.element.native = this.native
   }
 }
@@ -131,7 +131,7 @@ export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
 // HtmlDriver
 
 export class HtmlDriver<T extends HTMLElement, M = any> extends WebDriver<T, M> {
-  setNativeElement(node: ReactiveNode<El<T, M>>): void {
+  override setNativeElement(node: ReactiveNode<El<T, M>>): void {
     node.element.native = document.createElement(node.driver.name) as T
   }
 }
@@ -139,7 +139,7 @@ export class HtmlDriver<T extends HTMLElement, M = any> extends WebDriver<T, M> 
 // SvgDriver
 
 export class SvgDriver<T extends SVGElement, M = any> extends WebDriver<T, M> {
-  setNativeElement(node: ReactiveNode<El<T, M>>): void {
+  override setNativeElement(node: ReactiveNode<El<T, M>>): void {
     node.element.native = document.createElementNS("http://www.w3.org/2000/svg", node.driver.name) as T
   }
 }
