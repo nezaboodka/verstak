@@ -86,7 +86,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
             element.place = undefined // automatic placement in table
         }
         if (gBlinkingEffectMarker)
-          blink(element.native, ReactiveNode.currentUpdatePriority, node.stamp)
+          blink(element.native, ReactiveNode.currentScriptPriority, node.stamp)
       },
       e => {
       })

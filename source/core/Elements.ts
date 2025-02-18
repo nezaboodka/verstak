@@ -384,12 +384,12 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
           }
         },
       })
-      ReactiveNode.updateNestedNodesThenDo(() => {
+      ReactiveNode.runNestedNodeScriptsThenDo(() => {
         layoutInfo.isUpdateFinished = true
         // WORKAROUND: As long as "isUpdateFinished = true" does not trigger relaunch of
         // "update" of SyntheticElement (such a relaunch requires subscriptions on values
         // of variables rather than variables themselves), we do it manually.
-        ReactiveNode.triggerUpdate(relayoutEl, { stamp: node.stamp })
+        ReactiveNode.triggerScriptRun(relayoutEl, { stamp: node.stamp })
       })
     }
     return result
