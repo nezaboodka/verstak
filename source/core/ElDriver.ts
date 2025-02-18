@@ -281,7 +281,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private static applyKind<T extends Element>(element: ElImpl<T, any>, value: ElKind): void {
     const kind = Constants.layouts[value]
     kind && element.native.setAttribute(Constants.kindAttrName, kind)
-    VerstakDriversByLayout[value](element as any)
+    DriversByLayout[value](element as any)
   }
 
   private static applyCoords<T extends Element>(element: ElImpl<T, any>, value: ElCoords | undefined): void {
@@ -869,7 +869,7 @@ export const Constants = {
   kindAttrName: "kind",
 }
 
-const VerstakDriversByLayout: Array<Handler<El<HTMLElement>>> = [
+const DriversByLayout: Array<Handler<El<HTMLElement>>> = [
   el => { // panel
     const owner = el.node.owner.element as ElImpl
     const s = el.style

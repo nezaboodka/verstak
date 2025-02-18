@@ -7,7 +7,7 @@
 
 import { ObservableObject, unobservable } from "reactronic"
 
-export type AbstractTheme = {
+export type BasicAbstractTheme = {
   fillColor: string
   textColor: string
   positiveColor: string
@@ -20,9 +20,9 @@ export type AbstractTheme = {
 }
 
 export class Styling extends ObservableObject {
-  @unobservable protected readonly $: AbstractTheme
+  @unobservable protected readonly $: BasicAbstractTheme
 
-  constructor($: AbstractTheme) {
+  constructor($: BasicAbstractTheme) {
     super()
     this.$ = $
   }

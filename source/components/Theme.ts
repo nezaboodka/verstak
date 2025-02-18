@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { atomicRun, ReactiveNodeVariable, Isolation } from "reactronic"
-import { AbstractTheme } from "./theme/Styling.js"
+import { BasicAbstractTheme } from "./theme/Styling.js"
 import { ButtonStyling, DefaultButtonStyling } from "./theme/Button.s.js"
 import { FieldStyling, DefaultFieldStyling  } from "./theme/Field.s.js"
 import { IconStyling, DefaultIconStyling  } from "./theme/Icon.s.js"
@@ -17,21 +17,21 @@ export { type FieldStyling, type DefaultFieldStyling  } from "./theme/Field.s.js
 export { type IconStyling, type DefaultIconStyling  } from "./theme/Icon.s.js"
 export { type ToggleStyling, type DefaultToggleStyling } from "./theme/Toggle.s.js"
 
-export type VerstakExpressTheme = AbstractTheme & {
+export type AbstractTheme = BasicAbstractTheme & {
   readonly button: ButtonStyling
   readonly field: FieldStyling
   readonly icon: IconStyling
   readonly toggle: ToggleStyling
 }
 
-export class Theme implements VerstakExpressTheme {
-  private static readonly gCurrent = new ReactiveNodeVariable<VerstakExpressTheme>(
+export class Theme implements AbstractTheme {
+  private static readonly gCurrent = new ReactiveNodeVariable<AbstractTheme>(
     atomicRun({ isolation: Isolation.disjoinFromOuterTransaction }, () => new Theme()))
 
-  static get current(): VerstakExpressTheme {
+  static get current(): AbstractTheme {
     return Theme.gCurrent.value
   }
-  static set current(value: VerstakExpressTheme) {
+  static set current(value: AbstractTheme) {
     Theme.gCurrent.value = value
   }
 
