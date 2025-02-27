@@ -5,13 +5,13 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Note } from "verstak"
+import { TextBlock } from "verstak"
 import Md from "markdown-it"
 import * as prism from "prismjs"
 
 export function Markdown(content: string) {
   return (
-    Note(md.render(content), true, {
+    TextBlock(md.render(content), true, {
       preparation: (el, base) => {
         el.contentWrapping = true
         // b.native.setAttribute("markdown", "true")

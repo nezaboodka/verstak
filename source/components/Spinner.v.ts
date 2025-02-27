@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
-import { Panel, Note, El } from "verstak"
+import { Panel, TextBlock, El } from "verstak"
 import { observableModel, ValuesOrRefs } from "./common/Utils.js"
 
 export type SpinnerModel = {
@@ -23,7 +23,7 @@ export function Spinner(declaration?: ReactiveNodeDecl<El<HTMLElement, SpinnerMo
       },
       script: el => {
         const m = el.model
-        m.active && Note("loading...")
+        m.active && TextBlock("loading...")
       },
     }))
   )

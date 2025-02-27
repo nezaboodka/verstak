@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
-import { Panel, Note, El, OnClick } from "verstak"
+import { Panel, TextBlock, El, OnClick } from "verstak"
 import { observableModel } from "./common/Utils.js"
 import { Theme } from "./Theme.js"
 import { Icon } from "./Icon.v.js"
@@ -40,7 +40,7 @@ export function Button(declaration?: ReactiveNodeDecl<El<HTMLElement, ButtonMode
           })
         }
         if (m.label) {
-          Note(m.label, false, {
+          TextBlock(m.label, false, {
             script: (el, base) => {
               base()
               el.useStylingPreset(theme.label)

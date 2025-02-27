@@ -41,7 +41,7 @@ export type El<T = any, M = any> = {
 export enum ElKind {
   panel = 0,
   table = 1,
-  note = 2,
+  text = 2,
   group = 3,
   part = 4,
   splitter = 5,

@@ -82,7 +82,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   get index(): number { return this.node.slot!.index }
   get isPanel(): boolean { return this.kind === ElKind.panel }
   get isTable(): boolean { return this.kind === ElKind.table }
-  get isAuxiliary(): boolean { return this.kind > ElKind.note } // Part, Group, Cursor
+  get isAuxiliary(): boolean { return this.kind > ElKind.text } // Part, Group, Cursor
 
   get kind(): ElKind { return this._kind }
   set kind(value: ElKind) {
@@ -864,7 +864,7 @@ export const Constants = {
   wrapper: "wrapper",
   splitter: "splitter",
   group: "group",
-  layouts: ["panel", "table", "note", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
+  layouts: ["panel", "table", "text", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
   keyAttrName: "key",
   kindAttrName: "kind",
 }
@@ -890,7 +890,7 @@ const DriversByLayout: Array<Handler<El<HTMLElement>>> = [
     s.gridAutoColumns = "minmax(min-content, 1fr)"
     s.textAlign = "initial"
   },
-  el => { // note
+  el => { // text
     const owner = el.node.owner.element as ElImpl
     const s = el.style
     s.alignSelf = owner.isTable ? "stretch" : "center"

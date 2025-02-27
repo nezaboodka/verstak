@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
-import { Panel, Note, FocusModel, OnFocus, rowBreak, El, Handling, KeyboardSensor, KeyboardModifiers, Horizontal, Vertical } from "verstak"
+import { Panel, TextBlock, FocusModel, OnFocus, rowBreak, El, Handling, KeyboardSensor, KeyboardModifiers, Horizontal, Vertical } from "verstak"
 import { observableModel, ValuesOrRefs } from "./common/Utils.js"
 import { Theme, FieldStyling } from "./Theme.js"
 import { Icon } from "./Icon.v.js"
@@ -66,7 +66,7 @@ export function composeFieldModel<T>(props?: Partial<ValuesOrRefs<FieldModel<T>>
 
 function FieldInput(model: FieldModel, s: FieldStyling) {
   return (
-    Note(model.text, false, {
+    TextBlock(model.text, false, {
       key: FieldInput.name,
       preparation: (el, base) => {
         const e = el.native
@@ -116,7 +116,7 @@ function FieldPopup(model: FieldModel, s: FieldStyling) {
           if (options.length > 0) {
             for (const x of model.options) {
               rowBreak()
-              Note(x, false, {
+              TextBlock(x, false, {
                 key: x,
                 preparation: el => {
                   el.contentWrapping = false
@@ -125,7 +125,7 @@ function FieldPopup(model: FieldModel, s: FieldStyling) {
             }
           }
           else
-            Note("(nothing)", false, { key: "(nothing)" })
+            TextBlock("(nothing)", false, { key: "(nothing)" })
         }
       },
     })

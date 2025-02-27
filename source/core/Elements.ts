@@ -29,7 +29,7 @@ import { HtmlDriver, StaticDriver } from "./WebDriver.js"
 // Partition is a special non-visual element, which begins
 // new layout partition inside panel or table.
 
-// Note is either plain or markdown-formatted text
+// TextBlock is either plain or markdown-formatted text
 // supporting syntax highlighting for code blocks.
 
 // Group is a special non-visual element for logical
@@ -234,11 +234,11 @@ export function cursor(areaParams: ElPlace): void {
   })
 }
 
-// Note (either plain or html)
+// TextBlock (either plain or html)
 
-export function Note(content: string, formatted?: boolean,
+export function TextBlock(content: string, formatted?: boolean,
   declaration?: ReactiveNodeDecl<El<HTMLElement, void>>): ReactiveNode<El<HTMLElement, void>> {
-  return ReactiveNode.declare(Drivers.note, ReactiveNode.withBasis(declaration, {
+  return ReactiveNode.declare(Drivers.text, ReactiveNode.withBasis(declaration, {
     script: el => {
       if (formatted)
         el.native.innerHTML = content
@@ -499,7 +499,7 @@ export const Drivers = {
   table: new HtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.table),
 
   // display: block
-  note: new HtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.note),
+  text: new HtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.text),
 
   // display: contents
   group: new HtmlDriver<HTMLElement>(Constants.group, false, el => el.kind = ElKind.group),
