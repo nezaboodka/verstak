@@ -8,7 +8,7 @@
 import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
 import { El } from "../core/El.js"
 import { Div } from "./HtmlElements.js"
-import { Handling } from "../core/Elements.js"
+import { Fragment } from "../core/Elements.js"
 import { PointerSensor } from "../core/sensors/PointerSensor.js"
 
 export type DragAndDropHandler = (pointer: PointerSensor) => void
@@ -33,7 +33,7 @@ export function DraggableArea(
         const dataForSensor = e.dataForSensor
         dataForSensor.draggable = draggingId
         dataForSensor.drag = draggingId
-        Handling(() => {
+        Fragment(() => {
           const pointer = e.sensors.pointer
           if (pointer.dragSource === draggingId) {
             if (pointer.dragStarted) {

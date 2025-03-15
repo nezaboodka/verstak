@@ -9,14 +9,14 @@ import { cached } from "reactronic"
 import { css } from "@emotion/css"
 import { Styling } from "./Styling.js"
 
-export type FieldStyling = {
+export type InputStyling = {
   main: string
   icon: string
   input: string
   popup: string
 }
 
-export class DefaultFieldStyling extends Styling implements FieldStyling {
+export class DefaultInputStyling extends Styling implements InputStyling {
 
   @cached get main(): string { return css`
     border-radius: ${this.$.borderRadius};

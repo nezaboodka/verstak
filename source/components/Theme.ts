@@ -8,18 +8,18 @@
 import { atomicRun, ReactiveNodeVariable, Isolation } from "reactronic"
 import { BasicAbstractTheme } from "./theme/Styling.js"
 import { ButtonStyling, DefaultButtonStyling } from "./theme/Button.s.js"
-import { FieldStyling, DefaultFieldStyling  } from "./theme/Field.s.js"
+import { InputStyling, DefaultInputStyling  } from "./theme/Input.s.js"
 import { IconStyling, DefaultIconStyling  } from "./theme/Icon.s.js"
 import { ToggleStyling, DefaultToggleStyling } from "./theme/Toggle.s.js"
 
 export { type ButtonStyling, type DefaultButtonStyling } from "./theme/Button.s.js"
-export { type FieldStyling, type DefaultFieldStyling  } from "./theme/Field.s.js"
+export { type InputStyling, type DefaultInputStyling  } from "./theme/Input.s.js"
 export { type IconStyling, type DefaultIconStyling  } from "./theme/Icon.s.js"
 export { type ToggleStyling, type DefaultToggleStyling } from "./theme/Toggle.s.js"
 
 export type AbstractTheme = BasicAbstractTheme & {
   readonly button: ButtonStyling
-  readonly field: FieldStyling
+  readonly input: InputStyling
   readonly icon: IconStyling
   readonly toggle: ToggleStyling
 }
@@ -46,7 +46,7 @@ export class Theme implements AbstractTheme {
   outlinePadding = "0.25em"
   shadow = "0.1rem 0.1rem 0.5rem 0 rgba(127, 127, 127, 0.5)"
   button = new DefaultButtonStyling(this)
-  field = new DefaultFieldStyling(this)
+  input = new DefaultInputStyling(this)
   icon = new DefaultIconStyling(this)
   toggle = new DefaultToggleStyling(this)
 }

@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
-import { Panel, El } from "verstak"
+import { Division, El } from "verstak"
 import { observableModel } from "./common/Utils.js"
 
 export type ImageModel = {
@@ -15,7 +15,7 @@ export type ImageModel = {
 
 export function Image(declaration?: ReactiveNodeDecl<El<HTMLElement, ImageModel>>) {
   return (
-    Panel<ImageModel>(ReactiveNode.withBasis(declaration, {
+    Division<ImageModel>(ReactiveNode.withBasis(declaration, {
       mode: Mode.autonomous,
       preparation: el => {
         el.model ??= observableModel({ source: undefined })

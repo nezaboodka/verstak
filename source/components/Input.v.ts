@@ -6,12 +6,12 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
-import { Panel, TextBlock, FocusModel, OnFocus, rowBreak, El, Handling, KeyboardSensor, KeyboardModifiers, Horizontal, Vertical } from "verstak"
+import { Division, JustText, FocusModel, OnFocus, rowBreak, El, Fragment, KeyboardSensor, KeyboardModifiers, Horizontal, Vertical } from "verstak"
 import { observableModel, ValuesOrRefs } from "./common/Utils.js"
-import { Theme, FieldStyling } from "./Theme.js"
+import { Theme, InputStyling } from "./Theme.js"
 import { Icon } from "./Icon.v.js"
 
-export type FieldModel<T = string> = FocusModel & {
+export type InputModel<T = string> = FocusModel & {
   icon?: string
   text: string
   options: Array<T>
@@ -23,17 +23,17 @@ export type FieldModel<T = string> = FocusModel & {
   inputStyle: string
 }
 
-export function Field(declaration?: ReactiveNodeDecl<El<HTMLElement, FieldModel>>) {
+export function Input(declaration?: ReactiveNodeDecl<El<HTMLElement, InputModel>>) {
   return (
-    Panel<FieldModel>(ReactiveNode.withBasis(declaration, {
+    Division<InputModel>(ReactiveNode.withBasis(declaration, {
       mode: Mode.autonomous,
       preparation: el => {
-        el.model ??= composeFieldModel()
+        el.model ??= composeInputModel()
         el.native.dataForSensor.focus = el.model
       },
       script: el => {
         const m = el.model
-        const theme = Theme.current.field
+        const theme = Theme.current.input
         el.useStylingPreset(theme.main)
         if (m.icon)
           Icon(m.icon, {
@@ -42,14 +42,14 @@ export function Field(declaration?: ReactiveNodeDecl<El<HTMLElement, FieldModel>
               el.useStylingPreset(theme.icon)
             },
           })
-        FieldInput(m, theme)
-        FieldPopup(m, theme)
+        InputField(m, theme)
+        InputPopup(m, theme)
       },
     }))
   )
 }
 
-export function composeFieldModel<T>(props?: Partial<ValuesOrRefs<FieldModel<T>>>): FieldModel<T> {
+export function composeInputModel<T>(props?: Partial<ValuesOrRefs<InputModel<T>>>): InputModel<T> {
   return observableModel({
     icon: props?.icon,
     text: props?.text ?? "",
@@ -64,10 +64,10 @@ export function composeFieldModel<T>(props?: Partial<ValuesOrRefs<FieldModel<T>>
   })
 }
 
-function FieldInput(model: FieldModel, s: FieldStyling) {
+function InputField(model: InputModel, s: InputStyling) {
   return (
-    TextBlock(model.text, false, {
-      key: FieldInput.name,
+    JustText(model.text, false, {
+      key: InputField.name,
       preparation: (el, base) => {
         const e = el.native
         el.useStylingPreset(s.input)
@@ -82,7 +82,7 @@ function FieldInput(model: FieldModel, s: FieldStyling) {
         const e = el.native
         if (!model.isEditMode)
           e.innerText = model.text
-        Handling(() => {
+        Fragment(() => {
           const keyboard = e.sensors.keyboard
           if (keyboard.down) {
             if (isApplyKey(model, keyboard))
@@ -103,20 +103,20 @@ function FieldInput(model: FieldModel, s: FieldStyling) {
   )
 }
 
-function FieldPopup(model: FieldModel, s: FieldStyling) {
+function InputPopup(model: InputModel, s: InputStyling) {
   return (
-    Panel({
-      key: FieldPopup.name,
+    Division({
+      key: InputPopup.name,
       script: el => {
         el.useStylingPreset(s.popup)
-        Handling(() => model.position = el.native.sensors.scroll.y)
+        Fragment(() => model.position = el.native.sensors.scroll.y)
         const visible = el.overlayVisible = model.isEditMode
         if (visible) {
           const options = model.options
           if (options.length > 0) {
             for (const x of model.options) {
               rowBreak()
-              TextBlock(x, false, {
+              JustText(x, false, {
                 key: x,
                 preparation: el => {
                   el.contentWrapping = false
@@ -125,14 +125,14 @@ function FieldPopup(model: FieldModel, s: FieldStyling) {
             }
           }
           else
-            TextBlock("(nothing)", false, { key: "(nothing)" })
+            JustText("(nothing)", false, { key: "(nothing)" })
         }
       },
     })
   )
 }
 
-function isApplyKey(m: FieldModel, keyboard: KeyboardSensor): boolean {
+function isApplyKey(m: InputModel, keyboard: KeyboardSensor): boolean {
   const modifiers = keyboard.modifiers
   return keyboard.down === "Enter" && (
     !m.isMultiLineText || (modifiers & KeyboardModifiers.ctrlShiftMeta) > 0)

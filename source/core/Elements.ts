@@ -14,26 +14,26 @@ import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Siz
 import { HtmlDriver, StaticDriver } from "./WebDriver.js"
 
 // Verstak is based on two fundamental layout structures
-// called panel and table; and on two special non-visual
+// called division and table; and on two special non-visual
 // elements called partition and group.
 
 // Window is a root element, which element tree starts
 // from.
 
-// Panel is a layout structure, which children are laid
+// Division is a layout structure, which children are laid
 // out naturally: rightwards-downwards.
 
 // Table is layout structure, which children are laid out
 // over table cells.
 
 // Partition is a special non-visual element, which begins
-// new layout partition inside panel or table.
+// new layout partition inside division or table.
 
 // TextBlock is either plain or markdown-formatted text
 // supporting syntax highlighting for code blocks.
 
 // Group is a special non-visual element for logical
-// grouping of panels, tables and other groups.
+// grouping of divisions, tables and other groups.
 
 // Window
 
@@ -61,14 +61,14 @@ export function Window(
   finalization?: Script<El<HTMLBodyElement>>,
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<HTMLBodyElement>>): ReactiveNode<El<HTMLBodyElement>> {
-  const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.panel)
+  const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.division)
   return ReactiveNode.declare(driver, scriptOrDeclaration, scriptAsync,
     key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
-// Panel
+// Division
 
-export function Panel<M = unknown>(
+export function Division<M = unknown>(
   script?: Script<El<HTMLElement, M>>,
   scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
@@ -79,10 +79,10 @@ export function Panel<M = unknown>(
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>>
 
-export function Panel<M = unknown>(
+export function Division<M = unknown>(
   declaration?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>>
 
-export function Panel<M = unknown>(
+export function Division<M = unknown>(
   scriptOrDeclaration?: Script<El<HTMLElement, M>> | ReactiveNodeDecl<El<HTMLElement, M>>,
   scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
@@ -92,7 +92,7 @@ export function Panel<M = unknown>(
   finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<HTMLElement, M>>): ReactiveNode<El<HTMLElement, M>> {
-  return ReactiveNode.declare(Drivers.panel, scriptOrDeclaration, scriptAsync,
+  return ReactiveNode.declare(Drivers.division, scriptOrDeclaration, scriptAsync,
     key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
@@ -180,7 +180,7 @@ export function declareSplitter<T>(index: number, splitViewNode: ReactiveNode<El
         const dataForSensor = e.dataForSensor
         dataForSensor.draggable = key
         dataForSensor.drag = key
-        Handling(() => {
+        Fragment(() => {
           const pointer = e.sensors.pointer
           if (pointer.dragSource === key) {
             if (pointer.dragStarted) {
@@ -226,17 +226,17 @@ export function declareSplitter<T>(index: number, splitViewNode: ReactiveNode<El
   )
 }
 
-export function cursor(areaParams: ElPlace): void {
+export function cursor(place: ElPlace): void {
   ReactiveNode.declare(Drivers.cursor, {
     script: el => {
-      el.place = areaParams
+      el.place = place
     },
   })
 }
 
-// TextBlock (either plain or html)
+// JustText (either plain or html)
 
-export function TextBlock(content: string, formatted?: boolean,
+export function JustText(content: string, formatted?: boolean,
   declaration?: ReactiveNodeDecl<El<HTMLElement, void>>): ReactiveNode<El<HTMLElement, void>> {
   return ReactiveNode.declare(Drivers.text, ReactiveNode.withBasis(declaration, {
     script: el => {
@@ -280,12 +280,12 @@ export function Group<M = unknown>(
 
 // Fragment
 
-export function Handling<M = unknown>(
+export function Fragment<M = unknown>(
   script: Script<El<void, M>>): ReactiveNode<El<void, M>> {
-  return SyntheticElement({ mode: Mode.autonomous, script })
+  return PseudoElement({ mode: Mode.autonomous, script })
 }
 
-export function SyntheticElement<M = unknown>(
+export function PseudoElement<M = unknown>(
   script?: Script<El<void, M>>,
   scriptAsync?: ScriptAsync<El<void, M>>,
   key?: string,
@@ -296,10 +296,10 @@ export function SyntheticElement<M = unknown>(
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<void, M>>): ReactiveNode<El<void, M>>
 
-export function SyntheticElement<M = unknown>(
+export function PseudoElement<M = unknown>(
   declaration?: ReactiveNodeDecl<El<void, M>>): ReactiveNode<El<void, M>>
 
-export function SyntheticElement<M = unknown>(
+export function PseudoElement<M = unknown>(
   scriptOrDeclaration?: Script<El<void, M>> | ReactiveNodeDecl<El<void, M>>,
   scriptAsync?: ScriptAsync<El<void, M>>,
   key?: string,
@@ -309,13 +309,13 @@ export function SyntheticElement<M = unknown>(
   finalization?: Script<El<void, M>>,
   triggers?: unknown,
   basis?: ReactiveNodeDecl<El<void, M>>): ReactiveNode<El<void, M>> {
-  return ReactiveNode.declare(Drivers.synthetic, scriptOrDeclaration, scriptAsync,
+  return ReactiveNode.declare(Drivers.pseudo, scriptOrDeclaration, scriptAsync,
     key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
-// PanelDriver
+// DivisionDriver
 
-export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
+export class DivisionDriver<T extends HTMLElement> extends HtmlDriver<T> {
   override runScript(node: ReactiveNode<El<T>>): void | Promise<void> {
     rowBreak()
     const el = node.element as ElImpl
@@ -325,7 +325,7 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
         el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
       const layoutInfo = el.layoutInfo
       layoutInfo.isUpdateFinished = false
-      Handling(h => {
+      Fragment(h => {
         const native = el.native as HTMLElement
         const resize = native.sensors.resize
         for (const x of resize.resizedElements) {
@@ -337,7 +337,7 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
           layoutInfo.contentSizeYpx = contentBoxPx.blockSize
         }
       })
-      const relayoutEl = SyntheticElement({
+      const relayoutEl = PseudoElement({
         mode: Mode.autonomous,
         script: () => {
           const native = el.native as HTMLElement
@@ -387,7 +387,7 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
       ReactiveNode.runNestedNodeScriptsThenDo(() => {
         layoutInfo.isUpdateFinished = true
         // WORKAROUND: As long as "isUpdateFinished = true" does not trigger relaunch of
-        // "update" of SyntheticElement (such a relaunch requires subscriptions on values
+        // "update" of PseudoElement (such a relaunch requires subscriptions on values
         // of variables rather than variables themselves), we do it manually.
         ReactiveNode.triggerScriptRun(relayoutEl, { stamp: node.stamp })
       })
@@ -435,7 +435,7 @@ export class PanelDriver<T extends HTMLElement> extends HtmlDriver<T> {
 }
 
 export function isSplitViewPartition(childDriver: ReactiveNodeDriver): boolean {
-  return !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.synthetic
+  return !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.pseudo
 }
 
 function overrideMethod(declaration: ReactiveNodeDecl<El>, method: "preparation" | "script", func: (el: El) => void): void {
@@ -493,7 +493,7 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 export const Drivers = {
   // display: flex, flex-direction: column
-  panel: new PanelDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.panel),
+  division: new DivisionDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.division),
 
   // display: grid
   table: new HtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.table),
@@ -505,7 +505,7 @@ export const Drivers = {
   group: new HtmlDriver<HTMLElement>(Constants.group, false, el => el.kind = ElKind.group),
 
   // display: flex/row or contents
-  partition: new PartitionDriver<HTMLElement>(Constants.partition, true, el => el.kind = ElKind.part),
+  partition: new PartitionDriver<HTMLElement>(Constants.partition, true, el => el.kind = ElKind.partition),
 
   wrapper: new HtmlDriver<HTMLElement>(Constants.wrapper, false, el => el.kind = ElKind.native),
 
@@ -516,5 +516,5 @@ export const Drivers = {
   cursor: new CursorCommandDriver(),
 
   // (no element)
-  synthetic: new ElDriver<HTMLElement>("synthetic", false, el => el.kind = ElKind.group) as unknown as ReactiveNodeDriver<El<void, any>>,
+  pseudo: new ElDriver<HTMLElement>("pseudo", false, el => el.kind = ElKind.group) as unknown as ReactiveNodeDriver<El<void, any>>,
 }

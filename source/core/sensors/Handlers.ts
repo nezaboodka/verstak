@@ -6,14 +6,14 @@
 // automatically licensed under the license referred above.
 
 import { Mode, ToggleRef, nonReactiveRun } from "reactronic"
-import { SyntheticElement } from "../Elements.js"
+import { PseudoElement } from "../Elements.js"
 import { FocusModel } from "./FocusSensor.js"
 import { ResizedElement } from "./ResizeSensor.js"
 import { PointerSensor } from "./PointerSensor.js"
 
 export function OnClick(target: Element, action: ((pointer: PointerSensor) => void) | ToggleRef | undefined, key?: string): void {
   if (action !== undefined) {
-    SyntheticElement({
+    PseudoElement({
       key,
       mode: Mode.autonomous,
       triggers: { target/* , action */ },
@@ -34,7 +34,7 @@ export function OnClick(target: Element, action: ((pointer: PointerSensor) => vo
 
 export function OnClickAsync(target: HTMLElement, action: ((pointer: PointerSensor) => Promise<void>) | ToggleRef | undefined, key?: string): void {
   if (action !== undefined) {
-    SyntheticElement({
+    PseudoElement({
       key,
       mode: Mode.autonomous,
       triggers: { target/* , action */ },
@@ -55,7 +55,7 @@ export function OnClickAsync(target: HTMLElement, action: ((pointer: PointerSens
 
 export function OnResize(target: HTMLElement, action: ((element: ResizedElement) => void) | undefined, key?: string): void {
   if (action) {
-    SyntheticElement({
+    PseudoElement({
       key,
       mode: Mode.autonomous,
       triggers: { target/* , action */ },
@@ -73,7 +73,7 @@ export function OnFocus(
   target: HTMLElement, model: FocusModel,
   switchEditMode: ((model: FocusModel) => void) | undefined = undefined,
   key?: string): void {
-  SyntheticElement({
+  PseudoElement({
     key,
     mode: Mode.autonomous,
     triggers: { target, model },

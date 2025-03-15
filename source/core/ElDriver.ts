@@ -56,7 +56,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this.native = undefined as any as T // hack
     // User-defined properties
     this.model = undefined as any
-    this._kind = ElKind.part
+    this._kind = ElKind.partition
     this._place = undefined
     this._coords = UndefinedElCoords
     this._width = new Size()
@@ -80,7 +80,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   get index(): number { return this.node.slot!.index }
-  get isPanel(): boolean { return this.kind === ElKind.panel }
+  get isDivision(): boolean { return this.kind === ElKind.division }
   get isTable(): boolean { return this.kind === ElKind.table }
   get isAuxiliary(): boolean { return this.kind > ElKind.text } // Part, Group, Cursor
 
@@ -864,13 +864,13 @@ export const Constants = {
   wrapper: "wrapper",
   splitter: "splitter",
   group: "group",
-  layouts: ["panel", "table", "text", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
+  layouts: ["division", "table", "text", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
   keyAttrName: "key",
   kindAttrName: "kind",
 }
 
 const DriversByLayout: Array<Handler<El<HTMLElement>>> = [
-  el => { // panel
+  el => { // division
     const owner = el.node.owner.element as ElImpl
     const s = el.style
     s.display = "flex"

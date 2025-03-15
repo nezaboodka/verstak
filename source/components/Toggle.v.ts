@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
-import { Panel, TextBlock, El, OnClick } from "verstak"
+import { Division, JustText, El, OnClick } from "verstak"
 import { observableModel } from "./common/Utils.js"
 import { Theme } from "./Theme.js"
 import { Icon } from "./Icon.v.js"
@@ -19,7 +19,7 @@ export type ToggleModel = {
 
 export function Toggle(declaration?: ReactiveNodeDecl<El<HTMLElement, ToggleModel>>) {
   return (
-    Panel<ToggleModel>(ReactiveNode.withBasis(declaration, {
+    Division<ToggleModel>(ReactiveNode.withBasis(declaration, {
       mode: Mode.autonomous,
       preparation: el => {
         el.model ??= observableModel({
@@ -40,7 +40,7 @@ export function Toggle(declaration?: ReactiveNodeDecl<El<HTMLElement, ToggleMode
           },
         })
         if (m.label) {
-          TextBlock(m.label, false, {
+          JustText(m.label, false, {
             script: (el, base) => {
               base()
               el.useStylingPreset(toggleTheme.label)

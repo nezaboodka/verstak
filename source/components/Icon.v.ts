@@ -6,13 +6,13 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
-import { Panel, El } from "verstak"
+import { Division, El } from "verstak"
 import { Theme } from "./Theme.js"
 
 export function Icon(name: string,
   declaration?: ReactiveNodeDecl<El<HTMLElement, void>>) {
   return (
-    Panel(ReactiveNode.withBasis(declaration, {
+    Division(ReactiveNode.withBasis(declaration, {
       mode: Mode.autonomous,
       triggers: { name },
       script: el => {
