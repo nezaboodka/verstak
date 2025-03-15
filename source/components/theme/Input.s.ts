@@ -12,7 +12,7 @@ import { Styling } from "./Styling.js"
 export type InputStyling = {
   main: string
   icon: string
-  input: string
+  field: string
   popup: string
 }
 
@@ -31,7 +31,7 @@ export class DefaultInputStyling extends Styling implements InputStyling {
     color: ${this.$.outlineColor};
   `}
 
-  @cached get input(): string { return css`
+  @cached get field(): string { return css`
     padding: ${this.$.outlinePadding};
   `}
 

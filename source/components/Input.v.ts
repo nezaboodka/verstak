@@ -64,13 +64,13 @@ export function composeInputModel<T>(props?: Partial<ValuesOrRefs<InputModel<T>>
   })
 }
 
-function InputField(model: InputModel, s: InputStyling) {
+function InputField(model: InputModel, styling: InputStyling) {
   return (
     JustText(model.text, false, {
       key: InputField.name,
       preparation: (el, base) => {
         const e = el.native
-        el.useStylingPreset(s.input)
+        el.useStylingPreset(styling.field)
         el.horizontally = Horizontal.stretch
         el.vertically = Vertical.stretch
         e.tabIndex = 0
@@ -103,12 +103,12 @@ function InputField(model: InputModel, s: InputStyling) {
   )
 }
 
-function InputPopup(model: InputModel, s: InputStyling) {
+function InputPopup(model: InputModel, styling: InputStyling) {
   return (
     Division({
       key: InputPopup.name,
       script: el => {
-        el.useStylingPreset(s.popup)
+        el.useStylingPreset(styling.popup)
         Fragment(() => model.position = el.native.sensors.scroll.y)
         const visible = el.overlayVisible = model.isEditMode
         if (visible) {
