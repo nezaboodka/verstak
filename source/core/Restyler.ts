@@ -7,11 +7,11 @@
 
 import { cached, atomicRun } from "reactronic"
 
-export function restyler<T>(restyle: () => T): ObservablesStyles<T> {
-  return atomicRun(() => new ObservablesStyles<T>(restyle))
+export function restyler<T>(restyle: () => T): TriggeringStyles<T> {
+  return atomicRun(() => new TriggeringStyles<T>(restyle))
 }
 
-export class ObservablesStyles<T> {
+export class TriggeringStyles<T> {
   constructor(private readonly restyle: () => T) {
   }
 

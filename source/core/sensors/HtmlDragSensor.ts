@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reactive, atomic, unobservable, Transaction, LoggingLevel } from "reactronic"
+import { options, reactive, atomic, trigger, Transaction, LoggingLevel } from "reactronic"
 import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
 import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
@@ -24,14 +24,14 @@ export class HtmlDragSensor extends HtmlElementSensor {
   dragFinished: boolean
   startX: number // position relative to browser's viewport
   startY: number // position relative to browser's viewport
-  @unobservable private dataByFormat: Map<string, unknown>
-  @unobservable private draggingImage: HTMLElement | undefined
-  @unobservable private draggingImageX: number
-  @unobservable private draggingImageY: number
-  @unobservable dropEffect: DropEffect
-  @unobservable dataTypesAllowed: string[]
-  @unobservable effectAllowed: DragEffectAllowed
-  @unobservable dropAllowed: boolean
+  @trigger(false) private dataByFormat: Map<string, unknown>
+  @trigger(false) private draggingImage: HTMLElement | undefined
+  @trigger(false) private draggingImageX: number
+  @trigger(false) private draggingImageY: number
+  @trigger(false) dropEffect: DropEffect
+  @trigger(false) dataTypesAllowed: string[]
+  @trigger(false) effectAllowed: DragEffectAllowed
+  @trigger(false) dropAllowed: boolean
   draggingOver: boolean
   draggingDataTypes: string[]
   positionX: number // position relative to browser's viewport

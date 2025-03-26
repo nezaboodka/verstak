@@ -7,7 +7,7 @@
 
 import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
 import { Division, JustText, FocusModel, OnFocus, rowBreak, El, Fragment, KeyboardSensor, KeyboardModifiers, Horizontal, Vertical } from "verstak"
-import { observableModel, ValuesOrRefs } from "./common/Utils.js"
+import { triggeringModel, ValuesOrRefs } from "./common/Utils.js"
 import { Theme, InputStyling } from "./Theme.js"
 import { Icon } from "./Icon.v.js"
 
@@ -50,7 +50,7 @@ export function Input(declaration?: ReactiveNodeDecl<El<HTMLElement, InputModel>
 }
 
 export function composeInputModel<T>(props?: Partial<ValuesOrRefs<InputModel<T>>>): InputModel<T> {
-  return observableModel({
+  return triggeringModel({
     icon: props?.icon,
     text: props?.text ?? "",
     options: props?.options ?? [],

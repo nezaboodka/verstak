@@ -1,6 +1,6 @@
-import { ObservableObject, atomic, reactive } from "reactronic"
+import { TriggeringObject, atomic, reactive } from "reactronic"
 
-export class RealTimeClock extends ObservableObject {
+export class RealTimeClock extends TriggeringObject {
   hour: number = 0
   minute: number = 0
   second: number = 0

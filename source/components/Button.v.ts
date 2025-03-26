@@ -7,7 +7,7 @@
 
 import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
 import { Division, JustText, El, OnClick } from "verstak"
-import { observableModel } from "./common/Utils.js"
+import { triggeringModel } from "./common/Utils.js"
 import { Theme } from "./Theme.js"
 import { Icon } from "./Icon.v.js"
 
@@ -22,7 +22,7 @@ export function Button(declaration?: ReactiveNodeDecl<El<HTMLElement, ButtonMode
     Division<ButtonModel>(ReactiveNode.withBasis(declaration, {
       mode: Mode.autonomous,
       preparation: el => {
-        el.model ??= observableModel({
+        el.model ??= triggeringModel({
           icon: "fa-solid fa-square",
           label: ReactiveNode.key,
         })

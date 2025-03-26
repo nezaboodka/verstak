@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveNode, Handler, BaseDriver, MergedItem, Transaction, observable, ObservableObject } from "reactronic"
+import { ReactiveNode, Handler, BaseDriver, MergedItem, Transaction, trigger, TriggeringObject } from "reactronic"
 import { El, ElKind, ElCoords, Horizontal, Vertical, Range, ElPlace, Direction } from "./El.js"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
@@ -659,7 +659,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
 // Size
 
-class Size extends ObservableObject {
+class Size extends TriggeringObject {
   raw: Range
   minPx: number
   maxPx: number
@@ -683,14 +683,14 @@ export class ElLayoutInfo {
   alignerY?: ElImpl
   flags: ElLayoutInfoFlags
 
-  @observable effectiveSizePx: number
+  @trigger effectiveSizePx: number
 
-  @observable contentSizeXpx: number
-  @observable contentSizeYpx: number
-  @observable borderSizeYpx: number
-  @observable borderSizeXpx: number
+  @trigger contentSizeXpx: number
+  @trigger contentSizeYpx: number
+  @trigger borderSizeYpx: number
+  @trigger borderSizeXpx: number
 
-  @observable isUpdateFinished: boolean
+  @trigger isUpdateFinished: boolean
 
   constructor(prev: ElLayoutInfo) {
     this.x = prev.x

@@ -7,7 +7,7 @@
 
 import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
 import { Division, El } from "verstak"
-import { observableModel } from "./common/Utils.js"
+import { triggeringModel } from "./common/Utils.js"
 
 export type ImageModel = {
   source?: string
@@ -18,7 +18,7 @@ export function Image(declaration?: ReactiveNodeDecl<El<HTMLElement, ImageModel>
     Division<ImageModel>(ReactiveNode.withBasis(declaration, {
       mode: Mode.autonomous,
       preparation: el => {
-        el.model ??= observableModel({ source: undefined })
+        el.model ??= triggeringModel({ source: undefined })
       },
       script: el => {
         const m = el.model
