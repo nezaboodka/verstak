@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { cached } from "reactronic"
+import { cache } from "reactronic"
 import { css } from "@emotion/css"
 import { Styling } from "./Styling.js"
 
@@ -17,19 +17,22 @@ export type ButtonStyling = {
 
 export class DefaultButtonStyling extends Styling implements ButtonStyling {
 
-  @cached get main(): string { return css`
+  @cache
+  get main(): string { return css`
     cursor: pointer;
     border-radius: ${this.$.borderRadius};
     user-select: none;
   `}
 
-  @cached get icon(): string { return css`
+  @cache
+  get icon(): string { return css`
     min-width: auto;
     margin-left: ${this.$.outlinePadding};
     margin-right: ${this.$.outlinePadding};
   `}
 
-  @cached get label(): string { return css`
+  @cache
+  get label(): string { return css`
     margin-left: ${this.$.outlinePadding};
     margin-right: ${this.$.outlinePadding};
   `}

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { cached } from "reactronic"
+import { cache } from "reactronic"
 import { css } from "@emotion/css"
 import { Styling } from "./Styling.js"
 
@@ -18,24 +18,28 @@ export type InputStyling = {
 
 export class DefaultInputStyling extends Styling implements InputStyling {
 
-  @cached get main(): string { return css`
+  @cache
+  get main(): string { return css`
     border-radius: ${this.$.borderRadius};
     outline: ${this.$.outlineWidth} solid ${this.$.outlineColor};
     outline-offset: -${this.$.outlineWidth};
   `}
 
-  @cached get icon(): string { return css`
+  @cache
+  get icon(): string { return css`
     margin-left: ${this.$.outlinePadding};
     min-width: 1.25em;
     text-align: center;
     color: ${this.$.outlineColor};
   `}
 
-  @cached get field(): string { return css`
+  @cache
+  get field(): string { return css`
     padding: ${this.$.outlinePadding};
   `}
 
-  @cached get popup(): string { return css`
+  @cache
+  get popup(): string { return css`
     border-radius: ${this.$.borderRadius};
     outline: ${this.$.outlineWidth} solid ${this.$.outlineColor};
     outline-offset: -${this.$.outlineWidth};
