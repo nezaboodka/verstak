@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, trigger, atomicBlock, reaction, Reentrance, Transaction, LoggingLevel } from "reactronic"
+import { options, trigger, atomic, reaction, Reentrance, Transaction, LoggingLevel } from "reactronic"
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from "./BasePointerSensor.js"
 import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
 import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
@@ -176,13 +176,13 @@ export class PointerSensor extends BasePointerSensor {
     }
   }
 
-  @atomicBlock @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected moveOver(e: PointerEvent): void {
     this.immediatePositionX = e.clientX
     this.immediatePositionY = e.clientY
   }
 
-  @atomicBlock @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected tryClickingOrDragging(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -214,13 +214,13 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @atomicBlock @options({ reentrance: Reentrance.cancelPrevious, logging: LoggingLevel.Off })
+  @atomic @options({ reentrance: Reentrance.cancelPrevious, logging: LoggingLevel.Off })
   protected clickingOver(e: PointerEvent): void {
     this.updateClicking(e)
     this.revision++
   }
 
-  @atomicBlock @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected click(e: PointerEvent): void {
     if (this.updateClicking(e)) {
       this.modifiers = this.immediateModifiers
@@ -232,7 +232,7 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @atomicBlock @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected startDragging(e: PointerEvent): void {
     this.updateDragTarget(e)
     this.clickable = undefined
@@ -243,7 +243,7 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @atomicBlock @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected dragOver(e: PointerEvent): void {
     this.updateDragTarget(e)
     this.draggingOver = true
@@ -251,7 +251,7 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @atomicBlock @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected drop(e: PointerEvent): void {
     this.updateDragTarget(e)
     this.modifiers = this.immediateModifiers
@@ -261,14 +261,14 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @atomicBlock @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected finishDragging(): void {
     this.dragFinished = true
     this.tryingDragging = false
     this.revision++
   }
 
-  @atomicBlock @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected cancelDragging(): void {
     this.dragFinished = true
     this.tryingDragging = false
@@ -276,7 +276,7 @@ export class PointerSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @atomicBlock @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected reset(): void {
     this.pointerButton = PointerButton.none
     this.clickable = undefined

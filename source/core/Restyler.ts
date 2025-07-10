@@ -5,10 +5,10 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { cache, atomicRun } from "reactronic"
+import { cache, runAtomically } from "reactronic"
 
 export function restyler<T>(restyle: () => T): TriggeringStyles<T> {
-  return atomicRun(() => new TriggeringStyles<T>(restyle))
+  return runAtomically(() => new TriggeringStyles<T>(restyle))
 }
 
 export class TriggeringStyles<T> {

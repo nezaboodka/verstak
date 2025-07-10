@@ -1,4 +1,4 @@
-import { TriggeringObject, atomicBlock, reaction } from "reactronic"
+import { TriggeringObject, atomic, reaction } from "reactronic"
 
 export class RealTimeClock extends TriggeringObject {
   hour: number = 0
@@ -14,12 +14,12 @@ export class RealTimeClock extends TriggeringObject {
     this.put(new Date())
   }
 
-  @atomicBlock
+  @atomic
   pause(value: boolean = true): void {
     this.paused = value
   }
 
-  @atomicBlock
+  @atomic
   private tick(): void {
     let calibration = 0
     try {

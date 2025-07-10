@@ -5,14 +5,14 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { TriggeringObject, Ref, atomicRun, Isolation } from "reactronic"
+import { TriggeringObject, Ref, runAtomically, Isolation } from "reactronic"
 
 export type ValuesOrRefs<T> = {
   [K in keyof T]: T[K] | Ref<T[K]>
 }
 
 export function triggeringModel<T extends Object>(modelProps: ValuesOrRefs<T>): T {
-  return atomicRun({ isolation: Isolation.disjoinFromOuterTransaction }, () =>
+  return runAtomically({ isolation: Isolation.disjoinFromOuterTransaction }, () =>
     new TriggeringComposition(modelProps) as unknown as T)
 }
 

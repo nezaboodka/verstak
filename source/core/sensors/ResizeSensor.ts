@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, atomicBlock, LoggingLevel } from "reactronic"
+import { options, atomic, LoggingLevel } from "reactronic"
 import { El } from "../El.js"
 import { Sensor } from "./Sensor.js"
 
@@ -25,7 +25,7 @@ export class ResizeSensor extends Sensor {
     this.observer = new ResizeObserver(this.onResize.bind(this))
   }
 
-  @atomicBlock
+  @atomic
   reset(): void {
     this.doReset()
   }
@@ -55,7 +55,7 @@ export class ResizeSensor extends Sensor {
     this.reset()
   }
 
-  @atomicBlock @options({ logging: LoggingLevel.Off })
+  @atomic @options({ logging: LoggingLevel.Off })
   protected resize(entries: Array<ResizeObserverEntry>): void {
     this.revision++
     this.resizedElements = entries.map(entry => {
