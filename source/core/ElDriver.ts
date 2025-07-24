@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveNode, Handler, BaseDriver, MergedItem, Transaction, trigger, TriggeringObject } from "reactronic"
+import { ReactiveTree, ReactiveTreeNode, Handler, BaseDriver, MergedItem, Transaction, observable, ObservableObject } from "reactronic"
 import { El, ElKind, ElCoords, Horizontal, Vertical, Range, ElPlace, Direction } from "./El.js"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
@@ -13,7 +13,7 @@ import { equalElCoords, parseElCoords } from "./ElUtils.js"
 // ElDriver
 
 export class ElDriver<T extends Element, M = unknown> extends BaseDriver<El<T, M>> {
-  override create(node: ReactiveNode<El<T, M>>): El<T, M> {
+  override create(node: ReactiveTreeNode<El<T, M>>): El<T, M> {
     return new ElImpl<T, M>(node)
   }
 }
@@ -22,7 +22,7 @@ export class ElDriver<T extends Element, M = unknown> extends BaseDriver<El<T, M
 
 export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   // System-managed properties
-  readonly node: ReactiveNode<El<T, M>>
+  readonly node: ReactiveTreeNode<El<T, M>>
   maxColumnCount: number
   maxRowCount: number
   layoutInfo?: ElLayoutInfo
@@ -47,7 +47,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _splitView: Direction | undefined
   private _hasStylingPresets: boolean
 
-  constructor(node: ReactiveNode<El<T, M>>) {
+  constructor(node: ReactiveTreeNode<El<T, M>>) {
     // System-managed properties
     this.node = node
     this.maxColumnCount = 0
@@ -98,7 +98,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     const node = this.node
     const driver = node.driver
     if (!driver.isPartition) {
-      const owner = node.owner as ReactiveNode<ElImpl>
+      const owner = node.owner as ReactiveTreeNode<ElImpl>
       const ownerEl = owner.element
       const prevEl = node.slot!.prev?.instance.element as ElImpl
       const prevElLayoutInfo = prevEl?.layoutInfo ?? InitialElLayoutInfo
@@ -260,12 +260,12 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   protected *children(onlyAfter?: ElImpl): Generator<ElImpl> {
-    const after: MergedItem<ReactiveNode<any>> | undefined = onlyAfter?.node.slot
+    const after: MergedItem<ReactiveTreeNode<any>> | undefined = onlyAfter?.node.slot
     for (const child of this.node.children.items(after))
       yield child.instance.element as ElImpl
   }
 
-  static *childrenOf(node: ReactiveNode<El>, onlyAfter?: El): Generator<ElImpl> {
+  static *childrenOf(node: ReactiveTreeNode<El>, onlyAfter?: El): Generator<ElImpl> {
     return (node.element as ElImpl).children(onlyAfter as ElImpl)
   }
 
@@ -300,7 +300,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private static applyWidth<T extends Element>(element: ElImpl<T, any>, value: Range): void {
     const s = element.style
     const node = element.node
-    const owner = node.owner as ReactiveNode<ElImpl>
+    const owner = node.owner as ReactiveTreeNode<ElImpl>
     const ownerEl = owner.element
     if (ownerEl.splitView === Direction.horizontal) {
       // s.minWidth = "" // clear
@@ -318,7 +318,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private static applyHeight<T extends Element>(element: ElImpl<T, any>, value: Range): void {
     const s = element.style
     const node = element.node
-    const owner = node.owner as ReactiveNode<ElImpl>
+    const owner = node.owner as ReactiveTreeNode<ElImpl>
     const ownerEl = owner.element
     if (ownerEl.splitView === Direction.vertical) {
       // s.minHeight = "" // clear
@@ -599,7 +599,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
   private static applyOverlayVisible<T extends Element>(element: ElImpl<T, any>, value: boolean | undefined): void {
     const s = element.style
-    const host = ReactiveNode.findMatchingHost<El, El>(element.node, n =>
+    const host = ReactiveTree.findMatchingHost<El, El>(element.node, n =>
       n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
     const nativeHost = host?.element.native
     if (value === true) {
@@ -659,7 +659,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
 // Size
 
-class Size extends TriggeringObject {
+class Size extends ObservableObject {
   raw: Range
   minPx: number
   maxPx: number
@@ -683,14 +683,14 @@ export class ElLayoutInfo {
   alignerY?: ElImpl
   flags: ElLayoutInfoFlags
 
-  @trigger effectiveSizePx: number
+  @observable effectiveSizePx: number
 
-  @trigger contentSizeXpx: number
-  @trigger contentSizeYpx: number
-  @trigger borderSizeYpx: number
-  @trigger borderSizeXpx: number
+  @observable contentSizeXpx: number
+  @observable contentSizeYpx: number
+  @observable borderSizeYpx: number
+  @observable borderSizeXpx: number
 
-  @trigger isUpdateFinished: boolean
+  @observable isUpdateFinished: boolean
 
   constructor(prev: ElLayoutInfo) {
     this.x = prev.x

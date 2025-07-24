@@ -5,11 +5,11 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveNode } from "reactronic"
+import { ReactiveTreeNode } from "reactronic"
 
 export type El<T = any, M = any> = {
   // System-managed properties
-  readonly node: ReactiveNode<El<T, M>>
+  readonly node: ReactiveTreeNode<El<T, M>>
   readonly index: number
   native: T
 

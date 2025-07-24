@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveSystem, ReactiveNode, Priority, Handler, proceedSyncOrAsync } from "reactronic"
+import { ReactiveTree, ReactiveTreeNode, ReactiveSystem, Priority, Handler, proceedSyncOrAsync } from "reactronic"
 import { El } from "./El.js"
 import { Constants, ElDriver, ElImpl } from "./ElDriver.js"
 
@@ -13,11 +13,11 @@ import { Constants, ElDriver, ElImpl } from "./ElDriver.js"
 
 export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
 
-  setNativeElement(node: ReactiveNode<El<T, M>>): void {
+  setNativeElement(node: ReactiveTreeNode<El<T, M>>): void {
     // it's up to descendant class to define logic
   }
 
-  override runPreparation(node: ReactiveNode<El<T, M>>): void | Promise<void> {
+  override runPreparation(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
     this.setNativeElement(node)
     const e = node.element.native
     if (ReactiveSystem.isLogging && e !== undefined && !node.driver.isPartition)
@@ -28,7 +28,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     return result
   }
 
-  override runFinalization(node: ReactiveNode<El<T, M>>, isLeader: boolean): boolean {
+  override runFinalization(node: ReactiveTreeNode<El<T, M>>, isLeader: boolean): boolean {
     const element = node.element
     const native = element.native as T | undefined // hack
     if (native) {
@@ -41,19 +41,19 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     return false // children elements having native HTML elements are not treated as leaders
   }
 
-  override runMount(node: ReactiveNode<El<T, M>>): void {
+  override runMount(node: ReactiveTreeNode<El<T, M>>): void {
     const element = node.element
     const native = element.native as T | undefined // hack
     if (native) {
       const sequential = node.owner.children.isStrict
-      const automaticHost = ReactiveNode.findMatchingHost<El, El>(node, n =>
+      const automaticHost = ReactiveTree.findMatchingHost<El, El>(node, n =>
         n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
       const automaticNativeHost = automaticHost !== node.owner
         ? automaticHost?.driver.provideHost(automaticHost).element.native
         : automaticHost?.element.native
       if (automaticNativeHost) {
         if (sequential && !node.driver.isPartition) {
-          const after = ReactiveNode.findMatchingPrevSibling<El, El>(node, n =>
+          const after = ReactiveTree.findMatchingPrevSibling<El, El>(node, n =>
             n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
           if (after === undefined || after.driver.isPartition) {
             if (automaticNativeHost !== native.parentNode || !native.previousSibling)
@@ -73,7 +73,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     }
   }
 
-  override runScript(node: ReactiveNode<El<T, M>>): void | Promise<void> {
+  override runScript(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
     const element = node.element
     if (element instanceof ElImpl)
       element.prepareForUpdate()
@@ -86,20 +86,20 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
             element.place = undefined // automatic placement in table
         }
         if (gBlinkingEffectMarker)
-          blink(element.native, ReactiveNode.currentScriptPriority, node.stamp)
+          blink(element.native, ReactiveTreeNode.effectiveScriptPriority, node.stamp)
       },
       e => {
       })
     return result
   }
 
-  static findBrotherlyHost<T, R>(node: ReactiveNode<El<T>>): ReactiveNode<El<R>> | undefined {
-    return ReactiveNode.findMatchingHost<El, El>(node, n =>
+  static findBrotherlyHost<T, R>(node: ReactiveTreeNode<El<T>>): ReactiveTreeNode<El<R>> | undefined {
+    return ReactiveTree.findMatchingHost<El, El>(node, n =>
       n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
   }
 
-  static findBrotherlyPrevSibling<T, R>(node: ReactiveNode<El<T>>): ReactiveNode<El<R>> | undefined {
-    return ReactiveNode.findMatchingPrevSibling<El, El>(node, n =>
+  static findBrotherlyPrevSibling<T, R>(node: ReactiveTreeNode<El<T>>): ReactiveTreeNode<El<R>> | undefined {
+    return ReactiveTree.findMatchingPrevSibling<El, El>(node, n =>
       n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
   }
 
@@ -123,7 +123,7 @@ export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
     this.native = native
   }
 
-  override setNativeElement(node: ReactiveNode<El<T>>): void {
+  override setNativeElement(node: ReactiveTreeNode<El<T>>): void {
     node.element.native = this.native
   }
 }
@@ -131,7 +131,7 @@ export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
 // HtmlDriver
 
 export class HtmlDriver<T extends HTMLElement, M = any> extends WebDriver<T, M> {
-  override setNativeElement(node: ReactiveNode<El<T, M>>): void {
+  override setNativeElement(node: ReactiveTreeNode<El<T, M>>): void {
     node.element.native = document.createElement(node.driver.name) as T
   }
 }
@@ -139,7 +139,7 @@ export class HtmlDriver<T extends HTMLElement, M = any> extends WebDriver<T, M> 
 // SvgDriver
 
 export class SvgDriver<T extends SVGElement, M = any> extends WebDriver<T, M> {
-  override setNativeElement(node: ReactiveNode<El<T, M>>): void {
+  override setNativeElement(node: ReactiveTreeNode<El<T, M>>): void {
     node.element.native = document.createElementNS("http://www.w3.org/2000/svg", node.driver.name) as T
   }
 }

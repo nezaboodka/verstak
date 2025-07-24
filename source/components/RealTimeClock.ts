@@ -1,6 +1,13 @@
-import { TriggeringObject, atomic, reaction } from "reactronic"
+// The below copyright notice and the license permission notice
+// shall be included in all copies or substantial portions.
+// Copyright (C) 2022-2025 Nezaboodka Software <contact@nezaboodka.com>
+// License: https://raw.githubusercontent.com/nezaboodka/verstak/master/LICENSE
+// By contributing, you agree that your contributions will be
+// automatically licensed under the license referred above.
 
-export class RealTimeClock extends TriggeringObject {
+import { ObservableObject, atomic, reactive } from "reactronic"
+
+export class RealTimeClock extends ObservableObject {
   hour: number = 0
   minute: number = 0
   second: number = 0
@@ -32,7 +39,7 @@ export class RealTimeClock extends TriggeringObject {
     }
   }
 
-  @reaction // one-time boot reaction
+  @reactive // one-time boot reactive
   protected activate(): void {
     this.tick()
   }

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveNodeDecl, Mode, ReactiveNode } from "reactronic"
+import { ReactiveTree, ReactiveTreeNode, ReactiveTreeNodeDecl, Mode  } from "reactronic"
 import { El } from "../core/El.js"
 import { Div } from "./HtmlElements.js"
 import { Fragment } from "../core/Elements.js"
@@ -22,10 +22,10 @@ export interface DraggableAreaModel {
 
 export function DraggableArea(
   draggingId: string,
-  builder: ReactiveNodeDecl<El<HTMLDivElement, DraggableAreaModel>>): ReactiveNode<El<HTMLDivElement>> {
+  builder: ReactiveTreeNodeDecl<El<HTMLDivElement, DraggableAreaModel>>): ReactiveTreeNode<El<HTMLDivElement>> {
   // triggers = triggers ? { ...triggers, draggingId } : { draggingId }
   return (
-    Div<DraggableAreaModel>(ReactiveNode.withBasis(builder, {
+    Div<DraggableAreaModel>(ReactiveTree.withBasis(builder, {
       mode: Mode.autonomous,
       script: b => {
         const e = b.native

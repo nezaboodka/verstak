@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { TriggeringObject, Ref, runAtomically, Isolation } from "reactronic"
+import { ObservableObject, Ref, runAtomically, Isolation } from "reactronic"
 
 export type ValuesOrRefs<T> = {
   [K in keyof T]: T[K] | Ref<T[K]>
@@ -16,7 +16,7 @@ export function triggeringModel<T extends Object>(modelProps: ValuesOrRefs<T>): 
     new TriggeringComposition(modelProps) as unknown as T)
 }
 
-class TriggeringComposition<T> extends TriggeringObject {
+class TriggeringComposition<T> extends ObservableObject {
   constructor(composition: ValuesOrRefs<T>) {
     super()
     convertValuesToFieldsAndRefsToGetSet(this, composition)

@@ -42,7 +42,7 @@
     "markdown-it": "^14.1.0",
     "markdown-it-prism": "^2.3.0",
     "prismjs": "^1.29.0",
-    "reactronic": "^0.93.25026"
+    "reactronic": "^0.94.25029"
   },
   "devDependencies": {
     "@types/markdown-it": "14.1.2",

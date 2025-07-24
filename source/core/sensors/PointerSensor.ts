@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, trigger, atomic, reaction, Reentrance, Transaction, LoggingLevel } from "reactronic"
+import { options, observable, atomic, reactive, Reentrance, Transaction, LoggingLevel } from "reactronic"
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from "./BasePointerSensor.js"
 import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
 import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
@@ -13,14 +13,14 @@ import { WindowSensor } from "./WindowSensor.js"
 
 export class PointerSensor extends BasePointerSensor {
   pointerButton: PointerButton
-  @trigger(false) private clickable: unknown
+  @observable(false) private clickable: unknown
   hotPositionX: number
   hotPositionY: number
   clicking: unknown
   clicked: unknown
   clickX: number // position relative to browser's viewport
   clickY: number // position relative to browser's viewport
-  @trigger(false) private tryingDragging: boolean
+  @observable(false) private tryingDragging: boolean
   draggableData: unknown
   dragSource: unknown
   dragTarget: unknown
@@ -30,8 +30,8 @@ export class PointerSensor extends BasePointerSensor {
   dragFinished: boolean
   startX: number // position relative to browser's viewport
   startY: number // position relative to browser's viewport
-  @trigger(false) private draggingData: unknown
-  @trigger(false) dropAllowed: boolean
+  @observable(false) private draggingData: unknown
+  @observable(false) dropAllowed: boolean
   draggingOver: boolean
   // positionX: number // position relative to browser's viewport
   // positionY: number // position relative to browser's viewport
@@ -342,7 +342,7 @@ export class PointerSensor extends BasePointerSensor {
     this.immediatePositionY = e.clientY
   }
 
-  @reaction @options({ throttling: 0 })
+  @reactive @options({ throttling: 0 })
   protected whenClickingOrDragging(): void {
     if (this.draggingOver || this.clickable) {
       this.positionX = this.immediatePositionX
@@ -351,7 +351,7 @@ export class PointerSensor extends BasePointerSensor {
     }
   }
 
-  @reaction @options({ throttling: 0 })
+  @reactive @options({ throttling: 0 })
   protected whenMoving(): void {
     if (Number.isFinite(this.immediatePositionX) && Number.isFinite(this.immediatePositionY)) {
       this.hotPositionX = this.immediatePositionX
@@ -359,7 +359,7 @@ export class PointerSensor extends BasePointerSensor {
     }
   }
 
-  // @reaction
+  // @reactive
   // protected debug(): void {
   //   this.revision // subscribe
   //   const status = this.getDebugStatus()

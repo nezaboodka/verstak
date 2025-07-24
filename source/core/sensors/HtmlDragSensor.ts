@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reaction, atomic, trigger, Transaction, LoggingLevel } from "reactronic"
+import { options, reactive, atomic, observable, Transaction, LoggingLevel } from "reactronic"
 import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
 import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
@@ -24,14 +24,14 @@ export class HtmlDragSensor extends HtmlElementSensor {
   dragFinished: boolean
   startX: number // position relative to browser's viewport
   startY: number // position relative to browser's viewport
-  @trigger(false) private dataByFormat: Map<string, unknown>
-  @trigger(false) private draggingImage: HTMLElement | undefined
-  @trigger(false) private draggingImageX: number
-  @trigger(false) private draggingImageY: number
-  @trigger(false) dropEffect: DropEffect
-  @trigger(false) dataTypesAllowed: string[]
-  @trigger(false) effectAllowed: DragEffectAllowed
-  @trigger(false) dropAllowed: boolean
+  @observable(false) private dataByFormat: Map<string, unknown>
+  @observable(false) private draggingImage: HTMLElement | undefined
+  @observable(false) private draggingImageX: number
+  @observable(false) private draggingImageY: number
+  @observable(false) dropEffect: DropEffect
+  @observable(false) dataTypesAllowed: string[]
+  @observable(false) effectAllowed: DragEffectAllowed
+  @observable(false) dropAllowed: boolean
   draggingOver: boolean
   draggingDataTypes: string[]
   positionX: number // position relative to browser's viewport
@@ -317,7 +317,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.draggingOver = true
   }
 
-  @reaction @options({ throttling: 0 })
+  @reactive @options({ throttling: 0 })
   protected whenDragging(): void {
     if (this.draggingOver) {
       this.positionX = this.immediatePositionX

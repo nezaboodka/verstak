@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { TriggeringObject, trigger } from "reactronic"
+import { ObservableObject, observable } from "reactronic"
 
 export type BasicAbstractTheme = {
   fillColor: string
@@ -19,8 +19,8 @@ export type BasicAbstractTheme = {
   shadow: string
 }
 
-export class Styling extends TriggeringObject {
-  @trigger(false) protected readonly $: BasicAbstractTheme
+export class Styling extends ObservableObject {
+  @observable(false) protected readonly $: BasicAbstractTheme
 
   constructor($: BasicAbstractTheme) {
     super()
