@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTree, ReactiveTreeNode, ReactiveTreeNodeDecl, Mode } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDecl, Mode } from "reactronic"
 import { Division, JustText, El, OnClick } from "verstak"
 import { triggeringModel } from "./common/Utils.js"
 import { Theme } from "./Theme.js"
@@ -19,12 +19,12 @@ export type ButtonModel = {
 
 export function Button(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, ButtonModel>>) {
   return (
-    Division<ButtonModel>(ReactiveTree.withBasis(declaration, {
+    Division<ButtonModel>(ReactiveTreeNode.withBasis(declaration, {
       mode: Mode.autonomous,
       preparation: el => {
         el.model ??= triggeringModel({
           icon: "fa-solid fa-square",
-          label: ReactiveTreeNode.key,
+          label: ReactiveTreeNode.current.key,
         })
       },
       script: el => {

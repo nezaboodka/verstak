@@ -78,7 +78,7 @@ export function OnFocus(
     mode: Mode.autonomous,
     triggers: { target, model },
     preparation: el => {
-      el.node.configureReactronic({ throttling: 0 })
+      el.node.configureReactivity({ throttling: 0 })
     },
     script: el => {
       // console.log(`-> ${model.isEditMode ? "🟢" : "🔴"} RxFocuser [${key}]: ${model.isEditMode ? "focus()" : "blur()"}`)

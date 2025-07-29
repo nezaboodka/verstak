@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTree, ReactiveTreeNode, ReactiveSystem, Priority, Handler, proceedSyncOrAsync } from "reactronic"
+import { ReactiveTreeNode, ReactiveSystem, Priority, Handler, proceedSyncOrAsync } from "reactronic"
 import { El } from "./El.js"
 import { Constants, ElDriver, ElImpl } from "./ElDriver.js"
 
@@ -46,14 +46,14 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     const native = element.native as T | undefined // hack
     if (native) {
       const sequential = node.owner.children.isStrict
-      const automaticHost = ReactiveTree.findMatchingHost<El, El>(node, n =>
+      const automaticHost = ReactiveTreeNode.findMatchingHost<El, El>(node, n =>
         n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
       const automaticNativeHost = automaticHost !== node.owner
         ? automaticHost?.driver.provideHost(automaticHost).element.native
         : automaticHost?.element.native
       if (automaticNativeHost) {
         if (sequential && !node.driver.isPartition) {
-          const after = ReactiveTree.findMatchingPrevSibling<El, El>(node, n =>
+          const after = ReactiveTreeNode.findMatchingPrevSibling<El, El>(node, n =>
             n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
           if (after === undefined || after.driver.isPartition) {
             if (automaticNativeHost !== native.parentNode || !native.previousSibling)
@@ -86,7 +86,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
             element.place = undefined // automatic placement in table
         }
         if (gBlinkingEffectMarker)
-          blink(element.native, ReactiveTreeNode.effectiveScriptPriority, node.stamp)
+          blink(element.native, ReactiveTreeNode.currentScriptPriority, node.stamp)
       },
       e => {
       })
@@ -94,12 +94,12 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
   }
 
   static findBrotherlyHost<T, R>(node: ReactiveTreeNode<El<T>>): ReactiveTreeNode<El<R>> | undefined {
-    return ReactiveTree.findMatchingHost<El, El>(node, n =>
+    return ReactiveTreeNode.findMatchingHost<El, El>(node, n =>
       n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
   }
 
   static findBrotherlyPrevSibling<T, R>(node: ReactiveTreeNode<El<T>>): ReactiveTreeNode<El<R>> | undefined {
-    return ReactiveTree.findMatchingPrevSibling<El, El>(node, n =>
+    return ReactiveTreeNode.findMatchingPrevSibling<El, El>(node, n =>
       n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
   }
 

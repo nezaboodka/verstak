@@ -5,14 +5,14 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTree, ReactiveTreeNodeDecl, Mode } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDecl, Mode } from "reactronic"
 import { Division, El } from "verstak"
 import { Theme } from "./Theme.js"
 
 export function Icon(name: string,
   declaration?: ReactiveTreeNodeDecl<El<HTMLElement, void>>) {
   return (
-    Division(ReactiveTree.withBasis(declaration, {
+    Division(ReactiveTreeNode.withBasis(declaration, {
       mode: Mode.autonomous,
       triggers: { name },
       script: el => {

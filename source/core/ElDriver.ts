@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTree, ReactiveTreeNode, Handler, BaseDriver, MergedItem, Transaction, observable, ObservableObject } from "reactronic"
+import { ReactiveTreeNode, Handler, BaseDriver, MergedItem, Transaction, observable, ObservableObject } from "reactronic"
 import { El, ElKind, ElCoords, Horizontal, Vertical, Range, ElPlace, Direction } from "./El.js"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
@@ -599,7 +599,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
   private static applyOverlayVisible<T extends Element>(element: ElImpl<T, any>, value: boolean | undefined): void {
     const s = element.style
-    const host = ReactiveTree.findMatchingHost<El, El>(element.node, n =>
+    const host = ReactiveTreeNode.findMatchingHost<El, El>(element.node, n =>
       n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
     const nativeHost = host?.element.native
     if (value === true) {

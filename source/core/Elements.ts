@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTree, ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, MergeList, MergedItem, runNonReactively, ScriptAsync } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, MergeList, MergedItem, runNonReactively, ScriptAsync } from "reactronic"
 import { El, ElKind, ElPlace, Direction } from "./El.js"
 import { clamp } from "./ElUtils.js"
 import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "./ElDriver.js"
@@ -62,7 +62,7 @@ export function Window(
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLBodyElement>>): ReactiveTreeNode<El<HTMLBodyElement>> {
   const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.division)
-  return ReactiveTree.declare(driver, scriptOrDeclaration, scriptAsync,
+  return ReactiveTreeNode.declare(driver, scriptOrDeclaration, scriptAsync,
     key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
@@ -92,7 +92,7 @@ export function Division<M = unknown>(
   finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
-  return ReactiveTree.declare(Drivers.division, scriptOrDeclaration, scriptAsync,
+  return ReactiveTreeNode.declare(Drivers.division, scriptOrDeclaration, scriptAsync,
     key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
@@ -122,7 +122,7 @@ export function Table<M = unknown>(
   finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
-  return ReactiveTree.declare(Drivers.table, scriptOrDeclaration, scriptAsync,
+  return ReactiveTreeNode.declare(Drivers.table, scriptOrDeclaration, scriptAsync,
     key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
@@ -159,12 +159,12 @@ export function Splitter<M = unknown>(
   finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
-  return ReactiveTree.declare(Drivers.splitter, scriptOrDeclaration, scriptAsync,
+  return ReactiveTreeNode.declare(Drivers.splitter, scriptOrDeclaration, scriptAsync,
     key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
 export function rowBreak(shiftCursorDown?: number): void {
-  ReactiveTree.declare(Drivers.partition)
+  ReactiveTreeNode.declare(Drivers.partition)
 }
 
 export function declareSplitter<T>(index: number, splitViewNode: ReactiveTreeNode<El<T>>): ReactiveTreeNode<El<HTMLElement>> {
@@ -227,7 +227,7 @@ export function declareSplitter<T>(index: number, splitViewNode: ReactiveTreeNod
 }
 
 export function cursor(place: ElPlace): void {
-  ReactiveTree.declare(Drivers.cursor, {
+  ReactiveTreeNode.declare(Drivers.cursor, {
     script: el => {
       el.place = place
     },
@@ -238,7 +238,7 @@ export function cursor(place: ElPlace): void {
 
 export function JustText(content: string, formatted?: boolean,
   declaration?: ReactiveTreeNodeDecl<El<HTMLElement, void>>): ReactiveTreeNode<El<HTMLElement, void>> {
-  return ReactiveTree.declare(Drivers.text, ReactiveTree.withBasis(declaration, {
+  return ReactiveTreeNode.declare(Drivers.text, ReactiveTreeNode.withBasis(declaration, {
     script: el => {
       if (formatted)
         el.native.innerHTML = content
@@ -274,7 +274,7 @@ export function Group<M = unknown>(
   finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
-  return ReactiveTree.declare(Drivers.group, scriptOrDeclaration, scriptAsync,
+  return ReactiveTreeNode.declare(Drivers.group, scriptOrDeclaration, scriptAsync,
     key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
@@ -309,7 +309,7 @@ export function PseudoElement<M = unknown>(
   finalization?: Script<El<void, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>> {
-  return ReactiveTree.declare(Drivers.pseudo, scriptOrDeclaration, scriptAsync,
+  return ReactiveTreeNode.declare(Drivers.pseudo, scriptOrDeclaration, scriptAsync,
     key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
@@ -384,12 +384,12 @@ export class DivisionDriver<T extends HTMLElement> extends HtmlDriver<T> {
           }
         },
       })
-      ReactiveTree.runNestedNodeScriptsThenDo(() => {
+      ReactiveTreeNode.runNestedNodeScriptsThenDo(() => {
         layoutInfo.isUpdateFinished = true
         // WORKAROUND: As long as "isUpdateFinished = true" does not trigger relaunch of
         // "update" of PseudoElement (such a relaunch requires subscriptions on values
         // of variables rather than variables themselves), we do it manually.
-        ReactiveTree.triggerScriptRun(relayoutEl, { stamp: node.stamp })
+        ReactiveTreeNode.triggerScriptRun(relayoutEl, { stamp: node.stamp })
       })
     }
     return result
@@ -453,7 +453,7 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     const ownerEl = node.owner.element as ElImpl
     if (ownerEl.sealed !== undefined) {
       node.element.style.flexGrow = "1"
-      ReactiveTree.declare(Drivers.wrapper, {
+      ReactiveTreeNode.declare(Drivers.wrapper, {
         script: el => {
           const ownerEl = el.node.owner.owner.element as ElImpl
           if (ownerEl.splitView !== undefined) {
