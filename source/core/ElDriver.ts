@@ -867,6 +867,7 @@ export const Constants = {
   layouts: ["division", "table", "text", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
   keyAttrName: "key",
   kindAttrName: "kind",
+  ownReactiveTreeNodeKey: Symbol("own-reactive-tree-node"),
 }
 
 const DriversByLayout: Array<Handler<El<HTMLElement>>> = [
