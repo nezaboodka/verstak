@@ -96,16 +96,16 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     return result
   }
 
-  static getOwnReactiveTreeNodeOfNativeElement<T extends Element>(element: T): ReactiveTreeNode<El<T>> | undefined {
+  static getOwnNodeOfNativeElement<T extends Element>(element: T): ReactiveTreeNode<El<T>> | undefined {
     return (element as any)[Constants.ownReactiveTreeNodeKey]
   }
 
-  static findBrotherlyHost<T, R>(node: ReactiveTreeNode<El<T>>): ReactiveTreeNode<El<R>> | undefined {
+  static findBrotherlyHost<T extends Element, R extends Element>(node: ReactiveTreeNode<El<T>>): ReactiveTreeNode<El<R>> | undefined {
     return ReactiveTreeNode.findMatchingHost<El, El>(node, n =>
       n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
   }
 
-  static findBrotherlyPrevSibling<T, R>(node: ReactiveTreeNode<El<T>>): ReactiveTreeNode<El<R>> | undefined {
+  static findBrotherlyPrevSibling<T extends Element, R extends Element>(node: ReactiveTreeNode<El<T>>): ReactiveTreeNode<El<R>> | undefined {
     return ReactiveTreeNode.findMatchingPrevSibling<El, El>(node, n =>
       n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
   }
