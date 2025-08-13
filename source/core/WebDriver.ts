@@ -25,7 +25,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     const result = super.runPreparation(node)
     if (e == undefined && ReactiveSystem.isLogging && !node.driver.isPartition)
       node.element.native.setAttribute(Constants.keyAttrName, node.key)
-    Object.defineProperty(e, Constants.ownReactiveTreeNodeKey, {
+    Object.defineProperty(node.element.native, Constants.ownReactiveTreeNodeKey, {
       configurable: false, enumerable: false, value: node, writable: false,
     })
     return result
