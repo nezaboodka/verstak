@@ -19,11 +19,12 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
 
   override runPreparation(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
     this.setNativeElement(node)
-    const e = node.element.native
-    if (e !== undefined && !node.driver.isPartition)
+    const native = node.element.native
+    const isPartition = node.driver.isPartition
+    if (native !== undefined && !isPartition)
       this.setExtraAttributesAndProperties(node)
     const result = super.runPreparation(node)
-    if (e == undefined && node.element.native !== undefined && !node.driver.isPartition)
+    if (native == undefined && node.element.native !== undefined && !isPartition)
       this.setExtraAttributesAndProperties(node)
     return result
   }
