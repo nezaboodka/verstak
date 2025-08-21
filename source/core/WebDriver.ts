@@ -32,6 +32,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     const element = node.element
     const native = element.native as T | undefined // hack
     if (native) {
+      this.resetExtraAttributesAndProperties(node)
       native.resizeObserver?.unobserve(native) // is it really needed or browser does this automatically?
       if (isLeader)
         native.remove()
@@ -122,6 +123,13 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     })
     if (ReactiveSystem.isLogging)
       e.setAttribute(Constants.keyAttrName, node.key)
+  }
+
+  resetExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
+    const e = node.element.native as any
+    delete e[Constants.ownReactiveTreeNodeKey]
+    if (ReactiveSystem.isLogging)
+      e.setAttribute(Constants.keyAttrName, "")
   }
 }
 
