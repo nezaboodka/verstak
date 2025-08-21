@@ -117,7 +117,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     gBlinkingEffectMarker = value
   }
 
-  assignExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
+  private assignExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
     const e = node.element.native
     Object.defineProperty(e, Constants.ownReactiveTreeNodeKey, {
       configurable: true, enumerable: false, value: node, writable: false,
@@ -126,7 +126,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
       e.setAttribute(Constants.keyAttrName, node.key)
   }
 
-  clearExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
+  private clearExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
     const e = node.element.native as any
     delete e[Constants.ownReactiveTreeNodeKey]
     if (ReactiveSystem.isLogging)
