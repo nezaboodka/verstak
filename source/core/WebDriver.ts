@@ -20,14 +20,11 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
   override runPreparation(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
     this.setNativeElement(node)
     const e = node.element.native
-    if (ReactiveSystem.isLogging && e !== undefined && !node.driver.isPartition)
-      e.setAttribute(Constants.keyAttrName, node.key)
+    if (e !== undefined && !node.driver.isPartition)
+      this.setExtraAttributesAndProperties(node)
     const result = super.runPreparation(node)
-    if (e == undefined && ReactiveSystem.isLogging && !node.driver.isPartition)
-      node.element.native.setAttribute(Constants.keyAttrName, node.key)
-    Object.defineProperty(node.element.native, Constants.ownReactiveTreeNodeKey, {
-      configurable: false, enumerable: false, value: node, writable: false,
-    })
+    if (e == undefined && node.element.native !== undefined && !node.driver.isPartition)
+      this.setExtraAttributesAndProperties(node)
     return result
   }
 
@@ -116,6 +113,15 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
 
   static set blinkingEffectMarker(value: string | undefined) {
     gBlinkingEffectMarker = value
+  }
+
+  setExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
+    const e = node.element.native
+    Object.defineProperty(e, Constants.ownReactiveTreeNodeKey, {
+      configurable: true, enumerable: false, value: node, writable: false,
+    })
+    if (ReactiveSystem.isLogging)
+      e.setAttribute(Constants.keyAttrName, node.key)
   }
 }
 
