@@ -13,19 +13,19 @@ import { Constants, ElDriver, ElImpl } from "./ElDriver.js"
 
 export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
 
-  setNativeElement(node: ReactiveTreeNode<El<T, M>>): void {
+  assignNativeElement(node: ReactiveTreeNode<El<T, M>>): void {
     // it's up to descendant class to define logic
   }
 
   override runPreparation(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
-    this.setNativeElement(node)
+    this.assignNativeElement(node)
     const native = node.element.native
     const isPartition = node.driver.isPartition
     if (native !== undefined && !isPartition)
-      this.setExtraAttributesAndProperties(node)
+      this.assignExtraAttributesAndProperties(node)
     const result = super.runPreparation(node)
     if (native == undefined && node.element.native !== undefined && !isPartition)
-      this.setExtraAttributesAndProperties(node)
+      this.assignExtraAttributesAndProperties(node)
     return result
   }
 
@@ -33,7 +33,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     const el = node.element
     const native = el.native as T | undefined // hack
     if (native) {
-      this.resetExtraAttributesAndProperties(node)
+      this.clearExtraAttributesAndProperties(node)
       native.resizeObserver?.unobserve(native) // is it really needed or browser does this automatically?
       if (isLeader)
         native.remove()
@@ -117,7 +117,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     gBlinkingEffectMarker = value
   }
 
-  setExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
+  assignExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
     const e = node.element.native
     Object.defineProperty(e, Constants.ownReactiveTreeNodeKey, {
       configurable: true, enumerable: false, value: node, writable: false,
@@ -126,7 +126,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
       e.setAttribute(Constants.keyAttrName, node.key)
   }
 
-  resetExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
+  clearExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
     const e = node.element.native as any
     delete e[Constants.ownReactiveTreeNodeKey]
     if (ReactiveSystem.isLogging)
@@ -145,7 +145,7 @@ export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
     this.native = native
   }
 
-  override setNativeElement(node: ReactiveTreeNode<El<T>>): void {
+  override assignNativeElement(node: ReactiveTreeNode<El<T>>): void {
     node.element.native = this.native
   }
 }
@@ -153,7 +153,7 @@ export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
 // HtmlDriver
 
 export class HtmlDriver<T extends HTMLElement, M = any> extends WebDriver<T, M> {
-  override setNativeElement(node: ReactiveTreeNode<El<T, M>>): void {
+  override assignNativeElement(node: ReactiveTreeNode<El<T, M>>): void {
     node.element.native = document.createElement(node.driver.name) as T
   }
 }
@@ -161,7 +161,7 @@ export class HtmlDriver<T extends HTMLElement, M = any> extends WebDriver<T, M> 
 // SvgDriver
 
 export class SvgDriver<T extends SVGElement, M = any> extends WebDriver<T, M> {
-  override setNativeElement(node: ReactiveTreeNode<El<T, M>>): void {
+  override assignNativeElement(node: ReactiveTreeNode<El<T, M>>): void {
     node.element.native = document.createElementNS("http://www.w3.org/2000/svg", node.driver.name) as T
   }
 }
