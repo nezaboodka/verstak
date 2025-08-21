@@ -48,11 +48,11 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     const native = el.native as T | undefined // hack
     if (native) {
       const sequential = node.owner.children.isStrict
-      const automaticHost = ReactiveTreeNode.findMatchingHost<El, El>(node, n =>
+      const autoHost = ReactiveTreeNode.findMatchingHost<El, El>(node, n =>
         n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
-      const automaticNativeHost = automaticHost !== node.owner
-        ? automaticHost?.driver.provideHost(automaticHost).element.native
-        : automaticHost?.element.native
+      const automaticNativeHost = autoHost !== node.owner
+        ? autoHost?.driver.provideHost(autoHost).element.native
+        : autoHost?.element.native
       if (automaticNativeHost) {
         if (sequential && !node.driver.isPartition) {
           const after = ReactiveTreeNode.findMatchingPrevSibling<El, El>(node, n =>
