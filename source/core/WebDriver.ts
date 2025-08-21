@@ -95,7 +95,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     return result
   }
 
-  private assignExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
+  private assignExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>): void {
     const e = node.element.native
     Object.defineProperty(e, Constants.ownReactiveTreeNodeKey, {
       configurable: true, enumerable: false, value: node, writable: false,
@@ -104,7 +104,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
       e.setAttribute(Constants.keyAttrName, node.key)
   }
 
-  private clearExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
+  private clearExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>): void {
     const e = node.element.native
     delete (e as any)[Constants.ownReactiveTreeNodeKey]
     if (ReactiveSystem.isLogging)
