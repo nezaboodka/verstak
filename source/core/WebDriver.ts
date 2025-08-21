@@ -95,6 +95,22 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     return result
   }
 
+  private assignExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
+    const e = node.element.native
+    Object.defineProperty(e, Constants.ownReactiveTreeNodeKey, {
+      configurable: true, enumerable: false, value: node, writable: false,
+    })
+    if (ReactiveSystem.isLogging)
+      e.setAttribute(Constants.keyAttrName, node.key)
+  }
+
+  private clearExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
+    const e = node.element.native as any
+    delete e[Constants.ownReactiveTreeNodeKey]
+    if (ReactiveSystem.isLogging)
+      e.setAttribute(Constants.keyAttrName, "")
+  }
+
   static getOwnNodeOfNativeElement<T extends Element>(element: T): ReactiveTreeNode<El<T>> | undefined {
     return (element as any)[Constants.ownReactiveTreeNodeKey]
   }
@@ -115,22 +131,6 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
 
   static set blinkingEffectMarker(value: string | undefined) {
     gBlinkingEffectMarker = value
-  }
-
-  private assignExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
-    const e = node.element.native
-    Object.defineProperty(e, Constants.ownReactiveTreeNodeKey, {
-      configurable: true, enumerable: false, value: node, writable: false,
-    })
-    if (ReactiveSystem.isLogging)
-      e.setAttribute(Constants.keyAttrName, node.key)
-  }
-
-  private clearExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
-    const e = node.element.native as any
-    delete e[Constants.ownReactiveTreeNodeKey]
-    if (ReactiveSystem.isLogging)
-      e.setAttribute(Constants.keyAttrName, "")
   }
 }
 
