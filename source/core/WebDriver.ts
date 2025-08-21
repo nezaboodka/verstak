@@ -30,8 +30,8 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
   }
 
   override runFinalization(node: ReactiveTreeNode<El<T, M>>, isLeader: boolean): boolean {
-    const element = node.element
-    const native = element.native as T | undefined // hack
+    const el = node.element
+    const native = el.native as T | undefined // hack
     if (native) {
       this.resetExtraAttributesAndProperties(node)
       native.resizeObserver?.unobserve(native) // is it really needed or browser does this automatically?
@@ -39,13 +39,13 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
         native.remove()
     }
     super.runFinalization(node, isLeader)
-    element.native = null as any
+    el.native = null as any
     return false // children elements having native HTML elements are not treated as leaders
   }
 
   override runMount(node: ReactiveTreeNode<El<T, M>>): void {
-    const element = node.element
-    const native = element.native as T | undefined // hack
+    const el = node.element
+    const native = el.native as T | undefined // hack
     if (native) {
       const sequential = node.owner.children.isStrict
       const automaticHost = ReactiveTreeNode.findMatchingHost<El, El>(node, n =>
@@ -76,19 +76,19 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
   }
 
   override runScript(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
-    const element = node.element
-    if (element instanceof ElImpl)
-      element.prepareForUpdate()
+    const el = node.element
+    if (el instanceof ElImpl)
+      el.prepareForUpdate()
     let result = super.runScript(node)
     result = proceedSyncOrAsync(result,
       v => {
-        if (element.place === undefined) {
+        if (el.place === undefined) {
           const oel = node.owner.element
           if (oel instanceof ElImpl && oel.isTable)
-            element.place = undefined // automatic placement in table
+            el.place = undefined // automatic placement in table
         }
         if (gBlinkingEffectMarker)
-          blink(element.native, ReactiveTreeNode.currentScriptPriority, node.stamp)
+          blink(el.native, ReactiveTreeNode.currentScriptPriority, node.stamp)
       },
       e => {
       })
