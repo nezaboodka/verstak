@@ -105,8 +105,8 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
   }
 
   private clearExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>) {
-    const e = node.element.native as any
-    delete e[Constants.ownReactiveTreeNodeKey]
+    const e = node.element.native
+    delete (e as any)[Constants.ownReactiveTreeNodeKey]
     if (ReactiveSystem.isLogging)
       e.setAttribute(Constants.keyAttrName, "")
   }
