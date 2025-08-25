@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDecl, Mode, derived } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDecl, Mode, derivative } from "reactronic"
 import { Division, JustText, El, OnClick } from "verstak"
 import { observableModel } from "./common/Utils.js"
 import { Theme } from "./Theme.js"
@@ -19,7 +19,7 @@ export type ToggleModel = {
 
 export function Toggle(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, ToggleModel>>) {
   return (
-    Division<ToggleModel>(derived(declaration, {
+    Division<ToggleModel>(derivative(declaration, {
       mode: Mode.autonomous,
       preparation: el => {
         el.model ??= observableModel({

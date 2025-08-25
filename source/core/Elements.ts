@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, MergeList, MergedItem, declare, derived, launch, runNonReactively, ScriptAsync } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, MergeList, MergedItem, declare, derivative, launch, runNonReactively, ScriptAsync } from "reactronic"
 import { El, ElKind, ElPlace, Direction } from "./El.js"
 import { clamp } from "./ElUtils.js"
 import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "./ElDriver.js"
@@ -238,7 +238,7 @@ export function cursor(place: ElPlace): void {
 
 export function JustText(content: string, formatted?: boolean,
   declaration?: ReactiveTreeNodeDecl<El<HTMLElement, void>>): ReactiveTreeNode<El<HTMLElement, void>> {
-  return declare(Drivers.text, derived(declaration, {
+  return declare(Drivers.text, derivative(declaration, {
     script: el => {
       if (formatted)
         el.native.innerHTML = content
