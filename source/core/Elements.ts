@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, MergeList, MergedItem, runNonReactively, ScriptAsync } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, MergeList, MergedItem, launch, runNonReactively, ScriptAsync } from "reactronic"
 import { El, ElKind, ElPlace, Direction } from "./El.js"
 import { clamp } from "./ElUtils.js"
 import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "./ElDriver.js"
@@ -389,7 +389,7 @@ export class DivisionDriver<T extends HTMLElement> extends HtmlDriver<T> {
         // WORKAROUND: As long as "isUpdateFinished = true" does not trigger relaunch of
         // "update" of PseudoElement (such a relaunch requires subscriptions on values
         // of variables rather than variables themselves), we do it manually.
-        ReactiveTreeNode.triggerScriptRun(relayoutEl, { stamp: node.stamp })
+        launch(relayoutEl, { stamp: node.stamp })
       })
     }
     return result
