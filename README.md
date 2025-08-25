@@ -39,7 +39,7 @@ visual components for (re)rendering. All that is done in
 automatic, seamless, and fine-grained way, because Verstak
 **takes full care of tracking dependencies** between visual
 components (reactive functions) and application state
-(triggering objects).
+(observable objects).
 
 Example application: https://nevod.io ([source code](https://gitlab.com/nezaboodka/nevod.web.public/-/blob/master/README.md)).
 

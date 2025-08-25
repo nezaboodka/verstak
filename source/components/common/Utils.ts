@@ -11,12 +11,12 @@ export type ValuesOrRefs<T> = {
   [K in keyof T]: T[K] | Ref<T[K]>
 }
 
-export function triggeringModel<T extends Object>(modelProps: ValuesOrRefs<T>): T {
+export function observableModel<T extends Object>(modelProps: ValuesOrRefs<T>): T {
   return runAtomically({ isolation: Isolation.disjoinFromOuterTransaction }, () =>
-    new TriggeringComposition(modelProps) as unknown as T)
+    new ObservableComposition(modelProps) as unknown as T)
 }
 
-class TriggeringComposition<T> extends ObservableObject {
+class ObservableComposition<T> extends ObservableObject {
   constructor(composition: ValuesOrRefs<T>) {
     super()
     convertValuesToFieldsAndRefsToGetSet(this, composition)

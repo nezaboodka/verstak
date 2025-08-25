@@ -5,9 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDecl, Mode } from "reactronic"
+import { ReactiveTreeNodeDecl, Mode, derived } from "reactronic"
 import { Division, JustText, FocusModel, OnFocus, rowBreak, El, Fragment, KeyboardSensor, KeyboardModifiers, Horizontal, Vertical } from "verstak"
-import { triggeringModel, ValuesOrRefs } from "./common/Utils.js"
+import { observableModel, ValuesOrRefs } from "./common/Utils.js"
 import { Theme, InputStyling } from "./Theme.js"
 import { Icon } from "./Icon.v.js"
 
@@ -25,7 +25,7 @@ export type InputModel<T = string> = FocusModel & {
 
 export function Input(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, InputModel>>) {
   return (
-    Division<InputModel>(ReactiveTreeNode.withBasis(declaration, {
+    Division<InputModel>(derived(declaration, {
       mode: Mode.autonomous,
       preparation: el => {
         el.model ??= composeInputModel()
@@ -50,7 +50,7 @@ export function Input(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, InputMo
 }
 
 export function composeInputModel<T>(props?: Partial<ValuesOrRefs<InputModel<T>>>): InputModel<T> {
-  return triggeringModel({
+  return observableModel({
     icon: props?.icon,
     text: props?.text ?? "",
     options: props?.options ?? [],
