@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ScriptedList } from "reactronic"
+import { ReactiveTreeNode, ReconciliationList } from "reactronic"
 import { Direction } from "./El.js"
 import { clamp } from "./ElUtils.js"
 import { ElImpl } from "./ElDriver.js"
@@ -211,7 +211,7 @@ export function getPrioritiesForSplitter(index: number, size: number): ReadonlyA
   return result
 }
 
-export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: ScriptedList<ReactiveTreeNode>, indexes: Array<number>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
+export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: ReconciliationList<ReactiveTreeNode>, indexes: Array<number>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
   const resizable = []
   const manuallyResizable = []
   const items = Array.from(children.items()).filter(x => isSplitViewPartition(x.instance.driver))
@@ -242,7 +242,7 @@ export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: Sc
   return { resizable, manuallyResizable }
 }
 
-export function getPrioritiesForEmptySpaceDistribution(isHorizontal: boolean, children: ScriptedList<ReactiveTreeNode>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
+export function getPrioritiesForEmptySpaceDistribution(isHorizontal: boolean, children: ReconciliationList<ReactiveTreeNode>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
   let r = 0
   let mr = 0
   let i = 0

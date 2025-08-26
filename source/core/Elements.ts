@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, ScriptedList, LinkedItem, declare, derivative, launch, runNonReactively, ScriptAsync } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, ReconciliationList, LinkedItem, declare, derivative, launch, runNonReactively, ScriptAsync } from "reactronic"
 import { El, ElKind, ElPlace, Direction } from "./El.js"
 import { clamp } from "./ElUtils.js"
 import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "./ElDriver.js"
@@ -378,8 +378,8 @@ export class DivisionDriver<T extends HTMLElement> extends HtmlDriver<T> {
               }
             }
             const priorities = preferred.length > 0
-              ? getPrioritiesForSizeChanging(isHorizontal, node.children as ScriptedList<ReactiveTreeNode>, preferred)
-              : getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as ScriptedList<ReactiveTreeNode>)
+              ? getPrioritiesForSizeChanging(isHorizontal, node.children as ReconciliationList<ReactiveTreeNode>, preferred)
+              : getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as ReconciliationList<ReactiveTreeNode>)
             runNonReactively(() => relayout(node as any as ReactiveTreeNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx))
           }
         },
