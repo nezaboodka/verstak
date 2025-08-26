@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, MergeList } from "reactronic"
+import { ReactiveTreeNode, ScriptedList } from "reactronic"
 import { Direction } from "./El.js"
 import { clamp } from "./ElUtils.js"
 import { ElImpl } from "./ElDriver.js"
@@ -173,7 +173,7 @@ export function layout(splitViewNode: ReactiveTreeNode<ElImpl>): void {
   }
   const containerSizePx = (isHorizontal ? layoutInfo?.contentSizeXpx : layoutInfo?.contentSizeYpx) ?? 0
   const isOverflowing = greater(posPx, containerSizePx)
-  const wrapper = splitViewNode.children.firstMergedItem()?.instance.children.firstMergedItem()?.instance as ReactiveTreeNode<ElImpl> | undefined
+  const wrapper = splitViewNode.children.firstItem()?.instance.children.firstItem()?.instance as ReactiveTreeNode<ElImpl> | undefined
   if (wrapper !== undefined) {
     if (isHorizontal)
       wrapper.element.style.gridTemplateColumns = sizesPx.map(x => `${x}px`).join(" ")
@@ -211,7 +211,7 @@ export function getPrioritiesForSplitter(index: number, size: number): ReadonlyA
   return result
 }
 
-export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: MergeList<ReactiveTreeNode>, indexes: Array<number>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
+export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: ScriptedList<ReactiveTreeNode>, indexes: Array<number>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
   const resizable = []
   const manuallyResizable = []
   const items = Array.from(children.items()).filter(x => isSplitViewPartition(x.instance.driver))
@@ -242,7 +242,7 @@ export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: Me
   return { resizable, manuallyResizable }
 }
 
-export function getPrioritiesForEmptySpaceDistribution(isHorizontal: boolean, children: MergeList<ReactiveTreeNode>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
+export function getPrioritiesForEmptySpaceDistribution(isHorizontal: boolean, children: ScriptedList<ReactiveTreeNode>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
   let r = 0
   let mr = 0
   let i = 0

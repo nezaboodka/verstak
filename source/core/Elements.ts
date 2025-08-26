@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, MergeList, MergedItem, declare, derivative, launch, runNonReactively, ScriptAsync } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, ScriptedList, LinkedItem, declare, derivative, launch, runNonReactively, ScriptAsync } from "reactronic"
 import { El, ElKind, ElPlace, Direction } from "./El.js"
 import { clamp } from "./ElUtils.js"
 import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "./ElDriver.js"
@@ -378,8 +378,8 @@ export class DivisionDriver<T extends HTMLElement> extends HtmlDriver<T> {
               }
             }
             const priorities = preferred.length > 0
-              ? getPrioritiesForSizeChanging(isHorizontal, node.children as MergeList<ReactiveTreeNode>, preferred)
-              : getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as MergeList<ReactiveTreeNode>)
+              ? getPrioritiesForSizeChanging(isHorizontal, node.children as ScriptedList<ReactiveTreeNode>, preferred)
+              : getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as ScriptedList<ReactiveTreeNode>)
             runNonReactively(() => relayout(node as any as ReactiveTreeNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx))
           }
         },
@@ -395,8 +395,8 @@ export class DivisionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     return result
   }
 
-  override declareChild(ownerNode: ReactiveTreeNode<El<T, any>>, childDriver: ReactiveTreeNodeDriver<any>, childDeclaration?: ReactiveTreeNodeDecl<any> | undefined, childBasis?: ReactiveTreeNodeDecl<any> | undefined): MergedItem<ReactiveTreeNode> | undefined {
-    let result: MergedItem<ReactiveTreeNode> | undefined = undefined
+  override declareChild(ownerNode: ReactiveTreeNode<El<T, any>>, childDriver: ReactiveTreeNodeDriver<any>, childDeclaration?: ReactiveTreeNodeDecl<any> | undefined, childBasis?: ReactiveTreeNodeDecl<any> | undefined): LinkedItem<ReactiveTreeNode> | undefined {
+    let result: LinkedItem<ReactiveTreeNode> | undefined = undefined
     const el = ownerNode.element as ElImpl
     if (el.splitView !== undefined) {
       if (isSplitViewPartition(childDriver)) {
@@ -425,7 +425,7 @@ export class DivisionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     else {
       if (childDriver.isPartition) {
         // Coalesce multiple separators into single one, if any
-        const last = ownerNode.children.lastMergedItem()
+        const last = ownerNode.children.lastItem()
         if (last?.instance?.driver === childDriver)
           result = last
       }
@@ -484,7 +484,7 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     let host: ReactiveTreeNode<El<T, any>>
     const ownerEl = node.owner.element as ElImpl
     if (ownerEl.sealed !== undefined)
-      host = node.children.firstMergedItem()!.instance as ReactiveTreeNode<El<T, any>>
+      host = node.children.firstItem()!.instance as ReactiveTreeNode<El<T, any>>
     else
       host = node
     return host

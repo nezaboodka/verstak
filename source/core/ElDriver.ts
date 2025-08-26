@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, Handler, BaseDriver, MergedItem, Transaction, observable, ObservableObject } from "reactronic"
+import { ReactiveTreeNode, Handler, BaseDriver, LinkedItem, Transaction, observable, ObservableObject } from "reactronic"
 import { El, ElKind, ElCoords, Horizontal, Vertical, Range, ElPlace, Direction } from "./El.js"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
@@ -260,7 +260,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   protected *children(onlyAfter?: ElImpl): Generator<ElImpl> {
-    const after: MergedItem<ReactiveTreeNode<any>> | undefined = onlyAfter?.node.slot
+    const after: LinkedItem<ReactiveTreeNode<any>> | undefined = onlyAfter?.node.slot
     for (const child of this.node.children.items(after))
       yield child.instance.element as ElImpl
   }
