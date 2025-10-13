@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveTreeNodeDecl, Mode, derivative } from "reactronic"
-import { Division, El } from "verstak"
+import { Block, El } from "verstak"
 import { observableModel } from "./common/Utils.js"
 
 export type ImageModel = {
@@ -15,7 +15,7 @@ export type ImageModel = {
 
 export function Image(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, ImageModel>>) {
   return (
-    Division<ImageModel>(derivative(declaration, {
+    Block<ImageModel>(derivative(declaration, {
       mode: Mode.autonomous,
       preparation: el => {
         el.model ??= observableModel({ source: undefined })

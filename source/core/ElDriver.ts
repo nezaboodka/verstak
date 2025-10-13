@@ -80,7 +80,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   get index(): number { return this.node.slot!.index }
-  get isDivision(): boolean { return this.kind === ElKind.division }
+  get isBlock(): boolean { return this.kind === ElKind.block }
   get isTable(): boolean { return this.kind === ElKind.table }
   get isAuxiliary(): boolean { return this.kind > ElKind.text } // Part, Group, Cursor
 
@@ -864,14 +864,14 @@ export const Constants = {
   wrapper: "wrapper",
   splitter: "splitter",
   group: "group",
-  layouts: ["division", "table", "text", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
+  layouts: ["block", "table", "text", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
   keyAttrName: "key",
   kindAttrName: "kind",
   ownReactiveTreeNodeKey: Symbol("own-reactive-tree-node"),
 }
 
 const DriversByLayout: Array<Handler<El<HTMLElement>>> = [
-  el => { // division
+  el => { // block
     const owner = el.node.owner.element as ElImpl
     const s = el.style
     s.display = "flex"

@@ -6,13 +6,13 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveTreeNodeDecl, Mode, derivative } from "reactronic"
-import { Division, El } from "verstak"
+import { Block, El } from "verstak"
 import { Theme } from "./Theme.js"
 
 export function Icon(name: string,
   declaration?: ReactiveTreeNodeDecl<El<HTMLElement, void>>) {
   return (
-    Division(derivative(declaration, {
+    Block(derivative(declaration, {
       mode: Mode.autonomous,
       triggers: { name },
       script: el => {

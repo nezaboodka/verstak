@@ -39,7 +39,7 @@ export type El<T = any, M = any> = {
 }
 
 export enum ElKind {
-  division = 0,
+  block = 0,
   table = 1,
   text = 2,
   group = 3,

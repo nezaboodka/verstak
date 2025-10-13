@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveTreeNodeDecl, Mode, derivative } from "reactronic"
-import { Division, JustText, El } from "verstak"
+import { Block, JustText, El } from "verstak"
 import { observableModel, ValuesOrRefs } from "./common/Utils.js"
 
 export type SpinnerModel = {
@@ -16,7 +16,7 @@ export type SpinnerModel = {
 
 export function Spinner(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, SpinnerModel>>) {
   return (
-    Division<SpinnerModel>(derivative(declaration, {
+    Block<SpinnerModel>(derivative(declaration, {
       mode: Mode.autonomous,
       preparation: el => {
         el.model ??= composeSpinnerModel()

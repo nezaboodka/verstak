@@ -14,26 +14,26 @@ import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Siz
 import { HtmlDriver, StaticDriver } from "./WebDriver.js"
 
 // Verstak is based on two fundamental layout structures
-// called division and table; and on two special non-visual
+// called block and table; and on two special non-visual
 // elements called partition and group.
 
 // Window is a root element, which element tree starts
 // from.
 
-// Division is a layout structure, which children are laid
+// Block is a layout structure, which children are laid
 // out naturally: rightwards-downwards.
 
 // Table is layout structure, which children are laid out
 // over table cells.
 
 // Partition is a special non-visual element, which begins
-// new layout partition inside division or table.
+// new layout partition inside block or table.
 
 // TextBlock is either plain or markdown-formatted text
 // supporting syntax highlighting for code blocks.
 
 // Group is a special non-visual element for logical
-// grouping of divisions, tables and other groups.
+// grouping of blocks, tables and other groups.
 
 // Window
 
@@ -61,14 +61,14 @@ export function Window(
   finalization?: Script<El<HTMLBodyElement>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLBodyElement>>): ReactiveTreeNode<El<HTMLBodyElement>> {
-  const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.division)
+  const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.block)
   return declare(driver, scriptOrDeclaration, scriptAsync,
     key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
-// Division
+// Block
 
-export function Division<M = unknown>(
+export function Block<M = unknown>(
   script?: Script<El<HTMLElement, M>>,
   scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
@@ -79,10 +79,10 @@ export function Division<M = unknown>(
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
-export function Division<M = unknown>(
+export function Block<M = unknown>(
   declaration?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
-export function Division<M = unknown>(
+export function Block<M = unknown>(
   scriptOrDeclaration?: Script<El<HTMLElement, M>> | ReactiveTreeNodeDecl<El<HTMLElement, M>>,
   scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
@@ -92,7 +92,7 @@ export function Division<M = unknown>(
   finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
-  return declare(Drivers.division, scriptOrDeclaration, scriptAsync,
+  return declare(Drivers.block, scriptOrDeclaration, scriptAsync,
     key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
@@ -313,9 +313,9 @@ export function PseudoElement<M = unknown>(
     key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
-// DivisionDriver
+// BlockDriver
 
-export class DivisionDriver<T extends HTMLElement> extends HtmlDriver<T> {
+export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
   override runScript(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
     rowBreak()
     const el = node.element as ElImpl
@@ -493,7 +493,7 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 export const Drivers = {
   // display: flex, flex-direction: column
-  division: new DivisionDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.division),
+  block: new BlockDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.block),
 
   // display: grid
   table: new HtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.table),
