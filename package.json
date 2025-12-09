@@ -55,6 +55,7 @@
     "eslint": "9.39.1",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
+    "tsimp": "2.0.12",
     "typescript": "5.9.3"
   },
   "scripts": {

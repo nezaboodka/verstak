@@ -5,6 +5,7 @@
   "typescript.preferences.quoteStyle": "double",
   "files.exclude": {
     "**/node_modules/": true,
+    ".tsimp": true,
     // "**/build/": true,
     // "**/Build/": true,
   },
@@ -12,6 +13,7 @@
     "**/node_modules/": true,
     "**/build/": true,
     "**/Build/": true,
+    ".tsimp": true,
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "cSpell.ignorePaths": [
@@ -61,6 +63,7 @@
     "Stateful",
     "subscribeless",
     "Surkov",
+    "tsimp",
     "typeless",
     "unmount",
     "unmounting",
