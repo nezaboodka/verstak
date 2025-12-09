@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, reactive, atomic, observable, Transaction, LoggingLevel } from "reactronic"
+import { options, reaction, transaction, signal, Transaction, LoggingLevel } from "reactronic"
 import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
 import { HtmlElementSensor } from "./HtmlElementSensor.js"
 import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
@@ -24,14 +24,14 @@ export class HtmlDragSensor extends HtmlElementSensor {
   dragFinished: boolean
   startX: number // position relative to browser's viewport
   startY: number // position relative to browser's viewport
-  @observable(false) private dataByFormat: Map<string, unknown>
-  @observable(false) private draggingImage: HTMLElement | undefined
-  @observable(false) private draggingImageX: number
-  @observable(false) private draggingImageY: number
-  @observable(false) dropEffect: DropEffect
-  @observable(false) dataTypesAllowed: string[]
-  @observable(false) effectAllowed: DragEffectAllowed
-  @observable(false) dropAllowed: boolean
+  @signal(false) private dataByFormat: Map<string, unknown>
+  @signal(false) private draggingImage: HTMLElement | undefined
+  @signal(false) private draggingImageX: number
+  @signal(false) private draggingImageY: number
+  @signal(false) dropEffect: DropEffect
+  @signal(false) dataTypesAllowed: string[]
+  @signal(false) effectAllowed: DragEffectAllowed
+  @signal(false) dropAllowed: boolean
   draggingOver: boolean
   draggingDataTypes: string[]
   positionX: number // position relative to browser's viewport
@@ -156,7 +156,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.reset()
   }
 
-  @atomic @options({ logging: LoggingLevel.Off })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected startDragging(e: DragEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -182,39 +182,39 @@ export class HtmlDragSensor extends HtmlElementSensor {
     })
   }
 
-  @atomic @options({ logging: LoggingLevel.Off })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected dragging(e: DragEvent): void {
     this.dragStarted = true
     this.dragFinished = false
     this.revision++
   }
 
-  @atomic @options({ logging: LoggingLevel.Off })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected finishDragging(e: DragEvent): void {
     this.dragFinished = true
     this.revision++
   }
 
-  @atomic @options({ logging: LoggingLevel.Off })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected enterTarget(e: DragEvent): void {
     this.updateDragTarget(e)
     this.dropped = false
     this.revision++
   }
 
-  @atomic @options({ logging: LoggingLevel.Off })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected leaveTarget(e: DragEvent): void {
     // Nothing to do
   }
 
-  @atomic @options({ logging: LoggingLevel.Off })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected dragOver(e: DragEvent): void {
     this.updateDragTarget(e)
     this.dropped = false
     this.revision++
   }
 
-  @atomic @options({ logging: LoggingLevel.Off })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected drop(e: DragEvent): void {
     this.updateDragTarget(e)
     this.modifiers = this.immediateModifiers
@@ -237,7 +237,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.revision++
   }
 
-  @atomic @options({ logging: LoggingLevel.Off })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected updateEventOnDragStart(e: DragEvent): void {
     const dt = e.dataTransfer
     if (dt) {
@@ -253,13 +253,13 @@ export class HtmlDragSensor extends HtmlElementSensor {
     }
   }
 
-  @atomic @options({ logging: LoggingLevel.Off })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected updateEventOnDropAllowed(e: DragEvent): void {
     if (this.dropAllowed)
       e.preventDefault()
   }
 
-  @atomic @options({ logging: LoggingLevel.Off })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected reset(): void {
     this.draggable = undefined
     this.dragSource = undefined
@@ -317,7 +317,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     this.draggingOver = true
   }
 
-  @reactive @options({ throttling: 0 })
+  @reaction @options({ throttling: 0 })
   protected whenDragging(): void {
     if (this.draggingOver) {
       this.positionX = this.immediatePositionX
@@ -326,7 +326,7 @@ export class HtmlDragSensor extends HtmlElementSensor {
     }
   }
 
-  // @reactive
+  // @reaction
   // protected debug(): void {
   //   const status: string[] = []
   //   if (this.dragStarted)

@@ -5,16 +5,16 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { observable } from "reactronic"
+import { signal } from "reactronic"
 import { DataForSensor, SymDataForSensor } from "./DataForSensor.js"
 import { Sensor } from "./Sensor.js"
 import { WindowSensor } from "./WindowSensor.js"
 
 export class HtmlElementSensor extends Sensor {
-  @observable(false) readonly sourceElement: HTMLElement | SVGElement
-  @observable(false) readonly windowSensor?: WindowSensor
-  @observable(false) preventDefault: boolean
-  @observable(false) stopPropagation: boolean
+  @signal(false) readonly sourceElement: HTMLElement | SVGElement
+  @signal(false) readonly windowSensor?: WindowSensor
+  @signal(false) preventDefault: boolean
+  @signal(false) stopPropagation: boolean
 
   constructor(sourceElement: HTMLElement | SVGElement, windowSensor?: WindowSensor) {
     super()

@@ -5,9 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ObservableObject, atomic, reactive } from "reactronic"
+import { SxObject, transaction, reaction } from "reactronic"
 
-export class RealTimeClock extends ObservableObject {
+export class RealTimeClock extends SxObject {
   hour: number = 0
   minute: number = 0
   second: number = 0
@@ -21,12 +21,12 @@ export class RealTimeClock extends ObservableObject {
     this.put(new Date())
   }
 
-  @atomic
+  @transaction
   pause(value: boolean = true): void {
     this.paused = value
   }
 
-  @atomic
+  @transaction
   private tick(): void {
     let calibration = 0
     try {
@@ -39,7 +39,7 @@ export class RealTimeClock extends ObservableObject {
     }
   }
 
-  @reactive // one-time boot reactive
+  @reaction // one-time boot reactive
   protected activate(): void {
     this.tick()
   }

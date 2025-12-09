@@ -5,18 +5,18 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ObservableObject, Ref, runAtomically, Isolation } from "reactronic"
+import { SxObject, Ref, runTransactional, Isolation } from "reactronic"
 
 export type ValuesOrRefs<T> = {
   [K in keyof T]: T[K] | Ref<T[K]>
 }
 
 export function observableModel<T extends Object>(modelProps: ValuesOrRefs<T>): T {
-  return runAtomically({ isolation: Isolation.disjoinFromOuterTransaction }, () =>
+  return runTransactional({ isolation: Isolation.disjoinFromOuterTransaction }, () =>
     new ObservableComposition(modelProps) as unknown as T)
 }
 
-class ObservableComposition<T> extends ObservableObject {
+class ObservableComposition<T> extends SxObject {
   constructor(composition: ValuesOrRefs<T>) {
     super()
     convertValuesToFieldsAndRefsToGetSet(this, composition)

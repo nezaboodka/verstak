@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { options, Reentrance, atomic, Transaction, LoggingLevel } from "reactronic"
+import { options, Reentrance, transaction, Transaction, LoggingLevel } from "reactronic"
 import { extractPointerButton, isPointerButtonDown, PointerButton, BasePointerSensor } from "./BasePointerSensor.js"
 import { findTargetElementData, SymDataForSensor } from "./DataForSensor.js"
 import { extractModifierKeys, KeyboardModifiers } from "./KeyboardSensor.js"
@@ -113,7 +113,7 @@ export class ButtonSensor extends BasePointerSensor {
     }
   }
 
-  @atomic @options({ logging: LoggingLevel.Off })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected press(e: PointerEvent): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -135,14 +135,14 @@ export class ButtonSensor extends BasePointerSensor {
     })
   }
 
-  @atomic @options({ reentrance: Reentrance.cancelPrevious, logging: LoggingLevel.Off })
+  @transaction @options({ reentrance: Reentrance.cancelPrevious, logging: LoggingLevel.Off })
   protected selecting(e: PointerEvent): void {
     this.updateSensorData(e)
     this.state = ButtonState.selecting
     this.selected = false
   }
 
-  @atomic @options({ logging: LoggingLevel.Off })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected select(e: PointerEvent): void {
     this.updateSensorData(e)
     this.state = ButtonState.selected
@@ -151,7 +151,7 @@ export class ButtonSensor extends BasePointerSensor {
     this.selected = true
   }
 
-  @atomic @options({ logging: LoggingLevel.Off })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected release(): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -159,14 +159,14 @@ export class ButtonSensor extends BasePointerSensor {
     this.revision++
   }
 
-  @atomic @options({ logging: LoggingLevel.Off })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected cancel(): void {
     this.state = ButtonState.released
     this.selected = false
     this.revision++
   }
 
-  @atomic @options({ logging: LoggingLevel.Off })
+  @transaction @options({ logging: LoggingLevel.Off })
   protected reset(): void {
     this.preventDefault = false
     this.stopPropagation = false
@@ -194,7 +194,7 @@ export class ButtonSensor extends BasePointerSensor {
     this.revision++
   }
 
-  // @reactive
+  // @reaction
   // protected debug(): void {
   //   console.log(`Button stage = ${ButtonState[this.state]}, originData = ${this.originData}, selected = ${this.selected}, selectedData = ${this.selectedData}, selectedXY = (${this.selectedX}, ${this.selectedY})`)
   // }
