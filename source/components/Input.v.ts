@@ -7,7 +7,7 @@
 
 import { ReactiveTreeNodeDecl, Mode, derivative } from "reactronic"
 import { Block, JustText, FocusModel, OnFocus, rowBreak, El, Fragment, KeyboardSensor, KeyboardModifiers, Horizontal, Vertical } from "verstak"
-import { observableModel, ValuesOrRefs } from "./common/Utils.js"
+import { sxModel, ValuesOrRefs } from "./common/Utils.js"
 import { Theme, InputStyling } from "./Theme.js"
 import { Icon } from "./Icon.v.js"
 
@@ -50,7 +50,7 @@ export function Input(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, InputMo
 }
 
 export function composeInputModel<T>(props?: Partial<ValuesOrRefs<InputModel<T>>>): InputModel<T> {
-  return observableModel({
+  return sxModel({
     icon: props?.icon,
     text: props?.text ?? "",
     options: props?.options ?? [],

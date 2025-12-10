@@ -7,7 +7,7 @@
 
 import { ReactiveTreeNode, ReactiveTreeNodeDecl, Mode, derivative } from "reactronic"
 import { Block, JustText, El, OnClick } from "verstak"
-import { observableModel } from "./common/Utils.js"
+import { sxModel } from "./common/Utils.js"
 import { Theme } from "./Theme.js"
 import { Icon } from "./Icon.v.js"
 
@@ -22,7 +22,7 @@ export function Button(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Button
     Block<ButtonModel>(derivative(declaration, {
       mode: Mode.autonomous,
       preparation: el => {
-        el.model ??= observableModel({
+        el.model ??= sxModel({
           icon: "fa-solid fa-square",
           label: ReactiveTreeNode.current.key,
         })

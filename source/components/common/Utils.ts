@@ -11,12 +11,12 @@ export type ValuesOrRefs<T> = {
   [K in keyof T]: T[K] | Ref<T[K]>
 }
 
-export function observableModel<T extends Object>(modelProps: ValuesOrRefs<T>): T {
+export function sxModel<T extends Object>(modelProps: ValuesOrRefs<T>): T {
   return runTransactional({ isolation: Isolation.disjoinFromOuterTransaction }, () =>
-    new ObservableComposition(modelProps) as unknown as T)
+    new SxComposition(modelProps) as unknown as T)
 }
 
-class ObservableComposition<T> extends SxObject {
+class SxComposition<T> extends SxObject {
   constructor(composition: ValuesOrRefs<T>) {
     super()
     convertValuesToFieldsAndRefsToGetSet(this, composition)

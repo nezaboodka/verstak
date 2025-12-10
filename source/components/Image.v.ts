@@ -7,7 +7,7 @@
 
 import { ReactiveTreeNodeDecl, Mode, derivative } from "reactronic"
 import { Block, El } from "verstak"
-import { observableModel } from "./common/Utils.js"
+import { sxModel } from "./common/Utils.js"
 
 export type ImageModel = {
   source?: string
@@ -18,7 +18,7 @@ export function Image(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, ImageMo
     Block<ImageModel>(derivative(declaration, {
       mode: Mode.autonomous,
       preparation: el => {
-        el.model ??= observableModel({ source: undefined })
+        el.model ??= sxModel({ source: undefined })
       },
       script: el => {
         const m = el.model
