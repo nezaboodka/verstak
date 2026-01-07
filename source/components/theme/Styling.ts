@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { SxObject, signal } from "reactronic"
+import { RxObject, signal } from "reactronic"
 
 export type BasicAbstractTheme = {
   fillColor: string
@@ -19,7 +19,7 @@ export type BasicAbstractTheme = {
   shadow: string
 }
 
-export class Styling extends SxObject {
+export class Styling extends RxObject {
   @signal(false) protected readonly $: BasicAbstractTheme
 
   constructor($: BasicAbstractTheme) {

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, Handler, BaseDriver, LinkedItem, Transaction, signal, SxObject } from "reactronic"
+import { ReactiveTreeNode, Handler, BaseDriver, LinkedItem, Transaction, signal, RxObject } from "reactronic"
 import { El, ElKind, ElCoords, Horizontal, Vertical, Range, ElPlace, Direction } from "./El.js"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
@@ -659,7 +659,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
 // Size
 
-class Size extends SxObject {
+class Size extends RxObject {
   raw: Range
   minPx: number
   maxPx: number

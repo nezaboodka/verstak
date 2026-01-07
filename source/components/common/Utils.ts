@@ -5,18 +5,18 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { SxObject, Ref, runTransactional, Isolation } from "reactronic"
+import { RxObject, Ref, runTransactional, Isolation } from "reactronic"
 
 export type ValuesOrRefs<T> = {
   [K in keyof T]: T[K] | Ref<T[K]>
 }
 
-export function sxModel<T extends Object>(modelProps: ValuesOrRefs<T>): T {
+export function rxModel<T extends Object>(modelProps: ValuesOrRefs<T>): T {
   return runTransactional({ isolation: Isolation.disjoinFromOuterTransaction }, () =>
-    new SxComposition(modelProps) as unknown as T)
+    new RxComposition(modelProps) as unknown as T)
 }
 
-class SxComposition<T> extends SxObject {
+class RxComposition<T> extends RxObject {
   constructor(composition: ValuesOrRefs<T>) {
     super()
     convertValuesToFieldsAndRefsToGetSet(this, composition)

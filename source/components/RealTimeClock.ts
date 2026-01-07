@@ -5,9 +5,9 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { SxObject, transaction, reaction } from "reactronic"
+import { RxObject, transaction, reaction } from "reactronic"
 
-export class RealTimeClock extends SxObject {
+export class RealTimeClock extends RxObject {
   hour: number = 0
   minute: number = 0
   second: number = 0

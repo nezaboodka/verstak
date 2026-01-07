@@ -7,7 +7,7 @@
 
 import { ReactiveTreeNodeDecl, Mode, derivative } from "reactronic"
 import { Block, JustText, El } from "verstak"
-import { sxModel, ValuesOrRefs } from "./common/Utils.js"
+import { rxModel, ValuesOrRefs } from "./common/Utils.js"
 
 export type SpinnerModel = {
   active: boolean
@@ -31,7 +31,7 @@ export function Spinner(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Spinn
 
 export function composeSpinnerModel<T>(props?: Partial<ValuesOrRefs<SpinnerModel>>): SpinnerModel
 {
-  return sxModel({
+  return rxModel({
     active: props?.active ?? false,
     color: props?.color ?? "",
   })

@@ -7,7 +7,7 @@
 
 import { ReactiveTreeNode, ReactiveTreeNodeDecl, Mode, derivative } from "reactronic"
 import { Block, JustText, El, OnClick } from "verstak"
-import { sxModel } from "./common/Utils.js"
+import { rxModel } from "./common/Utils.js"
 import { Theme } from "./Theme.js"
 import { Icon } from "./Icon.v.js"
 
@@ -22,7 +22,7 @@ export function Toggle(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Toggle
     Block<ToggleModel>(derivative(declaration, {
       mode: Mode.autonomous,
       preparation: el => {
-        el.model ??= sxModel({
+        el.model ??= rxModel({
           label: ReactiveTreeNode.current.key,
           checked: true,
           color: "green" }) // model is either taken from parameter or created internally
