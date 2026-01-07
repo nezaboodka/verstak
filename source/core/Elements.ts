@@ -438,11 +438,11 @@ export function isSplitViewPartition(childDriver: ReactiveTreeNodeDriver): boole
   return !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.pseudo
 }
 
-function overrideMethod(declaration: ReactiveTreeNodeDecl<El>, method: "preparation" | "script", func: (el: El) => void): void {
+function overrideMethod(declaration: ReactiveTreeNodeDecl<El>, method: "preparation" | "script", func: (this: El, el: El) => void): void {
   const baseScript = declaration[method]
   declaration[method] = baseScript !== undefined
-    ? (el, base) => { baseScript(el, base); func(el) }
-    : (el, base) => { base(); func(el) }
+    ? (el, base) => { baseScript.call(el, el, base); func.call(el, el) }
+    : (el, base) => { base(); func.call(el, el) }
 }
 
 // PartitionDriver
