@@ -18,11 +18,11 @@ export function Spinner(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Spinn
   return (
     Block<SpinnerModel>(derivative(declaration, {
       mode: Mode.autonomous,
-      preparation: el => {
-        el.model ??= composeSpinnerModel()
+      preparation() {
+        this.model ??= composeSpinnerModel()
       },
-      script: el => {
-        const m = el.model
+      script() {
+        const m = this.model
         m.active && JustText("loading...")
       },
     }))

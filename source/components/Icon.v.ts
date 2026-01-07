@@ -15,10 +15,10 @@ export function Icon(name: string,
     Block(derivative(declaration, {
       mode: Mode.autonomous,
       triggers: { name },
-      script: el => {
+      script() {
         const theme = Theme.current.icon
-        el.useStylingPreset(name)
-        el.useStylingPreset(theme.main)
+        this.useStylingPreset(name)
+        this.useStylingPreset(theme.main)
       },
     }))
   )

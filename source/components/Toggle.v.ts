@@ -21,35 +21,35 @@ export function Toggle(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Toggle
   return (
     Block<ToggleModel>(derivative(declaration, {
       mode: Mode.autonomous,
-      preparation: el => {
-        el.model ??= rxModel({
+      preparation() {
+        this.model ??= rxModel({
           label: ReactiveTreeNode.current.key,
           checked: true,
           color: "green" }) // model is either taken from parameter or created internally
       },
-      script: el => {
-        const m = el.model
+      script() {
+        const m = this.model
         const theme = Theme.current
         const toggleTheme = theme.toggle
-        el.useStylingPreset(toggleTheme.main)
+        this.useStylingPreset(toggleTheme.main)
         Icon(`fa-solid fa-toggle-${m.checked ? "on" : "off"}`, {
-          script: (el, base) => {
+          script(el, base) {
             base()
-            el.useStylingPreset(toggleTheme.icon)
-            el.style.color = m.checked ? (theme.positiveColor ?? "") : "" // subscribe to ToggleModel.checked
+            this.useStylingPreset(toggleTheme.icon)
+            this.style.color = m.checked ? (theme.positiveColor ?? "") : "" // subscribe to ToggleModel.checked
           },
         })
         if (m.label) {
           JustText(m.label, false, {
-            script: (el, base) => {
+            script(el, base) {
               base()
-              el.useStylingPreset(toggleTheme.label)
+              this.useStylingPreset(toggleTheme.label)
             },
           })
         }
 
-        OnClick(el.native, () => {
-          el.model.checked = !el.model.checked
+        OnClick(this.native, () => {
+          this.model.checked = !this.model.checked
         })
       },
     }))

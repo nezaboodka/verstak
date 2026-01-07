@@ -17,14 +17,14 @@ export function Image(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, ImageMo
   return (
     Block<ImageModel>(derivative(declaration, {
       mode: Mode.autonomous,
-      preparation: el => {
-        el.model ??= rxModel({ source: undefined })
+      preparation() {
+        this.model ??= rxModel({ source: undefined })
       },
-      script: el => {
-        const m = el.model
-        el.style.backgroundImage = `url(${m.source})`
-        el.style.backgroundSize = "contain"
-        el.style.backgroundRepeat = "no-repeat"
+      script() {
+        const m = this.model
+        this.style.backgroundImage = `url(${m.source})`
+        this.style.backgroundSize = "contain"
+        this.style.backgroundRepeat = "no-repeat"
       },
     }))
   )

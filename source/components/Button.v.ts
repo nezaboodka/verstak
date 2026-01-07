@@ -21,34 +21,34 @@ export function Button(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Button
   return (
     Block<ButtonModel>(derivative(declaration, {
       mode: Mode.autonomous,
-      preparation: el => {
-        el.model ??= rxModel({
+      preparation() {
+        this.model ??= rxModel({
           icon: "fa-solid fa-square",
           label: ReactiveTreeNode.current.key,
         })
       },
-      script: el => {
-        const m = el.model
+      script() {
+        const m = this.model
         const theme = Theme.current.button
-        el.useStylingPreset(theme.main)
+        this.useStylingPreset(theme.main)
         if (m.icon) {
           Icon(m.icon, {
-            script: (el, base) => {
+            script(el, base) {
               base()
-              el.useStylingPreset(theme.icon)
+              this.useStylingPreset(theme.icon)
             },
           })
         }
         if (m.label) {
           JustText(m.label, false, {
-            script: (el, base) => {
+            script(el, base) {
               base()
-              el.useStylingPreset(theme.label)
+              this.useStylingPreset(theme.label)
             },
           })
         }
 
-        OnClick(el.native, m.action)
+        OnClick(this.native, m.action)
       },
     }))
   )

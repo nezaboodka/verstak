@@ -173,10 +173,12 @@ export function declareSplitter<T>(index: number, splitViewNode: ReactiveTreeNod
     Splitter({
       key,
       mode: Mode.autonomous,
-      preparation: el => el.native.className = `splitter ${key}`,
-      script: b => {
-        const e = b.native
-        const model = b.model
+      preparation() {
+        this.native.className = `splitter ${key}`
+      },
+      script() {
+        const e = this.native
+        const model = this.model
         const dataForSensor = e.dataForSensor
         dataForSensor.draggable = key
         dataForSensor.drag = key
@@ -228,8 +230,8 @@ export function declareSplitter<T>(index: number, splitViewNode: ReactiveTreeNod
 
 export function cursor(place: ElPlace): void {
   declare(Drivers.cursor, {
-    script: el => {
-      el.place = place
+    script() {
+      this.place = place
     },
   })
 }
@@ -239,11 +241,11 @@ export function cursor(place: ElPlace): void {
 export function JustText(content: string, formatted?: boolean,
   declaration?: ReactiveTreeNodeDecl<El<HTMLElement, void>>): ReactiveTreeNode<El<HTMLElement, void>> {
   return declare(Drivers.text, derivative(declaration, {
-    script: el => {
+    script() {
       if (formatted)
-        el.native.innerHTML = content
+        this.native.innerHTML = content
       else
-        el.native.innerText = content
+        this.native.innerText = content
     },
   }))
 }
@@ -339,7 +341,7 @@ export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
       })
       const relayoutEl = PseudoElement({
         mode: Mode.autonomous,
-        script: () => {
+        script() {
           const native = el.native as HTMLElement
           const isHorizontal = el.splitView === Direction.horizontal
           if (layoutInfo.isUpdateFinished) {
@@ -454,26 +456,26 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     if (ownerEl.sealed !== undefined) {
       node.element.style.flexGrow = "1"
       declare(Drivers.wrapper, {
-        script: el => {
-          const ownerEl = el.node.owner.owner.element as ElImpl
+        script() {
+          const ownerEl = this.node.owner.owner.element as ElImpl
           if (ownerEl.splitView !== undefined) {
-            el.style.display = "grid"
-            el.style.flexDirection = ""
+            this.style.display = "grid"
+            this.style.flexDirection = ""
           }
           else {
             if (ownerEl.isTable) {
-              el.style.display = "contents"
-              el.style.flexDirection = ""
+              this.style.display = "contents"
+              this.style.flexDirection = ""
             }
             else {
-              el.style.display = "flex"
-              el.style.flexDirection = "row"
+              this.style.display = "flex"
+              this.style.flexDirection = "row"
             }
           }
-          el.style.position = "absolute"
-          el.style.inset = "0"
-          el.style.overflow = "auto" // TODO: should be user-defined
-          el.style.gap = "inherit"
+          this.style.position = "absolute"
+          this.style.inset = "0"
+          this.style.overflow = "auto" // TODO: should be user-defined
+          this.style.gap = "inherit"
         },
       })
     }

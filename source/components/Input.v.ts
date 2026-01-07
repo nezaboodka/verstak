@@ -27,19 +27,19 @@ export function Input(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, InputMo
   return (
     Block<InputModel>(derivative(declaration, {
       mode: Mode.autonomous,
-      preparation: el => {
-        el.model ??= composeInputModel()
-        el.native.dataForSensor.focus = el.model
+      preparation() {
+        this.model ??= composeInputModel()
+        this.native.dataForSensor.focus = this.model
       },
-      script: el => {
-        const m = el.model
+      script() {
+        const m = this.model
         const theme = Theme.current.input
-        el.useStylingPreset(theme.main)
+        this.useStylingPreset(theme.main)
         if (m.icon)
           Icon(m.icon, {
-            script: (el, base) => {
+            script(el, base) {
               base()
-              el.useStylingPreset(theme.icon)
+              this.useStylingPreset(theme.icon)
             },
           })
         InputField(m, theme)
@@ -68,18 +68,18 @@ function InputField(model: InputModel, styling: InputStyling) {
   return (
     JustText(model.text, false, {
       key: InputField.name,
-      preparation: (el, base) => {
-        const e = el.native
-        el.useStylingPreset(styling.field)
-        el.horizontally = Horizontal.stretch
-        el.vertically = Vertical.stretch
+      preparation(el, base) {
+        const e = this.native
+        this.useStylingPreset(styling.field)
+        this.horizontally = Horizontal.stretch
+        this.vertically = Vertical.stretch
         e.tabIndex = 0
         e.contentEditable = "true"
         e.dataForSensor.focus = model
         base()
       },
-      script: el => {
-        const e = el.native
+      script() {
+        const e = this.native
         if (!model.isEditMode)
           e.innerText = model.text
         Fragment(() => {
@@ -107,10 +107,10 @@ function InputPopup(model: InputModel, styling: InputStyling) {
   return (
     Block({
       key: InputPopup.name,
-      script: el => {
-        el.useStylingPreset(styling.popup)
-        Fragment(() => model.position = el.native.sensors.scroll.y)
-        const visible = el.overlayVisible = model.isEditMode
+      script() {
+        this.useStylingPreset(styling.popup)
+        Fragment(() => model.position = this.native.sensors.scroll.y)
+        const visible = this.overlayVisible = model.isEditMode
         if (visible) {
           const options = model.options
           if (options.length > 0) {
@@ -118,8 +118,8 @@ function InputPopup(model: InputModel, styling: InputStyling) {
               rowBreak()
               JustText(x, false, {
                 key: x,
-                preparation: el => {
-                  el.contentWrapping = false
+                preparation() {
+                  this.contentWrapping = false
                 },
               })
             }

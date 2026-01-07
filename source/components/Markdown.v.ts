@@ -12,8 +12,8 @@ import * as prism from "prismjs"
 export function Markdown(content: string) {
   return (
     JustText(md.render(content), true, {
-      preparation: (el, base) => {
-        el.contentWrapping = true
+      preparation(el, base) {
+        this.contentWrapping = true
         // b.native.setAttribute("markdown", "true")
         base()
       },

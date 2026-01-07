@@ -17,7 +17,7 @@ export function OnClick(target: Element, action: ((pointer: PointerSensor) => vo
       key,
       mode: Mode.autonomous,
       triggers: { target/* , action */ },
-      script: el => {
+      script() {
         const pointer = target.sensors.pointer
         if (target.dataForSensor.click !== undefined && pointer.clicked === target.dataForSensor.click || target.dataForSensor.click === undefined && pointer.clicked) {
           if (action instanceof Function) {
@@ -38,7 +38,7 @@ export function OnClickAsync(target: HTMLElement, action: ((pointer: PointerSens
       key,
       mode: Mode.autonomous,
       triggers: { target/* , action */ },
-      scriptAsync: async (el) => {
+      async scriptAsync() {
         const pointer = target.sensors.pointer
         if (target.dataForSensor.click !== undefined && pointer.clicked === target.dataForSensor.click || target.dataForSensor.click === undefined && pointer.clicked) {
           if (action instanceof Function) {
@@ -59,7 +59,7 @@ export function OnResize(target: HTMLElement, action: ((element: ResizedElement)
       key,
       mode: Mode.autonomous,
       triggers: { target/* , action */ },
-      script: el => {
+      script() {
         const resize = target.sensors.resize
         resize.resizedElements.forEach(x => {
           action(x)
@@ -77,10 +77,10 @@ export function OnFocus(
     key,
     mode: Mode.autonomous,
     triggers: { target, model },
-    preparation: el => {
-      el.node.configureReactivity({ throttling: 0 })
+    preparation() {
+      this.node.configureReactivity({ throttling: 0 })
     },
-    script: el => {
+    script() {
       // console.log(`-> ${model.isEditMode ? "🟢" : "🔴"} RxFocuser [${key}]: ${model.isEditMode ? "focus()" : "blur()"}`)
       if (switchEditMode === undefined && !(target instanceof HTMLInputElement || target.hasAttribute("tabindex")))
         console.warn(`"${key ?? "noname"}" element must have "tabindex" attribute set in order to be focusable`)
