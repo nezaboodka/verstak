@@ -409,9 +409,9 @@ export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
         }
         const isHorizontal = el.splitView === Direction.horizontal
         if (childDeclaration !== undefined) {
-          if (childDeclaration.triggers === undefined)
-            childDeclaration.triggers = {}
-          Object.defineProperty(childDeclaration.triggers, "index", { value: partCount })
+          if (childDeclaration.signalArgs === undefined)
+            childDeclaration.signalArgs = {}
+          Object.defineProperty(childDeclaration.signalArgs, "index", { value: partCount })
           overrideMethod(childDeclaration, "script", el => {
             if (isHorizontal)
               el.style.gridColumn = `${partCount + 1}`

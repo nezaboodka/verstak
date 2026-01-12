@@ -16,7 +16,7 @@ export function OnClick(target: Element, action: ((pointer: PointerSensor) => vo
     PseudoElement({
       key,
       mode: Mode.autonomous,
-      triggers: { target/* , action */ },
+      signalArgs: { target/* , action */ },
       script() {
         const pointer = target.sensors.pointer
         if (target.dataForSensor.click !== undefined && pointer.clicked === target.dataForSensor.click || target.dataForSensor.click === undefined && pointer.clicked) {
@@ -37,7 +37,7 @@ export function OnClickAsync(target: HTMLElement, action: ((pointer: PointerSens
     PseudoElement({
       key,
       mode: Mode.autonomous,
-      triggers: { target/* , action */ },
+      signalArgs: { target/* , action */ },
       async scriptAsync() {
         const pointer = target.sensors.pointer
         if (target.dataForSensor.click !== undefined && pointer.clicked === target.dataForSensor.click || target.dataForSensor.click === undefined && pointer.clicked) {
@@ -58,7 +58,7 @@ export function OnResize(target: HTMLElement, action: ((element: ResizedElement)
     PseudoElement({
       key,
       mode: Mode.autonomous,
-      triggers: { target/* , action */ },
+      signalArgs: { target/* , action */ },
       script() {
         const resize = target.sensors.resize
         resize.resizedElements.forEach(x => {
@@ -76,7 +76,7 @@ export function OnFocus(
   PseudoElement({
     key,
     mode: Mode.autonomous,
-    triggers: { target, model },
+    signalArgs: { target, model },
     preparation() {
       this.node.configureReactivity({ throttling: 0 })
     },

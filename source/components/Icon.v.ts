@@ -14,7 +14,7 @@ export function Icon(name: string,
   return (
     Block(derivative(declaration, {
       mode: Mode.autonomous,
-      triggers: { name },
+      signalArgs: { name },
       script() {
         const theme = Theme.current.icon
         this.useStylingPreset(name)
