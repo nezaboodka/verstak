@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveTreeNode, ReactiveTreeNodeDecl, Mode, derivative } from "reactronic"
-import { Block, JustText, El, OnClick } from "verstak"
+import { Block, El, OnClick } from "verstak"
 import { rxModel } from "./common/Utils.js"
 import { Theme } from "./Theme.js"
 import { Icon } from "./Icon.v.js"
@@ -40,9 +40,10 @@ export function Toggle(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Toggle
           },
         })
         if (m.label) {
-          JustText(m.label, false, {
+          Block({
             script(el, base) {
               base()
+              this.text = m.label
               this.useStylingPreset(toggleTheme.label)
             },
           })

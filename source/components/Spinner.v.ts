@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveTreeNodeDecl, Mode, derivative } from "reactronic"
-import { Block, JustText, El } from "verstak"
+import { Block, El } from "verstak"
 import { rxModel, ValuesOrRefs } from "./common/Utils.js"
 
 export type SpinnerModel = {
@@ -23,7 +23,12 @@ export function Spinner(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Spinn
       },
       script() {
         const m = this.model
-        m.active && JustText("loading...")
+        if (m.active)
+          Block({
+            script() {
+              this.text = "loading..."
+            },
+          })
       },
     }))
   )

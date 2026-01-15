@@ -43,6 +43,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _stretchingStrengthVertically: number | undefined
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
+  private _text: string | undefined
+  private _isTextFormatted: boolean
   private _sealed: Direction | undefined
   private _splitView: Direction | undefined
   private _hasStylingPresets: boolean
@@ -69,6 +71,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._stretchingStrengthVertically = undefined
     this._contentWrapping = true
     this._overlayVisible = undefined
+    this._text = ""
+    this._isTextFormatted = false
     this._sealed = undefined
     this._splitView = undefined
     this._hasStylingPresets = false
@@ -82,7 +86,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   get index(): number { return this.node.slot!.index }
   get isBlock(): boolean { return this.kind === ElKind.block }
   get isTable(): boolean { return this.kind === ElKind.table }
-  get isAuxiliary(): boolean { return this.kind > ElKind.text } // Part, Group, Cursor
+  get isAuxiliary(): boolean { return this.kind > ElKind.table } // Part, Group, Cursor
 
   get kind(): ElKind { return this._kind }
   set kind(value: ElKind) {
@@ -227,6 +231,22 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     if (value !== this._overlayVisible) {
       ElImpl.applyOverlayVisible(this, value)
       this._overlayVisible = value
+    }
+  }
+
+  get text(): string | undefined { return this._text }
+  set text(value: string | undefined) {
+    if (value !== this._text) {
+      ElImpl.applyText(this, value)
+      this._text = value
+    }
+  }
+
+  get isTextFormatted(): boolean { return this._isTextFormatted }
+  set isTextFormatted(value: boolean) {
+    if (value !== this._isTextFormatted) {
+      ElImpl.applyIsTextFormatted(this, value)
+      this._isTextFormatted = value
     }
   }
 
@@ -644,6 +664,26 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
           e.sensors.resize.observeResizing(element, value !== undefined)
         }, e => { /* nop */ })
       })
+    }
+  }
+
+  static applyText<T extends Element>(element: El<T, any>, value: string | undefined): void {
+    const e = element.native
+    if (e instanceof HTMLElement) {
+      if (element.isTextFormatted)
+        e.innerHTML = value ?? ""
+      else
+        e.innerText = value ?? ""
+    }
+  }
+
+  static applyIsTextFormatted<T extends Element>(element: El<T, any>, value: boolean): void {
+    const e = element.native
+    if (e instanceof HTMLElement) {
+      if (value)
+        e.innerHTML = element.text ?? ""
+      else
+        e.innerText = element.text ?? ""
     }
   }
 

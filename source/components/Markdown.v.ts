@@ -5,17 +5,21 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { JustText } from "verstak"
 import Md from "markdown-it"
 import * as prism from "prismjs"
+import { Block } from "verstak"
 
 export function Markdown(content: string) {
   return (
-    JustText(md.render(content), true, {
+    Block({
       preparation(el, base) {
         this.contentWrapping = true
         // b.native.setAttribute("markdown", "true")
         base()
+      },
+      script() {
+        this.isTextFormatted = true
+        this.text = md.render(content)
       },
     })
   )

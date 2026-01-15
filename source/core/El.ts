@@ -27,6 +27,8 @@ export type El<T = any, M = any> = {
   stretchingStrengthVertically: number | undefined
   contentWrapping: boolean
   overlayVisible: boolean | undefined
+  text: string | undefined
+  isTextFormatted: boolean
 
   sealed: Direction | undefined
   splitView: Direction | undefined
@@ -41,12 +43,11 @@ export type El<T = any, M = any> = {
 export enum ElKind {
   block = 0,
   table = 1,
-  text = 2,
-  group = 3,
-  partition = 4,
-  splitter = 5,
-  cursor = 6,
-  native = 7,
+  group = 2,
+  partition = 3,
+  splitter = 4,
+  cursor = 5,
+  native = 6,
 }
 
 export type ElCoords = {

@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveTreeNodeDecl, Mode, derivative } from "reactronic"
-import { Block, JustText, FocusModel, OnFocus, rowBreak, El, Fragment, KeyboardSensor, KeyboardModifiers, Horizontal, Vertical } from "verstak"
+import { Block, FocusModel, OnFocus, rowBreak, El, Fragment, KeyboardSensor, KeyboardModifiers, Horizontal, Vertical } from "verstak"
 import { rxModel, ValuesOrRefs } from "./common/Utils.js"
 import { Theme, InputStyling } from "./Theme.js"
 import { Icon } from "./Icon.v.js"
@@ -66,7 +66,7 @@ export function composeInputModel<T>(props?: Partial<ValuesOrRefs<InputModel<T>>
 
 function InputField(model: InputModel, styling: InputStyling) {
   return (
-    JustText(model.text, false, {
+    Block({
       key: InputField.name,
       preparation(el, base) {
         const e = this.native
@@ -116,16 +116,22 @@ function InputPopup(model: InputModel, styling: InputStyling) {
           if (options.length > 0) {
             for (const x of model.options) {
               rowBreak()
-              JustText(x, false, {
+              Block({
                 key: x,
                 preparation() {
+                  this.text = x
                   this.contentWrapping = false
                 },
               })
             }
           }
           else
-            JustText("(nothing)", false, { key: "(nothing)" })
+            Block({
+              key: "(nothing)",
+              script() {
+                this.text = "(nothing)"
+              },
+            })
         }
       },
     })

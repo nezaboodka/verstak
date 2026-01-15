@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, ReconciliationList, LinkedItem, declare, derivative, launch, runNonReactive, ScriptAsync } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, ReconciliationList, LinkedItem, declare, launch, runNonReactive, ScriptAsync } from "reactronic"
 import { El, ElKind, ElPlace, Direction } from "./El.js"
 import { clamp } from "./ElUtils.js"
 import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "./ElDriver.js"
@@ -234,20 +234,6 @@ export function cursor(place: ElPlace): void {
       this.place = place
     },
   })
-}
-
-// JustText (either plain or html)
-
-export function JustText(content: string, formatted?: boolean,
-  declaration?: ReactiveTreeNodeDecl<El<HTMLElement, void>>): ReactiveTreeNode<El<HTMLElement, void>> {
-  return declare(Drivers.text, derivative(declaration, {
-    script() {
-      if (formatted)
-        this.native.innerHTML = content
-      else
-        this.native.innerText = content
-    },
-  }))
 }
 
 // Group
@@ -499,9 +485,6 @@ export const Drivers = {
 
   // display: grid
   table: new HtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.table),
-
-  // display: block
-  text: new HtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.text),
 
   // display: contents
   group: new HtmlDriver<HTMLElement>(Constants.group, false, el => el.kind = ElKind.group),
