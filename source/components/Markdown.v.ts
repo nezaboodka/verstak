@@ -18,7 +18,7 @@ export function Markdown(content: string) {
         base()
       },
       script() {
-        this.isTextFormatted = true
+        this.textIsFormatted = true
         this.text = md.render(content)
       },
     })

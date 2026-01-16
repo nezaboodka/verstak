@@ -28,7 +28,8 @@ export type El<T = any, M = any> = {
   contentWrapping: boolean
   overlayVisible: boolean | undefined
   text: string | undefined
-  isTextFormatted: boolean
+  textIsFormatted: boolean
+  textIsEditable: boolean
 
   sealed: Direction | undefined
   splitView: Direction | undefined

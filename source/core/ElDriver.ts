@@ -44,7 +44,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
   private _text: string | undefined
-  private _isTextFormatted: boolean
+  private _textIsFormatted: boolean
+  private _textIsEditable: boolean
   private _sealed: Direction | undefined
   private _splitView: Direction | undefined
   private _hasStylingPresets: boolean
@@ -72,7 +73,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._contentWrapping = true
     this._overlayVisible = undefined
     this._text = ""
-    this._isTextFormatted = false
+    this._textIsFormatted = false
+    this._textIsEditable = false
     this._sealed = undefined
     this._splitView = undefined
     this._hasStylingPresets = false
@@ -242,11 +244,19 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  get isTextFormatted(): boolean { return this._isTextFormatted }
-  set isTextFormatted(value: boolean) {
-    if (value !== this._isTextFormatted) {
-      ElImpl.applyIsTextFormatted(this, value)
-      this._isTextFormatted = value
+  get textIsFormatted(): boolean { return this._textIsFormatted }
+  set textIsFormatted(value: boolean) {
+    if (value !== this._textIsFormatted) {
+      ElImpl.applyTextIsFormatted(this, value)
+      this._textIsFormatted = value
+    }
+  }
+
+  get textIsEditable(): boolean { return this._textIsEditable }
+  set textIsEditable(value: boolean) {
+    if (value !== this._textIsEditable) {
+      ElImpl.applyTextIsEditable(this, value)
+      this._textIsEditable = value
     }
   }
 
@@ -678,20 +688,30 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
         e.style.display = "flex"
         e.style.minWidth = "0"
       }
-      if (element.isTextFormatted)
+      if (element.textIsFormatted)
         e.innerHTML = value ?? ""
       else
         e.innerText = value ?? ""
     }
   }
 
-  static applyIsTextFormatted<T extends Element>(element: El<T, any>, value: boolean): void {
+  static applyTextIsFormatted<T extends Element>(element: El<T, any>, value: boolean): void {
     const e = element.native
     if (e instanceof HTMLElement) {
       if (value)
         e.innerHTML = element.text ?? ""
       else
         e.innerText = element.text ?? ""
+    }
+  }
+
+  static applyTextIsEditable<T extends Element>(element: El<T, any>, value: boolean): void {
+    const e = element.native
+    if (e instanceof HTMLElement) {
+      if (value)
+        e.contentEditable = "true"
+      else
+        e.contentEditable = ""
     }
   }
 

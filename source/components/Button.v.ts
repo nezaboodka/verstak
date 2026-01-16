@@ -43,7 +43,7 @@ export function Button(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Button
           Block({
             script(el, base) {
               base()
-              this.isTextFormatted = false
+              this.textIsFormatted = false
               this.text = m.label
               this.useStylingPreset(theme.label)
             },
