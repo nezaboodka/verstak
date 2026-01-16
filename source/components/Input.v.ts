@@ -73,15 +73,15 @@ function InputField(model: InputModel, styling: InputStyling) {
         this.useStylingPreset(styling.field)
         this.horizontally = Horizontal.stretch
         this.vertically = Vertical.stretch
+        this.textIsEditable = true
         e.tabIndex = 0
-        e.contentEditable = "true"
         e.dataForSensor.focus = model
         base()
       },
       script() {
         const e = this.native
         if (!model.isEditMode)
-          e.innerText = model.text
+          this.text = model.text
         Fragment(() => {
           const keyboard = e.sensors.keyboard
           if (keyboard.down) {
