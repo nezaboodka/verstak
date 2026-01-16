@@ -670,6 +670,14 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   static applyText<T extends Element>(element: El<T, any>, value: string | undefined): void {
     const e = element.native
     if (e instanceof HTMLElement) {
+      if (value) {
+        e.style.display = "inline-grid"
+        e.style.minWidth = ""
+      }
+      else {
+        e.style.display = "flex"
+        e.style.minWidth = "0"
+      }
       if (element.isTextFormatted)
         e.innerHTML = value ?? ""
       else
@@ -904,7 +912,7 @@ export const Constants = {
   wrapper: "wrapper",
   splitter: "splitter",
   group: "group",
-  layouts: ["block", "table", "text", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
+  layouts: ["block", "table", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
   keyAttrName: "key",
   kindAttrName: "kind",
   ownReactiveTreeNodeKey: Symbol("own-reactive-tree-node"),
@@ -931,13 +939,13 @@ const DriversByLayout: Array<Handler<El<HTMLElement>>> = [
     s.gridAutoColumns = "minmax(min-content, 1fr)"
     s.textAlign = "initial"
   },
-  el => { // text
-    const owner = el.node.owner.element as ElImpl
-    const s = el.style
-    s.alignSelf = owner.isTable ? "stretch" : "center"
-    s.display = "inline-grid"
-    s.flexShrink = "1"
-  },
+  // el => { // text
+  //   const owner = el.node.owner.element as ElImpl
+  //   const s = el.style
+  //   s.alignSelf = owner.isTable ? "stretch" : "center"
+  //   s.display = "inline-grid"
+  //   s.flexShrink = "1"
+  // },
   el => { // group
     const s = el.style
     s.display = "contents"
