@@ -45,7 +45,7 @@ export function Window(
   preparation?: Script<El<HTMLBodyElement>>,
   preparationTask?: ScriptAsync<El<HTMLBodyElement>>,
   finalization?: Script<El<HTMLBodyElement>>,
-  triggers?: unknown,
+  signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLBodyElement>>): ReactiveTreeNode<El<HTMLBodyElement>>
 
 export function Window(
@@ -59,11 +59,11 @@ export function Window(
   preparation?: Script<El<HTMLBodyElement>>,
   preparationTask?: ScriptAsync<El<HTMLBodyElement>>,
   finalization?: Script<El<HTMLBodyElement>>,
-  triggers?: unknown,
+  signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLBodyElement>>): ReactiveTreeNode<El<HTMLBodyElement>> {
   const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.block)
   return declare(driver, bodyOrDeclaration, bodyTask,
-    key, mode, preparation, preparationTask, finalization, triggers, basis)
+    key, mode, preparation, preparationTask, finalization, signalArgs, basis)
 }
 
 // Block
@@ -76,7 +76,7 @@ export function Block<M = unknown>(
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
-  triggers?: unknown,
+  signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
 export function Block<M = unknown>(
@@ -90,10 +90,10 @@ export function Block<M = unknown>(
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
-  triggers?: unknown,
+  signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
   return declare(Drivers.block, bodyOrDeclaration, bodyTask,
-    key, mode, preparation, preparationTask, finalization, triggers, basis)
+    key, mode, preparation, preparationTask, finalization, signalArgs, basis)
 }
 
 // Table
@@ -106,7 +106,7 @@ export function Table<M = unknown>(
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
-  triggers?: unknown,
+  signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
 export function Table<M = unknown>(
@@ -120,10 +120,10 @@ export function Table<M = unknown>(
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
-  triggers?: unknown,
+  signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
   return declare(Drivers.table, bodyOrDeclaration, bodyTask,
-    key, mode, preparation, preparationTask, finalization, triggers, basis)
+    key, mode, preparation, preparationTask, finalization, signalArgs, basis)
 }
 
 // Partition
@@ -143,7 +143,7 @@ export function Splitter<M = unknown>(
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
-  triggers?: unknown,
+  signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
 export function Splitter<M = unknown>(
@@ -157,10 +157,10 @@ export function Splitter<M = unknown>(
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
-  triggers?: unknown,
+  signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
   return declare(Drivers.splitter, bodyOrDeclaration, bodyTask,
-    key, mode, preparation, preparationTask, finalization, triggers, basis)
+    key, mode, preparation, preparationTask, finalization, signalArgs, basis)
 }
 
 export function rowBreak(shiftCursorDown?: number): void {
@@ -246,7 +246,7 @@ export function Group<M = unknown>(
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
-  triggers?: unknown,
+  signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
 export function Group<M = unknown>(
@@ -260,10 +260,10 @@ export function Group<M = unknown>(
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
-  triggers?: unknown,
+  signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
   return declare(Drivers.group, bodyOrDeclaration, bodyTask,
-    key, mode, preparation, preparationTask, finalization, triggers, basis)
+    key, mode, preparation, preparationTask, finalization, signalArgs, basis)
 }
 
 // Fragment
@@ -281,7 +281,7 @@ export function PseudoElement<M = unknown>(
   preparation?: Script<El<void, M>>,
   preparationTask?: ScriptAsync<El<void, M>>,
   finalization?: Script<El<void, M>>,
-  triggers?: unknown,
+  signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>>
 
 export function PseudoElement<M = unknown>(
@@ -295,10 +295,10 @@ export function PseudoElement<M = unknown>(
   preparation?: Script<El<void, M>>,
   preparationTask?: ScriptAsync<El<void, M>>,
   finalization?: Script<El<void, M>>,
-  triggers?: unknown,
+  signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>> {
   return declare(Drivers.pseudo, bodyOrDeclaration, bodyTask,
-    key, mode, preparation, preparationTask, finalization, triggers, basis)
+    key, mode, preparation, preparationTask, finalization, signalArgs, basis)
 }
 
 // BlockDriver
