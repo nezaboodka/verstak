@@ -42,10 +42,10 @@ export class Dimension<T = NoUnit> {
   }
 
   // Font Size Px
-  static readonly gFontSizePx = new ReactiveTreeVariable<number>()
+  static readonly gFontSizePx = new ReactiveTreeVariable<number>("gFontSizePx")
 
   // Line Size Px
-  private static readonly gLineSizePx = new ReactiveTreeVariable<number>()
+  private static readonly gLineSizePx = new ReactiveTreeVariable<number>("gLineSizePx")
   static get lineSizePx(): number {
     return Dimension.gLineSizePx.value
   }

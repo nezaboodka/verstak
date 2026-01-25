@@ -25,7 +25,7 @@ export type AbstractTheme = BasicAbstractTheme & {
 }
 
 export class Theme implements AbstractTheme {
-  private static readonly gCurrent = new ReactiveTreeVariable<AbstractTheme>(
+  private static readonly gCurrent = new ReactiveTreeVariable<AbstractTheme>(Theme.name,
     runTransactional({ isolation: Isolation.disjoinFromOuterTransaction }, () => new Theme()))
 
   static get current(): AbstractTheme {
