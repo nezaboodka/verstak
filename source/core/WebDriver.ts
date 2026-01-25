@@ -75,11 +75,11 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     }
   }
 
-  override buildBody(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
+  override rebuildBody(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
     const el = node.element
     if (el instanceof ElImpl)
       el.prepareForUpdate()
-    let result = super.buildBody(node)
+    let result = super.rebuildBody(node)
     result = proceedSyncOrAsync(result,
       v => {
         if (el.place === undefined) {

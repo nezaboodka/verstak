@@ -304,10 +304,10 @@ export function PseudoElement<M = unknown>(
 // BlockDriver
 
 export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
-  override buildBody(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
+  override rebuildBody(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
     rowBreak()
     const el = node.element as ElImpl
-    const result = super.buildBody(node)
+    const result = super.rebuildBody(node)
     if (el.splitView !== undefined) {
       if (el.layoutInfo === undefined)
         el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
@@ -436,8 +436,8 @@ function overrideMethod(declaration: ReactiveTreeNodeDecl<El>, method: "preparat
 // PartitionDriver
 
 export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
-  override buildBody(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
-    const result = super.buildBody(node)
+  override rebuildBody(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
+    const result = super.rebuildBody(node)
     const ownerEl = node.owner.element as ElImpl
     if (ownerEl.sealed !== undefined) {
       node.element.style.flexGrow = "1"
