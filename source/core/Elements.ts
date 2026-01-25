@@ -43,7 +43,7 @@ export function Window(
   key?: string,
   mode?: Mode,
   preparation?: Script<El<HTMLBodyElement>>,
-  preparationAsync?: ScriptAsync<El<HTMLBodyElement>>,
+  preparationTask?: ScriptAsync<El<HTMLBodyElement>>,
   finalization?: Script<El<HTMLBodyElement>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLBodyElement>>): ReactiveTreeNode<El<HTMLBodyElement>>
@@ -57,13 +57,13 @@ export function Window(
   key?: string,
   mode?: Mode,
   preparation?: Script<El<HTMLBodyElement>>,
-  preparationAsync?: ScriptAsync<El<HTMLBodyElement>>,
+  preparationTask?: ScriptAsync<El<HTMLBodyElement>>,
   finalization?: Script<El<HTMLBodyElement>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLBodyElement>>): ReactiveTreeNode<El<HTMLBodyElement>> {
   const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.block)
   return declare(driver, scriptOrDeclaration, scriptAsync,
-    key, mode, preparation, preparationAsync, finalization, triggers, basis)
+    key, mode, preparation, preparationTask, finalization, triggers, basis)
 }
 
 // Block
@@ -74,7 +74,7 @@ export function Block<M = unknown>(
   key?: string,
   mode?: Mode,
   preparation?: Script<El<HTMLElement, M>>,
-  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -88,12 +88,12 @@ export function Block<M = unknown>(
   key?: string,
   mode?: Mode,
   preparation?: Script<El<HTMLElement, M>>,
-  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
   return declare(Drivers.block, scriptOrDeclaration, scriptAsync,
-    key, mode, preparation, preparationAsync, finalization, triggers, basis)
+    key, mode, preparation, preparationTask, finalization, triggers, basis)
 }
 
 // Table
@@ -104,7 +104,7 @@ export function Table<M = unknown>(
   key?: string,
   mode?: Mode,
   preparation?: Script<El<HTMLElement, M>>,
-  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -118,12 +118,12 @@ export function Table<M = unknown>(
   key?: string,
   mode?: Mode,
   preparation?: Script<El<HTMLElement, M>>,
-  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
   return declare(Drivers.table, scriptOrDeclaration, scriptAsync,
-    key, mode, preparation, preparationAsync, finalization, triggers, basis)
+    key, mode, preparation, preparationTask, finalization, triggers, basis)
 }
 
 // Partition
@@ -141,7 +141,7 @@ export function Splitter<M = unknown>(
   key?: string,
   mode?: Mode,
   preparation?: Script<El<HTMLElement, M>>,
-  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -155,12 +155,12 @@ export function Splitter<M = unknown>(
   key?: string,
   mode?: Mode,
   preparation?: Script<El<HTMLElement, M>>,
-  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
   return declare(Drivers.splitter, scriptOrDeclaration, scriptAsync,
-    key, mode, preparation, preparationAsync, finalization, triggers, basis)
+    key, mode, preparation, preparationTask, finalization, triggers, basis)
 }
 
 export function rowBreak(shiftCursorDown?: number): void {
@@ -244,7 +244,7 @@ export function Group<M = unknown>(
   key?: string,
   mode?: Mode,
   preparation?: Script<El<HTMLElement, M>>,
-  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -258,12 +258,12 @@ export function Group<M = unknown>(
   key?: string,
   mode?: Mode,
   preparation?: Script<El<HTMLElement, M>>,
-  preparationAsync?: ScriptAsync<El<HTMLElement, M>>,
+  preparationTask?: ScriptAsync<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
   return declare(Drivers.group, bodyOrDeclaration, bodyTask,
-    key, mode, preparation, preparationAsync, finalization, triggers, basis)
+    key, mode, preparation, preparationTask, finalization, triggers, basis)
 }
 
 // Fragment
@@ -279,7 +279,7 @@ export function PseudoElement<M = unknown>(
   key?: string,
   mode?: Mode,
   preparation?: Script<El<void, M>>,
-  preparationAsync?: ScriptAsync<El<void, M>>,
+  preparationTask?: ScriptAsync<El<void, M>>,
   finalization?: Script<El<void, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>>
@@ -293,12 +293,12 @@ export function PseudoElement<M = unknown>(
   key?: string,
   mode?: Mode,
   preparation?: Script<El<void, M>>,
-  preparationAsync?: ScriptAsync<El<void, M>>,
+  preparationTask?: ScriptAsync<El<void, M>>,
   finalization?: Script<El<void, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>> {
   return declare(Drivers.pseudo, bodyOrDeclaration, bodyTask,
-    key, mode, preparation, preparationAsync, finalization, triggers, basis)
+    key, mode, preparation, preparationTask, finalization, triggers, basis)
 }
 
 // BlockDriver
