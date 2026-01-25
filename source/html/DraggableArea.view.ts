@@ -23,7 +23,7 @@ export interface DraggableAreaModel {
 export function DraggableArea(
   draggingId: string,
   builder: ReactiveTreeNodeDecl<El<HTMLDivElement, DraggableAreaModel>>): ReactiveTreeNode<El<HTMLDivElement>> {
-  // triggers = triggers ? { ...triggers, draggingId } : { draggingId }
+  // signalArgs = signalArgs ? { ...signalArgs, draggingId } : { draggingId }
   return (
     Div<DraggableAreaModel>(derivative(builder, {
       mode: Mode.autonomous,
