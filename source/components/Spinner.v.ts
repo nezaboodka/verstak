@@ -21,11 +21,11 @@ export function Spinner(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Spinn
       preparation() {
         this.model ??= composeSpinnerModel()
       },
-      script() {
+      body() {
         const m = this.model
         if (m.active)
           Block({
-            script() {
+            body() {
               this.text = "loading..."
             },
           })

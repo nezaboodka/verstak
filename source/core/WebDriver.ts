@@ -75,11 +75,11 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     }
   }
 
-  override runScript(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
+  override buildBody(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
     const el = node.element
     if (el instanceof ElImpl)
       el.prepareForUpdate()
-    let result = super.runScript(node)
+    let result = super.buildBody(node)
     result = proceedSyncOrAsync(result,
       v => {
         if (el.place === undefined) {
@@ -88,7 +88,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
             el.place = undefined // automatic placement in table
         }
         if (gBlinkingEffectMarker)
-          blink(el.native, ReactiveTreeNode.currentScriptPriority, node.stamp)
+          blink(el.native, ReactiveTreeNode.currentBodyPriority, node.stamp)
       },
       e => {
       })

@@ -17,7 +17,7 @@ export function Markdown(content: string) {
         // b.native.setAttribute("markdown", "true")
         base()
       },
-      script() {
+      body() {
         this.textIsFormatted = true
         this.text = md.render(content)
       },

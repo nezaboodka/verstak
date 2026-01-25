@@ -31,13 +31,13 @@ export function Input(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, InputMo
         this.model ??= composeInputModel()
         this.native.dataForSensor.focus = this.model
       },
-      script() {
+      body() {
         const m = this.model
         const theme = Theme.current.input
         this.useStylingPreset(theme.main)
         if (m.icon)
           Icon(m.icon, {
-            script(el, base) {
+            body(el, base) {
               base()
               this.useStylingPreset(theme.icon)
             },
@@ -78,7 +78,7 @@ function InputField(model: InputModel, styling: InputStyling) {
         e.dataForSensor.focus = model
         base()
       },
-      script() {
+      body() {
         const e = this.native
         if (!model.isEditMode)
           this.text = model.text
@@ -107,7 +107,7 @@ function InputPopup(model: InputModel, styling: InputStyling) {
   return (
     Block({
       key: InputPopup.name,
-      script() {
+      body() {
         this.useStylingPreset(styling.popup)
         Fragment(() => model.position = this.native.sensors.scroll.y)
         const visible = this.overlayVisible = model.isEditMode
@@ -128,7 +128,7 @@ function InputPopup(model: InputModel, styling: InputStyling) {
           else
             Block({
               key: "(nothing)",
-              script() {
+              body() {
                 this.text = "(nothing)"
               },
             })

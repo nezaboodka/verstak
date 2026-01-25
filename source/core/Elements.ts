@@ -176,7 +176,7 @@ export function declareSplitter<T>(index: number, splitViewNode: ReactiveTreeNod
       preparation() {
         this.native.className = `splitter ${key}`
       },
-      script() {
+      body() {
         const e = this.native
         const model = this.model
         const dataForSensor = e.dataForSensor
@@ -230,7 +230,7 @@ export function declareSplitter<T>(index: number, splitViewNode: ReactiveTreeNod
 
 export function cursor(place: ElPlace): void {
   declare(Drivers.cursor, {
-    script() {
+    body() {
       this.place = place
     },
   })
@@ -239,8 +239,8 @@ export function cursor(place: ElPlace): void {
 // Group
 
 export function Group<M = unknown>(
-  script?: Script<El<HTMLElement, M>>,
-  scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
+  body?: Script<El<HTMLElement, M>>,
+  bodyTask?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
   preparation?: Script<El<HTMLElement, M>>,
@@ -253,8 +253,8 @@ export function Group<M = unknown>(
   declaration?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
 export function Group<M = unknown>(
-  scriptOrDeclaration?: Script<El<HTMLElement, M>> | ReactiveTreeNodeDecl<El<HTMLElement, M>>,
-  scriptAsync?: ScriptAsync<El<HTMLElement, M>>,
+  bodyOrDeclaration?: Script<El<HTMLElement, M>> | ReactiveTreeNodeDecl<El<HTMLElement, M>>,
+  bodyTask?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
   preparation?: Script<El<HTMLElement, M>>,
@@ -262,20 +262,20 @@ export function Group<M = unknown>(
   finalization?: Script<El<HTMLElement, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
-  return declare(Drivers.group, scriptOrDeclaration, scriptAsync,
+  return declare(Drivers.group, bodyOrDeclaration, bodyTask,
     key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
 // Fragment
 
 export function Fragment<M = unknown>(
-  script: Script<El<void, M>>): ReactiveTreeNode<El<void, M>> {
-  return PseudoElement({ mode: Mode.autonomous, script })
+  body: Script<El<void, M>>): ReactiveTreeNode<El<void, M>> {
+  return PseudoElement({ mode: Mode.autonomous, body })
 }
 
 export function PseudoElement<M = unknown>(
-  script?: Script<El<void, M>>,
-  scriptAsync?: ScriptAsync<El<void, M>>,
+  body?: Script<El<void, M>>,
+  bodyTask?: ScriptAsync<El<void, M>>,
   key?: string,
   mode?: Mode,
   preparation?: Script<El<void, M>>,
@@ -288,8 +288,8 @@ export function PseudoElement<M = unknown>(
   declaration?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>>
 
 export function PseudoElement<M = unknown>(
-  scriptOrDeclaration?: Script<El<void, M>> | ReactiveTreeNodeDecl<El<void, M>>,
-  scriptAsync?: ScriptAsync<El<void, M>>,
+  bodyOrDeclaration?: Script<El<void, M>> | ReactiveTreeNodeDecl<El<void, M>>,
+  bodyTask?: ScriptAsync<El<void, M>>,
   key?: string,
   mode?: Mode,
   preparation?: Script<El<void, M>>,
@@ -297,17 +297,17 @@ export function PseudoElement<M = unknown>(
   finalization?: Script<El<void, M>>,
   triggers?: unknown,
   basis?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>> {
-  return declare(Drivers.pseudo, scriptOrDeclaration, scriptAsync,
+  return declare(Drivers.pseudo, bodyOrDeclaration, bodyTask,
     key, mode, preparation, preparationAsync, finalization, triggers, basis)
 }
 
 // BlockDriver
 
 export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
-  override runScript(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
+  override buildBody(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
     rowBreak()
     const el = node.element as ElImpl
-    const result = super.runScript(node)
+    const result = super.buildBody(node)
     if (el.splitView !== undefined) {
       if (el.layoutInfo === undefined)
         el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
@@ -327,7 +327,7 @@ export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
       })
       const relayoutEl = PseudoElement({
         mode: Mode.autonomous,
-        script() {
+        body() {
           const native = el.native as HTMLElement
           const isHorizontal = el.splitView === Direction.horizontal
           if (layoutInfo.isUpdateFinished) {
@@ -398,7 +398,7 @@ export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
           if (childDeclaration.signalArgs === undefined)
             childDeclaration.signalArgs = {}
           Object.defineProperty(childDeclaration.signalArgs, "index", { value: partCount })
-          overrideMethod(childDeclaration, "script", el => {
+          overrideMethod(childDeclaration, "body", el => {
             if (isHorizontal)
               el.style.gridColumn = `${partCount + 1}`
             else
@@ -426,7 +426,7 @@ export function isSplitViewPartition(childDriver: ReactiveTreeNodeDriver): boole
   return !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.pseudo
 }
 
-function overrideMethod(declaration: ReactiveTreeNodeDecl<El>, method: "preparation" | "script", func: (this: El, el: El) => void): void {
+function overrideMethod(declaration: ReactiveTreeNodeDecl<El>, method: "preparation" | "body", func: (this: El, el: El) => void): void {
   const baseScript = declaration[method]
   declaration[method] = baseScript !== undefined
     ? (el, base) => { baseScript.call(el, el, base); func.call(el, el) }
@@ -436,13 +436,13 @@ function overrideMethod(declaration: ReactiveTreeNodeDecl<El>, method: "preparat
 // PartitionDriver
 
 export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
-  override runScript(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
-    const result = super.runScript(node)
+  override buildBody(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
+    const result = super.buildBody(node)
     const ownerEl = node.owner.element as ElImpl
     if (ownerEl.sealed !== undefined) {
       node.element.style.flexGrow = "1"
       declare(Drivers.wrapper, {
-        script() {
+        body() {
           const ownerEl = this.node.owner.owner.element as ElImpl
           if (ownerEl.splitView !== undefined) {
             this.style.display = "grid"

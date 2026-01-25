@@ -27,7 +27,7 @@ export function DraggableArea(
   return (
     Div<DraggableAreaModel>(derivative(builder, {
       mode: Mode.autonomous,
-      script() {
+      body() {
         const e = this.native
         const model = this.model
         const dataForSensor = e.dataForSensor

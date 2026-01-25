@@ -20,7 +20,7 @@ export function Image(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, ImageMo
       preparation() {
         this.model ??= rxModel({ source: undefined })
       },
-      script() {
+      body() {
         const m = this.model
         this.style.backgroundImage = `url(${m.source})`
         this.style.backgroundSize = "contain"

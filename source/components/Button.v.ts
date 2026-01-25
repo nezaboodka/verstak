@@ -27,13 +27,13 @@ export function Button(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Button
           label: ReactiveTreeNode.current.key,
         })
       },
-      script() {
+      body() {
         const m = this.model
         const theme = Theme.current.button
         this.useStylingPreset(theme.main)
         if (m.icon) {
           Icon(m.icon, {
-            script(el, base) {
+            body(el, base) {
               base()
               this.useStylingPreset(theme.icon)
             },
@@ -41,7 +41,7 @@ export function Button(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Button
         }
         if (m.label) {
           Block({
-            script(el, base) {
+            body(el, base) {
               base()
               this.textIsFormatted = false
               this.text = m.label
