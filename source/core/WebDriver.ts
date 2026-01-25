@@ -47,7 +47,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     const el = node.element
     const native = el.native as T | undefined // hack
     if (native) {
-      const sequential = node.owner.children.isStrict
+      const sequential = node.owner.children.isStrictOrder
       const autoHost = ReactiveTreeNode.findMatchingHost<El, El>(node, n =>
         n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
       const automaticNativeHost = autoHost !== node.owner

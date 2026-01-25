@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReconciliationList } from "reactronic"
+import { ReactiveTreeNode, LinkedList } from "reactronic"
 import { Direction } from "./El.js"
 import { clamp } from "./ElUtils.js"
 import { ElImpl } from "./ElDriver.js"
@@ -124,12 +124,11 @@ export function layout(splitViewNode: ReactiveTreeNode<ElImpl>): void {
   let isSplitterEnabled = false
   const sizesPx = []
   const layoutInfo = splitViewNode.element.layoutInfo
-  for (const item of splitViewNode.children.items()) {
-    const child = item.instance
+  for (const child of splitViewNode.children.items()) {
     if (isSplitViewPartition(child.driver)) {
       const el = child.element as ElImpl
       if (el.native !== undefined) {
-        const current = item
+        const current = child
         const sizePx = isHorizontal ? el.widthPx : el.heightPx
         const effectiveSizePx = el.layoutInfo?.effectiveSizePx ?? 0
         posPx += effectiveSizePx
@@ -142,8 +141,7 @@ export function layout(splitViewNode: ReactiveTreeNode<ElImpl>): void {
         growBefore ||= greater(sizePx.maxPx - effectiveSizePx, 0)
         let shrinkAfter = false
         let growAfter = false
-        for (const item of splitViewNode.children.items(current)) {
-          const child = item.instance
+        for (const child of splitViewNode.children.items(current)) {
           if (isSplitViewPartition(child.driver)) {
             const el = child.element as ElImpl
             if (el.native !== undefined) {
@@ -173,7 +171,7 @@ export function layout(splitViewNode: ReactiveTreeNode<ElImpl>): void {
   }
   const containerSizePx = (isHorizontal ? layoutInfo?.contentSizeXpx : layoutInfo?.contentSizeYpx) ?? 0
   const isOverflowing = greater(posPx, containerSizePx)
-  const wrapper = splitViewNode.children.firstItem()?.instance.children.firstItem()?.instance as ReactiveTreeNode<ElImpl> | undefined
+  const wrapper = splitViewNode.children.firstItem?.children.firstItem as ReactiveTreeNode<ElImpl> | undefined
   if (wrapper !== undefined) {
     if (isHorizontal)
       wrapper.element.style.gridTemplateColumns = sizesPx.map(x => `${x}px`).join(" ")
@@ -211,12 +209,12 @@ export function getPrioritiesForSplitter(index: number, size: number): ReadonlyA
   return result
 }
 
-export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: ReconciliationList<ReactiveTreeNode>, indexes: Array<number>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
+export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: LinkedList<ReactiveTreeNode>, indexes: Array<number>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
   const resizable = []
   const manuallyResizable = []
-  const items = Array.from(children.items()).filter(x => isSplitViewPartition(x.instance.driver))
+  const items = Array.from(children.items()).filter(x => isSplitViewPartition(x.driver))
   for (let i = items.length - 1; i >= 0; i--) {
-    const el = items[i].instance.element as ElImpl
+    const el = items[i].element as ElImpl
     const strength = (isHorizontal ? el.stretchingStrengthHorizontally : el.stretchingStrengthVertically) ?? 1
     if (!indexes.includes(i)) {
       if (strength > 0)
@@ -228,7 +226,7 @@ export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: Re
   let r = 0
   let mr = 0
   for (const i of indexes) {
-    const el = items[i].instance.element as ElImpl
+    const el = items[i].element as ElImpl
     const strength = (isHorizontal ? el.stretchingStrengthHorizontally : el.stretchingStrengthVertically) ?? 1
     if (strength > 0)
       r |= 1 << i
@@ -242,13 +240,13 @@ export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: Re
   return { resizable, manuallyResizable }
 }
 
-export function getPrioritiesForEmptySpaceDistribution(isHorizontal: boolean, children: ReconciliationList<ReactiveTreeNode>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
+export function getPrioritiesForEmptySpaceDistribution(isHorizontal: boolean, children: LinkedList<ReactiveTreeNode>): { resizable: ReadonlyArray<number>, manuallyResizable: ReadonlyArray<number> } {
   let r = 0
   let mr = 0
   let i = 0
   for (const child of children.items()) {
-    if (isSplitViewPartition(child.instance.driver)) {
-      const el = child.instance.element as ElImpl
+    if (isSplitViewPartition(child.driver)) {
+      const el = child.element as ElImpl
       const strength = (isHorizontal ? el.stretchingStrengthHorizontally : el.stretchingStrengthVertically) ?? 1
       if (strength > 0)
         r |= 1 << i

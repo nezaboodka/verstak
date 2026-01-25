@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, ReconciliationList, LinkedItem, declare, launch, runNonReactive, ScriptAsync } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, LinkedItem, declare, launch, runNonReactive, ScriptAsync } from "reactronic"
 import { El, ElKind, ElPlace, Direction } from "./El.js"
 import { clamp } from "./ElUtils.js"
 import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "./ElDriver.js"
@@ -206,8 +206,7 @@ export function declareSplitter<T>(index: number, splitViewNode: ReactiveTreeNod
               else { // drag started
                 e.setAttribute("rx-dragging", "true")
                 const initialSizesPx: Array<{ node: ReactiveTreeNode<ElImpl>, sizePx: number }> = []
-                for (const item of splitViewNode.children.items()) {
-                  const child = item.instance
+                for (const child of splitViewNode.children.items()) {
                   if (isSplitViewPartition(child.driver)) {
                     const sizePx = (child.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0
                     initialSizesPx.push({ node: child as ReactiveTreeNode<ElImpl>, sizePx })
@@ -337,8 +336,8 @@ export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
             const preferred: Array<number> = []
             const sizesPx: Array<{ node: ReactiveTreeNode<ElImpl>, sizePx: number }> = []
             for (const child of node.children.items()) {
-              const partEl = child.instance.element as ElImpl
-              if (isSplitViewPartition(child.instance.driver) && partEl !== undefined) {
+              const partEl = child.element as ElImpl
+              if (isSplitViewPartition(child.driver) && partEl !== undefined) {
                 const size = isHorizontal ? partEl.width : partEl.height
                 const options: SizeConverterOptions = {
                   axis: isHorizontal ? Axis.X : Axis.Y, lineSizePx: BodyFontSize/* Dimension.lineSizePx */, fontSizePx: BodyFontSize,
@@ -361,13 +360,13 @@ export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
                 }
                 // console.log(`%c[${i}]: ${minPx}..%c${partEl.layoutInfo.effectiveSizePx} -> ${clamp(partEl.layoutInfo!.effectiveSizePx, minPx, maxPx)}%c..${maxPx} (pref = ${preferredPx}) (px)`, "color: yellow", "color: #00BB00", "color: yellow")
                 const sizePx = partEl.layoutInfo!.effectiveSizePx = clamp(partEl.layoutInfo!.effectiveSizePx, minPx, maxPx)
-                sizesPx.push({ node: child.instance as ReactiveTreeNode<ElImpl>, sizePx })
+                sizesPx.push({ node: child as ReactiveTreeNode<ElImpl>, sizePx })
                 i++
               }
             }
             const priorities = preferred.length > 0
-              ? getPrioritiesForSizeChanging(isHorizontal, node.children as ReconciliationList<ReactiveTreeNode>, preferred)
-              : getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children as ReconciliationList<ReactiveTreeNode>)
+              ? getPrioritiesForSizeChanging(isHorizontal, node.children, preferred)
+              : getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children)
             runNonReactive(() => relayout(node as any as ReactiveTreeNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx))
           }
         },
@@ -390,7 +389,7 @@ export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
       if (isSplitViewPartition(childDriver)) {
         let partCount = 0
         for (const child of ownerNode.children.items()) {
-          if (isSplitViewPartition(child.instance.driver))
+          if (isSplitViewPartition(child.driver))
             partCount++
         }
         const isHorizontal = el.splitView === Direction.horizontal
@@ -413,8 +412,8 @@ export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
     else {
       if (childDriver.isPartition) {
         // Coalesce multiple separators into single one, if any
-        const last = ownerNode.children.lastItem()
-        if (last?.instance?.driver === childDriver)
+        const last = ownerNode.children.lastItem
+        if (last?.driver === childDriver)
           result = last
       }
     }
@@ -472,7 +471,7 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     let host: ReactiveTreeNode<El<T, any>>
     const ownerEl = node.owner.element as ElImpl
     if (ownerEl.sealed !== undefined)
-      host = node.children.firstItem()!.instance as ReactiveTreeNode<El<T, any>>
+      host = node.children.firstItem as ReactiveTreeNode<El<T, any>>
     else
       host = node
     return host

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, Handler, BaseDriver, LinkedItem, Transaction, signal, RxObject } from "reactronic"
+import { ReactiveTreeNode, Handler, BaseDriver, Transaction, signal, RxObject } from "reactronic"
 import { El, ElKind, ElCoords, Horizontal, Vertical, Range, ElPlace, Direction } from "./El.js"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
@@ -85,7 +85,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._hasStylingPresets = false // reset
   }
 
-  get index(): number { return this.node.slot!.index }
+  get rank(): number { return this.node.rank }
   get isBlock(): boolean { return this.kind === ElKind.block }
   get isTable(): boolean { return this.kind === ElKind.table }
   get isAuxiliary(): boolean { return this.kind > ElKind.table } // Part, Group, Cursor
@@ -106,9 +106,9 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     if (!driver.isPartition) {
       const owner = node.owner as ReactiveTreeNode<ElImpl>
       const ownerEl = owner.element
-      const prevEl = node.slot!.prev?.instance.element as ElImpl
+      const prevEl = node.prev?.element as ElImpl
       const prevElLayoutInfo = prevEl?.layoutInfo ?? InitialElLayoutInfo
-      const layoutInfo = this.layoutInfo = owner.children.isStrict ? new ElLayoutInfo(prevElLayoutInfo) : undefined
+      const layoutInfo = this.layoutInfo = owner.children.isStrictOrder ? new ElLayoutInfo(prevElLayoutInfo) : undefined
       const isCursorElement = driver instanceof CursorCommandDriver
       const coords = getElCoordsAndAdjustLayoutInfo(!isCursorElement,
         value, ownerEl.maxColumnCount, ownerEl.maxRowCount,
@@ -290,9 +290,9 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   protected *children(onlyAfter?: ElImpl): Generator<ElImpl> {
-    const after: LinkedItem<ReactiveTreeNode<any>> | undefined = onlyAfter?.node.slot
+    const after: ReactiveTreeNode<any> | undefined = onlyAfter?.node
     for (const child of this.node.children.items(after))
-      yield child.instance.element as ElImpl
+      yield child.element as ElImpl
   }
 
   static *childrenOf(node: ReactiveTreeNode<El>, onlyAfter?: El): Generator<ElImpl> {
@@ -301,7 +301,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
   private rowBreak(): void {
     const node = this.node
-    const prevEl = node.slot!.prev?.instance.element as ElImpl
+    const prevEl = node.prev?.element as ElImpl
     const prevElLayoutInfo = prevEl?.layoutInfo ?? InitialElLayoutInfo
     const layoutInfo = this.layoutInfo = new ElLayoutInfo(prevElLayoutInfo)
     layoutInfo.x = 1
@@ -386,7 +386,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       const isAligner = newPrimary === Horizontal.center ||
         newPrimary === Horizontal.right
       isEffectiveAlignerX = isAligner && (hostLayout.alignerX === undefined ||
-        element.index <= hostLayout.alignerX.index)
+        element.rank <= hostLayout.alignerX.rank)
       if (hostLayout.alignerX === element) {
         if (!isEffectiveAlignerX) {
           css.marginLeft = "" // remove "auto"
