@@ -1,6 +1,6 @@
 {
   "name": "verstak",
-  "version": "0.96.26011",
+  "version": "0.96.26012",
   "description": "Verstak - Front-End Library",
   "publisher": "Nezaboodka Software",
   "license": "Apache-2.0",
@@ -42,7 +42,7 @@
     "markdown-it": "^14.1.0",
     "markdown-it-prism": "^2.3.0",
     "prismjs": "^1.30.0",
-    "reactronic": "^0.96.26011"
+    "reactronic": "^0.96.26012"
   },
   "devDependencies": {
     "@types/markdown-it": "14.1.2",
