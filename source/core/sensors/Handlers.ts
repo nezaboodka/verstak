@@ -5,16 +5,17 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ToggleRef, runNonReactive } from "reactronic"
-import { PseudoElement } from "../Elements.js"
+import { Mode, ToggleRef, runNonReactive } from "reactronic"
+import { Intermediate } from "../Elements.js"
 import { FocusModel } from "./FocusSensor.js"
 import { ResizedElement } from "./ResizeSensor.js"
 import { PointerSensor } from "./PointerSensor.js"
 
 export function OnClick(target: Element, action: ((pointer: PointerSensor) => void) | ToggleRef | undefined, key?: string): void {
   if (action !== undefined) {
-    PseudoElement({
+    Intermediate({
       key,
+      mode: Mode.intermediate,
       signalArgs: { target/* , action */ },
       body() {
         const pointer = target.sensors.pointer
@@ -33,8 +34,9 @@ export function OnClick(target: Element, action: ((pointer: PointerSensor) => vo
 
 export function OnClickAsync(target: HTMLElement, action: ((pointer: PointerSensor) => Promise<void>) | ToggleRef | undefined, key?: string): void {
   if (action !== undefined) {
-    PseudoElement({
+    Intermediate({
       key,
+      mode: Mode.intermediate,
       signalArgs: { target/* , action */ },
       async bodyTask() {
         const pointer = target.sensors.pointer
@@ -53,8 +55,9 @@ export function OnClickAsync(target: HTMLElement, action: ((pointer: PointerSens
 
 export function OnResize(target: HTMLElement, action: ((element: ResizedElement) => void) | undefined, key?: string): void {
   if (action) {
-    PseudoElement({
+    Intermediate({
       key,
+      mode: Mode.intermediate,
       signalArgs: { target/* , action */ },
       body() {
         const resize = target.sensors.resize
@@ -70,8 +73,9 @@ export function OnFocus(
   target: HTMLElement, model: FocusModel,
   switchEditMode: ((model: FocusModel) => void) | undefined = undefined,
   key?: string): void {
-  PseudoElement({
+  Intermediate({
     key,
+    mode: Mode.intermediate,
     signalArgs: { target, model },
     preparation() {
       this.node.configureReactivity({ throttling: 0 })

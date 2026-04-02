@@ -288,10 +288,10 @@ export function Group<M = unknown>(
 
 export function Fragment<M = unknown>(
   body: Script<El<void, M>>): ReactiveTreeNode<El<void, M>> {
-  return PseudoElement({ body })
+  return Intermediate({ mode: Mode.intermediate, body })
 }
 
-export function PseudoElement<M = unknown>(
+export function Intermediate<M = unknown>(
   body?: Script<El<void, M>>,
   bodyTask?: ScriptAsync<El<void, M>>,
   key?: string,
@@ -304,10 +304,10 @@ export function PseudoElement<M = unknown>(
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>>
 
-export function PseudoElement<M = unknown>(
+export function Intermediate<M = unknown>(
   declaration?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>>
 
-export function PseudoElement<M = unknown>(
+export function Intermediate<M = unknown>(
   bodyOrDeclaration?: Script<El<void, M>> | ReactiveTreeNodeDecl<El<void, M>>,
   bodyTask?: ScriptAsync<El<void, M>>,
   key?: string,
@@ -319,7 +319,7 @@ export function PseudoElement<M = unknown>(
   finalization?: Script<El<void, M>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>> {
-  return declare(Drivers.pseudo, bodyOrDeclaration, bodyTask,
+  return declare(Drivers.intermediate, bodyOrDeclaration, bodyTask,
     key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
 }
 
@@ -347,7 +347,7 @@ export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
           layoutInfo.contentSizeYpx = contentBoxPx.blockSize
         }
       })
-      const relayoutEl = PseudoElement({
+      const relayoutEl = Intermediate({
         body() {
           const native = el.native as HTMLElement
           const isHorizontal = el.splitView === Direction.horizontal
@@ -396,7 +396,7 @@ export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
       ReactiveTreeNode.launchNestedNodesThenDo(() => {
         layoutInfo.isUpdateFinished = true
         // WORKAROUND: As long as "isUpdateFinished = true" does not trigger relaunch of
-        // "update" of PseudoElement (such a relaunch requires subscriptions on values
+        // "update" of Intermediate (such a relaunch requires subscriptions on values
         // of variables rather than variables themselves), we do it manually.
         ReactiveTreeNode.rebuildBody(relayoutEl, { stamp: node.stamp })
       })
@@ -444,7 +444,7 @@ export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
 }
 
 export function isSplitViewPartition(childDriver: ReactiveTreeNodeDriver): boolean {
-  return !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.pseudo
+  return !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.intermediate
 }
 
 function overrideMethod(declaration: ReactiveTreeNodeDecl<El>, method: "preparation" | "body", func: (this: El, el: El) => void): void {
@@ -522,5 +522,5 @@ export const Drivers = {
   cursor: new CursorCommandDriver(),
 
   // (no element)
-  pseudo: new ElDriver<HTMLElement>("pseudo", false, el => el.kind = ElKind.group) as unknown as ReactiveTreeNodeDriver<El<void, any>>,
+  intermediate: new ElDriver<HTMLElement>("intermediate", false, el => el.kind = ElKind.group) as unknown as ReactiveTreeNodeDriver<El<void, any>>,
 }
