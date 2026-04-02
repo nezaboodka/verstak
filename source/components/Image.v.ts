@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNodeDecl, Mode, derivative } from "reactronic"
+import { ReactiveTreeNodeDecl, derivative } from "reactronic"
 import { Block, El } from "verstak"
 import { rxModel } from "./common/Utils.js"
 
@@ -16,7 +16,6 @@ export type ImageModel = {
 export function Image(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, ImageModel>>) {
   return (
     Block<ImageModel>(derivative(declaration, {
-      mode: Mode.autonomous,
       preparation() {
         this.model ??= rxModel({ source: undefined })
       },

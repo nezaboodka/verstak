@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Mode, ToggleRef, runNonReactive } from "reactronic"
+import { ToggleRef, runNonReactive } from "reactronic"
 import { PseudoElement } from "../Elements.js"
 import { FocusModel } from "./FocusSensor.js"
 import { ResizedElement } from "./ResizeSensor.js"
@@ -15,7 +15,6 @@ export function OnClick(target: Element, action: ((pointer: PointerSensor) => vo
   if (action !== undefined) {
     PseudoElement({
       key,
-      mode: Mode.autonomous,
       signalArgs: { target/* , action */ },
       body() {
         const pointer = target.sensors.pointer
@@ -36,7 +35,6 @@ export function OnClickAsync(target: HTMLElement, action: ((pointer: PointerSens
   if (action !== undefined) {
     PseudoElement({
       key,
-      mode: Mode.autonomous,
       signalArgs: { target/* , action */ },
       async bodyTask() {
         const pointer = target.sensors.pointer
@@ -57,7 +55,6 @@ export function OnResize(target: HTMLElement, action: ((element: ResizedElement)
   if (action) {
     PseudoElement({
       key,
-      mode: Mode.autonomous,
       signalArgs: { target/* , action */ },
       body() {
         const resize = target.sensors.resize
@@ -75,7 +72,6 @@ export function OnFocus(
   key?: string): void {
   PseudoElement({
     key,
-    mode: Mode.autonomous,
     signalArgs: { target, model },
     preparation() {
       this.node.configureReactivity({ throttling: 0 })

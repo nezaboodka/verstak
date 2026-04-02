@@ -26,7 +26,6 @@ export type InputModel<T = string> = FocusModel & {
 export function Input(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, InputModel>>) {
   return (
     Block<InputModel>(derivative(declaration, {
-      mode: Mode.autonomous,
       preparation() {
         this.model ??= composeInputModel()
         this.native.dataForSensor.focus = this.model
@@ -68,6 +67,7 @@ function InputField(model: InputModel, styling: InputStyling) {
   return (
     Block({
       key: InputField.name,
+      mode: Mode.primitive,
       preparation(el, base) {
         const e = this.native
         this.useStylingPreset(styling.field)
@@ -107,6 +107,7 @@ function InputPopup(model: InputModel, styling: InputStyling) {
   return (
     Block({
       key: InputPopup.name,
+      mode: Mode.primitive,
       body() {
         this.useStylingPreset(styling.popup)
         Fragment(() => model.position = this.native.sensors.scroll.y)
@@ -118,6 +119,7 @@ function InputPopup(model: InputModel, styling: InputStyling) {
               rowBreak()
               Block({
                 key: x,
+                mode: Mode.primitive,
                 preparation() {
                   this.text = x
                   this.contentWrapping = false
@@ -128,6 +130,7 @@ function InputPopup(model: InputModel, styling: InputStyling) {
           else
             Block({
               key: "(nothing)",
+              mode: Mode.primitive,
               body() {
                 this.text = "(nothing)"
               },

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDecl, Mode, derivative } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDecl, derivative } from "reactronic"
 import { Block, El, OnClick } from "verstak"
 import { rxModel } from "./common/Utils.js"
 import { Theme } from "./Theme.js"
@@ -20,7 +20,6 @@ export type ButtonModel = {
 export function Button(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, ButtonModel>>) {
   return (
     Block<ButtonModel>(derivative(declaration, {
-      mode: Mode.autonomous,
       preparation() {
         this.model ??= rxModel({
           icon: "fa-solid fa-square",
@@ -41,6 +40,7 @@ export function Button(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Button
         }
         if (m.label) {
           Block({
+            // mode: Mode.primitive,
             body(el, base) {
               base()
               this.textIsFormatted = false

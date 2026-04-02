@@ -42,8 +42,10 @@ export function Window(
   bodyTask?: ScriptAsync<El<HTMLBodyElement>>,
   key?: string,
   mode?: Mode,
+  unmounted?: boolean,
   preparation?: Script<El<HTMLBodyElement>>,
   preparationTask?: ScriptAsync<El<HTMLBodyElement>>,
+  mounting?: Script<El<HTMLBodyElement>>,
   finalization?: Script<El<HTMLBodyElement>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLBodyElement>>): ReactiveTreeNode<El<HTMLBodyElement>>
@@ -56,14 +58,16 @@ export function Window(
   bodyTask?: ScriptAsync<El<HTMLBodyElement>>,
   key?: string,
   mode?: Mode,
+  unmounted?: boolean,
   preparation?: Script<El<HTMLBodyElement>>,
   preparationTask?: ScriptAsync<El<HTMLBodyElement>>,
+  mounting?: Script<El<HTMLBodyElement>>,
   finalization?: Script<El<HTMLBodyElement>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLBodyElement>>): ReactiveTreeNode<El<HTMLBodyElement>> {
   const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.block)
   return declare(driver, bodyOrDeclaration, bodyTask,
-    key, mode, preparation, preparationTask, finalization, signalArgs, basis)
+    key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
 }
 
 // Block
@@ -73,8 +77,10 @@ export function Block<M = unknown>(
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
+  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
+  mounting?: Script<El<HTMLElement>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -87,13 +93,15 @@ export function Block<M = unknown>(
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
+  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
+  mounting?: Script<El<HTMLElement>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
   return declare(Drivers.block, bodyOrDeclaration, bodyTask,
-    key, mode, preparation, preparationTask, finalization, signalArgs, basis)
+    key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
 }
 
 // Table
@@ -103,8 +111,10 @@ export function Table<M = unknown>(
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
+  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
+  mounting?: Script<El<HTMLElement>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -117,13 +127,15 @@ export function Table<M = unknown>(
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
+  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
+  mounting?: Script<El<HTMLElement>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
   return declare(Drivers.table, bodyOrDeclaration, bodyTask,
-    key, mode, preparation, preparationTask, finalization, signalArgs, basis)
+    key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
 }
 
 // Partition
@@ -140,8 +152,10 @@ export function Splitter<M = unknown>(
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
+  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
+  mounting?: Script<El<HTMLElement>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -154,13 +168,15 @@ export function Splitter<M = unknown>(
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
+  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
+  mounting?: Script<El<HTMLElement>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
   return declare(Drivers.splitter, bodyOrDeclaration, bodyTask,
-    key, mode, preparation, preparationTask, finalization, signalArgs, basis)
+    key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
 }
 
 export function rowBreak(shiftCursorDown?: number): void {
@@ -172,7 +188,6 @@ export function declareSplitter<T>(index: number, splitViewNode: ReactiveTreeNod
   return (
     Splitter({
       key,
-      mode: Mode.autonomous,
       preparation() {
         this.native.className = `splitter ${key}`
       },
@@ -242,8 +257,10 @@ export function Group<M = unknown>(
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
+  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
+  mounting?: Script<El<HTMLElement>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -256,20 +273,22 @@ export function Group<M = unknown>(
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
   mode?: Mode,
+  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
+  mounting?: Script<El<HTMLElement>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
   return declare(Drivers.group, bodyOrDeclaration, bodyTask,
-    key, mode, preparation, preparationTask, finalization, signalArgs, basis)
+    key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
 }
 
 // Fragment
 
 export function Fragment<M = unknown>(
   body: Script<El<void, M>>): ReactiveTreeNode<El<void, M>> {
-  return PseudoElement({ mode: Mode.autonomous, body })
+  return PseudoElement({ body })
 }
 
 export function PseudoElement<M = unknown>(
@@ -277,8 +296,10 @@ export function PseudoElement<M = unknown>(
   bodyTask?: ScriptAsync<El<void, M>>,
   key?: string,
   mode?: Mode,
+  unmounted?: boolean,
   preparation?: Script<El<void, M>>,
   preparationTask?: ScriptAsync<El<void, M>>,
+  mounting?: Script<El<void>>,
   finalization?: Script<El<void, M>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>>
@@ -291,13 +312,15 @@ export function PseudoElement<M = unknown>(
   bodyTask?: ScriptAsync<El<void, M>>,
   key?: string,
   mode?: Mode,
+  unmounted?: boolean,
   preparation?: Script<El<void, M>>,
   preparationTask?: ScriptAsync<El<void, M>>,
+  mounting?: Script<El<void>>,
   finalization?: Script<El<void, M>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>> {
   return declare(Drivers.pseudo, bodyOrDeclaration, bodyTask,
-    key, mode, preparation, preparationTask, finalization, signalArgs, basis)
+    key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
 }
 
 // BlockDriver
@@ -325,7 +348,6 @@ export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
         }
       })
       const relayoutEl = PseudoElement({
-        mode: Mode.autonomous,
         body() {
           const native = el.native as HTMLElement
           const isHorizontal = el.splitView === Direction.horizontal

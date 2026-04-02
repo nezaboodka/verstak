@@ -17,7 +17,6 @@ export type SpinnerModel = {
 export function Spinner(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, SpinnerModel>>) {
   return (
     Block<SpinnerModel>(derivative(declaration, {
-      mode: Mode.autonomous,
       preparation() {
         this.model ??= composeSpinnerModel()
       },
@@ -25,6 +24,7 @@ export function Spinner(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Spinn
         const m = this.model
         if (m.active)
           Block({
+            mode: Mode.primitive,
             body() {
               this.text = "loading..."
             },

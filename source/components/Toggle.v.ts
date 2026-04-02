@@ -20,7 +20,6 @@ export type ToggleModel = {
 export function Toggle(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, ToggleModel>>) {
   return (
     Block<ToggleModel>(derivative(declaration, {
-      mode: Mode.autonomous,
       preparation() {
         this.model ??= rxModel({
           label: ReactiveTreeNode.current.key,
@@ -41,6 +40,7 @@ export function Toggle(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Toggle
         })
         if (m.label) {
           Block({
+            mode: Mode.primitive,
             body(el, base) {
               base()
               this.text = m.label
