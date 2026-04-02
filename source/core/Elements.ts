@@ -287,11 +287,6 @@ export function Group<M = unknown>(
 // Fragment
 
 export function Fragment<M = unknown>(
-  body: Script<El<void, M>>): ReactiveTreeNode<El<void, M>> {
-  return Intermediate({ mode: Mode.intermediate, body })
-}
-
-export function Intermediate<M = unknown>(
   body?: Script<El<void, M>>,
   bodyTask?: ScriptAsync<El<void, M>>,
   key?: string,
@@ -304,10 +299,10 @@ export function Intermediate<M = unknown>(
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>>
 
-export function Intermediate<M = unknown>(
+export function Fragment<M = unknown>(
   declaration?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>>
 
-export function Intermediate<M = unknown>(
+export function Fragment<M = unknown>(
   bodyOrDeclaration?: Script<El<void, M>> | ReactiveTreeNodeDecl<El<void, M>>,
   bodyTask?: ScriptAsync<El<void, M>>,
   key?: string,
@@ -319,7 +314,8 @@ export function Intermediate<M = unknown>(
   finalization?: Script<El<void, M>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>> {
-  return declare(Drivers.intermediate, bodyOrDeclaration, bodyTask,
+  mode = mode !== undefined ? mode | Mode.fragment : Mode.fragment
+  return declare(Drivers.fragment, bodyOrDeclaration, bodyTask,
     key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
 }
 
@@ -347,7 +343,7 @@ export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
           layoutInfo.contentSizeYpx = contentBoxPx.blockSize
         }
       })
-      const relayoutEl = Intermediate({
+      const relayoutEl = Fragment({
         body() {
           const native = el.native as HTMLElement
           const isHorizontal = el.splitView === Direction.horizontal
@@ -444,7 +440,7 @@ export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
 }
 
 export function isSplitViewPartition(childDriver: ReactiveTreeNodeDriver): boolean {
-  return !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.intermediate
+  return !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.fragment
 }
 
 function overrideMethod(declaration: ReactiveTreeNodeDecl<El>, method: "preparation" | "body", func: (this: El, el: El) => void): void {
@@ -522,5 +518,5 @@ export const Drivers = {
   cursor: new CursorCommandDriver(),
 
   // (no element)
-  intermediate: new ElDriver<HTMLElement>("intermediate", false, el => el.kind = ElKind.group) as unknown as ReactiveTreeNodeDriver<El<void, any>>,
+  fragment: new ElDriver<HTMLElement>("fragment", false, el => el.kind = ElKind.group) as unknown as ReactiveTreeNodeDriver<El<void, any>>,
 }
