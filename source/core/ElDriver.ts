@@ -164,7 +164,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   set horizontally(value: Horizontal | undefined) {
     const existing = this._horizontal
     if (value !== existing) {
-      ElImpl.applyHorizontal(this, existing, value,
+      ElImpl.applyHorizontally(this, existing, value,
         this._contentHorizontal, this._contentHorizontal,
         this._stretchingStrengthHorizontally)
       this._horizontal = value
@@ -175,7 +175,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   set vertically(value: Vertical | undefined) {
     const existing = this._vertical
     if (value !== existing) {
-      ElImpl.applyVertical(this, existing, value,
+      ElImpl.applyVertically(this, existing, value,
         this._contentVertical, this._contentVertical,
         this._stretchingStrengthVertically)
       this._vertical = value
@@ -186,7 +186,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   set contentHorizontally(value: Horizontal | undefined) {
     const existing = this._contentHorizontal
     if (value !== existing) {
-      ElImpl.applyHorizontal(this, this._horizontal, this._horizontal,
+      ElImpl.applyHorizontally(this, this._horizontal, this._horizontal,
         existing, value, this._stretchingStrengthHorizontally)
       this._contentHorizontal = value
     }
@@ -196,7 +196,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   set contentVertically(value: Vertical | undefined) {
     const existing = this._contentVertical
     if (value !== existing) {
-      ElImpl.applyVertical(this, this._vertical, this._vertical,
+      ElImpl.applyVertically(this, this._vertical, this._vertical,
         existing, value, this._stretchingStrengthVertically)
       this._contentVertical = value
     }
@@ -363,7 +363,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  private static applyHorizontal<T extends Element>(element: ElImpl<T, any>,
+  private static applyHorizontally<T extends Element>(element: ElImpl<T, any>,
     oldPrimary: Horizontal | undefined, newPrimary: Horizontal | undefined,
     oldInside: Horizontal | undefined, newInside: Horizontal | undefined,
     strength: number | undefined): void {
@@ -463,7 +463,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       ElImpl.applyStretchingStrengthH(element, 0, 1)
   }
 
-  private static applyVertical<T extends Element>(element: ElImpl<T, any>,
+  private static applyVertically<T extends Element>(element: ElImpl<T, any>,
     oldPrimary: Vertical | undefined, newPrimary: Vertical | undefined,
     oldInside: Vertical | undefined, newInside: Vertical | undefined,
     strength: number | undefined): void {
