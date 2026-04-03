@@ -5,13 +5,13 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, LinkedItem, declare, runNonReactive, ScriptAsync } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, LinkedItem, declare, runNonReactive, ScriptAsync, Handler } from "reactronic"
 import { El, ElKind, ElPlace, Direction } from "./El.js"
 import { clamp } from "./ElUtils.js"
 import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "./ElDriver.js"
 import { getPrioritiesForEmptySpaceDistribution, getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
 import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
-import { HtmlDriver, StaticDriver } from "./WebDriver.js"
+import { HtmlDriver } from "./WebDriver.js"
 
 // Verstak is based on two fundamental layout structures
 // called block and table; and on two special non-visual
@@ -38,34 +38,34 @@ import { HtmlDriver, StaticDriver } from "./WebDriver.js"
 // Window
 
 export function Window(
-  body?: Script<El<HTMLBodyElement>>,
-  bodyTask?: ScriptAsync<El<HTMLBodyElement>>,
+  body?: Script<El<HTMLElement>>,
+  bodyTask?: ScriptAsync<El<HTMLElement>>,
   key?: string,
   mode?: Mode,
   unmounted?: boolean,
-  preparation?: Script<El<HTMLBodyElement>>,
-  preparationTask?: ScriptAsync<El<HTMLBodyElement>>,
-  mounting?: Script<El<HTMLBodyElement>>,
-  finalization?: Script<El<HTMLBodyElement>>,
+  preparation?: Script<El<HTMLElement>>,
+  preparationTask?: ScriptAsync<El<HTMLElement>>,
+  mounting?: Script<El<HTMLElement>>,
+  finalization?: Script<El<HTMLElement>>,
   signalArgs?: unknown,
-  basis?: ReactiveTreeNodeDecl<El<HTMLBodyElement>>): ReactiveTreeNode<El<HTMLBodyElement>>
+  basis?: ReactiveTreeNodeDecl<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
 
 export function Window(
-  declaration?: ReactiveTreeNodeDecl<El<HTMLBodyElement>>): ReactiveTreeNode<El<HTMLBodyElement>>
+  declaration?: ReactiveTreeNodeDecl<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
 
 export function Window(
-  bodyOrDeclaration?: Script<El<HTMLBodyElement>> | ReactiveTreeNodeDecl<El<HTMLBodyElement>>,
-  bodyTask?: ScriptAsync<El<HTMLBodyElement>>,
+  bodyOrDeclaration?: Script<El<HTMLElement>> | ReactiveTreeNodeDecl<El<HTMLElement>>,
+  bodyTask?: ScriptAsync<El<HTMLElement>>,
   key?: string,
   mode?: Mode,
   unmounted?: boolean,
-  preparation?: Script<El<HTMLBodyElement>>,
-  preparationTask?: ScriptAsync<El<HTMLBodyElement>>,
-  mounting?: Script<El<HTMLBodyElement>>,
-  finalization?: Script<El<HTMLBodyElement>>,
+  preparation?: Script<El<HTMLElement>>,
+  preparationTask?: ScriptAsync<El<HTMLElement>>,
+  mounting?: Script<El<HTMLElement>>,
+  finalization?: Script<El<HTMLElement>>,
   signalArgs?: unknown,
-  basis?: ReactiveTreeNodeDecl<El<HTMLBodyElement>>): ReactiveTreeNode<El<HTMLBodyElement>> {
-  const driver = new StaticDriver(global.document.body as HTMLBodyElement, "Page", false, el => el.kind = ElKind.block)
+  basis?: ReactiveTreeNodeDecl<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>> {
+  const driver = new StaticBlockDriver(global.document.body, "Page", false, el => el.kind = ElKind.block)
   return declare(driver, bodyOrDeclaration, bodyTask,
     key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
 }
@@ -448,6 +448,22 @@ function overrideMethod(declaration: ReactiveTreeNodeDecl<El>, method: "preparat
   declaration[method] = baseScript !== undefined
     ? (el, base) => { baseScript.call(el, el, base); func.call(el, el) }
     : (el, base) => { base(); func.call(el, el) }
+}
+
+// StaticBlockDriver
+
+export class StaticBlockDriver<T extends HTMLElement> extends BlockDriver<T> {
+
+  readonly native: T
+
+  constructor(native: T, name: string, isRow: boolean, initialize?: Handler<El<T>>) {
+    super(name, isRow, initialize)
+    this.native = native
+  }
+
+  override assignNativeElement(node: ReactiveTreeNode<El<T>>): void {
+    node.element.native = this.native
+  }
 }
 
 // PartitionDriver
