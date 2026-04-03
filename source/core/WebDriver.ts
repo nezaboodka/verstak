@@ -140,8 +140,8 @@ export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
 
   readonly native: T
 
-  constructor(native: T, name: string, isRow: boolean, initialize?: Handler<El<T>>) {
-    super(name, isRow, initialize)
+  constructor(native: T, name: string, isPartition: boolean, initialize?: Handler<El<T>>) {
+    super(name, isPartition, initialize)
     this.native = native
   }
 
