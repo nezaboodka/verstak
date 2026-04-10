@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDecl, Mode, derivative } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDecl, Mode, setBasis } from "reactronic"
 import { Block, El, OnClick } from "verstak"
 import { rxModel } from "./common/Utils.js"
 import { Theme } from "./Theme.js"
@@ -19,7 +19,7 @@ export type ToggleModel = {
 
 export function Toggle(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, ToggleModel>>) {
   return (
-    Block<ToggleModel>(derivative(declaration, {
+    Block<ToggleModel>(setBasis(declaration, {
       preparation() {
         this.model ??= rxModel({
           label: ReactiveTreeNode.current.key,

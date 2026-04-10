@@ -5,14 +5,14 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNodeDecl, derivative } from "reactronic"
+import { ReactiveTreeNodeDecl, setBasis } from "reactronic"
 import { Block, El } from "verstak"
 import { Theme } from "./Theme.js"
 
 export function Icon(name: string,
   declaration?: ReactiveTreeNodeDecl<El<HTMLElement, void>>) {
   return (
-    Block(derivative(declaration, {
+    Block(setBasis(declaration, {
       signalArgs: { name },
       body() {
         const theme = Theme.current.icon
