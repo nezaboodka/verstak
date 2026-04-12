@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveTreeNode, Handler, BaseDriver, Transaction, signal, RxObject } from "reactronic"
-import { El, ElKind, ElCoords, Horizontal, Vertical, Range, ElPlace, Direction } from "./El.js"
+import { El, ElKind, ElCoords, H, V, Range, ElPlace, Direction } from "./El.js"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 
@@ -35,12 +35,14 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _coords: ElCoords
   private _width: Size
   private _height: Size
-  private _horizontal: Horizontal | undefined
-  private _vertical: Vertical | undefined
-  private _contentHorizontal: Horizontal | undefined
-  private _contentVertical: Vertical | undefined
-  private _stretchingStrengthHorizontally: number | undefined
-  private _stretchingStrengthVertically: number | undefined
+  private _alignmentHorizontal: H | undefined
+  private _alignmentVertical: V | undefined
+  private _alignmentVerticalRowWise: V | undefined
+  private _selfAlignmentHorizontal: H | undefined
+  private _selfAlignmentVertical: V | undefined
+  private _selfAlignmentVerticalRowWise: V | undefined
+  private _stretchingStrengthHorizontal: number | undefined
+  private _stretchingStrengthVertical: number | undefined
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
   private _text: string | undefined
@@ -64,12 +66,14 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._coords = UndefinedElCoords
     this._width = new Size()
     this._height = new Size()
-    this._horizontal = undefined
-    this._vertical = undefined
-    this._contentHorizontal = undefined
-    this._contentVertical = undefined
-    this._stretchingStrengthHorizontally = undefined
-    this._stretchingStrengthVertically = undefined
+    this._alignmentHorizontal = undefined
+    this._alignmentVertical = undefined
+    this._alignmentVerticalRowWise = undefined
+    this._selfAlignmentHorizontal = undefined
+    this._selfAlignmentVertical = undefined
+    this._selfAlignmentVerticalRowWise = undefined
+    this._stretchingStrengthHorizontal = undefined
+    this._stretchingStrengthVertical = undefined
     this._contentWrapping = true
     this._overlayVisible = undefined
     this._text = ""
@@ -160,63 +164,78 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       this._height.maxPx = value.maxPx
   }
 
-  get horizontally(): Horizontal | undefined { return this._horizontal }
-  set horizontally(value: Horizontal | undefined) {
-    const existing = this._horizontal
+  get alignmentHorizontal(): H | undefined { return this._alignmentHorizontal }
+  set alignmentHorizontal(value: H | undefined) {
+    const existing = this._alignmentHorizontal
     if (value !== existing) {
-      ElImpl.applyHorizontally(this, existing, value,
-        this._contentHorizontal, this._contentHorizontal,
-        this._stretchingStrengthHorizontally)
-      this._horizontal = value
+      ElImpl.applyAlignmentHorizontal(this, existing, value)
+      this._alignmentHorizontal = value
     }
   }
 
-  get vertically(): Vertical | undefined { return this._vertical }
-  set vertically(value: Vertical | undefined) {
-    const existing = this._vertical
+  get alignmentVertical(): V | undefined { return this._alignmentVertical }
+  set alignmentVertical(value: V | undefined) {
+    const existing = this._alignmentVertical
     if (value !== existing) {
-      ElImpl.applyVertically(this, existing, value,
-        this._contentVertical, this._contentVertical,
-        this._stretchingStrengthVertically)
-      this._vertical = value
+      ElImpl.applyAlignmentVertical(this, existing, value)
+      this._alignmentVertical = value
     }
   }
 
-  get contentHorizontally(): Horizontal | undefined { return this._contentHorizontal }
-  set contentHorizontally(value: Horizontal | undefined) {
-    const existing = this._contentHorizontal
+  get alignmentVerticalRowWise(): V | undefined { return this._alignmentVerticalRowWise }
+  set alignmentVerticalRowWise(value: V | undefined) {
+    const existing = this._alignmentVerticalRowWise
     if (value !== existing) {
-      ElImpl.applyHorizontally(this, this._horizontal, this._horizontal,
-        existing, value, this._stretchingStrengthHorizontally)
-      this._contentHorizontal = value
+      // ElImpl.applyVertically(this, existing, value,
+      //   this._contentVertical, this._contentVertical,
+      //   this._stretchingStrengthVertically)
+      this._alignmentVerticalRowWise = value
     }
   }
 
-  get contentVertically(): Vertical | undefined { return this._contentVertical }
-  set contentVertically(value: Vertical | undefined) {
-    const existing = this._contentVertical
+  get selfAlignmentHorizontal(): H | undefined { return this._selfAlignmentHorizontal }
+  set selfAlignmentHorizontal(value: H | undefined) {
+    const existing = this._selfAlignmentHorizontal
     if (value !== existing) {
-      ElImpl.applyVertically(this, this._vertical, this._vertical,
-        existing, value, this._stretchingStrengthVertically)
-      this._contentVertical = value
+      // ElImpl.applyHorizontally(this, this._horizontal, this._horizontal,
+      //   existing, value, this._stretchingStrengthHorizontally)
+      this._selfAlignmentHorizontal = value
     }
   }
 
-  get stretchingStrengthHorizontally(): number | undefined { return this._stretchingStrengthHorizontally }
-  set stretchingStrengthHorizontally(value: number | undefined) {
-    const existing = this._stretchingStrengthHorizontally
+  get selfAlignmentVertical(): V | undefined { return this._selfAlignmentVertical }
+  set selfAlignmentVertical(value: V | undefined) {
+    const existing = this._selfAlignmentVertical
+    if (value !== existing) {
+      // ...
+      this._selfAlignmentVertical = value
+    }
+  }
+
+  get selfAlignmentVerticalRowWise(): V | undefined { return this._selfAlignmentVerticalRowWise }
+  set selfAlignmentVerticalRowWise(value: V | undefined) {
+    const existing = this._selfAlignmentVerticalRowWise
+    if (value !== existing) {
+      // ...
+      this._selfAlignmentVerticalRowWise = value
+    }
+  }
+
+  get stretchingStrengthHorizontal(): number | undefined { return this._stretchingStrengthHorizontal }
+  set stretchingStrengthHorizontal(value: number | undefined) {
+    const existing = this._stretchingStrengthHorizontal
     if (value !== existing) {
       ElImpl.applyStretchingStrengthH(this, existing, value)
-      this._stretchingStrengthHorizontally = value
+      this._stretchingStrengthHorizontal = value
     }
   }
 
-  get stretchingStrengthVertically(): number | undefined { return this._stretchingStrengthVertically }
+  get stretchingStrengthVertical(): number | undefined { return this._stretchingStrengthVertical }
   set stretchingStrengthVertically(value: number | undefined) {
-    const existing = this._stretchingStrengthVertically
+    const existing = this._stretchingStrengthVertical
     if (value !== existing) {
       ElImpl.applyStretchingStrengthV(this, existing, value)
-      this._stretchingStrengthVertically = value
+      this._stretchingStrengthVertical = value
     }
   }
 
@@ -309,8 +328,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   private static applyKind<T extends Element>(element: ElImpl<T, any>, value: ElKind): void {
-    const kind = Constants.layouts[value]
-    kind && element.native.setAttribute(Constants.kindAttrName, kind)
+    // const kind = Constants.layouts[value]
+    // kind && element.native.setAttribute(Constants.kindAttrName, kind)
     DriversByLayout[value](element as any)
   }
 
@@ -363,182 +382,200 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  private static applyHorizontally<T extends Element>(element: ElImpl<T, any>,
-    oldPrimary: Horizontal | undefined, newPrimary: Horizontal | undefined,
-    oldInside: Horizontal | undefined, newInside: Horizontal | undefined,
-    strength: number | undefined): void {
-    // Prepare
-    oldPrimary ??= Horizontal.left
-    newPrimary ??= Horizontal.left
-    oldInside ??= oldPrimary
-    newInside ??= newPrimary
-    const css: CSSStyleDeclaration = element.style
-    let hostLayout: ElLayoutInfo | undefined = undefined
-    if (element.node.host.driver.isPartition) {
-      const hostEl = element.node.host.element as ElImpl
-      hostLayout = hostEl.layoutInfo
-      if (hostLayout === undefined)
-        hostLayout = hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-    }
-    // Horizontal
-    let isEffectiveAlignerX = false
-    if (hostLayout) {
-      const isAligner = newPrimary === Horizontal.center ||
-        newPrimary === Horizontal.right
-      isEffectiveAlignerX = isAligner && (hostLayout.alignerX === undefined ||
-        element.rank <= hostLayout.alignerX.rank)
-      if (hostLayout.alignerX === element) {
-        if (!isEffectiveAlignerX) {
-          css.marginLeft = "" // remove "auto"
-          throw new Error("changing alignment leader is not implemented yet")
-          // hostLayout.alignerX = ... find new leader
-        }
-      }
-      else {
-        if (isEffectiveAlignerX) {
-          const existingAlignerCss = hostLayout.alignerX?.native?.style
-          if (existingAlignerCss)
-            existingAlignerCss.marginLeft = "" // remove "auto"
-          // cleanup old leading element
-          hostLayout.alignerX = element
-        }
-      }
-    }
-    switch (newPrimary) {
-      default:
-      case Horizontal.left:
-        css.justifySelf = "start"
-        if (oldPrimary === Horizontal.center) {
-          css.marginLeft = "" // remove "auto"
-          css.marginRight = "" // remove "auto"
-        }
-        else if (oldPrimary === Horizontal.right)
-          css.marginLeft = "" // remove "auto"
-        break
-      case Horizontal.center:
-        css.justifySelf = "center"
-        if (hostLayout)
-          css.marginLeft = isEffectiveAlignerX ? "auto" : ""
-        css.marginRight = "auto"
-        break
-      case Horizontal.right:
-        css.justifySelf = "end"
-        if (hostLayout)
-          css.marginLeft = isEffectiveAlignerX ? "auto" : ""
-        if (oldPrimary === Horizontal.center)
-          css.marginRight = "" // remove "auto"
-        break
-      case Horizontal.stretch:
-      case Horizontal.stretchAndFix:
-        css.justifySelf = "stretch"
-        if (oldPrimary === Horizontal.center) {
-          css.marginLeft = "" // remove "auto"
-          css.marginRight = "" // remove "auto"
-        }
-        else if (oldPrimary === Horizontal.right)
-          css.marginLeft = "" // remove "auto"
-        break
-    }
-    switch (newInside) {
-      default:
-      case Horizontal.left:
-        css.alignItems = "start"
-        css.textAlign = "left"
-        break
-      case Horizontal.center:
-        css.alignItems = "center"
-        css.textAlign = "center"
-        break
-      case Horizontal.right:
-        css.alignItems = "end"
-        css.textAlign = "right"
-        break
-      case Horizontal.stretch:
-      case Horizontal.stretchAndFix:
-        css.alignItems = "stretch"
-        css.textAlign = "justify"
-        break
-    }
-    if (newPrimary >= Horizontal.stretch && strength === undefined)
-      ElImpl.applyStretchingStrengthH(element, 0, 1)
+  private static applyAlignmentHorizontal<T extends Element>(element: ElImpl<T, any>,
+    oldValue: H | undefined, newValue: H | undefined): void {
+    const el = element.native
+    if (oldValue !== undefined)
+      el.classList.remove(StylingClassNameByHorizontalAlignment[oldValue])
+    if (newValue !== undefined)
+      el.classList.add(StylingClassNameByHorizontalAlignment[newValue])
   }
 
-  private static applyVertically<T extends Element>(element: ElImpl<T, any>,
-    oldPrimary: Vertical | undefined, newPrimary: Vertical | undefined,
-    oldInside: Vertical | undefined, newInside: Vertical | undefined,
-    strength: number | undefined): void {
-    // Prepare
-    oldPrimary ??= Vertical.top
-    newPrimary ??= Vertical.top
-    oldInside ??= oldPrimary
-    newInside ??= newPrimary
-    const css: CSSStyleDeclaration = element.style
-    let hostLayout: ElLayoutInfo | undefined = undefined
-    let hostCss: CSSStyleDeclaration | undefined = undefined
-    if (element.node.host.driver.isPartition) {
-      const hostEl = element.node.host.element as ElImpl
-      hostCss = hostEl.style
-      hostLayout = hostEl.layoutInfo
-      if (hostLayout === undefined)
-        hostLayout = hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
-    }
-    // Vertical
-    let isEffectiveAlignerY = false
-    if (hostLayout) {
-      const isAligner = newPrimary === Vertical.center ||
-        newPrimary === Vertical.bottom
-      isEffectiveAlignerY = isAligner && (hostLayout.alignerY === undefined ||
-        hostLayout.alignerY.vertically !== Vertical.center)
-      if (hostLayout.alignerY === element) {
-        if (!isEffectiveAlignerY) {
-          hostCss!.marginTop = "" // remove "auto"
-          // throw new Error("changing alignment leader is not implemented yet")
-          // hostLayout.alignerX = ... find new leader
-        }
-      }
-      else {
-        if (isEffectiveAlignerY) {
-          hostCss!.marginTop = "auto"
-          // cleanup old leading element
-          hostLayout.alignerY = element
-        }
-      }
-    }
-    switch (newPrimary) {
-      default:
-      case Vertical.top:
-        css.alignSelf = "start"
-        break
-      case Vertical.center:
-        css.alignSelf = "center"
-        break
-      case Vertical.bottom:
-        css.alignSelf = "end"
-        break
-      case Vertical.stretch:
-      case Vertical.stretchAndFix:
-        css.alignSelf = "stretch"
-        break
-    }
-    switch (newInside) {
-      default:
-      case Vertical.top:
-        css.justifyContent = "start"
-        break
-      case Vertical.center:
-        css.justifyContent = "center"
-        break
-      case Vertical.bottom:
-        css.justifyContent = "end"
-        break
-      case Vertical.stretch:
-      case Vertical.stretchAndFix:
-        css.justifyContent = "stretch"
-        break
-    }
-    if (newPrimary >= Vertical.stretch && strength === undefined)
-      ElImpl.applyStretchingStrengthV(element, 0, 1)
+  private static applyAlignmentVertical<T extends Element>(element: ElImpl<T, any>,
+    oldValue: V | undefined, newValue: V | undefined): void {
+    const el = element.native
+    if (oldValue !== undefined)
+      el.classList.remove(StylingClassNameByVerticalAlignment[oldValue])
+    if (newValue !== undefined)
+      el.classList.add(StylingClassNameByVerticalAlignment[newValue])
   }
+
+  // private static applyAlignmentHorizontalOld<T extends Element>(element: ElImpl<T, any>,
+  //   oldPrimary: H | undefined, newPrimary: H | undefined,
+  //   oldInside: H | undefined, newInside: H | undefined,
+  //   strength: number | undefined): void {
+  //   // Prepare
+  //   oldPrimary ??= H.left
+  //   newPrimary ??= H.left
+  //   oldInside ??= oldPrimary
+  //   newInside ??= newPrimary
+  //   const css: CSSStyleDeclaration = element.style
+  //   let hostLayout: ElLayoutInfo | undefined = undefined
+  //   if (element.node.host.driver.isPartition) {
+  //     const hostEl = element.node.host.element as ElImpl
+  //     hostLayout = hostEl.layoutInfo
+  //     if (hostLayout === undefined)
+  //       hostLayout = hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+  //   }
+  //   // Horizontal
+  //   let isEffectiveAlignerX = false
+  //   if (hostLayout) {
+  //     const isAligner = newPrimary === H.center ||
+  //       newPrimary === H.right
+  //     isEffectiveAlignerX = isAligner && (hostLayout.alignerX === undefined ||
+  //       element.rank <= hostLayout.alignerX.rank)
+  //     if (hostLayout.alignerX === element) {
+  //       if (!isEffectiveAlignerX) {
+  //         css.marginLeft = "" // remove "auto"
+  //         throw new Error("changing alignment leader is not implemented yet")
+  //         // hostLayout.alignerX = ... find new leader
+  //       }
+  //     }
+  //     else {
+  //       if (isEffectiveAlignerX) {
+  //         const existingAlignerCss = hostLayout.alignerX?.native?.style
+  //         if (existingAlignerCss)
+  //           existingAlignerCss.marginLeft = "" // remove "auto"
+  //         // cleanup old leading element
+  //         hostLayout.alignerX = element
+  //       }
+  //     }
+  //   }
+  //   switch (newPrimary) {
+  //     default:
+  //     case H.left:
+  //       css.justifySelf = "start"
+  //       if (oldPrimary === H.center) {
+  //         css.marginLeft = "" // remove "auto"
+  //         css.marginRight = "" // remove "auto"
+  //       }
+  //       else if (oldPrimary === H.right)
+  //         css.marginLeft = "" // remove "auto"
+  //       break
+  //     case H.center:
+  //       css.justifySelf = "center"
+  //       if (hostLayout)
+  //         css.marginLeft = isEffectiveAlignerX ? "auto" : ""
+  //       css.marginRight = "auto"
+  //       break
+  //     case H.right:
+  //       css.justifySelf = "end"
+  //       if (hostLayout)
+  //         css.marginLeft = isEffectiveAlignerX ? "auto" : ""
+  //       if (oldPrimary === H.center)
+  //         css.marginRight = "" // remove "auto"
+  //       break
+  //     case H.stretch:
+  //     case H.stretchAndFix:
+  //       css.justifySelf = "stretch"
+  //       if (oldPrimary === H.center) {
+  //         css.marginLeft = "" // remove "auto"
+  //         css.marginRight = "" // remove "auto"
+  //       }
+  //       else if (oldPrimary === H.right)
+  //         css.marginLeft = "" // remove "auto"
+  //       break
+  //   }
+  //   switch (newInside) {
+  //     default:
+  //     case H.left:
+  //       css.alignItems = "start"
+  //       css.textAlign = "left"
+  //       break
+  //     case H.center:
+  //       css.alignItems = "center"
+  //       css.textAlign = "center"
+  //       break
+  //     case H.right:
+  //       css.alignItems = "end"
+  //       css.textAlign = "right"
+  //       break
+  //     case H.stretch:
+  //     case H.stretchAndFix:
+  //       css.alignItems = "stretch"
+  //       css.textAlign = "justify"
+  //       break
+  //   }
+  //   if (newPrimary >= H.stretch && strength === undefined)
+  //     ElImpl.applyStretchingStrengthH(element, 0, 1)
+  // }
+
+  // private static applyAlignmentVerticalOld<T extends Element>(element: ElImpl<T, any>,
+  //   oldPrimary: V | undefined, newPrimary: V | undefined,
+  //   oldInside: V | undefined, newInside: V | undefined,
+  //   strength: number | undefined): void {
+  //   // Prepare
+  //   oldPrimary ??= V.top
+  //   newPrimary ??= V.top
+  //   oldInside ??= oldPrimary
+  //   newInside ??= newPrimary
+  //   const css: CSSStyleDeclaration = element.style
+  //   let hostLayout: ElLayoutInfo | undefined = undefined
+  //   let hostCss: CSSStyleDeclaration | undefined = undefined
+  //   if (element.node.host.driver.isPartition) {
+  //     const hostEl = element.node.host.element as ElImpl
+  //     hostCss = hostEl.style
+  //     hostLayout = hostEl.layoutInfo
+  //     if (hostLayout === undefined)
+  //       hostLayout = hostEl.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
+  //   }
+  //   // Vertical
+  //   let isEffectiveAlignerY = false
+  //   if (hostLayout) {
+  //     const isAligner = newPrimary === V.center ||
+  //       newPrimary === V.bottom
+  //     isEffectiveAlignerY = isAligner && (hostLayout.alignerY === undefined ||
+  //       hostLayout.alignerY.selfAlignmentVertical !== V.center)
+  //     if (hostLayout.alignerY === element) {
+  //       if (!isEffectiveAlignerY) {
+  //         hostCss!.marginTop = "" // remove "auto"
+  //         // throw new Error("changing alignment leader is not implemented yet")
+  //         // hostLayout.alignerX = ... find new leader
+  //       }
+  //     }
+  //     else {
+  //       if (isEffectiveAlignerY) {
+  //         hostCss!.marginTop = "auto"
+  //         // cleanup old leading element
+  //         hostLayout.alignerY = element
+  //       }
+  //     }
+  //   }
+  //   switch (newPrimary) {
+  //     default:
+  //     case V.top:
+  //       css.alignSelf = "start"
+  //       break
+  //     case V.center:
+  //       css.alignSelf = "center"
+  //       break
+  //     case V.bottom:
+  //       css.alignSelf = "end"
+  //       break
+  //     case V.stretch:
+  //     case V.stretchAndFix:
+  //       css.alignSelf = "stretch"
+  //       break
+  //   }
+  //   switch (newInside) {
+  //     default:
+  //     case V.top:
+  //       css.justifyContent = "start"
+  //       break
+  //     case V.center:
+  //       css.justifyContent = "center"
+  //       break
+  //     case V.bottom:
+  //       css.justifyContent = "end"
+  //       break
+  //     case V.stretch:
+  //     case V.stretchAndFix:
+  //       css.justifyContent = "stretch"
+  //       break
+  //   }
+  //   if (newPrimary >= V.stretch && strength === undefined)
+  //     ElImpl.applyStretchingStrengthV(element, 0, 1)
+  // }
 
   private static applyStretchingStrengthH<T extends Element>(
     element: ElImpl<T, any>, existing: number | undefined,
@@ -548,7 +585,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     const host = element.node.host
     if (host.driver.isPartition) {
       const hostEl = host.element as ElImpl
-      hostEl._stretchingStrengthHorizontally = value
+      hostEl._stretchingStrengthHorizontal = value
       existing ??= 0
       value ??= 0
       // TODO: to fix
@@ -588,7 +625,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     const host = element.node.host
     if (host.driver.isPartition) {
       const hostElement = host.element as ElImpl
-      hostElement._stretchingStrengthVertically = value
+      hostElement._stretchingStrengthVertical = value
       let delta = 0
       existing ??= 0
       value ??= 0
@@ -601,7 +638,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
           delta = -1
       }
       if (delta !== 0) {
-        const count = hostElement._stretchingStrengthVertically ?? 0 + delta
+        const count = hostElement._stretchingStrengthVertical ?? 0 + delta
         const s = hostElement.style
         if (count === 1)
           s.flexGrow = `${value}` // TODO: MAX!
@@ -681,8 +718,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     const e = element.native
     if (e instanceof HTMLElement) {
       if (value) {
-        e.style.display = "inline-grid"
-        e.style.minWidth = ""
+        // e.style.display = "inline-grid"
+        // e.style.minWidth = ""
       }
       else {
         e.style.display = "flex"
@@ -940,24 +977,26 @@ export const Constants = {
 
 const DriversByLayout: Array<Handler<El<HTMLElement>>> = [
   el => { // block
-    const owner = el.node.owner.element as ElImpl
-    const s = el.style
-    s.display = "flex"
-    s.flexDirection = "column"
-    s.alignSelf = owner.isTable ? "stretch" : "center"
-    s.textAlign = "initial"
-    s.flexShrink = "1"
-    s.minWidth = "0"
+    el.native.classList.add("v5k-block")
+    // // const owner = el.node.owner.element as ElImpl
+    // const s = el.style
+    // s.display = "flex"
+    // s.flexDirection = "column"
+    // // s.alignSelf = owner.isTable ? "stretch" : "center"
+    // // s.textAlign = "initial"
+    // s.flexShrink = "1"
+    // s.minWidth = "0"
   },
   el => { // table
-    const owner = el.node.owner.element as ElImpl
-    const s = el.style
-    s.alignSelf = owner.isTable ? "stretch" : "center"
-    s.display = "grid"
-    s.flexBasis = "0"
-    s.gridAutoRows = "minmax(min-content, 1fr)"
-    s.gridAutoColumns = "minmax(min-content, 1fr)"
-    s.textAlign = "initial"
+    el.native.classList.add("v5k-table")
+    // // const owner = el.node.owner.element as ElImpl
+    // const s = el.style
+    // // s.alignSelf = owner.isTable ? "stretch" : "center"
+    // s.display = "grid"
+    // s.flexBasis = "0"
+    // s.gridAutoRows = "minmax(min-content, 1fr)"
+    // s.gridAutoColumns = "minmax(min-content, 1fr)"
+    // s.textAlign = "initial"
   },
   // el => { // text
   //   const owner = el.node.owner.element as ElImpl
@@ -967,17 +1006,19 @@ const DriversByLayout: Array<Handler<El<HTMLElement>>> = [
   //   s.flexShrink = "1"
   // },
   el => { // group
-    const s = el.style
-    s.display = "contents"
+    el.native.classList.add("v5k-group")
+    // const s = el.style
+    // s.display = "contents"
   },
   el => { // partition
-    const owner = el.node.owner.element as ElImpl
-    const s = el.style
-    s.display = owner.isTable ? "contents" : "flex"
-    s.flexDirection = "row"
-    s.alignItems = "center" // is it good idea?..
-    s.gap = "inherit"
-    s.position = owner.sealed !== undefined ? "relative" : ""
+    el.native.classList.add("v5k-part")
+    // const owner = el.node.owner.element as ElImpl
+    // const s = el.style
+    // s.display = owner.isTable ? "contents" : "flex"
+    // s.flexDirection = "row"
+    // // s.alignItems = "center" // is it good idea?..
+    // s.gap = "inherit"
+    // s.position = owner.sealed !== undefined ? "relative" : ""
   },
   el => { // splitter
     const s = el.style
@@ -1002,6 +1043,22 @@ const DriversByLayout: Array<Handler<El<HTMLElement>>> = [
   el => { // native
   },
   // undefined // cursor
+]
+
+const StylingClassNameByHorizontalAlignment: Array<string> = [
+  "v5k-h-center",
+  "v5k-h-left",
+  "v5k-h-right",
+  "v5k-h-stretch",
+  "v5k-h-stretch-fix",
+]
+
+const StylingClassNameByVerticalAlignment: Array<string> = [
+  "v5k-v-center",
+  "v5k-v-top",
+  "v5k-v-bottom",
+  "v5k-v-stretch",
+  "v5k-v-stretch-fix",
 ]
 
 // function alignedX(align: Align, like: Align): boolean {

@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveTreeNodeDecl, Mode, setBasis } from "reactronic"
-import { Block, FocusModel, OnFocus, rowBreak, El, Fragment, KeyboardSensor, KeyboardModifiers, Horizontal, Vertical } from "verstak"
+import { Block, FocusModel, OnFocus, rowBreak, El, Fragment, KeyboardSensor, KeyboardModifiers, H, V } from "verstak"
 import { rxModel, ValuesOrRefs } from "./common/Utils.js"
 import { Theme, InputStyling } from "./Theme.js"
 import { Icon } from "./Icon.v.js"
@@ -71,8 +71,8 @@ function InputField(model: InputModel, styling: InputStyling) {
       preparation(el, base) {
         const e = this.native
         this.useStylingPreset(styling.field)
-        this.horizontally = Horizontal.stretch
-        this.vertically = Vertical.stretch
+        this.selfAlignmentHorizontal = H.stretch
+        this.selfAlignmentVertical = V.stretch
         this.textIsEditable = true
         e.tabIndex = 0
         e.dataForSensor.focus = model

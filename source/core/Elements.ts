@@ -37,7 +37,7 @@ import { HtmlDriver } from "./WebDriver.js"
 
 // Window
 
-export function Window(
+export function ApplicationWindow(
   body?: Script<El<HTMLElement>>,
   bodyTask?: ScriptAsync<El<HTMLElement>>,
   key?: string,
@@ -50,10 +50,10 @@ export function Window(
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
 
-export function Window(
+export function ApplicationWindow(
   declaration?: ReactiveTreeNodeDecl<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
 
-export function Window(
+export function ApplicationWindow(
   bodyOrDeclaration?: Script<El<HTMLElement>> | ReactiveTreeNodeDecl<El<HTMLElement>>,
   bodyTask?: ScriptAsync<El<HTMLElement>>,
   key?: string,
@@ -65,9 +65,36 @@ export function Window(
   finalization?: Script<El<HTMLElement>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>> {
-  const driver = new StaticBlockDriver(global.document.body, "Page", false, el => el.kind = ElKind.block)
+  acquireVerstakStyleSheet()
+  const body = global.document.body
+  const driver = new StaticBlockDriver(body, "Page", false, el => el.kind = ElKind.block)
+  body.classList.add("v5k-body")
+  body.classList.add("v5k-block")
   return declare(driver, bodyOrDeclaration, bodyTask,
     key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
+}
+
+function acquireVerstakStyleSheet(): void {
+  const existing = findStyleByTitle("v5k")
+  if (existing === undefined) {
+    const style = document.createElement("style")
+    style.title = "v5k"
+    style.innerHTML = VerstakStyleSheetCode
+    const head = document.getElementsByTagName("head")[0]
+    head.appendChild(style)
+  }
+}
+
+function findStyleByTitle(title: string): StyleSheet | undefined {
+  const styles = document.styleSheets
+  for (let i = 0, l = styles.length; i < l; i++) {
+    const s = styles[i]
+    if (s.disabled)
+      continue
+    if (s.title === title)
+      return s
+  }
+  return undefined
 }
 
 // Block
@@ -323,7 +350,6 @@ export function Fragment<M = unknown>(
 
 export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
   override rebuildBody(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
-    rowBreak()
     const el = node.element as ElImpl
     const result = super.rebuildBody(node)
     if (el.splitView !== undefined) {
@@ -428,11 +454,14 @@ export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
       }
     }
     else {
+      const last = ownerNode.children.lastItem
       if (childDriver.isPartition) {
         // Coalesce multiple separators into single one, if any
-        const last = ownerNode.children.lastItem
         if (last?.driver === childDriver)
           result = last
+      }
+      else if (last === undefined) {
+        declare(Drivers.partition)
       }
     }
     return result
@@ -536,3 +565,154 @@ export const Drivers = {
   // (no element)
   fragment: new ElDriver<HTMLElement>("fragment", false, el => el.kind = ElKind.group) as unknown as ReactiveTreeNodeDriver<El<void, any>>,
 }
+
+const VerstakStyleSheetCode =
+`
+.v5k-body {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-sizing: border-box;
+}
+
+.v5k-block {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 1;
+  justify-content: center;
+  text-align: center;
+}
+
+.v5k-block > .v5k-part {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.v5k-table {
+  display: grid;
+  flex-basis: 0;
+  grid-auto-rows: minmax(min-content, 1fr);
+  grid-auto-columns: minmax(min-content, 1fr);
+  text-align: initial;
+}
+
+.v5k-table > .v5k-part {
+  display: contents;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.v5k-block.v5k-v-top {
+  justify-content: start;
+}
+
+.v5k-block.v5k-v-bottom {
+  justify-content: end;
+}
+
+.v5k-block.v5k-v-stretch > .v5k-part,
+.v5k-block.v5k-v-stretch-fix > .v5k-part {
+  flex-grow: 1;
+  align-items: stretch;
+}
+
+.v5k-block.v5k-h-left > .v5k-part {
+  justify-content: start;
+}
+
+.v5k-block.v5k-h-right > .v5k-part {
+  justify-content: end;
+}
+
+.v5k-block.v5k-h-stretch > .v5k-part > *,
+.v5k-block.v5k-h-stretch-fix > .v5k-part > * {
+  flex-grow: 1;
+}
+
+/* Verstak Blinking Effect */
+
+.ё .ё00 {
+  animation: v5k-blinking-animation-ex-0-1 1.5s ease-in 1 !important;
+}
+
+.ё .ё01 {
+  animation: v5k-blinking-animation-ex-0-2 1.5s ease-in 1 !important;
+}
+
+.ё .ё10 {
+  animation: v5k-blinking-animation-ex-1-1 1.5s ease-in 1 !important;
+}
+
+.ё .ё11 {
+  animation: v5k-blinking-animation-ex-1-2 1.5s ease-in 1 !important;
+}
+
+.ё .ё20 {
+  animation: v5k-blinking-animation-ex-2-1 1.5s ease-in 1 !important;
+}
+
+.ё .ё21 {
+  animation: v5k-blinking-animation-ex-2-2 1.5s ease-in 1 !important;
+}
+
+/* Verstak Blinking Animation */
+
+@keyframes v5k-blinking-animation-0-2 {
+  from { box-shadow: 0 0 0 2px red inset; }
+}
+
+@keyframes v5k-blinking-animation-1-1 {
+  from { box-shadow: 0 0 0 2px #0000BB inset; }
+}
+
+@keyframes v5k-blinking-animation-1-2 {
+  from { box-shadow: 0 0 0 2px #0000BB inset; }
+}
+
+@keyframes v5k-blinking-animation-2-1 {
+  from { box-shadow: 0 0 0 2px #00BB00 inset; }
+}
+
+@keyframes v5k-blinking-animation-2-2 {
+  from { box-shadow: 0 0 0 2px #00BB00 inset; }
+}
+
+/* Verstak Blinking Animation */
+
+@keyframes v5k-blinking-animation-ex-0-1 {
+  from { outline-offset: -1px; outline: 2px solid red; }
+  to { outline-offset: -1px; outline: 2px solid transparent; }
+}
+
+@keyframes v5k-blinking-animation-ex-0-2 {
+  from { outline-offset: -1px; outline: 2px solid red; }
+  to { outline-offset: -1px; outline: 2px solid transparent; }
+}
+
+@keyframes v5k-blinking-animation-ex-1-1 {
+  from { outline-offset: -1px; outline: 2px solid #0000BB; }
+  to { outline-offset: -1px; outline: 2px solid transparent; }
+}
+
+@keyframes v5k-blinking-animation-ex-1-2 {
+  from { outline-offset: -1px; outline: 2px solid #0000BB; }
+  to { outline-offset: -1px; outline: 2px solid transparent; }
+}
+
+@keyframes v5k-blinking-animation-ex-2-1 {
+  from { outline-offset: -1px; outline: 2px solid #00BB00; }
+  to { outline-offset: -1px; outline: 2px solid transparent; }
+}
+
+@keyframes v5k-blinking-animation-ex-2-2 {
+  from { outline-offset: -1px; outline: 2px solid #00BB00; }
+  to { outline-offset: -1px; outline: 2px solid transparent; }
+}
+`

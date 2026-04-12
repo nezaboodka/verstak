@@ -19,12 +19,14 @@ export type El<T = any, M = any> = {
   place: ElPlace
   width: Range
   height: Range
-  horizontally: Horizontal | undefined
-  contentHorizontally: Horizontal | undefined
-  vertically: Vertical | undefined
-  contentVertically: Vertical | undefined
-  stretchingStrengthHorizontally: number | undefined
-  stretchingStrengthVertically: number | undefined
+  alignmentHorizontal: H | undefined
+  alignmentVertical: V | undefined
+  alignmentVerticalRowWise: V | undefined
+  selfAlignmentHorizontal: H | undefined
+  selfAlignmentVertical: V | undefined
+  selfAlignmentVerticalRowWise: V | undefined
+  stretchingStrengthHorizontal: number | undefined
+  stretchingStrengthVertical: number | undefined
   contentWrapping: boolean
   overlayVisible: boolean | undefined
   text: string | undefined
@@ -58,17 +60,17 @@ export type ElCoords = {
   y2: number
 }
 
-export enum Horizontal {
-  left          = 0,
-  center        = 1,
+export enum H {
+  center        = 0,
+  left          = 1,
   right         = 2,
   stretch       = 3,
   stretchAndFix = 4,
 }
 
-export enum Vertical {
-  top           = 0,
-  center        = 1,
+export enum V {
+  center        = 0,
+  top           = 1,
   bottom        = 2,
   stretch       = 3,
   stretchAndFix = 4,
