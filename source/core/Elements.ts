@@ -610,7 +610,7 @@ const VerstakStyleSheetCode =
 }
 
 .v5k-block.v5k-v-center {
-  justify-content: start;
+  justify-content: center;
 }
 
 .v5k-block.v5k-v-top {
