@@ -609,6 +609,10 @@ const VerstakStyleSheetCode =
   align-items: center;
 }
 
+.v5k-block.v5k-v-center {
+  justify-content: start;
+}
+
 .v5k-block.v5k-v-top {
   justify-content: start;
 }
@@ -621,6 +625,10 @@ const VerstakStyleSheetCode =
 .v5k-block.v5k-v-stretch-fix > .v5k-part {
   flex-grow: 1;
   align-items: stretch;
+}
+
+.v5k-block.v5k-h-center > .v5k-part {
+  justify-content: center;
 }
 
 .v5k-block.v5k-h-left > .v5k-part {
