@@ -8,7 +8,7 @@
 import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, LinkedItem, declare, runNonReactive, ScriptAsync, Handler } from "reactronic"
 import { El, ElKind, ElPlace, Direction, H, V } from "./El.js"
 import { clamp } from "./ElUtils.js"
-import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo, StylingClassNameByAlignmentHorizontal, StylingClassNameByAlignmentVertical, StylingClassNameByAlignmentVerticalRowWise } from "./ElDriver.js"
+import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo, StylingClassNameByAlignmentHorizontal, StylingClassNameByAlignmentVertical, StylingClassNameByAlignmentVerticalRowWise, StylingClassNameBySelfAlignmentHorizontal, StylingClassNameBySelfAlignmentVertical, StylingClassNameBySelfAlignmentVerticalRowWise } from "./ElDriver.js"
 import { getPrioritiesForEmptySpaceDistribution, getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
 import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
 import { HtmlDriver } from "./WebDriver.js"
@@ -594,6 +594,8 @@ const VerstakStyleSheetCode =
   align-items: center;
 }
 
+/* Children Alignment */
+
 .v5k-block.${StylingClassNameByAlignmentVertical[V.center]} {
   justify-content: center;
 }
@@ -660,6 +662,60 @@ const VerstakStyleSheetCode =
 
 .v5k-block.${StylingClassNameByAlignmentHorizontal[H.stretch]} > .v5k-part > *,
 .v5k-block.${StylingClassNameByAlignmentHorizontal[H.stretchAndFix]} > .v5k-part > * {
+  flex-grow: 1;
+}
+
+/* Self Alignment */
+
+.v5k-block.${StylingClassNameBySelfAlignmentVertical[V.center]} {
+  justify-self: center;
+}
+
+.v5k-block.${StylingClassNameBySelfAlignmentVertical[V.top]} {
+  justify-self: start;
+}
+
+.v5k-block.${StylingClassNameBySelfAlignmentVertical[V.bottom]} {
+  justify-self: end;
+}
+
+.v5k-block.${StylingClassNameBySelfAlignmentVertical[V.stretch]},
+.v5k-block.${StylingClassNameBySelfAlignmentVertical[V.stretchAndFix]} {
+  align-self: stretch;
+}
+
+.v5k-block.${StylingClassNameBySelfAlignmentVerticalRowWise[V.center]} {
+  align-self: center;
+}
+
+.v5k-block.${StylingClassNameBySelfAlignmentVerticalRowWise[V.top]} {
+  align-self: start;
+}
+
+.v5k-block.${StylingClassNameBySelfAlignmentVerticalRowWise[V.bottom]} {
+  align-self: end;
+}
+
+.v5k-block.${StylingClassNameBySelfAlignmentVerticalRowWise[V.stretch]},
+.v5k-block.${StylingClassNameBySelfAlignmentVerticalRowWise[V.stretchAndFix]} {
+  align-self: stretch;
+}
+
+.v5k-block.${StylingClassNameBySelfAlignmentHorizontal[H.center]} {
+  justify-self: center;
+}
+
+.v5k-block.${StylingClassNameBySelfAlignmentHorizontal[H.left]} {
+  justify-self: start;
+}
+
+.v5k-block.${StylingClassNameBySelfAlignmentHorizontal[H.right]} {
+  justify-self: end;
+}
+
+.v5k-block.${StylingClassNameBySelfAlignmentHorizontal[H.stretch]},
+.v5k-block.${StylingClassNameBySelfAlignmentHorizontal[H.stretchAndFix]} {
+  justify-self: stretch;
   flex-grow: 1;
 }
 

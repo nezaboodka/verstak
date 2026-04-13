@@ -195,8 +195,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   set selfAlignmentHorizontal(value: H | undefined) {
     const existing = this._selfAlignmentHorizontal
     if (value !== existing) {
-      // ElImpl.applyHorizontally(this, this._horizontal, this._horizontal,
-      //   existing, value, this._stretchingStrengthHorizontally)
+      ElImpl.applySelfAlignmentHorizontal(this, existing, value)
       this._selfAlignmentHorizontal = value
     }
   }
@@ -205,7 +204,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   set selfAlignmentVertical(value: V | undefined) {
     const existing = this._selfAlignmentVertical
     if (value !== existing) {
-      // ...
+      ElImpl.applySelfAlignmentVertical(this, existing, value)
       this._selfAlignmentVertical = value
     }
   }
@@ -214,7 +213,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   set selfAlignmentVerticalRowWise(value: V | undefined) {
     const existing = this._selfAlignmentVerticalRowWise
     if (value !== existing) {
-      // ...
+      ElImpl.applySelfAlignmentVerticalRowWise(this, existing, value)
       this._selfAlignmentVerticalRowWise = value
     }
   }
@@ -405,6 +404,33 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       el.classList.remove(StylingClassNameByAlignmentVerticalRowWise[oldValue])
     if (newValue !== undefined)
       el.classList.add(StylingClassNameByAlignmentVerticalRowWise[newValue])
+  }
+
+  private static applySelfAlignmentHorizontal<T extends Element>(element: ElImpl<T, any>,
+    oldValue: H | undefined, newValue: H | undefined): void {
+    const el = element.native
+    if (oldValue !== undefined)
+      el.classList.remove(StylingClassNameBySelfAlignmentHorizontal[oldValue])
+    if (newValue !== undefined)
+      el.classList.add(StylingClassNameBySelfAlignmentHorizontal[newValue])
+  }
+
+  private static applySelfAlignmentVertical<T extends Element>(element: ElImpl<T, any>,
+    oldValue: V | undefined, newValue: V | undefined): void {
+    const el = element.native
+    if (oldValue !== undefined)
+      el.classList.remove(StylingClassNameBySelfAlignmentVertical[oldValue])
+    if (newValue !== undefined)
+      el.classList.add(StylingClassNameBySelfAlignmentVertical[newValue])
+  }
+
+  private static applySelfAlignmentVerticalRowWise<T extends Element>(element: ElImpl<T, any>,
+    oldValue: V | undefined, newValue: V | undefined): void {
+    const el = element.native
+    if (oldValue !== undefined)
+      el.classList.remove(StylingClassNameBySelfAlignmentVerticalRowWise[oldValue])
+    if (newValue !== undefined)
+      el.classList.add(StylingClassNameBySelfAlignmentVerticalRowWise[newValue])
   }
 
   // private static applyAlignmentHorizontalOld<T extends Element>(element: ElImpl<T, any>,
@@ -1037,11 +1063,35 @@ export const StylingClassNameByAlignmentVertical: Array<string> = [
 ]
 
 export const StylingClassNameByAlignmentVerticalRowWise: Array<string> = [
-  "v5k-v-center-rw",
-  "v5k-v-top-rw",
-  "v5k-v-bottom-rw",
-  "v5k-v-stretch-rw",
-  "v5k-v-stretch-fix-rw",
+  "v5k-vrw-center",
+  "v5k-vrw-top",
+  "v5k-vrw-bottom",
+  "v5k-vrw-stretch",
+  "v5k-vrw-stretch-fix",
+]
+
+export const StylingClassNameBySelfAlignmentHorizontal: Array<string> = [
+  "v5k-sh-center",
+  "v5k-sh-left",
+  "v5k-sh-right",
+  "v5k-sh-stretch",
+  "v5k-sh-stretch-fix",
+]
+
+export const StylingClassNameBySelfAlignmentVertical: Array<string> = [
+  "v5k-sv-center",
+  "v5k-sv-top",
+  "v5k-sv-bottom",
+  "v5k-sv-stretch",
+  "v5k-sv-stretch-fix",
+]
+
+export const StylingClassNameBySelfAlignmentVerticalRowWise: Array<string> = [
+  "v5k-svrw-center",
+  "v5k-svrw-top",
+  "v5k-svrw-bottom",
+  "v5k-svrw-stretch",
+  "v5k-svrw-stretch-fix",
 ]
 
 // function alignedX(align: Align, like: Align): boolean {
