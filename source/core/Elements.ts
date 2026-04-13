@@ -668,15 +668,15 @@ const VerstakStyleSheetCode =
 /* Self Alignment */
 
 .v5k-block.${StylingClassNameBySelfAlignmentVertical[V.center]} {
-  justify-self: center;
+  align-self: center;
 }
 
 .v5k-block.${StylingClassNameBySelfAlignmentVertical[V.top]} {
-  justify-self: start;
+  align-self: start;
 }
 
 .v5k-block.${StylingClassNameBySelfAlignmentVertical[V.bottom]} {
-  justify-self: end;
+  align-self: end;
 }
 
 .v5k-block.${StylingClassNameBySelfAlignmentVertical[V.stretch]},
