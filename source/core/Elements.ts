@@ -629,16 +629,33 @@ const VerstakStyleSheetCode =
   align-items: stretch;
 }
 
+.v5k-block.${StylingClassNameByAlignmentHorizontal[H.center]} {
+  text-align: center;
+}
+
 .v5k-block.${StylingClassNameByAlignmentHorizontal[H.center]} > .v5k-part {
   justify-content: center;
+}
+
+.v5k-block.${StylingClassNameByAlignmentHorizontal[H.left]} {
+  text-align: left;
 }
 
 .v5k-block.${StylingClassNameByAlignmentHorizontal[H.left]} > .v5k-part {
   justify-content: start;
 }
 
+.v5k-block.${StylingClassNameByAlignmentHorizontal[H.right]} {
+  text-align: right;
+}
+
 .v5k-block.${StylingClassNameByAlignmentHorizontal[H.right]} > .v5k-part {
   justify-content: end;
+}
+
+.v5k-block.${StylingClassNameByAlignmentHorizontal[H.stretch]},
+.v5k-block.${StylingClassNameByAlignmentHorizontal[H.stretchAndFix]} {
+  text-align: justify;
 }
 
 .v5k-block.${StylingClassNameByAlignmentHorizontal[H.stretch]} > .v5k-part > *,
