@@ -1087,27 +1087,27 @@ export const StylingClassNameByAlignmentVerticalRowWise: Array<string> = [
 ]
 
 export const StylingClassNameBySelfAlignmentHorizontal: Array<string> = [
-  "v5k-sh-center",
-  "v5k-sh-left",
-  "v5k-sh-right",
-  "v5k-sh-stretch",
-  "v5k-sh-stretch-fix",
+  "v5k-self-h-center",
+  "v5k-self-h-left",
+  "v5k-self-h-right",
+  "v5k-self-h-stretch",
+  "v5k-self-h-stretch-fix",
 ]
 
 export const StylingClassNameBySelfAlignmentVertical: Array<string> = [
-  "v5k-sv-center",
-  "v5k-sv-top",
-  "v5k-sv-bottom",
-  "v5k-sv-stretch",
-  "v5k-sv-stretch-fix",
+  "v5k-self-v-center",
+  "v5k-self-v-top",
+  "v5k-self-v-bottom",
+  "v5k-self-v-stretch",
+  "v5k-self-v-stretch-fix",
 ]
 
 export const StylingClassNameBySelfAlignmentVerticalRowWise: Array<string> = [
-  "v5k-svrw-center",
-  "v5k-svrw-top",
-  "v5k-svrw-bottom",
-  "v5k-svrw-stretch",
-  "v5k-svrw-stretch-fix",
+  "v5k-self-vrw-center",
+  "v5k-self-vrw-top",
+  "v5k-self-vrw-bottom",
+  "v5k-self-vrw-stretch",
+  "v5k-self-vrw-stretch-fix",
 ]
 
 // function alignedX(align: Align, like: Align): boolean {
