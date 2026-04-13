@@ -985,47 +985,15 @@ export const Constants = {
 const DriversByLayout: Array<Handler<El<HTMLElement>>> = [
   el => { // block
     el.native.classList.add("v5k-block")
-    // // const owner = el.node.owner.element as ElImpl
-    // const s = el.style
-    // s.display = "flex"
-    // s.flexDirection = "column"
-    // // s.alignSelf = owner.isTable ? "stretch" : "center"
-    // // s.textAlign = "initial"
-    // s.flexShrink = "1"
-    // s.minWidth = "0"
   },
   el => { // table
     el.native.classList.add("v5k-table")
-    // // const owner = el.node.owner.element as ElImpl
-    // const s = el.style
-    // // s.alignSelf = owner.isTable ? "stretch" : "center"
-    // s.display = "grid"
-    // s.flexBasis = "0"
-    // s.gridAutoRows = "minmax(min-content, 1fr)"
-    // s.gridAutoColumns = "minmax(min-content, 1fr)"
-    // s.textAlign = "initial"
   },
-  // el => { // text
-  //   const owner = el.node.owner.element as ElImpl
-  //   const s = el.style
-  //   s.alignSelf = owner.isTable ? "stretch" : "center"
-  //   s.display = "inline-grid"
-  //   s.flexShrink = "1"
-  // },
   el => { // group
     el.native.classList.add("v5k-group")
-    // const s = el.style
-    // s.display = "contents"
   },
   el => { // partition
     el.native.classList.add("v5k-part")
-    // const owner = el.node.owner.element as ElImpl
-    // const s = el.style
-    // s.display = owner.isTable ? "contents" : "flex"
-    // s.flexDirection = "row"
-    // // s.alignItems = "center" // is it good idea?..
-    // s.gap = "inherit"
-    // s.position = owner.sealed !== undefined ? "relative" : ""
   },
   el => { // splitter
     const s = el.style
