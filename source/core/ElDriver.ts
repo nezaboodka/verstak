@@ -186,9 +186,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   set alignmentVerticalRowWise(value: V | undefined) {
     const existing = this._alignmentVerticalRowWise
     if (value !== existing) {
-      // ElImpl.applyVertically(this, existing, value,
-      //   this._contentVertical, this._contentVertical,
-      //   this._stretchingStrengthVertical)
+      ElImpl.applyAlignmentVerticalRowWise(this, existing, value)
       this._alignmentVerticalRowWise = value
     }
   }
@@ -386,18 +384,27 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     oldValue: H | undefined, newValue: H | undefined): void {
     const el = element.native
     if (oldValue !== undefined)
-      el.classList.remove(StylingClassNameByHorizontalAlignment[oldValue])
+      el.classList.remove(StylingClassNameByAlignmentHorizontal[oldValue])
     if (newValue !== undefined)
-      el.classList.add(StylingClassNameByHorizontalAlignment[newValue])
+      el.classList.add(StylingClassNameByAlignmentHorizontal[newValue])
   }
 
   private static applyAlignmentVertical<T extends Element>(element: ElImpl<T, any>,
     oldValue: V | undefined, newValue: V | undefined): void {
     const el = element.native
     if (oldValue !== undefined)
-      el.classList.remove(StylingClassNameByVerticalAlignment[oldValue])
+      el.classList.remove(StylingClassNameByAlignmentVertical[oldValue])
     if (newValue !== undefined)
-      el.classList.add(StylingClassNameByVerticalAlignment[newValue])
+      el.classList.add(StylingClassNameByAlignmentVertical[newValue])
+  }
+
+  private static applyAlignmentVerticalRowWise<T extends Element>(element: ElImpl<T, any>,
+    oldValue: V | undefined, newValue: V | undefined): void {
+    const el = element.native
+    if (oldValue !== undefined)
+      el.classList.remove(StylingClassNameByAlignmentVerticalRowWise[oldValue])
+    if (newValue !== undefined)
+      el.classList.add(StylingClassNameByAlignmentVerticalRowWise[newValue])
   }
 
   // private static applyAlignmentHorizontalOld<T extends Element>(element: ElImpl<T, any>,
@@ -1045,7 +1052,7 @@ const DriversByLayout: Array<Handler<El<HTMLElement>>> = [
   // undefined // cursor
 ]
 
-const StylingClassNameByHorizontalAlignment: Array<string> = [
+const StylingClassNameByAlignmentHorizontal: Array<string> = [
   "v5k-h-center",
   "v5k-h-left",
   "v5k-h-right",
@@ -1053,12 +1060,20 @@ const StylingClassNameByHorizontalAlignment: Array<string> = [
   "v5k-h-stretch-fix",
 ]
 
-const StylingClassNameByVerticalAlignment: Array<string> = [
+const StylingClassNameByAlignmentVertical: Array<string> = [
   "v5k-v-center",
   "v5k-v-top",
   "v5k-v-bottom",
   "v5k-v-stretch",
   "v5k-v-stretch-fix",
+]
+
+const StylingClassNameByAlignmentVerticalRowWise: Array<string> = [
+  "v5k-v-center-rw",
+  "v5k-v-top-rw",
+  "v5k-v-bottom-rw",
+  "v5k-v-stretch-rw",
+  "v5k-v-stretch-fix-rw",
 ]
 
 // function alignedX(align: Align, like: Align): boolean {

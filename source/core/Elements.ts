@@ -612,6 +612,23 @@ const VerstakStyleSheetCode =
   align-items: stretch;
 }
 
+.v5k-block.v5k-v-center-rw > .v5k-part {
+  align-items: center;
+}
+
+.v5k-block.v5k-v-top-rw > .v5k-part {
+  align-items: start;
+}
+
+.v5k-block.v5k-v-bottom-rw > .v5k-part {
+  align-items: end;
+}
+
+.v5k-block.v5k-v-stretch-rw > .v5k-part,
+.v5k-block.v5k-v-stretch-fix-rw > .v5k-part {
+  align-items: stretch;
+}
+
 .v5k-block.v5k-h-center > .v5k-part {
   justify-content: center;
 }
