@@ -716,7 +716,6 @@ const VerstakStyleSheetCode =
 .v5k-block.${StylingClassNameBySelfAlignmentHorizontal[H.stretch]},
 .v5k-block.${StylingClassNameBySelfAlignmentHorizontal[H.stretchAndFix]} {
   justify-self: stretch;
-  flex-grow: 1;
 }
 
 .v5k-table {

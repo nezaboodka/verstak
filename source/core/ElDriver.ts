@@ -409,19 +409,35 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private static applySelfAlignmentHorizontal<T extends Element>(element: ElImpl<T, any>,
     oldValue: H | undefined, newValue: H | undefined): void {
     const el = element.native
-    if (oldValue !== undefined)
+    if (oldValue !== undefined) {
       el.classList.remove(StylingClassNameBySelfAlignmentHorizontal[oldValue])
-    if (newValue !== undefined)
+      if (oldValue === H.stretch || oldValue === H.stretchAndFix)
+        element.style.flexGrow = ""
+    }
+    if (newValue !== undefined) {
       el.classList.add(StylingClassNameBySelfAlignmentHorizontal[newValue])
+      if (newValue === H.stretch || newValue === H.stretchAndFix)
+        element.style.flexGrow = `${element.stretchingStrengthHorizontal ?? 1}`
+    }
   }
 
   private static applySelfAlignmentVertical<T extends Element>(element: ElImpl<T, any>,
     oldValue: V | undefined, newValue: V | undefined): void {
     const el = element.native
-    if (oldValue !== undefined)
+    if (oldValue !== undefined) {
       el.classList.remove(StylingClassNameBySelfAlignmentVertical[oldValue])
-    if (newValue !== undefined)
+      if (oldValue === V.stretch || oldValue === V.stretchAndFix) {
+        const hostEl = element.node.host.element as ElImpl
+        hostEl.style.flexGrow = ""
+      }
+    }
+    if (newValue !== undefined) {
       el.classList.add(StylingClassNameBySelfAlignmentVertical[newValue])
+      if (newValue === V.stretch || newValue === V.stretchAndFix) {
+        const hostEl = element.node.host.element as ElImpl
+        hostEl.style.flexGrow = `${element.stretchingStrengthVertical ?? 1}`
+      }
+    }
   }
 
   private static applySelfAlignmentVerticalRowWise<T extends Element>(element: ElImpl<T, any>,
