@@ -87,7 +87,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
           if (oel instanceof ElImpl && oel.isTable)
             el.place = undefined // automatic placement in table
         }
-        if (gBlinkingEffectMarker)
+        if (gBlinkingEffect)
           blink(el.native, ReactiveTreeNode.currentBodyPriority, node.stamp)
       },
       e => {
@@ -125,12 +125,12 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
       n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
   }
 
-  static get blinkingEffectMarker(): string | undefined {
-    return gBlinkingEffectMarker
+  static get blinkingEffect(): boolean {
+    return gBlinkingEffect
   }
 
-  static set blinkingEffectMarker(value: string | undefined) {
-    gBlinkingEffectMarker = value
+  static set blinkingEffect(value: boolean) {
+    gBlinkingEffect = value
   }
 }
 
@@ -172,10 +172,10 @@ function blink(element: Element | undefined, priority: Priority, revision: numbe
   if (element !== undefined) {
     const n1 = revision % 2
     const n2 = 1 >> n1
-    const bem = gBlinkingEffectMarker
+    const bem = "v5k-"
     element.classList.toggle(`${bem}${priority}${n1}`, true)
     element.classList.toggle(`${bem}${priority}${n2}`, false)
   }
 }
 
-let gBlinkingEffectMarker: string | undefined = undefined
+let gBlinkingEffect: boolean = false

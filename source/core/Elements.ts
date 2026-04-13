@@ -594,21 +594,6 @@ const VerstakStyleSheetCode =
   align-items: center;
 }
 
-.v5k-table {
-  display: grid;
-  flex-basis: 0;
-  grid-auto-rows: minmax(min-content, 1fr);
-  grid-auto-columns: minmax(min-content, 1fr);
-  text-align: initial;
-}
-
-.v5k-table > .v5k-part {
-  display: contents;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
 .v5k-block.v5k-v-center {
   justify-content: center;
 }
@@ -644,82 +629,97 @@ const VerstakStyleSheetCode =
   flex-grow: 1;
 }
 
+.v5k-table {
+  display: grid;
+  flex-basis: 0;
+  grid-auto-rows: minmax(min-content, 1fr);
+  grid-auto-columns: minmax(min-content, 1fr);
+  text-align: initial;
+}
+
+.v5k-table > .v5k-part {
+  display: contents;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
 /* Verstak Blinking Effect */
 
-.ё .ё00 {
-  animation: v5k-blinking-animation-ex-0-1 1.5s ease-in 1 !important;
+.v5k-00 {
+  animation: v5k-blink-ex-0-1 1.5s ease-in 1 !important;
 }
 
-.ё .ё01 {
-  animation: v5k-blinking-animation-ex-0-2 1.5s ease-in 1 !important;
+.v5k-01 {
+  animation: v5k-blink-ex-0-2 1.5s ease-in 1 !important;
 }
 
-.ё .ё10 {
-  animation: v5k-blinking-animation-ex-1-1 1.5s ease-in 1 !important;
+.v5k-10 {
+  animation: v5k-blink-ex-1-1 1.5s ease-in 1 !important;
 }
 
-.ё .ё11 {
-  animation: v5k-blinking-animation-ex-1-2 1.5s ease-in 1 !important;
+.v5k-11 {
+  animation: v5k-blink-ex-1-2 1.5s ease-in 1 !important;
 }
 
-.ё .ё20 {
-  animation: v5k-blinking-animation-ex-2-1 1.5s ease-in 1 !important;
+.v5k-20 {
+  animation: v5k-blink-ex-2-1 1.5s ease-in 1 !important;
 }
 
-.ё .ё21 {
-  animation: v5k-blinking-animation-ex-2-2 1.5s ease-in 1 !important;
+.v5k-21 {
+  animation: v5k-blink-ex-2-2 1.5s ease-in 1 !important;
 }
 
 /* Verstak Blinking Animation */
 
-@keyframes v5k-blinking-animation-0-2 {
+@keyframes v5k-blink-0-2 {
   from { box-shadow: 0 0 0 2px red inset; }
 }
 
-@keyframes v5k-blinking-animation-1-1 {
+@keyframes v5k-blink-1-1 {
   from { box-shadow: 0 0 0 2px #0000BB inset; }
 }
 
-@keyframes v5k-blinking-animation-1-2 {
+@keyframes v5k-blink-1-2 {
   from { box-shadow: 0 0 0 2px #0000BB inset; }
 }
 
-@keyframes v5k-blinking-animation-2-1 {
+@keyframes v5k-blink-2-1 {
   from { box-shadow: 0 0 0 2px #00BB00 inset; }
 }
 
-@keyframes v5k-blinking-animation-2-2 {
+@keyframes v5k-blink-2-2 {
   from { box-shadow: 0 0 0 2px #00BB00 inset; }
 }
 
 /* Verstak Blinking Animation */
 
-@keyframes v5k-blinking-animation-ex-0-1 {
+@keyframes v5k-blink-ex-0-1 {
   from { outline-offset: -1px; outline: 2px solid red; }
   to { outline-offset: -1px; outline: 2px solid transparent; }
 }
 
-@keyframes v5k-blinking-animation-ex-0-2 {
+@keyframes v5k-blink-ex-0-2 {
   from { outline-offset: -1px; outline: 2px solid red; }
   to { outline-offset: -1px; outline: 2px solid transparent; }
 }
 
-@keyframes v5k-blinking-animation-ex-1-1 {
+@keyframes v5k-blink-ex-1-1 {
   from { outline-offset: -1px; outline: 2px solid #0000BB; }
   to { outline-offset: -1px; outline: 2px solid transparent; }
 }
 
-@keyframes v5k-blinking-animation-ex-1-2 {
+@keyframes v5k-blink-ex-1-2 {
   from { outline-offset: -1px; outline: 2px solid #0000BB; }
   to { outline-offset: -1px; outline: 2px solid transparent; }
 }
 
-@keyframes v5k-blinking-animation-ex-2-1 {
+@keyframes v5k-blink-ex-2-1 {
   from { outline-offset: -1px; outline: 2px solid #00BB00; }
   to { outline-offset: -1px; outline: 2px solid transparent; }
 }
 
-@keyframes v5k-blinking-animation-ex-2-2 {
+@keyframes v5k-blink-ex-2-2 {
   from { outline-offset: -1px; outline: 2px solid #00BB00; }
   to { outline-offset: -1px; outline: 2px solid transparent; }
 }
