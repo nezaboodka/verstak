@@ -6,9 +6,9 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, LinkedItem, declare, runNonReactive, ScriptAsync, Handler } from "reactronic"
-import { El, ElKind, ElPlace, Direction } from "./El.js"
+import { El, ElKind, ElPlace, Direction, H, V } from "./El.js"
 import { clamp } from "./ElUtils.js"
-import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "./ElDriver.js"
+import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo, StylingClassNameByAlignmentHorizontal, StylingClassNameByAlignmentVertical, StylingClassNameByAlignmentVerticalRowWise } from "./ElDriver.js"
 import { getPrioritiesForEmptySpaceDistribution, getPrioritiesForSizeChanging, relayout, relayoutUsingSplitter } from "./SplitViewMath.js"
 import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Sizes.js"
 import { HtmlDriver } from "./WebDriver.js"
@@ -594,55 +594,55 @@ const VerstakStyleSheetCode =
   align-items: center;
 }
 
-.v5k-block.v5k-v-center {
+.v5k-block.${StylingClassNameByAlignmentVertical[V.center]} {
   justify-content: center;
 }
 
-.v5k-block.v5k-v-top {
+.v5k-block.${StylingClassNameByAlignmentVertical[V.top]} {
   justify-content: start;
 }
 
-.v5k-block.v5k-v-bottom {
+.v5k-block.${StylingClassNameByAlignmentVertical[V.bottom]} {
   justify-content: end;
 }
 
-.v5k-block.v5k-v-stretch > .v5k-part,
-.v5k-block.v5k-v-stretch-fix > .v5k-part {
+.v5k-block.${StylingClassNameByAlignmentVertical[V.stretch]} > .v5k-part,
+.v5k-block.${StylingClassNameByAlignmentVertical[V.stretchAndFix]} > .v5k-part {
   flex-grow: 1;
   align-items: stretch;
 }
 
-.v5k-block.v5k-v-center-rw > .v5k-part {
+.v5k-block.${StylingClassNameByAlignmentVerticalRowWise[V.center]} > .v5k-part {
   align-items: center;
 }
 
-.v5k-block.v5k-v-top-rw > .v5k-part {
+.v5k-block.${StylingClassNameByAlignmentVerticalRowWise[V.top]} > .v5k-part {
   align-items: start;
 }
 
-.v5k-block.v5k-v-bottom-rw > .v5k-part {
+.v5k-block.${StylingClassNameByAlignmentVerticalRowWise[V.bottom]} > .v5k-part {
   align-items: end;
 }
 
-.v5k-block.v5k-v-stretch-rw > .v5k-part,
-.v5k-block.v5k-v-stretch-fix-rw > .v5k-part {
+.v5k-block.${StylingClassNameByAlignmentVerticalRowWise[V.stretch]} > .v5k-part,
+.v5k-block.${StylingClassNameByAlignmentVerticalRowWise[V.stretchAndFix]} > .v5k-part {
   align-items: stretch;
 }
 
-.v5k-block.v5k-h-center > .v5k-part {
+.v5k-block.${StylingClassNameByAlignmentHorizontal[H.center]} > .v5k-part {
   justify-content: center;
 }
 
-.v5k-block.v5k-h-left > .v5k-part {
+.v5k-block.${StylingClassNameByAlignmentHorizontal[H.left]} > .v5k-part {
   justify-content: start;
 }
 
-.v5k-block.v5k-h-right > .v5k-part {
+.v5k-block.v${StylingClassNameByAlignmentHorizontal[H.right]} > .v5k-part {
   justify-content: end;
 }
 
-.v5k-block.v5k-h-stretch > .v5k-part > *,
-.v5k-block.v5k-h-stretch-fix > .v5k-part > * {
+.v5k-block.${StylingClassNameByAlignmentHorizontal[H.stretch]} > .v5k-part > *,
+.v5k-block.${StylingClassNameByAlignmentHorizontal[H.stretchAndFix]} > .v5k-part > * {
   flex-grow: 1;
 }
 

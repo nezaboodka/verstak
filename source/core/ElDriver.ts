@@ -1052,7 +1052,7 @@ const DriversByLayout: Array<Handler<El<HTMLElement>>> = [
   // undefined // cursor
 ]
 
-const StylingClassNameByAlignmentHorizontal: Array<string> = [
+export const StylingClassNameByAlignmentHorizontal: Array<string> = [
   "v5k-h-center",
   "v5k-h-left",
   "v5k-h-right",
@@ -1060,7 +1060,7 @@ const StylingClassNameByAlignmentHorizontal: Array<string> = [
   "v5k-h-stretch-fix",
 ]
 
-const StylingClassNameByAlignmentVertical: Array<string> = [
+export const StylingClassNameByAlignmentVertical: Array<string> = [
   "v5k-v-center",
   "v5k-v-top",
   "v5k-v-bottom",
@@ -1068,7 +1068,7 @@ const StylingClassNameByAlignmentVertical: Array<string> = [
   "v5k-v-stretch-fix",
 ]
 
-const StylingClassNameByAlignmentVerticalRowWise: Array<string> = [
+export const StylingClassNameByAlignmentVerticalRowWise: Array<string> = [
   "v5k-v-center-rw",
   "v5k-v-top-rw",
   "v5k-v-bottom-rw",
