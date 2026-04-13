@@ -215,7 +215,7 @@ export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: Li
   const items = Array.from(children.items()).filter(x => isSplitViewPartition(x.driver))
   for (let i = items.length - 1; i >= 0; i--) {
     const el = items[i].element as ElImpl
-    const strength = (isHorizontal ? el.stretchingStrengthHorizontal : el.stretchingStrengthVertically) ?? 1
+    const strength = (isHorizontal ? el.stretchingStrengthHorizontal : el.stretchingStrengthVertical) ?? 1
     if (!indexes.includes(i)) {
       if (strength > 0)
         resizable.push(1 << i)
@@ -227,7 +227,7 @@ export function getPrioritiesForSizeChanging(isHorizontal: boolean, children: Li
   let mr = 0
   for (const i of indexes) {
     const el = items[i].element as ElImpl
-    const strength = (isHorizontal ? el.stretchingStrengthHorizontal : el.stretchingStrengthVertically) ?? 1
+    const strength = (isHorizontal ? el.stretchingStrengthHorizontal : el.stretchingStrengthVertical) ?? 1
     if (strength > 0)
       r |= 1 << i
     else
@@ -247,7 +247,7 @@ export function getPrioritiesForEmptySpaceDistribution(isHorizontal: boolean, ch
   for (const child of children.items()) {
     if (isSplitViewPartition(child.driver)) {
       const el = child.element as ElImpl
-      const strength = (isHorizontal ? el.stretchingStrengthHorizontal : el.stretchingStrengthVertically) ?? 1
+      const strength = (isHorizontal ? el.stretchingStrengthHorizontal : el.stretchingStrengthVertical) ?? 1
       if (strength > 0)
         r |= 1 << i
       else
@@ -261,7 +261,7 @@ export function getPrioritiesForEmptySpaceDistribution(isHorizontal: boolean, ch
 function getFractionCount(isHorizontal: boolean, children: Array<ReactiveTreeNode<ElImpl>>, vector: number, index: number, force: boolean = false): number {
   let result = 0
   for (const i of indexes(vector, index)) {
-    const growth = (isHorizontal ? children[i].element.stretchingStrengthHorizontal : children[i].element.stretchingStrengthVertically) ?? 1
+    const growth = (isHorizontal ? children[i].element.stretchingStrengthHorizontal : children[i].element.stretchingStrengthVertical) ?? 1
     result += growth > 0 ? growth : (force ? 1 : 0)
   }
   return result
@@ -309,7 +309,7 @@ function distribute(sign: number, deltaPx: number, index: number, priorities: Re
       for (const i of indexes(vector, sign * index)) {
         const child = sizesPx[i].node
         const initialSizePx = sizesPx[i].sizePx
-        const strength = isHorizontal ? (child.element.stretchingStrengthHorizontal ?? 1) : (child.element.stretchingStrengthVertically ?? 1)
+        const strength = isHorizontal ? (child.element.stretchingStrengthHorizontal ?? 1) : (child.element.stretchingStrengthVertical ?? 1)
         const growth = strength > 0 ? strength : (force ? 1 : 0)
         const newSizePx = initialSizePx + sign * (growth * fractionSizePx)
         const size = isHorizontal ? sizesPx[i].node.element.widthPx : sizesPx[i].node.element.heightPx

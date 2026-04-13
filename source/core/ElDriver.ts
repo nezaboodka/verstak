@@ -188,7 +188,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     if (value !== existing) {
       // ElImpl.applyVertically(this, existing, value,
       //   this._contentVertical, this._contentVertical,
-      //   this._stretchingStrengthVertically)
+      //   this._stretchingStrengthVertical)
       this._alignmentVerticalRowWise = value
     }
   }
@@ -231,7 +231,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   get stretchingStrengthVertical(): number | undefined { return this._stretchingStrengthVertical }
-  set stretchingStrengthVertically(value: number | undefined) {
+  set stretchingStrengthVertical(value: number | undefined) {
     const existing = this._stretchingStrengthVertical
     if (value !== existing) {
       ElImpl.applyStretchingStrengthV(this, existing, value)
