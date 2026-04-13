@@ -637,7 +637,7 @@ const VerstakStyleSheetCode =
   justify-content: start;
 }
 
-.v5k-block.v${StylingClassNameByAlignmentHorizontal[H.right]} > .v5k-part {
+.v5k-block.${StylingClassNameByAlignmentHorizontal[H.right]} > .v5k-part {
   justify-content: end;
 }
 
