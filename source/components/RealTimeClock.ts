@@ -22,11 +22,6 @@ export class RealTimeClock extends RxObject {
   }
 
   @transaction
-  pause(value: boolean = true): void {
-    this.paused = value
-  }
-
-  @transaction
   private tick(): void {
     let calibration = 0
     try {
@@ -39,7 +34,9 @@ export class RealTimeClock extends RxObject {
     }
   }
 
-  @reaction // one-time boot reactive
+  // Internal
+
+  @reaction // one-time boot reaction
   protected activate(): void {
     this.tick()
   }
