@@ -736,27 +736,27 @@ const VerstakStyleSheetCode =
 /* Verstak Blinking Effect */
 
 .v5k-00 {
-  animation: v5k-blink-ex-0-1 1.5s ease-in 1 !important;
+  animation: v5k-blink-ex-0-1 0.75s ease-in 1 !important;
 }
 
 .v5k-01 {
-  animation: v5k-blink-ex-0-2 1.5s ease-in 1 !important;
+  animation: v5k-blink-ex-0-2 0.75s ease-in 1 !important;
 }
 
 .v5k-10 {
-  animation: v5k-blink-ex-1-1 1.5s ease-in 1 !important;
+  animation: v5k-blink-ex-1-1 0.75s ease-in 1 !important;
 }
 
 .v5k-11 {
-  animation: v5k-blink-ex-1-2 1.5s ease-in 1 !important;
+  animation: v5k-blink-ex-1-2 0.75s ease-in 1 !important;
 }
 
 .v5k-20 {
-  animation: v5k-blink-ex-2-1 1.5s ease-in 1 !important;
+  animation: v5k-blink-ex-2-1 0.75s ease-in 1 !important;
 }
 
 .v5k-21 {
-  animation: v5k-blink-ex-2-2 1.5s ease-in 1 !important;
+  animation: v5k-blink-ex-2-2 0.75s ease-in 1 !important;
 }
 
 /* Verstak Blinking Animation */
