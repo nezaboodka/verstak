@@ -14,3 +14,6 @@ export * from "./Sizes.js"
 export * from "./SplitViewMath.js"
 export * from "./Elements.js"
 export * from "./sensors/api.js"
+export * from "./HtmlApiExt.js"
+
+import "./HtmlApiExt.js"

@@ -6,6 +6,3 @@
 // automatically licensed under the license referred above.
 
 export * from "./HtmlElements.js"
-export * from "./HtmlApiExt.js"
-
-import "./HtmlApiExt.js"
