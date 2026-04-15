@@ -7,7 +7,7 @@
 
 import { RxObject, transaction } from "reactronic"
 
-export class RealTimeClock extends RxObject {
+export class CurrentTime extends RxObject {
   hour: number = 0
   minute: number = 0
   second: number = 0
