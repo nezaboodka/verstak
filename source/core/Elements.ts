@@ -571,8 +571,7 @@ const VerstakStyleSheetCode =
 .v5k-body {
   width: 100vw;
   max-width: 100vw;
-  height: 100vh;
-  max-height: 100vh;
+  min-height: 100vh;
   margin: 0;
   padding: 0;
   border: none;
