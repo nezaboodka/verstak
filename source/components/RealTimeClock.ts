@@ -18,7 +18,7 @@ export class RealTimeClock extends RxObject {
   constructor(interval: number = 1000) {
     super()
     this.interval = interval
-    this.put(new Date())
+    this.apply(new Date())
   }
 
   @transaction
@@ -31,7 +31,7 @@ export class RealTimeClock extends RxObject {
     let calibration = 0
     try {
       const now = new Date()
-      this.put(now)
+      this.apply(now)
       calibration = now.getTime() % this.interval
     }
     finally {
@@ -44,7 +44,7 @@ export class RealTimeClock extends RxObject {
     this.tick()
   }
 
-  private put(time: Date): void {
+  private apply(time: Date): void {
     this.hour = time.getHours()
     this.minute = time.getMinutes()
     this.second = time.getSeconds()
