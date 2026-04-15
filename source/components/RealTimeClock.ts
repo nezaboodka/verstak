@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RxObject, transaction, reaction } from "reactronic"
+import { RxObject, transaction } from "reactronic"
 
 export class RealTimeClock extends RxObject {
   hour: number = 0
@@ -13,12 +13,11 @@ export class RealTimeClock extends RxObject {
   second: number = 0
   ms: number = 0
   interval: number = 0
-  paused: boolean = false
 
   constructor(interval: number = 1000) {
     super()
     this.interval = interval
-    this.apply(new Date())
+    this.tick()
   }
 
   @transaction
@@ -26,25 +25,14 @@ export class RealTimeClock extends RxObject {
     let calibration = 0
     try {
       const now = new Date()
-      this.apply(now)
+      this.hour = now.getHours()
+      this.minute = now.getMinutes()
+      this.second = now.getSeconds()
+      this.ms = now.getMilliseconds()
       calibration = now.getTime() % this.interval
     }
     finally {
       setTimeout(() => this.tick(), this.interval - calibration)
     }
-  }
-
-  // Internal
-
-  @reaction // one-time boot reaction
-  protected activate(): void {
-    this.tick()
-  }
-
-  private apply(time: Date): void {
-    this.hour = time.getHours()
-    this.minute = time.getMinutes()
-    this.second = time.getSeconds()
-    this.ms = time.getMilliseconds()
   }
 }
