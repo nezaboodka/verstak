@@ -25,8 +25,8 @@ export type El<T = any, M = any> = {
   selfAlignmentHorizontal: H | undefined
   selfAlignmentVertical: V | undefined
   selfAlignmentVerticalRowWise: V | undefined
-  stretchingStrengthHorizontal: number | undefined
-  stretchingStrengthVertical: number | undefined
+  selfStretchingStrengthHorizontal: number | undefined
+  selfStretchingStrengthVertical: number | undefined
   contentWrapping: boolean
   overlayVisible: boolean | undefined
   text: string | undefined

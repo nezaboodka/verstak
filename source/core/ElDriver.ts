@@ -41,8 +41,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _selfAlignmentHorizontal: H | undefined
   private _selfAlignmentVertical: V | undefined
   private _selfAlignmentVerticalRowWise: V | undefined
-  private _stretchingStrengthHorizontal: number | undefined
-  private _stretchingStrengthVertical: number | undefined
+  private _selfStretchingStrengthHorizontal: number | undefined
+  private _selfStretchingStrengthVertical: number | undefined
   private _contentWrapping: boolean
   private _overlayVisible: boolean | undefined
   private _text: string | undefined
@@ -72,8 +72,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this._selfAlignmentHorizontal = undefined
     this._selfAlignmentVertical = undefined
     this._selfAlignmentVerticalRowWise = undefined
-    this._stretchingStrengthHorizontal = undefined
-    this._stretchingStrengthVertical = undefined
+    this._selfStretchingStrengthHorizontal = undefined
+    this._selfStretchingStrengthVertical = undefined
     this._contentWrapping = true
     this._overlayVisible = undefined
     this._text = ""
@@ -218,21 +218,21 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  get stretchingStrengthHorizontal(): number | undefined { return this._stretchingStrengthHorizontal }
-  set stretchingStrengthHorizontal(value: number | undefined) {
-    const existing = this._stretchingStrengthHorizontal
+  get selfStretchingStrengthHorizontal(): number | undefined { return this._selfStretchingStrengthHorizontal }
+  set selfStretchingStrengthHorizontal(value: number | undefined) {
+    const existing = this._selfStretchingStrengthHorizontal
     if (value !== existing) {
-      ElImpl.applyStretchingStrengthHorizontal(this, existing, value)
-      this._stretchingStrengthHorizontal = value
+      ElImpl.applySelfStretchingStrengthHorizontal(this, existing, value)
+      this._selfStretchingStrengthHorizontal = value
     }
   }
 
-  get stretchingStrengthVertical(): number | undefined { return this._stretchingStrengthVertical }
-  set stretchingStrengthVertical(value: number | undefined) {
-    const existing = this._stretchingStrengthVertical
+  get selfStretchingStrengthVertical(): number | undefined { return this._selfStretchingStrengthVertical }
+  set selfStretchingStrengthVertical(value: number | undefined) {
+    const existing = this._selfStretchingStrengthVertical
     if (value !== existing) {
-      ElImpl.applyStretchingStrengthVertical(this, existing, value)
-      this._stretchingStrengthVertical = value
+      ElImpl.applySelfStretchingStrengthVertical(this, existing, value)
+      this._selfStretchingStrengthVertical = value
     }
   }
 
@@ -417,7 +417,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     if (newValue !== undefined) {
       el.classList.add(StylingClassNameBySelfAlignmentHorizontal[newValue])
       if (newValue === H.stretch || newValue === H.stretchAndFix)
-        element.style.flexGrow = `${element.stretchingStrengthHorizontal ?? 1}`
+        element.style.flexGrow = `${element.selfStretchingStrengthHorizontal ?? 1}`
     }
   }
 
@@ -435,7 +435,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       el.classList.add(StylingClassNameBySelfAlignmentVertical[newValue])
       if (newValue === V.stretch || newValue === V.stretchAndFix) {
         const hostEl = element.node.host.element as ElImpl
-        hostEl.style.flexGrow = `${element.stretchingStrengthVertical ?? 1}`
+        hostEl.style.flexGrow = `${element.selfStretchingStrengthVertical ?? 1}`
       }
     }
   }
@@ -626,7 +626,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   //     ElImpl.applyStretchingStrengthV(element, 0, 1)
   // }
 
-  private static applyStretchingStrengthHorizontal<T extends Element>(
+  private static applySelfStretchingStrengthHorizontal<T extends Element>(
     element: ElImpl<T, any>, existing: number | undefined,
     value: number | undefined): void {
     // Maintain strength for hosting partition (if any)
@@ -634,7 +634,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     const host = element.node.host
     if (host.driver.isPartition) {
       const hostEl = host.element as ElImpl
-      hostEl._stretchingStrengthHorizontal = value
+      hostEl._selfStretchingStrengthHorizontal = value
       existing ??= 0
       value ??= 0
       // TODO: to fix
@@ -667,14 +667,14 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  private static applyStretchingStrengthVertical<T extends Element>(
+  private static applySelfStretchingStrengthVertical<T extends Element>(
     element: ElImpl<T, any>, existing: number | undefined,
     value: number | undefined): void {
     // Maintain strength for hosting partition (if any)
     const host = element.node.host
     if (host.driver.isPartition) {
       const hostElement = host.element as ElImpl
-      hostElement._stretchingStrengthVertical = value
+      hostElement._selfStretchingStrengthVertical = value
       let delta = 0
       existing ??= 0
       value ??= 0
@@ -687,7 +687,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
           delta = -1
       }
       if (delta !== 0) {
-        const count = hostElement._stretchingStrengthVertical ?? 0 + delta
+        const count = hostElement._selfStretchingStrengthVertical ?? 0 + delta
         const s = hostElement.style
         if (count === 1)
           s.flexGrow = `${value}` // TODO: MAX!
