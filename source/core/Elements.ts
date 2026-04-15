@@ -698,6 +698,7 @@ const VerstakStyleSheetCode =
 
 .v5k-block.${StylingClassNameByPartitionAlignmentVertical[V.stretch]},
 .v5k-block.${StylingClassNameByPartitionAlignmentVertical[V.stretchAndFix]} {
+  flex-grow: 1;
   justify-self: stretch;
 }
 

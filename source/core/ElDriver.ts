@@ -426,31 +426,37 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
   private static applySelfAlignmentHorizontal<T extends Element>(element: ElImpl<T, any>,
     existing: H | undefined, value: H | undefined): void {
-    const el = element.native
+    const e = element.native
     if (existing !== undefined) {
-      el.classList.remove(StylingClassNameBySelfAlignmentHorizontal[existing])
+      e.classList.remove(StylingClassNameBySelfAlignmentHorizontal[existing])
       if (existing === H.stretch || existing === H.stretchAndFix)
         element.style.flexGrow = ""
     }
     if (value !== undefined) {
-      el.classList.add(StylingClassNameBySelfAlignmentHorizontal[value])
-      if (value === H.stretch || value === H.stretchAndFix)
-        element.style.flexGrow = `${element.selfStretchingStrengthHorizontal ?? 1}`
+      e.classList.add(StylingClassNameBySelfAlignmentHorizontal[value])
+      const grow = element.selfStretchingStrengthHorizontal
+      if ((value === H.stretch || value === H.stretchAndFix) && grow !== undefined && grow !== 1)
+        element.style.flexGrow = `${grow}`
+      else
+        element.style.flexGrow = ""
     }
   }
 
-  private static applyPartitionAlignmentVertical<T extends Element>(element: ElImpl<T, any>,
+  private static applyPartitionAlignmentVertical<T extends Element>(partition: ElImpl<T, any>,
     existing: V | undefined, value: V | undefined): void {
-    const el = element.native
+    const e = partition.native
     if (existing !== undefined) {
-      el.classList.remove(StylingClassNameByPartitionAlignmentVertical[existing])
+      e.classList.remove(StylingClassNameByPartitionAlignmentVertical[existing])
       if (existing === V.stretch || existing === V.stretchAndFix)
-        element.style.flexGrow = ""
+        partition.style.flexGrow = ""
     }
     if (value !== undefined) {
-      el.classList.add(StylingClassNameByPartitionAlignmentVertical[value])
-      if (value === V.stretch || value === V.stretchAndFix)
-        element.style.flexGrow = `${element.selfStretchingStrengthVertical ?? 1}`
+      e.classList.add(StylingClassNameByPartitionAlignmentVertical[value])
+      const grow = partition.selfStretchingStrengthVertical
+      if ((value === V.stretch || value === V.stretchAndFix) && grow !== undefined && grow !== 1)
+        partition.style.flexGrow = `${grow}`
+      else
+        partition.style.flexGrow = ""
     }
   }
 
@@ -644,8 +650,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     element: ElImpl<T, any>, existing: number | undefined,
     value: number | undefined): void {
     const a = element.selfAlignmentHorizontal
-    if (a === H.stretch || a === H.stretchAndFix)
-      element.style.flexGrow = `${value ?? 1}`
+    if ((a === H.stretch || a === H.stretchAndFix) && value !== undefined && value !== 1)
+      element.style.flexGrow = `${value}`
     else
       element.style.flexGrow = ""
   }
@@ -655,8 +661,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     value: number | undefined): void {
     const host = element.node.host.element as ElImpl
     const a = host.selfAlignmentVertical
-    if (a === V.stretch || a === V.stretchAndFix)
-      host.style.flexGrow = `${value ?? 1}`
+    if ((a === V.stretch || a === V.stretchAndFix) && value !== undefined && value !== 1)
+      host.style.flexGrow = `${value}`
     else
       host.style.flexGrow = ""
   }
