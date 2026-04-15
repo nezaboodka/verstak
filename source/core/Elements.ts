@@ -17,7 +17,7 @@ import { HtmlDriver } from "./WebDriver.js"
 // called block and table; and on two special non-visual
 // elements called partition and group.
 
-// ApplicationScreen is a root element, which element tree
+// ApplicationWindow is a root element, which element tree
 // starts from.
 
 // Block is a layout structure, which children are laid
@@ -35,9 +35,9 @@ import { HtmlDriver } from "./WebDriver.js"
 // Group is a special non-visual element for logical
 // grouping of blocks, tables and other groups.
 
-// ApplicationScreen
+// ApplicationWindow
 
-export function ApplicationScreen(
+export function ApplicationWindow(
   body?: Script<El<HTMLElement>>,
   bodyTask?: ScriptAsync<El<HTMLElement>>,
   key?: string,
@@ -50,10 +50,10 @@ export function ApplicationScreen(
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
 
-export function ApplicationScreen(
+export function ApplicationWindow(
   declaration?: ReactiveTreeNodeDecl<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
 
-export function ApplicationScreen(
+export function ApplicationWindow(
   bodyOrDeclaration?: Script<El<HTMLElement>> | ReactiveTreeNodeDecl<El<HTMLElement>>,
   bodyTask?: ScriptAsync<El<HTMLElement>>,
   key?: string,
