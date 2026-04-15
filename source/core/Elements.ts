@@ -665,6 +665,26 @@ const VerstakStyleSheetCode =
   flex-grow: 1;
 }
 
+/* Partition Alignment */
+
+.v5k-part.${StylingClassNameByPartitionAlignmentVertical[V.center]} {
+  justify-self: center;
+}
+
+.v5k-part.${StylingClassNameByPartitionAlignmentVertical[V.top]} {
+  justify-self: start;
+}
+
+.v5k-part.${StylingClassNameByPartitionAlignmentVertical[V.bottom]} {
+  justify-self: end;
+}
+
+.v5k-part.${StylingClassNameByPartitionAlignmentVertical[V.stretch]},
+.v5k-part.${StylingClassNameByPartitionAlignmentVertical[V.stretchAndFix]} {
+  flex-grow: 1;
+  justify-self: stretch;
+}
+
 /* Self Alignment */
 
 .v5k-block.${StylingClassNameBySelfAlignmentVertical[V.center]} {
@@ -684,24 +704,6 @@ const VerstakStyleSheetCode =
   align-self: stretch;
 }
 
-.v5k-block.${StylingClassNameByPartitionAlignmentVertical[V.center]} {
-  justify-self: center;
-}
-
-.v5k-block.${StylingClassNameByPartitionAlignmentVertical[V.top]} {
-  justify-self: start;
-}
-
-.v5k-block.${StylingClassNameByPartitionAlignmentVertical[V.bottom]} {
-  justify-self: end;
-}
-
-.v5k-block.${StylingClassNameByPartitionAlignmentVertical[V.stretch]},
-.v5k-block.${StylingClassNameByPartitionAlignmentVertical[V.stretchAndFix]} {
-  flex-grow: 1;
-  justify-self: stretch;
-}
-
 .v5k-block.${StylingClassNameBySelfAlignmentHorizontal[H.center]} {
   justify-self: center;
 }
@@ -718,6 +720,8 @@ const VerstakStyleSheetCode =
 .v5k-block.${StylingClassNameBySelfAlignmentHorizontal[H.stretchAndFix]} {
   justify-self: stretch;
 }
+
+/* Table */
 
 .v5k-table {
   display: grid;
