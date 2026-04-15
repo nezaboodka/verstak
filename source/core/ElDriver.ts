@@ -222,7 +222,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   set stretchingStrengthHorizontal(value: number | undefined) {
     const existing = this._stretchingStrengthHorizontal
     if (value !== existing) {
-      ElImpl.applyStretchingStrengthH(this, existing, value)
+      ElImpl.applyStretchingStrengthHorizontal(this, existing, value)
       this._stretchingStrengthHorizontal = value
     }
   }
@@ -231,7 +231,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   set stretchingStrengthVertical(value: number | undefined) {
     const existing = this._stretchingStrengthVertical
     if (value !== existing) {
-      ElImpl.applyStretchingStrengthV(this, existing, value)
+      ElImpl.applyStretchingStrengthVertical(this, existing, value)
       this._stretchingStrengthVertical = value
     }
   }
@@ -626,7 +626,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   //     ElImpl.applyStretchingStrengthV(element, 0, 1)
   // }
 
-  private static applyStretchingStrengthH<T extends Element>(
+  private static applyStretchingStrengthHorizontal<T extends Element>(
     element: ElImpl<T, any>, existing: number | undefined,
     value: number | undefined): void {
     // Maintain strength for hosting partition (if any)
@@ -667,7 +667,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
   }
 
-  private static applyStretchingStrengthV<T extends Element>(
+  private static applyStretchingStrengthVertical<T extends Element>(
     element: ElImpl<T, any>, existing: number | undefined,
     value: number | undefined): void {
     // Maintain strength for hosting partition (if any)
