@@ -320,20 +320,15 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     return (this.native as any).style
   }
 
-  get action(): Handler<El<T, M>, void | Promise<void>> | undefined {
+  get action(): Handler<El<T, M>, void> | undefined {
     return (this.native as any).onclick // type-safety is violated here
   }
 
-  set action(value: Handler<El<T, M>, void | Promise<void>> | undefined) {
+  set action(value: Handler<El<T, M>, void> | undefined) {
     const self = this.native
     if (self instanceof HTMLElement) {
-      if (value) { // if not undefined and not null
-        self.onclick = () => {
-          const res = value(this)
-          if (res instanceof Promise)
-            res.then(v => undefined, e => undefined)
-        }
-      }
+      if (value) // if not undefined and not null
+        self.onclick = () => value(this)
       else
         self.onclick = null
     }
