@@ -316,9 +316,28 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     return this.layoutInfo.effectiveSizePx ?? 0
   }
 
-  get style(): CSSStyleDeclaration { return (this.native as any).style }
-  get action(): Handler<El<T, M>, void | Promise<void>> { return (this.native as any).onclick }
-  set action(value: Handler<El<T, M>, void | Promise<void>>) { (this.native as any).onclick = value }
+  get style(): CSSStyleDeclaration {
+    return (this.native as any).style
+  }
+
+  get action(): Handler<El<T, M>, void | Promise<void>> | undefined {
+    return (this.native as any).onclick // type-safety is violated here
+  }
+
+  set action(value: Handler<El<T, M>, void | Promise<void>> | undefined) {
+    const self = this.native
+    if (self instanceof HTMLElement) {
+      if (value) { // if not undefined and not null
+        self.onclick = () => {
+          const res = value(this)
+          if (res instanceof Promise)
+            res.then(v => undefined, e => undefined)
+        }
+      }
+      else
+        self.onclick = null
+    }
+  }
 
   useStylingPreset(stylingPresetName: string, enabled?: boolean): void {
     ElImpl.applyStylingPreset(this, this._hasStylingPresets, stylingPresetName, enabled)

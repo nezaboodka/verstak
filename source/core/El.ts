@@ -40,7 +40,7 @@ export type El<T = any, M = any> = {
   partitionSizeInSplitViewPx: number
 
   readonly style: CSSStyleDeclaration
-  action: Handler<El<T, M>, void | Promise<void>>
+  action: Handler<El<T, M>, void | Promise<void>> | undefined
   useStylingPreset(stylingPresetName: string, enabled?: boolean): void
 }
 
