@@ -66,7 +66,7 @@ export function ApplicationWindow(
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>> {
   acquireVerstakStyleSheet()
-  const body = global.document.body
+  const body = (document ?? global.document).body
   const driver = new StaticBlockDriver(body, "Page", false, el => el.kind = ElKind.block)
   body.classList.add("v5k-body")
   body.classList.add("v5k-block")

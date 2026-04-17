@@ -16,7 +16,7 @@ declare global {
   }
 }
 
-const ElementType = global.Element
+const ElementType = Element ?? global.Element
 
 if (ElementType !== undefined) {
   Object.defineProperty(ElementType.prototype, "sensors", {
