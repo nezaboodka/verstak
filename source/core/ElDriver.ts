@@ -317,6 +317,8 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   get style(): CSSStyleDeclaration { return (this.native as any).style }
+  get action(): Handler<El<T, M>, void | Promise<void>> { return (this.native as any).onclick }
+  set action(value: Handler<El<T, M>, void | Promise<void>>) { (this.native as any).onclick = value }
 
   useStylingPreset(stylingPresetName: string, enabled?: boolean): void {
     ElImpl.applyStylingPreset(this, this._hasStylingPresets, stylingPresetName, enabled)

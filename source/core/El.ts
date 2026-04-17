@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode } from "reactronic"
+import { Handler, ReactiveTreeNode } from "reactronic"
 
 export type El<T = any, M = any> = {
   // System-managed properties
@@ -40,6 +40,7 @@ export type El<T = any, M = any> = {
   partitionSizeInSplitViewPx: number
 
   readonly style: CSSStyleDeclaration
+  action: Handler<El<T, M>, void | Promise<void>>
   useStylingPreset(stylingPresetName: string, enabled?: boolean): void
 }
 
