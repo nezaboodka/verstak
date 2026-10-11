@@ -14,26 +14,26 @@ import { Axis, BodyFontSize, Dimension, SizeConverterOptions, toPx } from "./Siz
 import { HtmlDriver } from "./WebDriver.js"
 
 // Verstak is based on two fundamental layout structures
-// called block and table; and on two special non-visual
-// elements called partition and group.
+// called natural layout and table layout; and on two
+// special non-visual elements called partition and group.
 
 // ApplicationWindow is a root element, which element tree
 // starts from.
 
-// Block is a layout structure, which children are laid
-// out naturally: rightwards-downwards.
+// Element is a basic layout structure, which children by
+// default are laid out naturally: rightwards-downwards.
 
 // Table is layout structure, which children are laid out
 // over table cells.
 
 // Partition is a special non-visual element, which begins
-// new layout partition inside block or table.
+// new layout partition inside element or table.
 
-// TextBlock is either plain or markdown-formatted text
+// TextElement is either plain or markdown-formatted text
 // supporting syntax highlighting for code blocks.
 
 // Group is a special non-visual element for logical
-// grouping of blocks, tables and other groups.
+// grouping of elements, tables and other groups.
 
 // ApplicationWindow
 
@@ -67,9 +67,9 @@ export function ApplicationWindow(
   basis?: ReactiveTreeNodeDecl<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>> {
   acquireVerstakStyleSheet()
   const body = (document ?? global.document).body
-  const driver = new StaticBlockDriver(body, "Page", false, el => el.kind = ElKind.block)
+  const driver = new StaticElementDriver(body, "Page", false, el => el.kind = ElKind.element)
   body.classList.add("v5k-body")
-  body.classList.add("v5k-block")
+  body.classList.add("v5k-element")
   return declare(driver, bodyOrDeclaration, bodyTask,
     key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
 }
@@ -97,9 +97,9 @@ function findStyleByTitle(title: string): StyleSheet | undefined {
   return undefined
 }
 
-// Block
+// Element
 
-export function Block<M = unknown>(
+export function Element<M = unknown>(
   body?: Script<El<HTMLElement, M>>,
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
@@ -112,10 +112,10 @@ export function Block<M = unknown>(
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
-export function Block<M = unknown>(
+export function Element<M = unknown>(
   declaration?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
-export function Block<M = unknown>(
+export function Element<M = unknown>(
   bodyOrDeclaration?: Script<El<HTMLElement, M>> | ReactiveTreeNodeDecl<El<HTMLElement, M>>,
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
   key?: string,
@@ -127,7 +127,7 @@ export function Block<M = unknown>(
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
   basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
-  return declare(Drivers.block, bodyOrDeclaration, bodyTask,
+  return declare(Drivers.element, bodyOrDeclaration, bodyTask,
     key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
 }
 
@@ -346,9 +346,9 @@ export function Fragment<M = unknown>(
     key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
 }
 
-// BlockDriver
+// ElementDriver
 
-export class BlockDriver<T extends HTMLElement> extends HtmlDriver<T> {
+export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
   override rebuildBody(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
     const el = node.element as ElImpl
     const result = super.rebuildBody(node)
@@ -479,9 +479,9 @@ function overrideMethod(declaration: ReactiveTreeNodeDecl<El>, method: "preparat
     : (el, base) => { base(); func.call(el, el) }
 }
 
-// StaticBlockDriver
+// StaticElementDriver
 
-export class StaticBlockDriver<T extends HTMLElement> extends BlockDriver<T> {
+export class StaticElementDriver<T extends HTMLElement> extends ElementDriver<T> {
 
   readonly native: T
 
@@ -543,7 +543,7 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 export const Drivers = {
   // display: flex, flex-direction: column
-  block: new BlockDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.block),
+  element: new ElementDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.element),
 
   // display: grid
   table: new HtmlDriver<HTMLElement>(Constants.element, false, el => el.kind = ElKind.table),
@@ -578,7 +578,7 @@ const VerstakStyleSheetCode =
   box-sizing: border-box;
 }
 
-.v5k-block {
+.v5k-element {
   display: flex;
   flex-direction: column;
   flex-shrink: 1;
@@ -586,7 +586,7 @@ const VerstakStyleSheetCode =
   text-align: center;
 }
 
-.v5k-block > .v5k-part {
+.v5k-element > .v5k-part {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -595,72 +595,72 @@ const VerstakStyleSheetCode =
 
 /* Children Alignment */
 
-.v5k-block.${StylingClassNameByAlignmentVertical[V.center]} {
+.v5k-element.${StylingClassNameByAlignmentVertical[V.center]} {
   justify-content: center;
 }
 
-.v5k-block.${StylingClassNameByAlignmentVertical[V.top]} {
+.v5k-element.${StylingClassNameByAlignmentVertical[V.top]} {
   justify-content: start;
 }
 
-.v5k-block.${StylingClassNameByAlignmentVertical[V.bottom]} {
+.v5k-element.${StylingClassNameByAlignmentVertical[V.bottom]} {
   justify-content: end;
 }
 
-.v5k-block.${StylingClassNameByAlignmentVertical[V.stretch]} > .v5k-part,
-.v5k-block.${StylingClassNameByAlignmentVertical[V.stretchAndFix]} > .v5k-part {
+.v5k-element.${StylingClassNameByAlignmentVertical[V.stretch]} > .v5k-part,
+.v5k-element.${StylingClassNameByAlignmentVertical[V.stretchAndFix]} > .v5k-part {
   flex-grow: 1;
   align-items: stretch;
 }
 
-.v5k-block.${StylingClassNameByAlignmentVerticalRowWise[V.center]} > .v5k-part {
+.v5k-element.${StylingClassNameByAlignmentVerticalRowWise[V.center]} > .v5k-part {
   align-items: center;
 }
 
-.v5k-block.${StylingClassNameByAlignmentVerticalRowWise[V.top]} > .v5k-part {
+.v5k-element.${StylingClassNameByAlignmentVerticalRowWise[V.top]} > .v5k-part {
   align-items: start;
 }
 
-.v5k-block.${StylingClassNameByAlignmentVerticalRowWise[V.bottom]} > .v5k-part {
+.v5k-element.${StylingClassNameByAlignmentVerticalRowWise[V.bottom]} > .v5k-part {
   align-items: end;
 }
 
-.v5k-block.${StylingClassNameByAlignmentVerticalRowWise[V.stretch]} > .v5k-part,
-.v5k-block.${StylingClassNameByAlignmentVerticalRowWise[V.stretchAndFix]} > .v5k-part {
+.v5k-element.${StylingClassNameByAlignmentVerticalRowWise[V.stretch]} > .v5k-part,
+.v5k-element.${StylingClassNameByAlignmentVerticalRowWise[V.stretchAndFix]} > .v5k-part {
   align-items: stretch;
 }
 
-.v5k-block.${StylingClassNameByAlignmentHorizontal[H.center]} {
+.v5k-element.${StylingClassNameByAlignmentHorizontal[H.center]} {
   text-align: center;
 }
 
-.v5k-block.${StylingClassNameByAlignmentHorizontal[H.center]} > .v5k-part {
+.v5k-element.${StylingClassNameByAlignmentHorizontal[H.center]} > .v5k-part {
   justify-content: center;
 }
 
-.v5k-block.${StylingClassNameByAlignmentHorizontal[H.left]} {
+.v5k-element.${StylingClassNameByAlignmentHorizontal[H.left]} {
   text-align: left;
 }
 
-.v5k-block.${StylingClassNameByAlignmentHorizontal[H.left]} > .v5k-part {
+.v5k-element.${StylingClassNameByAlignmentHorizontal[H.left]} > .v5k-part {
   justify-content: start;
 }
 
-.v5k-block.${StylingClassNameByAlignmentHorizontal[H.right]} {
+.v5k-element.${StylingClassNameByAlignmentHorizontal[H.right]} {
   text-align: right;
 }
 
-.v5k-block.${StylingClassNameByAlignmentHorizontal[H.right]} > .v5k-part {
+.v5k-element.${StylingClassNameByAlignmentHorizontal[H.right]} > .v5k-part {
   justify-content: end;
 }
 
-.v5k-block.${StylingClassNameByAlignmentHorizontal[H.stretch]},
-.v5k-block.${StylingClassNameByAlignmentHorizontal[H.stretchAndFix]} {
+.v5k-element.${StylingClassNameByAlignmentHorizontal[H.stretch]},
+.v5k-element.${StylingClassNameByAlignmentHorizontal[H.stretchAndFix]} {
   text-align: justify;
 }
 
-.v5k-block.${StylingClassNameByAlignmentHorizontal[H.stretch]} > .v5k-part > *,
-.v5k-block.${StylingClassNameByAlignmentHorizontal[H.stretchAndFix]} > .v5k-part > * {
+.v5k-element.${StylingClassNameByAlignmentHorizontal[H.stretch]} > .v5k-part > *,
+.v5k-element.${StylingClassNameByAlignmentHorizontal[H.stretchAndFix]} > .v5k-part > * {
   flex-grow: 1;
 }
 
@@ -686,37 +686,37 @@ const VerstakStyleSheetCode =
 
 /* Self Alignment */
 
-.v5k-block.${StylingClassNameBySelfAlignmentVertical[V.center]} {
+.v5k-element.${StylingClassNameBySelfAlignmentVertical[V.center]} {
   align-self: center;
 }
 
-.v5k-block.${StylingClassNameBySelfAlignmentVertical[V.top]} {
+.v5k-element.${StylingClassNameBySelfAlignmentVertical[V.top]} {
   align-self: start;
 }
 
-.v5k-block.${StylingClassNameBySelfAlignmentVertical[V.bottom]} {
+.v5k-element.${StylingClassNameBySelfAlignmentVertical[V.bottom]} {
   align-self: end;
 }
 
-.v5k-block.${StylingClassNameBySelfAlignmentVertical[V.stretch]},
-.v5k-block.${StylingClassNameBySelfAlignmentVertical[V.stretchAndFix]} {
+.v5k-element.${StylingClassNameBySelfAlignmentVertical[V.stretch]},
+.v5k-element.${StylingClassNameBySelfAlignmentVertical[V.stretchAndFix]} {
   align-self: stretch;
 }
 
-.v5k-block.${StylingClassNameBySelfAlignmentHorizontal[H.center]} {
+.v5k-element.${StylingClassNameBySelfAlignmentHorizontal[H.center]} {
   justify-self: center;
 }
 
-.v5k-block.${StylingClassNameBySelfAlignmentHorizontal[H.left]} {
+.v5k-element.${StylingClassNameBySelfAlignmentHorizontal[H.left]} {
   justify-self: start;
 }
 
-.v5k-block.${StylingClassNameBySelfAlignmentHorizontal[H.right]} {
+.v5k-element.${StylingClassNameBySelfAlignmentHorizontal[H.right]} {
   justify-self: end;
 }
 
-.v5k-block.${StylingClassNameBySelfAlignmentHorizontal[H.stretch]},
-.v5k-block.${StylingClassNameBySelfAlignmentHorizontal[H.stretchAndFix]} {
+.v5k-element.${StylingClassNameBySelfAlignmentHorizontal[H.stretch]},
+.v5k-element.${StylingClassNameBySelfAlignmentHorizontal[H.stretchAndFix]} {
   flex-grow: 1;
   justify-self: stretch;
 }

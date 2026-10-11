@@ -45,7 +45,7 @@ export type El<T = any, M = any> = {
 }
 
 export enum ElKind {
-  block = 0,
+  element = 0,
   table = 1,
   group = 2,
   partition = 3,

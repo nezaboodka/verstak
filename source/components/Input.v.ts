@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveTreeNodeDecl, Mode, setBasis } from "reactronic"
-import { Block, FocusModel, OnFocus, rowBreak, El, Fragment, KeyboardSensor, KeyboardModifiers, H, V } from "verstak"
+import { Element, FocusModel, OnFocus, rowBreak, El, Fragment, KeyboardSensor, KeyboardModifiers, H, V } from "verstak"
 import { rxModel, ValuesOrRefs } from "./common/Utils.js"
 import { Theme, InputStyling } from "./Theme.js"
 import { Icon } from "./Icon.v.js"
@@ -25,7 +25,7 @@ export type InputModel<T = string> = FocusModel & {
 
 export function Input(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, InputModel>>) {
   return (
-    Block<InputModel>(setBasis(declaration, {
+    Element<InputModel>(setBasis(declaration, {
       preparation() {
         this.model ??= composeInputModel()
         this.native.dataForSensor.focus = this.model
@@ -65,7 +65,7 @@ export function composeInputModel<T>(props?: Partial<ValuesOrRefs<InputModel<T>>
 
 function InputField(model: InputModel, styling: InputStyling) {
   return (
-    Block({
+    Element({
       key: InputField.name,
       mode: Mode.primitive,
       preparation(el, base) {
@@ -105,7 +105,7 @@ function InputField(model: InputModel, styling: InputStyling) {
 
 function InputPopup(model: InputModel, styling: InputStyling) {
   return (
-    Block({
+    Element({
       key: InputPopup.name,
       mode: Mode.primitive,
       body() {
@@ -117,7 +117,7 @@ function InputPopup(model: InputModel, styling: InputStyling) {
           if (options.length > 0) {
             for (const x of model.options) {
               rowBreak()
-              Block({
+              Element({
                 key: x,
                 mode: Mode.primitive,
                 preparation() {
@@ -128,7 +128,7 @@ function InputPopup(model: InputModel, styling: InputStyling) {
             }
           }
           else
-            Block({
+            Element({
               key: "(nothing)",
               mode: Mode.primitive,
               body() {

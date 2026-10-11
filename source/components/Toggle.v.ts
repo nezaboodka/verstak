@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveTreeNode, ReactiveTreeNodeDecl, Mode, setBasis } from "reactronic"
-import { Block, El, OnClick } from "verstak"
+import { Element, El, OnClick } from "verstak"
 import { rxModel } from "./common/Utils.js"
 import { Theme } from "./Theme.js"
 import { Icon } from "./Icon.v.js"
@@ -19,7 +19,7 @@ export type ToggleModel = {
 
 export function Toggle(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, ToggleModel>>) {
   return (
-    Block<ToggleModel>(setBasis(declaration, {
+    Element<ToggleModel>(setBasis(declaration, {
       preparation() {
         this.model ??= rxModel({
           label: ReactiveTreeNode.current.key,
@@ -39,7 +39,7 @@ export function Toggle(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, Toggle
           },
         })
         if (m.label) {
-          Block({
+          Element({
             mode: Mode.primitive,
             body(el, base) {
               base()

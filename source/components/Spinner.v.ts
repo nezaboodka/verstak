@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ReactiveTreeNodeDecl, Mode, setBasis } from "reactronic"
-import { Block, El } from "verstak"
+import { Element, El } from "verstak"
 import { rxModel, ValuesOrRefs } from "./common/Utils.js"
 
 export type SpinnerModel = {
@@ -16,14 +16,14 @@ export type SpinnerModel = {
 
 export function Spinner(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, SpinnerModel>>) {
   return (
-    Block<SpinnerModel>(setBasis(declaration, {
+    Element<SpinnerModel>(setBasis(declaration, {
       preparation() {
         this.model ??= composeSpinnerModel()
       },
       body() {
         const m = this.model
         if (m.active)
-          Block({
+          Element({
             mode: Mode.primitive,
             body() {
               this.text = "loading..."

@@ -90,7 +90,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   }
 
   get rank(): number { return this.node.rank }
-  get isBlock(): boolean { return this.kind === ElKind.block }
+  get isElement(): boolean { return this.kind === ElKind.element }
   get isTable(): boolean { return this.kind === ElKind.table }
   get isAuxiliary(): boolean { return this.kind > ElKind.table } // Part, Group, Cursor
 
@@ -1004,15 +1004,15 @@ export const Constants = {
   wrapper: "wrapper",
   splitter: "splitter",
   group: "group",
-  layouts: ["block", "table", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
+  layouts: ["element", "table", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
   keyAttrName: "key",
   kindAttrName: "kind",
   ownReactiveTreeNodeKey: Symbol("own-reactive-tree-node"),
 }
 
 const DriversByLayout: Array<Handler<El<HTMLElement>>> = [
-  el => { // block
-    el.native.classList.add("v5k-block")
+  el => { // element
+    el.native.classList.add("v5k-element")
   },
   el => { // table
     el.native.classList.add("v5k-table")

@@ -7,11 +7,11 @@
 
 import Md from "markdown-it"
 import * as prism from "prismjs"
-import { Block } from "verstak"
+import { Element } from "verstak"
 
 export function Markdown(content: string) {
   return (
-    Block({
+    Element({
       preparation(el, base) {
         this.contentWrapping = true
         // b.native.setAttribute("markdown", "true")
