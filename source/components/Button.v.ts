@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDecl, setBasis } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDesc, setBasis } from "reactronic"
 import { Element, El, OnClick } from "verstak"
 import { rxModel } from "./common/Utils.js"
 import { Theme } from "./Theme.js"
@@ -17,9 +17,9 @@ export type ButtonModel = {
   action?(): void
 }
 
-export function Button(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, ButtonModel>>) {
+export function Button(description?: ReactiveTreeNodeDesc<El<HTMLElement, ButtonModel>>) {
   return (
-    Element<ButtonModel>(setBasis(declaration, {
+    Element<ButtonModel>(setBasis(description, {
       preparation() {
         this.model ??= rxModel({
           icon: "fa-solid fa-square",

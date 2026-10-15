@@ -450,7 +450,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     }
     if (value !== undefined) {
       e.classList.add(StylingClassNameBySelfAlignmentHorizontal[value])
-      const grow = element.selfStretchingStrengthHorizontal
+      const grow = element.selfStretchingStrengthHorizontal ?? 1
       if ((value === H.stretch || value === H.stretchAndFix) && grow !== undefined && grow !== 1)
         element.style.flexGrow = `${grow}`
       else

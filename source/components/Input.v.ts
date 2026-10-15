@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNodeDecl, Mode, setBasis } from "reactronic"
+import { ReactiveTreeNodeDesc, Mode, setBasis } from "reactronic"
 import { Element, FocusModel, OnFocus, rowBreak, El, Fragment, KeyboardSensor, KeyboardModifiers, H, V } from "verstak"
 import { rxModel, ValuesOrRefs } from "./common/Utils.js"
 import { Theme, InputStyling } from "./Theme.js"
@@ -23,9 +23,9 @@ export type InputModel<T = string> = FocusModel & {
   inputStyle: string
 }
 
-export function Input(declaration?: ReactiveTreeNodeDecl<El<HTMLElement, InputModel>>) {
+export function Input(description?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel>>) {
   return (
-    Element<InputModel>(setBasis(declaration, {
+    Element<InputModel>(setBasis(description, {
       preparation() {
         this.model ??= composeInputModel()
         this.native.dataForSensor.focus = this.model

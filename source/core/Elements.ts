@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDecl, ReactiveTreeNodeDriver, Script, Mode, LinkedItem, declare, runNonReactive, ScriptAsync, Handler } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDesc, ReactiveTreeNodeDriver, Script, Mode, LinkedItem, args2desc, describe, runNonReactive, ScriptAsync, Handler } from "reactronic"
 import { El, ElKind, ElPlace, Direction, H, V } from "./El.js"
 import { clamp } from "./ElUtils.js"
 import { Constants, CursorCommandDriver, ElDriver, ElImpl, ElLayoutInfo, InitialElLayoutInfo, StylingClassNameByAlignmentHorizontal, StylingClassNameByAlignmentVertical, StylingClassNameByAlignmentVerticalRowWise, StylingClassNameBySelfAlignmentHorizontal, StylingClassNameBySelfAlignmentVertical, StylingClassNameByPartitionAlignmentVertical } from "./ElDriver.js"
@@ -38,40 +38,52 @@ import { HtmlDriver } from "./WebDriver.js"
 // ApplicationWindow
 
 export function ApplicationWindow(
+  body: Script<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+
+export function ApplicationWindow(
+  key: string,
+  body: Script<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+
+export function ApplicationWindow(
+  mode: Mode,
+  body: Script<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+
+export function ApplicationWindow(
+  description: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+
+export function ApplicationWindow(
+  key?: string,
+  mode?: Mode,
   body?: Script<El<HTMLElement>>,
   bodyTask?: ScriptAsync<El<HTMLElement>>,
-  key?: string,
-  mode?: Mode,
-  unmounted?: boolean,
   preparation?: Script<El<HTMLElement>>,
   preparationTask?: ScriptAsync<El<HTMLElement>>,
   mounting?: Script<El<HTMLElement>>,
   finalization?: Script<El<HTMLElement>>,
   signalArgs?: unknown,
-  basis?: ReactiveTreeNodeDecl<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
 
 export function ApplicationWindow(
-  declaration?: ReactiveTreeNodeDecl<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
-
-export function ApplicationWindow(
-  bodyOrDeclaration?: Script<El<HTMLElement>> | ReactiveTreeNodeDecl<El<HTMLElement>>,
+  bodyOrKeyOrModeDescription?: Script<El<HTMLElement>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement>>,
+  bodyOrMode?: Script<El<HTMLElement>> | Mode,
+  body?: Script<El<HTMLElement>>,
   bodyTask?: ScriptAsync<El<HTMLElement>>,
-  key?: string,
-  mode?: Mode,
-  unmounted?: boolean,
   preparation?: Script<El<HTMLElement>>,
   preparationTask?: ScriptAsync<El<HTMLElement>>,
   mounting?: Script<El<HTMLElement>>,
   finalization?: Script<El<HTMLElement>>,
   signalArgs?: unknown,
-  basis?: ReactiveTreeNodeDecl<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>> {
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>> {
   acquireVerstakStyleSheet()
-  const body = (document ?? global.document).body
-  const driver = new StaticElementDriver(body, "Page", false, el => el.kind = ElKind.element)
-  body.classList.add("v5k-body")
-  body.classList.add("v5k-element")
-  return declare(driver, bodyOrDeclaration, bodyTask,
-    key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
+  const page = (document ?? global.document).body
+  const driver = new StaticElementDriver(page, "Page", false, el => el.kind = ElKind.element)
+  page.classList.add("v5k-body")
+  page.classList.add("v5k-element")
+  return describe(driver,
+    bodyOrKeyOrModeDescription, bodyOrMode, body, bodyTask,
+    preparation, preparationTask, mounting, finalization, signalArgs, unmounted, basis)
 }
 
 function acquireVerstakStyleSheet(): void {
@@ -100,69 +112,93 @@ function findStyleByTitle(title: string): StyleSheet | undefined {
 // Element
 
 export function Element<M = unknown>(
+  body: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Element<M = unknown>(
+  key: string,
+  body: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Element<M = unknown>(
+  mode: Mode,
+  body: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Element<M = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Element<M = unknown>(
+  key?: string,
+  mode?: Mode,
   body?: Script<El<HTMLElement, M>>,
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
-  key?: string,
-  mode?: Mode,
-  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement>>,
+  mounting?: Script<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
-  basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
 export function Element<M = unknown>(
-  declaration?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
-
-export function Element<M = unknown>(
-  bodyOrDeclaration?: Script<El<HTMLElement, M>> | ReactiveTreeNodeDecl<El<HTMLElement, M>>,
+  bodyOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
+  bodyOrMode?: Script<El<HTMLElement, M>> | Mode,
+  body?: Script<El<HTMLElement, M>>,
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
-  key?: string,
-  mode?: Mode,
-  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement>>,
+  mounting?: Script<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
-  basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
-  return declare(Drivers.element, bodyOrDeclaration, bodyTask,
-    key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Drivers.element,
+    bodyOrKeyOrModeDescription, bodyOrMode, body, bodyTask,
+    preparation, preparationTask, mounting, finalization, signalArgs, unmounted, basis)
 }
 
 // Table
 
 export function Table<M = unknown>(
+  body: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Table<M = unknown>(
+  key: string,
+  body: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Table<M = unknown>(
+  mode: Mode,
+  body: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Table<M = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Table<M = unknown>(
+  key?: string,
+  mode?: Mode,
   body?: Script<El<HTMLElement, M>>,
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
-  key?: string,
-  mode?: Mode,
-  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement>>,
+  mounting?: Script<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
-  basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
 export function Table<M = unknown>(
-  declaration?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
-
-export function Table<M = unknown>(
-  bodyOrDeclaration?: Script<El<HTMLElement, M>> | ReactiveTreeNodeDecl<El<HTMLElement, M>>,
+  bodyOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
+  bodyOrMode?: Script<El<HTMLElement, M>> | Mode,
+  body?: Script<El<HTMLElement, M>>,
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
-  key?: string,
-  mode?: Mode,
-  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement>>,
+  mounting?: Script<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
-  basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
-  return declare(Drivers.table, bodyOrDeclaration, bodyTask,
-    key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Drivers.table,
+    bodyOrKeyOrModeDescription, bodyOrMode, body, bodyTask,
+    preparation, preparationTask, mounting, finalization, signalArgs, unmounted, basis)
 }
 
 // Partition
@@ -175,42 +211,54 @@ export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: 
 // Splitter
 
 export function Splitter<M = unknown>(
+  body: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Splitter<M = unknown>(
+  key: string,
+  body: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Splitter<M = unknown>(
+  mode: Mode,
+  body: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Splitter<M = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Splitter<M = unknown>(
+  key?: string,
+  mode?: Mode,
   body?: Script<El<HTMLElement, M>>,
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
-  key?: string,
-  mode?: Mode,
-  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement>>,
+  mounting?: Script<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
-  basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
 export function Splitter<M = unknown>(
-  declaration?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
-
-export function Splitter<M = unknown>(
-  bodyOrDeclaration?: Script<El<HTMLElement, M>> | ReactiveTreeNodeDecl<El<HTMLElement, M>>,
+  bodyOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
+  bodyOrMode?: Script<El<HTMLElement, M>> | Mode,
+  body?: Script<El<HTMLElement, M>>,
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
-  key?: string,
-  mode?: Mode,
-  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement>>,
+  mounting?: Script<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
-  basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
-  return declare(Drivers.splitter, bodyOrDeclaration, bodyTask,
-    key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Drivers.splitter,
+    bodyOrKeyOrModeDescription, bodyOrMode, body, bodyTask,
+    preparation, preparationTask, mounting, finalization, signalArgs, unmounted, basis)
 }
 
 export function rowBreak(shiftCursorDown?: number): void {
-  declare(Drivers.partition)
+  describe(Drivers.partition, {})
 }
 
-export function declareSplitter<T>(index: number, splitViewNode: ReactiveTreeNode<El<T>>): ReactiveTreeNode<El<HTMLElement>> {
+export function describeSplitter<T>(index: number, splitViewNode: ReactiveTreeNode<El<T>>): ReactiveTreeNode<El<HTMLElement>> {
   const key = `splitter-${index}`
   return (
     Splitter({
@@ -270,7 +318,7 @@ export function declareSplitter<T>(index: number, splitViewNode: ReactiveTreeNod
 }
 
 export function cursor(place: ElPlace): void {
-  declare(Drivers.cursor, {
+  describe(Drivers.cursor, {
     body() {
       this.place = place
     },
@@ -280,70 +328,95 @@ export function cursor(place: ElPlace): void {
 // Group
 
 export function Group<M = unknown>(
+  body: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Group<M = unknown>(
+  key: string,
+  body: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Group<M = unknown>(
+  mode: Mode,
+  body: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Group<M = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+
+export function Group<M = unknown>(
+  key?: string,
+  mode?: Mode,
   body?: Script<El<HTMLElement, M>>,
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
-  key?: string,
-  mode?: Mode,
-  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement>>,
+  mounting?: Script<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
-  basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
 export function Group<M = unknown>(
-  declaration?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
-
-export function Group<M = unknown>(
-  bodyOrDeclaration?: Script<El<HTMLElement, M>> | ReactiveTreeNodeDecl<El<HTMLElement, M>>,
+  bodyOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
+  bodyOrMode?: Script<El<HTMLElement, M>> | Mode,
+  body?: Script<El<HTMLElement, M>>,
   bodyTask?: ScriptAsync<El<HTMLElement, M>>,
-  key?: string,
-  mode?: Mode,
-  unmounted?: boolean,
   preparation?: Script<El<HTMLElement, M>>,
   preparationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement>>,
+  mounting?: Script<El<HTMLElement, M>>,
   finalization?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
-  basis?: ReactiveTreeNodeDecl<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
-  return declare(Drivers.group, bodyOrDeclaration, bodyTask,
-    key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Drivers.group,
+    bodyOrKeyOrModeDescription, bodyOrMode, body, bodyTask,
+    preparation, preparationTask, mounting, finalization, signalArgs, unmounted, basis)
 }
 
 // Fragment
 
 export function Fragment<M = unknown>(
+  body: Script<El<void, M>>): ReactiveTreeNode<El<void, M>>
+
+export function Fragment<M = unknown>(
+  key: string,
+  body: Script<El<void, M>>): ReactiveTreeNode<El<void, M>>
+
+export function Fragment<M = unknown>(
+  mode: Mode,
+  body: Script<El<void, M>>): ReactiveTreeNode<El<void, M>>
+
+export function Fragment<M = unknown>(
+  description: ReactiveTreeNodeDesc<El<void, M>>): ReactiveTreeNode<El<void, M>>
+
+export function Fragment<M = unknown>(
+  key?: string,
+  mode?: Mode,
   body?: Script<El<void, M>>,
   bodyTask?: ScriptAsync<El<void, M>>,
-  key?: string,
-  mode?: Mode,
-  unmounted?: boolean,
   preparation?: Script<El<void, M>>,
   preparationTask?: ScriptAsync<El<void, M>>,
-  mounting?: Script<El<void>>,
+  mounting?: Script<El<void, M>>,
   finalization?: Script<El<void, M>>,
   signalArgs?: unknown,
-  basis?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>>
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<void, M>>): ReactiveTreeNode<El<void, M>>
 
 export function Fragment<M = unknown>(
-  declaration?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>>
-
-export function Fragment<M = unknown>(
-  bodyOrDeclaration?: Script<El<void, M>> | ReactiveTreeNodeDecl<El<void, M>>,
+  bodyOrKeyOrModeDescription?: Script<El<void, M>> | string | Mode | ReactiveTreeNodeDesc<El<void, M>>,
+  bodyOrMode?: Script<El<void, M>> | Mode,
+  body?: Script<El<void, M>>,
   bodyTask?: ScriptAsync<El<void, M>>,
-  key?: string,
-  mode?: Mode,
-  unmounted?: boolean,
   preparation?: Script<El<void, M>>,
   preparationTask?: ScriptAsync<El<void, M>>,
-  mounting?: Script<El<void>>,
+  mounting?: Script<El<void, M>>,
   finalization?: Script<El<void, M>>,
   signalArgs?: unknown,
-  basis?: ReactiveTreeNodeDecl<El<void, M>>): ReactiveTreeNode<El<void, M>> {
-  mode = mode !== undefined ? mode | Mode.fragment : Mode.fragment
-  return declare(Drivers.fragment, bodyOrDeclaration, bodyTask,
-    key, mode, unmounted, preparation, preparationTask, mounting, finalization, signalArgs, basis)
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<void, M>>): ReactiveTreeNode<El<void, M>> {
+  const desc = args2desc(
+    bodyOrKeyOrModeDescription, bodyOrMode, body, bodyTask,
+    preparation, preparationTask, mounting, finalization, signalArgs, unmounted, basis)
+  desc.mode = (desc.mode ?? Mode.default) | Mode.fragment
+  return describe(Drivers.fragment, desc)
 }
 
 // ElementDriver
@@ -426,7 +499,7 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
     return result
   }
 
-  override declareChild(ownerNode: ReactiveTreeNode<El<T, any>>, childDriver: ReactiveTreeNodeDriver<any>, childDeclaration?: ReactiveTreeNodeDecl<any> | undefined, childBasis?: ReactiveTreeNodeDecl<any> | undefined): LinkedItem<ReactiveTreeNode> | undefined {
+  override describeChild(ownerNode: ReactiveTreeNode<El<T, any>>, childDriver: ReactiveTreeNodeDriver<any>, childDescription?: ReactiveTreeNodeDesc<any> | undefined, childBasis?: ReactiveTreeNodeDesc<any> | undefined): LinkedItem<ReactiveTreeNode> | undefined {
     let result: LinkedItem<ReactiveTreeNode> | undefined = undefined
     const el = ownerNode.element as ElImpl
     if (el.splitView !== undefined) {
@@ -437,11 +510,11 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
             partCount++
         }
         const isHorizontal = el.splitView === Direction.horizontal
-        if (childDeclaration !== undefined) {
-          if (childDeclaration.signalArgs === undefined)
-            childDeclaration.signalArgs = {}
-          Object.defineProperty(childDeclaration.signalArgs, "index", { value: partCount })
-          overrideMethod(childDeclaration, "body", el => {
+        if (childDescription !== undefined) {
+          if (childDescription.signalArgs === undefined)
+            childDescription.signalArgs = {}
+          Object.defineProperty(childDescription.signalArgs, "index", { value: partCount })
+          overrideMethod(childDescription, "body", el => {
             if (isHorizontal)
               el.style.gridColumn = `${partCount + 1}`
             else
@@ -450,7 +523,7 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
         }
         // console.log(`partCount = ${partCount}`)
         if (partCount > 0)
-          declareSplitter(partCount - 1, ownerNode)
+          describeSplitter(partCount - 1, ownerNode)
       }
     }
     else {
@@ -461,7 +534,7 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
           result = last
       }
       else if (last === undefined) {
-        declare(Drivers.partition)
+        describe(Drivers.partition, {})
       }
     }
     return result
@@ -472,9 +545,9 @@ export function isSplitViewPartition(childDriver: ReactiveTreeNodeDriver): boole
   return !childDriver.isPartition && childDriver !== Drivers.splitter && childDriver !== Drivers.fragment
 }
 
-function overrideMethod(declaration: ReactiveTreeNodeDecl<El>, method: "preparation" | "body", func: (this: El, el: El) => void): void {
-  const baseScript = declaration[method]
-  declaration[method] = baseScript !== undefined
+function overrideMethod(description: ReactiveTreeNodeDesc<El>, method: "preparation" | "body", func: (this: El, el: El) => void): void {
+  const baseScript = description[method]
+  description[method] = baseScript !== undefined
     ? (el, base) => { baseScript.call(el, el, base); func.call(el, el) }
     : (el, base) => { base(); func.call(el, el) }
 }
@@ -503,7 +576,7 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     const ownerEl = node.owner.element as ElImpl
     if (ownerEl.sealed !== undefined) {
       node.element.style.flexGrow = "1"
-      declare(Drivers.wrapper, {
+      describe(Drivers.wrapper, {
         body() {
           const ownerEl = this.node.owner.owner.element as ElImpl
           if (ownerEl.splitView !== undefined) {
