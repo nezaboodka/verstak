@@ -31,6 +31,7 @@ export const EmptyDataArray: any[] = []
 export function findTargetElementData(targetPath: any[], underPointer: any[], sym: symbol,
   anyOfPayloadKeys: Array<keyof DataForSensor>,
   ignoreWindow: boolean = false): { data?: DataForSensor, window: unknown } {
+  //
   let result: DataForSensor | undefined = undefined
   let i = 0
   let window: unknown = undefined
@@ -62,6 +63,7 @@ export function findTargetElementData(targetPath: any[], underPointer: any[], sy
 export function grabElementDataList(targetPath: any[], sym: symbol,
   payloadKey: keyof DataForSensor, existing: Array<unknown>,
   ignoreWindow: boolean = false, predicate: (element: any) => boolean = () => false): { dataList: Array<unknown>, window: unknown, activeData: unknown } {
+  //
   let result = existing
   let i = 0
   let j = 0

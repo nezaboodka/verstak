@@ -8,8 +8,8 @@
 import { ReactiveTreeNode, ReactiveTreeNodeDesc, setBasis  } from "reactronic"
 import { El } from "../core/El.js"
 import { Div } from "./HtmlElements.js"
-import { Fragment } from "../core/Elements.js"
-import { PointerSensor } from "../core/sensors/PointerSensor.js"
+import { Fragment } from "../core/elements/api.js"
+import { PointerSensor } from "../core/sensors/api.js"
 
 export type DragAndDropHandler = (pointer: PointerSensor) => void
 
@@ -23,6 +23,7 @@ export interface DraggableAreaModel {
 export function DraggableArea(
   draggingId: string,
   builder: ReactiveTreeNodeDesc<El<HTMLDivElement, DraggableAreaModel>>): ReactiveTreeNode<El<HTMLDivElement>> {
+  //
   // signalArgs = signalArgs ? { ...signalArgs, draggingId } : { draggingId }
   return (
     Div<DraggableAreaModel>(setBasis(builder, {

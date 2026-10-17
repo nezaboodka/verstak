@@ -140,8 +140,8 @@ export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
 
   readonly native: T
 
-  constructor(native: T, name: string, isPartition: boolean, initialize?: Handler<El<T>>) {
-    super(name, isPartition, initialize)
+  constructor(native: T, id: string, isPartition: boolean, initialize?: Handler<El<T>>) {
+    super(id, isPartition, initialize)
     this.native = native
   }
 
@@ -154,7 +154,7 @@ export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
 
 export class HtmlDriver<T extends HTMLElement, M = any> extends WebDriver<T, M> {
   override assignNativeElement(node: ReactiveTreeNode<El<T, M>>): void {
-    node.element.native = document.createElement(node.driver.name) as T
+    node.element.native = document.createElement(node.driver.id) as T
   }
 }
 
@@ -162,7 +162,7 @@ export class HtmlDriver<T extends HTMLElement, M = any> extends WebDriver<T, M> 
 
 export class SvgDriver<T extends SVGElement, M = any> extends WebDriver<T, M> {
   override assignNativeElement(node: ReactiveTreeNode<El<T, M>>): void {
-    node.element.native = document.createElementNS("http://www.w3.org/2000/svg", node.driver.name) as T
+    node.element.native = document.createElementNS("http://www.w3.org/2000/svg", node.driver.id) as T
   }
 }
 

@@ -12,7 +12,7 @@ export * from "./ElDriver.js"
 export * from "./WebDriver.js"
 export * from "./Sizes.js"
 export * from "./SplitViewMath.js"
-export * from "./Elements.js"
+export * from "./elements/api.js"
 export * from "./sensors/api.js"
 export * from "./HtmlApiExt.js"
 

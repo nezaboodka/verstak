@@ -6,7 +6,7 @@
 // automatically licensed under the license referred above.
 
 import { ToggleRef, runNonReactive } from "reactronic"
-import { Fragment } from "../Elements.js"
+import { Fragment } from "../elements/api.js"
 import { FocusModel } from "./FocusSensor.js"
 import { ResizedElement } from "./ResizeSensor.js"
 import { PointerSensor } from "./PointerSensor.js"
@@ -70,6 +70,7 @@ export function OnFocus(
   target: HTMLElement, model: FocusModel,
   switchEditMode: ((model: FocusModel) => void) | undefined = undefined,
   key?: string): void {
+  //
   Fragment({
     key,
     signalArgs: { target, model },
@@ -96,8 +97,9 @@ export type ResizeCallback = (width: number, height: number) => void
 export class ResizeData {
   constructor(
     public id: string,
-    public handler?: ResizeCallback,
-  ) {}
+    public handler?: ResizeCallback) {
+    //
+  }
 }
 
 export function prepareResizeHandler(action: ((width: number, height: number) => void) | ResizeData): (element: ResizedElement) => void {

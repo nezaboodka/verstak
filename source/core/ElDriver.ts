@@ -9,7 +9,6 @@ import { ReactiveTreeNode, Handler, BaseDriver, Transaction, signal, RxObject } 
 import { El, ElKind, ElCoords, H, V, Range, ElPlace, Direction } from "./El.js"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
-
 // ElDriver
 
 export class ElDriver<T extends Element, M = unknown> extends BaseDriver<El<T, M>> {
@@ -113,7 +112,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
       const prevEl = node.prev?.element as ElImpl
       const prevElLayoutInfo = prevEl?.layoutInfo ?? InitialElLayoutInfo
       const layoutInfo = this.layoutInfo = owner.children.isStrictOrder ? new ElLayoutInfo(prevElLayoutInfo) : undefined
-      const isCursorElement = driver instanceof CursorCommandDriver
+      const isCursorElement = this.kind === ElKind.cursor
       const coords = getElCoordsAndAdjustLayoutInfo(!isCursorElement,
         value, ownerEl.maxColumnCount, ownerEl.maxRowCount,
         prevElLayoutInfo, layoutInfo)
@@ -415,6 +414,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
   private static applyAlignmentHorizontal<T extends Element>(element: ElImpl<T, any>,
     existing: H | undefined, value: H | undefined): void {
+    //
     const el = element.native
     if (existing !== undefined)
       el.classList.remove(StylingClassNameByAlignmentHorizontal[existing])
@@ -424,6 +424,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
   private static applyAlignmentVertical<T extends Element>(element: ElImpl<T, any>,
     existing: V | undefined, value: V | undefined): void {
+    //
     const el = element.native
     if (existing !== undefined)
       el.classList.remove(StylingClassNameByAlignmentVertical[existing])
@@ -433,6 +434,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
   private static applyAlignmentVerticalRowWise<T extends Element>(element: ElImpl<T, any>,
     existing: V | undefined, value: V | undefined): void {
+    //
     const el = element.native
     if (existing !== undefined)
       el.classList.remove(StylingClassNameByAlignmentVerticalRowWise[existing])
@@ -442,6 +444,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
   private static applySelfAlignmentHorizontal<T extends Element>(element: ElImpl<T, any>,
     existing: H | undefined, value: H | undefined): void {
+    //
     const e = element.native
     if (existing !== undefined) {
       e.classList.remove(StylingClassNameBySelfAlignmentHorizontal[existing])
@@ -460,6 +463,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
   private static applyPartitionAlignmentVertical<T extends Element>(partition: ElImpl<T, any>,
     existing: V | undefined, value: V | undefined): void {
+    //
     const e = partition.native
     if (existing !== undefined) {
       e.classList.remove(StylingClassNameByPartitionAlignmentVertical[existing])
@@ -478,6 +482,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
   private static applySelfAlignmentVertical<T extends Element>(element: ElImpl<T, any>,
     existing: V | undefined, value: V | undefined): void {
+    //
     const el = element.native
     if (existing !== undefined)
       el.classList.remove(StylingClassNameBySelfAlignmentVertical[existing])
@@ -665,6 +670,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private static applySelfStretchingStrengthHorizontal<T extends Element>(
     element: ElImpl<T, any>, existing: number | undefined,
     value: number | undefined): void {
+    //
     const a = element.selfAlignmentHorizontal
     if ((a === H.stretch || a === H.stretchAndFix) && value !== undefined && value !== 1)
       element.style.flexGrow = `${value}`
@@ -675,6 +681,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private static applySelfStretchingStrengthVertical<T extends Element>(
     element: ElImpl<T, any>, existing: number | undefined,
     value: number | undefined): void {
+    //
     const host = element.node.host.element as ElImpl
     const a = host.selfAlignmentVertical
     if ((a === V.stretch || a === V.stretchAndFix) && value !== undefined && value !== 1)
@@ -866,6 +873,7 @@ export const InitialElLayoutInfo: ElLayoutInfo = Object.freeze(new ElLayoutInfo(
 function getElCoordsAndAdjustLayoutInfo(
   isRegularElement: boolean, place: ElPlace, maxX: number, maxY: number,
   prevElLayoutInfo: ElLayoutInfo, layoutInfo?: ElLayoutInfo): ElCoords {
+  //
   let result: ElCoords // this comment just prevents syntax highlighting in VS code
   if (typeof (place) === "string") {
     // Absolute positioning
@@ -950,6 +958,7 @@ function absolutizeElCoords(place: ElCoords,
   cursorX: number, cursorY: number,
   maxWidth: number, maxHeight: number,
   result: ElCoords): ElCoords {
+  //
   // X1, X2
   const x1 = absolutizePosition(place.x1, cursorX, maxWidth)
   const x2 = absolutizePosition(place.x2, x1, maxWidth)
@@ -977,34 +986,11 @@ function absolutizePosition(pos: number, cursor: number, max: number): number {
   return pos
 }
 
-// CursorCommandDriver
-
-export class CursorCommand {
-  absolute?: string
-  columnShift?: number
-  rowShift?: number
-}
-
-export class CursorCommandDriver extends ElDriver<Element, unknown> {
-  constructor() {
-    super("cursor", false, el => el.kind = ElKind.cursor)
-  }
-}
-
 // Constants
 
 export const Constants = {
-  // element: "эл",
-  // partition: "разд",
-  // layouts: ["панель", "таблица", "заметка", "группа", "" /* раздел */, "" /* разделитель */, "" /* курсор */],
   // keyAttrName: "ключ",
   // kindAttrName: "вид",
-  element: "el",
-  partition: "part",
-  wrapper: "wrapper",
-  splitter: "splitter",
-  group: "group",
-  layouts: ["element", "table", "group", "" /* partition */, "" /* splitter */, "" /* cursor */],
   keyAttrName: "key",
   kindAttrName: "kind",
   ownReactiveTreeNodeKey: Symbol("own-reactive-tree-node"),

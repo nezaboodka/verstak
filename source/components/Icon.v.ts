@@ -11,6 +11,7 @@ import { Theme } from "./Theme.js"
 
 export function Icon(name: string,
   description?: ReactiveTreeNodeDesc<El<HTMLElement, void>>) {
+  //
   return (
     Element(setBasis(description, {
       signalArgs: { name },

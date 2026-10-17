@@ -9,7 +9,8 @@ import { ReactiveTreeNode, LinkedList } from "reactronic"
 import { Direction } from "./El.js"
 import { clamp } from "./ElUtils.js"
 import { ElImpl } from "./ElDriver.js"
-import { Drivers, isSplitViewPartition } from "./Elements.js"
+import { isSplitViewPartition } from "./elements/Splitter.js"
+import { SplitterDriver } from "./elements/Splitter.js"
 
 const DEBUG = false
 
@@ -157,7 +158,7 @@ export function layout(splitViewNode: ReactiveTreeNode<ElImpl>): void {
         }
       }
     }
-    else if (child.driver === Drivers.splitter) {
+    else if (child.driver instanceof SplitterDriver) {
       const el = child.element as ElImpl
       if (el.native !== undefined) {
         // DEBUG && console.log(`(${isHorizontal ? "horizontal" : "vertical"}) pos = ${posPx}px`)
