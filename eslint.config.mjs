@@ -43,9 +43,6 @@ export default defineConfig(
       "@typescript-eslint/no-unused-expressions": "off",
       "@typescript-eslint/no-wrapper-object-types": "off",
       "@typescript-eslint/no-unsafe-function-type": "off",
-      "@typescript-eslint/explicit-function-return-type": ["error", {
-        allowExpressions: true,
-      }],
       "@typescript-eslint/no-var-requires": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
