@@ -54,7 +54,7 @@ export function Splitter<M = unknown>(
   unmounted?: boolean,
   basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
   //
-  return describe(SplitterDriver.glob,
+  return describe(Splitter.name, SplitterDriver.glob,
     bodyOrKeyOrModeDescription, bodyOrMode, body, bodyTask,
     preparation, preparationTask, mounting, finalization, signalArgs, unmounted, basis)
 }

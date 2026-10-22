@@ -18,7 +18,7 @@ export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: 
 }
 
 export function rowBreak(shiftCursorDown?: number): void {
-  describe(PartitionDriver.glob, {})
+  describe("RowBreak", PartitionDriver.glob, {})
 }
 
 // PartitionDriver (display: flex/row or contents)
@@ -36,7 +36,7 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     const ownerEl = node.owner.element as ElImpl
     if (ownerEl.sealed !== undefined) {
       node.element.style.flexGrow = "1"
-      describe(WrapperDriver.glob, {
+      describe("Wrapper", WrapperDriver.glob, {
         body() {
           const ownerEl = this.node.owner.owner.element as ElImpl
           if (ownerEl.splitView !== undefined) {

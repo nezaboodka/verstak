@@ -55,7 +55,7 @@ export function Fragment<M = unknown>(
     bodyOrKeyOrModeDescription, bodyOrMode, body, bodyTask,
     preparation, preparationTask, mounting, finalization, signalArgs, unmounted, basis)
   desc.mode = (desc.mode ?? Mode.default) | Mode.fragment
-  return describe(FragmentDriver.glob, desc)
+  return describe(Fragment.name, FragmentDriver.glob, desc)
 }
 
 // FragmentDriver

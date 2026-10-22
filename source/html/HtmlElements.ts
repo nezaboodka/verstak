@@ -9,120 +9,462 @@ import { ReactiveTreeNode, ReactiveTreeNodeDesc, describe } from "reactronic"
 import { El, ElKind } from "../core/El.js"
 import { HtmlDriver } from "../core/WebDriver.js"
 
-export function A<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLAnchorElement, M>>): ReactiveTreeNode<El<HTMLAnchorElement, M>> { return describe(HtmlTags.a, description ?? {}) }
-export function Abbr<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.abbr, description ?? {}) }
-export function Address<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.address, description ?? {}) }
-export function Area<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLAreaElement, M>>): ReactiveTreeNode<El<HTMLAreaElement, M>> { return describe(HtmlTags.area, description ?? {}) }
-export function Article<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.article, description ?? {}) }
-export function Aside<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.aside, description ?? {}) }
-export function Audio<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLAudioElement, M>>): ReactiveTreeNode<El<HTMLAudioElement, M>> { return describe(HtmlTags.audio, description ?? {}) }
-export function B<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.b, description ?? {}) }
-export function Base<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLBaseElement, M>>): ReactiveTreeNode<El<HTMLBaseElement, M>> { return describe(HtmlTags.base, description ?? {}) }
-export function Bdi<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.bdi, description ?? {}) }
-export function Bdo<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.bdo, description ?? {}) }
-export function Big<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.big, description ?? {}) }
-export function BlockQuote<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.blockquote, description ?? {}) }
-export function Body<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLBodyElement, M>>): ReactiveTreeNode<El<HTMLBodyElement, M>> { return describe(HtmlTags.body, description ?? {}) }
-export function BR<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLBRElement, M>>): ReactiveTreeNode<El<HTMLBRElement, M>> { return describe(HtmlTags.br, description ?? {}) }
-export function Button<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLButtonElement, M>>): ReactiveTreeNode<El<HTMLButtonElement, M>> { return describe(HtmlTags.button, description ?? {}) }
-export function Canvas<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLCanvasElement, M>>): ReactiveTreeNode<El<HTMLCanvasElement, M>> { return describe(HtmlTags.canvas, description ?? {}) }
-export function Caption<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M>> { return describe(HtmlTags.caption, description ?? {}) }
-export function Cite<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.cite, description ?? {}) }
-export function Code<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.code, description ?? {}) }
-export function Col<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>> { return describe(HtmlTags.col, description ?? {}) }
-export function ColGroup<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>> { return describe(HtmlTags.colgroup, description ?? {}) }
-export function Data<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLDataElement, M>>): ReactiveTreeNode<El<HTMLDataElement, M>> { return describe(HtmlTags.data, description ?? {}) }
-export function DataList<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLDataListElement, M>>): ReactiveTreeNode<El<HTMLDataListElement, M>> { return describe(HtmlTags.datalist, description ?? {}) }
-export function DD<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.dd, description ?? {}) }
-export function Del<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.del, description ?? {}) }
-export function Details<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.details, description ?? {}) }
-export function Dfn<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.dfn, description ?? {}) }
-export function Div<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLDivElement, M>>): ReactiveTreeNode<El<HTMLDivElement, M>> { return describe(HtmlTags.div, description ?? {}) }
-export function DL<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLDListElement, M>>): ReactiveTreeNode<El<HTMLDListElement, M>> { return describe(HtmlTags.dl, description ?? {}) }
-export function DT<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.dt, description ?? {}) }
-export function EM<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.em, description ?? {}) }
-export function Embed<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLEmbedElement, M>>): ReactiveTreeNode<El<HTMLEmbedElement, M>> { return describe(HtmlTags.embed, description ?? {}) }
-export function FieldSet<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M>>): ReactiveTreeNode<El<HTMLFieldSetElement, M>> { return describe(HtmlTags.fieldset, description ?? {}) }
-export function FigCaption<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.figcaption, description ?? {}) }
-export function Figure<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.figure, description ?? {}) }
-export function Footer<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.footer, description ?? {}) }
-export function Form<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLFormElement, M>>): ReactiveTreeNode<El<HTMLFormElement, M>> { return describe(HtmlTags.form, description ?? {}) }
-export function H1<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> { return describe(HtmlTags.h1, description ?? {}) }
-export function H2<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> { return describe(HtmlTags.h2, description ?? {}) }
-export function H3<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> { return describe(HtmlTags.h3, description ?? {}) }
-export function H4<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> { return describe(HtmlTags.h4, description ?? {}) }
-export function H5<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> { return describe(HtmlTags.h5, description ?? {}) }
-export function H6<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> { return describe(HtmlTags.h6, description ?? {}) }
-export function Head<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHeadElement, M>>): ReactiveTreeNode<El<HTMLHeadElement, M>> { return describe(HtmlTags.head, description ?? {}) }
-export function Header<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.header, description ?? {}) }
-export function HGroup<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.hgroup, description ?? {}) }
-export function HR<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHRElement, M>>): ReactiveTreeNode<El<HTMLHRElement, M>> { return describe(HtmlTags.hr, description ?? {}) }
-export function Html<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHtmlElement, M>>): ReactiveTreeNode<El<HTMLHtmlElement, M>> { return describe(HtmlTags.html, description ?? {}) }
-export function I<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.i, description ?? {}) }
-export function IFrame<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLIFrameElement, M>>): ReactiveTreeNode<El<HTMLIFrameElement, M>> { return describe(HtmlTags.iframe, description ?? {}) }
-export function Img<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLImageElement, M>>): ReactiveTreeNode<El<HTMLImageElement, M>> { return describe(HtmlTags.img, description ?? {}) }
-export function Input<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLInputElement, M>>): ReactiveTreeNode<El<HTMLInputElement, M>> { return describe(HtmlTags.input, description ?? {}) }
-export function Ins<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLModElement, M>>): ReactiveTreeNode<El<HTMLModElement, M>> { return describe(HtmlTags.ins, description ?? {}) }
-export function Kbd<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.kbd, description ?? {}) }
-export function KeyGen<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.keygen, description ?? {}) }
-export function Label<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLLabelElement, M>>): ReactiveTreeNode<El<HTMLLabelElement, M>> { return describe(HtmlTags.label, description ?? {}) }
-export function Legend<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLLegendElement, M>>): ReactiveTreeNode<El<HTMLLegendElement, M>> { return describe(HtmlTags.legend, description ?? {}) }
-export function LI<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLLIElement, M>>): ReactiveTreeNode<El<HTMLLIElement, M>> { return describe(HtmlTags.li, description ?? {}) }
-export function Link<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLLinkElement, M>>): ReactiveTreeNode<El<HTMLLinkElement, M>> { return describe(HtmlTags.link, description ?? {}) }
-export function Main<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.main, description ?? {}) }
-export function Map<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLMapElement, M>>): ReactiveTreeNode<El<HTMLMapElement, M>> { return describe(HtmlTags.map, description ?? {}) }
-export function Mark<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.mark, description ?? {}) }
-export function Menu<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.menu, description ?? {}) }
-export function MenuItem<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.menuitem, description ?? {}) }
-export function Meta<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLMetaElement, M>>): ReactiveTreeNode<El<HTMLMetaElement, M>> { return describe(HtmlTags.meta, description ?? {}) }
-export function Meter<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.meter, description ?? {}) }
-export function Nav<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.nav, description ?? {}) }
-export function NoIndex<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.noindex, description ?? {}) }
-export function NoScript<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.noscript, description ?? {}) }
-export function Obj<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLObjectElement, M>>): ReactiveTreeNode<El<HTMLObjectElement, M>> { return describe(HtmlTags.object, description ?? {}) }
-export function OL<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLOListElement, M>>): ReactiveTreeNode<El<HTMLOListElement, M>> { return describe(HtmlTags.ol, description ?? {}) }
-export function OptGroup<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M>>): ReactiveTreeNode<El<HTMLOptGroupElement, M>> { return describe(HtmlTags.optgroup, description ?? {}) }
-export function Option<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLOptionElement, M>>): ReactiveTreeNode<El<HTMLOptionElement, M>> { return describe(HtmlTags.option, description ?? {}) }
-export function Output<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.output, description ?? {}) }
-export function P<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLParagraphElement, M>>): ReactiveTreeNode<El<HTMLParagraphElement, M>> { return describe(HtmlTags.p, description ?? {}) }
-export function Param<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.param, description ?? {}) }
-export function Picture<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.picture, description ?? {}) }
-export function Pre<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLPreElement, M>>): ReactiveTreeNode<El<HTMLPreElement, M>> { return describe(HtmlTags.pre, description ?? {}) }
-export function Progress<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLProgressElement, M>>): ReactiveTreeNode<El<HTMLProgressElement, M>> { return describe(HtmlTags.progress, description ?? {}) }
-export function Q<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLQuoteElement, M>>): ReactiveTreeNode<El<HTMLQuoteElement, M>> { return describe(HtmlTags.q, description ?? {}) }
-export function RP<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.rp, description ?? {}) }
-export function RT<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.rt, description ?? {}) }
-export function Ruby<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.ruby, description ?? {}) }
-export function S<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.s, description ?? {}) }
-export function Samp<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.samp, description ?? {}) }
-export function Script<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLScriptElement, M>>): ReactiveTreeNode<El<HTMLScriptElement, M>> { return describe(HtmlTags.script, description ?? {}) }
-export function Section<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.section, description ?? {}) }
-export function Select<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLSelectElement, M>>): ReactiveTreeNode<El<HTMLSelectElement, M>> { return describe(HtmlTags.select, description ?? {}) }
-export function Small<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.small, description ?? {}) }
-export function Source<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLSourceElement, M>>): ReactiveTreeNode<El<HTMLSourceElement, M>> { return describe(HtmlTags.source, description ?? {}) }
-export function Span<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLSpanElement, M>>): ReactiveTreeNode<El<HTMLSpanElement, M>> { return describe(HtmlTags.span, description ?? {}) }
-export function Strong<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.strong, description ?? {}) }
-export function Style<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLStyleElement, M>>): ReactiveTreeNode<El<HTMLStyleElement, M>> { return describe(HtmlTags.style, description ?? {}) }
-export function Sub<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.sub, description ?? {}) }
-export function Summary<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.summary, description ?? {}) }
-export function Sup<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.sup, description ?? {}) }
-export function Tbl<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableElement, M>>): ReactiveTreeNode<El<HTMLTableElement, M>> { return describe(HtmlTags.table, description ?? {}) }
-export function Template<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTemplateElement, M>>): ReactiveTreeNode<El<HTMLTemplateElement, M>> { return describe(HtmlTags.template, description ?? {}) }
-export function TBody<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>> { return describe(HtmlTags.tbody, description ?? {}) }
-export function TD<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>> { return describe(HtmlTags.td, description ?? {}) }
-export function TextArea<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M>>): ReactiveTreeNode<El<HTMLTextAreaElement, M>> { return describe(HtmlTags.textarea, description ?? {}) }
-export function TFoot<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>> { return describe(HtmlTags.tfoot, description ?? {}) }
-export function TH<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>> { return describe(HtmlTags.th, description ?? {}) }
-export function THead<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>> { return describe(HtmlTags.thead, description ?? {}) }
-export function Time<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.time, description ?? {}) }
-export function Title<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTitleElement, M>>): ReactiveTreeNode<El<HTMLTitleElement, M>> { return describe(HtmlTags.title, description ?? {}) }
-export function TR<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableRowElement, M>>): ReactiveTreeNode<El<HTMLTableRowElement, M>> { return describe(HtmlTags.tr, description ?? {}) }
-export function Track<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTrackElement, M>>): ReactiveTreeNode<El<HTMLTrackElement, M>> { return describe(HtmlTags.track, description ?? {}) }
-export function U<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.u, description ?? {}) }
-export function UL<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLUListElement, M>>): ReactiveTreeNode<El<HTMLUListElement, M>> { return describe(HtmlTags.ul, description ?? {}) }
-export function Var<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.var, description ?? {}) }
-export function Video<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLVideoElement, M>>): ReactiveTreeNode<El<HTMLVideoElement, M>> { return describe(HtmlTags.video, description ?? {}) }
-export function Wbr<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> { return describe(HtmlTags.wbr, description ?? {}) }
+export function A<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLAnchorElement, M>>): ReactiveTreeNode<El<HTMLAnchorElement, M>> {
+  return describe(A.name, HtmlTags.a, description ?? {})
+}
+
+export function Abbr<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Abbr.name, HtmlTags.abbr, description ?? {})
+}
+
+export function Address<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Address.name, HtmlTags.address, description ?? {})
+}
+
+export function Area<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLAreaElement, M>>): ReactiveTreeNode<El<HTMLAreaElement, M>> {
+  return describe(Area.name, HtmlTags.area, description ?? {})
+}
+
+export function Article<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Article.name, HtmlTags.article, description ?? {})
+}
+
+export function Aside<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Aside.name, HtmlTags.aside, description ?? {})
+}
+
+export function Audio<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLAudioElement, M>>): ReactiveTreeNode<El<HTMLAudioElement, M>> {
+  return describe(Audio.name, HtmlTags.audio, description ?? {})
+}
+
+export function B<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(B.name, HtmlTags.b, description ?? {})
+}
+
+export function Base<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLBaseElement, M>>): ReactiveTreeNode<El<HTMLBaseElement, M>> {
+  return describe(Base.name, HtmlTags.base, description ?? {})
+}
+
+export function Bdi<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Bdi.name, HtmlTags.bdi, description ?? {})
+}
+
+export function Bdo<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Bdo.name, HtmlTags.bdo, description ?? {})
+}
+
+export function Big<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Big.name, HtmlTags.big, description ?? {})
+}
+
+export function BlockQuote<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(BlockQuote.name, HtmlTags.blockquote, description ?? {})
+}
+
+export function Body<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLBodyElement, M>>): ReactiveTreeNode<El<HTMLBodyElement, M>> {
+  return describe(Body.name, HtmlTags.body, description ?? {})
+}
+
+export function BR<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLBRElement, M>>): ReactiveTreeNode<El<HTMLBRElement, M>> {
+  return describe(BR.name, HtmlTags.br, description ?? {})
+}
+
+export function Button<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLButtonElement, M>>): ReactiveTreeNode<El<HTMLButtonElement, M>> {
+  return describe(Button.name, HtmlTags.button, description ?? {})
+}
+
+export function Canvas<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLCanvasElement, M>>): ReactiveTreeNode<El<HTMLCanvasElement, M>> {
+  return describe(Canvas.name, HtmlTags.canvas, description ?? {})
+}
+
+export function Caption<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M>> {
+  return describe(Caption.name, HtmlTags.caption, description ?? {})
+}
+
+export function Cite<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Cite.name, HtmlTags.cite, description ?? {})
+}
+
+export function Code<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Code.name, HtmlTags.code, description ?? {})
+}
+
+export function Col<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>> {
+  return describe(Col.name, HtmlTags.col, description ?? {})
+}
+
+export function ColGroup<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>> {
+  return describe(ColGroup.name, HtmlTags.colgroup, description ?? {})
+}
+
+export function Data<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLDataElement, M>>): ReactiveTreeNode<El<HTMLDataElement, M>> {
+  return describe(Data.name, HtmlTags.data, description ?? {})
+}
+
+export function DataList<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLDataListElement, M>>): ReactiveTreeNode<El<HTMLDataListElement, M>> {
+  return describe(DataList.name, HtmlTags.datalist, description ?? {})
+}
+
+export function DD<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(DD.name, HtmlTags.dd, description ?? {})
+}
+
+export function Del<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Del.name, HtmlTags.del, description ?? {})
+}
+
+export function Details<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Details.name, HtmlTags.details, description ?? {})
+}
+
+export function Dfn<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Dfn.name, HtmlTags.dfn, description ?? {})
+}
+
+export function Div<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLDivElement, M>>): ReactiveTreeNode<El<HTMLDivElement, M>> {
+  return describe(Div.name, HtmlTags.div, description ?? {})
+}
+
+export function DL<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLDListElement, M>>): ReactiveTreeNode<El<HTMLDListElement, M>> {
+  return describe(DL.name, HtmlTags.dl, description ?? {})
+}
+
+export function DT<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(DT.name, HtmlTags.dt, description ?? {})
+}
+
+export function EM<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(EM.name, HtmlTags.em, description ?? {})
+}
+
+export function Embed<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLEmbedElement, M>>): ReactiveTreeNode<El<HTMLEmbedElement, M>> {
+  return describe(Embed.name, HtmlTags.embed, description ?? {})
+}
+
+export function FieldSet<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M>>): ReactiveTreeNode<El<HTMLFieldSetElement, M>> {
+  return describe(FieldSet.name, HtmlTags.fieldset, description ?? {})
+}
+
+export function FigCaption<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(FigCaption.name, HtmlTags.figcaption, description ?? {})
+}
+
+export function Figure<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Figure.name, HtmlTags.figure, description ?? {})
+}
+
+export function Footer<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Footer.name, HtmlTags.footer, description ?? {})
+}
+
+export function Form<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLFormElement, M>>): ReactiveTreeNode<El<HTMLFormElement, M>> {
+  return describe(Form.name, HtmlTags.form, description ?? {})
+}
+
+export function H1<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> {
+  return describe(H1.name, HtmlTags.h1, description ?? {})
+}
+
+export function H2<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> {
+  return describe(H2.name, HtmlTags.h2, description ?? {})
+}
+
+export function H3<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> {
+  return describe(H3.name, HtmlTags.h3, description ?? {})
+}
+
+export function H4<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> {
+  return describe(H4.name, HtmlTags.h4, description ?? {})
+}
+
+export function H5<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> {
+  return describe(H5.name, HtmlTags.h5, description ?? {})
+}
+
+export function H6<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> {
+  return describe(H6.name, HtmlTags.h6, description ?? {})
+}
+
+export function Head<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHeadElement, M>>): ReactiveTreeNode<El<HTMLHeadElement, M>> {
+  return describe(Head.name, HtmlTags.head, description ?? {})
+}
+
+export function Header<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Header.name, HtmlTags.header, description ?? {})
+}
+
+export function HGroup<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(HGroup.name, HtmlTags.hgroup, description ?? {})
+}
+
+export function HR<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHRElement, M>>): ReactiveTreeNode<El<HTMLHRElement, M>> {
+  return describe(HR.name, HtmlTags.hr, description ?? {})
+}
+
+export function Html<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLHtmlElement, M>>): ReactiveTreeNode<El<HTMLHtmlElement, M>> {
+  return describe(Html.name, HtmlTags.html, description ?? {})
+}
+
+export function I<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(I.name, HtmlTags.i, description ?? {})
+}
+
+export function IFrame<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLIFrameElement, M>>): ReactiveTreeNode<El<HTMLIFrameElement, M>> {
+  return describe(IFrame.name, HtmlTags.iframe, description ?? {})
+}
+
+export function Img<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLImageElement, M>>): ReactiveTreeNode<El<HTMLImageElement, M>> {
+  return describe(Img.name, HtmlTags.img, description ?? {})
+}
+
+export function Input<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLInputElement, M>>): ReactiveTreeNode<El<HTMLInputElement, M>> {
+  return describe(Input.name, HtmlTags.input, description ?? {})
+}
+
+export function Ins<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLModElement, M>>): ReactiveTreeNode<El<HTMLModElement, M>> {
+  return describe(Ins.name, HtmlTags.ins, description ?? {})
+}
+
+export function Kbd<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Kbd.name, HtmlTags.kbd, description ?? {})
+}
+
+export function KeyGen<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(KeyGen.name, HtmlTags.keygen, description ?? {})
+}
+
+export function Label<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLLabelElement, M>>): ReactiveTreeNode<El<HTMLLabelElement, M>> {
+  return describe(Label.name, HtmlTags.label, description ?? {})
+}
+
+export function Legend<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLLegendElement, M>>): ReactiveTreeNode<El<HTMLLegendElement, M>> {
+  return describe(Legend.name, HtmlTags.legend, description ?? {})
+}
+
+export function LI<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLLIElement, M>>): ReactiveTreeNode<El<HTMLLIElement, M>> {
+  return describe(LI.name, HtmlTags.li, description ?? {})
+}
+
+export function Link<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLLinkElement, M>>): ReactiveTreeNode<El<HTMLLinkElement, M>> {
+  return describe(Link.name, HtmlTags.link, description ?? {})
+}
+
+export function Main<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Main.name, HtmlTags.main, description ?? {})
+}
+
+export function Map<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLMapElement, M>>): ReactiveTreeNode<El<HTMLMapElement, M>> {
+  return describe(Map.name, HtmlTags.map, description ?? {})
+}
+
+export function Mark<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Mark.name, HtmlTags.mark, description ?? {})
+}
+
+export function Menu<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Menu.name, HtmlTags.menu, description ?? {})
+}
+
+export function MenuItem<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(MenuItem.name, HtmlTags.menuitem, description ?? {})
+}
+
+export function Meta<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLMetaElement, M>>): ReactiveTreeNode<El<HTMLMetaElement, M>> {
+  return describe(Meta.name, HtmlTags.meta, description ?? {})
+}
+
+export function Meter<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Meter.name, HtmlTags.meter, description ?? {})
+}
+
+export function Nav<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Nav.name, HtmlTags.nav, description ?? {})
+}
+
+export function NoIndex<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(NoIndex.name, HtmlTags.noindex, description ?? {})
+}
+
+export function NoScript<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(NoScript.name, HtmlTags.noscript, description ?? {})
+}
+
+export function Obj<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLObjectElement, M>>): ReactiveTreeNode<El<HTMLObjectElement, M>> {
+  return describe(Obj.name, HtmlTags.object, description ?? {})
+}
+
+export function OL<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLOListElement, M>>): ReactiveTreeNode<El<HTMLOListElement, M>> {
+  return describe(OL.name, HtmlTags.ol, description ?? {})
+}
+
+export function OptGroup<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M>>): ReactiveTreeNode<El<HTMLOptGroupElement, M>> {
+  return describe(OptGroup.name, HtmlTags.optgroup, description ?? {})
+}
+
+export function Option<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLOptionElement, M>>): ReactiveTreeNode<El<HTMLOptionElement, M>> {
+  return describe(Option.name, HtmlTags.option, description ?? {})
+}
+
+export function Output<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Output.name, HtmlTags.output, description ?? {})
+}
+
+export function P<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLParagraphElement, M>>): ReactiveTreeNode<El<HTMLParagraphElement, M>> {
+  return describe(P.name, HtmlTags.p, description ?? {})
+}
+
+export function Param<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Param.name, HtmlTags.param, description ?? {})
+}
+
+export function Picture<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Picture.name, HtmlTags.picture, description ?? {})
+}
+
+export function Pre<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLPreElement, M>>): ReactiveTreeNode<El<HTMLPreElement, M>> {
+  return describe(Pre.name, HtmlTags.pre, description ?? {})
+}
+
+export function Progress<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLProgressElement, M>>): ReactiveTreeNode<El<HTMLProgressElement, M>> {
+  return describe(Progress.name, HtmlTags.progress, description ?? {})
+}
+
+export function Q<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLQuoteElement, M>>): ReactiveTreeNode<El<HTMLQuoteElement, M>> {
+  return describe(Q.name, HtmlTags.q, description ?? {})
+}
+
+export function RP<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(RP.name, HtmlTags.rp, description ?? {})
+}
+
+export function RT<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(RT.name, HtmlTags.rt, description ?? {})
+}
+
+export function Ruby<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Ruby.name, HtmlTags.ruby, description ?? {})
+}
+
+export function S<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(S.name, HtmlTags.s, description ?? {})
+}
+
+export function Samp<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Samp.name, HtmlTags.samp, description ?? {})
+}
+
+export function Script<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLScriptElement, M>>): ReactiveTreeNode<El<HTMLScriptElement, M>> {
+  return describe(Script.name, HtmlTags.script, description ?? {})
+}
+
+export function Section<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Section.name, HtmlTags.section, description ?? {})
+}
+
+export function Select<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLSelectElement, M>>): ReactiveTreeNode<El<HTMLSelectElement, M>> {
+  return describe(Select.name, HtmlTags.select, description ?? {})
+}
+
+export function Small<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Small.name, HtmlTags.small, description ?? {})
+}
+
+export function Source<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLSourceElement, M>>): ReactiveTreeNode<El<HTMLSourceElement, M>> {
+  return describe(Source.name, HtmlTags.source, description ?? {})
+}
+
+export function Span<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLSpanElement, M>>): ReactiveTreeNode<El<HTMLSpanElement, M>> {
+  return describe(Span.name, HtmlTags.span, description ?? {})
+}
+
+export function Strong<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Strong.name, HtmlTags.strong, description ?? {})
+}
+
+export function Style<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLStyleElement, M>>): ReactiveTreeNode<El<HTMLStyleElement, M>> {
+  return describe(Style.name, HtmlTags.style, description ?? {})
+}
+
+export function Sub<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Sub.name, HtmlTags.sub, description ?? {})
+}
+
+export function Summary<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Summary.name, HtmlTags.summary, description ?? {})
+}
+
+export function Sup<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Sup.name, HtmlTags.sup, description ?? {})
+}
+
+export function Tbl<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableElement, M>>): ReactiveTreeNode<El<HTMLTableElement, M>> {
+  return describe(Tbl.name, HtmlTags.table, description ?? {})
+}
+
+export function Template<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTemplateElement, M>>): ReactiveTreeNode<El<HTMLTemplateElement, M>> {
+  return describe(Template.name, HtmlTags.template, description ?? {})
+}
+
+export function TBody<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>> {
+  return describe(TBody.name, HtmlTags.tbody, description ?? {})
+}
+
+export function TD<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>> {
+  return describe(TD.name, HtmlTags.td, description ?? {})
+}
+
+export function TextArea<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M>>): ReactiveTreeNode<El<HTMLTextAreaElement, M>> {
+  return describe(TextArea.name, HtmlTags.textarea, description ?? {})
+}
+
+export function TFoot<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>> {
+  return describe(TFoot.name, HtmlTags.tfoot, description ?? {})
+}
+
+export function TH<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>> {
+  return describe(TH.name, HtmlTags.th, description ?? {})
+}
+
+export function THead<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>> {
+  return describe(THead.name, HtmlTags.thead, description ?? {})
+}
+
+export function Time<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Time.name, HtmlTags.time, description ?? {})
+}
+
+export function Title<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTitleElement, M>>): ReactiveTreeNode<El<HTMLTitleElement, M>> {
+  return describe(Title.name, HtmlTags.title, description ?? {})
+}
+
+export function TR<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTableRowElement, M>>): ReactiveTreeNode<El<HTMLTableRowElement, M>> {
+  return describe(TR.name, HtmlTags.tr, description ?? {})
+}
+
+export function Track<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLTrackElement, M>>): ReactiveTreeNode<El<HTMLTrackElement, M>> {
+  return describe(Track.name, HtmlTags.track, description ?? {})
+}
+
+export function U<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(U.name, HtmlTags.u, description ?? {})
+}
+
+export function UL<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLUListElement, M>>): ReactiveTreeNode<El<HTMLUListElement, M>> {
+  return describe(UL.name, HtmlTags.ul, description ?? {})
+}
+
+export function Var<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Var.name, HtmlTags.var, description ?? {})
+}
+
+export function Video<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLVideoElement, M>>): ReactiveTreeNode<El<HTMLVideoElement, M>> {
+  return describe(Video.name, HtmlTags.video, description ?? {})
+}
+
+export function Wbr<M = unknown>(description?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  return describe(Wbr.name, HtmlTags.wbr, description ?? {})
+}
+
 
 const HtmlTags = {
   a: new HtmlDriver<HTMLAnchorElement>("a", false, el => el.kind = ElKind.native),

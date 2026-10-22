@@ -57,7 +57,7 @@ export function ApplicationWindow(
   const driver = new ApplicationWindowDriver(page)
   page.classList.add("v5k-app")
   page.classList.add("v5k-element")
-  return describe(driver,
+  return describe(ApplicationWindow.name, driver,
     bodyOrKeyOrModeDescription, bodyOrMode, body, bodyTask,
     preparation, preparationTask, mounting, finalization, signalArgs, unmounted, basis)
 }

@@ -58,7 +58,7 @@ export function Element<M = unknown>(
   unmounted?: boolean,
   basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
   //
-  return describe(ElementDriver.glob,
+  return describe(Element.name, ElementDriver.glob,
     bodyOrKeyOrModeDescription, bodyOrMode, body, bodyTask,
     preparation, preparationTask, mounting, finalization, signalArgs, unmounted, basis)
 }
@@ -185,7 +185,7 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
           result = last
       }
       else if (last === undefined) {
-        describe(PartitionDriver.glob, {})
+        describe("Partition", PartitionDriver.glob, {})
       }
     }
     return result
