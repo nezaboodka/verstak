@@ -16,7 +16,7 @@ export function OnClick(target: Element, action: ((pointer: PointerSensor) => vo
     Fragment({
       key,
       signalArgs: { target/* , action */ },
-      body() {
+      setup() {
         const pointer = target.sensors.pointer
         if (target.dataForSensor.click !== undefined && pointer.clicked === target.dataForSensor.click || target.dataForSensor.click === undefined && pointer.clicked) {
           if (action instanceof Function) {
@@ -36,7 +36,7 @@ export function OnClickAsync(target: HTMLElement, action: ((pointer: PointerSens
     Fragment({
       key,
       signalArgs: { target/* , action */ },
-      async bodyTask() {
+      async setupTask() {
         const pointer = target.sensors.pointer
         if (target.dataForSensor.click !== undefined && pointer.clicked === target.dataForSensor.click || target.dataForSensor.click === undefined && pointer.clicked) {
           if (action instanceof Function) {
@@ -56,7 +56,7 @@ export function OnResize(target: HTMLElement, action: ((element: ResizedElement)
     Fragment({
       key,
       signalArgs: { target/* , action */ },
-      body() {
+      setup() {
         const resize = target.sensors.resize
         resize.resizedElements.forEach(x => {
           action(x)
@@ -74,10 +74,10 @@ export function OnFocus(
   Fragment({
     key,
     signalArgs: { target, model },
-    preparation() {
+    creation() {
       this.node.configureReactivity({ throttling: 0 })
     },
-    body() {
+    setup() {
       // console.log(`-> ${model.isEditMode ? "🟢" : "🔴"} RxFocuser [${key}]: ${model.isEditMode ? "focus()" : "blur()"}`)
       if (switchEditMode === undefined && !(target instanceof HTMLInputElement || target.hasAttribute("tabindex")))
         console.warn(`"${key ?? "noname"}" element must have "tabindex" attribute set in order to be focusable`)

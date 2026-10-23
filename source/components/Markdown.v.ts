@@ -12,12 +12,12 @@ import { Element } from "verstak"
 export function Markdown(content: string) {
   return (
     Element({
-      preparation(el, base) {
+      creation(el, base) {
         this.contentWrapping = true
         // b.native.setAttribute("markdown", "true")
         base()
       },
-      body() {
+      setup() {
         this.textIsFormatted = true
         this.text = md.render(content)
       },

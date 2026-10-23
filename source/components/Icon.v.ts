@@ -15,7 +15,7 @@ export function Icon(name: string,
   return (
     Element(setBasis(description, {
       signalArgs: { name },
-      body() {
+      setup() {
         const theme = Theme.current.icon
         this.useStylingPreset(name)
         this.useStylingPreset(theme.main)

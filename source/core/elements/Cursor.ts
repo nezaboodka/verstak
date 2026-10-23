@@ -13,7 +13,7 @@ import { ElDriver } from "../ElDriver.js"
 
 export function cursor(place: ElPlace): void {
   describe(cursor.name, CursorCommandDriver.glob, {
-    body() {
+    setup() {
       this.place = place
     },
   })

@@ -73,9 +73,9 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
     super(ElementDriver.id, false, el => el.kind = ElKind.element)
   }
 
-  override rebuildBody(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
+  override runSetup(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
     const el = node.element as ElImpl
-    const result = super.rebuildBody(node)
+    const result = super.runSetup(node)
     if (el.splitView !== undefined) {
       if (el.layoutInfo === undefined)
         el.layoutInfo = new ElLayoutInfo(InitialElLayoutInfo)
@@ -94,7 +94,7 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
         }
       })
       const relayoutEl = Fragment({
-        body() {
+        setup() {
           const native = el.native as HTMLElement
           const isHorizontal = el.splitView === Direction.horizontal
           if (layoutInfo.isUpdateFinished) {
@@ -144,7 +144,7 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
         // WORKAROUND: As long as "isUpdateFinished = true" does not trigger relaunch of
         // "update" of Intermediate (such a relaunch requires subscriptions on values
         // of variables rather than variables themselves), we do it manually.
-        ReactiveTreeNode.rebuildBody(relayoutEl, { stamp: node.stamp })
+        ReactiveTreeNode.launchSetup(relayoutEl, { stamp: node.stamp })
       })
     }
     return result
@@ -165,7 +165,7 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
           if (childDescription.signalArgs === undefined)
             childDescription.signalArgs = {}
           Object.defineProperty(childDescription.signalArgs, "index", { value: partCount })
-          overrideMethod(childDescription, "body", el => {
+          overrideMethod(childDescription, "setup", el => {
             if (isHorizontal)
               el.style.gridColumn = `${partCount + 1}`
             else
@@ -194,7 +194,7 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 // overrideMethod
 
-function overrideMethod(description: ReactiveTreeNodeDesc<El>, method: "preparation" | "body", func: (this: El, el: El) => void): void {
+function overrideMethod(description: ReactiveTreeNodeDesc<El>, method: "creation" | "setup" | "destruction", func: (this: El, el: El) => void): void {
   const baseScript = description[method]
   description[method] = baseScript !== undefined
     ? (el, base) => { baseScript.call(el, el, base); func.call(el, el) }

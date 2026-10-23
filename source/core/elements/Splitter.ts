@@ -64,10 +64,10 @@ export function describeSplitter<T>(index: number, splitViewNode: ReactiveTreeNo
   return (
     Splitter({
       key,
-      preparation() {
+      creation() {
         this.native.className = `splitter ${key}`
       },
-      body() {
+      setup() {
         const e = this.native
         const model = this.model
         const dataForSensor = e.dataForSensor

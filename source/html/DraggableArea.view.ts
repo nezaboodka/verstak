@@ -27,7 +27,7 @@ export function DraggableArea(
   // signalArgs = signalArgs ? { ...signalArgs, draggingId } : { draggingId }
   return (
     Div<DraggableAreaModel>(setBasis(builder, {
-      body() {
+      setup() {
         const e = this.native
         const model = this.model
         const dataForSensor = e.dataForSensor

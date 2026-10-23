@@ -31,13 +31,13 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     super(PartitionDriver.id, true, el => el.kind = ElKind.partition)
   }
 
-  override rebuildBody(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
-    const result = super.rebuildBody(node)
+  override runSetup(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
+    const result = super.runSetup(node)
     const ownerEl = node.owner.element as ElImpl
     if (ownerEl.sealed !== undefined) {
       node.element.style.flexGrow = "1"
       describe("Wrapper", WrapperDriver.glob, {
-        body() {
+        setup() {
           const ownerEl = this.node.owner.owner.element as ElImpl
           if (ownerEl.splitView !== undefined) {
             this.style.display = "grid"

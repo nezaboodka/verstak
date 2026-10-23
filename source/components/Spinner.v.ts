@@ -17,15 +17,15 @@ export type SpinnerModel = {
 export function Spinner(description?: ReactiveTreeNodeDesc<El<HTMLElement, SpinnerModel>>) {
   return (
     Element<SpinnerModel>(setBasis(description, {
-      preparation() {
+      creation() {
         this.model ??= composeSpinnerModel()
       },
-      body() {
+      setup() {
         const m = this.model
         if (m.active)
           Element({
             mode: Mode.primitive,
-            body() {
+            setup() {
               this.text = "loading..."
             },
           })

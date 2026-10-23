@@ -53,7 +53,7 @@ export function Fragment<M = unknown>(
   //
   const desc = args2desc(
     bodyOrKeyOrModeDescription, bodyOrMode, body, bodyTask,
-    preparation, preparationTask, mounting, finalization, signalArgs, unmounted, basis)
+    preparation, preparationTask, mounting, finalization, signalArgs, unmounted, basis) ?? {}
   desc.mode = (desc.mode ?? Mode.default) | Mode.fragment
   return describe(Fragment.name, FragmentDriver.glob, desc)
 }

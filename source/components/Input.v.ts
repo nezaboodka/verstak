@@ -26,17 +26,17 @@ export type InputModel<T = string> = FocusModel & {
 export function Input(description?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel>>) {
   return (
     Element<InputModel>(setBasis(description, {
-      preparation() {
+      creation() {
         this.model ??= composeInputModel()
         this.native.dataForSensor.focus = this.model
       },
-      body() {
+      setup() {
         const m = this.model
         const theme = Theme.current.input
         this.useStylingPreset(theme.main)
         if (m.icon)
           Icon(m.icon, {
-            body(el, base) {
+            setup(el, base) {
               base()
               this.useStylingPreset(theme.icon)
             },
@@ -68,7 +68,7 @@ function InputField(model: InputModel, styling: InputStyling) {
     Element({
       key: InputField.name,
       mode: Mode.primitive,
-      preparation(el, base) {
+      creation(el, base) {
         const e = this.native
         this.useStylingPreset(styling.field)
         this.selfAlignmentHorizontal = H.stretch
@@ -78,7 +78,7 @@ function InputField(model: InputModel, styling: InputStyling) {
         e.dataForSensor.focus = model
         base()
       },
-      body() {
+      setup() {
         const e = this.native
         if (!model.isEditMode)
           this.text = model.text
@@ -108,7 +108,7 @@ function InputPopup(model: InputModel, styling: InputStyling) {
     Element({
       key: InputPopup.name,
       mode: Mode.primitive,
-      body() {
+      setup() {
         this.useStylingPreset(styling.popup)
         Fragment(() => model.position = this.native.sensors.scroll.y)
         const visible = this.overlayVisible = model.isEditMode
@@ -120,7 +120,7 @@ function InputPopup(model: InputModel, styling: InputStyling) {
               Element({
                 key: x,
                 mode: Mode.primitive,
-                preparation() {
+                creation() {
                   this.text = x
                   this.contentWrapping = false
                 },
@@ -131,7 +131,7 @@ function InputPopup(model: InputModel, styling: InputStyling) {
             Element({
               key: "(nothing)",
               mode: Mode.primitive,
-              body() {
+              setup() {
                 this.text = "(nothing)"
               },
             })

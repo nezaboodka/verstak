@@ -20,19 +20,19 @@ export type ToggleModel = {
 export function Toggle(description?: ReactiveTreeNodeDesc<El<HTMLElement, ToggleModel>>) {
   return (
     Element<ToggleModel>(setBasis(description, {
-      preparation() {
+      creation() {
         this.model ??= rxModel({
           label: ReactiveTreeNode.current.key,
           checked: true,
           color: "green" }) // model is either taken from parameter or created internally
       },
-      body() {
+      setup() {
         const m = this.model
         const theme = Theme.current
         const toggleTheme = theme.toggle
         this.useStylingPreset(toggleTheme.main)
         Icon(`fa-solid fa-toggle-${m.checked ? "on" : "off"}`, {
-          body(el, base) {
+          setup(el, base) {
             base()
             this.useStylingPreset(toggleTheme.icon)
             this.style.color = m.checked ? (theme.positiveColor ?? "") : "" // subscribe to ToggleModel.checked
@@ -41,7 +41,7 @@ export function Toggle(description?: ReactiveTreeNodeDesc<El<HTMLElement, Toggle
         if (m.label) {
           Element({
             mode: Mode.primitive,
-            body(el, base) {
+            setup(el, base) {
               base()
               this.text = m.label
               this.useStylingPreset(toggleTheme.label)

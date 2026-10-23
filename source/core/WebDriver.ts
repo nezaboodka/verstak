@@ -17,19 +17,19 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     // it's up to descendant class to define logic
   }
 
-  override runPreparation(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
+  override runCreation(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
     this.assignNativeElement(node)
     const native = node.element.native
     const isPartition = node.driver.isPartition
     if (native !== undefined && !isPartition)
       this.assignExtraAttributesAndProperties(node)
-    const result = super.runPreparation(node)
+    const result = super.runCreation(node)
     if (native == undefined && node.element.native !== undefined && !isPartition)
       this.assignExtraAttributesAndProperties(node)
     return result
   }
 
-  override runFinalization(node: ReactiveTreeNode<El<T, M>>, isLeader: boolean): boolean {
+  override runDestruction(node: ReactiveTreeNode<El<T, M>>, isLeader: boolean): boolean {
     const el = node.element
     const native = el.native as T | undefined // hack
     if (native) {
@@ -38,7 +38,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
       if (isLeader)
         native.remove()
     }
-    super.runFinalization(node, isLeader)
+    super.runDestruction(node, isLeader)
     el.native = null as any
     return false // children elements having native HTML elements are not treated as leaders
   }
@@ -75,11 +75,11 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     }
   }
 
-  override rebuildBody(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
+  override runSetup(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
     const el = node.element
     if (el instanceof ElImpl)
       el.prepareForUpdate()
-    let result = super.rebuildBody(node)
+    let result = super.runSetup(node)
     result = proceedSyncOrAsync(result,
       v => {
         if (el.place === undefined) {
@@ -88,7 +88,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
             el.place = undefined // automatic placement in table
         }
         if (gBlinkingEffect)
-          blink(el.native, ReactiveTreeNode.currentBodyPriority, node.stamp)
+          blink(el.native, ReactiveTreeNode.currentNodePriority, node.stamp)
       },
       e => {
       })

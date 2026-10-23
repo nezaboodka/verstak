@@ -16,10 +16,10 @@ export type ImageModel = {
 export function Image(description?: ReactiveTreeNodeDesc<El<HTMLElement, ImageModel>>) {
   return (
     Element<ImageModel>(setBasis(description, {
-      preparation() {
+      creation() {
         this.model ??= rxModel({ source: undefined })
       },
-      body() {
+      setup() {
         const m = this.model
         this.style.backgroundImage = `url(${m.source})`
         this.style.backgroundSize = "contain"

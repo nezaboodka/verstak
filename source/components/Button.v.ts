@@ -20,19 +20,19 @@ export type ButtonModel = {
 export function Button(description?: ReactiveTreeNodeDesc<El<HTMLElement, ButtonModel>>) {
   return (
     Element<ButtonModel>(setBasis(description, {
-      preparation() {
+      creation() {
         this.model ??= rxModel({
           icon: "fa-solid fa-square",
           label: ReactiveTreeNode.current.key,
         })
       },
-      body() {
+      setup() {
         const m = this.model
         const theme = Theme.current.button
         this.useStylingPreset(theme.main)
-        if (m.icon) {
+        if (m.icon) {/*  */
           Icon(m.icon, {
-            body(el, base) {
+            setup(el, base) {
               base()
               this.useStylingPreset(theme.icon)
             },
@@ -41,7 +41,7 @@ export function Button(description?: ReactiveTreeNodeDesc<El<HTMLElement, Button
         if (m.label) {
           Element({
             // mode: Mode.primitive,
-            body(el, base) {
+            setup(el, base) {
               base()
               this.textIsFormatted = false
               this.text = m.label
