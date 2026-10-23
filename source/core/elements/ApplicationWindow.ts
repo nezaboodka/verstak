@@ -13,15 +13,15 @@ import { acquireVerstakStyleSheet } from "./v5k.js"
 // ApplicationWindow
 
 export function ApplicationWindow(
-  body: Script<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+  setup: Script<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
 
 export function ApplicationWindow(
   key: string,
-  body: Script<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+  setup: Script<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
 
 export function ApplicationWindow(
   mode: Mode,
-  body: Script<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+  setup: Script<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
 
 export function ApplicationWindow(
   description: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
@@ -29,25 +29,25 @@ export function ApplicationWindow(
 export function ApplicationWindow(
   key?: string,
   mode?: Mode,
-  body?: Script<El<HTMLElement>>,
-  bodyTask?: ScriptAsync<El<HTMLElement>>,
-  preparation?: Script<El<HTMLElement>>,
-  preparationTask?: ScriptAsync<El<HTMLElement>>,
+  setup?: Script<El<HTMLElement>>,
+  setupTask?: ScriptAsync<El<HTMLElement>>,
+  creation?: Script<El<HTMLElement>>,
+  creationTask?: ScriptAsync<El<HTMLElement>>,
   mounting?: Script<El<HTMLElement>>,
-  finalization?: Script<El<HTMLElement>>,
+  destruction?: Script<El<HTMLElement>>,
   signalArgs?: unknown,
   unmounted?: boolean,
   basis?: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
 
 export function ApplicationWindow(
-  bodyOrKeyOrModeDescription?: Script<El<HTMLElement>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement>>,
-  bodyOrMode?: Script<El<HTMLElement>> | Mode,
-  body?: Script<El<HTMLElement>>,
-  bodyTask?: ScriptAsync<El<HTMLElement>>,
-  preparation?: Script<El<HTMLElement>>,
-  preparationTask?: ScriptAsync<El<HTMLElement>>,
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement>>,
+  setupOrMode?: Script<El<HTMLElement>> | Mode,
+  setup?: Script<El<HTMLElement>>,
+  setupTask?: ScriptAsync<El<HTMLElement>>,
+  creation?: Script<El<HTMLElement>>,
+  creationTask?: ScriptAsync<El<HTMLElement>>,
   mounting?: Script<El<HTMLElement>>,
-  finalization?: Script<El<HTMLElement>>,
+  destruction?: Script<El<HTMLElement>>,
   signalArgs?: unknown,
   unmounted?: boolean,
   basis?: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>> {
@@ -58,8 +58,8 @@ export function ApplicationWindow(
   page.classList.add("v5k-app")
   page.classList.add("v5k-element")
   return describe(ApplicationWindow.name, driver,
-    bodyOrKeyOrModeDescription, bodyOrMode, body, bodyTask,
-    preparation, preparationTask, mounting, finalization, signalArgs, unmounted, basis)
+    setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
+    creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
 // ApplicationWindowDriver

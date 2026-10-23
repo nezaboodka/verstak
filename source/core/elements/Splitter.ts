@@ -15,15 +15,15 @@ import { Fragment, FragmentDriver } from "./Fragment.js"
 // Splitter
 
 export function Splitter<M = unknown>(
-  body: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
 export function Splitter<M = unknown>(
   key: string,
-  body: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
 export function Splitter<M = unknown>(
   mode: Mode,
-  body: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
 export function Splitter<M = unknown>(
   description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -31,32 +31,32 @@ export function Splitter<M = unknown>(
 export function Splitter<M = unknown>(
   key?: string,
   mode?: Mode,
-  body?: Script<El<HTMLElement, M>>,
-  bodyTask?: ScriptAsync<El<HTMLElement, M>>,
-  preparation?: Script<El<HTMLElement, M>>,
-  preparationTask?: ScriptAsync<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M>>,
+  creation?: Script<El<HTMLElement, M>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M>>,
   mounting?: Script<El<HTMLElement, M>>,
-  finalization?: Script<El<HTMLElement, M>>,
+  destruction?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
   unmounted?: boolean,
   basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
 export function Splitter<M = unknown>(
-  bodyOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  bodyOrMode?: Script<El<HTMLElement, M>> | Mode,
-  body?: Script<El<HTMLElement, M>>,
-  bodyTask?: ScriptAsync<El<HTMLElement, M>>,
-  preparation?: Script<El<HTMLElement, M>>,
-  preparationTask?: ScriptAsync<El<HTMLElement, M>>,
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
+  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
+  setup?: Script<El<HTMLElement, M>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M>>,
+  creation?: Script<El<HTMLElement, M>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M>>,
   mounting?: Script<El<HTMLElement, M>>,
-  finalization?: Script<El<HTMLElement, M>>,
+  destruction?: Script<El<HTMLElement, M>>,
   signalArgs?: unknown,
   unmounted?: boolean,
   basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
   //
   return describe(Splitter.name, SplitterDriver.glob,
-    bodyOrKeyOrModeDescription, bodyOrMode, body, bodyTask,
-    preparation, preparationTask, mounting, finalization, signalArgs, unmounted, basis)
+    setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
+    creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
 export function describeSplitter<T>(index: number, splitViewNode: ReactiveTreeNode<El<T>>): ReactiveTreeNode<El<HTMLElement>> {
