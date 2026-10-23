@@ -30,7 +30,7 @@ export function Button(description?: ReactiveTreeNodeDesc<El<HTMLElement, Button
         const m = this.model
         const theme = Theme.current.button
         this.useStylingPreset(theme.main)
-        if (m.icon) {/*  */
+        if (m.icon) {
           Icon(m.icon, {
             setup(el, base) {
               base()
