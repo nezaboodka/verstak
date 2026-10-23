@@ -19,51 +19,51 @@ export type ButtonModel = {
 
 // Button
 
-export function Button(
-  setup: Script<El<HTMLElement, ButtonModel>>): ReactiveTreeNode<El<HTMLElement, ButtonModel>>
+export function Button<D = unknown>(
+  setup: Script<El<HTMLElement, ButtonModel, D>>): ReactiveTreeNode<El<HTMLElement, ButtonModel, D>>
 
-export function Button(
+export function Button<D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, ButtonModel>>): ReactiveTreeNode<El<HTMLElement, ButtonModel>>
+  setup: Script<El<HTMLElement, ButtonModel, D>>): ReactiveTreeNode<El<HTMLElement, ButtonModel, D>>
 
-export function Button(
+export function Button<D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, ButtonModel>>): ReactiveTreeNode<El<HTMLElement, ButtonModel>>
+  setup: Script<El<HTMLElement, ButtonModel, D>>): ReactiveTreeNode<El<HTMLElement, ButtonModel, D>>
 
-export function Button(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, ButtonModel>>): ReactiveTreeNode<El<HTMLElement, ButtonModel>>
+export function Button<D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, ButtonModel, D>>): ReactiveTreeNode<El<HTMLElement, ButtonModel, D>>
 
-export function Button(
+export function Button<D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, ButtonModel>>,
-  setupTask?: ScriptAsync<El<HTMLElement, ButtonModel>>,
-  creation?: Script<El<HTMLElement, ButtonModel>>,
-  creationTask?: ScriptAsync<El<HTMLElement, ButtonModel>>,
-  mounting?: Script<El<HTMLElement, ButtonModel>>,
-  destruction?: Script<El<HTMLElement, ButtonModel>>,
+  setup?: Script<El<HTMLElement, ButtonModel, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, ButtonModel, D>>,
+  creation?: Script<El<HTMLElement, ButtonModel, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, ButtonModel, D>>,
+  mounting?: Script<El<HTMLElement, ButtonModel, D>>,
+  destruction?: Script<El<HTMLElement, ButtonModel, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, ButtonModel>>): ReactiveTreeNode<El<HTMLElement, ButtonModel>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, ButtonModel, D>>): ReactiveTreeNode<El<HTMLElement, ButtonModel, D>>
 
-export function Button(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, ButtonModel>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, ButtonModel>>,
-  setupOrMode?: Script<El<HTMLElement, ButtonModel>> | Mode,
-  setup?: Script<El<HTMLElement, ButtonModel>>,
-  setupTask?: ScriptAsync<El<HTMLElement, ButtonModel>>,
-  creation?: Script<El<HTMLElement, ButtonModel>>,
-  creationTask?: ScriptAsync<El<HTMLElement, ButtonModel>>,
-  mounting?: Script<El<HTMLElement, ButtonModel>>,
-  destruction?: Script<El<HTMLElement, ButtonModel>>,
+export function Button<D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, ButtonModel, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, ButtonModel, D>>,
+  setupOrMode?: Script<El<HTMLElement, ButtonModel, D>> | Mode,
+  setup?: Script<El<HTMLElement, ButtonModel, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, ButtonModel, D>>,
+  creation?: Script<El<HTMLElement, ButtonModel, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, ButtonModel, D>>,
+  mounting?: Script<El<HTMLElement, ButtonModel, D>>,
+  destruction?: Script<El<HTMLElement, ButtonModel, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, ButtonModel>>): ReactiveTreeNode<El<HTMLElement, ButtonModel>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, ButtonModel, D>>): ReactiveTreeNode<El<HTMLElement, ButtonModel, D>> {
   //
   const description = args2desc(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
   return (
-    Element<ButtonModel>(setBasis(description, {
+    Element<ButtonModel, D>(setBasis(description, {
       creation() {
         this.model ??= rxModel({
           icon: "fa-solid fa-square",

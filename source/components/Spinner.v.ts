@@ -16,51 +16,51 @@ export type SpinnerModel = {
 
 // Spinner
 
-export function Spinner(
-  setup: Script<El<HTMLElement, SpinnerModel>>): ReactiveTreeNode<El<HTMLElement, SpinnerModel>>
+export function Spinner<D = unknown>(
+  setup: Script<El<HTMLElement, SpinnerModel, D>>): ReactiveTreeNode<El<HTMLElement, SpinnerModel, D>>
 
-export function Spinner(
+export function Spinner<D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, SpinnerModel>>): ReactiveTreeNode<El<HTMLElement, SpinnerModel>>
+  setup: Script<El<HTMLElement, SpinnerModel, D>>): ReactiveTreeNode<El<HTMLElement, SpinnerModel, D>>
 
-export function Spinner(
+export function Spinner<D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, SpinnerModel>>): ReactiveTreeNode<El<HTMLElement, SpinnerModel>>
+  setup: Script<El<HTMLElement, SpinnerModel, D>>): ReactiveTreeNode<El<HTMLElement, SpinnerModel, D>>
 
-export function Spinner(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, SpinnerModel>>): ReactiveTreeNode<El<HTMLElement, SpinnerModel>>
+export function Spinner<D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, SpinnerModel, D>>): ReactiveTreeNode<El<HTMLElement, SpinnerModel, D>>
 
-export function Spinner(
+export function Spinner<D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, SpinnerModel>>,
-  setupTask?: ScriptAsync<El<HTMLElement, SpinnerModel>>,
-  creation?: Script<El<HTMLElement, SpinnerModel>>,
-  creationTask?: ScriptAsync<El<HTMLElement, SpinnerModel>>,
-  mounting?: Script<El<HTMLElement, SpinnerModel>>,
-  destruction?: Script<El<HTMLElement, SpinnerModel>>,
+  setup?: Script<El<HTMLElement, SpinnerModel, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, SpinnerModel, D>>,
+  creation?: Script<El<HTMLElement, SpinnerModel, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, SpinnerModel, D>>,
+  mounting?: Script<El<HTMLElement, SpinnerModel, D>>,
+  destruction?: Script<El<HTMLElement, SpinnerModel, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, SpinnerModel>>): ReactiveTreeNode<El<HTMLElement, SpinnerModel>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, SpinnerModel, D>>): ReactiveTreeNode<El<HTMLElement, SpinnerModel, D>>
 
-export function Spinner(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, SpinnerModel>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, SpinnerModel>>,
-  setupOrMode?: Script<El<HTMLElement, SpinnerModel>> | Mode,
-  setup?: Script<El<HTMLElement, SpinnerModel>>,
-  setupTask?: ScriptAsync<El<HTMLElement, SpinnerModel>>,
-  creation?: Script<El<HTMLElement, SpinnerModel>>,
-  creationTask?: ScriptAsync<El<HTMLElement, SpinnerModel>>,
-  mounting?: Script<El<HTMLElement, SpinnerModel>>,
-  destruction?: Script<El<HTMLElement, SpinnerModel>>,
+export function Spinner<D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, SpinnerModel, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, SpinnerModel, D>>,
+  setupOrMode?: Script<El<HTMLElement, SpinnerModel, D>> | Mode,
+  setup?: Script<El<HTMLElement, SpinnerModel, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, SpinnerModel, D>>,
+  creation?: Script<El<HTMLElement, SpinnerModel, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, SpinnerModel, D>>,
+  mounting?: Script<El<HTMLElement, SpinnerModel, D>>,
+  destruction?: Script<El<HTMLElement, SpinnerModel, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, SpinnerModel>>): ReactiveTreeNode<El<HTMLElement, SpinnerModel>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, SpinnerModel, D>>): ReactiveTreeNode<El<HTMLElement, SpinnerModel, D>> {
   //
   const description = args2desc(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
   return (
-    Element<SpinnerModel>(setBasis(description, {
+    Element<SpinnerModel, D>(setBasis(description, {
       creation() {
         this.model ??= composeSpinnerModel()
       },

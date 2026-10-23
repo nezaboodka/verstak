@@ -11,13 +11,13 @@ import { Constants, ElDriver, ElImpl } from "./ElDriver.js"
 
 // WebDriver
 
-export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
+export class WebDriver<T extends Element, M = unknown, D = unknown> extends ElDriver<T, M, D> {
 
-  assignNativeElement(node: ReactiveTreeNode<El<T, M>>): void {
+  assignNativeElement(node: ReactiveTreeNode<El<T, M, D>>): void {
     // it's up to descendant class to define logic
   }
 
-  override runCreation(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
+  override runCreation(node: ReactiveTreeNode<El<T, M, D>>): void | Promise<void> {
     this.assignNativeElement(node)
     const native = node.element.native
     const isPartition = node.driver.isPartition
@@ -29,7 +29,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     return result
   }
 
-  override runDestruction(node: ReactiveTreeNode<El<T, M>>, isLeader: boolean): boolean {
+  override runDestruction(node: ReactiveTreeNode<El<T, M, D>>, isLeader: boolean): boolean {
     const el = node.element
     const native = el.native as T | undefined // hack
     if (native) {
@@ -43,7 +43,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     return false // children elements having native HTML elements are not treated as leaders
   }
 
-  override runMount(node: ReactiveTreeNode<El<T, M>>): void {
+  override runMount(node: ReactiveTreeNode<El<T, M, D>>): void {
     const el = node.element
     const native = el.native as T | undefined // hack
     if (native) {
@@ -75,7 +75,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     }
   }
 
-  override runSetup(node: ReactiveTreeNode<El<T, M>>): void | Promise<void> {
+  override runSetup(node: ReactiveTreeNode<El<T, M, D>>): void | Promise<void> {
     const el = node.element
     if (el instanceof ElImpl)
       el.prepareForUpdate()
@@ -95,7 +95,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
     return result
   }
 
-  private assignExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>): void {
+  private assignExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M, D>>): void {
     const e = node.element.native
     Object.defineProperty(e, Constants.ownReactiveTreeNodeKey, {
       configurable: true, enumerable: false, value: node, writable: false,
@@ -104,7 +104,7 @@ export class WebDriver<T extends Element, M = unknown> extends ElDriver<T, M> {
       e.setAttribute(Constants.keyAttrName, node.key)
   }
 
-  private clearExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M>>): void {
+  private clearExtraAttributesAndProperties(node: ReactiveTreeNode<El<T, M, D>>): void {
     const e = node.element.native
     delete (e as any)[Constants.ownReactiveTreeNodeKey]
     if (ReactiveSystem.isLogging)
@@ -152,16 +152,16 @@ export class StaticDriver<T extends HTMLElement> extends WebDriver<T> {
 
 // HtmlDriver
 
-export class HtmlDriver<T extends HTMLElement, M = any> extends WebDriver<T, M> {
-  override assignNativeElement(node: ReactiveTreeNode<El<T, M>>): void {
+export class HtmlDriver<T extends HTMLElement, M = any, D = any> extends WebDriver<T, M, D> {
+  override assignNativeElement(node: ReactiveTreeNode<El<T, M, D>>): void {
     node.element.native = document.createElement(node.driver.id) as T
   }
 }
 
 // SvgDriver
 
-export class SvgDriver<T extends SVGElement, M = any> extends WebDriver<T, M> {
-  override assignNativeElement(node: ReactiveTreeNode<El<T, M>>): void {
+export class SvgDriver<T extends SVGElement, M = any, D = any> extends WebDriver<T, M, D> {
+  override assignNativeElement(node: ReactiveTreeNode<El<T, M, D>>): void {
     node.element.native = document.createElementNS("http://www.w3.org/2000/svg", node.driver.id) as T
   }
 }

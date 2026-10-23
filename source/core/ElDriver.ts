@@ -11,17 +11,17 @@ import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // ElDriver
 
-export class ElDriver<T extends Element, M = unknown> extends BaseDriver<El<T, M>> {
-  override create(node: ReactiveTreeNode<El<T, M>>): El<T, M> {
-    return new ElImpl<T, M>(node)
+export class ElDriver<T extends Element, M = unknown, D = unknown> extends BaseDriver<El<T, M, D>> {
+  override create(node: ReactiveTreeNode<El<T, M, D>>): El<T, M, D> {
+    return new ElImpl<T, M, D>(node)
   }
 }
 
 // ElImpl
 
-export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
+export class ElImpl<T extends Element = any, M = any, D = any> implements El<T, M, D> {
   // System-managed properties
-  readonly node: ReactiveTreeNode<El<T, M>>
+  readonly node: ReactiveTreeNode<El<T, M, D>>
   maxColumnCount: number
   maxRowCount: number
   layoutInfo?: ElLayoutInfo
@@ -29,6 +29,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
 
   // User-defined properties
   model: M
+  data: D
   private _kind: ElKind
   private _place: ElPlace
   private _coords: ElCoords
@@ -51,7 +52,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
   private _splitView: Direction | undefined
   private _hasStylingPresets: boolean
 
-  constructor(node: ReactiveTreeNode<El<T, M>>) {
+  constructor(node: ReactiveTreeNode<El<T, M, D>>) {
     // System-managed properties
     this.node = node
     this.maxColumnCount = 0
@@ -60,6 +61,7 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     this.native = undefined as any as T // hack
     // User-defined properties
     this.model = undefined as any
+    this.data = undefined as any
     this._kind = ElKind.partition
     this._place = undefined
     this._coords = UndefinedElCoords
@@ -319,11 +321,11 @@ export class ElImpl<T extends Element = any, M = any> implements El<T, M> {
     return (this.native as any).style
   }
 
-  get action(): Handler<El<T, M>, void> | undefined {
+  get action(): Handler<El<T, M, D>, void> | undefined {
     return (this.native as any).onclick // type-safety is violated here
   }
 
-  set action(value: Handler<El<T, M>, void> | undefined) {
+  set action(value: Handler<El<T, M, D>, void> | undefined) {
     const self = this.native
     if (self instanceof HTMLElement) {
       if (value) // if not undefined and not null

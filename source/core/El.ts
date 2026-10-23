@@ -7,14 +7,15 @@
 
 import { Handler, ReactiveTreeNode } from "reactronic"
 
-export type El<T = any, M = any> = {
+export type El<T = any, M = any, D = any> = {
   // System-managed properties
-  readonly node: ReactiveTreeNode<El<T, M>>
+  readonly node: ReactiveTreeNode<El<T, M, D>>
   readonly rank: number
   native: T
 
   // User-manageable properties
   model: M
+  data: D
   kind: ElKind
   place: ElPlace
   width: Range
@@ -40,7 +41,7 @@ export type El<T = any, M = any> = {
   partitionSizeInSplitViewPx: number
 
   readonly style: CSSStyleDeclaration
-  action: Handler<El<T, M>, void> | undefined
+  action: Handler<El<T, M, D>, void> | undefined
   useStylingPreset(stylingPresetName: string, enabled?: boolean): void
 }
 

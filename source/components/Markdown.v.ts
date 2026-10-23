@@ -12,57 +12,57 @@ import { Element, El } from "verstak"
 
 // Markdown
 
-export function Markdown(
+export function Markdown<D = unknown>(
   content: string,
-  setup: Script<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+  setup: Script<El<HTMLElement, any, D>>): ReactiveTreeNode<El<HTMLElement, any, D>>
 
-export function Markdown(
+export function Markdown<D = unknown>(
   content: string,
   key: string,
-  setup: Script<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+  setup: Script<El<HTMLElement, any, D>>): ReactiveTreeNode<El<HTMLElement, any, D>>
 
-export function Markdown(
+export function Markdown<D = unknown>(
   content: string,
   mode: Mode,
-  setup: Script<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+  setup: Script<El<HTMLElement, any, D>>): ReactiveTreeNode<El<HTMLElement, any, D>>
 
-export function Markdown(
+export function Markdown<D = unknown>(
   content: string,
-  description: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+  description: ReactiveTreeNodeDesc<El<HTMLElement, any, D>>): ReactiveTreeNode<El<HTMLElement, any, D>>
 
-export function Markdown(
+export function Markdown<D = unknown>(
   content: string,
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement>>,
-  setupTask?: ScriptAsync<El<HTMLElement>>,
-  creation?: Script<El<HTMLElement>>,
-  creationTask?: ScriptAsync<El<HTMLElement>>,
-  mounting?: Script<El<HTMLElement>>,
-  destruction?: Script<El<HTMLElement>>,
+  setup?: Script<El<HTMLElement, any, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, any, D>>,
+  creation?: Script<El<HTMLElement, any, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, any, D>>,
+  mounting?: Script<El<HTMLElement, any, D>>,
+  destruction?: Script<El<HTMLElement, any, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, any, D>>): ReactiveTreeNode<El<HTMLElement, any, D>>
 
-export function Markdown(
+export function Markdown<D = unknown>(
   content: string,
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement>>,
-  setupOrMode?: Script<El<HTMLElement>> | Mode,
-  setup?: Script<El<HTMLElement>>,
-  setupTask?: ScriptAsync<El<HTMLElement>>,
-  creation?: Script<El<HTMLElement>>,
-  creationTask?: ScriptAsync<El<HTMLElement>>,
-  mounting?: Script<El<HTMLElement>>,
-  destruction?: Script<El<HTMLElement>>,
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, any, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, any, D>>,
+  setupOrMode?: Script<El<HTMLElement, any, D>> | Mode,
+  setup?: Script<El<HTMLElement, any, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, any, D>>,
+  creation?: Script<El<HTMLElement, any, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, any, D>>,
+  mounting?: Script<El<HTMLElement, any, D>>,
+  destruction?: Script<El<HTMLElement, any, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, any, D>>): ReactiveTreeNode<El<HTMLElement, any, D>> {
   //
   const description = args2desc(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
   return (
-    Element(setBasis(description, {
+    Element<any, D>(setBasis(description, {
       creation(el, base) {
         this.contentWrapping = true
         // b.native.setAttribute("markdown", "true")

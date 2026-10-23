@@ -25,51 +25,51 @@ export type InputModel<T = string> = FocusModel & {
 
 // Input
 
-export function Input(
-  setup: Script<El<HTMLElement, InputModel>>): ReactiveTreeNode<El<HTMLElement, InputModel>>
+export function Input<D = unknown>(
+  setup: Script<El<HTMLElement, InputModel, D>>): ReactiveTreeNode<El<HTMLElement, InputModel, D>>
 
-export function Input(
+export function Input<D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, InputModel>>): ReactiveTreeNode<El<HTMLElement, InputModel>>
+  setup: Script<El<HTMLElement, InputModel, D>>): ReactiveTreeNode<El<HTMLElement, InputModel, D>>
 
-export function Input(
+export function Input<D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, InputModel>>): ReactiveTreeNode<El<HTMLElement, InputModel>>
+  setup: Script<El<HTMLElement, InputModel, D>>): ReactiveTreeNode<El<HTMLElement, InputModel, D>>
 
-export function Input(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, InputModel>>): ReactiveTreeNode<El<HTMLElement, InputModel>>
+export function Input<D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, InputModel, D>>): ReactiveTreeNode<El<HTMLElement, InputModel, D>>
 
-export function Input(
+export function Input<D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, InputModel>>,
-  setupTask?: ScriptAsync<El<HTMLElement, InputModel>>,
-  creation?: Script<El<HTMLElement, InputModel>>,
-  creationTask?: ScriptAsync<El<HTMLElement, InputModel>>,
-  mounting?: Script<El<HTMLElement, InputModel>>,
-  destruction?: Script<El<HTMLElement, InputModel>>,
+  setup?: Script<El<HTMLElement, InputModel, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, InputModel, D>>,
+  creation?: Script<El<HTMLElement, InputModel, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, InputModel, D>>,
+  mounting?: Script<El<HTMLElement, InputModel, D>>,
+  destruction?: Script<El<HTMLElement, InputModel, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel>>): ReactiveTreeNode<El<HTMLElement, InputModel>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel, D>>): ReactiveTreeNode<El<HTMLElement, InputModel, D>>
 
-export function Input(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, InputModel>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, InputModel>>,
-  setupOrMode?: Script<El<HTMLElement, InputModel>> | Mode,
-  setup?: Script<El<HTMLElement, InputModel>>,
-  setupTask?: ScriptAsync<El<HTMLElement, InputModel>>,
-  creation?: Script<El<HTMLElement, InputModel>>,
-  creationTask?: ScriptAsync<El<HTMLElement, InputModel>>,
-  mounting?: Script<El<HTMLElement, InputModel>>,
-  destruction?: Script<El<HTMLElement, InputModel>>,
+export function Input<D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, InputModel, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, InputModel, D>>,
+  setupOrMode?: Script<El<HTMLElement, InputModel, D>> | Mode,
+  setup?: Script<El<HTMLElement, InputModel, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, InputModel, D>>,
+  creation?: Script<El<HTMLElement, InputModel, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, InputModel, D>>,
+  mounting?: Script<El<HTMLElement, InputModel, D>>,
+  destruction?: Script<El<HTMLElement, InputModel, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel>>): ReactiveTreeNode<El<HTMLElement, InputModel>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel, D>>): ReactiveTreeNode<El<HTMLElement, InputModel, D>> {
   //
   const description = args2desc(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
   return (
-    Element<InputModel>(setBasis(description, {
+    Element<InputModel, D>(setBasis(description, {
       creation() {
         this.model ??= composeInputModel()
         this.native.dataForSensor.focus = this.model

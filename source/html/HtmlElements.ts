@@ -11,45 +11,45 @@ import { HtmlDriver } from "../core/WebDriver.js"
 
 // A
 
-export function A<M = unknown>(
-  setup: Script<El<HTMLAnchorElement, M>>): ReactiveTreeNode<El<HTMLAnchorElement, M>>
+export function A<M = unknown, D = unknown>(
+  setup: Script<El<HTMLAnchorElement, M, D>>): ReactiveTreeNode<El<HTMLAnchorElement, M, D>>
 
-export function A<M = unknown>(
+export function A<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLAnchorElement, M>>): ReactiveTreeNode<El<HTMLAnchorElement, M>>
+  setup: Script<El<HTMLAnchorElement, M, D>>): ReactiveTreeNode<El<HTMLAnchorElement, M, D>>
 
-export function A<M = unknown>(
+export function A<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLAnchorElement, M>>): ReactiveTreeNode<El<HTMLAnchorElement, M>>
+  setup: Script<El<HTMLAnchorElement, M, D>>): ReactiveTreeNode<El<HTMLAnchorElement, M, D>>
 
-export function A<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLAnchorElement, M>>): ReactiveTreeNode<El<HTMLAnchorElement, M>>
+export function A<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLAnchorElement, M, D>>): ReactiveTreeNode<El<HTMLAnchorElement, M, D>>
 
-export function A<M = unknown>(
+export function A<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLAnchorElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLAnchorElement, M>>,
-  creation?: Script<El<HTMLAnchorElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLAnchorElement, M>>,
-  mounting?: Script<El<HTMLAnchorElement, M>>,
-  destruction?: Script<El<HTMLAnchorElement, M>>,
+  setup?: Script<El<HTMLAnchorElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLAnchorElement, M, D>>,
+  creation?: Script<El<HTMLAnchorElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLAnchorElement, M, D>>,
+  mounting?: Script<El<HTMLAnchorElement, M, D>>,
+  destruction?: Script<El<HTMLAnchorElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAnchorElement, M>>): ReactiveTreeNode<El<HTMLAnchorElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLAnchorElement, M, D>>): ReactiveTreeNode<El<HTMLAnchorElement, M, D>>
 
-export function A<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLAnchorElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLAnchorElement, M>>,
-  setupOrMode?: Script<El<HTMLAnchorElement, M>> | Mode,
-  setup?: Script<El<HTMLAnchorElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLAnchorElement, M>>,
-  creation?: Script<El<HTMLAnchorElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLAnchorElement, M>>,
-  mounting?: Script<El<HTMLAnchorElement, M>>,
-  destruction?: Script<El<HTMLAnchorElement, M>>,
+export function A<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLAnchorElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLAnchorElement, M, D>>,
+  setupOrMode?: Script<El<HTMLAnchorElement, M, D>> | Mode,
+  setup?: Script<El<HTMLAnchorElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLAnchorElement, M, D>>,
+  creation?: Script<El<HTMLAnchorElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLAnchorElement, M, D>>,
+  mounting?: Script<El<HTMLAnchorElement, M, D>>,
+  destruction?: Script<El<HTMLAnchorElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAnchorElement, M>>): ReactiveTreeNode<El<HTMLAnchorElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLAnchorElement, M, D>>): ReactiveTreeNode<El<HTMLAnchorElement, M, D>> {
   //
   return describe(A.name, HtmlTags.a,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -58,45 +58,45 @@ export function A<M = unknown>(
 
 // Abbr
 
-export function Abbr<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Abbr<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Abbr<M = unknown>(
+export function Abbr<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Abbr<M = unknown>(
+export function Abbr<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Abbr<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Abbr<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Abbr<M = unknown>(
+export function Abbr<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Abbr<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Abbr<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Abbr.name, HtmlTags.abbr,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -105,45 +105,45 @@ export function Abbr<M = unknown>(
 
 // Address
 
-export function Address<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Address<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Address<M = unknown>(
+export function Address<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Address<M = unknown>(
+export function Address<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Address<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Address<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Address<M = unknown>(
+export function Address<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Address<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Address<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Address.name, HtmlTags.address,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -152,45 +152,45 @@ export function Address<M = unknown>(
 
 // Area
 
-export function Area<M = unknown>(
-  setup: Script<El<HTMLAreaElement, M>>): ReactiveTreeNode<El<HTMLAreaElement, M>>
+export function Area<M = unknown, D = unknown>(
+  setup: Script<El<HTMLAreaElement, M, D>>): ReactiveTreeNode<El<HTMLAreaElement, M, D>>
 
-export function Area<M = unknown>(
+export function Area<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLAreaElement, M>>): ReactiveTreeNode<El<HTMLAreaElement, M>>
+  setup: Script<El<HTMLAreaElement, M, D>>): ReactiveTreeNode<El<HTMLAreaElement, M, D>>
 
-export function Area<M = unknown>(
+export function Area<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLAreaElement, M>>): ReactiveTreeNode<El<HTMLAreaElement, M>>
+  setup: Script<El<HTMLAreaElement, M, D>>): ReactiveTreeNode<El<HTMLAreaElement, M, D>>
 
-export function Area<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLAreaElement, M>>): ReactiveTreeNode<El<HTMLAreaElement, M>>
+export function Area<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLAreaElement, M, D>>): ReactiveTreeNode<El<HTMLAreaElement, M, D>>
 
-export function Area<M = unknown>(
+export function Area<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLAreaElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLAreaElement, M>>,
-  creation?: Script<El<HTMLAreaElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLAreaElement, M>>,
-  mounting?: Script<El<HTMLAreaElement, M>>,
-  destruction?: Script<El<HTMLAreaElement, M>>,
+  setup?: Script<El<HTMLAreaElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLAreaElement, M, D>>,
+  creation?: Script<El<HTMLAreaElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLAreaElement, M, D>>,
+  mounting?: Script<El<HTMLAreaElement, M, D>>,
+  destruction?: Script<El<HTMLAreaElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAreaElement, M>>): ReactiveTreeNode<El<HTMLAreaElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLAreaElement, M, D>>): ReactiveTreeNode<El<HTMLAreaElement, M, D>>
 
-export function Area<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLAreaElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLAreaElement, M>>,
-  setupOrMode?: Script<El<HTMLAreaElement, M>> | Mode,
-  setup?: Script<El<HTMLAreaElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLAreaElement, M>>,
-  creation?: Script<El<HTMLAreaElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLAreaElement, M>>,
-  mounting?: Script<El<HTMLAreaElement, M>>,
-  destruction?: Script<El<HTMLAreaElement, M>>,
+export function Area<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLAreaElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLAreaElement, M, D>>,
+  setupOrMode?: Script<El<HTMLAreaElement, M, D>> | Mode,
+  setup?: Script<El<HTMLAreaElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLAreaElement, M, D>>,
+  creation?: Script<El<HTMLAreaElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLAreaElement, M, D>>,
+  mounting?: Script<El<HTMLAreaElement, M, D>>,
+  destruction?: Script<El<HTMLAreaElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAreaElement, M>>): ReactiveTreeNode<El<HTMLAreaElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLAreaElement, M, D>>): ReactiveTreeNode<El<HTMLAreaElement, M, D>> {
   //
   return describe(Area.name, HtmlTags.area,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -199,45 +199,45 @@ export function Area<M = unknown>(
 
 // Article
 
-export function Article<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Article<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Article<M = unknown>(
+export function Article<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Article<M = unknown>(
+export function Article<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Article<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Article<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Article<M = unknown>(
+export function Article<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Article<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Article<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Article.name, HtmlTags.article,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -246,45 +246,45 @@ export function Article<M = unknown>(
 
 // Aside
 
-export function Aside<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Aside<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Aside<M = unknown>(
+export function Aside<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Aside<M = unknown>(
+export function Aside<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Aside<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Aside<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Aside<M = unknown>(
+export function Aside<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Aside<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Aside<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Aside.name, HtmlTags.aside,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -293,45 +293,45 @@ export function Aside<M = unknown>(
 
 // Audio
 
-export function Audio<M = unknown>(
-  setup: Script<El<HTMLAudioElement, M>>): ReactiveTreeNode<El<HTMLAudioElement, M>>
+export function Audio<M = unknown, D = unknown>(
+  setup: Script<El<HTMLAudioElement, M, D>>): ReactiveTreeNode<El<HTMLAudioElement, M, D>>
 
-export function Audio<M = unknown>(
+export function Audio<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLAudioElement, M>>): ReactiveTreeNode<El<HTMLAudioElement, M>>
+  setup: Script<El<HTMLAudioElement, M, D>>): ReactiveTreeNode<El<HTMLAudioElement, M, D>>
 
-export function Audio<M = unknown>(
+export function Audio<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLAudioElement, M>>): ReactiveTreeNode<El<HTMLAudioElement, M>>
+  setup: Script<El<HTMLAudioElement, M, D>>): ReactiveTreeNode<El<HTMLAudioElement, M, D>>
 
-export function Audio<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLAudioElement, M>>): ReactiveTreeNode<El<HTMLAudioElement, M>>
+export function Audio<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLAudioElement, M, D>>): ReactiveTreeNode<El<HTMLAudioElement, M, D>>
 
-export function Audio<M = unknown>(
+export function Audio<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLAudioElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLAudioElement, M>>,
-  creation?: Script<El<HTMLAudioElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLAudioElement, M>>,
-  mounting?: Script<El<HTMLAudioElement, M>>,
-  destruction?: Script<El<HTMLAudioElement, M>>,
+  setup?: Script<El<HTMLAudioElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLAudioElement, M, D>>,
+  creation?: Script<El<HTMLAudioElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLAudioElement, M, D>>,
+  mounting?: Script<El<HTMLAudioElement, M, D>>,
+  destruction?: Script<El<HTMLAudioElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAudioElement, M>>): ReactiveTreeNode<El<HTMLAudioElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLAudioElement, M, D>>): ReactiveTreeNode<El<HTMLAudioElement, M, D>>
 
-export function Audio<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLAudioElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLAudioElement, M>>,
-  setupOrMode?: Script<El<HTMLAudioElement, M>> | Mode,
-  setup?: Script<El<HTMLAudioElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLAudioElement, M>>,
-  creation?: Script<El<HTMLAudioElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLAudioElement, M>>,
-  mounting?: Script<El<HTMLAudioElement, M>>,
-  destruction?: Script<El<HTMLAudioElement, M>>,
+export function Audio<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLAudioElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLAudioElement, M, D>>,
+  setupOrMode?: Script<El<HTMLAudioElement, M, D>> | Mode,
+  setup?: Script<El<HTMLAudioElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLAudioElement, M, D>>,
+  creation?: Script<El<HTMLAudioElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLAudioElement, M, D>>,
+  mounting?: Script<El<HTMLAudioElement, M, D>>,
+  destruction?: Script<El<HTMLAudioElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAudioElement, M>>): ReactiveTreeNode<El<HTMLAudioElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLAudioElement, M, D>>): ReactiveTreeNode<El<HTMLAudioElement, M, D>> {
   //
   return describe(Audio.name, HtmlTags.audio,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -340,45 +340,45 @@ export function Audio<M = unknown>(
 
 // B
 
-export function B<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function B<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function B<M = unknown>(
+export function B<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function B<M = unknown>(
+export function B<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function B<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function B<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function B<M = unknown>(
+export function B<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function B<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function B<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(B.name, HtmlTags.b,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -387,45 +387,45 @@ export function B<M = unknown>(
 
 // Base
 
-export function Base<M = unknown>(
-  setup: Script<El<HTMLBaseElement, M>>): ReactiveTreeNode<El<HTMLBaseElement, M>>
+export function Base<M = unknown, D = unknown>(
+  setup: Script<El<HTMLBaseElement, M, D>>): ReactiveTreeNode<El<HTMLBaseElement, M, D>>
 
-export function Base<M = unknown>(
+export function Base<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLBaseElement, M>>): ReactiveTreeNode<El<HTMLBaseElement, M>>
+  setup: Script<El<HTMLBaseElement, M, D>>): ReactiveTreeNode<El<HTMLBaseElement, M, D>>
 
-export function Base<M = unknown>(
+export function Base<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLBaseElement, M>>): ReactiveTreeNode<El<HTMLBaseElement, M>>
+  setup: Script<El<HTMLBaseElement, M, D>>): ReactiveTreeNode<El<HTMLBaseElement, M, D>>
 
-export function Base<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLBaseElement, M>>): ReactiveTreeNode<El<HTMLBaseElement, M>>
+export function Base<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLBaseElement, M, D>>): ReactiveTreeNode<El<HTMLBaseElement, M, D>>
 
-export function Base<M = unknown>(
+export function Base<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLBaseElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLBaseElement, M>>,
-  creation?: Script<El<HTMLBaseElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLBaseElement, M>>,
-  mounting?: Script<El<HTMLBaseElement, M>>,
-  destruction?: Script<El<HTMLBaseElement, M>>,
+  setup?: Script<El<HTMLBaseElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLBaseElement, M, D>>,
+  creation?: Script<El<HTMLBaseElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLBaseElement, M, D>>,
+  mounting?: Script<El<HTMLBaseElement, M, D>>,
+  destruction?: Script<El<HTMLBaseElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBaseElement, M>>): ReactiveTreeNode<El<HTMLBaseElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLBaseElement, M, D>>): ReactiveTreeNode<El<HTMLBaseElement, M, D>>
 
-export function Base<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLBaseElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLBaseElement, M>>,
-  setupOrMode?: Script<El<HTMLBaseElement, M>> | Mode,
-  setup?: Script<El<HTMLBaseElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLBaseElement, M>>,
-  creation?: Script<El<HTMLBaseElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLBaseElement, M>>,
-  mounting?: Script<El<HTMLBaseElement, M>>,
-  destruction?: Script<El<HTMLBaseElement, M>>,
+export function Base<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLBaseElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLBaseElement, M, D>>,
+  setupOrMode?: Script<El<HTMLBaseElement, M, D>> | Mode,
+  setup?: Script<El<HTMLBaseElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLBaseElement, M, D>>,
+  creation?: Script<El<HTMLBaseElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLBaseElement, M, D>>,
+  mounting?: Script<El<HTMLBaseElement, M, D>>,
+  destruction?: Script<El<HTMLBaseElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBaseElement, M>>): ReactiveTreeNode<El<HTMLBaseElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLBaseElement, M, D>>): ReactiveTreeNode<El<HTMLBaseElement, M, D>> {
   //
   return describe(Base.name, HtmlTags.base,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -434,45 +434,45 @@ export function Base<M = unknown>(
 
 // Bdi
 
-export function Bdi<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Bdi<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Bdi<M = unknown>(
+export function Bdi<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Bdi<M = unknown>(
+export function Bdi<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Bdi<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Bdi<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Bdi<M = unknown>(
+export function Bdi<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Bdi<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Bdi<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Bdi.name, HtmlTags.bdi,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -481,45 +481,45 @@ export function Bdi<M = unknown>(
 
 // Bdo
 
-export function Bdo<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Bdo<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Bdo<M = unknown>(
+export function Bdo<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Bdo<M = unknown>(
+export function Bdo<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Bdo<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Bdo<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Bdo<M = unknown>(
+export function Bdo<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Bdo<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Bdo<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Bdo.name, HtmlTags.bdo,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -528,45 +528,45 @@ export function Bdo<M = unknown>(
 
 // Big
 
-export function Big<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Big<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Big<M = unknown>(
+export function Big<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Big<M = unknown>(
+export function Big<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Big<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Big<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Big<M = unknown>(
+export function Big<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Big<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Big<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Big.name, HtmlTags.big,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -575,45 +575,45 @@ export function Big<M = unknown>(
 
 // BlockQuote
 
-export function BlockQuote<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function BlockQuote<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function BlockQuote<M = unknown>(
+export function BlockQuote<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function BlockQuote<M = unknown>(
+export function BlockQuote<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function BlockQuote<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function BlockQuote<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function BlockQuote<M = unknown>(
+export function BlockQuote<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function BlockQuote<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function BlockQuote<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(BlockQuote.name, HtmlTags.blockquote,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -622,45 +622,45 @@ export function BlockQuote<M = unknown>(
 
 // Body
 
-export function Body<M = unknown>(
-  setup: Script<El<HTMLBodyElement, M>>): ReactiveTreeNode<El<HTMLBodyElement, M>>
+export function Body<M = unknown, D = unknown>(
+  setup: Script<El<HTMLBodyElement, M, D>>): ReactiveTreeNode<El<HTMLBodyElement, M, D>>
 
-export function Body<M = unknown>(
+export function Body<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLBodyElement, M>>): ReactiveTreeNode<El<HTMLBodyElement, M>>
+  setup: Script<El<HTMLBodyElement, M, D>>): ReactiveTreeNode<El<HTMLBodyElement, M, D>>
 
-export function Body<M = unknown>(
+export function Body<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLBodyElement, M>>): ReactiveTreeNode<El<HTMLBodyElement, M>>
+  setup: Script<El<HTMLBodyElement, M, D>>): ReactiveTreeNode<El<HTMLBodyElement, M, D>>
 
-export function Body<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLBodyElement, M>>): ReactiveTreeNode<El<HTMLBodyElement, M>>
+export function Body<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLBodyElement, M, D>>): ReactiveTreeNode<El<HTMLBodyElement, M, D>>
 
-export function Body<M = unknown>(
+export function Body<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLBodyElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLBodyElement, M>>,
-  creation?: Script<El<HTMLBodyElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLBodyElement, M>>,
-  mounting?: Script<El<HTMLBodyElement, M>>,
-  destruction?: Script<El<HTMLBodyElement, M>>,
+  setup?: Script<El<HTMLBodyElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLBodyElement, M, D>>,
+  creation?: Script<El<HTMLBodyElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLBodyElement, M, D>>,
+  mounting?: Script<El<HTMLBodyElement, M, D>>,
+  destruction?: Script<El<HTMLBodyElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBodyElement, M>>): ReactiveTreeNode<El<HTMLBodyElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLBodyElement, M, D>>): ReactiveTreeNode<El<HTMLBodyElement, M, D>>
 
-export function Body<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLBodyElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLBodyElement, M>>,
-  setupOrMode?: Script<El<HTMLBodyElement, M>> | Mode,
-  setup?: Script<El<HTMLBodyElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLBodyElement, M>>,
-  creation?: Script<El<HTMLBodyElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLBodyElement, M>>,
-  mounting?: Script<El<HTMLBodyElement, M>>,
-  destruction?: Script<El<HTMLBodyElement, M>>,
+export function Body<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLBodyElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLBodyElement, M, D>>,
+  setupOrMode?: Script<El<HTMLBodyElement, M, D>> | Mode,
+  setup?: Script<El<HTMLBodyElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLBodyElement, M, D>>,
+  creation?: Script<El<HTMLBodyElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLBodyElement, M, D>>,
+  mounting?: Script<El<HTMLBodyElement, M, D>>,
+  destruction?: Script<El<HTMLBodyElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBodyElement, M>>): ReactiveTreeNode<El<HTMLBodyElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLBodyElement, M, D>>): ReactiveTreeNode<El<HTMLBodyElement, M, D>> {
   //
   return describe(Body.name, HtmlTags.body,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -669,45 +669,45 @@ export function Body<M = unknown>(
 
 // BR
 
-export function BR<M = unknown>(
-  setup: Script<El<HTMLBRElement, M>>): ReactiveTreeNode<El<HTMLBRElement, M>>
+export function BR<M = unknown, D = unknown>(
+  setup: Script<El<HTMLBRElement, M, D>>): ReactiveTreeNode<El<HTMLBRElement, M, D>>
 
-export function BR<M = unknown>(
+export function BR<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLBRElement, M>>): ReactiveTreeNode<El<HTMLBRElement, M>>
+  setup: Script<El<HTMLBRElement, M, D>>): ReactiveTreeNode<El<HTMLBRElement, M, D>>
 
-export function BR<M = unknown>(
+export function BR<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLBRElement, M>>): ReactiveTreeNode<El<HTMLBRElement, M>>
+  setup: Script<El<HTMLBRElement, M, D>>): ReactiveTreeNode<El<HTMLBRElement, M, D>>
 
-export function BR<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLBRElement, M>>): ReactiveTreeNode<El<HTMLBRElement, M>>
+export function BR<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLBRElement, M, D>>): ReactiveTreeNode<El<HTMLBRElement, M, D>>
 
-export function BR<M = unknown>(
+export function BR<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLBRElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLBRElement, M>>,
-  creation?: Script<El<HTMLBRElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLBRElement, M>>,
-  mounting?: Script<El<HTMLBRElement, M>>,
-  destruction?: Script<El<HTMLBRElement, M>>,
+  setup?: Script<El<HTMLBRElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLBRElement, M, D>>,
+  creation?: Script<El<HTMLBRElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLBRElement, M, D>>,
+  mounting?: Script<El<HTMLBRElement, M, D>>,
+  destruction?: Script<El<HTMLBRElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBRElement, M>>): ReactiveTreeNode<El<HTMLBRElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLBRElement, M, D>>): ReactiveTreeNode<El<HTMLBRElement, M, D>>
 
-export function BR<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLBRElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLBRElement, M>>,
-  setupOrMode?: Script<El<HTMLBRElement, M>> | Mode,
-  setup?: Script<El<HTMLBRElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLBRElement, M>>,
-  creation?: Script<El<HTMLBRElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLBRElement, M>>,
-  mounting?: Script<El<HTMLBRElement, M>>,
-  destruction?: Script<El<HTMLBRElement, M>>,
+export function BR<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLBRElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLBRElement, M, D>>,
+  setupOrMode?: Script<El<HTMLBRElement, M, D>> | Mode,
+  setup?: Script<El<HTMLBRElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLBRElement, M, D>>,
+  creation?: Script<El<HTMLBRElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLBRElement, M, D>>,
+  mounting?: Script<El<HTMLBRElement, M, D>>,
+  destruction?: Script<El<HTMLBRElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBRElement, M>>): ReactiveTreeNode<El<HTMLBRElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLBRElement, M, D>>): ReactiveTreeNode<El<HTMLBRElement, M, D>> {
   //
   return describe(BR.name, HtmlTags.br,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -716,45 +716,45 @@ export function BR<M = unknown>(
 
 // Button
 
-export function Button<M = unknown>(
-  setup: Script<El<HTMLButtonElement, M>>): ReactiveTreeNode<El<HTMLButtonElement, M>>
+export function Button<M = unknown, D = unknown>(
+  setup: Script<El<HTMLButtonElement, M, D>>): ReactiveTreeNode<El<HTMLButtonElement, M, D>>
 
-export function Button<M = unknown>(
+export function Button<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLButtonElement, M>>): ReactiveTreeNode<El<HTMLButtonElement, M>>
+  setup: Script<El<HTMLButtonElement, M, D>>): ReactiveTreeNode<El<HTMLButtonElement, M, D>>
 
-export function Button<M = unknown>(
+export function Button<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLButtonElement, M>>): ReactiveTreeNode<El<HTMLButtonElement, M>>
+  setup: Script<El<HTMLButtonElement, M, D>>): ReactiveTreeNode<El<HTMLButtonElement, M, D>>
 
-export function Button<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLButtonElement, M>>): ReactiveTreeNode<El<HTMLButtonElement, M>>
+export function Button<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLButtonElement, M, D>>): ReactiveTreeNode<El<HTMLButtonElement, M, D>>
 
-export function Button<M = unknown>(
+export function Button<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLButtonElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLButtonElement, M>>,
-  creation?: Script<El<HTMLButtonElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLButtonElement, M>>,
-  mounting?: Script<El<HTMLButtonElement, M>>,
-  destruction?: Script<El<HTMLButtonElement, M>>,
+  setup?: Script<El<HTMLButtonElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLButtonElement, M, D>>,
+  creation?: Script<El<HTMLButtonElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLButtonElement, M, D>>,
+  mounting?: Script<El<HTMLButtonElement, M, D>>,
+  destruction?: Script<El<HTMLButtonElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLButtonElement, M>>): ReactiveTreeNode<El<HTMLButtonElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLButtonElement, M, D>>): ReactiveTreeNode<El<HTMLButtonElement, M, D>>
 
-export function Button<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLButtonElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLButtonElement, M>>,
-  setupOrMode?: Script<El<HTMLButtonElement, M>> | Mode,
-  setup?: Script<El<HTMLButtonElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLButtonElement, M>>,
-  creation?: Script<El<HTMLButtonElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLButtonElement, M>>,
-  mounting?: Script<El<HTMLButtonElement, M>>,
-  destruction?: Script<El<HTMLButtonElement, M>>,
+export function Button<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLButtonElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLButtonElement, M, D>>,
+  setupOrMode?: Script<El<HTMLButtonElement, M, D>> | Mode,
+  setup?: Script<El<HTMLButtonElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLButtonElement, M, D>>,
+  creation?: Script<El<HTMLButtonElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLButtonElement, M, D>>,
+  mounting?: Script<El<HTMLButtonElement, M, D>>,
+  destruction?: Script<El<HTMLButtonElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLButtonElement, M>>): ReactiveTreeNode<El<HTMLButtonElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLButtonElement, M, D>>): ReactiveTreeNode<El<HTMLButtonElement, M, D>> {
   //
   return describe(Button.name, HtmlTags.button,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -763,45 +763,45 @@ export function Button<M = unknown>(
 
 // Canvas
 
-export function Canvas<M = unknown>(
-  setup: Script<El<HTMLCanvasElement, M>>): ReactiveTreeNode<El<HTMLCanvasElement, M>>
+export function Canvas<M = unknown, D = unknown>(
+  setup: Script<El<HTMLCanvasElement, M, D>>): ReactiveTreeNode<El<HTMLCanvasElement, M, D>>
 
-export function Canvas<M = unknown>(
+export function Canvas<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLCanvasElement, M>>): ReactiveTreeNode<El<HTMLCanvasElement, M>>
+  setup: Script<El<HTMLCanvasElement, M, D>>): ReactiveTreeNode<El<HTMLCanvasElement, M, D>>
 
-export function Canvas<M = unknown>(
+export function Canvas<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLCanvasElement, M>>): ReactiveTreeNode<El<HTMLCanvasElement, M>>
+  setup: Script<El<HTMLCanvasElement, M, D>>): ReactiveTreeNode<El<HTMLCanvasElement, M, D>>
 
-export function Canvas<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLCanvasElement, M>>): ReactiveTreeNode<El<HTMLCanvasElement, M>>
+export function Canvas<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLCanvasElement, M, D>>): ReactiveTreeNode<El<HTMLCanvasElement, M, D>>
 
-export function Canvas<M = unknown>(
+export function Canvas<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLCanvasElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLCanvasElement, M>>,
-  creation?: Script<El<HTMLCanvasElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLCanvasElement, M>>,
-  mounting?: Script<El<HTMLCanvasElement, M>>,
-  destruction?: Script<El<HTMLCanvasElement, M>>,
+  setup?: Script<El<HTMLCanvasElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLCanvasElement, M, D>>,
+  creation?: Script<El<HTMLCanvasElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLCanvasElement, M, D>>,
+  mounting?: Script<El<HTMLCanvasElement, M, D>>,
+  destruction?: Script<El<HTMLCanvasElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLCanvasElement, M>>): ReactiveTreeNode<El<HTMLCanvasElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLCanvasElement, M, D>>): ReactiveTreeNode<El<HTMLCanvasElement, M, D>>
 
-export function Canvas<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLCanvasElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLCanvasElement, M>>,
-  setupOrMode?: Script<El<HTMLCanvasElement, M>> | Mode,
-  setup?: Script<El<HTMLCanvasElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLCanvasElement, M>>,
-  creation?: Script<El<HTMLCanvasElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLCanvasElement, M>>,
-  mounting?: Script<El<HTMLCanvasElement, M>>,
-  destruction?: Script<El<HTMLCanvasElement, M>>,
+export function Canvas<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLCanvasElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLCanvasElement, M, D>>,
+  setupOrMode?: Script<El<HTMLCanvasElement, M, D>> | Mode,
+  setup?: Script<El<HTMLCanvasElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLCanvasElement, M, D>>,
+  creation?: Script<El<HTMLCanvasElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLCanvasElement, M, D>>,
+  mounting?: Script<El<HTMLCanvasElement, M, D>>,
+  destruction?: Script<El<HTMLCanvasElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLCanvasElement, M>>): ReactiveTreeNode<El<HTMLCanvasElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLCanvasElement, M, D>>): ReactiveTreeNode<El<HTMLCanvasElement, M, D>> {
   //
   return describe(Canvas.name, HtmlTags.canvas,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -810,45 +810,45 @@ export function Canvas<M = unknown>(
 
 // Caption
 
-export function Caption<M = unknown>(
-  setup: Script<El<HTMLTableCaptionElement, M>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M>>
+export function Caption<M = unknown, D = unknown>(
+  setup: Script<El<HTMLTableCaptionElement, M, D>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M, D>>
 
-export function Caption<M = unknown>(
+export function Caption<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLTableCaptionElement, M>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M>>
+  setup: Script<El<HTMLTableCaptionElement, M, D>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M, D>>
 
-export function Caption<M = unknown>(
+export function Caption<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLTableCaptionElement, M>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M>>
+  setup: Script<El<HTMLTableCaptionElement, M, D>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M, D>>
 
-export function Caption<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M>>
+export function Caption<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M, D>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M, D>>
 
-export function Caption<M = unknown>(
+export function Caption<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLTableCaptionElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableCaptionElement, M>>,
-  creation?: Script<El<HTMLTableCaptionElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableCaptionElement, M>>,
-  mounting?: Script<El<HTMLTableCaptionElement, M>>,
-  destruction?: Script<El<HTMLTableCaptionElement, M>>,
+  setup?: Script<El<HTMLTableCaptionElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableCaptionElement, M, D>>,
+  creation?: Script<El<HTMLTableCaptionElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableCaptionElement, M, D>>,
+  mounting?: Script<El<HTMLTableCaptionElement, M, D>>,
+  destruction?: Script<El<HTMLTableCaptionElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M, D>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M, D>>
 
-export function Caption<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLTableCaptionElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M>>,
-  setupOrMode?: Script<El<HTMLTableCaptionElement, M>> | Mode,
-  setup?: Script<El<HTMLTableCaptionElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableCaptionElement, M>>,
-  creation?: Script<El<HTMLTableCaptionElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableCaptionElement, M>>,
-  mounting?: Script<El<HTMLTableCaptionElement, M>>,
-  destruction?: Script<El<HTMLTableCaptionElement, M>>,
+export function Caption<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLTableCaptionElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M, D>>,
+  setupOrMode?: Script<El<HTMLTableCaptionElement, M, D>> | Mode,
+  setup?: Script<El<HTMLTableCaptionElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableCaptionElement, M, D>>,
+  creation?: Script<El<HTMLTableCaptionElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableCaptionElement, M, D>>,
+  mounting?: Script<El<HTMLTableCaptionElement, M, D>>,
+  destruction?: Script<El<HTMLTableCaptionElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M, D>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M, D>> {
   //
   return describe(Caption.name, HtmlTags.caption,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -857,45 +857,45 @@ export function Caption<M = unknown>(
 
 // Cite
 
-export function Cite<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Cite<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Cite<M = unknown>(
+export function Cite<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Cite<M = unknown>(
+export function Cite<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Cite<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Cite<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Cite<M = unknown>(
+export function Cite<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Cite<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Cite<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Cite.name, HtmlTags.cite,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -904,45 +904,45 @@ export function Cite<M = unknown>(
 
 // Code
 
-export function Code<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Code<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Code<M = unknown>(
+export function Code<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Code<M = unknown>(
+export function Code<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Code<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Code<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Code<M = unknown>(
+export function Code<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Code<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Code<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Code.name, HtmlTags.code,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -951,45 +951,45 @@ export function Code<M = unknown>(
 
 // Col
 
-export function Col<M = unknown>(
-  setup: Script<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>>
+export function Col<M = unknown, D = unknown>(
+  setup: Script<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
 
-export function Col<M = unknown>(
+export function Col<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>>
+  setup: Script<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
 
-export function Col<M = unknown>(
+export function Col<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>>
+  setup: Script<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
 
-export function Col<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>>
+export function Col<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
 
-export function Col<M = unknown>(
+export function Col<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLTableColElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableColElement, M>>,
-  creation?: Script<El<HTMLTableColElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableColElement, M>>,
-  mounting?: Script<El<HTMLTableColElement, M>>,
-  destruction?: Script<El<HTMLTableColElement, M>>,
+  setup?: Script<El<HTMLTableColElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableColElement, M, D>>,
+  creation?: Script<El<HTMLTableColElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableColElement, M, D>>,
+  mounting?: Script<El<HTMLTableColElement, M, D>>,
+  destruction?: Script<El<HTMLTableColElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
 
-export function Col<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLTableColElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableColElement, M>>,
-  setupOrMode?: Script<El<HTMLTableColElement, M>> | Mode,
-  setup?: Script<El<HTMLTableColElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableColElement, M>>,
-  creation?: Script<El<HTMLTableColElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableColElement, M>>,
-  mounting?: Script<El<HTMLTableColElement, M>>,
-  destruction?: Script<El<HTMLTableColElement, M>>,
+export function Col<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLTableColElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>,
+  setupOrMode?: Script<El<HTMLTableColElement, M, D>> | Mode,
+  setup?: Script<El<HTMLTableColElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableColElement, M, D>>,
+  creation?: Script<El<HTMLTableColElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableColElement, M, D>>,
+  mounting?: Script<El<HTMLTableColElement, M, D>>,
+  destruction?: Script<El<HTMLTableColElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>> {
   //
   return describe(Col.name, HtmlTags.col,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -998,45 +998,45 @@ export function Col<M = unknown>(
 
 // ColGroup
 
-export function ColGroup<M = unknown>(
-  setup: Script<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>>
+export function ColGroup<M = unknown, D = unknown>(
+  setup: Script<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
 
-export function ColGroup<M = unknown>(
+export function ColGroup<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>>
+  setup: Script<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
 
-export function ColGroup<M = unknown>(
+export function ColGroup<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>>
+  setup: Script<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
 
-export function ColGroup<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>>
+export function ColGroup<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
 
-export function ColGroup<M = unknown>(
+export function ColGroup<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLTableColElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableColElement, M>>,
-  creation?: Script<El<HTMLTableColElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableColElement, M>>,
-  mounting?: Script<El<HTMLTableColElement, M>>,
-  destruction?: Script<El<HTMLTableColElement, M>>,
+  setup?: Script<El<HTMLTableColElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableColElement, M, D>>,
+  creation?: Script<El<HTMLTableColElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableColElement, M, D>>,
+  mounting?: Script<El<HTMLTableColElement, M, D>>,
+  destruction?: Script<El<HTMLTableColElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
 
-export function ColGroup<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLTableColElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableColElement, M>>,
-  setupOrMode?: Script<El<HTMLTableColElement, M>> | Mode,
-  setup?: Script<El<HTMLTableColElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableColElement, M>>,
-  creation?: Script<El<HTMLTableColElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableColElement, M>>,
-  mounting?: Script<El<HTMLTableColElement, M>>,
-  destruction?: Script<El<HTMLTableColElement, M>>,
+export function ColGroup<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLTableColElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>,
+  setupOrMode?: Script<El<HTMLTableColElement, M, D>> | Mode,
+  setup?: Script<El<HTMLTableColElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableColElement, M, D>>,
+  creation?: Script<El<HTMLTableColElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableColElement, M, D>>,
+  mounting?: Script<El<HTMLTableColElement, M, D>>,
+  destruction?: Script<El<HTMLTableColElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>> {
   //
   return describe(ColGroup.name, HtmlTags.colgroup,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1045,45 +1045,45 @@ export function ColGroup<M = unknown>(
 
 // Data
 
-export function Data<M = unknown>(
-  setup: Script<El<HTMLDataElement, M>>): ReactiveTreeNode<El<HTMLDataElement, M>>
+export function Data<M = unknown, D = unknown>(
+  setup: Script<El<HTMLDataElement, M, D>>): ReactiveTreeNode<El<HTMLDataElement, M, D>>
 
-export function Data<M = unknown>(
+export function Data<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLDataElement, M>>): ReactiveTreeNode<El<HTMLDataElement, M>>
+  setup: Script<El<HTMLDataElement, M, D>>): ReactiveTreeNode<El<HTMLDataElement, M, D>>
 
-export function Data<M = unknown>(
+export function Data<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLDataElement, M>>): ReactiveTreeNode<El<HTMLDataElement, M>>
+  setup: Script<El<HTMLDataElement, M, D>>): ReactiveTreeNode<El<HTMLDataElement, M, D>>
 
-export function Data<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLDataElement, M>>): ReactiveTreeNode<El<HTMLDataElement, M>>
+export function Data<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLDataElement, M, D>>): ReactiveTreeNode<El<HTMLDataElement, M, D>>
 
-export function Data<M = unknown>(
+export function Data<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLDataElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLDataElement, M>>,
-  creation?: Script<El<HTMLDataElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLDataElement, M>>,
-  mounting?: Script<El<HTMLDataElement, M>>,
-  destruction?: Script<El<HTMLDataElement, M>>,
+  setup?: Script<El<HTMLDataElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLDataElement, M, D>>,
+  creation?: Script<El<HTMLDataElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLDataElement, M, D>>,
+  mounting?: Script<El<HTMLDataElement, M, D>>,
+  destruction?: Script<El<HTMLDataElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDataElement, M>>): ReactiveTreeNode<El<HTMLDataElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLDataElement, M, D>>): ReactiveTreeNode<El<HTMLDataElement, M, D>>
 
-export function Data<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLDataElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLDataElement, M>>,
-  setupOrMode?: Script<El<HTMLDataElement, M>> | Mode,
-  setup?: Script<El<HTMLDataElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLDataElement, M>>,
-  creation?: Script<El<HTMLDataElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLDataElement, M>>,
-  mounting?: Script<El<HTMLDataElement, M>>,
-  destruction?: Script<El<HTMLDataElement, M>>,
+export function Data<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLDataElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLDataElement, M, D>>,
+  setupOrMode?: Script<El<HTMLDataElement, M, D>> | Mode,
+  setup?: Script<El<HTMLDataElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLDataElement, M, D>>,
+  creation?: Script<El<HTMLDataElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLDataElement, M, D>>,
+  mounting?: Script<El<HTMLDataElement, M, D>>,
+  destruction?: Script<El<HTMLDataElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDataElement, M>>): ReactiveTreeNode<El<HTMLDataElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLDataElement, M, D>>): ReactiveTreeNode<El<HTMLDataElement, M, D>> {
   //
   return describe(Data.name, HtmlTags.data,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1092,45 +1092,45 @@ export function Data<M = unknown>(
 
 // DataList
 
-export function DataList<M = unknown>(
-  setup: Script<El<HTMLDataListElement, M>>): ReactiveTreeNode<El<HTMLDataListElement, M>>
+export function DataList<M = unknown, D = unknown>(
+  setup: Script<El<HTMLDataListElement, M, D>>): ReactiveTreeNode<El<HTMLDataListElement, M, D>>
 
-export function DataList<M = unknown>(
+export function DataList<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLDataListElement, M>>): ReactiveTreeNode<El<HTMLDataListElement, M>>
+  setup: Script<El<HTMLDataListElement, M, D>>): ReactiveTreeNode<El<HTMLDataListElement, M, D>>
 
-export function DataList<M = unknown>(
+export function DataList<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLDataListElement, M>>): ReactiveTreeNode<El<HTMLDataListElement, M>>
+  setup: Script<El<HTMLDataListElement, M, D>>): ReactiveTreeNode<El<HTMLDataListElement, M, D>>
 
-export function DataList<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLDataListElement, M>>): ReactiveTreeNode<El<HTMLDataListElement, M>>
+export function DataList<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLDataListElement, M, D>>): ReactiveTreeNode<El<HTMLDataListElement, M, D>>
 
-export function DataList<M = unknown>(
+export function DataList<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLDataListElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLDataListElement, M>>,
-  creation?: Script<El<HTMLDataListElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLDataListElement, M>>,
-  mounting?: Script<El<HTMLDataListElement, M>>,
-  destruction?: Script<El<HTMLDataListElement, M>>,
+  setup?: Script<El<HTMLDataListElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLDataListElement, M, D>>,
+  creation?: Script<El<HTMLDataListElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLDataListElement, M, D>>,
+  mounting?: Script<El<HTMLDataListElement, M, D>>,
+  destruction?: Script<El<HTMLDataListElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDataListElement, M>>): ReactiveTreeNode<El<HTMLDataListElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLDataListElement, M, D>>): ReactiveTreeNode<El<HTMLDataListElement, M, D>>
 
-export function DataList<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLDataListElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLDataListElement, M>>,
-  setupOrMode?: Script<El<HTMLDataListElement, M>> | Mode,
-  setup?: Script<El<HTMLDataListElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLDataListElement, M>>,
-  creation?: Script<El<HTMLDataListElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLDataListElement, M>>,
-  mounting?: Script<El<HTMLDataListElement, M>>,
-  destruction?: Script<El<HTMLDataListElement, M>>,
+export function DataList<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLDataListElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLDataListElement, M, D>>,
+  setupOrMode?: Script<El<HTMLDataListElement, M, D>> | Mode,
+  setup?: Script<El<HTMLDataListElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLDataListElement, M, D>>,
+  creation?: Script<El<HTMLDataListElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLDataListElement, M, D>>,
+  mounting?: Script<El<HTMLDataListElement, M, D>>,
+  destruction?: Script<El<HTMLDataListElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDataListElement, M>>): ReactiveTreeNode<El<HTMLDataListElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLDataListElement, M, D>>): ReactiveTreeNode<El<HTMLDataListElement, M, D>> {
   //
   return describe(DataList.name, HtmlTags.datalist,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1139,45 +1139,45 @@ export function DataList<M = unknown>(
 
 // DD
 
-export function DD<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function DD<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function DD<M = unknown>(
+export function DD<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function DD<M = unknown>(
+export function DD<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function DD<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function DD<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function DD<M = unknown>(
+export function DD<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function DD<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function DD<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(DD.name, HtmlTags.dd,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1186,45 +1186,45 @@ export function DD<M = unknown>(
 
 // Del
 
-export function Del<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Del<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Del<M = unknown>(
+export function Del<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Del<M = unknown>(
+export function Del<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Del<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Del<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Del<M = unknown>(
+export function Del<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Del<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Del<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Del.name, HtmlTags.del,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1233,45 +1233,45 @@ export function Del<M = unknown>(
 
 // Details
 
-export function Details<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Details<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Details<M = unknown>(
+export function Details<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Details<M = unknown>(
+export function Details<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Details<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Details<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Details<M = unknown>(
+export function Details<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Details<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Details<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Details.name, HtmlTags.details,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1280,45 +1280,45 @@ export function Details<M = unknown>(
 
 // Dfn
 
-export function Dfn<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Dfn<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Dfn<M = unknown>(
+export function Dfn<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Dfn<M = unknown>(
+export function Dfn<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Dfn<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Dfn<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Dfn<M = unknown>(
+export function Dfn<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Dfn<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Dfn<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Dfn.name, HtmlTags.dfn,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1327,45 +1327,45 @@ export function Dfn<M = unknown>(
 
 // Div
 
-export function Div<M = unknown>(
-  setup: Script<El<HTMLDivElement, M>>): ReactiveTreeNode<El<HTMLDivElement, M>>
+export function Div<M = unknown, D = unknown>(
+  setup: Script<El<HTMLDivElement, M, D>>): ReactiveTreeNode<El<HTMLDivElement, M, D>>
 
-export function Div<M = unknown>(
+export function Div<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLDivElement, M>>): ReactiveTreeNode<El<HTMLDivElement, M>>
+  setup: Script<El<HTMLDivElement, M, D>>): ReactiveTreeNode<El<HTMLDivElement, M, D>>
 
-export function Div<M = unknown>(
+export function Div<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLDivElement, M>>): ReactiveTreeNode<El<HTMLDivElement, M>>
+  setup: Script<El<HTMLDivElement, M, D>>): ReactiveTreeNode<El<HTMLDivElement, M, D>>
 
-export function Div<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLDivElement, M>>): ReactiveTreeNode<El<HTMLDivElement, M>>
+export function Div<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLDivElement, M, D>>): ReactiveTreeNode<El<HTMLDivElement, M, D>>
 
-export function Div<M = unknown>(
+export function Div<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLDivElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLDivElement, M>>,
-  creation?: Script<El<HTMLDivElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLDivElement, M>>,
-  mounting?: Script<El<HTMLDivElement, M>>,
-  destruction?: Script<El<HTMLDivElement, M>>,
+  setup?: Script<El<HTMLDivElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLDivElement, M, D>>,
+  creation?: Script<El<HTMLDivElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLDivElement, M, D>>,
+  mounting?: Script<El<HTMLDivElement, M, D>>,
+  destruction?: Script<El<HTMLDivElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDivElement, M>>): ReactiveTreeNode<El<HTMLDivElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLDivElement, M, D>>): ReactiveTreeNode<El<HTMLDivElement, M, D>>
 
-export function Div<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLDivElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLDivElement, M>>,
-  setupOrMode?: Script<El<HTMLDivElement, M>> | Mode,
-  setup?: Script<El<HTMLDivElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLDivElement, M>>,
-  creation?: Script<El<HTMLDivElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLDivElement, M>>,
-  mounting?: Script<El<HTMLDivElement, M>>,
-  destruction?: Script<El<HTMLDivElement, M>>,
+export function Div<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLDivElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLDivElement, M, D>>,
+  setupOrMode?: Script<El<HTMLDivElement, M, D>> | Mode,
+  setup?: Script<El<HTMLDivElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLDivElement, M, D>>,
+  creation?: Script<El<HTMLDivElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLDivElement, M, D>>,
+  mounting?: Script<El<HTMLDivElement, M, D>>,
+  destruction?: Script<El<HTMLDivElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDivElement, M>>): ReactiveTreeNode<El<HTMLDivElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLDivElement, M, D>>): ReactiveTreeNode<El<HTMLDivElement, M, D>> {
   //
   return describe(Div.name, HtmlTags.div,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1374,45 +1374,45 @@ export function Div<M = unknown>(
 
 // DL
 
-export function DL<M = unknown>(
-  setup: Script<El<HTMLDListElement, M>>): ReactiveTreeNode<El<HTMLDListElement, M>>
+export function DL<M = unknown, D = unknown>(
+  setup: Script<El<HTMLDListElement, M, D>>): ReactiveTreeNode<El<HTMLDListElement, M, D>>
 
-export function DL<M = unknown>(
+export function DL<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLDListElement, M>>): ReactiveTreeNode<El<HTMLDListElement, M>>
+  setup: Script<El<HTMLDListElement, M, D>>): ReactiveTreeNode<El<HTMLDListElement, M, D>>
 
-export function DL<M = unknown>(
+export function DL<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLDListElement, M>>): ReactiveTreeNode<El<HTMLDListElement, M>>
+  setup: Script<El<HTMLDListElement, M, D>>): ReactiveTreeNode<El<HTMLDListElement, M, D>>
 
-export function DL<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLDListElement, M>>): ReactiveTreeNode<El<HTMLDListElement, M>>
+export function DL<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLDListElement, M, D>>): ReactiveTreeNode<El<HTMLDListElement, M, D>>
 
-export function DL<M = unknown>(
+export function DL<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLDListElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLDListElement, M>>,
-  creation?: Script<El<HTMLDListElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLDListElement, M>>,
-  mounting?: Script<El<HTMLDListElement, M>>,
-  destruction?: Script<El<HTMLDListElement, M>>,
+  setup?: Script<El<HTMLDListElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLDListElement, M, D>>,
+  creation?: Script<El<HTMLDListElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLDListElement, M, D>>,
+  mounting?: Script<El<HTMLDListElement, M, D>>,
+  destruction?: Script<El<HTMLDListElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDListElement, M>>): ReactiveTreeNode<El<HTMLDListElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLDListElement, M, D>>): ReactiveTreeNode<El<HTMLDListElement, M, D>>
 
-export function DL<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLDListElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLDListElement, M>>,
-  setupOrMode?: Script<El<HTMLDListElement, M>> | Mode,
-  setup?: Script<El<HTMLDListElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLDListElement, M>>,
-  creation?: Script<El<HTMLDListElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLDListElement, M>>,
-  mounting?: Script<El<HTMLDListElement, M>>,
-  destruction?: Script<El<HTMLDListElement, M>>,
+export function DL<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLDListElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLDListElement, M, D>>,
+  setupOrMode?: Script<El<HTMLDListElement, M, D>> | Mode,
+  setup?: Script<El<HTMLDListElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLDListElement, M, D>>,
+  creation?: Script<El<HTMLDListElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLDListElement, M, D>>,
+  mounting?: Script<El<HTMLDListElement, M, D>>,
+  destruction?: Script<El<HTMLDListElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDListElement, M>>): ReactiveTreeNode<El<HTMLDListElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLDListElement, M, D>>): ReactiveTreeNode<El<HTMLDListElement, M, D>> {
   //
   return describe(DL.name, HtmlTags.dl,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1421,45 +1421,45 @@ export function DL<M = unknown>(
 
 // DT
 
-export function DT<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function DT<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function DT<M = unknown>(
+export function DT<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function DT<M = unknown>(
+export function DT<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function DT<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function DT<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function DT<M = unknown>(
+export function DT<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function DT<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function DT<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(DT.name, HtmlTags.dt,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1468,45 +1468,45 @@ export function DT<M = unknown>(
 
 // EM
 
-export function EM<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function EM<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function EM<M = unknown>(
+export function EM<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function EM<M = unknown>(
+export function EM<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function EM<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function EM<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function EM<M = unknown>(
+export function EM<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function EM<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function EM<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(EM.name, HtmlTags.em,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1515,45 +1515,45 @@ export function EM<M = unknown>(
 
 // Embed
 
-export function Embed<M = unknown>(
-  setup: Script<El<HTMLEmbedElement, M>>): ReactiveTreeNode<El<HTMLEmbedElement, M>>
+export function Embed<M = unknown, D = unknown>(
+  setup: Script<El<HTMLEmbedElement, M, D>>): ReactiveTreeNode<El<HTMLEmbedElement, M, D>>
 
-export function Embed<M = unknown>(
+export function Embed<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLEmbedElement, M>>): ReactiveTreeNode<El<HTMLEmbedElement, M>>
+  setup: Script<El<HTMLEmbedElement, M, D>>): ReactiveTreeNode<El<HTMLEmbedElement, M, D>>
 
-export function Embed<M = unknown>(
+export function Embed<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLEmbedElement, M>>): ReactiveTreeNode<El<HTMLEmbedElement, M>>
+  setup: Script<El<HTMLEmbedElement, M, D>>): ReactiveTreeNode<El<HTMLEmbedElement, M, D>>
 
-export function Embed<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLEmbedElement, M>>): ReactiveTreeNode<El<HTMLEmbedElement, M>>
+export function Embed<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLEmbedElement, M, D>>): ReactiveTreeNode<El<HTMLEmbedElement, M, D>>
 
-export function Embed<M = unknown>(
+export function Embed<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLEmbedElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLEmbedElement, M>>,
-  creation?: Script<El<HTMLEmbedElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLEmbedElement, M>>,
-  mounting?: Script<El<HTMLEmbedElement, M>>,
-  destruction?: Script<El<HTMLEmbedElement, M>>,
+  setup?: Script<El<HTMLEmbedElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLEmbedElement, M, D>>,
+  creation?: Script<El<HTMLEmbedElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLEmbedElement, M, D>>,
+  mounting?: Script<El<HTMLEmbedElement, M, D>>,
+  destruction?: Script<El<HTMLEmbedElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLEmbedElement, M>>): ReactiveTreeNode<El<HTMLEmbedElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLEmbedElement, M, D>>): ReactiveTreeNode<El<HTMLEmbedElement, M, D>>
 
-export function Embed<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLEmbedElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLEmbedElement, M>>,
-  setupOrMode?: Script<El<HTMLEmbedElement, M>> | Mode,
-  setup?: Script<El<HTMLEmbedElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLEmbedElement, M>>,
-  creation?: Script<El<HTMLEmbedElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLEmbedElement, M>>,
-  mounting?: Script<El<HTMLEmbedElement, M>>,
-  destruction?: Script<El<HTMLEmbedElement, M>>,
+export function Embed<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLEmbedElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLEmbedElement, M, D>>,
+  setupOrMode?: Script<El<HTMLEmbedElement, M, D>> | Mode,
+  setup?: Script<El<HTMLEmbedElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLEmbedElement, M, D>>,
+  creation?: Script<El<HTMLEmbedElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLEmbedElement, M, D>>,
+  mounting?: Script<El<HTMLEmbedElement, M, D>>,
+  destruction?: Script<El<HTMLEmbedElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLEmbedElement, M>>): ReactiveTreeNode<El<HTMLEmbedElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLEmbedElement, M, D>>): ReactiveTreeNode<El<HTMLEmbedElement, M, D>> {
   //
   return describe(Embed.name, HtmlTags.embed,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1562,45 +1562,45 @@ export function Embed<M = unknown>(
 
 // FieldSet
 
-export function FieldSet<M = unknown>(
-  setup: Script<El<HTMLFieldSetElement, M>>): ReactiveTreeNode<El<HTMLFieldSetElement, M>>
+export function FieldSet<M = unknown, D = unknown>(
+  setup: Script<El<HTMLFieldSetElement, M, D>>): ReactiveTreeNode<El<HTMLFieldSetElement, M, D>>
 
-export function FieldSet<M = unknown>(
+export function FieldSet<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLFieldSetElement, M>>): ReactiveTreeNode<El<HTMLFieldSetElement, M>>
+  setup: Script<El<HTMLFieldSetElement, M, D>>): ReactiveTreeNode<El<HTMLFieldSetElement, M, D>>
 
-export function FieldSet<M = unknown>(
+export function FieldSet<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLFieldSetElement, M>>): ReactiveTreeNode<El<HTMLFieldSetElement, M>>
+  setup: Script<El<HTMLFieldSetElement, M, D>>): ReactiveTreeNode<El<HTMLFieldSetElement, M, D>>
 
-export function FieldSet<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M>>): ReactiveTreeNode<El<HTMLFieldSetElement, M>>
+export function FieldSet<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M, D>>): ReactiveTreeNode<El<HTMLFieldSetElement, M, D>>
 
-export function FieldSet<M = unknown>(
+export function FieldSet<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLFieldSetElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLFieldSetElement, M>>,
-  creation?: Script<El<HTMLFieldSetElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLFieldSetElement, M>>,
-  mounting?: Script<El<HTMLFieldSetElement, M>>,
-  destruction?: Script<El<HTMLFieldSetElement, M>>,
+  setup?: Script<El<HTMLFieldSetElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLFieldSetElement, M, D>>,
+  creation?: Script<El<HTMLFieldSetElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLFieldSetElement, M, D>>,
+  mounting?: Script<El<HTMLFieldSetElement, M, D>>,
+  destruction?: Script<El<HTMLFieldSetElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M>>): ReactiveTreeNode<El<HTMLFieldSetElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M, D>>): ReactiveTreeNode<El<HTMLFieldSetElement, M, D>>
 
-export function FieldSet<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLFieldSetElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M>>,
-  setupOrMode?: Script<El<HTMLFieldSetElement, M>> | Mode,
-  setup?: Script<El<HTMLFieldSetElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLFieldSetElement, M>>,
-  creation?: Script<El<HTMLFieldSetElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLFieldSetElement, M>>,
-  mounting?: Script<El<HTMLFieldSetElement, M>>,
-  destruction?: Script<El<HTMLFieldSetElement, M>>,
+export function FieldSet<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLFieldSetElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M, D>>,
+  setupOrMode?: Script<El<HTMLFieldSetElement, M, D>> | Mode,
+  setup?: Script<El<HTMLFieldSetElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLFieldSetElement, M, D>>,
+  creation?: Script<El<HTMLFieldSetElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLFieldSetElement, M, D>>,
+  mounting?: Script<El<HTMLFieldSetElement, M, D>>,
+  destruction?: Script<El<HTMLFieldSetElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M>>): ReactiveTreeNode<El<HTMLFieldSetElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M, D>>): ReactiveTreeNode<El<HTMLFieldSetElement, M, D>> {
   //
   return describe(FieldSet.name, HtmlTags.fieldset,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1609,45 +1609,45 @@ export function FieldSet<M = unknown>(
 
 // FigCaption
 
-export function FigCaption<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function FigCaption<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function FigCaption<M = unknown>(
+export function FigCaption<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function FigCaption<M = unknown>(
+export function FigCaption<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function FigCaption<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function FigCaption<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function FigCaption<M = unknown>(
+export function FigCaption<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function FigCaption<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function FigCaption<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(FigCaption.name, HtmlTags.figcaption,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1656,45 +1656,45 @@ export function FigCaption<M = unknown>(
 
 // Figure
 
-export function Figure<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Figure<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Figure<M = unknown>(
+export function Figure<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Figure<M = unknown>(
+export function Figure<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Figure<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Figure<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Figure<M = unknown>(
+export function Figure<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Figure<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Figure<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Figure.name, HtmlTags.figure,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1703,45 +1703,45 @@ export function Figure<M = unknown>(
 
 // Footer
 
-export function Footer<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Footer<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Footer<M = unknown>(
+export function Footer<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Footer<M = unknown>(
+export function Footer<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Footer<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Footer<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Footer<M = unknown>(
+export function Footer<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Footer<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Footer<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Footer.name, HtmlTags.footer,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1750,45 +1750,45 @@ export function Footer<M = unknown>(
 
 // Form
 
-export function Form<M = unknown>(
-  setup: Script<El<HTMLFormElement, M>>): ReactiveTreeNode<El<HTMLFormElement, M>>
+export function Form<M = unknown, D = unknown>(
+  setup: Script<El<HTMLFormElement, M, D>>): ReactiveTreeNode<El<HTMLFormElement, M, D>>
 
-export function Form<M = unknown>(
+export function Form<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLFormElement, M>>): ReactiveTreeNode<El<HTMLFormElement, M>>
+  setup: Script<El<HTMLFormElement, M, D>>): ReactiveTreeNode<El<HTMLFormElement, M, D>>
 
-export function Form<M = unknown>(
+export function Form<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLFormElement, M>>): ReactiveTreeNode<El<HTMLFormElement, M>>
+  setup: Script<El<HTMLFormElement, M, D>>): ReactiveTreeNode<El<HTMLFormElement, M, D>>
 
-export function Form<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLFormElement, M>>): ReactiveTreeNode<El<HTMLFormElement, M>>
+export function Form<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLFormElement, M, D>>): ReactiveTreeNode<El<HTMLFormElement, M, D>>
 
-export function Form<M = unknown>(
+export function Form<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLFormElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLFormElement, M>>,
-  creation?: Script<El<HTMLFormElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLFormElement, M>>,
-  mounting?: Script<El<HTMLFormElement, M>>,
-  destruction?: Script<El<HTMLFormElement, M>>,
+  setup?: Script<El<HTMLFormElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLFormElement, M, D>>,
+  creation?: Script<El<HTMLFormElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLFormElement, M, D>>,
+  mounting?: Script<El<HTMLFormElement, M, D>>,
+  destruction?: Script<El<HTMLFormElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLFormElement, M>>): ReactiveTreeNode<El<HTMLFormElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLFormElement, M, D>>): ReactiveTreeNode<El<HTMLFormElement, M, D>>
 
-export function Form<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLFormElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLFormElement, M>>,
-  setupOrMode?: Script<El<HTMLFormElement, M>> | Mode,
-  setup?: Script<El<HTMLFormElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLFormElement, M>>,
-  creation?: Script<El<HTMLFormElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLFormElement, M>>,
-  mounting?: Script<El<HTMLFormElement, M>>,
-  destruction?: Script<El<HTMLFormElement, M>>,
+export function Form<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLFormElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLFormElement, M, D>>,
+  setupOrMode?: Script<El<HTMLFormElement, M, D>> | Mode,
+  setup?: Script<El<HTMLFormElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLFormElement, M, D>>,
+  creation?: Script<El<HTMLFormElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLFormElement, M, D>>,
+  mounting?: Script<El<HTMLFormElement, M, D>>,
+  destruction?: Script<El<HTMLFormElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLFormElement, M>>): ReactiveTreeNode<El<HTMLFormElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLFormElement, M, D>>): ReactiveTreeNode<El<HTMLFormElement, M, D>> {
   //
   return describe(Form.name, HtmlTags.form,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1797,45 +1797,45 @@ export function Form<M = unknown>(
 
 // H1
 
-export function H1<M = unknown>(
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+export function H1<M = unknown, D = unknown>(
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H1<M = unknown>(
+export function H1<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H1<M = unknown>(
+export function H1<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H1<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+export function H1<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H1<M = unknown>(
+export function H1<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLHeadingElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  creation?: Script<El<HTMLHeadingElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  mounting?: Script<El<HTMLHeadingElement, M>>,
-  destruction?: Script<El<HTMLHeadingElement, M>>,
+  setup?: Script<El<HTMLHeadingElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  creation?: Script<El<HTMLHeadingElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  mounting?: Script<El<HTMLHeadingElement, M, D>>,
+  destruction?: Script<El<HTMLHeadingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H1<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLHeadingElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>,
-  setupOrMode?: Script<El<HTMLHeadingElement, M>> | Mode,
-  setup?: Script<El<HTMLHeadingElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  creation?: Script<El<HTMLHeadingElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  mounting?: Script<El<HTMLHeadingElement, M>>,
-  destruction?: Script<El<HTMLHeadingElement, M>>,
+export function H1<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLHeadingElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
+  setupOrMode?: Script<El<HTMLHeadingElement, M, D>> | Mode,
+  setup?: Script<El<HTMLHeadingElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  creation?: Script<El<HTMLHeadingElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  mounting?: Script<El<HTMLHeadingElement, M, D>>,
+  destruction?: Script<El<HTMLHeadingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>> {
   //
   return describe(H1.name, HtmlTags.h1,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1844,45 +1844,45 @@ export function H1<M = unknown>(
 
 // H2
 
-export function H2<M = unknown>(
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+export function H2<M = unknown, D = unknown>(
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H2<M = unknown>(
+export function H2<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H2<M = unknown>(
+export function H2<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H2<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+export function H2<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H2<M = unknown>(
+export function H2<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLHeadingElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  creation?: Script<El<HTMLHeadingElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  mounting?: Script<El<HTMLHeadingElement, M>>,
-  destruction?: Script<El<HTMLHeadingElement, M>>,
+  setup?: Script<El<HTMLHeadingElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  creation?: Script<El<HTMLHeadingElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  mounting?: Script<El<HTMLHeadingElement, M, D>>,
+  destruction?: Script<El<HTMLHeadingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H2<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLHeadingElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>,
-  setupOrMode?: Script<El<HTMLHeadingElement, M>> | Mode,
-  setup?: Script<El<HTMLHeadingElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  creation?: Script<El<HTMLHeadingElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  mounting?: Script<El<HTMLHeadingElement, M>>,
-  destruction?: Script<El<HTMLHeadingElement, M>>,
+export function H2<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLHeadingElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
+  setupOrMode?: Script<El<HTMLHeadingElement, M, D>> | Mode,
+  setup?: Script<El<HTMLHeadingElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  creation?: Script<El<HTMLHeadingElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  mounting?: Script<El<HTMLHeadingElement, M, D>>,
+  destruction?: Script<El<HTMLHeadingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>> {
   //
   return describe(H2.name, HtmlTags.h2,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1891,45 +1891,45 @@ export function H2<M = unknown>(
 
 // H3
 
-export function H3<M = unknown>(
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+export function H3<M = unknown, D = unknown>(
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H3<M = unknown>(
+export function H3<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H3<M = unknown>(
+export function H3<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H3<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+export function H3<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H3<M = unknown>(
+export function H3<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLHeadingElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  creation?: Script<El<HTMLHeadingElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  mounting?: Script<El<HTMLHeadingElement, M>>,
-  destruction?: Script<El<HTMLHeadingElement, M>>,
+  setup?: Script<El<HTMLHeadingElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  creation?: Script<El<HTMLHeadingElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  mounting?: Script<El<HTMLHeadingElement, M, D>>,
+  destruction?: Script<El<HTMLHeadingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H3<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLHeadingElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>,
-  setupOrMode?: Script<El<HTMLHeadingElement, M>> | Mode,
-  setup?: Script<El<HTMLHeadingElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  creation?: Script<El<HTMLHeadingElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  mounting?: Script<El<HTMLHeadingElement, M>>,
-  destruction?: Script<El<HTMLHeadingElement, M>>,
+export function H3<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLHeadingElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
+  setupOrMode?: Script<El<HTMLHeadingElement, M, D>> | Mode,
+  setup?: Script<El<HTMLHeadingElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  creation?: Script<El<HTMLHeadingElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  mounting?: Script<El<HTMLHeadingElement, M, D>>,
+  destruction?: Script<El<HTMLHeadingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>> {
   //
   return describe(H3.name, HtmlTags.h3,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1938,45 +1938,45 @@ export function H3<M = unknown>(
 
 // H4
 
-export function H4<M = unknown>(
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+export function H4<M = unknown, D = unknown>(
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H4<M = unknown>(
+export function H4<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H4<M = unknown>(
+export function H4<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H4<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+export function H4<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H4<M = unknown>(
+export function H4<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLHeadingElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  creation?: Script<El<HTMLHeadingElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  mounting?: Script<El<HTMLHeadingElement, M>>,
-  destruction?: Script<El<HTMLHeadingElement, M>>,
+  setup?: Script<El<HTMLHeadingElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  creation?: Script<El<HTMLHeadingElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  mounting?: Script<El<HTMLHeadingElement, M, D>>,
+  destruction?: Script<El<HTMLHeadingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H4<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLHeadingElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>,
-  setupOrMode?: Script<El<HTMLHeadingElement, M>> | Mode,
-  setup?: Script<El<HTMLHeadingElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  creation?: Script<El<HTMLHeadingElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  mounting?: Script<El<HTMLHeadingElement, M>>,
-  destruction?: Script<El<HTMLHeadingElement, M>>,
+export function H4<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLHeadingElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
+  setupOrMode?: Script<El<HTMLHeadingElement, M, D>> | Mode,
+  setup?: Script<El<HTMLHeadingElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  creation?: Script<El<HTMLHeadingElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  mounting?: Script<El<HTMLHeadingElement, M, D>>,
+  destruction?: Script<El<HTMLHeadingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>> {
   //
   return describe(H4.name, HtmlTags.h4,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1985,45 +1985,45 @@ export function H4<M = unknown>(
 
 // H5
 
-export function H5<M = unknown>(
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+export function H5<M = unknown, D = unknown>(
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H5<M = unknown>(
+export function H5<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H5<M = unknown>(
+export function H5<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H5<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+export function H5<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H5<M = unknown>(
+export function H5<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLHeadingElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  creation?: Script<El<HTMLHeadingElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  mounting?: Script<El<HTMLHeadingElement, M>>,
-  destruction?: Script<El<HTMLHeadingElement, M>>,
+  setup?: Script<El<HTMLHeadingElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  creation?: Script<El<HTMLHeadingElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  mounting?: Script<El<HTMLHeadingElement, M, D>>,
+  destruction?: Script<El<HTMLHeadingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H5<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLHeadingElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>,
-  setupOrMode?: Script<El<HTMLHeadingElement, M>> | Mode,
-  setup?: Script<El<HTMLHeadingElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  creation?: Script<El<HTMLHeadingElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  mounting?: Script<El<HTMLHeadingElement, M>>,
-  destruction?: Script<El<HTMLHeadingElement, M>>,
+export function H5<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLHeadingElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
+  setupOrMode?: Script<El<HTMLHeadingElement, M, D>> | Mode,
+  setup?: Script<El<HTMLHeadingElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  creation?: Script<El<HTMLHeadingElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  mounting?: Script<El<HTMLHeadingElement, M, D>>,
+  destruction?: Script<El<HTMLHeadingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>> {
   //
   return describe(H5.name, HtmlTags.h5,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2032,45 +2032,45 @@ export function H5<M = unknown>(
 
 // H6
 
-export function H6<M = unknown>(
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+export function H6<M = unknown, D = unknown>(
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H6<M = unknown>(
+export function H6<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H6<M = unknown>(
+export function H6<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  setup: Script<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H6<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+export function H6<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H6<M = unknown>(
+export function H6<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLHeadingElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  creation?: Script<El<HTMLHeadingElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  mounting?: Script<El<HTMLHeadingElement, M>>,
-  destruction?: Script<El<HTMLHeadingElement, M>>,
+  setup?: Script<El<HTMLHeadingElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  creation?: Script<El<HTMLHeadingElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  mounting?: Script<El<HTMLHeadingElement, M, D>>,
+  destruction?: Script<El<HTMLHeadingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
 
-export function H6<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLHeadingElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>,
-  setupOrMode?: Script<El<HTMLHeadingElement, M>> | Mode,
-  setup?: Script<El<HTMLHeadingElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  creation?: Script<El<HTMLHeadingElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHeadingElement, M>>,
-  mounting?: Script<El<HTMLHeadingElement, M>>,
-  destruction?: Script<El<HTMLHeadingElement, M>>,
+export function H6<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLHeadingElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
+  setupOrMode?: Script<El<HTMLHeadingElement, M, D>> | Mode,
+  setup?: Script<El<HTMLHeadingElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  creation?: Script<El<HTMLHeadingElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHeadingElement, M, D>>,
+  mounting?: Script<El<HTMLHeadingElement, M, D>>,
+  destruction?: Script<El<HTMLHeadingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>> {
   //
   return describe(H6.name, HtmlTags.h6,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2079,45 +2079,45 @@ export function H6<M = unknown>(
 
 // Head
 
-export function Head<M = unknown>(
-  setup: Script<El<HTMLHeadElement, M>>): ReactiveTreeNode<El<HTMLHeadElement, M>>
+export function Head<M = unknown, D = unknown>(
+  setup: Script<El<HTMLHeadElement, M, D>>): ReactiveTreeNode<El<HTMLHeadElement, M, D>>
 
-export function Head<M = unknown>(
+export function Head<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLHeadElement, M>>): ReactiveTreeNode<El<HTMLHeadElement, M>>
+  setup: Script<El<HTMLHeadElement, M, D>>): ReactiveTreeNode<El<HTMLHeadElement, M, D>>
 
-export function Head<M = unknown>(
+export function Head<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLHeadElement, M>>): ReactiveTreeNode<El<HTMLHeadElement, M>>
+  setup: Script<El<HTMLHeadElement, M, D>>): ReactiveTreeNode<El<HTMLHeadElement, M, D>>
 
-export function Head<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLHeadElement, M>>): ReactiveTreeNode<El<HTMLHeadElement, M>>
+export function Head<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLHeadElement, M, D>>): ReactiveTreeNode<El<HTMLHeadElement, M, D>>
 
-export function Head<M = unknown>(
+export function Head<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLHeadElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHeadElement, M>>,
-  creation?: Script<El<HTMLHeadElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHeadElement, M>>,
-  mounting?: Script<El<HTMLHeadElement, M>>,
-  destruction?: Script<El<HTMLHeadElement, M>>,
+  setup?: Script<El<HTMLHeadElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHeadElement, M, D>>,
+  creation?: Script<El<HTMLHeadElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHeadElement, M, D>>,
+  mounting?: Script<El<HTMLHeadElement, M, D>>,
+  destruction?: Script<El<HTMLHeadElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadElement, M>>): ReactiveTreeNode<El<HTMLHeadElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLHeadElement, M, D>>): ReactiveTreeNode<El<HTMLHeadElement, M, D>>
 
-export function Head<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLHeadElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadElement, M>>,
-  setupOrMode?: Script<El<HTMLHeadElement, M>> | Mode,
-  setup?: Script<El<HTMLHeadElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHeadElement, M>>,
-  creation?: Script<El<HTMLHeadElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHeadElement, M>>,
-  mounting?: Script<El<HTMLHeadElement, M>>,
-  destruction?: Script<El<HTMLHeadElement, M>>,
+export function Head<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLHeadElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadElement, M, D>>,
+  setupOrMode?: Script<El<HTMLHeadElement, M, D>> | Mode,
+  setup?: Script<El<HTMLHeadElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHeadElement, M, D>>,
+  creation?: Script<El<HTMLHeadElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHeadElement, M, D>>,
+  mounting?: Script<El<HTMLHeadElement, M, D>>,
+  destruction?: Script<El<HTMLHeadElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadElement, M>>): ReactiveTreeNode<El<HTMLHeadElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLHeadElement, M, D>>): ReactiveTreeNode<El<HTMLHeadElement, M, D>> {
   //
   return describe(Head.name, HtmlTags.head,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2126,45 +2126,45 @@ export function Head<M = unknown>(
 
 // Header
 
-export function Header<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Header<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Header<M = unknown>(
+export function Header<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Header<M = unknown>(
+export function Header<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Header<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Header<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Header<M = unknown>(
+export function Header<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Header<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Header<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Header.name, HtmlTags.header,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2173,45 +2173,45 @@ export function Header<M = unknown>(
 
 // HGroup
 
-export function HGroup<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function HGroup<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function HGroup<M = unknown>(
+export function HGroup<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function HGroup<M = unknown>(
+export function HGroup<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function HGroup<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function HGroup<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function HGroup<M = unknown>(
+export function HGroup<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function HGroup<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function HGroup<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(HGroup.name, HtmlTags.hgroup,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2220,45 +2220,45 @@ export function HGroup<M = unknown>(
 
 // HR
 
-export function HR<M = unknown>(
-  setup: Script<El<HTMLHRElement, M>>): ReactiveTreeNode<El<HTMLHRElement, M>>
+export function HR<M = unknown, D = unknown>(
+  setup: Script<El<HTMLHRElement, M, D>>): ReactiveTreeNode<El<HTMLHRElement, M, D>>
 
-export function HR<M = unknown>(
+export function HR<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLHRElement, M>>): ReactiveTreeNode<El<HTMLHRElement, M>>
+  setup: Script<El<HTMLHRElement, M, D>>): ReactiveTreeNode<El<HTMLHRElement, M, D>>
 
-export function HR<M = unknown>(
+export function HR<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLHRElement, M>>): ReactiveTreeNode<El<HTMLHRElement, M>>
+  setup: Script<El<HTMLHRElement, M, D>>): ReactiveTreeNode<El<HTMLHRElement, M, D>>
 
-export function HR<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLHRElement, M>>): ReactiveTreeNode<El<HTMLHRElement, M>>
+export function HR<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLHRElement, M, D>>): ReactiveTreeNode<El<HTMLHRElement, M, D>>
 
-export function HR<M = unknown>(
+export function HR<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLHRElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHRElement, M>>,
-  creation?: Script<El<HTMLHRElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHRElement, M>>,
-  mounting?: Script<El<HTMLHRElement, M>>,
-  destruction?: Script<El<HTMLHRElement, M>>,
+  setup?: Script<El<HTMLHRElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHRElement, M, D>>,
+  creation?: Script<El<HTMLHRElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHRElement, M, D>>,
+  mounting?: Script<El<HTMLHRElement, M, D>>,
+  destruction?: Script<El<HTMLHRElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHRElement, M>>): ReactiveTreeNode<El<HTMLHRElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLHRElement, M, D>>): ReactiveTreeNode<El<HTMLHRElement, M, D>>
 
-export function HR<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLHRElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHRElement, M>>,
-  setupOrMode?: Script<El<HTMLHRElement, M>> | Mode,
-  setup?: Script<El<HTMLHRElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHRElement, M>>,
-  creation?: Script<El<HTMLHRElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHRElement, M>>,
-  mounting?: Script<El<HTMLHRElement, M>>,
-  destruction?: Script<El<HTMLHRElement, M>>,
+export function HR<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLHRElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHRElement, M, D>>,
+  setupOrMode?: Script<El<HTMLHRElement, M, D>> | Mode,
+  setup?: Script<El<HTMLHRElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHRElement, M, D>>,
+  creation?: Script<El<HTMLHRElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHRElement, M, D>>,
+  mounting?: Script<El<HTMLHRElement, M, D>>,
+  destruction?: Script<El<HTMLHRElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHRElement, M>>): ReactiveTreeNode<El<HTMLHRElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLHRElement, M, D>>): ReactiveTreeNode<El<HTMLHRElement, M, D>> {
   //
   return describe(HR.name, HtmlTags.hr,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2267,45 +2267,45 @@ export function HR<M = unknown>(
 
 // Html
 
-export function Html<M = unknown>(
-  setup: Script<El<HTMLHtmlElement, M>>): ReactiveTreeNode<El<HTMLHtmlElement, M>>
+export function Html<M = unknown, D = unknown>(
+  setup: Script<El<HTMLHtmlElement, M, D>>): ReactiveTreeNode<El<HTMLHtmlElement, M, D>>
 
-export function Html<M = unknown>(
+export function Html<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLHtmlElement, M>>): ReactiveTreeNode<El<HTMLHtmlElement, M>>
+  setup: Script<El<HTMLHtmlElement, M, D>>): ReactiveTreeNode<El<HTMLHtmlElement, M, D>>
 
-export function Html<M = unknown>(
+export function Html<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLHtmlElement, M>>): ReactiveTreeNode<El<HTMLHtmlElement, M>>
+  setup: Script<El<HTMLHtmlElement, M, D>>): ReactiveTreeNode<El<HTMLHtmlElement, M, D>>
 
-export function Html<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLHtmlElement, M>>): ReactiveTreeNode<El<HTMLHtmlElement, M>>
+export function Html<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLHtmlElement, M, D>>): ReactiveTreeNode<El<HTMLHtmlElement, M, D>>
 
-export function Html<M = unknown>(
+export function Html<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLHtmlElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHtmlElement, M>>,
-  creation?: Script<El<HTMLHtmlElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHtmlElement, M>>,
-  mounting?: Script<El<HTMLHtmlElement, M>>,
-  destruction?: Script<El<HTMLHtmlElement, M>>,
+  setup?: Script<El<HTMLHtmlElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHtmlElement, M, D>>,
+  creation?: Script<El<HTMLHtmlElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHtmlElement, M, D>>,
+  mounting?: Script<El<HTMLHtmlElement, M, D>>,
+  destruction?: Script<El<HTMLHtmlElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHtmlElement, M>>): ReactiveTreeNode<El<HTMLHtmlElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLHtmlElement, M, D>>): ReactiveTreeNode<El<HTMLHtmlElement, M, D>>
 
-export function Html<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLHtmlElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHtmlElement, M>>,
-  setupOrMode?: Script<El<HTMLHtmlElement, M>> | Mode,
-  setup?: Script<El<HTMLHtmlElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLHtmlElement, M>>,
-  creation?: Script<El<HTMLHtmlElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLHtmlElement, M>>,
-  mounting?: Script<El<HTMLHtmlElement, M>>,
-  destruction?: Script<El<HTMLHtmlElement, M>>,
+export function Html<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLHtmlElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHtmlElement, M, D>>,
+  setupOrMode?: Script<El<HTMLHtmlElement, M, D>> | Mode,
+  setup?: Script<El<HTMLHtmlElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLHtmlElement, M, D>>,
+  creation?: Script<El<HTMLHtmlElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLHtmlElement, M, D>>,
+  mounting?: Script<El<HTMLHtmlElement, M, D>>,
+  destruction?: Script<El<HTMLHtmlElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHtmlElement, M>>): ReactiveTreeNode<El<HTMLHtmlElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLHtmlElement, M, D>>): ReactiveTreeNode<El<HTMLHtmlElement, M, D>> {
   //
   return describe(Html.name, HtmlTags.html,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2314,45 +2314,45 @@ export function Html<M = unknown>(
 
 // I
 
-export function I<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function I<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function I<M = unknown>(
+export function I<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function I<M = unknown>(
+export function I<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function I<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function I<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function I<M = unknown>(
+export function I<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function I<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function I<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(I.name, HtmlTags.i,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2361,45 +2361,45 @@ export function I<M = unknown>(
 
 // IFrame
 
-export function IFrame<M = unknown>(
-  setup: Script<El<HTMLIFrameElement, M>>): ReactiveTreeNode<El<HTMLIFrameElement, M>>
+export function IFrame<M = unknown, D = unknown>(
+  setup: Script<El<HTMLIFrameElement, M, D>>): ReactiveTreeNode<El<HTMLIFrameElement, M, D>>
 
-export function IFrame<M = unknown>(
+export function IFrame<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLIFrameElement, M>>): ReactiveTreeNode<El<HTMLIFrameElement, M>>
+  setup: Script<El<HTMLIFrameElement, M, D>>): ReactiveTreeNode<El<HTMLIFrameElement, M, D>>
 
-export function IFrame<M = unknown>(
+export function IFrame<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLIFrameElement, M>>): ReactiveTreeNode<El<HTMLIFrameElement, M>>
+  setup: Script<El<HTMLIFrameElement, M, D>>): ReactiveTreeNode<El<HTMLIFrameElement, M, D>>
 
-export function IFrame<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLIFrameElement, M>>): ReactiveTreeNode<El<HTMLIFrameElement, M>>
+export function IFrame<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLIFrameElement, M, D>>): ReactiveTreeNode<El<HTMLIFrameElement, M, D>>
 
-export function IFrame<M = unknown>(
+export function IFrame<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLIFrameElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLIFrameElement, M>>,
-  creation?: Script<El<HTMLIFrameElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLIFrameElement, M>>,
-  mounting?: Script<El<HTMLIFrameElement, M>>,
-  destruction?: Script<El<HTMLIFrameElement, M>>,
+  setup?: Script<El<HTMLIFrameElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLIFrameElement, M, D>>,
+  creation?: Script<El<HTMLIFrameElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLIFrameElement, M, D>>,
+  mounting?: Script<El<HTMLIFrameElement, M, D>>,
+  destruction?: Script<El<HTMLIFrameElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLIFrameElement, M>>): ReactiveTreeNode<El<HTMLIFrameElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLIFrameElement, M, D>>): ReactiveTreeNode<El<HTMLIFrameElement, M, D>>
 
-export function IFrame<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLIFrameElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLIFrameElement, M>>,
-  setupOrMode?: Script<El<HTMLIFrameElement, M>> | Mode,
-  setup?: Script<El<HTMLIFrameElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLIFrameElement, M>>,
-  creation?: Script<El<HTMLIFrameElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLIFrameElement, M>>,
-  mounting?: Script<El<HTMLIFrameElement, M>>,
-  destruction?: Script<El<HTMLIFrameElement, M>>,
+export function IFrame<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLIFrameElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLIFrameElement, M, D>>,
+  setupOrMode?: Script<El<HTMLIFrameElement, M, D>> | Mode,
+  setup?: Script<El<HTMLIFrameElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLIFrameElement, M, D>>,
+  creation?: Script<El<HTMLIFrameElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLIFrameElement, M, D>>,
+  mounting?: Script<El<HTMLIFrameElement, M, D>>,
+  destruction?: Script<El<HTMLIFrameElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLIFrameElement, M>>): ReactiveTreeNode<El<HTMLIFrameElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLIFrameElement, M, D>>): ReactiveTreeNode<El<HTMLIFrameElement, M, D>> {
   //
   return describe(IFrame.name, HtmlTags.iframe,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2408,45 +2408,45 @@ export function IFrame<M = unknown>(
 
 // Img
 
-export function Img<M = unknown>(
-  setup: Script<El<HTMLImageElement, M>>): ReactiveTreeNode<El<HTMLImageElement, M>>
+export function Img<M = unknown, D = unknown>(
+  setup: Script<El<HTMLImageElement, M, D>>): ReactiveTreeNode<El<HTMLImageElement, M, D>>
 
-export function Img<M = unknown>(
+export function Img<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLImageElement, M>>): ReactiveTreeNode<El<HTMLImageElement, M>>
+  setup: Script<El<HTMLImageElement, M, D>>): ReactiveTreeNode<El<HTMLImageElement, M, D>>
 
-export function Img<M = unknown>(
+export function Img<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLImageElement, M>>): ReactiveTreeNode<El<HTMLImageElement, M>>
+  setup: Script<El<HTMLImageElement, M, D>>): ReactiveTreeNode<El<HTMLImageElement, M, D>>
 
-export function Img<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLImageElement, M>>): ReactiveTreeNode<El<HTMLImageElement, M>>
+export function Img<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLImageElement, M, D>>): ReactiveTreeNode<El<HTMLImageElement, M, D>>
 
-export function Img<M = unknown>(
+export function Img<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLImageElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLImageElement, M>>,
-  creation?: Script<El<HTMLImageElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLImageElement, M>>,
-  mounting?: Script<El<HTMLImageElement, M>>,
-  destruction?: Script<El<HTMLImageElement, M>>,
+  setup?: Script<El<HTMLImageElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLImageElement, M, D>>,
+  creation?: Script<El<HTMLImageElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLImageElement, M, D>>,
+  mounting?: Script<El<HTMLImageElement, M, D>>,
+  destruction?: Script<El<HTMLImageElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLImageElement, M>>): ReactiveTreeNode<El<HTMLImageElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLImageElement, M, D>>): ReactiveTreeNode<El<HTMLImageElement, M, D>>
 
-export function Img<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLImageElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLImageElement, M>>,
-  setupOrMode?: Script<El<HTMLImageElement, M>> | Mode,
-  setup?: Script<El<HTMLImageElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLImageElement, M>>,
-  creation?: Script<El<HTMLImageElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLImageElement, M>>,
-  mounting?: Script<El<HTMLImageElement, M>>,
-  destruction?: Script<El<HTMLImageElement, M>>,
+export function Img<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLImageElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLImageElement, M, D>>,
+  setupOrMode?: Script<El<HTMLImageElement, M, D>> | Mode,
+  setup?: Script<El<HTMLImageElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLImageElement, M, D>>,
+  creation?: Script<El<HTMLImageElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLImageElement, M, D>>,
+  mounting?: Script<El<HTMLImageElement, M, D>>,
+  destruction?: Script<El<HTMLImageElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLImageElement, M>>): ReactiveTreeNode<El<HTMLImageElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLImageElement, M, D>>): ReactiveTreeNode<El<HTMLImageElement, M, D>> {
   //
   return describe(Img.name, HtmlTags.img,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2455,45 +2455,45 @@ export function Img<M = unknown>(
 
 // Input
 
-export function Input<M = unknown>(
-  setup: Script<El<HTMLInputElement, M>>): ReactiveTreeNode<El<HTMLInputElement, M>>
+export function Input<M = unknown, D = unknown>(
+  setup: Script<El<HTMLInputElement, M, D>>): ReactiveTreeNode<El<HTMLInputElement, M, D>>
 
-export function Input<M = unknown>(
+export function Input<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLInputElement, M>>): ReactiveTreeNode<El<HTMLInputElement, M>>
+  setup: Script<El<HTMLInputElement, M, D>>): ReactiveTreeNode<El<HTMLInputElement, M, D>>
 
-export function Input<M = unknown>(
+export function Input<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLInputElement, M>>): ReactiveTreeNode<El<HTMLInputElement, M>>
+  setup: Script<El<HTMLInputElement, M, D>>): ReactiveTreeNode<El<HTMLInputElement, M, D>>
 
-export function Input<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLInputElement, M>>): ReactiveTreeNode<El<HTMLInputElement, M>>
+export function Input<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLInputElement, M, D>>): ReactiveTreeNode<El<HTMLInputElement, M, D>>
 
-export function Input<M = unknown>(
+export function Input<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLInputElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLInputElement, M>>,
-  creation?: Script<El<HTMLInputElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLInputElement, M>>,
-  mounting?: Script<El<HTMLInputElement, M>>,
-  destruction?: Script<El<HTMLInputElement, M>>,
+  setup?: Script<El<HTMLInputElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLInputElement, M, D>>,
+  creation?: Script<El<HTMLInputElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLInputElement, M, D>>,
+  mounting?: Script<El<HTMLInputElement, M, D>>,
+  destruction?: Script<El<HTMLInputElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLInputElement, M>>): ReactiveTreeNode<El<HTMLInputElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLInputElement, M, D>>): ReactiveTreeNode<El<HTMLInputElement, M, D>>
 
-export function Input<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLInputElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLInputElement, M>>,
-  setupOrMode?: Script<El<HTMLInputElement, M>> | Mode,
-  setup?: Script<El<HTMLInputElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLInputElement, M>>,
-  creation?: Script<El<HTMLInputElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLInputElement, M>>,
-  mounting?: Script<El<HTMLInputElement, M>>,
-  destruction?: Script<El<HTMLInputElement, M>>,
+export function Input<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLInputElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLInputElement, M, D>>,
+  setupOrMode?: Script<El<HTMLInputElement, M, D>> | Mode,
+  setup?: Script<El<HTMLInputElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLInputElement, M, D>>,
+  creation?: Script<El<HTMLInputElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLInputElement, M, D>>,
+  mounting?: Script<El<HTMLInputElement, M, D>>,
+  destruction?: Script<El<HTMLInputElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLInputElement, M>>): ReactiveTreeNode<El<HTMLInputElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLInputElement, M, D>>): ReactiveTreeNode<El<HTMLInputElement, M, D>> {
   //
   return describe(Input.name, HtmlTags.input,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2502,45 +2502,45 @@ export function Input<M = unknown>(
 
 // Ins
 
-export function Ins<M = unknown>(
-  setup: Script<El<HTMLModElement, M>>): ReactiveTreeNode<El<HTMLModElement, M>>
+export function Ins<M = unknown, D = unknown>(
+  setup: Script<El<HTMLModElement, M, D>>): ReactiveTreeNode<El<HTMLModElement, M, D>>
 
-export function Ins<M = unknown>(
+export function Ins<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLModElement, M>>): ReactiveTreeNode<El<HTMLModElement, M>>
+  setup: Script<El<HTMLModElement, M, D>>): ReactiveTreeNode<El<HTMLModElement, M, D>>
 
-export function Ins<M = unknown>(
+export function Ins<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLModElement, M>>): ReactiveTreeNode<El<HTMLModElement, M>>
+  setup: Script<El<HTMLModElement, M, D>>): ReactiveTreeNode<El<HTMLModElement, M, D>>
 
-export function Ins<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLModElement, M>>): ReactiveTreeNode<El<HTMLModElement, M>>
+export function Ins<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLModElement, M, D>>): ReactiveTreeNode<El<HTMLModElement, M, D>>
 
-export function Ins<M = unknown>(
+export function Ins<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLModElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLModElement, M>>,
-  creation?: Script<El<HTMLModElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLModElement, M>>,
-  mounting?: Script<El<HTMLModElement, M>>,
-  destruction?: Script<El<HTMLModElement, M>>,
+  setup?: Script<El<HTMLModElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLModElement, M, D>>,
+  creation?: Script<El<HTMLModElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLModElement, M, D>>,
+  mounting?: Script<El<HTMLModElement, M, D>>,
+  destruction?: Script<El<HTMLModElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLModElement, M>>): ReactiveTreeNode<El<HTMLModElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLModElement, M, D>>): ReactiveTreeNode<El<HTMLModElement, M, D>>
 
-export function Ins<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLModElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLModElement, M>>,
-  setupOrMode?: Script<El<HTMLModElement, M>> | Mode,
-  setup?: Script<El<HTMLModElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLModElement, M>>,
-  creation?: Script<El<HTMLModElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLModElement, M>>,
-  mounting?: Script<El<HTMLModElement, M>>,
-  destruction?: Script<El<HTMLModElement, M>>,
+export function Ins<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLModElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLModElement, M, D>>,
+  setupOrMode?: Script<El<HTMLModElement, M, D>> | Mode,
+  setup?: Script<El<HTMLModElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLModElement, M, D>>,
+  creation?: Script<El<HTMLModElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLModElement, M, D>>,
+  mounting?: Script<El<HTMLModElement, M, D>>,
+  destruction?: Script<El<HTMLModElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLModElement, M>>): ReactiveTreeNode<El<HTMLModElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLModElement, M, D>>): ReactiveTreeNode<El<HTMLModElement, M, D>> {
   //
   return describe(Ins.name, HtmlTags.ins,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2549,45 +2549,45 @@ export function Ins<M = unknown>(
 
 // Kbd
 
-export function Kbd<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Kbd<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Kbd<M = unknown>(
+export function Kbd<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Kbd<M = unknown>(
+export function Kbd<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Kbd<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Kbd<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Kbd<M = unknown>(
+export function Kbd<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Kbd<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Kbd<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Kbd.name, HtmlTags.kbd,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2596,45 +2596,45 @@ export function Kbd<M = unknown>(
 
 // KeyGen
 
-export function KeyGen<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function KeyGen<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function KeyGen<M = unknown>(
+export function KeyGen<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function KeyGen<M = unknown>(
+export function KeyGen<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function KeyGen<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function KeyGen<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function KeyGen<M = unknown>(
+export function KeyGen<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function KeyGen<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function KeyGen<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(KeyGen.name, HtmlTags.keygen,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2643,45 +2643,45 @@ export function KeyGen<M = unknown>(
 
 // Label
 
-export function Label<M = unknown>(
-  setup: Script<El<HTMLLabelElement, M>>): ReactiveTreeNode<El<HTMLLabelElement, M>>
+export function Label<M = unknown, D = unknown>(
+  setup: Script<El<HTMLLabelElement, M, D>>): ReactiveTreeNode<El<HTMLLabelElement, M, D>>
 
-export function Label<M = unknown>(
+export function Label<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLLabelElement, M>>): ReactiveTreeNode<El<HTMLLabelElement, M>>
+  setup: Script<El<HTMLLabelElement, M, D>>): ReactiveTreeNode<El<HTMLLabelElement, M, D>>
 
-export function Label<M = unknown>(
+export function Label<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLLabelElement, M>>): ReactiveTreeNode<El<HTMLLabelElement, M>>
+  setup: Script<El<HTMLLabelElement, M, D>>): ReactiveTreeNode<El<HTMLLabelElement, M, D>>
 
-export function Label<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLLabelElement, M>>): ReactiveTreeNode<El<HTMLLabelElement, M>>
+export function Label<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLLabelElement, M, D>>): ReactiveTreeNode<El<HTMLLabelElement, M, D>>
 
-export function Label<M = unknown>(
+export function Label<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLLabelElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLLabelElement, M>>,
-  creation?: Script<El<HTMLLabelElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLLabelElement, M>>,
-  mounting?: Script<El<HTMLLabelElement, M>>,
-  destruction?: Script<El<HTMLLabelElement, M>>,
+  setup?: Script<El<HTMLLabelElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLLabelElement, M, D>>,
+  creation?: Script<El<HTMLLabelElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLLabelElement, M, D>>,
+  mounting?: Script<El<HTMLLabelElement, M, D>>,
+  destruction?: Script<El<HTMLLabelElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLabelElement, M>>): ReactiveTreeNode<El<HTMLLabelElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLLabelElement, M, D>>): ReactiveTreeNode<El<HTMLLabelElement, M, D>>
 
-export function Label<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLLabelElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLLabelElement, M>>,
-  setupOrMode?: Script<El<HTMLLabelElement, M>> | Mode,
-  setup?: Script<El<HTMLLabelElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLLabelElement, M>>,
-  creation?: Script<El<HTMLLabelElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLLabelElement, M>>,
-  mounting?: Script<El<HTMLLabelElement, M>>,
-  destruction?: Script<El<HTMLLabelElement, M>>,
+export function Label<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLLabelElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLLabelElement, M, D>>,
+  setupOrMode?: Script<El<HTMLLabelElement, M, D>> | Mode,
+  setup?: Script<El<HTMLLabelElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLLabelElement, M, D>>,
+  creation?: Script<El<HTMLLabelElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLLabelElement, M, D>>,
+  mounting?: Script<El<HTMLLabelElement, M, D>>,
+  destruction?: Script<El<HTMLLabelElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLabelElement, M>>): ReactiveTreeNode<El<HTMLLabelElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLLabelElement, M, D>>): ReactiveTreeNode<El<HTMLLabelElement, M, D>> {
   //
   return describe(Label.name, HtmlTags.label,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2690,45 +2690,45 @@ export function Label<M = unknown>(
 
 // Legend
 
-export function Legend<M = unknown>(
-  setup: Script<El<HTMLLegendElement, M>>): ReactiveTreeNode<El<HTMLLegendElement, M>>
+export function Legend<M = unknown, D = unknown>(
+  setup: Script<El<HTMLLegendElement, M, D>>): ReactiveTreeNode<El<HTMLLegendElement, M, D>>
 
-export function Legend<M = unknown>(
+export function Legend<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLLegendElement, M>>): ReactiveTreeNode<El<HTMLLegendElement, M>>
+  setup: Script<El<HTMLLegendElement, M, D>>): ReactiveTreeNode<El<HTMLLegendElement, M, D>>
 
-export function Legend<M = unknown>(
+export function Legend<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLLegendElement, M>>): ReactiveTreeNode<El<HTMLLegendElement, M>>
+  setup: Script<El<HTMLLegendElement, M, D>>): ReactiveTreeNode<El<HTMLLegendElement, M, D>>
 
-export function Legend<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLLegendElement, M>>): ReactiveTreeNode<El<HTMLLegendElement, M>>
+export function Legend<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLLegendElement, M, D>>): ReactiveTreeNode<El<HTMLLegendElement, M, D>>
 
-export function Legend<M = unknown>(
+export function Legend<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLLegendElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLLegendElement, M>>,
-  creation?: Script<El<HTMLLegendElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLLegendElement, M>>,
-  mounting?: Script<El<HTMLLegendElement, M>>,
-  destruction?: Script<El<HTMLLegendElement, M>>,
+  setup?: Script<El<HTMLLegendElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLLegendElement, M, D>>,
+  creation?: Script<El<HTMLLegendElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLLegendElement, M, D>>,
+  mounting?: Script<El<HTMLLegendElement, M, D>>,
+  destruction?: Script<El<HTMLLegendElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLegendElement, M>>): ReactiveTreeNode<El<HTMLLegendElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLLegendElement, M, D>>): ReactiveTreeNode<El<HTMLLegendElement, M, D>>
 
-export function Legend<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLLegendElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLLegendElement, M>>,
-  setupOrMode?: Script<El<HTMLLegendElement, M>> | Mode,
-  setup?: Script<El<HTMLLegendElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLLegendElement, M>>,
-  creation?: Script<El<HTMLLegendElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLLegendElement, M>>,
-  mounting?: Script<El<HTMLLegendElement, M>>,
-  destruction?: Script<El<HTMLLegendElement, M>>,
+export function Legend<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLLegendElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLLegendElement, M, D>>,
+  setupOrMode?: Script<El<HTMLLegendElement, M, D>> | Mode,
+  setup?: Script<El<HTMLLegendElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLLegendElement, M, D>>,
+  creation?: Script<El<HTMLLegendElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLLegendElement, M, D>>,
+  mounting?: Script<El<HTMLLegendElement, M, D>>,
+  destruction?: Script<El<HTMLLegendElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLegendElement, M>>): ReactiveTreeNode<El<HTMLLegendElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLLegendElement, M, D>>): ReactiveTreeNode<El<HTMLLegendElement, M, D>> {
   //
   return describe(Legend.name, HtmlTags.legend,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2737,45 +2737,45 @@ export function Legend<M = unknown>(
 
 // LI
 
-export function LI<M = unknown>(
-  setup: Script<El<HTMLLIElement, M>>): ReactiveTreeNode<El<HTMLLIElement, M>>
+export function LI<M = unknown, D = unknown>(
+  setup: Script<El<HTMLLIElement, M, D>>): ReactiveTreeNode<El<HTMLLIElement, M, D>>
 
-export function LI<M = unknown>(
+export function LI<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLLIElement, M>>): ReactiveTreeNode<El<HTMLLIElement, M>>
+  setup: Script<El<HTMLLIElement, M, D>>): ReactiveTreeNode<El<HTMLLIElement, M, D>>
 
-export function LI<M = unknown>(
+export function LI<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLLIElement, M>>): ReactiveTreeNode<El<HTMLLIElement, M>>
+  setup: Script<El<HTMLLIElement, M, D>>): ReactiveTreeNode<El<HTMLLIElement, M, D>>
 
-export function LI<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLLIElement, M>>): ReactiveTreeNode<El<HTMLLIElement, M>>
+export function LI<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLLIElement, M, D>>): ReactiveTreeNode<El<HTMLLIElement, M, D>>
 
-export function LI<M = unknown>(
+export function LI<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLLIElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLLIElement, M>>,
-  creation?: Script<El<HTMLLIElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLLIElement, M>>,
-  mounting?: Script<El<HTMLLIElement, M>>,
-  destruction?: Script<El<HTMLLIElement, M>>,
+  setup?: Script<El<HTMLLIElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLLIElement, M, D>>,
+  creation?: Script<El<HTMLLIElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLLIElement, M, D>>,
+  mounting?: Script<El<HTMLLIElement, M, D>>,
+  destruction?: Script<El<HTMLLIElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLIElement, M>>): ReactiveTreeNode<El<HTMLLIElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLLIElement, M, D>>): ReactiveTreeNode<El<HTMLLIElement, M, D>>
 
-export function LI<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLLIElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLLIElement, M>>,
-  setupOrMode?: Script<El<HTMLLIElement, M>> | Mode,
-  setup?: Script<El<HTMLLIElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLLIElement, M>>,
-  creation?: Script<El<HTMLLIElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLLIElement, M>>,
-  mounting?: Script<El<HTMLLIElement, M>>,
-  destruction?: Script<El<HTMLLIElement, M>>,
+export function LI<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLLIElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLLIElement, M, D>>,
+  setupOrMode?: Script<El<HTMLLIElement, M, D>> | Mode,
+  setup?: Script<El<HTMLLIElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLLIElement, M, D>>,
+  creation?: Script<El<HTMLLIElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLLIElement, M, D>>,
+  mounting?: Script<El<HTMLLIElement, M, D>>,
+  destruction?: Script<El<HTMLLIElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLIElement, M>>): ReactiveTreeNode<El<HTMLLIElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLLIElement, M, D>>): ReactiveTreeNode<El<HTMLLIElement, M, D>> {
   //
   return describe(LI.name, HtmlTags.li,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2784,45 +2784,45 @@ export function LI<M = unknown>(
 
 // Link
 
-export function Link<M = unknown>(
-  setup: Script<El<HTMLLinkElement, M>>): ReactiveTreeNode<El<HTMLLinkElement, M>>
+export function Link<M = unknown, D = unknown>(
+  setup: Script<El<HTMLLinkElement, M, D>>): ReactiveTreeNode<El<HTMLLinkElement, M, D>>
 
-export function Link<M = unknown>(
+export function Link<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLLinkElement, M>>): ReactiveTreeNode<El<HTMLLinkElement, M>>
+  setup: Script<El<HTMLLinkElement, M, D>>): ReactiveTreeNode<El<HTMLLinkElement, M, D>>
 
-export function Link<M = unknown>(
+export function Link<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLLinkElement, M>>): ReactiveTreeNode<El<HTMLLinkElement, M>>
+  setup: Script<El<HTMLLinkElement, M, D>>): ReactiveTreeNode<El<HTMLLinkElement, M, D>>
 
-export function Link<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLLinkElement, M>>): ReactiveTreeNode<El<HTMLLinkElement, M>>
+export function Link<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLLinkElement, M, D>>): ReactiveTreeNode<El<HTMLLinkElement, M, D>>
 
-export function Link<M = unknown>(
+export function Link<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLLinkElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLLinkElement, M>>,
-  creation?: Script<El<HTMLLinkElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLLinkElement, M>>,
-  mounting?: Script<El<HTMLLinkElement, M>>,
-  destruction?: Script<El<HTMLLinkElement, M>>,
+  setup?: Script<El<HTMLLinkElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLLinkElement, M, D>>,
+  creation?: Script<El<HTMLLinkElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLLinkElement, M, D>>,
+  mounting?: Script<El<HTMLLinkElement, M, D>>,
+  destruction?: Script<El<HTMLLinkElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLinkElement, M>>): ReactiveTreeNode<El<HTMLLinkElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLLinkElement, M, D>>): ReactiveTreeNode<El<HTMLLinkElement, M, D>>
 
-export function Link<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLLinkElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLLinkElement, M>>,
-  setupOrMode?: Script<El<HTMLLinkElement, M>> | Mode,
-  setup?: Script<El<HTMLLinkElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLLinkElement, M>>,
-  creation?: Script<El<HTMLLinkElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLLinkElement, M>>,
-  mounting?: Script<El<HTMLLinkElement, M>>,
-  destruction?: Script<El<HTMLLinkElement, M>>,
+export function Link<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLLinkElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLLinkElement, M, D>>,
+  setupOrMode?: Script<El<HTMLLinkElement, M, D>> | Mode,
+  setup?: Script<El<HTMLLinkElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLLinkElement, M, D>>,
+  creation?: Script<El<HTMLLinkElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLLinkElement, M, D>>,
+  mounting?: Script<El<HTMLLinkElement, M, D>>,
+  destruction?: Script<El<HTMLLinkElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLinkElement, M>>): ReactiveTreeNode<El<HTMLLinkElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLLinkElement, M, D>>): ReactiveTreeNode<El<HTMLLinkElement, M, D>> {
   //
   return describe(Link.name, HtmlTags.link,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2831,45 +2831,45 @@ export function Link<M = unknown>(
 
 // Main
 
-export function Main<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Main<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Main<M = unknown>(
+export function Main<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Main<M = unknown>(
+export function Main<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Main<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Main<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Main<M = unknown>(
+export function Main<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Main<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Main<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Main.name, HtmlTags.main,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2878,45 +2878,45 @@ export function Main<M = unknown>(
 
 // Map
 
-export function Map<M = unknown>(
-  setup: Script<El<HTMLMapElement, M>>): ReactiveTreeNode<El<HTMLMapElement, M>>
+export function Map<M = unknown, D = unknown>(
+  setup: Script<El<HTMLMapElement, M, D>>): ReactiveTreeNode<El<HTMLMapElement, M, D>>
 
-export function Map<M = unknown>(
+export function Map<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLMapElement, M>>): ReactiveTreeNode<El<HTMLMapElement, M>>
+  setup: Script<El<HTMLMapElement, M, D>>): ReactiveTreeNode<El<HTMLMapElement, M, D>>
 
-export function Map<M = unknown>(
+export function Map<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLMapElement, M>>): ReactiveTreeNode<El<HTMLMapElement, M>>
+  setup: Script<El<HTMLMapElement, M, D>>): ReactiveTreeNode<El<HTMLMapElement, M, D>>
 
-export function Map<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLMapElement, M>>): ReactiveTreeNode<El<HTMLMapElement, M>>
+export function Map<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLMapElement, M, D>>): ReactiveTreeNode<El<HTMLMapElement, M, D>>
 
-export function Map<M = unknown>(
+export function Map<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLMapElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLMapElement, M>>,
-  creation?: Script<El<HTMLMapElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLMapElement, M>>,
-  mounting?: Script<El<HTMLMapElement, M>>,
-  destruction?: Script<El<HTMLMapElement, M>>,
+  setup?: Script<El<HTMLMapElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLMapElement, M, D>>,
+  creation?: Script<El<HTMLMapElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLMapElement, M, D>>,
+  mounting?: Script<El<HTMLMapElement, M, D>>,
+  destruction?: Script<El<HTMLMapElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLMapElement, M>>): ReactiveTreeNode<El<HTMLMapElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLMapElement, M, D>>): ReactiveTreeNode<El<HTMLMapElement, M, D>>
 
-export function Map<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLMapElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLMapElement, M>>,
-  setupOrMode?: Script<El<HTMLMapElement, M>> | Mode,
-  setup?: Script<El<HTMLMapElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLMapElement, M>>,
-  creation?: Script<El<HTMLMapElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLMapElement, M>>,
-  mounting?: Script<El<HTMLMapElement, M>>,
-  destruction?: Script<El<HTMLMapElement, M>>,
+export function Map<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLMapElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLMapElement, M, D>>,
+  setupOrMode?: Script<El<HTMLMapElement, M, D>> | Mode,
+  setup?: Script<El<HTMLMapElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLMapElement, M, D>>,
+  creation?: Script<El<HTMLMapElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLMapElement, M, D>>,
+  mounting?: Script<El<HTMLMapElement, M, D>>,
+  destruction?: Script<El<HTMLMapElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLMapElement, M>>): ReactiveTreeNode<El<HTMLMapElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLMapElement, M, D>>): ReactiveTreeNode<El<HTMLMapElement, M, D>> {
   //
   return describe(Map.name, HtmlTags.map,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2925,45 +2925,45 @@ export function Map<M = unknown>(
 
 // Mark
 
-export function Mark<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Mark<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Mark<M = unknown>(
+export function Mark<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Mark<M = unknown>(
+export function Mark<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Mark<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Mark<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Mark<M = unknown>(
+export function Mark<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Mark<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Mark<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Mark.name, HtmlTags.mark,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2972,45 +2972,45 @@ export function Mark<M = unknown>(
 
 // Menu
 
-export function Menu<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Menu<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Menu<M = unknown>(
+export function Menu<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Menu<M = unknown>(
+export function Menu<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Menu<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Menu<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Menu<M = unknown>(
+export function Menu<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Menu<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Menu<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Menu.name, HtmlTags.menu,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3019,45 +3019,45 @@ export function Menu<M = unknown>(
 
 // MenuItem
 
-export function MenuItem<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function MenuItem<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function MenuItem<M = unknown>(
+export function MenuItem<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function MenuItem<M = unknown>(
+export function MenuItem<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function MenuItem<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function MenuItem<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function MenuItem<M = unknown>(
+export function MenuItem<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function MenuItem<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function MenuItem<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(MenuItem.name, HtmlTags.menuitem,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3066,45 +3066,45 @@ export function MenuItem<M = unknown>(
 
 // Meta
 
-export function Meta<M = unknown>(
-  setup: Script<El<HTMLMetaElement, M>>): ReactiveTreeNode<El<HTMLMetaElement, M>>
+export function Meta<M = unknown, D = unknown>(
+  setup: Script<El<HTMLMetaElement, M, D>>): ReactiveTreeNode<El<HTMLMetaElement, M, D>>
 
-export function Meta<M = unknown>(
+export function Meta<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLMetaElement, M>>): ReactiveTreeNode<El<HTMLMetaElement, M>>
+  setup: Script<El<HTMLMetaElement, M, D>>): ReactiveTreeNode<El<HTMLMetaElement, M, D>>
 
-export function Meta<M = unknown>(
+export function Meta<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLMetaElement, M>>): ReactiveTreeNode<El<HTMLMetaElement, M>>
+  setup: Script<El<HTMLMetaElement, M, D>>): ReactiveTreeNode<El<HTMLMetaElement, M, D>>
 
-export function Meta<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLMetaElement, M>>): ReactiveTreeNode<El<HTMLMetaElement, M>>
+export function Meta<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLMetaElement, M, D>>): ReactiveTreeNode<El<HTMLMetaElement, M, D>>
 
-export function Meta<M = unknown>(
+export function Meta<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLMetaElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLMetaElement, M>>,
-  creation?: Script<El<HTMLMetaElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLMetaElement, M>>,
-  mounting?: Script<El<HTMLMetaElement, M>>,
-  destruction?: Script<El<HTMLMetaElement, M>>,
+  setup?: Script<El<HTMLMetaElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLMetaElement, M, D>>,
+  creation?: Script<El<HTMLMetaElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLMetaElement, M, D>>,
+  mounting?: Script<El<HTMLMetaElement, M, D>>,
+  destruction?: Script<El<HTMLMetaElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLMetaElement, M>>): ReactiveTreeNode<El<HTMLMetaElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLMetaElement, M, D>>): ReactiveTreeNode<El<HTMLMetaElement, M, D>>
 
-export function Meta<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLMetaElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLMetaElement, M>>,
-  setupOrMode?: Script<El<HTMLMetaElement, M>> | Mode,
-  setup?: Script<El<HTMLMetaElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLMetaElement, M>>,
-  creation?: Script<El<HTMLMetaElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLMetaElement, M>>,
-  mounting?: Script<El<HTMLMetaElement, M>>,
-  destruction?: Script<El<HTMLMetaElement, M>>,
+export function Meta<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLMetaElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLMetaElement, M, D>>,
+  setupOrMode?: Script<El<HTMLMetaElement, M, D>> | Mode,
+  setup?: Script<El<HTMLMetaElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLMetaElement, M, D>>,
+  creation?: Script<El<HTMLMetaElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLMetaElement, M, D>>,
+  mounting?: Script<El<HTMLMetaElement, M, D>>,
+  destruction?: Script<El<HTMLMetaElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLMetaElement, M>>): ReactiveTreeNode<El<HTMLMetaElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLMetaElement, M, D>>): ReactiveTreeNode<El<HTMLMetaElement, M, D>> {
   //
   return describe(Meta.name, HtmlTags.meta,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3113,45 +3113,45 @@ export function Meta<M = unknown>(
 
 // Meter
 
-export function Meter<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Meter<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Meter<M = unknown>(
+export function Meter<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Meter<M = unknown>(
+export function Meter<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Meter<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Meter<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Meter<M = unknown>(
+export function Meter<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Meter<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Meter<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Meter.name, HtmlTags.meter,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3160,45 +3160,45 @@ export function Meter<M = unknown>(
 
 // Nav
 
-export function Nav<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Nav<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Nav<M = unknown>(
+export function Nav<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Nav<M = unknown>(
+export function Nav<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Nav<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Nav<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Nav<M = unknown>(
+export function Nav<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Nav<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Nav<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Nav.name, HtmlTags.nav,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3207,45 +3207,45 @@ export function Nav<M = unknown>(
 
 // NoIndex
 
-export function NoIndex<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function NoIndex<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function NoIndex<M = unknown>(
+export function NoIndex<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function NoIndex<M = unknown>(
+export function NoIndex<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function NoIndex<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function NoIndex<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function NoIndex<M = unknown>(
+export function NoIndex<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function NoIndex<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function NoIndex<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(NoIndex.name, HtmlTags.noindex,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3254,45 +3254,45 @@ export function NoIndex<M = unknown>(
 
 // NoScript
 
-export function NoScript<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function NoScript<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function NoScript<M = unknown>(
+export function NoScript<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function NoScript<M = unknown>(
+export function NoScript<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function NoScript<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function NoScript<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function NoScript<M = unknown>(
+export function NoScript<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function NoScript<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function NoScript<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(NoScript.name, HtmlTags.noscript,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3301,45 +3301,45 @@ export function NoScript<M = unknown>(
 
 // Obj
 
-export function Obj<M = unknown>(
-  setup: Script<El<HTMLObjectElement, M>>): ReactiveTreeNode<El<HTMLObjectElement, M>>
+export function Obj<M = unknown, D = unknown>(
+  setup: Script<El<HTMLObjectElement, M, D>>): ReactiveTreeNode<El<HTMLObjectElement, M, D>>
 
-export function Obj<M = unknown>(
+export function Obj<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLObjectElement, M>>): ReactiveTreeNode<El<HTMLObjectElement, M>>
+  setup: Script<El<HTMLObjectElement, M, D>>): ReactiveTreeNode<El<HTMLObjectElement, M, D>>
 
-export function Obj<M = unknown>(
+export function Obj<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLObjectElement, M>>): ReactiveTreeNode<El<HTMLObjectElement, M>>
+  setup: Script<El<HTMLObjectElement, M, D>>): ReactiveTreeNode<El<HTMLObjectElement, M, D>>
 
-export function Obj<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLObjectElement, M>>): ReactiveTreeNode<El<HTMLObjectElement, M>>
+export function Obj<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLObjectElement, M, D>>): ReactiveTreeNode<El<HTMLObjectElement, M, D>>
 
-export function Obj<M = unknown>(
+export function Obj<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLObjectElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLObjectElement, M>>,
-  creation?: Script<El<HTMLObjectElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLObjectElement, M>>,
-  mounting?: Script<El<HTMLObjectElement, M>>,
-  destruction?: Script<El<HTMLObjectElement, M>>,
+  setup?: Script<El<HTMLObjectElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLObjectElement, M, D>>,
+  creation?: Script<El<HTMLObjectElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLObjectElement, M, D>>,
+  mounting?: Script<El<HTMLObjectElement, M, D>>,
+  destruction?: Script<El<HTMLObjectElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLObjectElement, M>>): ReactiveTreeNode<El<HTMLObjectElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLObjectElement, M, D>>): ReactiveTreeNode<El<HTMLObjectElement, M, D>>
 
-export function Obj<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLObjectElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLObjectElement, M>>,
-  setupOrMode?: Script<El<HTMLObjectElement, M>> | Mode,
-  setup?: Script<El<HTMLObjectElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLObjectElement, M>>,
-  creation?: Script<El<HTMLObjectElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLObjectElement, M>>,
-  mounting?: Script<El<HTMLObjectElement, M>>,
-  destruction?: Script<El<HTMLObjectElement, M>>,
+export function Obj<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLObjectElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLObjectElement, M, D>>,
+  setupOrMode?: Script<El<HTMLObjectElement, M, D>> | Mode,
+  setup?: Script<El<HTMLObjectElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLObjectElement, M, D>>,
+  creation?: Script<El<HTMLObjectElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLObjectElement, M, D>>,
+  mounting?: Script<El<HTMLObjectElement, M, D>>,
+  destruction?: Script<El<HTMLObjectElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLObjectElement, M>>): ReactiveTreeNode<El<HTMLObjectElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLObjectElement, M, D>>): ReactiveTreeNode<El<HTMLObjectElement, M, D>> {
   //
   return describe(Obj.name, HtmlTags.object,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3348,45 +3348,45 @@ export function Obj<M = unknown>(
 
 // OL
 
-export function OL<M = unknown>(
-  setup: Script<El<HTMLOListElement, M>>): ReactiveTreeNode<El<HTMLOListElement, M>>
+export function OL<M = unknown, D = unknown>(
+  setup: Script<El<HTMLOListElement, M, D>>): ReactiveTreeNode<El<HTMLOListElement, M, D>>
 
-export function OL<M = unknown>(
+export function OL<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLOListElement, M>>): ReactiveTreeNode<El<HTMLOListElement, M>>
+  setup: Script<El<HTMLOListElement, M, D>>): ReactiveTreeNode<El<HTMLOListElement, M, D>>
 
-export function OL<M = unknown>(
+export function OL<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLOListElement, M>>): ReactiveTreeNode<El<HTMLOListElement, M>>
+  setup: Script<El<HTMLOListElement, M, D>>): ReactiveTreeNode<El<HTMLOListElement, M, D>>
 
-export function OL<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLOListElement, M>>): ReactiveTreeNode<El<HTMLOListElement, M>>
+export function OL<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLOListElement, M, D>>): ReactiveTreeNode<El<HTMLOListElement, M, D>>
 
-export function OL<M = unknown>(
+export function OL<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLOListElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLOListElement, M>>,
-  creation?: Script<El<HTMLOListElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLOListElement, M>>,
-  mounting?: Script<El<HTMLOListElement, M>>,
-  destruction?: Script<El<HTMLOListElement, M>>,
+  setup?: Script<El<HTMLOListElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLOListElement, M, D>>,
+  creation?: Script<El<HTMLOListElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLOListElement, M, D>>,
+  mounting?: Script<El<HTMLOListElement, M, D>>,
+  destruction?: Script<El<HTMLOListElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOListElement, M>>): ReactiveTreeNode<El<HTMLOListElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLOListElement, M, D>>): ReactiveTreeNode<El<HTMLOListElement, M, D>>
 
-export function OL<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLOListElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLOListElement, M>>,
-  setupOrMode?: Script<El<HTMLOListElement, M>> | Mode,
-  setup?: Script<El<HTMLOListElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLOListElement, M>>,
-  creation?: Script<El<HTMLOListElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLOListElement, M>>,
-  mounting?: Script<El<HTMLOListElement, M>>,
-  destruction?: Script<El<HTMLOListElement, M>>,
+export function OL<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLOListElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLOListElement, M, D>>,
+  setupOrMode?: Script<El<HTMLOListElement, M, D>> | Mode,
+  setup?: Script<El<HTMLOListElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLOListElement, M, D>>,
+  creation?: Script<El<HTMLOListElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLOListElement, M, D>>,
+  mounting?: Script<El<HTMLOListElement, M, D>>,
+  destruction?: Script<El<HTMLOListElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOListElement, M>>): ReactiveTreeNode<El<HTMLOListElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLOListElement, M, D>>): ReactiveTreeNode<El<HTMLOListElement, M, D>> {
   //
   return describe(OL.name, HtmlTags.ol,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3395,45 +3395,45 @@ export function OL<M = unknown>(
 
 // OptGroup
 
-export function OptGroup<M = unknown>(
-  setup: Script<El<HTMLOptGroupElement, M>>): ReactiveTreeNode<El<HTMLOptGroupElement, M>>
+export function OptGroup<M = unknown, D = unknown>(
+  setup: Script<El<HTMLOptGroupElement, M, D>>): ReactiveTreeNode<El<HTMLOptGroupElement, M, D>>
 
-export function OptGroup<M = unknown>(
+export function OptGroup<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLOptGroupElement, M>>): ReactiveTreeNode<El<HTMLOptGroupElement, M>>
+  setup: Script<El<HTMLOptGroupElement, M, D>>): ReactiveTreeNode<El<HTMLOptGroupElement, M, D>>
 
-export function OptGroup<M = unknown>(
+export function OptGroup<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLOptGroupElement, M>>): ReactiveTreeNode<El<HTMLOptGroupElement, M>>
+  setup: Script<El<HTMLOptGroupElement, M, D>>): ReactiveTreeNode<El<HTMLOptGroupElement, M, D>>
 
-export function OptGroup<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M>>): ReactiveTreeNode<El<HTMLOptGroupElement, M>>
+export function OptGroup<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M, D>>): ReactiveTreeNode<El<HTMLOptGroupElement, M, D>>
 
-export function OptGroup<M = unknown>(
+export function OptGroup<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLOptGroupElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLOptGroupElement, M>>,
-  creation?: Script<El<HTMLOptGroupElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLOptGroupElement, M>>,
-  mounting?: Script<El<HTMLOptGroupElement, M>>,
-  destruction?: Script<El<HTMLOptGroupElement, M>>,
+  setup?: Script<El<HTMLOptGroupElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLOptGroupElement, M, D>>,
+  creation?: Script<El<HTMLOptGroupElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLOptGroupElement, M, D>>,
+  mounting?: Script<El<HTMLOptGroupElement, M, D>>,
+  destruction?: Script<El<HTMLOptGroupElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M>>): ReactiveTreeNode<El<HTMLOptGroupElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M, D>>): ReactiveTreeNode<El<HTMLOptGroupElement, M, D>>
 
-export function OptGroup<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLOptGroupElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M>>,
-  setupOrMode?: Script<El<HTMLOptGroupElement, M>> | Mode,
-  setup?: Script<El<HTMLOptGroupElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLOptGroupElement, M>>,
-  creation?: Script<El<HTMLOptGroupElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLOptGroupElement, M>>,
-  mounting?: Script<El<HTMLOptGroupElement, M>>,
-  destruction?: Script<El<HTMLOptGroupElement, M>>,
+export function OptGroup<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLOptGroupElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M, D>>,
+  setupOrMode?: Script<El<HTMLOptGroupElement, M, D>> | Mode,
+  setup?: Script<El<HTMLOptGroupElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLOptGroupElement, M, D>>,
+  creation?: Script<El<HTMLOptGroupElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLOptGroupElement, M, D>>,
+  mounting?: Script<El<HTMLOptGroupElement, M, D>>,
+  destruction?: Script<El<HTMLOptGroupElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M>>): ReactiveTreeNode<El<HTMLOptGroupElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M, D>>): ReactiveTreeNode<El<HTMLOptGroupElement, M, D>> {
   //
   return describe(OptGroup.name, HtmlTags.optgroup,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3442,45 +3442,45 @@ export function OptGroup<M = unknown>(
 
 // Option
 
-export function Option<M = unknown>(
-  setup: Script<El<HTMLOptionElement, M>>): ReactiveTreeNode<El<HTMLOptionElement, M>>
+export function Option<M = unknown, D = unknown>(
+  setup: Script<El<HTMLOptionElement, M, D>>): ReactiveTreeNode<El<HTMLOptionElement, M, D>>
 
-export function Option<M = unknown>(
+export function Option<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLOptionElement, M>>): ReactiveTreeNode<El<HTMLOptionElement, M>>
+  setup: Script<El<HTMLOptionElement, M, D>>): ReactiveTreeNode<El<HTMLOptionElement, M, D>>
 
-export function Option<M = unknown>(
+export function Option<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLOptionElement, M>>): ReactiveTreeNode<El<HTMLOptionElement, M>>
+  setup: Script<El<HTMLOptionElement, M, D>>): ReactiveTreeNode<El<HTMLOptionElement, M, D>>
 
-export function Option<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLOptionElement, M>>): ReactiveTreeNode<El<HTMLOptionElement, M>>
+export function Option<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLOptionElement, M, D>>): ReactiveTreeNode<El<HTMLOptionElement, M, D>>
 
-export function Option<M = unknown>(
+export function Option<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLOptionElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLOptionElement, M>>,
-  creation?: Script<El<HTMLOptionElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLOptionElement, M>>,
-  mounting?: Script<El<HTMLOptionElement, M>>,
-  destruction?: Script<El<HTMLOptionElement, M>>,
+  setup?: Script<El<HTMLOptionElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLOptionElement, M, D>>,
+  creation?: Script<El<HTMLOptionElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLOptionElement, M, D>>,
+  mounting?: Script<El<HTMLOptionElement, M, D>>,
+  destruction?: Script<El<HTMLOptionElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOptionElement, M>>): ReactiveTreeNode<El<HTMLOptionElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLOptionElement, M, D>>): ReactiveTreeNode<El<HTMLOptionElement, M, D>>
 
-export function Option<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLOptionElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLOptionElement, M>>,
-  setupOrMode?: Script<El<HTMLOptionElement, M>> | Mode,
-  setup?: Script<El<HTMLOptionElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLOptionElement, M>>,
-  creation?: Script<El<HTMLOptionElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLOptionElement, M>>,
-  mounting?: Script<El<HTMLOptionElement, M>>,
-  destruction?: Script<El<HTMLOptionElement, M>>,
+export function Option<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLOptionElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLOptionElement, M, D>>,
+  setupOrMode?: Script<El<HTMLOptionElement, M, D>> | Mode,
+  setup?: Script<El<HTMLOptionElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLOptionElement, M, D>>,
+  creation?: Script<El<HTMLOptionElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLOptionElement, M, D>>,
+  mounting?: Script<El<HTMLOptionElement, M, D>>,
+  destruction?: Script<El<HTMLOptionElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOptionElement, M>>): ReactiveTreeNode<El<HTMLOptionElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLOptionElement, M, D>>): ReactiveTreeNode<El<HTMLOptionElement, M, D>> {
   //
   return describe(Option.name, HtmlTags.option,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3489,45 +3489,45 @@ export function Option<M = unknown>(
 
 // Output
 
-export function Output<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Output<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Output<M = unknown>(
+export function Output<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Output<M = unknown>(
+export function Output<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Output<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Output<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Output<M = unknown>(
+export function Output<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Output<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Output<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Output.name, HtmlTags.output,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3536,45 +3536,45 @@ export function Output<M = unknown>(
 
 // P
 
-export function P<M = unknown>(
-  setup: Script<El<HTMLParagraphElement, M>>): ReactiveTreeNode<El<HTMLParagraphElement, M>>
+export function P<M = unknown, D = unknown>(
+  setup: Script<El<HTMLParagraphElement, M, D>>): ReactiveTreeNode<El<HTMLParagraphElement, M, D>>
 
-export function P<M = unknown>(
+export function P<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLParagraphElement, M>>): ReactiveTreeNode<El<HTMLParagraphElement, M>>
+  setup: Script<El<HTMLParagraphElement, M, D>>): ReactiveTreeNode<El<HTMLParagraphElement, M, D>>
 
-export function P<M = unknown>(
+export function P<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLParagraphElement, M>>): ReactiveTreeNode<El<HTMLParagraphElement, M>>
+  setup: Script<El<HTMLParagraphElement, M, D>>): ReactiveTreeNode<El<HTMLParagraphElement, M, D>>
 
-export function P<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLParagraphElement, M>>): ReactiveTreeNode<El<HTMLParagraphElement, M>>
+export function P<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLParagraphElement, M, D>>): ReactiveTreeNode<El<HTMLParagraphElement, M, D>>
 
-export function P<M = unknown>(
+export function P<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLParagraphElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLParagraphElement, M>>,
-  creation?: Script<El<HTMLParagraphElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLParagraphElement, M>>,
-  mounting?: Script<El<HTMLParagraphElement, M>>,
-  destruction?: Script<El<HTMLParagraphElement, M>>,
+  setup?: Script<El<HTMLParagraphElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLParagraphElement, M, D>>,
+  creation?: Script<El<HTMLParagraphElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLParagraphElement, M, D>>,
+  mounting?: Script<El<HTMLParagraphElement, M, D>>,
+  destruction?: Script<El<HTMLParagraphElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLParagraphElement, M>>): ReactiveTreeNode<El<HTMLParagraphElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLParagraphElement, M, D>>): ReactiveTreeNode<El<HTMLParagraphElement, M, D>>
 
-export function P<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLParagraphElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLParagraphElement, M>>,
-  setupOrMode?: Script<El<HTMLParagraphElement, M>> | Mode,
-  setup?: Script<El<HTMLParagraphElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLParagraphElement, M>>,
-  creation?: Script<El<HTMLParagraphElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLParagraphElement, M>>,
-  mounting?: Script<El<HTMLParagraphElement, M>>,
-  destruction?: Script<El<HTMLParagraphElement, M>>,
+export function P<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLParagraphElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLParagraphElement, M, D>>,
+  setupOrMode?: Script<El<HTMLParagraphElement, M, D>> | Mode,
+  setup?: Script<El<HTMLParagraphElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLParagraphElement, M, D>>,
+  creation?: Script<El<HTMLParagraphElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLParagraphElement, M, D>>,
+  mounting?: Script<El<HTMLParagraphElement, M, D>>,
+  destruction?: Script<El<HTMLParagraphElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLParagraphElement, M>>): ReactiveTreeNode<El<HTMLParagraphElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLParagraphElement, M, D>>): ReactiveTreeNode<El<HTMLParagraphElement, M, D>> {
   //
   return describe(P.name, HtmlTags.p,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3583,45 +3583,45 @@ export function P<M = unknown>(
 
 // Param
 
-export function Param<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Param<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Param<M = unknown>(
+export function Param<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Param<M = unknown>(
+export function Param<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Param<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Param<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Param<M = unknown>(
+export function Param<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Param<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Param<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Param.name, HtmlTags.param,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3630,45 +3630,45 @@ export function Param<M = unknown>(
 
 // Picture
 
-export function Picture<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Picture<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Picture<M = unknown>(
+export function Picture<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Picture<M = unknown>(
+export function Picture<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Picture<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Picture<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Picture<M = unknown>(
+export function Picture<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Picture<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Picture<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Picture.name, HtmlTags.picture,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3677,45 +3677,45 @@ export function Picture<M = unknown>(
 
 // Pre
 
-export function Pre<M = unknown>(
-  setup: Script<El<HTMLPreElement, M>>): ReactiveTreeNode<El<HTMLPreElement, M>>
+export function Pre<M = unknown, D = unknown>(
+  setup: Script<El<HTMLPreElement, M, D>>): ReactiveTreeNode<El<HTMLPreElement, M, D>>
 
-export function Pre<M = unknown>(
+export function Pre<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLPreElement, M>>): ReactiveTreeNode<El<HTMLPreElement, M>>
+  setup: Script<El<HTMLPreElement, M, D>>): ReactiveTreeNode<El<HTMLPreElement, M, D>>
 
-export function Pre<M = unknown>(
+export function Pre<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLPreElement, M>>): ReactiveTreeNode<El<HTMLPreElement, M>>
+  setup: Script<El<HTMLPreElement, M, D>>): ReactiveTreeNode<El<HTMLPreElement, M, D>>
 
-export function Pre<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLPreElement, M>>): ReactiveTreeNode<El<HTMLPreElement, M>>
+export function Pre<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLPreElement, M, D>>): ReactiveTreeNode<El<HTMLPreElement, M, D>>
 
-export function Pre<M = unknown>(
+export function Pre<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLPreElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLPreElement, M>>,
-  creation?: Script<El<HTMLPreElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLPreElement, M>>,
-  mounting?: Script<El<HTMLPreElement, M>>,
-  destruction?: Script<El<HTMLPreElement, M>>,
+  setup?: Script<El<HTMLPreElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLPreElement, M, D>>,
+  creation?: Script<El<HTMLPreElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLPreElement, M, D>>,
+  mounting?: Script<El<HTMLPreElement, M, D>>,
+  destruction?: Script<El<HTMLPreElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLPreElement, M>>): ReactiveTreeNode<El<HTMLPreElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLPreElement, M, D>>): ReactiveTreeNode<El<HTMLPreElement, M, D>>
 
-export function Pre<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLPreElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLPreElement, M>>,
-  setupOrMode?: Script<El<HTMLPreElement, M>> | Mode,
-  setup?: Script<El<HTMLPreElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLPreElement, M>>,
-  creation?: Script<El<HTMLPreElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLPreElement, M>>,
-  mounting?: Script<El<HTMLPreElement, M>>,
-  destruction?: Script<El<HTMLPreElement, M>>,
+export function Pre<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLPreElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLPreElement, M, D>>,
+  setupOrMode?: Script<El<HTMLPreElement, M, D>> | Mode,
+  setup?: Script<El<HTMLPreElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLPreElement, M, D>>,
+  creation?: Script<El<HTMLPreElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLPreElement, M, D>>,
+  mounting?: Script<El<HTMLPreElement, M, D>>,
+  destruction?: Script<El<HTMLPreElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLPreElement, M>>): ReactiveTreeNode<El<HTMLPreElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLPreElement, M, D>>): ReactiveTreeNode<El<HTMLPreElement, M, D>> {
   //
   return describe(Pre.name, HtmlTags.pre,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3724,45 +3724,45 @@ export function Pre<M = unknown>(
 
 // Progress
 
-export function Progress<M = unknown>(
-  setup: Script<El<HTMLProgressElement, M>>): ReactiveTreeNode<El<HTMLProgressElement, M>>
+export function Progress<M = unknown, D = unknown>(
+  setup: Script<El<HTMLProgressElement, M, D>>): ReactiveTreeNode<El<HTMLProgressElement, M, D>>
 
-export function Progress<M = unknown>(
+export function Progress<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLProgressElement, M>>): ReactiveTreeNode<El<HTMLProgressElement, M>>
+  setup: Script<El<HTMLProgressElement, M, D>>): ReactiveTreeNode<El<HTMLProgressElement, M, D>>
 
-export function Progress<M = unknown>(
+export function Progress<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLProgressElement, M>>): ReactiveTreeNode<El<HTMLProgressElement, M>>
+  setup: Script<El<HTMLProgressElement, M, D>>): ReactiveTreeNode<El<HTMLProgressElement, M, D>>
 
-export function Progress<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLProgressElement, M>>): ReactiveTreeNode<El<HTMLProgressElement, M>>
+export function Progress<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLProgressElement, M, D>>): ReactiveTreeNode<El<HTMLProgressElement, M, D>>
 
-export function Progress<M = unknown>(
+export function Progress<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLProgressElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLProgressElement, M>>,
-  creation?: Script<El<HTMLProgressElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLProgressElement, M>>,
-  mounting?: Script<El<HTMLProgressElement, M>>,
-  destruction?: Script<El<HTMLProgressElement, M>>,
+  setup?: Script<El<HTMLProgressElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLProgressElement, M, D>>,
+  creation?: Script<El<HTMLProgressElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLProgressElement, M, D>>,
+  mounting?: Script<El<HTMLProgressElement, M, D>>,
+  destruction?: Script<El<HTMLProgressElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLProgressElement, M>>): ReactiveTreeNode<El<HTMLProgressElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLProgressElement, M, D>>): ReactiveTreeNode<El<HTMLProgressElement, M, D>>
 
-export function Progress<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLProgressElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLProgressElement, M>>,
-  setupOrMode?: Script<El<HTMLProgressElement, M>> | Mode,
-  setup?: Script<El<HTMLProgressElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLProgressElement, M>>,
-  creation?: Script<El<HTMLProgressElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLProgressElement, M>>,
-  mounting?: Script<El<HTMLProgressElement, M>>,
-  destruction?: Script<El<HTMLProgressElement, M>>,
+export function Progress<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLProgressElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLProgressElement, M, D>>,
+  setupOrMode?: Script<El<HTMLProgressElement, M, D>> | Mode,
+  setup?: Script<El<HTMLProgressElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLProgressElement, M, D>>,
+  creation?: Script<El<HTMLProgressElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLProgressElement, M, D>>,
+  mounting?: Script<El<HTMLProgressElement, M, D>>,
+  destruction?: Script<El<HTMLProgressElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLProgressElement, M>>): ReactiveTreeNode<El<HTMLProgressElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLProgressElement, M, D>>): ReactiveTreeNode<El<HTMLProgressElement, M, D>> {
   //
   return describe(Progress.name, HtmlTags.progress,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3771,45 +3771,45 @@ export function Progress<M = unknown>(
 
 // Q
 
-export function Q<M = unknown>(
-  setup: Script<El<HTMLQuoteElement, M>>): ReactiveTreeNode<El<HTMLQuoteElement, M>>
+export function Q<M = unknown, D = unknown>(
+  setup: Script<El<HTMLQuoteElement, M, D>>): ReactiveTreeNode<El<HTMLQuoteElement, M, D>>
 
-export function Q<M = unknown>(
+export function Q<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLQuoteElement, M>>): ReactiveTreeNode<El<HTMLQuoteElement, M>>
+  setup: Script<El<HTMLQuoteElement, M, D>>): ReactiveTreeNode<El<HTMLQuoteElement, M, D>>
 
-export function Q<M = unknown>(
+export function Q<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLQuoteElement, M>>): ReactiveTreeNode<El<HTMLQuoteElement, M>>
+  setup: Script<El<HTMLQuoteElement, M, D>>): ReactiveTreeNode<El<HTMLQuoteElement, M, D>>
 
-export function Q<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLQuoteElement, M>>): ReactiveTreeNode<El<HTMLQuoteElement, M>>
+export function Q<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLQuoteElement, M, D>>): ReactiveTreeNode<El<HTMLQuoteElement, M, D>>
 
-export function Q<M = unknown>(
+export function Q<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLQuoteElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLQuoteElement, M>>,
-  creation?: Script<El<HTMLQuoteElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLQuoteElement, M>>,
-  mounting?: Script<El<HTMLQuoteElement, M>>,
-  destruction?: Script<El<HTMLQuoteElement, M>>,
+  setup?: Script<El<HTMLQuoteElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLQuoteElement, M, D>>,
+  creation?: Script<El<HTMLQuoteElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLQuoteElement, M, D>>,
+  mounting?: Script<El<HTMLQuoteElement, M, D>>,
+  destruction?: Script<El<HTMLQuoteElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLQuoteElement, M>>): ReactiveTreeNode<El<HTMLQuoteElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLQuoteElement, M, D>>): ReactiveTreeNode<El<HTMLQuoteElement, M, D>>
 
-export function Q<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLQuoteElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLQuoteElement, M>>,
-  setupOrMode?: Script<El<HTMLQuoteElement, M>> | Mode,
-  setup?: Script<El<HTMLQuoteElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLQuoteElement, M>>,
-  creation?: Script<El<HTMLQuoteElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLQuoteElement, M>>,
-  mounting?: Script<El<HTMLQuoteElement, M>>,
-  destruction?: Script<El<HTMLQuoteElement, M>>,
+export function Q<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLQuoteElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLQuoteElement, M, D>>,
+  setupOrMode?: Script<El<HTMLQuoteElement, M, D>> | Mode,
+  setup?: Script<El<HTMLQuoteElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLQuoteElement, M, D>>,
+  creation?: Script<El<HTMLQuoteElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLQuoteElement, M, D>>,
+  mounting?: Script<El<HTMLQuoteElement, M, D>>,
+  destruction?: Script<El<HTMLQuoteElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLQuoteElement, M>>): ReactiveTreeNode<El<HTMLQuoteElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLQuoteElement, M, D>>): ReactiveTreeNode<El<HTMLQuoteElement, M, D>> {
   //
   return describe(Q.name, HtmlTags.q,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3818,45 +3818,45 @@ export function Q<M = unknown>(
 
 // RP
 
-export function RP<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function RP<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function RP<M = unknown>(
+export function RP<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function RP<M = unknown>(
+export function RP<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function RP<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function RP<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function RP<M = unknown>(
+export function RP<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function RP<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function RP<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(RP.name, HtmlTags.rp,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3865,45 +3865,45 @@ export function RP<M = unknown>(
 
 // RT
 
-export function RT<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function RT<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function RT<M = unknown>(
+export function RT<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function RT<M = unknown>(
+export function RT<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function RT<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function RT<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function RT<M = unknown>(
+export function RT<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function RT<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function RT<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(RT.name, HtmlTags.rt,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3912,45 +3912,45 @@ export function RT<M = unknown>(
 
 // Ruby
 
-export function Ruby<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Ruby<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Ruby<M = unknown>(
+export function Ruby<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Ruby<M = unknown>(
+export function Ruby<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Ruby<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Ruby<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Ruby<M = unknown>(
+export function Ruby<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Ruby<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Ruby<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Ruby.name, HtmlTags.ruby,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -3959,45 +3959,45 @@ export function Ruby<M = unknown>(
 
 // S
 
-export function S<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function S<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function S<M = unknown>(
+export function S<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function S<M = unknown>(
+export function S<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function S<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function S<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function S<M = unknown>(
+export function S<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function S<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function S<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(S.name, HtmlTags.s,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4006,45 +4006,45 @@ export function S<M = unknown>(
 
 // Samp
 
-export function Samp<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Samp<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Samp<M = unknown>(
+export function Samp<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Samp<M = unknown>(
+export function Samp<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Samp<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Samp<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Samp<M = unknown>(
+export function Samp<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Samp<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Samp<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Samp.name, HtmlTags.samp,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4053,45 +4053,45 @@ export function Samp<M = unknown>(
 
 // Script
 
-export function Script<M = unknown>(
-  setup: Script<El<HTMLScriptElement, M>>): ReactiveTreeNode<El<HTMLScriptElement, M>>
+export function Script<M = unknown, D = unknown>(
+  setup: Script<El<HTMLScriptElement, M, D>>): ReactiveTreeNode<El<HTMLScriptElement, M, D>>
 
-export function Script<M = unknown>(
+export function Script<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLScriptElement, M>>): ReactiveTreeNode<El<HTMLScriptElement, M>>
+  setup: Script<El<HTMLScriptElement, M, D>>): ReactiveTreeNode<El<HTMLScriptElement, M, D>>
 
-export function Script<M = unknown>(
+export function Script<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLScriptElement, M>>): ReactiveTreeNode<El<HTMLScriptElement, M>>
+  setup: Script<El<HTMLScriptElement, M, D>>): ReactiveTreeNode<El<HTMLScriptElement, M, D>>
 
-export function Script<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLScriptElement, M>>): ReactiveTreeNode<El<HTMLScriptElement, M>>
+export function Script<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLScriptElement, M, D>>): ReactiveTreeNode<El<HTMLScriptElement, M, D>>
 
-export function Script<M = unknown>(
+export function Script<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLScriptElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLScriptElement, M>>,
-  creation?: Script<El<HTMLScriptElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLScriptElement, M>>,
-  mounting?: Script<El<HTMLScriptElement, M>>,
-  destruction?: Script<El<HTMLScriptElement, M>>,
+  setup?: Script<El<HTMLScriptElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLScriptElement, M, D>>,
+  creation?: Script<El<HTMLScriptElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLScriptElement, M, D>>,
+  mounting?: Script<El<HTMLScriptElement, M, D>>,
+  destruction?: Script<El<HTMLScriptElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLScriptElement, M>>): ReactiveTreeNode<El<HTMLScriptElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLScriptElement, M, D>>): ReactiveTreeNode<El<HTMLScriptElement, M, D>>
 
-export function Script<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLScriptElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLScriptElement, M>>,
-  setupOrMode?: Script<El<HTMLScriptElement, M>> | Mode,
-  setup?: Script<El<HTMLScriptElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLScriptElement, M>>,
-  creation?: Script<El<HTMLScriptElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLScriptElement, M>>,
-  mounting?: Script<El<HTMLScriptElement, M>>,
-  destruction?: Script<El<HTMLScriptElement, M>>,
+export function Script<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLScriptElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLScriptElement, M, D>>,
+  setupOrMode?: Script<El<HTMLScriptElement, M, D>> | Mode,
+  setup?: Script<El<HTMLScriptElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLScriptElement, M, D>>,
+  creation?: Script<El<HTMLScriptElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLScriptElement, M, D>>,
+  mounting?: Script<El<HTMLScriptElement, M, D>>,
+  destruction?: Script<El<HTMLScriptElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLScriptElement, M>>): ReactiveTreeNode<El<HTMLScriptElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLScriptElement, M, D>>): ReactiveTreeNode<El<HTMLScriptElement, M, D>> {
   //
   return describe(Script.name, HtmlTags.script,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4100,45 +4100,45 @@ export function Script<M = unknown>(
 
 // Section
 
-export function Section<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Section<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Section<M = unknown>(
+export function Section<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Section<M = unknown>(
+export function Section<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Section<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Section<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Section<M = unknown>(
+export function Section<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Section<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Section<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Section.name, HtmlTags.section,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4147,45 +4147,45 @@ export function Section<M = unknown>(
 
 // Select
 
-export function Select<M = unknown>(
-  setup: Script<El<HTMLSelectElement, M>>): ReactiveTreeNode<El<HTMLSelectElement, M>>
+export function Select<M = unknown, D = unknown>(
+  setup: Script<El<HTMLSelectElement, M, D>>): ReactiveTreeNode<El<HTMLSelectElement, M, D>>
 
-export function Select<M = unknown>(
+export function Select<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLSelectElement, M>>): ReactiveTreeNode<El<HTMLSelectElement, M>>
+  setup: Script<El<HTMLSelectElement, M, D>>): ReactiveTreeNode<El<HTMLSelectElement, M, D>>
 
-export function Select<M = unknown>(
+export function Select<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLSelectElement, M>>): ReactiveTreeNode<El<HTMLSelectElement, M>>
+  setup: Script<El<HTMLSelectElement, M, D>>): ReactiveTreeNode<El<HTMLSelectElement, M, D>>
 
-export function Select<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLSelectElement, M>>): ReactiveTreeNode<El<HTMLSelectElement, M>>
+export function Select<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLSelectElement, M, D>>): ReactiveTreeNode<El<HTMLSelectElement, M, D>>
 
-export function Select<M = unknown>(
+export function Select<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLSelectElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLSelectElement, M>>,
-  creation?: Script<El<HTMLSelectElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLSelectElement, M>>,
-  mounting?: Script<El<HTMLSelectElement, M>>,
-  destruction?: Script<El<HTMLSelectElement, M>>,
+  setup?: Script<El<HTMLSelectElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLSelectElement, M, D>>,
+  creation?: Script<El<HTMLSelectElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLSelectElement, M, D>>,
+  mounting?: Script<El<HTMLSelectElement, M, D>>,
+  destruction?: Script<El<HTMLSelectElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSelectElement, M>>): ReactiveTreeNode<El<HTMLSelectElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLSelectElement, M, D>>): ReactiveTreeNode<El<HTMLSelectElement, M, D>>
 
-export function Select<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLSelectElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLSelectElement, M>>,
-  setupOrMode?: Script<El<HTMLSelectElement, M>> | Mode,
-  setup?: Script<El<HTMLSelectElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLSelectElement, M>>,
-  creation?: Script<El<HTMLSelectElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLSelectElement, M>>,
-  mounting?: Script<El<HTMLSelectElement, M>>,
-  destruction?: Script<El<HTMLSelectElement, M>>,
+export function Select<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLSelectElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLSelectElement, M, D>>,
+  setupOrMode?: Script<El<HTMLSelectElement, M, D>> | Mode,
+  setup?: Script<El<HTMLSelectElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLSelectElement, M, D>>,
+  creation?: Script<El<HTMLSelectElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLSelectElement, M, D>>,
+  mounting?: Script<El<HTMLSelectElement, M, D>>,
+  destruction?: Script<El<HTMLSelectElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSelectElement, M>>): ReactiveTreeNode<El<HTMLSelectElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLSelectElement, M, D>>): ReactiveTreeNode<El<HTMLSelectElement, M, D>> {
   //
   return describe(Select.name, HtmlTags.select,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4194,45 +4194,45 @@ export function Select<M = unknown>(
 
 // Small
 
-export function Small<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Small<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Small<M = unknown>(
+export function Small<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Small<M = unknown>(
+export function Small<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Small<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Small<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Small<M = unknown>(
+export function Small<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Small<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Small<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Small.name, HtmlTags.small,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4241,45 +4241,45 @@ export function Small<M = unknown>(
 
 // Source
 
-export function Source<M = unknown>(
-  setup: Script<El<HTMLSourceElement, M>>): ReactiveTreeNode<El<HTMLSourceElement, M>>
+export function Source<M = unknown, D = unknown>(
+  setup: Script<El<HTMLSourceElement, M, D>>): ReactiveTreeNode<El<HTMLSourceElement, M, D>>
 
-export function Source<M = unknown>(
+export function Source<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLSourceElement, M>>): ReactiveTreeNode<El<HTMLSourceElement, M>>
+  setup: Script<El<HTMLSourceElement, M, D>>): ReactiveTreeNode<El<HTMLSourceElement, M, D>>
 
-export function Source<M = unknown>(
+export function Source<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLSourceElement, M>>): ReactiveTreeNode<El<HTMLSourceElement, M>>
+  setup: Script<El<HTMLSourceElement, M, D>>): ReactiveTreeNode<El<HTMLSourceElement, M, D>>
 
-export function Source<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLSourceElement, M>>): ReactiveTreeNode<El<HTMLSourceElement, M>>
+export function Source<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLSourceElement, M, D>>): ReactiveTreeNode<El<HTMLSourceElement, M, D>>
 
-export function Source<M = unknown>(
+export function Source<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLSourceElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLSourceElement, M>>,
-  creation?: Script<El<HTMLSourceElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLSourceElement, M>>,
-  mounting?: Script<El<HTMLSourceElement, M>>,
-  destruction?: Script<El<HTMLSourceElement, M>>,
+  setup?: Script<El<HTMLSourceElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLSourceElement, M, D>>,
+  creation?: Script<El<HTMLSourceElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLSourceElement, M, D>>,
+  mounting?: Script<El<HTMLSourceElement, M, D>>,
+  destruction?: Script<El<HTMLSourceElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSourceElement, M>>): ReactiveTreeNode<El<HTMLSourceElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLSourceElement, M, D>>): ReactiveTreeNode<El<HTMLSourceElement, M, D>>
 
-export function Source<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLSourceElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLSourceElement, M>>,
-  setupOrMode?: Script<El<HTMLSourceElement, M>> | Mode,
-  setup?: Script<El<HTMLSourceElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLSourceElement, M>>,
-  creation?: Script<El<HTMLSourceElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLSourceElement, M>>,
-  mounting?: Script<El<HTMLSourceElement, M>>,
-  destruction?: Script<El<HTMLSourceElement, M>>,
+export function Source<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLSourceElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLSourceElement, M, D>>,
+  setupOrMode?: Script<El<HTMLSourceElement, M, D>> | Mode,
+  setup?: Script<El<HTMLSourceElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLSourceElement, M, D>>,
+  creation?: Script<El<HTMLSourceElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLSourceElement, M, D>>,
+  mounting?: Script<El<HTMLSourceElement, M, D>>,
+  destruction?: Script<El<HTMLSourceElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSourceElement, M>>): ReactiveTreeNode<El<HTMLSourceElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLSourceElement, M, D>>): ReactiveTreeNode<El<HTMLSourceElement, M, D>> {
   //
   return describe(Source.name, HtmlTags.source,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4288,45 +4288,45 @@ export function Source<M = unknown>(
 
 // Span
 
-export function Span<M = unknown>(
-  setup: Script<El<HTMLSpanElement, M>>): ReactiveTreeNode<El<HTMLSpanElement, M>>
+export function Span<M = unknown, D = unknown>(
+  setup: Script<El<HTMLSpanElement, M, D>>): ReactiveTreeNode<El<HTMLSpanElement, M, D>>
 
-export function Span<M = unknown>(
+export function Span<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLSpanElement, M>>): ReactiveTreeNode<El<HTMLSpanElement, M>>
+  setup: Script<El<HTMLSpanElement, M, D>>): ReactiveTreeNode<El<HTMLSpanElement, M, D>>
 
-export function Span<M = unknown>(
+export function Span<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLSpanElement, M>>): ReactiveTreeNode<El<HTMLSpanElement, M>>
+  setup: Script<El<HTMLSpanElement, M, D>>): ReactiveTreeNode<El<HTMLSpanElement, M, D>>
 
-export function Span<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLSpanElement, M>>): ReactiveTreeNode<El<HTMLSpanElement, M>>
+export function Span<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLSpanElement, M, D>>): ReactiveTreeNode<El<HTMLSpanElement, M, D>>
 
-export function Span<M = unknown>(
+export function Span<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLSpanElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLSpanElement, M>>,
-  creation?: Script<El<HTMLSpanElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLSpanElement, M>>,
-  mounting?: Script<El<HTMLSpanElement, M>>,
-  destruction?: Script<El<HTMLSpanElement, M>>,
+  setup?: Script<El<HTMLSpanElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLSpanElement, M, D>>,
+  creation?: Script<El<HTMLSpanElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLSpanElement, M, D>>,
+  mounting?: Script<El<HTMLSpanElement, M, D>>,
+  destruction?: Script<El<HTMLSpanElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSpanElement, M>>): ReactiveTreeNode<El<HTMLSpanElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLSpanElement, M, D>>): ReactiveTreeNode<El<HTMLSpanElement, M, D>>
 
-export function Span<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLSpanElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLSpanElement, M>>,
-  setupOrMode?: Script<El<HTMLSpanElement, M>> | Mode,
-  setup?: Script<El<HTMLSpanElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLSpanElement, M>>,
-  creation?: Script<El<HTMLSpanElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLSpanElement, M>>,
-  mounting?: Script<El<HTMLSpanElement, M>>,
-  destruction?: Script<El<HTMLSpanElement, M>>,
+export function Span<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLSpanElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLSpanElement, M, D>>,
+  setupOrMode?: Script<El<HTMLSpanElement, M, D>> | Mode,
+  setup?: Script<El<HTMLSpanElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLSpanElement, M, D>>,
+  creation?: Script<El<HTMLSpanElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLSpanElement, M, D>>,
+  mounting?: Script<El<HTMLSpanElement, M, D>>,
+  destruction?: Script<El<HTMLSpanElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSpanElement, M>>): ReactiveTreeNode<El<HTMLSpanElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLSpanElement, M, D>>): ReactiveTreeNode<El<HTMLSpanElement, M, D>> {
   //
   return describe(Span.name, HtmlTags.span,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4335,45 +4335,45 @@ export function Span<M = unknown>(
 
 // Strong
 
-export function Strong<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Strong<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Strong<M = unknown>(
+export function Strong<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Strong<M = unknown>(
+export function Strong<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Strong<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Strong<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Strong<M = unknown>(
+export function Strong<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Strong<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Strong<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Strong.name, HtmlTags.strong,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4382,45 +4382,45 @@ export function Strong<M = unknown>(
 
 // Style
 
-export function Style<M = unknown>(
-  setup: Script<El<HTMLStyleElement, M>>): ReactiveTreeNode<El<HTMLStyleElement, M>>
+export function Style<M = unknown, D = unknown>(
+  setup: Script<El<HTMLStyleElement, M, D>>): ReactiveTreeNode<El<HTMLStyleElement, M, D>>
 
-export function Style<M = unknown>(
+export function Style<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLStyleElement, M>>): ReactiveTreeNode<El<HTMLStyleElement, M>>
+  setup: Script<El<HTMLStyleElement, M, D>>): ReactiveTreeNode<El<HTMLStyleElement, M, D>>
 
-export function Style<M = unknown>(
+export function Style<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLStyleElement, M>>): ReactiveTreeNode<El<HTMLStyleElement, M>>
+  setup: Script<El<HTMLStyleElement, M, D>>): ReactiveTreeNode<El<HTMLStyleElement, M, D>>
 
-export function Style<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLStyleElement, M>>): ReactiveTreeNode<El<HTMLStyleElement, M>>
+export function Style<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLStyleElement, M, D>>): ReactiveTreeNode<El<HTMLStyleElement, M, D>>
 
-export function Style<M = unknown>(
+export function Style<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLStyleElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLStyleElement, M>>,
-  creation?: Script<El<HTMLStyleElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLStyleElement, M>>,
-  mounting?: Script<El<HTMLStyleElement, M>>,
-  destruction?: Script<El<HTMLStyleElement, M>>,
+  setup?: Script<El<HTMLStyleElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLStyleElement, M, D>>,
+  creation?: Script<El<HTMLStyleElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLStyleElement, M, D>>,
+  mounting?: Script<El<HTMLStyleElement, M, D>>,
+  destruction?: Script<El<HTMLStyleElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLStyleElement, M>>): ReactiveTreeNode<El<HTMLStyleElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLStyleElement, M, D>>): ReactiveTreeNode<El<HTMLStyleElement, M, D>>
 
-export function Style<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLStyleElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLStyleElement, M>>,
-  setupOrMode?: Script<El<HTMLStyleElement, M>> | Mode,
-  setup?: Script<El<HTMLStyleElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLStyleElement, M>>,
-  creation?: Script<El<HTMLStyleElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLStyleElement, M>>,
-  mounting?: Script<El<HTMLStyleElement, M>>,
-  destruction?: Script<El<HTMLStyleElement, M>>,
+export function Style<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLStyleElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLStyleElement, M, D>>,
+  setupOrMode?: Script<El<HTMLStyleElement, M, D>> | Mode,
+  setup?: Script<El<HTMLStyleElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLStyleElement, M, D>>,
+  creation?: Script<El<HTMLStyleElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLStyleElement, M, D>>,
+  mounting?: Script<El<HTMLStyleElement, M, D>>,
+  destruction?: Script<El<HTMLStyleElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLStyleElement, M>>): ReactiveTreeNode<El<HTMLStyleElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLStyleElement, M, D>>): ReactiveTreeNode<El<HTMLStyleElement, M, D>> {
   //
   return describe(Style.name, HtmlTags.style,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4429,45 +4429,45 @@ export function Style<M = unknown>(
 
 // Sub
 
-export function Sub<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Sub<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Sub<M = unknown>(
+export function Sub<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Sub<M = unknown>(
+export function Sub<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Sub<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Sub<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Sub<M = unknown>(
+export function Sub<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Sub<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Sub<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Sub.name, HtmlTags.sub,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4476,45 +4476,45 @@ export function Sub<M = unknown>(
 
 // Summary
 
-export function Summary<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Summary<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Summary<M = unknown>(
+export function Summary<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Summary<M = unknown>(
+export function Summary<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Summary<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Summary<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Summary<M = unknown>(
+export function Summary<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Summary<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Summary<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Summary.name, HtmlTags.summary,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4523,45 +4523,45 @@ export function Summary<M = unknown>(
 
 // Sup
 
-export function Sup<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Sup<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Sup<M = unknown>(
+export function Sup<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Sup<M = unknown>(
+export function Sup<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Sup<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Sup<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Sup<M = unknown>(
+export function Sup<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Sup<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Sup<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Sup.name, HtmlTags.sup,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4570,45 +4570,45 @@ export function Sup<M = unknown>(
 
 // Tbl
 
-export function Tbl<M = unknown>(
-  setup: Script<El<HTMLTableElement, M>>): ReactiveTreeNode<El<HTMLTableElement, M>>
+export function Tbl<M = unknown, D = unknown>(
+  setup: Script<El<HTMLTableElement, M, D>>): ReactiveTreeNode<El<HTMLTableElement, M, D>>
 
-export function Tbl<M = unknown>(
+export function Tbl<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLTableElement, M>>): ReactiveTreeNode<El<HTMLTableElement, M>>
+  setup: Script<El<HTMLTableElement, M, D>>): ReactiveTreeNode<El<HTMLTableElement, M, D>>
 
-export function Tbl<M = unknown>(
+export function Tbl<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLTableElement, M>>): ReactiveTreeNode<El<HTMLTableElement, M>>
+  setup: Script<El<HTMLTableElement, M, D>>): ReactiveTreeNode<El<HTMLTableElement, M, D>>
 
-export function Tbl<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLTableElement, M>>): ReactiveTreeNode<El<HTMLTableElement, M>>
+export function Tbl<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLTableElement, M, D>>): ReactiveTreeNode<El<HTMLTableElement, M, D>>
 
-export function Tbl<M = unknown>(
+export function Tbl<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLTableElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableElement, M>>,
-  creation?: Script<El<HTMLTableElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableElement, M>>,
-  mounting?: Script<El<HTMLTableElement, M>>,
-  destruction?: Script<El<HTMLTableElement, M>>,
+  setup?: Script<El<HTMLTableElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableElement, M, D>>,
+  creation?: Script<El<HTMLTableElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableElement, M, D>>,
+  mounting?: Script<El<HTMLTableElement, M, D>>,
+  destruction?: Script<El<HTMLTableElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableElement, M>>): ReactiveTreeNode<El<HTMLTableElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableElement, M, D>>): ReactiveTreeNode<El<HTMLTableElement, M, D>>
 
-export function Tbl<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLTableElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableElement, M>>,
-  setupOrMode?: Script<El<HTMLTableElement, M>> | Mode,
-  setup?: Script<El<HTMLTableElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableElement, M>>,
-  creation?: Script<El<HTMLTableElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableElement, M>>,
-  mounting?: Script<El<HTMLTableElement, M>>,
-  destruction?: Script<El<HTMLTableElement, M>>,
+export function Tbl<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLTableElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableElement, M, D>>,
+  setupOrMode?: Script<El<HTMLTableElement, M, D>> | Mode,
+  setup?: Script<El<HTMLTableElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableElement, M, D>>,
+  creation?: Script<El<HTMLTableElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableElement, M, D>>,
+  mounting?: Script<El<HTMLTableElement, M, D>>,
+  destruction?: Script<El<HTMLTableElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableElement, M>>): ReactiveTreeNode<El<HTMLTableElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableElement, M, D>>): ReactiveTreeNode<El<HTMLTableElement, M, D>> {
   //
   return describe(Tbl.name, HtmlTags.table,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4617,45 +4617,45 @@ export function Tbl<M = unknown>(
 
 // Template
 
-export function Template<M = unknown>(
-  setup: Script<El<HTMLTemplateElement, M>>): ReactiveTreeNode<El<HTMLTemplateElement, M>>
+export function Template<M = unknown, D = unknown>(
+  setup: Script<El<HTMLTemplateElement, M, D>>): ReactiveTreeNode<El<HTMLTemplateElement, M, D>>
 
-export function Template<M = unknown>(
+export function Template<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLTemplateElement, M>>): ReactiveTreeNode<El<HTMLTemplateElement, M>>
+  setup: Script<El<HTMLTemplateElement, M, D>>): ReactiveTreeNode<El<HTMLTemplateElement, M, D>>
 
-export function Template<M = unknown>(
+export function Template<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLTemplateElement, M>>): ReactiveTreeNode<El<HTMLTemplateElement, M>>
+  setup: Script<El<HTMLTemplateElement, M, D>>): ReactiveTreeNode<El<HTMLTemplateElement, M, D>>
 
-export function Template<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLTemplateElement, M>>): ReactiveTreeNode<El<HTMLTemplateElement, M>>
+export function Template<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLTemplateElement, M, D>>): ReactiveTreeNode<El<HTMLTemplateElement, M, D>>
 
-export function Template<M = unknown>(
+export function Template<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLTemplateElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTemplateElement, M>>,
-  creation?: Script<El<HTMLTemplateElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTemplateElement, M>>,
-  mounting?: Script<El<HTMLTemplateElement, M>>,
-  destruction?: Script<El<HTMLTemplateElement, M>>,
+  setup?: Script<El<HTMLTemplateElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTemplateElement, M, D>>,
+  creation?: Script<El<HTMLTemplateElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTemplateElement, M, D>>,
+  mounting?: Script<El<HTMLTemplateElement, M, D>>,
+  destruction?: Script<El<HTMLTemplateElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTemplateElement, M>>): ReactiveTreeNode<El<HTMLTemplateElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLTemplateElement, M, D>>): ReactiveTreeNode<El<HTMLTemplateElement, M, D>>
 
-export function Template<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLTemplateElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTemplateElement, M>>,
-  setupOrMode?: Script<El<HTMLTemplateElement, M>> | Mode,
-  setup?: Script<El<HTMLTemplateElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTemplateElement, M>>,
-  creation?: Script<El<HTMLTemplateElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTemplateElement, M>>,
-  mounting?: Script<El<HTMLTemplateElement, M>>,
-  destruction?: Script<El<HTMLTemplateElement, M>>,
+export function Template<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLTemplateElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTemplateElement, M, D>>,
+  setupOrMode?: Script<El<HTMLTemplateElement, M, D>> | Mode,
+  setup?: Script<El<HTMLTemplateElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTemplateElement, M, D>>,
+  creation?: Script<El<HTMLTemplateElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTemplateElement, M, D>>,
+  mounting?: Script<El<HTMLTemplateElement, M, D>>,
+  destruction?: Script<El<HTMLTemplateElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTemplateElement, M>>): ReactiveTreeNode<El<HTMLTemplateElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLTemplateElement, M, D>>): ReactiveTreeNode<El<HTMLTemplateElement, M, D>> {
   //
   return describe(Template.name, HtmlTags.template,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4664,45 +4664,45 @@ export function Template<M = unknown>(
 
 // TBody
 
-export function TBody<M = unknown>(
-  setup: Script<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
+export function TBody<M = unknown, D = unknown>(
+  setup: Script<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
 
-export function TBody<M = unknown>(
+export function TBody<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
+  setup: Script<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
 
-export function TBody<M = unknown>(
+export function TBody<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
+  setup: Script<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
 
-export function TBody<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
+export function TBody<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
 
-export function TBody<M = unknown>(
+export function TBody<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLTableSectionElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableSectionElement, M>>,
-  creation?: Script<El<HTMLTableSectionElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableSectionElement, M>>,
-  mounting?: Script<El<HTMLTableSectionElement, M>>,
-  destruction?: Script<El<HTMLTableSectionElement, M>>,
+  setup?: Script<El<HTMLTableSectionElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableSectionElement, M, D>>,
+  creation?: Script<El<HTMLTableSectionElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableSectionElement, M, D>>,
+  mounting?: Script<El<HTMLTableSectionElement, M, D>>,
+  destruction?: Script<El<HTMLTableSectionElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
 
-export function TBody<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLTableSectionElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>,
-  setupOrMode?: Script<El<HTMLTableSectionElement, M>> | Mode,
-  setup?: Script<El<HTMLTableSectionElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableSectionElement, M>>,
-  creation?: Script<El<HTMLTableSectionElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableSectionElement, M>>,
-  mounting?: Script<El<HTMLTableSectionElement, M>>,
-  destruction?: Script<El<HTMLTableSectionElement, M>>,
+export function TBody<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLTableSectionElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
+  setupOrMode?: Script<El<HTMLTableSectionElement, M, D>> | Mode,
+  setup?: Script<El<HTMLTableSectionElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableSectionElement, M, D>>,
+  creation?: Script<El<HTMLTableSectionElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableSectionElement, M, D>>,
+  mounting?: Script<El<HTMLTableSectionElement, M, D>>,
+  destruction?: Script<El<HTMLTableSectionElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>> {
   //
   return describe(TBody.name, HtmlTags.tbody,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4711,45 +4711,45 @@ export function TBody<M = unknown>(
 
 // TD
 
-export function TD<M = unknown>(
-  setup: Script<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>>
+export function TD<M = unknown, D = unknown>(
+  setup: Script<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
 
-export function TD<M = unknown>(
+export function TD<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>>
+  setup: Script<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
 
-export function TD<M = unknown>(
+export function TD<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>>
+  setup: Script<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
 
-export function TD<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>>
+export function TD<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
 
-export function TD<M = unknown>(
+export function TD<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLTableCellElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableCellElement, M>>,
-  creation?: Script<El<HTMLTableCellElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableCellElement, M>>,
-  mounting?: Script<El<HTMLTableCellElement, M>>,
-  destruction?: Script<El<HTMLTableCellElement, M>>,
+  setup?: Script<El<HTMLTableCellElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableCellElement, M, D>>,
+  creation?: Script<El<HTMLTableCellElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableCellElement, M, D>>,
+  mounting?: Script<El<HTMLTableCellElement, M, D>>,
+  destruction?: Script<El<HTMLTableCellElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
 
-export function TD<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLTableCellElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableCellElement, M>>,
-  setupOrMode?: Script<El<HTMLTableCellElement, M>> | Mode,
-  setup?: Script<El<HTMLTableCellElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableCellElement, M>>,
-  creation?: Script<El<HTMLTableCellElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableCellElement, M>>,
-  mounting?: Script<El<HTMLTableCellElement, M>>,
-  destruction?: Script<El<HTMLTableCellElement, M>>,
+export function TD<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLTableCellElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>,
+  setupOrMode?: Script<El<HTMLTableCellElement, M, D>> | Mode,
+  setup?: Script<El<HTMLTableCellElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableCellElement, M, D>>,
+  creation?: Script<El<HTMLTableCellElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableCellElement, M, D>>,
+  mounting?: Script<El<HTMLTableCellElement, M, D>>,
+  destruction?: Script<El<HTMLTableCellElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>> {
   //
   return describe(TD.name, HtmlTags.td,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4758,45 +4758,45 @@ export function TD<M = unknown>(
 
 // TextArea
 
-export function TextArea<M = unknown>(
-  setup: Script<El<HTMLTextAreaElement, M>>): ReactiveTreeNode<El<HTMLTextAreaElement, M>>
+export function TextArea<M = unknown, D = unknown>(
+  setup: Script<El<HTMLTextAreaElement, M, D>>): ReactiveTreeNode<El<HTMLTextAreaElement, M, D>>
 
-export function TextArea<M = unknown>(
+export function TextArea<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLTextAreaElement, M>>): ReactiveTreeNode<El<HTMLTextAreaElement, M>>
+  setup: Script<El<HTMLTextAreaElement, M, D>>): ReactiveTreeNode<El<HTMLTextAreaElement, M, D>>
 
-export function TextArea<M = unknown>(
+export function TextArea<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLTextAreaElement, M>>): ReactiveTreeNode<El<HTMLTextAreaElement, M>>
+  setup: Script<El<HTMLTextAreaElement, M, D>>): ReactiveTreeNode<El<HTMLTextAreaElement, M, D>>
 
-export function TextArea<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M>>): ReactiveTreeNode<El<HTMLTextAreaElement, M>>
+export function TextArea<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M, D>>): ReactiveTreeNode<El<HTMLTextAreaElement, M, D>>
 
-export function TextArea<M = unknown>(
+export function TextArea<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLTextAreaElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTextAreaElement, M>>,
-  creation?: Script<El<HTMLTextAreaElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTextAreaElement, M>>,
-  mounting?: Script<El<HTMLTextAreaElement, M>>,
-  destruction?: Script<El<HTMLTextAreaElement, M>>,
+  setup?: Script<El<HTMLTextAreaElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTextAreaElement, M, D>>,
+  creation?: Script<El<HTMLTextAreaElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTextAreaElement, M, D>>,
+  mounting?: Script<El<HTMLTextAreaElement, M, D>>,
+  destruction?: Script<El<HTMLTextAreaElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M>>): ReactiveTreeNode<El<HTMLTextAreaElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M, D>>): ReactiveTreeNode<El<HTMLTextAreaElement, M, D>>
 
-export function TextArea<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLTextAreaElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M>>,
-  setupOrMode?: Script<El<HTMLTextAreaElement, M>> | Mode,
-  setup?: Script<El<HTMLTextAreaElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTextAreaElement, M>>,
-  creation?: Script<El<HTMLTextAreaElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTextAreaElement, M>>,
-  mounting?: Script<El<HTMLTextAreaElement, M>>,
-  destruction?: Script<El<HTMLTextAreaElement, M>>,
+export function TextArea<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLTextAreaElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M, D>>,
+  setupOrMode?: Script<El<HTMLTextAreaElement, M, D>> | Mode,
+  setup?: Script<El<HTMLTextAreaElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTextAreaElement, M, D>>,
+  creation?: Script<El<HTMLTextAreaElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTextAreaElement, M, D>>,
+  mounting?: Script<El<HTMLTextAreaElement, M, D>>,
+  destruction?: Script<El<HTMLTextAreaElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M>>): ReactiveTreeNode<El<HTMLTextAreaElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M, D>>): ReactiveTreeNode<El<HTMLTextAreaElement, M, D>> {
   //
   return describe(TextArea.name, HtmlTags.textarea,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4805,45 +4805,45 @@ export function TextArea<M = unknown>(
 
 // TFoot
 
-export function TFoot<M = unknown>(
-  setup: Script<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
+export function TFoot<M = unknown, D = unknown>(
+  setup: Script<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
 
-export function TFoot<M = unknown>(
+export function TFoot<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
+  setup: Script<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
 
-export function TFoot<M = unknown>(
+export function TFoot<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
+  setup: Script<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
 
-export function TFoot<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
+export function TFoot<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
 
-export function TFoot<M = unknown>(
+export function TFoot<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLTableSectionElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableSectionElement, M>>,
-  creation?: Script<El<HTMLTableSectionElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableSectionElement, M>>,
-  mounting?: Script<El<HTMLTableSectionElement, M>>,
-  destruction?: Script<El<HTMLTableSectionElement, M>>,
+  setup?: Script<El<HTMLTableSectionElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableSectionElement, M, D>>,
+  creation?: Script<El<HTMLTableSectionElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableSectionElement, M, D>>,
+  mounting?: Script<El<HTMLTableSectionElement, M, D>>,
+  destruction?: Script<El<HTMLTableSectionElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
 
-export function TFoot<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLTableSectionElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>,
-  setupOrMode?: Script<El<HTMLTableSectionElement, M>> | Mode,
-  setup?: Script<El<HTMLTableSectionElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableSectionElement, M>>,
-  creation?: Script<El<HTMLTableSectionElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableSectionElement, M>>,
-  mounting?: Script<El<HTMLTableSectionElement, M>>,
-  destruction?: Script<El<HTMLTableSectionElement, M>>,
+export function TFoot<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLTableSectionElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
+  setupOrMode?: Script<El<HTMLTableSectionElement, M, D>> | Mode,
+  setup?: Script<El<HTMLTableSectionElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableSectionElement, M, D>>,
+  creation?: Script<El<HTMLTableSectionElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableSectionElement, M, D>>,
+  mounting?: Script<El<HTMLTableSectionElement, M, D>>,
+  destruction?: Script<El<HTMLTableSectionElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>> {
   //
   return describe(TFoot.name, HtmlTags.tfoot,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4852,45 +4852,45 @@ export function TFoot<M = unknown>(
 
 // TH
 
-export function TH<M = unknown>(
-  setup: Script<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>>
+export function TH<M = unknown, D = unknown>(
+  setup: Script<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
 
-export function TH<M = unknown>(
+export function TH<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>>
+  setup: Script<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
 
-export function TH<M = unknown>(
+export function TH<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>>
+  setup: Script<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
 
-export function TH<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>>
+export function TH<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
 
-export function TH<M = unknown>(
+export function TH<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLTableCellElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableCellElement, M>>,
-  creation?: Script<El<HTMLTableCellElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableCellElement, M>>,
-  mounting?: Script<El<HTMLTableCellElement, M>>,
-  destruction?: Script<El<HTMLTableCellElement, M>>,
+  setup?: Script<El<HTMLTableCellElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableCellElement, M, D>>,
+  creation?: Script<El<HTMLTableCellElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableCellElement, M, D>>,
+  mounting?: Script<El<HTMLTableCellElement, M, D>>,
+  destruction?: Script<El<HTMLTableCellElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
 
-export function TH<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLTableCellElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableCellElement, M>>,
-  setupOrMode?: Script<El<HTMLTableCellElement, M>> | Mode,
-  setup?: Script<El<HTMLTableCellElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableCellElement, M>>,
-  creation?: Script<El<HTMLTableCellElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableCellElement, M>>,
-  mounting?: Script<El<HTMLTableCellElement, M>>,
-  destruction?: Script<El<HTMLTableCellElement, M>>,
+export function TH<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLTableCellElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>,
+  setupOrMode?: Script<El<HTMLTableCellElement, M, D>> | Mode,
+  setup?: Script<El<HTMLTableCellElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableCellElement, M, D>>,
+  creation?: Script<El<HTMLTableCellElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableCellElement, M, D>>,
+  mounting?: Script<El<HTMLTableCellElement, M, D>>,
+  destruction?: Script<El<HTMLTableCellElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>> {
   //
   return describe(TH.name, HtmlTags.th,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4899,45 +4899,45 @@ export function TH<M = unknown>(
 
 // THead
 
-export function THead<M = unknown>(
-  setup: Script<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
+export function THead<M = unknown, D = unknown>(
+  setup: Script<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
 
-export function THead<M = unknown>(
+export function THead<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
+  setup: Script<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
 
-export function THead<M = unknown>(
+export function THead<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
+  setup: Script<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
 
-export function THead<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
+export function THead<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
 
-export function THead<M = unknown>(
+export function THead<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLTableSectionElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableSectionElement, M>>,
-  creation?: Script<El<HTMLTableSectionElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableSectionElement, M>>,
-  mounting?: Script<El<HTMLTableSectionElement, M>>,
-  destruction?: Script<El<HTMLTableSectionElement, M>>,
+  setup?: Script<El<HTMLTableSectionElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableSectionElement, M, D>>,
+  creation?: Script<El<HTMLTableSectionElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableSectionElement, M, D>>,
+  mounting?: Script<El<HTMLTableSectionElement, M, D>>,
+  destruction?: Script<El<HTMLTableSectionElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
 
-export function THead<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLTableSectionElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>,
-  setupOrMode?: Script<El<HTMLTableSectionElement, M>> | Mode,
-  setup?: Script<El<HTMLTableSectionElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableSectionElement, M>>,
-  creation?: Script<El<HTMLTableSectionElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableSectionElement, M>>,
-  mounting?: Script<El<HTMLTableSectionElement, M>>,
-  destruction?: Script<El<HTMLTableSectionElement, M>>,
+export function THead<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLTableSectionElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
+  setupOrMode?: Script<El<HTMLTableSectionElement, M, D>> | Mode,
+  setup?: Script<El<HTMLTableSectionElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableSectionElement, M, D>>,
+  creation?: Script<El<HTMLTableSectionElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableSectionElement, M, D>>,
+  mounting?: Script<El<HTMLTableSectionElement, M, D>>,
+  destruction?: Script<El<HTMLTableSectionElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>> {
   //
   return describe(THead.name, HtmlTags.thead,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4946,45 +4946,45 @@ export function THead<M = unknown>(
 
 // Time
 
-export function Time<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Time<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Time<M = unknown>(
+export function Time<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Time<M = unknown>(
+export function Time<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Time<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Time<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Time<M = unknown>(
+export function Time<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Time<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Time<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Time.name, HtmlTags.time,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -4993,45 +4993,45 @@ export function Time<M = unknown>(
 
 // Title
 
-export function Title<M = unknown>(
-  setup: Script<El<HTMLTitleElement, M>>): ReactiveTreeNode<El<HTMLTitleElement, M>>
+export function Title<M = unknown, D = unknown>(
+  setup: Script<El<HTMLTitleElement, M, D>>): ReactiveTreeNode<El<HTMLTitleElement, M, D>>
 
-export function Title<M = unknown>(
+export function Title<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLTitleElement, M>>): ReactiveTreeNode<El<HTMLTitleElement, M>>
+  setup: Script<El<HTMLTitleElement, M, D>>): ReactiveTreeNode<El<HTMLTitleElement, M, D>>
 
-export function Title<M = unknown>(
+export function Title<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLTitleElement, M>>): ReactiveTreeNode<El<HTMLTitleElement, M>>
+  setup: Script<El<HTMLTitleElement, M, D>>): ReactiveTreeNode<El<HTMLTitleElement, M, D>>
 
-export function Title<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLTitleElement, M>>): ReactiveTreeNode<El<HTMLTitleElement, M>>
+export function Title<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLTitleElement, M, D>>): ReactiveTreeNode<El<HTMLTitleElement, M, D>>
 
-export function Title<M = unknown>(
+export function Title<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLTitleElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTitleElement, M>>,
-  creation?: Script<El<HTMLTitleElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTitleElement, M>>,
-  mounting?: Script<El<HTMLTitleElement, M>>,
-  destruction?: Script<El<HTMLTitleElement, M>>,
+  setup?: Script<El<HTMLTitleElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTitleElement, M, D>>,
+  creation?: Script<El<HTMLTitleElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTitleElement, M, D>>,
+  mounting?: Script<El<HTMLTitleElement, M, D>>,
+  destruction?: Script<El<HTMLTitleElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTitleElement, M>>): ReactiveTreeNode<El<HTMLTitleElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLTitleElement, M, D>>): ReactiveTreeNode<El<HTMLTitleElement, M, D>>
 
-export function Title<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLTitleElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTitleElement, M>>,
-  setupOrMode?: Script<El<HTMLTitleElement, M>> | Mode,
-  setup?: Script<El<HTMLTitleElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTitleElement, M>>,
-  creation?: Script<El<HTMLTitleElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTitleElement, M>>,
-  mounting?: Script<El<HTMLTitleElement, M>>,
-  destruction?: Script<El<HTMLTitleElement, M>>,
+export function Title<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLTitleElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTitleElement, M, D>>,
+  setupOrMode?: Script<El<HTMLTitleElement, M, D>> | Mode,
+  setup?: Script<El<HTMLTitleElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTitleElement, M, D>>,
+  creation?: Script<El<HTMLTitleElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTitleElement, M, D>>,
+  mounting?: Script<El<HTMLTitleElement, M, D>>,
+  destruction?: Script<El<HTMLTitleElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTitleElement, M>>): ReactiveTreeNode<El<HTMLTitleElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLTitleElement, M, D>>): ReactiveTreeNode<El<HTMLTitleElement, M, D>> {
   //
   return describe(Title.name, HtmlTags.title,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -5040,45 +5040,45 @@ export function Title<M = unknown>(
 
 // TR
 
-export function TR<M = unknown>(
-  setup: Script<El<HTMLTableRowElement, M>>): ReactiveTreeNode<El<HTMLTableRowElement, M>>
+export function TR<M = unknown, D = unknown>(
+  setup: Script<El<HTMLTableRowElement, M, D>>): ReactiveTreeNode<El<HTMLTableRowElement, M, D>>
 
-export function TR<M = unknown>(
+export function TR<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLTableRowElement, M>>): ReactiveTreeNode<El<HTMLTableRowElement, M>>
+  setup: Script<El<HTMLTableRowElement, M, D>>): ReactiveTreeNode<El<HTMLTableRowElement, M, D>>
 
-export function TR<M = unknown>(
+export function TR<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLTableRowElement, M>>): ReactiveTreeNode<El<HTMLTableRowElement, M>>
+  setup: Script<El<HTMLTableRowElement, M, D>>): ReactiveTreeNode<El<HTMLTableRowElement, M, D>>
 
-export function TR<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLTableRowElement, M>>): ReactiveTreeNode<El<HTMLTableRowElement, M>>
+export function TR<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLTableRowElement, M, D>>): ReactiveTreeNode<El<HTMLTableRowElement, M, D>>
 
-export function TR<M = unknown>(
+export function TR<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLTableRowElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableRowElement, M>>,
-  creation?: Script<El<HTMLTableRowElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableRowElement, M>>,
-  mounting?: Script<El<HTMLTableRowElement, M>>,
-  destruction?: Script<El<HTMLTableRowElement, M>>,
+  setup?: Script<El<HTMLTableRowElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableRowElement, M, D>>,
+  creation?: Script<El<HTMLTableRowElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableRowElement, M, D>>,
+  mounting?: Script<El<HTMLTableRowElement, M, D>>,
+  destruction?: Script<El<HTMLTableRowElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableRowElement, M>>): ReactiveTreeNode<El<HTMLTableRowElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableRowElement, M, D>>): ReactiveTreeNode<El<HTMLTableRowElement, M, D>>
 
-export function TR<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLTableRowElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableRowElement, M>>,
-  setupOrMode?: Script<El<HTMLTableRowElement, M>> | Mode,
-  setup?: Script<El<HTMLTableRowElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTableRowElement, M>>,
-  creation?: Script<El<HTMLTableRowElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTableRowElement, M>>,
-  mounting?: Script<El<HTMLTableRowElement, M>>,
-  destruction?: Script<El<HTMLTableRowElement, M>>,
+export function TR<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLTableRowElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableRowElement, M, D>>,
+  setupOrMode?: Script<El<HTMLTableRowElement, M, D>> | Mode,
+  setup?: Script<El<HTMLTableRowElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTableRowElement, M, D>>,
+  creation?: Script<El<HTMLTableRowElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTableRowElement, M, D>>,
+  mounting?: Script<El<HTMLTableRowElement, M, D>>,
+  destruction?: Script<El<HTMLTableRowElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableRowElement, M>>): ReactiveTreeNode<El<HTMLTableRowElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLTableRowElement, M, D>>): ReactiveTreeNode<El<HTMLTableRowElement, M, D>> {
   //
   return describe(TR.name, HtmlTags.tr,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -5087,45 +5087,45 @@ export function TR<M = unknown>(
 
 // Track
 
-export function Track<M = unknown>(
-  setup: Script<El<HTMLTrackElement, M>>): ReactiveTreeNode<El<HTMLTrackElement, M>>
+export function Track<M = unknown, D = unknown>(
+  setup: Script<El<HTMLTrackElement, M, D>>): ReactiveTreeNode<El<HTMLTrackElement, M, D>>
 
-export function Track<M = unknown>(
+export function Track<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLTrackElement, M>>): ReactiveTreeNode<El<HTMLTrackElement, M>>
+  setup: Script<El<HTMLTrackElement, M, D>>): ReactiveTreeNode<El<HTMLTrackElement, M, D>>
 
-export function Track<M = unknown>(
+export function Track<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLTrackElement, M>>): ReactiveTreeNode<El<HTMLTrackElement, M>>
+  setup: Script<El<HTMLTrackElement, M, D>>): ReactiveTreeNode<El<HTMLTrackElement, M, D>>
 
-export function Track<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLTrackElement, M>>): ReactiveTreeNode<El<HTMLTrackElement, M>>
+export function Track<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLTrackElement, M, D>>): ReactiveTreeNode<El<HTMLTrackElement, M, D>>
 
-export function Track<M = unknown>(
+export function Track<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLTrackElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTrackElement, M>>,
-  creation?: Script<El<HTMLTrackElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTrackElement, M>>,
-  mounting?: Script<El<HTMLTrackElement, M>>,
-  destruction?: Script<El<HTMLTrackElement, M>>,
+  setup?: Script<El<HTMLTrackElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTrackElement, M, D>>,
+  creation?: Script<El<HTMLTrackElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTrackElement, M, D>>,
+  mounting?: Script<El<HTMLTrackElement, M, D>>,
+  destruction?: Script<El<HTMLTrackElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTrackElement, M>>): ReactiveTreeNode<El<HTMLTrackElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLTrackElement, M, D>>): ReactiveTreeNode<El<HTMLTrackElement, M, D>>
 
-export function Track<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLTrackElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTrackElement, M>>,
-  setupOrMode?: Script<El<HTMLTrackElement, M>> | Mode,
-  setup?: Script<El<HTMLTrackElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLTrackElement, M>>,
-  creation?: Script<El<HTMLTrackElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLTrackElement, M>>,
-  mounting?: Script<El<HTMLTrackElement, M>>,
-  destruction?: Script<El<HTMLTrackElement, M>>,
+export function Track<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLTrackElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTrackElement, M, D>>,
+  setupOrMode?: Script<El<HTMLTrackElement, M, D>> | Mode,
+  setup?: Script<El<HTMLTrackElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLTrackElement, M, D>>,
+  creation?: Script<El<HTMLTrackElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLTrackElement, M, D>>,
+  mounting?: Script<El<HTMLTrackElement, M, D>>,
+  destruction?: Script<El<HTMLTrackElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTrackElement, M>>): ReactiveTreeNode<El<HTMLTrackElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLTrackElement, M, D>>): ReactiveTreeNode<El<HTMLTrackElement, M, D>> {
   //
   return describe(Track.name, HtmlTags.track,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -5134,45 +5134,45 @@ export function Track<M = unknown>(
 
 // U
 
-export function U<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function U<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function U<M = unknown>(
+export function U<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function U<M = unknown>(
+export function U<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function U<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function U<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function U<M = unknown>(
+export function U<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function U<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function U<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(U.name, HtmlTags.u,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -5181,45 +5181,45 @@ export function U<M = unknown>(
 
 // UL
 
-export function UL<M = unknown>(
-  setup: Script<El<HTMLUListElement, M>>): ReactiveTreeNode<El<HTMLUListElement, M>>
+export function UL<M = unknown, D = unknown>(
+  setup: Script<El<HTMLUListElement, M, D>>): ReactiveTreeNode<El<HTMLUListElement, M, D>>
 
-export function UL<M = unknown>(
+export function UL<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLUListElement, M>>): ReactiveTreeNode<El<HTMLUListElement, M>>
+  setup: Script<El<HTMLUListElement, M, D>>): ReactiveTreeNode<El<HTMLUListElement, M, D>>
 
-export function UL<M = unknown>(
+export function UL<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLUListElement, M>>): ReactiveTreeNode<El<HTMLUListElement, M>>
+  setup: Script<El<HTMLUListElement, M, D>>): ReactiveTreeNode<El<HTMLUListElement, M, D>>
 
-export function UL<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLUListElement, M>>): ReactiveTreeNode<El<HTMLUListElement, M>>
+export function UL<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLUListElement, M, D>>): ReactiveTreeNode<El<HTMLUListElement, M, D>>
 
-export function UL<M = unknown>(
+export function UL<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLUListElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLUListElement, M>>,
-  creation?: Script<El<HTMLUListElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLUListElement, M>>,
-  mounting?: Script<El<HTMLUListElement, M>>,
-  destruction?: Script<El<HTMLUListElement, M>>,
+  setup?: Script<El<HTMLUListElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLUListElement, M, D>>,
+  creation?: Script<El<HTMLUListElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLUListElement, M, D>>,
+  mounting?: Script<El<HTMLUListElement, M, D>>,
+  destruction?: Script<El<HTMLUListElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLUListElement, M>>): ReactiveTreeNode<El<HTMLUListElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLUListElement, M, D>>): ReactiveTreeNode<El<HTMLUListElement, M, D>>
 
-export function UL<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLUListElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLUListElement, M>>,
-  setupOrMode?: Script<El<HTMLUListElement, M>> | Mode,
-  setup?: Script<El<HTMLUListElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLUListElement, M>>,
-  creation?: Script<El<HTMLUListElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLUListElement, M>>,
-  mounting?: Script<El<HTMLUListElement, M>>,
-  destruction?: Script<El<HTMLUListElement, M>>,
+export function UL<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLUListElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLUListElement, M, D>>,
+  setupOrMode?: Script<El<HTMLUListElement, M, D>> | Mode,
+  setup?: Script<El<HTMLUListElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLUListElement, M, D>>,
+  creation?: Script<El<HTMLUListElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLUListElement, M, D>>,
+  mounting?: Script<El<HTMLUListElement, M, D>>,
+  destruction?: Script<El<HTMLUListElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLUListElement, M>>): ReactiveTreeNode<El<HTMLUListElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLUListElement, M, D>>): ReactiveTreeNode<El<HTMLUListElement, M, D>> {
   //
   return describe(UL.name, HtmlTags.ul,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -5228,45 +5228,45 @@ export function UL<M = unknown>(
 
 // Var
 
-export function Var<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Var<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Var<M = unknown>(
+export function Var<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Var<M = unknown>(
+export function Var<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Var<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Var<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Var<M = unknown>(
+export function Var<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Var<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Var<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Var.name, HtmlTags.var,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -5275,45 +5275,45 @@ export function Var<M = unknown>(
 
 // Video
 
-export function Video<M = unknown>(
-  setup: Script<El<HTMLVideoElement, M>>): ReactiveTreeNode<El<HTMLVideoElement, M>>
+export function Video<M = unknown, D = unknown>(
+  setup: Script<El<HTMLVideoElement, M, D>>): ReactiveTreeNode<El<HTMLVideoElement, M, D>>
 
-export function Video<M = unknown>(
+export function Video<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLVideoElement, M>>): ReactiveTreeNode<El<HTMLVideoElement, M>>
+  setup: Script<El<HTMLVideoElement, M, D>>): ReactiveTreeNode<El<HTMLVideoElement, M, D>>
 
-export function Video<M = unknown>(
+export function Video<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLVideoElement, M>>): ReactiveTreeNode<El<HTMLVideoElement, M>>
+  setup: Script<El<HTMLVideoElement, M, D>>): ReactiveTreeNode<El<HTMLVideoElement, M, D>>
 
-export function Video<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLVideoElement, M>>): ReactiveTreeNode<El<HTMLVideoElement, M>>
+export function Video<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLVideoElement, M, D>>): ReactiveTreeNode<El<HTMLVideoElement, M, D>>
 
-export function Video<M = unknown>(
+export function Video<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLVideoElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLVideoElement, M>>,
-  creation?: Script<El<HTMLVideoElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLVideoElement, M>>,
-  mounting?: Script<El<HTMLVideoElement, M>>,
-  destruction?: Script<El<HTMLVideoElement, M>>,
+  setup?: Script<El<HTMLVideoElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLVideoElement, M, D>>,
+  creation?: Script<El<HTMLVideoElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLVideoElement, M, D>>,
+  mounting?: Script<El<HTMLVideoElement, M, D>>,
+  destruction?: Script<El<HTMLVideoElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLVideoElement, M>>): ReactiveTreeNode<El<HTMLVideoElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLVideoElement, M, D>>): ReactiveTreeNode<El<HTMLVideoElement, M, D>>
 
-export function Video<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLVideoElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLVideoElement, M>>,
-  setupOrMode?: Script<El<HTMLVideoElement, M>> | Mode,
-  setup?: Script<El<HTMLVideoElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLVideoElement, M>>,
-  creation?: Script<El<HTMLVideoElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLVideoElement, M>>,
-  mounting?: Script<El<HTMLVideoElement, M>>,
-  destruction?: Script<El<HTMLVideoElement, M>>,
+export function Video<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLVideoElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLVideoElement, M, D>>,
+  setupOrMode?: Script<El<HTMLVideoElement, M, D>> | Mode,
+  setup?: Script<El<HTMLVideoElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLVideoElement, M, D>>,
+  creation?: Script<El<HTMLVideoElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLVideoElement, M, D>>,
+  mounting?: Script<El<HTMLVideoElement, M, D>>,
+  destruction?: Script<El<HTMLVideoElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLVideoElement, M>>): ReactiveTreeNode<El<HTMLVideoElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLVideoElement, M, D>>): ReactiveTreeNode<El<HTMLVideoElement, M, D>> {
   //
   return describe(Video.name, HtmlTags.video,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -5322,45 +5322,45 @@ export function Video<M = unknown>(
 
 // Wbr
 
-export function Wbr<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Wbr<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Wbr<M = unknown>(
+export function Wbr<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Wbr<M = unknown>(
+export function Wbr<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Wbr<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Wbr<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Wbr<M = unknown>(
+export function Wbr<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Wbr<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Wbr<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Wbr.name, HtmlTags.wbr,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,

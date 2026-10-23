@@ -15,51 +15,51 @@ export type ImageModel = {
 
 // Image
 
-export function Image(
-  setup: Script<El<HTMLElement, ImageModel>>): ReactiveTreeNode<El<HTMLElement, ImageModel>>
+export function Image<D = unknown>(
+  setup: Script<El<HTMLElement, ImageModel, D>>): ReactiveTreeNode<El<HTMLElement, ImageModel, D>>
 
-export function Image(
+export function Image<D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, ImageModel>>): ReactiveTreeNode<El<HTMLElement, ImageModel>>
+  setup: Script<El<HTMLElement, ImageModel, D>>): ReactiveTreeNode<El<HTMLElement, ImageModel, D>>
 
-export function Image(
+export function Image<D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, ImageModel>>): ReactiveTreeNode<El<HTMLElement, ImageModel>>
+  setup: Script<El<HTMLElement, ImageModel, D>>): ReactiveTreeNode<El<HTMLElement, ImageModel, D>>
 
-export function Image(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, ImageModel>>): ReactiveTreeNode<El<HTMLElement, ImageModel>>
+export function Image<D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, ImageModel, D>>): ReactiveTreeNode<El<HTMLElement, ImageModel, D>>
 
-export function Image(
+export function Image<D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, ImageModel>>,
-  setupTask?: ScriptAsync<El<HTMLElement, ImageModel>>,
-  creation?: Script<El<HTMLElement, ImageModel>>,
-  creationTask?: ScriptAsync<El<HTMLElement, ImageModel>>,
-  mounting?: Script<El<HTMLElement, ImageModel>>,
-  destruction?: Script<El<HTMLElement, ImageModel>>,
+  setup?: Script<El<HTMLElement, ImageModel, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, ImageModel, D>>,
+  creation?: Script<El<HTMLElement, ImageModel, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, ImageModel, D>>,
+  mounting?: Script<El<HTMLElement, ImageModel, D>>,
+  destruction?: Script<El<HTMLElement, ImageModel, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, ImageModel>>): ReactiveTreeNode<El<HTMLElement, ImageModel>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, ImageModel, D>>): ReactiveTreeNode<El<HTMLElement, ImageModel, D>>
 
-export function Image(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, ImageModel>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, ImageModel>>,
-  setupOrMode?: Script<El<HTMLElement, ImageModel>> | Mode,
-  setup?: Script<El<HTMLElement, ImageModel>>,
-  setupTask?: ScriptAsync<El<HTMLElement, ImageModel>>,
-  creation?: Script<El<HTMLElement, ImageModel>>,
-  creationTask?: ScriptAsync<El<HTMLElement, ImageModel>>,
-  mounting?: Script<El<HTMLElement, ImageModel>>,
-  destruction?: Script<El<HTMLElement, ImageModel>>,
+export function Image<D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, ImageModel, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, ImageModel, D>>,
+  setupOrMode?: Script<El<HTMLElement, ImageModel, D>> | Mode,
+  setup?: Script<El<HTMLElement, ImageModel, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, ImageModel, D>>,
+  creation?: Script<El<HTMLElement, ImageModel, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, ImageModel, D>>,
+  mounting?: Script<El<HTMLElement, ImageModel, D>>,
+  destruction?: Script<El<HTMLElement, ImageModel, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, ImageModel>>): ReactiveTreeNode<El<HTMLElement, ImageModel>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, ImageModel, D>>): ReactiveTreeNode<El<HTMLElement, ImageModel, D>> {
   //
   const description = args2desc(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
   return (
-    Element<ImageModel>(setBasis(description, {
+    Element<ImageModel, D>(setBasis(description, {
       creation() {
         this.model ??= rxModel({ source: undefined })
       },

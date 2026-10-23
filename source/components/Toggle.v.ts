@@ -19,51 +19,51 @@ export type ToggleModel = {
 
 // Toggle
 
-export function Toggle(
-  setup: Script<El<HTMLElement, ToggleModel>>): ReactiveTreeNode<El<HTMLElement, ToggleModel>>
+export function Toggle<D = unknown>(
+  setup: Script<El<HTMLElement, ToggleModel, D>>): ReactiveTreeNode<El<HTMLElement, ToggleModel, D>>
 
-export function Toggle(
+export function Toggle<D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, ToggleModel>>): ReactiveTreeNode<El<HTMLElement, ToggleModel>>
+  setup: Script<El<HTMLElement, ToggleModel, D>>): ReactiveTreeNode<El<HTMLElement, ToggleModel, D>>
 
-export function Toggle(
+export function Toggle<D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, ToggleModel>>): ReactiveTreeNode<El<HTMLElement, ToggleModel>>
+  setup: Script<El<HTMLElement, ToggleModel, D>>): ReactiveTreeNode<El<HTMLElement, ToggleModel, D>>
 
-export function Toggle(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, ToggleModel>>): ReactiveTreeNode<El<HTMLElement, ToggleModel>>
+export function Toggle<D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, ToggleModel, D>>): ReactiveTreeNode<El<HTMLElement, ToggleModel, D>>
 
-export function Toggle(
+export function Toggle<D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, ToggleModel>>,
-  setupTask?: ScriptAsync<El<HTMLElement, ToggleModel>>,
-  creation?: Script<El<HTMLElement, ToggleModel>>,
-  creationTask?: ScriptAsync<El<HTMLElement, ToggleModel>>,
-  mounting?: Script<El<HTMLElement, ToggleModel>>,
-  destruction?: Script<El<HTMLElement, ToggleModel>>,
+  setup?: Script<El<HTMLElement, ToggleModel, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, ToggleModel, D>>,
+  creation?: Script<El<HTMLElement, ToggleModel, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, ToggleModel, D>>,
+  mounting?: Script<El<HTMLElement, ToggleModel, D>>,
+  destruction?: Script<El<HTMLElement, ToggleModel, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, ToggleModel>>): ReactiveTreeNode<El<HTMLElement, ToggleModel>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, ToggleModel, D>>): ReactiveTreeNode<El<HTMLElement, ToggleModel, D>>
 
-export function Toggle(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, ToggleModel>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, ToggleModel>>,
-  setupOrMode?: Script<El<HTMLElement, ToggleModel>> | Mode,
-  setup?: Script<El<HTMLElement, ToggleModel>>,
-  setupTask?: ScriptAsync<El<HTMLElement, ToggleModel>>,
-  creation?: Script<El<HTMLElement, ToggleModel>>,
-  creationTask?: ScriptAsync<El<HTMLElement, ToggleModel>>,
-  mounting?: Script<El<HTMLElement, ToggleModel>>,
-  destruction?: Script<El<HTMLElement, ToggleModel>>,
+export function Toggle<D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, ToggleModel, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, ToggleModel, D>>,
+  setupOrMode?: Script<El<HTMLElement, ToggleModel, D>> | Mode,
+  setup?: Script<El<HTMLElement, ToggleModel, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, ToggleModel, D>>,
+  creation?: Script<El<HTMLElement, ToggleModel, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, ToggleModel, D>>,
+  mounting?: Script<El<HTMLElement, ToggleModel, D>>,
+  destruction?: Script<El<HTMLElement, ToggleModel, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, ToggleModel>>): ReactiveTreeNode<El<HTMLElement, ToggleModel>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, ToggleModel, D>>): ReactiveTreeNode<El<HTMLElement, ToggleModel, D>> {
   //
   const description = args2desc(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
   return (
-    Element<ToggleModel>(setBasis(description, {
+    Element<ToggleModel, D>(setBasis(description, {
       creation() {
         this.model ??= rxModel({
           label: ReactiveTreeNode.current.key,

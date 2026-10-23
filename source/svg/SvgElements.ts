@@ -11,45 +11,45 @@ import { SvgDriver } from "../core/WebDriver.js"
 
 // Svg
 
-export function Svg<M = unknown>(
-  setup: Script<El<SVGSVGElement, M>>): ReactiveTreeNode<El<SVGSVGElement, M>>
+export function Svg<M = unknown, D = unknown>(
+  setup: Script<El<SVGSVGElement, M, D>>): ReactiveTreeNode<El<SVGSVGElement, M, D>>
 
-export function Svg<M = unknown>(
+export function Svg<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGSVGElement, M>>): ReactiveTreeNode<El<SVGSVGElement, M>>
+  setup: Script<El<SVGSVGElement, M, D>>): ReactiveTreeNode<El<SVGSVGElement, M, D>>
 
-export function Svg<M = unknown>(
+export function Svg<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGSVGElement, M>>): ReactiveTreeNode<El<SVGSVGElement, M>>
+  setup: Script<El<SVGSVGElement, M, D>>): ReactiveTreeNode<El<SVGSVGElement, M, D>>
 
-export function Svg<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGSVGElement, M>>): ReactiveTreeNode<El<SVGSVGElement, M>>
+export function Svg<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGSVGElement, M, D>>): ReactiveTreeNode<El<SVGSVGElement, M, D>>
 
-export function Svg<M = unknown>(
+export function Svg<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGSVGElement, M>>,
-  setupTask?: ScriptAsync<El<SVGSVGElement, M>>,
-  creation?: Script<El<SVGSVGElement, M>>,
-  creationTask?: ScriptAsync<El<SVGSVGElement, M>>,
-  mounting?: Script<El<SVGSVGElement, M>>,
-  destruction?: Script<El<SVGSVGElement, M>>,
+  setup?: Script<El<SVGSVGElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGSVGElement, M, D>>,
+  creation?: Script<El<SVGSVGElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGSVGElement, M, D>>,
+  mounting?: Script<El<SVGSVGElement, M, D>>,
+  destruction?: Script<El<SVGSVGElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGSVGElement, M>>): ReactiveTreeNode<El<SVGSVGElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGSVGElement, M, D>>): ReactiveTreeNode<El<SVGSVGElement, M, D>>
 
-export function Svg<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGSVGElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGSVGElement, M>>,
-  setupOrMode?: Script<El<SVGSVGElement, M>> | Mode,
-  setup?: Script<El<SVGSVGElement, M>>,
-  setupTask?: ScriptAsync<El<SVGSVGElement, M>>,
-  creation?: Script<El<SVGSVGElement, M>>,
-  creationTask?: ScriptAsync<El<SVGSVGElement, M>>,
-  mounting?: Script<El<SVGSVGElement, M>>,
-  destruction?: Script<El<SVGSVGElement, M>>,
+export function Svg<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGSVGElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGSVGElement, M, D>>,
+  setupOrMode?: Script<El<SVGSVGElement, M, D>> | Mode,
+  setup?: Script<El<SVGSVGElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGSVGElement, M, D>>,
+  creation?: Script<El<SVGSVGElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGSVGElement, M, D>>,
+  mounting?: Script<El<SVGSVGElement, M, D>>,
+  destruction?: Script<El<SVGSVGElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGSVGElement, M>>): ReactiveTreeNode<El<SVGSVGElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGSVGElement, M, D>>): ReactiveTreeNode<El<SVGSVGElement, M, D>> {
   //
   return describe(Svg.name, SvgTags.svg,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -58,45 +58,45 @@ export function Svg<M = unknown>(
 
 // SvgA
 
-export function SvgA<M = unknown>(
-  setup: Script<El<SVGAElement, M>>): ReactiveTreeNode<El<SVGAElement, M>>
+export function SvgA<M = unknown, D = unknown>(
+  setup: Script<El<SVGAElement, M, D>>): ReactiveTreeNode<El<SVGAElement, M, D>>
 
-export function SvgA<M = unknown>(
+export function SvgA<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGAElement, M>>): ReactiveTreeNode<El<SVGAElement, M>>
+  setup: Script<El<SVGAElement, M, D>>): ReactiveTreeNode<El<SVGAElement, M, D>>
 
-export function SvgA<M = unknown>(
+export function SvgA<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGAElement, M>>): ReactiveTreeNode<El<SVGAElement, M>>
+  setup: Script<El<SVGAElement, M, D>>): ReactiveTreeNode<El<SVGAElement, M, D>>
 
-export function SvgA<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGAElement, M>>): ReactiveTreeNode<El<SVGAElement, M>>
+export function SvgA<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGAElement, M, D>>): ReactiveTreeNode<El<SVGAElement, M, D>>
 
-export function SvgA<M = unknown>(
+export function SvgA<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGAElement, M>>,
-  setupTask?: ScriptAsync<El<SVGAElement, M>>,
-  creation?: Script<El<SVGAElement, M>>,
-  creationTask?: ScriptAsync<El<SVGAElement, M>>,
-  mounting?: Script<El<SVGAElement, M>>,
-  destruction?: Script<El<SVGAElement, M>>,
+  setup?: Script<El<SVGAElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGAElement, M, D>>,
+  creation?: Script<El<SVGAElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGAElement, M, D>>,
+  mounting?: Script<El<SVGAElement, M, D>>,
+  destruction?: Script<El<SVGAElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGAElement, M>>): ReactiveTreeNode<El<SVGAElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGAElement, M, D>>): ReactiveTreeNode<El<SVGAElement, M, D>>
 
-export function SvgA<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGAElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGAElement, M>>,
-  setupOrMode?: Script<El<SVGAElement, M>> | Mode,
-  setup?: Script<El<SVGAElement, M>>,
-  setupTask?: ScriptAsync<El<SVGAElement, M>>,
-  creation?: Script<El<SVGAElement, M>>,
-  creationTask?: ScriptAsync<El<SVGAElement, M>>,
-  mounting?: Script<El<SVGAElement, M>>,
-  destruction?: Script<El<SVGAElement, M>>,
+export function SvgA<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGAElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGAElement, M, D>>,
+  setupOrMode?: Script<El<SVGAElement, M, D>> | Mode,
+  setup?: Script<El<SVGAElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGAElement, M, D>>,
+  creation?: Script<El<SVGAElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGAElement, M, D>>,
+  mounting?: Script<El<SVGAElement, M, D>>,
+  destruction?: Script<El<SVGAElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGAElement, M>>): ReactiveTreeNode<El<SVGAElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGAElement, M, D>>): ReactiveTreeNode<El<SVGAElement, M, D>> {
   //
   return describe(SvgA.name, SvgTags.a,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -105,45 +105,45 @@ export function SvgA<M = unknown>(
 
 // Animate
 
-export function Animate<M = unknown>(
-  setup: Script<El<SVGAnimateElement, M>>): ReactiveTreeNode<El<SVGAnimateElement, M>>
+export function Animate<M = unknown, D = unknown>(
+  setup: Script<El<SVGAnimateElement, M, D>>): ReactiveTreeNode<El<SVGAnimateElement, M, D>>
 
-export function Animate<M = unknown>(
+export function Animate<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGAnimateElement, M>>): ReactiveTreeNode<El<SVGAnimateElement, M>>
+  setup: Script<El<SVGAnimateElement, M, D>>): ReactiveTreeNode<El<SVGAnimateElement, M, D>>
 
-export function Animate<M = unknown>(
+export function Animate<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGAnimateElement, M>>): ReactiveTreeNode<El<SVGAnimateElement, M>>
+  setup: Script<El<SVGAnimateElement, M, D>>): ReactiveTreeNode<El<SVGAnimateElement, M, D>>
 
-export function Animate<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGAnimateElement, M>>): ReactiveTreeNode<El<SVGAnimateElement, M>>
+export function Animate<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGAnimateElement, M, D>>): ReactiveTreeNode<El<SVGAnimateElement, M, D>>
 
-export function Animate<M = unknown>(
+export function Animate<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGAnimateElement, M>>,
-  setupTask?: ScriptAsync<El<SVGAnimateElement, M>>,
-  creation?: Script<El<SVGAnimateElement, M>>,
-  creationTask?: ScriptAsync<El<SVGAnimateElement, M>>,
-  mounting?: Script<El<SVGAnimateElement, M>>,
-  destruction?: Script<El<SVGAnimateElement, M>>,
+  setup?: Script<El<SVGAnimateElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGAnimateElement, M, D>>,
+  creation?: Script<El<SVGAnimateElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGAnimateElement, M, D>>,
+  mounting?: Script<El<SVGAnimateElement, M, D>>,
+  destruction?: Script<El<SVGAnimateElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGAnimateElement, M>>): ReactiveTreeNode<El<SVGAnimateElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGAnimateElement, M, D>>): ReactiveTreeNode<El<SVGAnimateElement, M, D>>
 
-export function Animate<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGAnimateElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGAnimateElement, M>>,
-  setupOrMode?: Script<El<SVGAnimateElement, M>> | Mode,
-  setup?: Script<El<SVGAnimateElement, M>>,
-  setupTask?: ScriptAsync<El<SVGAnimateElement, M>>,
-  creation?: Script<El<SVGAnimateElement, M>>,
-  creationTask?: ScriptAsync<El<SVGAnimateElement, M>>,
-  mounting?: Script<El<SVGAnimateElement, M>>,
-  destruction?: Script<El<SVGAnimateElement, M>>,
+export function Animate<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGAnimateElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGAnimateElement, M, D>>,
+  setupOrMode?: Script<El<SVGAnimateElement, M, D>> | Mode,
+  setup?: Script<El<SVGAnimateElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGAnimateElement, M, D>>,
+  creation?: Script<El<SVGAnimateElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGAnimateElement, M, D>>,
+  mounting?: Script<El<SVGAnimateElement, M, D>>,
+  destruction?: Script<El<SVGAnimateElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGAnimateElement, M>>): ReactiveTreeNode<El<SVGAnimateElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGAnimateElement, M, D>>): ReactiveTreeNode<El<SVGAnimateElement, M, D>> {
   //
   return describe(Animate.name, SvgTags.animate,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -152,45 +152,45 @@ export function Animate<M = unknown>(
 
 // AnimateMotion
 
-export function AnimateMotion<M = unknown>(
-  setup: Script<El<SVGAnimateMotionElement, M>>): ReactiveTreeNode<El<SVGAnimateMotionElement, M>>
+export function AnimateMotion<M = unknown, D = unknown>(
+  setup: Script<El<SVGAnimateMotionElement, M, D>>): ReactiveTreeNode<El<SVGAnimateMotionElement, M, D>>
 
-export function AnimateMotion<M = unknown>(
+export function AnimateMotion<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGAnimateMotionElement, M>>): ReactiveTreeNode<El<SVGAnimateMotionElement, M>>
+  setup: Script<El<SVGAnimateMotionElement, M, D>>): ReactiveTreeNode<El<SVGAnimateMotionElement, M, D>>
 
-export function AnimateMotion<M = unknown>(
+export function AnimateMotion<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGAnimateMotionElement, M>>): ReactiveTreeNode<El<SVGAnimateMotionElement, M>>
+  setup: Script<El<SVGAnimateMotionElement, M, D>>): ReactiveTreeNode<El<SVGAnimateMotionElement, M, D>>
 
-export function AnimateMotion<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGAnimateMotionElement, M>>): ReactiveTreeNode<El<SVGAnimateMotionElement, M>>
+export function AnimateMotion<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGAnimateMotionElement, M, D>>): ReactiveTreeNode<El<SVGAnimateMotionElement, M, D>>
 
-export function AnimateMotion<M = unknown>(
+export function AnimateMotion<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGAnimateMotionElement, M>>,
-  setupTask?: ScriptAsync<El<SVGAnimateMotionElement, M>>,
-  creation?: Script<El<SVGAnimateMotionElement, M>>,
-  creationTask?: ScriptAsync<El<SVGAnimateMotionElement, M>>,
-  mounting?: Script<El<SVGAnimateMotionElement, M>>,
-  destruction?: Script<El<SVGAnimateMotionElement, M>>,
+  setup?: Script<El<SVGAnimateMotionElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGAnimateMotionElement, M, D>>,
+  creation?: Script<El<SVGAnimateMotionElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGAnimateMotionElement, M, D>>,
+  mounting?: Script<El<SVGAnimateMotionElement, M, D>>,
+  destruction?: Script<El<SVGAnimateMotionElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGAnimateMotionElement, M>>): ReactiveTreeNode<El<SVGAnimateMotionElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGAnimateMotionElement, M, D>>): ReactiveTreeNode<El<SVGAnimateMotionElement, M, D>>
 
-export function AnimateMotion<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGAnimateMotionElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGAnimateMotionElement, M>>,
-  setupOrMode?: Script<El<SVGAnimateMotionElement, M>> | Mode,
-  setup?: Script<El<SVGAnimateMotionElement, M>>,
-  setupTask?: ScriptAsync<El<SVGAnimateMotionElement, M>>,
-  creation?: Script<El<SVGAnimateMotionElement, M>>,
-  creationTask?: ScriptAsync<El<SVGAnimateMotionElement, M>>,
-  mounting?: Script<El<SVGAnimateMotionElement, M>>,
-  destruction?: Script<El<SVGAnimateMotionElement, M>>,
+export function AnimateMotion<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGAnimateMotionElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGAnimateMotionElement, M, D>>,
+  setupOrMode?: Script<El<SVGAnimateMotionElement, M, D>> | Mode,
+  setup?: Script<El<SVGAnimateMotionElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGAnimateMotionElement, M, D>>,
+  creation?: Script<El<SVGAnimateMotionElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGAnimateMotionElement, M, D>>,
+  mounting?: Script<El<SVGAnimateMotionElement, M, D>>,
+  destruction?: Script<El<SVGAnimateMotionElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGAnimateMotionElement, M>>): ReactiveTreeNode<El<SVGAnimateMotionElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGAnimateMotionElement, M, D>>): ReactiveTreeNode<El<SVGAnimateMotionElement, M, D>> {
   //
   return describe(AnimateMotion.name, SvgTags.animateMotion,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -199,45 +199,45 @@ export function AnimateMotion<M = unknown>(
 
 // AnimateTransform
 
-export function AnimateTransform<M = unknown>(
-  setup: Script<El<SVGAnimateTransformElement, M>>): ReactiveTreeNode<El<SVGAnimateTransformElement, M>>
+export function AnimateTransform<M = unknown, D = unknown>(
+  setup: Script<El<SVGAnimateTransformElement, M, D>>): ReactiveTreeNode<El<SVGAnimateTransformElement, M, D>>
 
-export function AnimateTransform<M = unknown>(
+export function AnimateTransform<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGAnimateTransformElement, M>>): ReactiveTreeNode<El<SVGAnimateTransformElement, M>>
+  setup: Script<El<SVGAnimateTransformElement, M, D>>): ReactiveTreeNode<El<SVGAnimateTransformElement, M, D>>
 
-export function AnimateTransform<M = unknown>(
+export function AnimateTransform<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGAnimateTransformElement, M>>): ReactiveTreeNode<El<SVGAnimateTransformElement, M>>
+  setup: Script<El<SVGAnimateTransformElement, M, D>>): ReactiveTreeNode<El<SVGAnimateTransformElement, M, D>>
 
-export function AnimateTransform<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGAnimateTransformElement, M>>): ReactiveTreeNode<El<SVGAnimateTransformElement, M>>
+export function AnimateTransform<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGAnimateTransformElement, M, D>>): ReactiveTreeNode<El<SVGAnimateTransformElement, M, D>>
 
-export function AnimateTransform<M = unknown>(
+export function AnimateTransform<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGAnimateTransformElement, M>>,
-  setupTask?: ScriptAsync<El<SVGAnimateTransformElement, M>>,
-  creation?: Script<El<SVGAnimateTransformElement, M>>,
-  creationTask?: ScriptAsync<El<SVGAnimateTransformElement, M>>,
-  mounting?: Script<El<SVGAnimateTransformElement, M>>,
-  destruction?: Script<El<SVGAnimateTransformElement, M>>,
+  setup?: Script<El<SVGAnimateTransformElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGAnimateTransformElement, M, D>>,
+  creation?: Script<El<SVGAnimateTransformElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGAnimateTransformElement, M, D>>,
+  mounting?: Script<El<SVGAnimateTransformElement, M, D>>,
+  destruction?: Script<El<SVGAnimateTransformElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGAnimateTransformElement, M>>): ReactiveTreeNode<El<SVGAnimateTransformElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGAnimateTransformElement, M, D>>): ReactiveTreeNode<El<SVGAnimateTransformElement, M, D>>
 
-export function AnimateTransform<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGAnimateTransformElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGAnimateTransformElement, M>>,
-  setupOrMode?: Script<El<SVGAnimateTransformElement, M>> | Mode,
-  setup?: Script<El<SVGAnimateTransformElement, M>>,
-  setupTask?: ScriptAsync<El<SVGAnimateTransformElement, M>>,
-  creation?: Script<El<SVGAnimateTransformElement, M>>,
-  creationTask?: ScriptAsync<El<SVGAnimateTransformElement, M>>,
-  mounting?: Script<El<SVGAnimateTransformElement, M>>,
-  destruction?: Script<El<SVGAnimateTransformElement, M>>,
+export function AnimateTransform<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGAnimateTransformElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGAnimateTransformElement, M, D>>,
+  setupOrMode?: Script<El<SVGAnimateTransformElement, M, D>> | Mode,
+  setup?: Script<El<SVGAnimateTransformElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGAnimateTransformElement, M, D>>,
+  creation?: Script<El<SVGAnimateTransformElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGAnimateTransformElement, M, D>>,
+  mounting?: Script<El<SVGAnimateTransformElement, M, D>>,
+  destruction?: Script<El<SVGAnimateTransformElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGAnimateTransformElement, M>>): ReactiveTreeNode<El<SVGAnimateTransformElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGAnimateTransformElement, M, D>>): ReactiveTreeNode<El<SVGAnimateTransformElement, M, D>> {
   //
   return describe(AnimateTransform.name, SvgTags.animateTransform,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -246,45 +246,45 @@ export function AnimateTransform<M = unknown>(
 
 // Circle
 
-export function Circle<M = unknown>(
-  setup: Script<El<SVGCircleElement, M>>): ReactiveTreeNode<El<SVGCircleElement, M>>
+export function Circle<M = unknown, D = unknown>(
+  setup: Script<El<SVGCircleElement, M, D>>): ReactiveTreeNode<El<SVGCircleElement, M, D>>
 
-export function Circle<M = unknown>(
+export function Circle<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGCircleElement, M>>): ReactiveTreeNode<El<SVGCircleElement, M>>
+  setup: Script<El<SVGCircleElement, M, D>>): ReactiveTreeNode<El<SVGCircleElement, M, D>>
 
-export function Circle<M = unknown>(
+export function Circle<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGCircleElement, M>>): ReactiveTreeNode<El<SVGCircleElement, M>>
+  setup: Script<El<SVGCircleElement, M, D>>): ReactiveTreeNode<El<SVGCircleElement, M, D>>
 
-export function Circle<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGCircleElement, M>>): ReactiveTreeNode<El<SVGCircleElement, M>>
+export function Circle<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGCircleElement, M, D>>): ReactiveTreeNode<El<SVGCircleElement, M, D>>
 
-export function Circle<M = unknown>(
+export function Circle<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGCircleElement, M>>,
-  setupTask?: ScriptAsync<El<SVGCircleElement, M>>,
-  creation?: Script<El<SVGCircleElement, M>>,
-  creationTask?: ScriptAsync<El<SVGCircleElement, M>>,
-  mounting?: Script<El<SVGCircleElement, M>>,
-  destruction?: Script<El<SVGCircleElement, M>>,
+  setup?: Script<El<SVGCircleElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGCircleElement, M, D>>,
+  creation?: Script<El<SVGCircleElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGCircleElement, M, D>>,
+  mounting?: Script<El<SVGCircleElement, M, D>>,
+  destruction?: Script<El<SVGCircleElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGCircleElement, M>>): ReactiveTreeNode<El<SVGCircleElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGCircleElement, M, D>>): ReactiveTreeNode<El<SVGCircleElement, M, D>>
 
-export function Circle<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGCircleElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGCircleElement, M>>,
-  setupOrMode?: Script<El<SVGCircleElement, M>> | Mode,
-  setup?: Script<El<SVGCircleElement, M>>,
-  setupTask?: ScriptAsync<El<SVGCircleElement, M>>,
-  creation?: Script<El<SVGCircleElement, M>>,
-  creationTask?: ScriptAsync<El<SVGCircleElement, M>>,
-  mounting?: Script<El<SVGCircleElement, M>>,
-  destruction?: Script<El<SVGCircleElement, M>>,
+export function Circle<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGCircleElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGCircleElement, M, D>>,
+  setupOrMode?: Script<El<SVGCircleElement, M, D>> | Mode,
+  setup?: Script<El<SVGCircleElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGCircleElement, M, D>>,
+  creation?: Script<El<SVGCircleElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGCircleElement, M, D>>,
+  mounting?: Script<El<SVGCircleElement, M, D>>,
+  destruction?: Script<El<SVGCircleElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGCircleElement, M>>): ReactiveTreeNode<El<SVGCircleElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGCircleElement, M, D>>): ReactiveTreeNode<El<SVGCircleElement, M, D>> {
   //
   return describe(Circle.name, SvgTags.circle,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -293,45 +293,45 @@ export function Circle<M = unknown>(
 
 // ClipPath
 
-export function ClipPath<M = unknown>(
-  setup: Script<El<SVGClipPathElement, M>>): ReactiveTreeNode<El<SVGClipPathElement, M>>
+export function ClipPath<M = unknown, D = unknown>(
+  setup: Script<El<SVGClipPathElement, M, D>>): ReactiveTreeNode<El<SVGClipPathElement, M, D>>
 
-export function ClipPath<M = unknown>(
+export function ClipPath<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGClipPathElement, M>>): ReactiveTreeNode<El<SVGClipPathElement, M>>
+  setup: Script<El<SVGClipPathElement, M, D>>): ReactiveTreeNode<El<SVGClipPathElement, M, D>>
 
-export function ClipPath<M = unknown>(
+export function ClipPath<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGClipPathElement, M>>): ReactiveTreeNode<El<SVGClipPathElement, M>>
+  setup: Script<El<SVGClipPathElement, M, D>>): ReactiveTreeNode<El<SVGClipPathElement, M, D>>
 
-export function ClipPath<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGClipPathElement, M>>): ReactiveTreeNode<El<SVGClipPathElement, M>>
+export function ClipPath<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGClipPathElement, M, D>>): ReactiveTreeNode<El<SVGClipPathElement, M, D>>
 
-export function ClipPath<M = unknown>(
+export function ClipPath<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGClipPathElement, M>>,
-  setupTask?: ScriptAsync<El<SVGClipPathElement, M>>,
-  creation?: Script<El<SVGClipPathElement, M>>,
-  creationTask?: ScriptAsync<El<SVGClipPathElement, M>>,
-  mounting?: Script<El<SVGClipPathElement, M>>,
-  destruction?: Script<El<SVGClipPathElement, M>>,
+  setup?: Script<El<SVGClipPathElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGClipPathElement, M, D>>,
+  creation?: Script<El<SVGClipPathElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGClipPathElement, M, D>>,
+  mounting?: Script<El<SVGClipPathElement, M, D>>,
+  destruction?: Script<El<SVGClipPathElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGClipPathElement, M>>): ReactiveTreeNode<El<SVGClipPathElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGClipPathElement, M, D>>): ReactiveTreeNode<El<SVGClipPathElement, M, D>>
 
-export function ClipPath<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGClipPathElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGClipPathElement, M>>,
-  setupOrMode?: Script<El<SVGClipPathElement, M>> | Mode,
-  setup?: Script<El<SVGClipPathElement, M>>,
-  setupTask?: ScriptAsync<El<SVGClipPathElement, M>>,
-  creation?: Script<El<SVGClipPathElement, M>>,
-  creationTask?: ScriptAsync<El<SVGClipPathElement, M>>,
-  mounting?: Script<El<SVGClipPathElement, M>>,
-  destruction?: Script<El<SVGClipPathElement, M>>,
+export function ClipPath<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGClipPathElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGClipPathElement, M, D>>,
+  setupOrMode?: Script<El<SVGClipPathElement, M, D>> | Mode,
+  setup?: Script<El<SVGClipPathElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGClipPathElement, M, D>>,
+  creation?: Script<El<SVGClipPathElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGClipPathElement, M, D>>,
+  mounting?: Script<El<SVGClipPathElement, M, D>>,
+  destruction?: Script<El<SVGClipPathElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGClipPathElement, M>>): ReactiveTreeNode<El<SVGClipPathElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGClipPathElement, M, D>>): ReactiveTreeNode<El<SVGClipPathElement, M, D>> {
   //
   return describe(ClipPath.name, SvgTags.clipPath,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -340,45 +340,45 @@ export function ClipPath<M = unknown>(
 
 // Defs
 
-export function Defs<M = unknown>(
-  setup: Script<El<SVGDefsElement, M>>): ReactiveTreeNode<El<SVGDefsElement, M>>
+export function Defs<M = unknown, D = unknown>(
+  setup: Script<El<SVGDefsElement, M, D>>): ReactiveTreeNode<El<SVGDefsElement, M, D>>
 
-export function Defs<M = unknown>(
+export function Defs<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGDefsElement, M>>): ReactiveTreeNode<El<SVGDefsElement, M>>
+  setup: Script<El<SVGDefsElement, M, D>>): ReactiveTreeNode<El<SVGDefsElement, M, D>>
 
-export function Defs<M = unknown>(
+export function Defs<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGDefsElement, M>>): ReactiveTreeNode<El<SVGDefsElement, M>>
+  setup: Script<El<SVGDefsElement, M, D>>): ReactiveTreeNode<El<SVGDefsElement, M, D>>
 
-export function Defs<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGDefsElement, M>>): ReactiveTreeNode<El<SVGDefsElement, M>>
+export function Defs<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGDefsElement, M, D>>): ReactiveTreeNode<El<SVGDefsElement, M, D>>
 
-export function Defs<M = unknown>(
+export function Defs<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGDefsElement, M>>,
-  setupTask?: ScriptAsync<El<SVGDefsElement, M>>,
-  creation?: Script<El<SVGDefsElement, M>>,
-  creationTask?: ScriptAsync<El<SVGDefsElement, M>>,
-  mounting?: Script<El<SVGDefsElement, M>>,
-  destruction?: Script<El<SVGDefsElement, M>>,
+  setup?: Script<El<SVGDefsElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGDefsElement, M, D>>,
+  creation?: Script<El<SVGDefsElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGDefsElement, M, D>>,
+  mounting?: Script<El<SVGDefsElement, M, D>>,
+  destruction?: Script<El<SVGDefsElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGDefsElement, M>>): ReactiveTreeNode<El<SVGDefsElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGDefsElement, M, D>>): ReactiveTreeNode<El<SVGDefsElement, M, D>>
 
-export function Defs<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGDefsElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGDefsElement, M>>,
-  setupOrMode?: Script<El<SVGDefsElement, M>> | Mode,
-  setup?: Script<El<SVGDefsElement, M>>,
-  setupTask?: ScriptAsync<El<SVGDefsElement, M>>,
-  creation?: Script<El<SVGDefsElement, M>>,
-  creationTask?: ScriptAsync<El<SVGDefsElement, M>>,
-  mounting?: Script<El<SVGDefsElement, M>>,
-  destruction?: Script<El<SVGDefsElement, M>>,
+export function Defs<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGDefsElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGDefsElement, M, D>>,
+  setupOrMode?: Script<El<SVGDefsElement, M, D>> | Mode,
+  setup?: Script<El<SVGDefsElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGDefsElement, M, D>>,
+  creation?: Script<El<SVGDefsElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGDefsElement, M, D>>,
+  mounting?: Script<El<SVGDefsElement, M, D>>,
+  destruction?: Script<El<SVGDefsElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGDefsElement, M>>): ReactiveTreeNode<El<SVGDefsElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGDefsElement, M, D>>): ReactiveTreeNode<El<SVGDefsElement, M, D>> {
   //
   return describe(Defs.name, SvgTags.defs,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -387,45 +387,45 @@ export function Defs<M = unknown>(
 
 // Desc
 
-export function Desc<M = unknown>(
-  setup: Script<El<SVGDescElement, M>>): ReactiveTreeNode<El<SVGDescElement, M>>
+export function Desc<M = unknown, D = unknown>(
+  setup: Script<El<SVGDescElement, M, D>>): ReactiveTreeNode<El<SVGDescElement, M, D>>
 
-export function Desc<M = unknown>(
+export function Desc<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGDescElement, M>>): ReactiveTreeNode<El<SVGDescElement, M>>
+  setup: Script<El<SVGDescElement, M, D>>): ReactiveTreeNode<El<SVGDescElement, M, D>>
 
-export function Desc<M = unknown>(
+export function Desc<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGDescElement, M>>): ReactiveTreeNode<El<SVGDescElement, M>>
+  setup: Script<El<SVGDescElement, M, D>>): ReactiveTreeNode<El<SVGDescElement, M, D>>
 
-export function Desc<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGDescElement, M>>): ReactiveTreeNode<El<SVGDescElement, M>>
+export function Desc<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGDescElement, M, D>>): ReactiveTreeNode<El<SVGDescElement, M, D>>
 
-export function Desc<M = unknown>(
+export function Desc<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGDescElement, M>>,
-  setupTask?: ScriptAsync<El<SVGDescElement, M>>,
-  creation?: Script<El<SVGDescElement, M>>,
-  creationTask?: ScriptAsync<El<SVGDescElement, M>>,
-  mounting?: Script<El<SVGDescElement, M>>,
-  destruction?: Script<El<SVGDescElement, M>>,
+  setup?: Script<El<SVGDescElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGDescElement, M, D>>,
+  creation?: Script<El<SVGDescElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGDescElement, M, D>>,
+  mounting?: Script<El<SVGDescElement, M, D>>,
+  destruction?: Script<El<SVGDescElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGDescElement, M>>): ReactiveTreeNode<El<SVGDescElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGDescElement, M, D>>): ReactiveTreeNode<El<SVGDescElement, M, D>>
 
-export function Desc<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGDescElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGDescElement, M>>,
-  setupOrMode?: Script<El<SVGDescElement, M>> | Mode,
-  setup?: Script<El<SVGDescElement, M>>,
-  setupTask?: ScriptAsync<El<SVGDescElement, M>>,
-  creation?: Script<El<SVGDescElement, M>>,
-  creationTask?: ScriptAsync<El<SVGDescElement, M>>,
-  mounting?: Script<El<SVGDescElement, M>>,
-  destruction?: Script<El<SVGDescElement, M>>,
+export function Desc<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGDescElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGDescElement, M, D>>,
+  setupOrMode?: Script<El<SVGDescElement, M, D>> | Mode,
+  setup?: Script<El<SVGDescElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGDescElement, M, D>>,
+  creation?: Script<El<SVGDescElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGDescElement, M, D>>,
+  mounting?: Script<El<SVGDescElement, M, D>>,
+  destruction?: Script<El<SVGDescElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGDescElement, M>>): ReactiveTreeNode<El<SVGDescElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGDescElement, M, D>>): ReactiveTreeNode<El<SVGDescElement, M, D>> {
   //
   return describe(Desc.name, SvgTags.desc,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -434,45 +434,45 @@ export function Desc<M = unknown>(
 
 // Ellipse
 
-export function Ellipse<M = unknown>(
-  setup: Script<El<SVGEllipseElement, M>>): ReactiveTreeNode<El<SVGEllipseElement, M>>
+export function Ellipse<M = unknown, D = unknown>(
+  setup: Script<El<SVGEllipseElement, M, D>>): ReactiveTreeNode<El<SVGEllipseElement, M, D>>
 
-export function Ellipse<M = unknown>(
+export function Ellipse<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGEllipseElement, M>>): ReactiveTreeNode<El<SVGEllipseElement, M>>
+  setup: Script<El<SVGEllipseElement, M, D>>): ReactiveTreeNode<El<SVGEllipseElement, M, D>>
 
-export function Ellipse<M = unknown>(
+export function Ellipse<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGEllipseElement, M>>): ReactiveTreeNode<El<SVGEllipseElement, M>>
+  setup: Script<El<SVGEllipseElement, M, D>>): ReactiveTreeNode<El<SVGEllipseElement, M, D>>
 
-export function Ellipse<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGEllipseElement, M>>): ReactiveTreeNode<El<SVGEllipseElement, M>>
+export function Ellipse<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGEllipseElement, M, D>>): ReactiveTreeNode<El<SVGEllipseElement, M, D>>
 
-export function Ellipse<M = unknown>(
+export function Ellipse<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGEllipseElement, M>>,
-  setupTask?: ScriptAsync<El<SVGEllipseElement, M>>,
-  creation?: Script<El<SVGEllipseElement, M>>,
-  creationTask?: ScriptAsync<El<SVGEllipseElement, M>>,
-  mounting?: Script<El<SVGEllipseElement, M>>,
-  destruction?: Script<El<SVGEllipseElement, M>>,
+  setup?: Script<El<SVGEllipseElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGEllipseElement, M, D>>,
+  creation?: Script<El<SVGEllipseElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGEllipseElement, M, D>>,
+  mounting?: Script<El<SVGEllipseElement, M, D>>,
+  destruction?: Script<El<SVGEllipseElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGEllipseElement, M>>): ReactiveTreeNode<El<SVGEllipseElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGEllipseElement, M, D>>): ReactiveTreeNode<El<SVGEllipseElement, M, D>>
 
-export function Ellipse<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGEllipseElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGEllipseElement, M>>,
-  setupOrMode?: Script<El<SVGEllipseElement, M>> | Mode,
-  setup?: Script<El<SVGEllipseElement, M>>,
-  setupTask?: ScriptAsync<El<SVGEllipseElement, M>>,
-  creation?: Script<El<SVGEllipseElement, M>>,
-  creationTask?: ScriptAsync<El<SVGEllipseElement, M>>,
-  mounting?: Script<El<SVGEllipseElement, M>>,
-  destruction?: Script<El<SVGEllipseElement, M>>,
+export function Ellipse<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGEllipseElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGEllipseElement, M, D>>,
+  setupOrMode?: Script<El<SVGEllipseElement, M, D>> | Mode,
+  setup?: Script<El<SVGEllipseElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGEllipseElement, M, D>>,
+  creation?: Script<El<SVGEllipseElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGEllipseElement, M, D>>,
+  mounting?: Script<El<SVGEllipseElement, M, D>>,
+  destruction?: Script<El<SVGEllipseElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGEllipseElement, M>>): ReactiveTreeNode<El<SVGEllipseElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGEllipseElement, M, D>>): ReactiveTreeNode<El<SVGEllipseElement, M, D>> {
   //
   return describe(Ellipse.name, SvgTags.ellipse,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -481,45 +481,45 @@ export function Ellipse<M = unknown>(
 
 // FeBlend
 
-export function FeBlend<M = unknown>(
-  setup: Script<El<SVGFEBlendElement, M>>): ReactiveTreeNode<El<SVGFEBlendElement, M>>
+export function FeBlend<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEBlendElement, M, D>>): ReactiveTreeNode<El<SVGFEBlendElement, M, D>>
 
-export function FeBlend<M = unknown>(
+export function FeBlend<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEBlendElement, M>>): ReactiveTreeNode<El<SVGFEBlendElement, M>>
+  setup: Script<El<SVGFEBlendElement, M, D>>): ReactiveTreeNode<El<SVGFEBlendElement, M, D>>
 
-export function FeBlend<M = unknown>(
+export function FeBlend<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEBlendElement, M>>): ReactiveTreeNode<El<SVGFEBlendElement, M>>
+  setup: Script<El<SVGFEBlendElement, M, D>>): ReactiveTreeNode<El<SVGFEBlendElement, M, D>>
 
-export function FeBlend<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEBlendElement, M>>): ReactiveTreeNode<El<SVGFEBlendElement, M>>
+export function FeBlend<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEBlendElement, M, D>>): ReactiveTreeNode<El<SVGFEBlendElement, M, D>>
 
-export function FeBlend<M = unknown>(
+export function FeBlend<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEBlendElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEBlendElement, M>>,
-  creation?: Script<El<SVGFEBlendElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEBlendElement, M>>,
-  mounting?: Script<El<SVGFEBlendElement, M>>,
-  destruction?: Script<El<SVGFEBlendElement, M>>,
+  setup?: Script<El<SVGFEBlendElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEBlendElement, M, D>>,
+  creation?: Script<El<SVGFEBlendElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEBlendElement, M, D>>,
+  mounting?: Script<El<SVGFEBlendElement, M, D>>,
+  destruction?: Script<El<SVGFEBlendElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEBlendElement, M>>): ReactiveTreeNode<El<SVGFEBlendElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEBlendElement, M, D>>): ReactiveTreeNode<El<SVGFEBlendElement, M, D>>
 
-export function FeBlend<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEBlendElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEBlendElement, M>>,
-  setupOrMode?: Script<El<SVGFEBlendElement, M>> | Mode,
-  setup?: Script<El<SVGFEBlendElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEBlendElement, M>>,
-  creation?: Script<El<SVGFEBlendElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEBlendElement, M>>,
-  mounting?: Script<El<SVGFEBlendElement, M>>,
-  destruction?: Script<El<SVGFEBlendElement, M>>,
+export function FeBlend<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEBlendElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEBlendElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEBlendElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEBlendElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEBlendElement, M, D>>,
+  creation?: Script<El<SVGFEBlendElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEBlendElement, M, D>>,
+  mounting?: Script<El<SVGFEBlendElement, M, D>>,
+  destruction?: Script<El<SVGFEBlendElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEBlendElement, M>>): ReactiveTreeNode<El<SVGFEBlendElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEBlendElement, M, D>>): ReactiveTreeNode<El<SVGFEBlendElement, M, D>> {
   //
   return describe(FeBlend.name, SvgTags.feBlend,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -528,45 +528,45 @@ export function FeBlend<M = unknown>(
 
 // FeColorMatrix
 
-export function FeColorMatrix<M = unknown>(
-  setup: Script<El<SVGFEColorMatrixElement, M>>): ReactiveTreeNode<El<SVGFEColorMatrixElement, M>>
+export function FeColorMatrix<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEColorMatrixElement, M, D>>): ReactiveTreeNode<El<SVGFEColorMatrixElement, M, D>>
 
-export function FeColorMatrix<M = unknown>(
+export function FeColorMatrix<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEColorMatrixElement, M>>): ReactiveTreeNode<El<SVGFEColorMatrixElement, M>>
+  setup: Script<El<SVGFEColorMatrixElement, M, D>>): ReactiveTreeNode<El<SVGFEColorMatrixElement, M, D>>
 
-export function FeColorMatrix<M = unknown>(
+export function FeColorMatrix<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEColorMatrixElement, M>>): ReactiveTreeNode<El<SVGFEColorMatrixElement, M>>
+  setup: Script<El<SVGFEColorMatrixElement, M, D>>): ReactiveTreeNode<El<SVGFEColorMatrixElement, M, D>>
 
-export function FeColorMatrix<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEColorMatrixElement, M>>): ReactiveTreeNode<El<SVGFEColorMatrixElement, M>>
+export function FeColorMatrix<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEColorMatrixElement, M, D>>): ReactiveTreeNode<El<SVGFEColorMatrixElement, M, D>>
 
-export function FeColorMatrix<M = unknown>(
+export function FeColorMatrix<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEColorMatrixElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEColorMatrixElement, M>>,
-  creation?: Script<El<SVGFEColorMatrixElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEColorMatrixElement, M>>,
-  mounting?: Script<El<SVGFEColorMatrixElement, M>>,
-  destruction?: Script<El<SVGFEColorMatrixElement, M>>,
+  setup?: Script<El<SVGFEColorMatrixElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEColorMatrixElement, M, D>>,
+  creation?: Script<El<SVGFEColorMatrixElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEColorMatrixElement, M, D>>,
+  mounting?: Script<El<SVGFEColorMatrixElement, M, D>>,
+  destruction?: Script<El<SVGFEColorMatrixElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEColorMatrixElement, M>>): ReactiveTreeNode<El<SVGFEColorMatrixElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEColorMatrixElement, M, D>>): ReactiveTreeNode<El<SVGFEColorMatrixElement, M, D>>
 
-export function FeColorMatrix<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEColorMatrixElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEColorMatrixElement, M>>,
-  setupOrMode?: Script<El<SVGFEColorMatrixElement, M>> | Mode,
-  setup?: Script<El<SVGFEColorMatrixElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEColorMatrixElement, M>>,
-  creation?: Script<El<SVGFEColorMatrixElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEColorMatrixElement, M>>,
-  mounting?: Script<El<SVGFEColorMatrixElement, M>>,
-  destruction?: Script<El<SVGFEColorMatrixElement, M>>,
+export function FeColorMatrix<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEColorMatrixElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEColorMatrixElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEColorMatrixElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEColorMatrixElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEColorMatrixElement, M, D>>,
+  creation?: Script<El<SVGFEColorMatrixElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEColorMatrixElement, M, D>>,
+  mounting?: Script<El<SVGFEColorMatrixElement, M, D>>,
+  destruction?: Script<El<SVGFEColorMatrixElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEColorMatrixElement, M>>): ReactiveTreeNode<El<SVGFEColorMatrixElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEColorMatrixElement, M, D>>): ReactiveTreeNode<El<SVGFEColorMatrixElement, M, D>> {
   //
   return describe(FeColorMatrix.name, SvgTags.feColorMatrix,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -575,45 +575,45 @@ export function FeColorMatrix<M = unknown>(
 
 // FeComponentTransfer
 
-export function FeComponentTransfer<M = unknown>(
-  setup: Script<El<SVGFEComponentTransferElement, M>>): ReactiveTreeNode<El<SVGFEComponentTransferElement, M>>
+export function FeComponentTransfer<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEComponentTransferElement, M, D>>): ReactiveTreeNode<El<SVGFEComponentTransferElement, M, D>>
 
-export function FeComponentTransfer<M = unknown>(
+export function FeComponentTransfer<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEComponentTransferElement, M>>): ReactiveTreeNode<El<SVGFEComponentTransferElement, M>>
+  setup: Script<El<SVGFEComponentTransferElement, M, D>>): ReactiveTreeNode<El<SVGFEComponentTransferElement, M, D>>
 
-export function FeComponentTransfer<M = unknown>(
+export function FeComponentTransfer<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEComponentTransferElement, M>>): ReactiveTreeNode<El<SVGFEComponentTransferElement, M>>
+  setup: Script<El<SVGFEComponentTransferElement, M, D>>): ReactiveTreeNode<El<SVGFEComponentTransferElement, M, D>>
 
-export function FeComponentTransfer<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEComponentTransferElement, M>>): ReactiveTreeNode<El<SVGFEComponentTransferElement, M>>
+export function FeComponentTransfer<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEComponentTransferElement, M, D>>): ReactiveTreeNode<El<SVGFEComponentTransferElement, M, D>>
 
-export function FeComponentTransfer<M = unknown>(
+export function FeComponentTransfer<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEComponentTransferElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEComponentTransferElement, M>>,
-  creation?: Script<El<SVGFEComponentTransferElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEComponentTransferElement, M>>,
-  mounting?: Script<El<SVGFEComponentTransferElement, M>>,
-  destruction?: Script<El<SVGFEComponentTransferElement, M>>,
+  setup?: Script<El<SVGFEComponentTransferElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEComponentTransferElement, M, D>>,
+  creation?: Script<El<SVGFEComponentTransferElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEComponentTransferElement, M, D>>,
+  mounting?: Script<El<SVGFEComponentTransferElement, M, D>>,
+  destruction?: Script<El<SVGFEComponentTransferElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEComponentTransferElement, M>>): ReactiveTreeNode<El<SVGFEComponentTransferElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEComponentTransferElement, M, D>>): ReactiveTreeNode<El<SVGFEComponentTransferElement, M, D>>
 
-export function FeComponentTransfer<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEComponentTransferElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEComponentTransferElement, M>>,
-  setupOrMode?: Script<El<SVGFEComponentTransferElement, M>> | Mode,
-  setup?: Script<El<SVGFEComponentTransferElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEComponentTransferElement, M>>,
-  creation?: Script<El<SVGFEComponentTransferElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEComponentTransferElement, M>>,
-  mounting?: Script<El<SVGFEComponentTransferElement, M>>,
-  destruction?: Script<El<SVGFEComponentTransferElement, M>>,
+export function FeComponentTransfer<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEComponentTransferElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEComponentTransferElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEComponentTransferElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEComponentTransferElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEComponentTransferElement, M, D>>,
+  creation?: Script<El<SVGFEComponentTransferElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEComponentTransferElement, M, D>>,
+  mounting?: Script<El<SVGFEComponentTransferElement, M, D>>,
+  destruction?: Script<El<SVGFEComponentTransferElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEComponentTransferElement, M>>): ReactiveTreeNode<El<SVGFEComponentTransferElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEComponentTransferElement, M, D>>): ReactiveTreeNode<El<SVGFEComponentTransferElement, M, D>> {
   //
   return describe(FeComponentTransfer.name, SvgTags.feComponentTransfer,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -622,45 +622,45 @@ export function FeComponentTransfer<M = unknown>(
 
 // FeComposite
 
-export function FeComposite<M = unknown>(
-  setup: Script<El<SVGFECompositeElement, M>>): ReactiveTreeNode<El<SVGFECompositeElement, M>>
+export function FeComposite<M = unknown, D = unknown>(
+  setup: Script<El<SVGFECompositeElement, M, D>>): ReactiveTreeNode<El<SVGFECompositeElement, M, D>>
 
-export function FeComposite<M = unknown>(
+export function FeComposite<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFECompositeElement, M>>): ReactiveTreeNode<El<SVGFECompositeElement, M>>
+  setup: Script<El<SVGFECompositeElement, M, D>>): ReactiveTreeNode<El<SVGFECompositeElement, M, D>>
 
-export function FeComposite<M = unknown>(
+export function FeComposite<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFECompositeElement, M>>): ReactiveTreeNode<El<SVGFECompositeElement, M>>
+  setup: Script<El<SVGFECompositeElement, M, D>>): ReactiveTreeNode<El<SVGFECompositeElement, M, D>>
 
-export function FeComposite<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFECompositeElement, M>>): ReactiveTreeNode<El<SVGFECompositeElement, M>>
+export function FeComposite<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFECompositeElement, M, D>>): ReactiveTreeNode<El<SVGFECompositeElement, M, D>>
 
-export function FeComposite<M = unknown>(
+export function FeComposite<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFECompositeElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFECompositeElement, M>>,
-  creation?: Script<El<SVGFECompositeElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFECompositeElement, M>>,
-  mounting?: Script<El<SVGFECompositeElement, M>>,
-  destruction?: Script<El<SVGFECompositeElement, M>>,
+  setup?: Script<El<SVGFECompositeElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFECompositeElement, M, D>>,
+  creation?: Script<El<SVGFECompositeElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFECompositeElement, M, D>>,
+  mounting?: Script<El<SVGFECompositeElement, M, D>>,
+  destruction?: Script<El<SVGFECompositeElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFECompositeElement, M>>): ReactiveTreeNode<El<SVGFECompositeElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFECompositeElement, M, D>>): ReactiveTreeNode<El<SVGFECompositeElement, M, D>>
 
-export function FeComposite<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFECompositeElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFECompositeElement, M>>,
-  setupOrMode?: Script<El<SVGFECompositeElement, M>> | Mode,
-  setup?: Script<El<SVGFECompositeElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFECompositeElement, M>>,
-  creation?: Script<El<SVGFECompositeElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFECompositeElement, M>>,
-  mounting?: Script<El<SVGFECompositeElement, M>>,
-  destruction?: Script<El<SVGFECompositeElement, M>>,
+export function FeComposite<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFECompositeElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFECompositeElement, M, D>>,
+  setupOrMode?: Script<El<SVGFECompositeElement, M, D>> | Mode,
+  setup?: Script<El<SVGFECompositeElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFECompositeElement, M, D>>,
+  creation?: Script<El<SVGFECompositeElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFECompositeElement, M, D>>,
+  mounting?: Script<El<SVGFECompositeElement, M, D>>,
+  destruction?: Script<El<SVGFECompositeElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFECompositeElement, M>>): ReactiveTreeNode<El<SVGFECompositeElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFECompositeElement, M, D>>): ReactiveTreeNode<El<SVGFECompositeElement, M, D>> {
   //
   return describe(FeComposite.name, SvgTags.feComposite,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -669,45 +669,45 @@ export function FeComposite<M = unknown>(
 
 // FeConvolveMatrix
 
-export function FeConvolveMatrix<M = unknown>(
-  setup: Script<El<SVGFEConvolveMatrixElement, M>>): ReactiveTreeNode<El<SVGFEConvolveMatrixElement, M>>
+export function FeConvolveMatrix<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEConvolveMatrixElement, M, D>>): ReactiveTreeNode<El<SVGFEConvolveMatrixElement, M, D>>
 
-export function FeConvolveMatrix<M = unknown>(
+export function FeConvolveMatrix<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEConvolveMatrixElement, M>>): ReactiveTreeNode<El<SVGFEConvolveMatrixElement, M>>
+  setup: Script<El<SVGFEConvolveMatrixElement, M, D>>): ReactiveTreeNode<El<SVGFEConvolveMatrixElement, M, D>>
 
-export function FeConvolveMatrix<M = unknown>(
+export function FeConvolveMatrix<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEConvolveMatrixElement, M>>): ReactiveTreeNode<El<SVGFEConvolveMatrixElement, M>>
+  setup: Script<El<SVGFEConvolveMatrixElement, M, D>>): ReactiveTreeNode<El<SVGFEConvolveMatrixElement, M, D>>
 
-export function FeConvolveMatrix<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEConvolveMatrixElement, M>>): ReactiveTreeNode<El<SVGFEConvolveMatrixElement, M>>
+export function FeConvolveMatrix<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEConvolveMatrixElement, M, D>>): ReactiveTreeNode<El<SVGFEConvolveMatrixElement, M, D>>
 
-export function FeConvolveMatrix<M = unknown>(
+export function FeConvolveMatrix<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEConvolveMatrixElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEConvolveMatrixElement, M>>,
-  creation?: Script<El<SVGFEConvolveMatrixElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEConvolveMatrixElement, M>>,
-  mounting?: Script<El<SVGFEConvolveMatrixElement, M>>,
-  destruction?: Script<El<SVGFEConvolveMatrixElement, M>>,
+  setup?: Script<El<SVGFEConvolveMatrixElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEConvolveMatrixElement, M, D>>,
+  creation?: Script<El<SVGFEConvolveMatrixElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEConvolveMatrixElement, M, D>>,
+  mounting?: Script<El<SVGFEConvolveMatrixElement, M, D>>,
+  destruction?: Script<El<SVGFEConvolveMatrixElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEConvolveMatrixElement, M>>): ReactiveTreeNode<El<SVGFEConvolveMatrixElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEConvolveMatrixElement, M, D>>): ReactiveTreeNode<El<SVGFEConvolveMatrixElement, M, D>>
 
-export function FeConvolveMatrix<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEConvolveMatrixElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEConvolveMatrixElement, M>>,
-  setupOrMode?: Script<El<SVGFEConvolveMatrixElement, M>> | Mode,
-  setup?: Script<El<SVGFEConvolveMatrixElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEConvolveMatrixElement, M>>,
-  creation?: Script<El<SVGFEConvolveMatrixElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEConvolveMatrixElement, M>>,
-  mounting?: Script<El<SVGFEConvolveMatrixElement, M>>,
-  destruction?: Script<El<SVGFEConvolveMatrixElement, M>>,
+export function FeConvolveMatrix<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEConvolveMatrixElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEConvolveMatrixElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEConvolveMatrixElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEConvolveMatrixElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEConvolveMatrixElement, M, D>>,
+  creation?: Script<El<SVGFEConvolveMatrixElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEConvolveMatrixElement, M, D>>,
+  mounting?: Script<El<SVGFEConvolveMatrixElement, M, D>>,
+  destruction?: Script<El<SVGFEConvolveMatrixElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEConvolveMatrixElement, M>>): ReactiveTreeNode<El<SVGFEConvolveMatrixElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEConvolveMatrixElement, M, D>>): ReactiveTreeNode<El<SVGFEConvolveMatrixElement, M, D>> {
   //
   return describe(FeConvolveMatrix.name, SvgTags.feConvolveMatrix,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -716,45 +716,45 @@ export function FeConvolveMatrix<M = unknown>(
 
 // FeDiffuseLighting
 
-export function FeDiffuseLighting<M = unknown>(
-  setup: Script<El<SVGFEDiffuseLightingElement, M>>): ReactiveTreeNode<El<SVGFEDiffuseLightingElement, M>>
+export function FeDiffuseLighting<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEDiffuseLightingElement, M, D>>): ReactiveTreeNode<El<SVGFEDiffuseLightingElement, M, D>>
 
-export function FeDiffuseLighting<M = unknown>(
+export function FeDiffuseLighting<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEDiffuseLightingElement, M>>): ReactiveTreeNode<El<SVGFEDiffuseLightingElement, M>>
+  setup: Script<El<SVGFEDiffuseLightingElement, M, D>>): ReactiveTreeNode<El<SVGFEDiffuseLightingElement, M, D>>
 
-export function FeDiffuseLighting<M = unknown>(
+export function FeDiffuseLighting<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEDiffuseLightingElement, M>>): ReactiveTreeNode<El<SVGFEDiffuseLightingElement, M>>
+  setup: Script<El<SVGFEDiffuseLightingElement, M, D>>): ReactiveTreeNode<El<SVGFEDiffuseLightingElement, M, D>>
 
-export function FeDiffuseLighting<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEDiffuseLightingElement, M>>): ReactiveTreeNode<El<SVGFEDiffuseLightingElement, M>>
+export function FeDiffuseLighting<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEDiffuseLightingElement, M, D>>): ReactiveTreeNode<El<SVGFEDiffuseLightingElement, M, D>>
 
-export function FeDiffuseLighting<M = unknown>(
+export function FeDiffuseLighting<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEDiffuseLightingElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEDiffuseLightingElement, M>>,
-  creation?: Script<El<SVGFEDiffuseLightingElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEDiffuseLightingElement, M>>,
-  mounting?: Script<El<SVGFEDiffuseLightingElement, M>>,
-  destruction?: Script<El<SVGFEDiffuseLightingElement, M>>,
+  setup?: Script<El<SVGFEDiffuseLightingElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEDiffuseLightingElement, M, D>>,
+  creation?: Script<El<SVGFEDiffuseLightingElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEDiffuseLightingElement, M, D>>,
+  mounting?: Script<El<SVGFEDiffuseLightingElement, M, D>>,
+  destruction?: Script<El<SVGFEDiffuseLightingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEDiffuseLightingElement, M>>): ReactiveTreeNode<El<SVGFEDiffuseLightingElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEDiffuseLightingElement, M, D>>): ReactiveTreeNode<El<SVGFEDiffuseLightingElement, M, D>>
 
-export function FeDiffuseLighting<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEDiffuseLightingElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEDiffuseLightingElement, M>>,
-  setupOrMode?: Script<El<SVGFEDiffuseLightingElement, M>> | Mode,
-  setup?: Script<El<SVGFEDiffuseLightingElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEDiffuseLightingElement, M>>,
-  creation?: Script<El<SVGFEDiffuseLightingElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEDiffuseLightingElement, M>>,
-  mounting?: Script<El<SVGFEDiffuseLightingElement, M>>,
-  destruction?: Script<El<SVGFEDiffuseLightingElement, M>>,
+export function FeDiffuseLighting<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEDiffuseLightingElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEDiffuseLightingElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEDiffuseLightingElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEDiffuseLightingElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEDiffuseLightingElement, M, D>>,
+  creation?: Script<El<SVGFEDiffuseLightingElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEDiffuseLightingElement, M, D>>,
+  mounting?: Script<El<SVGFEDiffuseLightingElement, M, D>>,
+  destruction?: Script<El<SVGFEDiffuseLightingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEDiffuseLightingElement, M>>): ReactiveTreeNode<El<SVGFEDiffuseLightingElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEDiffuseLightingElement, M, D>>): ReactiveTreeNode<El<SVGFEDiffuseLightingElement, M, D>> {
   //
   return describe(FeDiffuseLighting.name, SvgTags.feDiffuseLighting,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -763,45 +763,45 @@ export function FeDiffuseLighting<M = unknown>(
 
 // FeDisplacementMap
 
-export function FeDisplacementMap<M = unknown>(
-  setup: Script<El<SVGFEDisplacementMapElement, M>>): ReactiveTreeNode<El<SVGFEDisplacementMapElement, M>>
+export function FeDisplacementMap<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEDisplacementMapElement, M, D>>): ReactiveTreeNode<El<SVGFEDisplacementMapElement, M, D>>
 
-export function FeDisplacementMap<M = unknown>(
+export function FeDisplacementMap<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEDisplacementMapElement, M>>): ReactiveTreeNode<El<SVGFEDisplacementMapElement, M>>
+  setup: Script<El<SVGFEDisplacementMapElement, M, D>>): ReactiveTreeNode<El<SVGFEDisplacementMapElement, M, D>>
 
-export function FeDisplacementMap<M = unknown>(
+export function FeDisplacementMap<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEDisplacementMapElement, M>>): ReactiveTreeNode<El<SVGFEDisplacementMapElement, M>>
+  setup: Script<El<SVGFEDisplacementMapElement, M, D>>): ReactiveTreeNode<El<SVGFEDisplacementMapElement, M, D>>
 
-export function FeDisplacementMap<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEDisplacementMapElement, M>>): ReactiveTreeNode<El<SVGFEDisplacementMapElement, M>>
+export function FeDisplacementMap<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEDisplacementMapElement, M, D>>): ReactiveTreeNode<El<SVGFEDisplacementMapElement, M, D>>
 
-export function FeDisplacementMap<M = unknown>(
+export function FeDisplacementMap<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEDisplacementMapElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEDisplacementMapElement, M>>,
-  creation?: Script<El<SVGFEDisplacementMapElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEDisplacementMapElement, M>>,
-  mounting?: Script<El<SVGFEDisplacementMapElement, M>>,
-  destruction?: Script<El<SVGFEDisplacementMapElement, M>>,
+  setup?: Script<El<SVGFEDisplacementMapElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEDisplacementMapElement, M, D>>,
+  creation?: Script<El<SVGFEDisplacementMapElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEDisplacementMapElement, M, D>>,
+  mounting?: Script<El<SVGFEDisplacementMapElement, M, D>>,
+  destruction?: Script<El<SVGFEDisplacementMapElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEDisplacementMapElement, M>>): ReactiveTreeNode<El<SVGFEDisplacementMapElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEDisplacementMapElement, M, D>>): ReactiveTreeNode<El<SVGFEDisplacementMapElement, M, D>>
 
-export function FeDisplacementMap<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEDisplacementMapElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEDisplacementMapElement, M>>,
-  setupOrMode?: Script<El<SVGFEDisplacementMapElement, M>> | Mode,
-  setup?: Script<El<SVGFEDisplacementMapElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEDisplacementMapElement, M>>,
-  creation?: Script<El<SVGFEDisplacementMapElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEDisplacementMapElement, M>>,
-  mounting?: Script<El<SVGFEDisplacementMapElement, M>>,
-  destruction?: Script<El<SVGFEDisplacementMapElement, M>>,
+export function FeDisplacementMap<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEDisplacementMapElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEDisplacementMapElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEDisplacementMapElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEDisplacementMapElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEDisplacementMapElement, M, D>>,
+  creation?: Script<El<SVGFEDisplacementMapElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEDisplacementMapElement, M, D>>,
+  mounting?: Script<El<SVGFEDisplacementMapElement, M, D>>,
+  destruction?: Script<El<SVGFEDisplacementMapElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEDisplacementMapElement, M>>): ReactiveTreeNode<El<SVGFEDisplacementMapElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEDisplacementMapElement, M, D>>): ReactiveTreeNode<El<SVGFEDisplacementMapElement, M, D>> {
   //
   return describe(FeDisplacementMap.name, SvgTags.feDisplacementMap,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -810,45 +810,45 @@ export function FeDisplacementMap<M = unknown>(
 
 // FeDistantLight
 
-export function FeDistantLight<M = unknown>(
-  setup: Script<El<SVGFEDistantLightElement, M>>): ReactiveTreeNode<El<SVGFEDistantLightElement, M>>
+export function FeDistantLight<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEDistantLightElement, M, D>>): ReactiveTreeNode<El<SVGFEDistantLightElement, M, D>>
 
-export function FeDistantLight<M = unknown>(
+export function FeDistantLight<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEDistantLightElement, M>>): ReactiveTreeNode<El<SVGFEDistantLightElement, M>>
+  setup: Script<El<SVGFEDistantLightElement, M, D>>): ReactiveTreeNode<El<SVGFEDistantLightElement, M, D>>
 
-export function FeDistantLight<M = unknown>(
+export function FeDistantLight<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEDistantLightElement, M>>): ReactiveTreeNode<El<SVGFEDistantLightElement, M>>
+  setup: Script<El<SVGFEDistantLightElement, M, D>>): ReactiveTreeNode<El<SVGFEDistantLightElement, M, D>>
 
-export function FeDistantLight<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEDistantLightElement, M>>): ReactiveTreeNode<El<SVGFEDistantLightElement, M>>
+export function FeDistantLight<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEDistantLightElement, M, D>>): ReactiveTreeNode<El<SVGFEDistantLightElement, M, D>>
 
-export function FeDistantLight<M = unknown>(
+export function FeDistantLight<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEDistantLightElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEDistantLightElement, M>>,
-  creation?: Script<El<SVGFEDistantLightElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEDistantLightElement, M>>,
-  mounting?: Script<El<SVGFEDistantLightElement, M>>,
-  destruction?: Script<El<SVGFEDistantLightElement, M>>,
+  setup?: Script<El<SVGFEDistantLightElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEDistantLightElement, M, D>>,
+  creation?: Script<El<SVGFEDistantLightElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEDistantLightElement, M, D>>,
+  mounting?: Script<El<SVGFEDistantLightElement, M, D>>,
+  destruction?: Script<El<SVGFEDistantLightElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEDistantLightElement, M>>): ReactiveTreeNode<El<SVGFEDistantLightElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEDistantLightElement, M, D>>): ReactiveTreeNode<El<SVGFEDistantLightElement, M, D>>
 
-export function FeDistantLight<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEDistantLightElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEDistantLightElement, M>>,
-  setupOrMode?: Script<El<SVGFEDistantLightElement, M>> | Mode,
-  setup?: Script<El<SVGFEDistantLightElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEDistantLightElement, M>>,
-  creation?: Script<El<SVGFEDistantLightElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEDistantLightElement, M>>,
-  mounting?: Script<El<SVGFEDistantLightElement, M>>,
-  destruction?: Script<El<SVGFEDistantLightElement, M>>,
+export function FeDistantLight<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEDistantLightElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEDistantLightElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEDistantLightElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEDistantLightElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEDistantLightElement, M, D>>,
+  creation?: Script<El<SVGFEDistantLightElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEDistantLightElement, M, D>>,
+  mounting?: Script<El<SVGFEDistantLightElement, M, D>>,
+  destruction?: Script<El<SVGFEDistantLightElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEDistantLightElement, M>>): ReactiveTreeNode<El<SVGFEDistantLightElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEDistantLightElement, M, D>>): ReactiveTreeNode<El<SVGFEDistantLightElement, M, D>> {
   //
   return describe(FeDistantLight.name, SvgTags.feDistantLight,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -857,45 +857,45 @@ export function FeDistantLight<M = unknown>(
 
 // FeDropShadow
 
-export function FeDropShadow<M = unknown>(
-  setup: Script<El<SVGFEDropShadowElement, M>>): ReactiveTreeNode<El<SVGFEDropShadowElement, M>>
+export function FeDropShadow<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEDropShadowElement, M, D>>): ReactiveTreeNode<El<SVGFEDropShadowElement, M, D>>
 
-export function FeDropShadow<M = unknown>(
+export function FeDropShadow<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEDropShadowElement, M>>): ReactiveTreeNode<El<SVGFEDropShadowElement, M>>
+  setup: Script<El<SVGFEDropShadowElement, M, D>>): ReactiveTreeNode<El<SVGFEDropShadowElement, M, D>>
 
-export function FeDropShadow<M = unknown>(
+export function FeDropShadow<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEDropShadowElement, M>>): ReactiveTreeNode<El<SVGFEDropShadowElement, M>>
+  setup: Script<El<SVGFEDropShadowElement, M, D>>): ReactiveTreeNode<El<SVGFEDropShadowElement, M, D>>
 
-export function FeDropShadow<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEDropShadowElement, M>>): ReactiveTreeNode<El<SVGFEDropShadowElement, M>>
+export function FeDropShadow<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEDropShadowElement, M, D>>): ReactiveTreeNode<El<SVGFEDropShadowElement, M, D>>
 
-export function FeDropShadow<M = unknown>(
+export function FeDropShadow<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEDropShadowElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEDropShadowElement, M>>,
-  creation?: Script<El<SVGFEDropShadowElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEDropShadowElement, M>>,
-  mounting?: Script<El<SVGFEDropShadowElement, M>>,
-  destruction?: Script<El<SVGFEDropShadowElement, M>>,
+  setup?: Script<El<SVGFEDropShadowElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEDropShadowElement, M, D>>,
+  creation?: Script<El<SVGFEDropShadowElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEDropShadowElement, M, D>>,
+  mounting?: Script<El<SVGFEDropShadowElement, M, D>>,
+  destruction?: Script<El<SVGFEDropShadowElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEDropShadowElement, M>>): ReactiveTreeNode<El<SVGFEDropShadowElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEDropShadowElement, M, D>>): ReactiveTreeNode<El<SVGFEDropShadowElement, M, D>>
 
-export function FeDropShadow<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEDropShadowElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEDropShadowElement, M>>,
-  setupOrMode?: Script<El<SVGFEDropShadowElement, M>> | Mode,
-  setup?: Script<El<SVGFEDropShadowElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEDropShadowElement, M>>,
-  creation?: Script<El<SVGFEDropShadowElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEDropShadowElement, M>>,
-  mounting?: Script<El<SVGFEDropShadowElement, M>>,
-  destruction?: Script<El<SVGFEDropShadowElement, M>>,
+export function FeDropShadow<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEDropShadowElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEDropShadowElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEDropShadowElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEDropShadowElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEDropShadowElement, M, D>>,
+  creation?: Script<El<SVGFEDropShadowElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEDropShadowElement, M, D>>,
+  mounting?: Script<El<SVGFEDropShadowElement, M, D>>,
+  destruction?: Script<El<SVGFEDropShadowElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEDropShadowElement, M>>): ReactiveTreeNode<El<SVGFEDropShadowElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEDropShadowElement, M, D>>): ReactiveTreeNode<El<SVGFEDropShadowElement, M, D>> {
   //
   return describe(FeDropShadow.name, SvgTags.feDropShadow,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -904,45 +904,45 @@ export function FeDropShadow<M = unknown>(
 
 // FeFlood
 
-export function FeFlood<M = unknown>(
-  setup: Script<El<SVGFEFloodElement, M>>): ReactiveTreeNode<El<SVGFEFloodElement, M>>
+export function FeFlood<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEFloodElement, M, D>>): ReactiveTreeNode<El<SVGFEFloodElement, M, D>>
 
-export function FeFlood<M = unknown>(
+export function FeFlood<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEFloodElement, M>>): ReactiveTreeNode<El<SVGFEFloodElement, M>>
+  setup: Script<El<SVGFEFloodElement, M, D>>): ReactiveTreeNode<El<SVGFEFloodElement, M, D>>
 
-export function FeFlood<M = unknown>(
+export function FeFlood<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEFloodElement, M>>): ReactiveTreeNode<El<SVGFEFloodElement, M>>
+  setup: Script<El<SVGFEFloodElement, M, D>>): ReactiveTreeNode<El<SVGFEFloodElement, M, D>>
 
-export function FeFlood<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEFloodElement, M>>): ReactiveTreeNode<El<SVGFEFloodElement, M>>
+export function FeFlood<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEFloodElement, M, D>>): ReactiveTreeNode<El<SVGFEFloodElement, M, D>>
 
-export function FeFlood<M = unknown>(
+export function FeFlood<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEFloodElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEFloodElement, M>>,
-  creation?: Script<El<SVGFEFloodElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEFloodElement, M>>,
-  mounting?: Script<El<SVGFEFloodElement, M>>,
-  destruction?: Script<El<SVGFEFloodElement, M>>,
+  setup?: Script<El<SVGFEFloodElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEFloodElement, M, D>>,
+  creation?: Script<El<SVGFEFloodElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEFloodElement, M, D>>,
+  mounting?: Script<El<SVGFEFloodElement, M, D>>,
+  destruction?: Script<El<SVGFEFloodElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEFloodElement, M>>): ReactiveTreeNode<El<SVGFEFloodElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEFloodElement, M, D>>): ReactiveTreeNode<El<SVGFEFloodElement, M, D>>
 
-export function FeFlood<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEFloodElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEFloodElement, M>>,
-  setupOrMode?: Script<El<SVGFEFloodElement, M>> | Mode,
-  setup?: Script<El<SVGFEFloodElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEFloodElement, M>>,
-  creation?: Script<El<SVGFEFloodElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEFloodElement, M>>,
-  mounting?: Script<El<SVGFEFloodElement, M>>,
-  destruction?: Script<El<SVGFEFloodElement, M>>,
+export function FeFlood<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEFloodElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEFloodElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEFloodElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEFloodElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEFloodElement, M, D>>,
+  creation?: Script<El<SVGFEFloodElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEFloodElement, M, D>>,
+  mounting?: Script<El<SVGFEFloodElement, M, D>>,
+  destruction?: Script<El<SVGFEFloodElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEFloodElement, M>>): ReactiveTreeNode<El<SVGFEFloodElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEFloodElement, M, D>>): ReactiveTreeNode<El<SVGFEFloodElement, M, D>> {
   //
   return describe(FeFlood.name, SvgTags.feFlood,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -951,45 +951,45 @@ export function FeFlood<M = unknown>(
 
 // FeFuncA
 
-export function FeFuncA<M = unknown>(
-  setup: Script<El<SVGFEFuncAElement, M>>): ReactiveTreeNode<El<SVGFEFuncAElement, M>>
+export function FeFuncA<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEFuncAElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncAElement, M, D>>
 
-export function FeFuncA<M = unknown>(
+export function FeFuncA<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEFuncAElement, M>>): ReactiveTreeNode<El<SVGFEFuncAElement, M>>
+  setup: Script<El<SVGFEFuncAElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncAElement, M, D>>
 
-export function FeFuncA<M = unknown>(
+export function FeFuncA<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEFuncAElement, M>>): ReactiveTreeNode<El<SVGFEFuncAElement, M>>
+  setup: Script<El<SVGFEFuncAElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncAElement, M, D>>
 
-export function FeFuncA<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEFuncAElement, M>>): ReactiveTreeNode<El<SVGFEFuncAElement, M>>
+export function FeFuncA<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEFuncAElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncAElement, M, D>>
 
-export function FeFuncA<M = unknown>(
+export function FeFuncA<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEFuncAElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEFuncAElement, M>>,
-  creation?: Script<El<SVGFEFuncAElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEFuncAElement, M>>,
-  mounting?: Script<El<SVGFEFuncAElement, M>>,
-  destruction?: Script<El<SVGFEFuncAElement, M>>,
+  setup?: Script<El<SVGFEFuncAElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEFuncAElement, M, D>>,
+  creation?: Script<El<SVGFEFuncAElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEFuncAElement, M, D>>,
+  mounting?: Script<El<SVGFEFuncAElement, M, D>>,
+  destruction?: Script<El<SVGFEFuncAElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncAElement, M>>): ReactiveTreeNode<El<SVGFEFuncAElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncAElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncAElement, M, D>>
 
-export function FeFuncA<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEFuncAElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEFuncAElement, M>>,
-  setupOrMode?: Script<El<SVGFEFuncAElement, M>> | Mode,
-  setup?: Script<El<SVGFEFuncAElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEFuncAElement, M>>,
-  creation?: Script<El<SVGFEFuncAElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEFuncAElement, M>>,
-  mounting?: Script<El<SVGFEFuncAElement, M>>,
-  destruction?: Script<El<SVGFEFuncAElement, M>>,
+export function FeFuncA<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEFuncAElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEFuncAElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEFuncAElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEFuncAElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEFuncAElement, M, D>>,
+  creation?: Script<El<SVGFEFuncAElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEFuncAElement, M, D>>,
+  mounting?: Script<El<SVGFEFuncAElement, M, D>>,
+  destruction?: Script<El<SVGFEFuncAElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncAElement, M>>): ReactiveTreeNode<El<SVGFEFuncAElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncAElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncAElement, M, D>> {
   //
   return describe(FeFuncA.name, SvgTags.feFuncA,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -998,45 +998,45 @@ export function FeFuncA<M = unknown>(
 
 // FeFuncB
 
-export function FeFuncB<M = unknown>(
-  setup: Script<El<SVGFEFuncBElement, M>>): ReactiveTreeNode<El<SVGFEFuncBElement, M>>
+export function FeFuncB<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEFuncBElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncBElement, M, D>>
 
-export function FeFuncB<M = unknown>(
+export function FeFuncB<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEFuncBElement, M>>): ReactiveTreeNode<El<SVGFEFuncBElement, M>>
+  setup: Script<El<SVGFEFuncBElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncBElement, M, D>>
 
-export function FeFuncB<M = unknown>(
+export function FeFuncB<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEFuncBElement, M>>): ReactiveTreeNode<El<SVGFEFuncBElement, M>>
+  setup: Script<El<SVGFEFuncBElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncBElement, M, D>>
 
-export function FeFuncB<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEFuncBElement, M>>): ReactiveTreeNode<El<SVGFEFuncBElement, M>>
+export function FeFuncB<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEFuncBElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncBElement, M, D>>
 
-export function FeFuncB<M = unknown>(
+export function FeFuncB<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEFuncBElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEFuncBElement, M>>,
-  creation?: Script<El<SVGFEFuncBElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEFuncBElement, M>>,
-  mounting?: Script<El<SVGFEFuncBElement, M>>,
-  destruction?: Script<El<SVGFEFuncBElement, M>>,
+  setup?: Script<El<SVGFEFuncBElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEFuncBElement, M, D>>,
+  creation?: Script<El<SVGFEFuncBElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEFuncBElement, M, D>>,
+  mounting?: Script<El<SVGFEFuncBElement, M, D>>,
+  destruction?: Script<El<SVGFEFuncBElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncBElement, M>>): ReactiveTreeNode<El<SVGFEFuncBElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncBElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncBElement, M, D>>
 
-export function FeFuncB<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEFuncBElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEFuncBElement, M>>,
-  setupOrMode?: Script<El<SVGFEFuncBElement, M>> | Mode,
-  setup?: Script<El<SVGFEFuncBElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEFuncBElement, M>>,
-  creation?: Script<El<SVGFEFuncBElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEFuncBElement, M>>,
-  mounting?: Script<El<SVGFEFuncBElement, M>>,
-  destruction?: Script<El<SVGFEFuncBElement, M>>,
+export function FeFuncB<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEFuncBElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEFuncBElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEFuncBElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEFuncBElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEFuncBElement, M, D>>,
+  creation?: Script<El<SVGFEFuncBElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEFuncBElement, M, D>>,
+  mounting?: Script<El<SVGFEFuncBElement, M, D>>,
+  destruction?: Script<El<SVGFEFuncBElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncBElement, M>>): ReactiveTreeNode<El<SVGFEFuncBElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncBElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncBElement, M, D>> {
   //
   return describe(FeFuncB.name, SvgTags.feFuncB,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1045,45 +1045,45 @@ export function FeFuncB<M = unknown>(
 
 // FeFuncG
 
-export function FeFuncG<M = unknown>(
-  setup: Script<El<SVGFEFuncGElement, M>>): ReactiveTreeNode<El<SVGFEFuncGElement, M>>
+export function FeFuncG<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEFuncGElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncGElement, M, D>>
 
-export function FeFuncG<M = unknown>(
+export function FeFuncG<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEFuncGElement, M>>): ReactiveTreeNode<El<SVGFEFuncGElement, M>>
+  setup: Script<El<SVGFEFuncGElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncGElement, M, D>>
 
-export function FeFuncG<M = unknown>(
+export function FeFuncG<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEFuncGElement, M>>): ReactiveTreeNode<El<SVGFEFuncGElement, M>>
+  setup: Script<El<SVGFEFuncGElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncGElement, M, D>>
 
-export function FeFuncG<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEFuncGElement, M>>): ReactiveTreeNode<El<SVGFEFuncGElement, M>>
+export function FeFuncG<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEFuncGElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncGElement, M, D>>
 
-export function FeFuncG<M = unknown>(
+export function FeFuncG<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEFuncGElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEFuncGElement, M>>,
-  creation?: Script<El<SVGFEFuncGElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEFuncGElement, M>>,
-  mounting?: Script<El<SVGFEFuncGElement, M>>,
-  destruction?: Script<El<SVGFEFuncGElement, M>>,
+  setup?: Script<El<SVGFEFuncGElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEFuncGElement, M, D>>,
+  creation?: Script<El<SVGFEFuncGElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEFuncGElement, M, D>>,
+  mounting?: Script<El<SVGFEFuncGElement, M, D>>,
+  destruction?: Script<El<SVGFEFuncGElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncGElement, M>>): ReactiveTreeNode<El<SVGFEFuncGElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncGElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncGElement, M, D>>
 
-export function FeFuncG<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEFuncGElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEFuncGElement, M>>,
-  setupOrMode?: Script<El<SVGFEFuncGElement, M>> | Mode,
-  setup?: Script<El<SVGFEFuncGElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEFuncGElement, M>>,
-  creation?: Script<El<SVGFEFuncGElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEFuncGElement, M>>,
-  mounting?: Script<El<SVGFEFuncGElement, M>>,
-  destruction?: Script<El<SVGFEFuncGElement, M>>,
+export function FeFuncG<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEFuncGElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEFuncGElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEFuncGElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEFuncGElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEFuncGElement, M, D>>,
+  creation?: Script<El<SVGFEFuncGElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEFuncGElement, M, D>>,
+  mounting?: Script<El<SVGFEFuncGElement, M, D>>,
+  destruction?: Script<El<SVGFEFuncGElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncGElement, M>>): ReactiveTreeNode<El<SVGFEFuncGElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncGElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncGElement, M, D>> {
   //
   return describe(FeFuncG.name, SvgTags.feFuncG,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1092,45 +1092,45 @@ export function FeFuncG<M = unknown>(
 
 // FeFuncR
 
-export function FeFuncR<M = unknown>(
-  setup: Script<El<SVGFEFuncRElement, M>>): ReactiveTreeNode<El<SVGFEFuncRElement, M>>
+export function FeFuncR<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEFuncRElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncRElement, M, D>>
 
-export function FeFuncR<M = unknown>(
+export function FeFuncR<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEFuncRElement, M>>): ReactiveTreeNode<El<SVGFEFuncRElement, M>>
+  setup: Script<El<SVGFEFuncRElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncRElement, M, D>>
 
-export function FeFuncR<M = unknown>(
+export function FeFuncR<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEFuncRElement, M>>): ReactiveTreeNode<El<SVGFEFuncRElement, M>>
+  setup: Script<El<SVGFEFuncRElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncRElement, M, D>>
 
-export function FeFuncR<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEFuncRElement, M>>): ReactiveTreeNode<El<SVGFEFuncRElement, M>>
+export function FeFuncR<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEFuncRElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncRElement, M, D>>
 
-export function FeFuncR<M = unknown>(
+export function FeFuncR<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEFuncRElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEFuncRElement, M>>,
-  creation?: Script<El<SVGFEFuncRElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEFuncRElement, M>>,
-  mounting?: Script<El<SVGFEFuncRElement, M>>,
-  destruction?: Script<El<SVGFEFuncRElement, M>>,
+  setup?: Script<El<SVGFEFuncRElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEFuncRElement, M, D>>,
+  creation?: Script<El<SVGFEFuncRElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEFuncRElement, M, D>>,
+  mounting?: Script<El<SVGFEFuncRElement, M, D>>,
+  destruction?: Script<El<SVGFEFuncRElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncRElement, M>>): ReactiveTreeNode<El<SVGFEFuncRElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncRElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncRElement, M, D>>
 
-export function FeFuncR<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEFuncRElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEFuncRElement, M>>,
-  setupOrMode?: Script<El<SVGFEFuncRElement, M>> | Mode,
-  setup?: Script<El<SVGFEFuncRElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEFuncRElement, M>>,
-  creation?: Script<El<SVGFEFuncRElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEFuncRElement, M>>,
-  mounting?: Script<El<SVGFEFuncRElement, M>>,
-  destruction?: Script<El<SVGFEFuncRElement, M>>,
+export function FeFuncR<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEFuncRElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEFuncRElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEFuncRElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEFuncRElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEFuncRElement, M, D>>,
+  creation?: Script<El<SVGFEFuncRElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEFuncRElement, M, D>>,
+  mounting?: Script<El<SVGFEFuncRElement, M, D>>,
+  destruction?: Script<El<SVGFEFuncRElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncRElement, M>>): ReactiveTreeNode<El<SVGFEFuncRElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEFuncRElement, M, D>>): ReactiveTreeNode<El<SVGFEFuncRElement, M, D>> {
   //
   return describe(FeFuncR.name, SvgTags.feFuncR,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1139,45 +1139,45 @@ export function FeFuncR<M = unknown>(
 
 // FeGaussianBlur
 
-export function FeGaussianBlur<M = unknown>(
-  setup: Script<El<SVGFEGaussianBlurElement, M>>): ReactiveTreeNode<El<SVGFEGaussianBlurElement, M>>
+export function FeGaussianBlur<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEGaussianBlurElement, M, D>>): ReactiveTreeNode<El<SVGFEGaussianBlurElement, M, D>>
 
-export function FeGaussianBlur<M = unknown>(
+export function FeGaussianBlur<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEGaussianBlurElement, M>>): ReactiveTreeNode<El<SVGFEGaussianBlurElement, M>>
+  setup: Script<El<SVGFEGaussianBlurElement, M, D>>): ReactiveTreeNode<El<SVGFEGaussianBlurElement, M, D>>
 
-export function FeGaussianBlur<M = unknown>(
+export function FeGaussianBlur<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEGaussianBlurElement, M>>): ReactiveTreeNode<El<SVGFEGaussianBlurElement, M>>
+  setup: Script<El<SVGFEGaussianBlurElement, M, D>>): ReactiveTreeNode<El<SVGFEGaussianBlurElement, M, D>>
 
-export function FeGaussianBlur<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEGaussianBlurElement, M>>): ReactiveTreeNode<El<SVGFEGaussianBlurElement, M>>
+export function FeGaussianBlur<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEGaussianBlurElement, M, D>>): ReactiveTreeNode<El<SVGFEGaussianBlurElement, M, D>>
 
-export function FeGaussianBlur<M = unknown>(
+export function FeGaussianBlur<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEGaussianBlurElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEGaussianBlurElement, M>>,
-  creation?: Script<El<SVGFEGaussianBlurElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEGaussianBlurElement, M>>,
-  mounting?: Script<El<SVGFEGaussianBlurElement, M>>,
-  destruction?: Script<El<SVGFEGaussianBlurElement, M>>,
+  setup?: Script<El<SVGFEGaussianBlurElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEGaussianBlurElement, M, D>>,
+  creation?: Script<El<SVGFEGaussianBlurElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEGaussianBlurElement, M, D>>,
+  mounting?: Script<El<SVGFEGaussianBlurElement, M, D>>,
+  destruction?: Script<El<SVGFEGaussianBlurElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEGaussianBlurElement, M>>): ReactiveTreeNode<El<SVGFEGaussianBlurElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEGaussianBlurElement, M, D>>): ReactiveTreeNode<El<SVGFEGaussianBlurElement, M, D>>
 
-export function FeGaussianBlur<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEGaussianBlurElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEGaussianBlurElement, M>>,
-  setupOrMode?: Script<El<SVGFEGaussianBlurElement, M>> | Mode,
-  setup?: Script<El<SVGFEGaussianBlurElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEGaussianBlurElement, M>>,
-  creation?: Script<El<SVGFEGaussianBlurElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEGaussianBlurElement, M>>,
-  mounting?: Script<El<SVGFEGaussianBlurElement, M>>,
-  destruction?: Script<El<SVGFEGaussianBlurElement, M>>,
+export function FeGaussianBlur<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEGaussianBlurElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEGaussianBlurElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEGaussianBlurElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEGaussianBlurElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEGaussianBlurElement, M, D>>,
+  creation?: Script<El<SVGFEGaussianBlurElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEGaussianBlurElement, M, D>>,
+  mounting?: Script<El<SVGFEGaussianBlurElement, M, D>>,
+  destruction?: Script<El<SVGFEGaussianBlurElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEGaussianBlurElement, M>>): ReactiveTreeNode<El<SVGFEGaussianBlurElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEGaussianBlurElement, M, D>>): ReactiveTreeNode<El<SVGFEGaussianBlurElement, M, D>> {
   //
   return describe(FeGaussianBlur.name, SvgTags.feGaussianBlur,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1186,45 +1186,45 @@ export function FeGaussianBlur<M = unknown>(
 
 // FeImage
 
-export function FeImage<M = unknown>(
-  setup: Script<El<SVGFEImageElement, M>>): ReactiveTreeNode<El<SVGFEImageElement, M>>
+export function FeImage<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEImageElement, M, D>>): ReactiveTreeNode<El<SVGFEImageElement, M, D>>
 
-export function FeImage<M = unknown>(
+export function FeImage<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEImageElement, M>>): ReactiveTreeNode<El<SVGFEImageElement, M>>
+  setup: Script<El<SVGFEImageElement, M, D>>): ReactiveTreeNode<El<SVGFEImageElement, M, D>>
 
-export function FeImage<M = unknown>(
+export function FeImage<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEImageElement, M>>): ReactiveTreeNode<El<SVGFEImageElement, M>>
+  setup: Script<El<SVGFEImageElement, M, D>>): ReactiveTreeNode<El<SVGFEImageElement, M, D>>
 
-export function FeImage<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEImageElement, M>>): ReactiveTreeNode<El<SVGFEImageElement, M>>
+export function FeImage<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEImageElement, M, D>>): ReactiveTreeNode<El<SVGFEImageElement, M, D>>
 
-export function FeImage<M = unknown>(
+export function FeImage<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEImageElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEImageElement, M>>,
-  creation?: Script<El<SVGFEImageElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEImageElement, M>>,
-  mounting?: Script<El<SVGFEImageElement, M>>,
-  destruction?: Script<El<SVGFEImageElement, M>>,
+  setup?: Script<El<SVGFEImageElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEImageElement, M, D>>,
+  creation?: Script<El<SVGFEImageElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEImageElement, M, D>>,
+  mounting?: Script<El<SVGFEImageElement, M, D>>,
+  destruction?: Script<El<SVGFEImageElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEImageElement, M>>): ReactiveTreeNode<El<SVGFEImageElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEImageElement, M, D>>): ReactiveTreeNode<El<SVGFEImageElement, M, D>>
 
-export function FeImage<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEImageElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEImageElement, M>>,
-  setupOrMode?: Script<El<SVGFEImageElement, M>> | Mode,
-  setup?: Script<El<SVGFEImageElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEImageElement, M>>,
-  creation?: Script<El<SVGFEImageElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEImageElement, M>>,
-  mounting?: Script<El<SVGFEImageElement, M>>,
-  destruction?: Script<El<SVGFEImageElement, M>>,
+export function FeImage<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEImageElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEImageElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEImageElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEImageElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEImageElement, M, D>>,
+  creation?: Script<El<SVGFEImageElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEImageElement, M, D>>,
+  mounting?: Script<El<SVGFEImageElement, M, D>>,
+  destruction?: Script<El<SVGFEImageElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEImageElement, M>>): ReactiveTreeNode<El<SVGFEImageElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEImageElement, M, D>>): ReactiveTreeNode<El<SVGFEImageElement, M, D>> {
   //
   return describe(FeImage.name, SvgTags.feImage,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1233,45 +1233,45 @@ export function FeImage<M = unknown>(
 
 // FeMerge
 
-export function FeMerge<M = unknown>(
-  setup: Script<El<SVGFEMergeElement, M>>): ReactiveTreeNode<El<SVGFEMergeElement, M>>
+export function FeMerge<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEMergeElement, M, D>>): ReactiveTreeNode<El<SVGFEMergeElement, M, D>>
 
-export function FeMerge<M = unknown>(
+export function FeMerge<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEMergeElement, M>>): ReactiveTreeNode<El<SVGFEMergeElement, M>>
+  setup: Script<El<SVGFEMergeElement, M, D>>): ReactiveTreeNode<El<SVGFEMergeElement, M, D>>
 
-export function FeMerge<M = unknown>(
+export function FeMerge<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEMergeElement, M>>): ReactiveTreeNode<El<SVGFEMergeElement, M>>
+  setup: Script<El<SVGFEMergeElement, M, D>>): ReactiveTreeNode<El<SVGFEMergeElement, M, D>>
 
-export function FeMerge<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEMergeElement, M>>): ReactiveTreeNode<El<SVGFEMergeElement, M>>
+export function FeMerge<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEMergeElement, M, D>>): ReactiveTreeNode<El<SVGFEMergeElement, M, D>>
 
-export function FeMerge<M = unknown>(
+export function FeMerge<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEMergeElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEMergeElement, M>>,
-  creation?: Script<El<SVGFEMergeElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEMergeElement, M>>,
-  mounting?: Script<El<SVGFEMergeElement, M>>,
-  destruction?: Script<El<SVGFEMergeElement, M>>,
+  setup?: Script<El<SVGFEMergeElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEMergeElement, M, D>>,
+  creation?: Script<El<SVGFEMergeElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEMergeElement, M, D>>,
+  mounting?: Script<El<SVGFEMergeElement, M, D>>,
+  destruction?: Script<El<SVGFEMergeElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEMergeElement, M>>): ReactiveTreeNode<El<SVGFEMergeElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEMergeElement, M, D>>): ReactiveTreeNode<El<SVGFEMergeElement, M, D>>
 
-export function FeMerge<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEMergeElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEMergeElement, M>>,
-  setupOrMode?: Script<El<SVGFEMergeElement, M>> | Mode,
-  setup?: Script<El<SVGFEMergeElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEMergeElement, M>>,
-  creation?: Script<El<SVGFEMergeElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEMergeElement, M>>,
-  mounting?: Script<El<SVGFEMergeElement, M>>,
-  destruction?: Script<El<SVGFEMergeElement, M>>,
+export function FeMerge<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEMergeElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEMergeElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEMergeElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEMergeElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEMergeElement, M, D>>,
+  creation?: Script<El<SVGFEMergeElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEMergeElement, M, D>>,
+  mounting?: Script<El<SVGFEMergeElement, M, D>>,
+  destruction?: Script<El<SVGFEMergeElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEMergeElement, M>>): ReactiveTreeNode<El<SVGFEMergeElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEMergeElement, M, D>>): ReactiveTreeNode<El<SVGFEMergeElement, M, D>> {
   //
   return describe(FeMerge.name, SvgTags.feMerge,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1280,45 +1280,45 @@ export function FeMerge<M = unknown>(
 
 // FeMergeNode
 
-export function FeMergeNode<M = unknown>(
-  setup: Script<El<SVGFEMergeNodeElement, M>>): ReactiveTreeNode<El<SVGFEMergeNodeElement, M>>
+export function FeMergeNode<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEMergeNodeElement, M, D>>): ReactiveTreeNode<El<SVGFEMergeNodeElement, M, D>>
 
-export function FeMergeNode<M = unknown>(
+export function FeMergeNode<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEMergeNodeElement, M>>): ReactiveTreeNode<El<SVGFEMergeNodeElement, M>>
+  setup: Script<El<SVGFEMergeNodeElement, M, D>>): ReactiveTreeNode<El<SVGFEMergeNodeElement, M, D>>
 
-export function FeMergeNode<M = unknown>(
+export function FeMergeNode<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEMergeNodeElement, M>>): ReactiveTreeNode<El<SVGFEMergeNodeElement, M>>
+  setup: Script<El<SVGFEMergeNodeElement, M, D>>): ReactiveTreeNode<El<SVGFEMergeNodeElement, M, D>>
 
-export function FeMergeNode<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEMergeNodeElement, M>>): ReactiveTreeNode<El<SVGFEMergeNodeElement, M>>
+export function FeMergeNode<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEMergeNodeElement, M, D>>): ReactiveTreeNode<El<SVGFEMergeNodeElement, M, D>>
 
-export function FeMergeNode<M = unknown>(
+export function FeMergeNode<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEMergeNodeElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEMergeNodeElement, M>>,
-  creation?: Script<El<SVGFEMergeNodeElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEMergeNodeElement, M>>,
-  mounting?: Script<El<SVGFEMergeNodeElement, M>>,
-  destruction?: Script<El<SVGFEMergeNodeElement, M>>,
+  setup?: Script<El<SVGFEMergeNodeElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEMergeNodeElement, M, D>>,
+  creation?: Script<El<SVGFEMergeNodeElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEMergeNodeElement, M, D>>,
+  mounting?: Script<El<SVGFEMergeNodeElement, M, D>>,
+  destruction?: Script<El<SVGFEMergeNodeElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEMergeNodeElement, M>>): ReactiveTreeNode<El<SVGFEMergeNodeElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEMergeNodeElement, M, D>>): ReactiveTreeNode<El<SVGFEMergeNodeElement, M, D>>
 
-export function FeMergeNode<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEMergeNodeElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEMergeNodeElement, M>>,
-  setupOrMode?: Script<El<SVGFEMergeNodeElement, M>> | Mode,
-  setup?: Script<El<SVGFEMergeNodeElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEMergeNodeElement, M>>,
-  creation?: Script<El<SVGFEMergeNodeElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEMergeNodeElement, M>>,
-  mounting?: Script<El<SVGFEMergeNodeElement, M>>,
-  destruction?: Script<El<SVGFEMergeNodeElement, M>>,
+export function FeMergeNode<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEMergeNodeElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEMergeNodeElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEMergeNodeElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEMergeNodeElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEMergeNodeElement, M, D>>,
+  creation?: Script<El<SVGFEMergeNodeElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEMergeNodeElement, M, D>>,
+  mounting?: Script<El<SVGFEMergeNodeElement, M, D>>,
+  destruction?: Script<El<SVGFEMergeNodeElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEMergeNodeElement, M>>): ReactiveTreeNode<El<SVGFEMergeNodeElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEMergeNodeElement, M, D>>): ReactiveTreeNode<El<SVGFEMergeNodeElement, M, D>> {
   //
   return describe(FeMergeNode.name, SvgTags.feMergeNode,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1327,45 +1327,45 @@ export function FeMergeNode<M = unknown>(
 
 // FeMorphology
 
-export function FeMorphology<M = unknown>(
-  setup: Script<El<SVGFEMorphologyElement, M>>): ReactiveTreeNode<El<SVGFEMorphologyElement, M>>
+export function FeMorphology<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEMorphologyElement, M, D>>): ReactiveTreeNode<El<SVGFEMorphologyElement, M, D>>
 
-export function FeMorphology<M = unknown>(
+export function FeMorphology<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEMorphologyElement, M>>): ReactiveTreeNode<El<SVGFEMorphologyElement, M>>
+  setup: Script<El<SVGFEMorphologyElement, M, D>>): ReactiveTreeNode<El<SVGFEMorphologyElement, M, D>>
 
-export function FeMorphology<M = unknown>(
+export function FeMorphology<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEMorphologyElement, M>>): ReactiveTreeNode<El<SVGFEMorphologyElement, M>>
+  setup: Script<El<SVGFEMorphologyElement, M, D>>): ReactiveTreeNode<El<SVGFEMorphologyElement, M, D>>
 
-export function FeMorphology<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEMorphologyElement, M>>): ReactiveTreeNode<El<SVGFEMorphologyElement, M>>
+export function FeMorphology<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEMorphologyElement, M, D>>): ReactiveTreeNode<El<SVGFEMorphologyElement, M, D>>
 
-export function FeMorphology<M = unknown>(
+export function FeMorphology<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEMorphologyElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEMorphologyElement, M>>,
-  creation?: Script<El<SVGFEMorphologyElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEMorphologyElement, M>>,
-  mounting?: Script<El<SVGFEMorphologyElement, M>>,
-  destruction?: Script<El<SVGFEMorphologyElement, M>>,
+  setup?: Script<El<SVGFEMorphologyElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEMorphologyElement, M, D>>,
+  creation?: Script<El<SVGFEMorphologyElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEMorphologyElement, M, D>>,
+  mounting?: Script<El<SVGFEMorphologyElement, M, D>>,
+  destruction?: Script<El<SVGFEMorphologyElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEMorphologyElement, M>>): ReactiveTreeNode<El<SVGFEMorphologyElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEMorphologyElement, M, D>>): ReactiveTreeNode<El<SVGFEMorphologyElement, M, D>>
 
-export function FeMorphology<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEMorphologyElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEMorphologyElement, M>>,
-  setupOrMode?: Script<El<SVGFEMorphologyElement, M>> | Mode,
-  setup?: Script<El<SVGFEMorphologyElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEMorphologyElement, M>>,
-  creation?: Script<El<SVGFEMorphologyElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEMorphologyElement, M>>,
-  mounting?: Script<El<SVGFEMorphologyElement, M>>,
-  destruction?: Script<El<SVGFEMorphologyElement, M>>,
+export function FeMorphology<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEMorphologyElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEMorphologyElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEMorphologyElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEMorphologyElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEMorphologyElement, M, D>>,
+  creation?: Script<El<SVGFEMorphologyElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEMorphologyElement, M, D>>,
+  mounting?: Script<El<SVGFEMorphologyElement, M, D>>,
+  destruction?: Script<El<SVGFEMorphologyElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEMorphologyElement, M>>): ReactiveTreeNode<El<SVGFEMorphologyElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEMorphologyElement, M, D>>): ReactiveTreeNode<El<SVGFEMorphologyElement, M, D>> {
   //
   return describe(FeMorphology.name, SvgTags.feMorphology,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1374,45 +1374,45 @@ export function FeMorphology<M = unknown>(
 
 // FeOffset
 
-export function FeOffset<M = unknown>(
-  setup: Script<El<SVGFEOffsetElement, M>>): ReactiveTreeNode<El<SVGFEOffsetElement, M>>
+export function FeOffset<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEOffsetElement, M, D>>): ReactiveTreeNode<El<SVGFEOffsetElement, M, D>>
 
-export function FeOffset<M = unknown>(
+export function FeOffset<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEOffsetElement, M>>): ReactiveTreeNode<El<SVGFEOffsetElement, M>>
+  setup: Script<El<SVGFEOffsetElement, M, D>>): ReactiveTreeNode<El<SVGFEOffsetElement, M, D>>
 
-export function FeOffset<M = unknown>(
+export function FeOffset<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEOffsetElement, M>>): ReactiveTreeNode<El<SVGFEOffsetElement, M>>
+  setup: Script<El<SVGFEOffsetElement, M, D>>): ReactiveTreeNode<El<SVGFEOffsetElement, M, D>>
 
-export function FeOffset<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEOffsetElement, M>>): ReactiveTreeNode<El<SVGFEOffsetElement, M>>
+export function FeOffset<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEOffsetElement, M, D>>): ReactiveTreeNode<El<SVGFEOffsetElement, M, D>>
 
-export function FeOffset<M = unknown>(
+export function FeOffset<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEOffsetElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEOffsetElement, M>>,
-  creation?: Script<El<SVGFEOffsetElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEOffsetElement, M>>,
-  mounting?: Script<El<SVGFEOffsetElement, M>>,
-  destruction?: Script<El<SVGFEOffsetElement, M>>,
+  setup?: Script<El<SVGFEOffsetElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEOffsetElement, M, D>>,
+  creation?: Script<El<SVGFEOffsetElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEOffsetElement, M, D>>,
+  mounting?: Script<El<SVGFEOffsetElement, M, D>>,
+  destruction?: Script<El<SVGFEOffsetElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEOffsetElement, M>>): ReactiveTreeNode<El<SVGFEOffsetElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEOffsetElement, M, D>>): ReactiveTreeNode<El<SVGFEOffsetElement, M, D>>
 
-export function FeOffset<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEOffsetElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEOffsetElement, M>>,
-  setupOrMode?: Script<El<SVGFEOffsetElement, M>> | Mode,
-  setup?: Script<El<SVGFEOffsetElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEOffsetElement, M>>,
-  creation?: Script<El<SVGFEOffsetElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEOffsetElement, M>>,
-  mounting?: Script<El<SVGFEOffsetElement, M>>,
-  destruction?: Script<El<SVGFEOffsetElement, M>>,
+export function FeOffset<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEOffsetElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEOffsetElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEOffsetElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEOffsetElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEOffsetElement, M, D>>,
+  creation?: Script<El<SVGFEOffsetElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEOffsetElement, M, D>>,
+  mounting?: Script<El<SVGFEOffsetElement, M, D>>,
+  destruction?: Script<El<SVGFEOffsetElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEOffsetElement, M>>): ReactiveTreeNode<El<SVGFEOffsetElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEOffsetElement, M, D>>): ReactiveTreeNode<El<SVGFEOffsetElement, M, D>> {
   //
   return describe(FeOffset.name, SvgTags.feOffset,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1421,45 +1421,45 @@ export function FeOffset<M = unknown>(
 
 // FePointLight
 
-export function FePointLight<M = unknown>(
-  setup: Script<El<SVGFEPointLightElement, M>>): ReactiveTreeNode<El<SVGFEPointLightElement, M>>
+export function FePointLight<M = unknown, D = unknown>(
+  setup: Script<El<SVGFEPointLightElement, M, D>>): ReactiveTreeNode<El<SVGFEPointLightElement, M, D>>
 
-export function FePointLight<M = unknown>(
+export function FePointLight<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFEPointLightElement, M>>): ReactiveTreeNode<El<SVGFEPointLightElement, M>>
+  setup: Script<El<SVGFEPointLightElement, M, D>>): ReactiveTreeNode<El<SVGFEPointLightElement, M, D>>
 
-export function FePointLight<M = unknown>(
+export function FePointLight<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFEPointLightElement, M>>): ReactiveTreeNode<El<SVGFEPointLightElement, M>>
+  setup: Script<El<SVGFEPointLightElement, M, D>>): ReactiveTreeNode<El<SVGFEPointLightElement, M, D>>
 
-export function FePointLight<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFEPointLightElement, M>>): ReactiveTreeNode<El<SVGFEPointLightElement, M>>
+export function FePointLight<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFEPointLightElement, M, D>>): ReactiveTreeNode<El<SVGFEPointLightElement, M, D>>
 
-export function FePointLight<M = unknown>(
+export function FePointLight<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFEPointLightElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEPointLightElement, M>>,
-  creation?: Script<El<SVGFEPointLightElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEPointLightElement, M>>,
-  mounting?: Script<El<SVGFEPointLightElement, M>>,
-  destruction?: Script<El<SVGFEPointLightElement, M>>,
+  setup?: Script<El<SVGFEPointLightElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEPointLightElement, M, D>>,
+  creation?: Script<El<SVGFEPointLightElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEPointLightElement, M, D>>,
+  mounting?: Script<El<SVGFEPointLightElement, M, D>>,
+  destruction?: Script<El<SVGFEPointLightElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEPointLightElement, M>>): ReactiveTreeNode<El<SVGFEPointLightElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFEPointLightElement, M, D>>): ReactiveTreeNode<El<SVGFEPointLightElement, M, D>>
 
-export function FePointLight<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFEPointLightElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEPointLightElement, M>>,
-  setupOrMode?: Script<El<SVGFEPointLightElement, M>> | Mode,
-  setup?: Script<El<SVGFEPointLightElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFEPointLightElement, M>>,
-  creation?: Script<El<SVGFEPointLightElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFEPointLightElement, M>>,
-  mounting?: Script<El<SVGFEPointLightElement, M>>,
-  destruction?: Script<El<SVGFEPointLightElement, M>>,
+export function FePointLight<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFEPointLightElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFEPointLightElement, M, D>>,
+  setupOrMode?: Script<El<SVGFEPointLightElement, M, D>> | Mode,
+  setup?: Script<El<SVGFEPointLightElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFEPointLightElement, M, D>>,
+  creation?: Script<El<SVGFEPointLightElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFEPointLightElement, M, D>>,
+  mounting?: Script<El<SVGFEPointLightElement, M, D>>,
+  destruction?: Script<El<SVGFEPointLightElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFEPointLightElement, M>>): ReactiveTreeNode<El<SVGFEPointLightElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFEPointLightElement, M, D>>): ReactiveTreeNode<El<SVGFEPointLightElement, M, D>> {
   //
   return describe(FePointLight.name, SvgTags.fePointLight,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1468,45 +1468,45 @@ export function FePointLight<M = unknown>(
 
 // FeSpecularLighting
 
-export function FeSpecularLighting<M = unknown>(
-  setup: Script<El<SVGFESpecularLightingElement, M>>): ReactiveTreeNode<El<SVGFESpecularLightingElement, M>>
+export function FeSpecularLighting<M = unknown, D = unknown>(
+  setup: Script<El<SVGFESpecularLightingElement, M, D>>): ReactiveTreeNode<El<SVGFESpecularLightingElement, M, D>>
 
-export function FeSpecularLighting<M = unknown>(
+export function FeSpecularLighting<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFESpecularLightingElement, M>>): ReactiveTreeNode<El<SVGFESpecularLightingElement, M>>
+  setup: Script<El<SVGFESpecularLightingElement, M, D>>): ReactiveTreeNode<El<SVGFESpecularLightingElement, M, D>>
 
-export function FeSpecularLighting<M = unknown>(
+export function FeSpecularLighting<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFESpecularLightingElement, M>>): ReactiveTreeNode<El<SVGFESpecularLightingElement, M>>
+  setup: Script<El<SVGFESpecularLightingElement, M, D>>): ReactiveTreeNode<El<SVGFESpecularLightingElement, M, D>>
 
-export function FeSpecularLighting<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFESpecularLightingElement, M>>): ReactiveTreeNode<El<SVGFESpecularLightingElement, M>>
+export function FeSpecularLighting<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFESpecularLightingElement, M, D>>): ReactiveTreeNode<El<SVGFESpecularLightingElement, M, D>>
 
-export function FeSpecularLighting<M = unknown>(
+export function FeSpecularLighting<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFESpecularLightingElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFESpecularLightingElement, M>>,
-  creation?: Script<El<SVGFESpecularLightingElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFESpecularLightingElement, M>>,
-  mounting?: Script<El<SVGFESpecularLightingElement, M>>,
-  destruction?: Script<El<SVGFESpecularLightingElement, M>>,
+  setup?: Script<El<SVGFESpecularLightingElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFESpecularLightingElement, M, D>>,
+  creation?: Script<El<SVGFESpecularLightingElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFESpecularLightingElement, M, D>>,
+  mounting?: Script<El<SVGFESpecularLightingElement, M, D>>,
+  destruction?: Script<El<SVGFESpecularLightingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFESpecularLightingElement, M>>): ReactiveTreeNode<El<SVGFESpecularLightingElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFESpecularLightingElement, M, D>>): ReactiveTreeNode<El<SVGFESpecularLightingElement, M, D>>
 
-export function FeSpecularLighting<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFESpecularLightingElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFESpecularLightingElement, M>>,
-  setupOrMode?: Script<El<SVGFESpecularLightingElement, M>> | Mode,
-  setup?: Script<El<SVGFESpecularLightingElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFESpecularLightingElement, M>>,
-  creation?: Script<El<SVGFESpecularLightingElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFESpecularLightingElement, M>>,
-  mounting?: Script<El<SVGFESpecularLightingElement, M>>,
-  destruction?: Script<El<SVGFESpecularLightingElement, M>>,
+export function FeSpecularLighting<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFESpecularLightingElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFESpecularLightingElement, M, D>>,
+  setupOrMode?: Script<El<SVGFESpecularLightingElement, M, D>> | Mode,
+  setup?: Script<El<SVGFESpecularLightingElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFESpecularLightingElement, M, D>>,
+  creation?: Script<El<SVGFESpecularLightingElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFESpecularLightingElement, M, D>>,
+  mounting?: Script<El<SVGFESpecularLightingElement, M, D>>,
+  destruction?: Script<El<SVGFESpecularLightingElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFESpecularLightingElement, M>>): ReactiveTreeNode<El<SVGFESpecularLightingElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFESpecularLightingElement, M, D>>): ReactiveTreeNode<El<SVGFESpecularLightingElement, M, D>> {
   //
   return describe(FeSpecularLighting.name, SvgTags.feSpecularLighting,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1515,45 +1515,45 @@ export function FeSpecularLighting<M = unknown>(
 
 // FeSpotLight
 
-export function FeSpotLight<M = unknown>(
-  setup: Script<El<SVGFESpotLightElement, M>>): ReactiveTreeNode<El<SVGFESpotLightElement, M>>
+export function FeSpotLight<M = unknown, D = unknown>(
+  setup: Script<El<SVGFESpotLightElement, M, D>>): ReactiveTreeNode<El<SVGFESpotLightElement, M, D>>
 
-export function FeSpotLight<M = unknown>(
+export function FeSpotLight<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFESpotLightElement, M>>): ReactiveTreeNode<El<SVGFESpotLightElement, M>>
+  setup: Script<El<SVGFESpotLightElement, M, D>>): ReactiveTreeNode<El<SVGFESpotLightElement, M, D>>
 
-export function FeSpotLight<M = unknown>(
+export function FeSpotLight<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFESpotLightElement, M>>): ReactiveTreeNode<El<SVGFESpotLightElement, M>>
+  setup: Script<El<SVGFESpotLightElement, M, D>>): ReactiveTreeNode<El<SVGFESpotLightElement, M, D>>
 
-export function FeSpotLight<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFESpotLightElement, M>>): ReactiveTreeNode<El<SVGFESpotLightElement, M>>
+export function FeSpotLight<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFESpotLightElement, M, D>>): ReactiveTreeNode<El<SVGFESpotLightElement, M, D>>
 
-export function FeSpotLight<M = unknown>(
+export function FeSpotLight<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFESpotLightElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFESpotLightElement, M>>,
-  creation?: Script<El<SVGFESpotLightElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFESpotLightElement, M>>,
-  mounting?: Script<El<SVGFESpotLightElement, M>>,
-  destruction?: Script<El<SVGFESpotLightElement, M>>,
+  setup?: Script<El<SVGFESpotLightElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFESpotLightElement, M, D>>,
+  creation?: Script<El<SVGFESpotLightElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFESpotLightElement, M, D>>,
+  mounting?: Script<El<SVGFESpotLightElement, M, D>>,
+  destruction?: Script<El<SVGFESpotLightElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFESpotLightElement, M>>): ReactiveTreeNode<El<SVGFESpotLightElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFESpotLightElement, M, D>>): ReactiveTreeNode<El<SVGFESpotLightElement, M, D>>
 
-export function FeSpotLight<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFESpotLightElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFESpotLightElement, M>>,
-  setupOrMode?: Script<El<SVGFESpotLightElement, M>> | Mode,
-  setup?: Script<El<SVGFESpotLightElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFESpotLightElement, M>>,
-  creation?: Script<El<SVGFESpotLightElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFESpotLightElement, M>>,
-  mounting?: Script<El<SVGFESpotLightElement, M>>,
-  destruction?: Script<El<SVGFESpotLightElement, M>>,
+export function FeSpotLight<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFESpotLightElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFESpotLightElement, M, D>>,
+  setupOrMode?: Script<El<SVGFESpotLightElement, M, D>> | Mode,
+  setup?: Script<El<SVGFESpotLightElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFESpotLightElement, M, D>>,
+  creation?: Script<El<SVGFESpotLightElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFESpotLightElement, M, D>>,
+  mounting?: Script<El<SVGFESpotLightElement, M, D>>,
+  destruction?: Script<El<SVGFESpotLightElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFESpotLightElement, M>>): ReactiveTreeNode<El<SVGFESpotLightElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFESpotLightElement, M, D>>): ReactiveTreeNode<El<SVGFESpotLightElement, M, D>> {
   //
   return describe(FeSpotLight.name, SvgTags.feSpotLight,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1562,45 +1562,45 @@ export function FeSpotLight<M = unknown>(
 
 // FeTile
 
-export function FeTile<M = unknown>(
-  setup: Script<El<SVGFETileElement, M>>): ReactiveTreeNode<El<SVGFETileElement, M>>
+export function FeTile<M = unknown, D = unknown>(
+  setup: Script<El<SVGFETileElement, M, D>>): ReactiveTreeNode<El<SVGFETileElement, M, D>>
 
-export function FeTile<M = unknown>(
+export function FeTile<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFETileElement, M>>): ReactiveTreeNode<El<SVGFETileElement, M>>
+  setup: Script<El<SVGFETileElement, M, D>>): ReactiveTreeNode<El<SVGFETileElement, M, D>>
 
-export function FeTile<M = unknown>(
+export function FeTile<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFETileElement, M>>): ReactiveTreeNode<El<SVGFETileElement, M>>
+  setup: Script<El<SVGFETileElement, M, D>>): ReactiveTreeNode<El<SVGFETileElement, M, D>>
 
-export function FeTile<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFETileElement, M>>): ReactiveTreeNode<El<SVGFETileElement, M>>
+export function FeTile<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFETileElement, M, D>>): ReactiveTreeNode<El<SVGFETileElement, M, D>>
 
-export function FeTile<M = unknown>(
+export function FeTile<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFETileElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFETileElement, M>>,
-  creation?: Script<El<SVGFETileElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFETileElement, M>>,
-  mounting?: Script<El<SVGFETileElement, M>>,
-  destruction?: Script<El<SVGFETileElement, M>>,
+  setup?: Script<El<SVGFETileElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFETileElement, M, D>>,
+  creation?: Script<El<SVGFETileElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFETileElement, M, D>>,
+  mounting?: Script<El<SVGFETileElement, M, D>>,
+  destruction?: Script<El<SVGFETileElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFETileElement, M>>): ReactiveTreeNode<El<SVGFETileElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFETileElement, M, D>>): ReactiveTreeNode<El<SVGFETileElement, M, D>>
 
-export function FeTile<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFETileElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFETileElement, M>>,
-  setupOrMode?: Script<El<SVGFETileElement, M>> | Mode,
-  setup?: Script<El<SVGFETileElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFETileElement, M>>,
-  creation?: Script<El<SVGFETileElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFETileElement, M>>,
-  mounting?: Script<El<SVGFETileElement, M>>,
-  destruction?: Script<El<SVGFETileElement, M>>,
+export function FeTile<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFETileElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFETileElement, M, D>>,
+  setupOrMode?: Script<El<SVGFETileElement, M, D>> | Mode,
+  setup?: Script<El<SVGFETileElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFETileElement, M, D>>,
+  creation?: Script<El<SVGFETileElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFETileElement, M, D>>,
+  mounting?: Script<El<SVGFETileElement, M, D>>,
+  destruction?: Script<El<SVGFETileElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFETileElement, M>>): ReactiveTreeNode<El<SVGFETileElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFETileElement, M, D>>): ReactiveTreeNode<El<SVGFETileElement, M, D>> {
   //
   return describe(FeTile.name, SvgTags.feTile,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1609,45 +1609,45 @@ export function FeTile<M = unknown>(
 
 // FeTurbulence
 
-export function FeTurbulence<M = unknown>(
-  setup: Script<El<SVGFETurbulenceElement, M>>): ReactiveTreeNode<El<SVGFETurbulenceElement, M>>
+export function FeTurbulence<M = unknown, D = unknown>(
+  setup: Script<El<SVGFETurbulenceElement, M, D>>): ReactiveTreeNode<El<SVGFETurbulenceElement, M, D>>
 
-export function FeTurbulence<M = unknown>(
+export function FeTurbulence<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFETurbulenceElement, M>>): ReactiveTreeNode<El<SVGFETurbulenceElement, M>>
+  setup: Script<El<SVGFETurbulenceElement, M, D>>): ReactiveTreeNode<El<SVGFETurbulenceElement, M, D>>
 
-export function FeTurbulence<M = unknown>(
+export function FeTurbulence<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFETurbulenceElement, M>>): ReactiveTreeNode<El<SVGFETurbulenceElement, M>>
+  setup: Script<El<SVGFETurbulenceElement, M, D>>): ReactiveTreeNode<El<SVGFETurbulenceElement, M, D>>
 
-export function FeTurbulence<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFETurbulenceElement, M>>): ReactiveTreeNode<El<SVGFETurbulenceElement, M>>
+export function FeTurbulence<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFETurbulenceElement, M, D>>): ReactiveTreeNode<El<SVGFETurbulenceElement, M, D>>
 
-export function FeTurbulence<M = unknown>(
+export function FeTurbulence<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFETurbulenceElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFETurbulenceElement, M>>,
-  creation?: Script<El<SVGFETurbulenceElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFETurbulenceElement, M>>,
-  mounting?: Script<El<SVGFETurbulenceElement, M>>,
-  destruction?: Script<El<SVGFETurbulenceElement, M>>,
+  setup?: Script<El<SVGFETurbulenceElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFETurbulenceElement, M, D>>,
+  creation?: Script<El<SVGFETurbulenceElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFETurbulenceElement, M, D>>,
+  mounting?: Script<El<SVGFETurbulenceElement, M, D>>,
+  destruction?: Script<El<SVGFETurbulenceElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFETurbulenceElement, M>>): ReactiveTreeNode<El<SVGFETurbulenceElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFETurbulenceElement, M, D>>): ReactiveTreeNode<El<SVGFETurbulenceElement, M, D>>
 
-export function FeTurbulence<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFETurbulenceElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFETurbulenceElement, M>>,
-  setupOrMode?: Script<El<SVGFETurbulenceElement, M>> | Mode,
-  setup?: Script<El<SVGFETurbulenceElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFETurbulenceElement, M>>,
-  creation?: Script<El<SVGFETurbulenceElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFETurbulenceElement, M>>,
-  mounting?: Script<El<SVGFETurbulenceElement, M>>,
-  destruction?: Script<El<SVGFETurbulenceElement, M>>,
+export function FeTurbulence<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFETurbulenceElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFETurbulenceElement, M, D>>,
+  setupOrMode?: Script<El<SVGFETurbulenceElement, M, D>> | Mode,
+  setup?: Script<El<SVGFETurbulenceElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFETurbulenceElement, M, D>>,
+  creation?: Script<El<SVGFETurbulenceElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFETurbulenceElement, M, D>>,
+  mounting?: Script<El<SVGFETurbulenceElement, M, D>>,
+  destruction?: Script<El<SVGFETurbulenceElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFETurbulenceElement, M>>): ReactiveTreeNode<El<SVGFETurbulenceElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFETurbulenceElement, M, D>>): ReactiveTreeNode<El<SVGFETurbulenceElement, M, D>> {
   //
   return describe(FeTurbulence.name, SvgTags.feTurbulence,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1656,45 +1656,45 @@ export function FeTurbulence<M = unknown>(
 
 // Filter
 
-export function Filter<M = unknown>(
-  setup: Script<El<SVGFilterElement, M>>): ReactiveTreeNode<El<SVGFilterElement, M>>
+export function Filter<M = unknown, D = unknown>(
+  setup: Script<El<SVGFilterElement, M, D>>): ReactiveTreeNode<El<SVGFilterElement, M, D>>
 
-export function Filter<M = unknown>(
+export function Filter<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGFilterElement, M>>): ReactiveTreeNode<El<SVGFilterElement, M>>
+  setup: Script<El<SVGFilterElement, M, D>>): ReactiveTreeNode<El<SVGFilterElement, M, D>>
 
-export function Filter<M = unknown>(
+export function Filter<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGFilterElement, M>>): ReactiveTreeNode<El<SVGFilterElement, M>>
+  setup: Script<El<SVGFilterElement, M, D>>): ReactiveTreeNode<El<SVGFilterElement, M, D>>
 
-export function Filter<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGFilterElement, M>>): ReactiveTreeNode<El<SVGFilterElement, M>>
+export function Filter<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGFilterElement, M, D>>): ReactiveTreeNode<El<SVGFilterElement, M, D>>
 
-export function Filter<M = unknown>(
+export function Filter<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGFilterElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFilterElement, M>>,
-  creation?: Script<El<SVGFilterElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFilterElement, M>>,
-  mounting?: Script<El<SVGFilterElement, M>>,
-  destruction?: Script<El<SVGFilterElement, M>>,
+  setup?: Script<El<SVGFilterElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFilterElement, M, D>>,
+  creation?: Script<El<SVGFilterElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFilterElement, M, D>>,
+  mounting?: Script<El<SVGFilterElement, M, D>>,
+  destruction?: Script<El<SVGFilterElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFilterElement, M>>): ReactiveTreeNode<El<SVGFilterElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGFilterElement, M, D>>): ReactiveTreeNode<El<SVGFilterElement, M, D>>
 
-export function Filter<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGFilterElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFilterElement, M>>,
-  setupOrMode?: Script<El<SVGFilterElement, M>> | Mode,
-  setup?: Script<El<SVGFilterElement, M>>,
-  setupTask?: ScriptAsync<El<SVGFilterElement, M>>,
-  creation?: Script<El<SVGFilterElement, M>>,
-  creationTask?: ScriptAsync<El<SVGFilterElement, M>>,
-  mounting?: Script<El<SVGFilterElement, M>>,
-  destruction?: Script<El<SVGFilterElement, M>>,
+export function Filter<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGFilterElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGFilterElement, M, D>>,
+  setupOrMode?: Script<El<SVGFilterElement, M, D>> | Mode,
+  setup?: Script<El<SVGFilterElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGFilterElement, M, D>>,
+  creation?: Script<El<SVGFilterElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGFilterElement, M, D>>,
+  mounting?: Script<El<SVGFilterElement, M, D>>,
+  destruction?: Script<El<SVGFilterElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGFilterElement, M>>): ReactiveTreeNode<El<SVGFilterElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGFilterElement, M, D>>): ReactiveTreeNode<El<SVGFilterElement, M, D>> {
   //
   return describe(Filter.name, SvgTags.filter,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1703,45 +1703,45 @@ export function Filter<M = unknown>(
 
 // ForeignObject
 
-export function ForeignObject<M = unknown>(
-  setup: Script<El<SVGForeignObjectElement, M>>): ReactiveTreeNode<El<SVGForeignObjectElement, M>>
+export function ForeignObject<M = unknown, D = unknown>(
+  setup: Script<El<SVGForeignObjectElement, M, D>>): ReactiveTreeNode<El<SVGForeignObjectElement, M, D>>
 
-export function ForeignObject<M = unknown>(
+export function ForeignObject<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGForeignObjectElement, M>>): ReactiveTreeNode<El<SVGForeignObjectElement, M>>
+  setup: Script<El<SVGForeignObjectElement, M, D>>): ReactiveTreeNode<El<SVGForeignObjectElement, M, D>>
 
-export function ForeignObject<M = unknown>(
+export function ForeignObject<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGForeignObjectElement, M>>): ReactiveTreeNode<El<SVGForeignObjectElement, M>>
+  setup: Script<El<SVGForeignObjectElement, M, D>>): ReactiveTreeNode<El<SVGForeignObjectElement, M, D>>
 
-export function ForeignObject<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGForeignObjectElement, M>>): ReactiveTreeNode<El<SVGForeignObjectElement, M>>
+export function ForeignObject<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGForeignObjectElement, M, D>>): ReactiveTreeNode<El<SVGForeignObjectElement, M, D>>
 
-export function ForeignObject<M = unknown>(
+export function ForeignObject<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGForeignObjectElement, M>>,
-  setupTask?: ScriptAsync<El<SVGForeignObjectElement, M>>,
-  creation?: Script<El<SVGForeignObjectElement, M>>,
-  creationTask?: ScriptAsync<El<SVGForeignObjectElement, M>>,
-  mounting?: Script<El<SVGForeignObjectElement, M>>,
-  destruction?: Script<El<SVGForeignObjectElement, M>>,
+  setup?: Script<El<SVGForeignObjectElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGForeignObjectElement, M, D>>,
+  creation?: Script<El<SVGForeignObjectElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGForeignObjectElement, M, D>>,
+  mounting?: Script<El<SVGForeignObjectElement, M, D>>,
+  destruction?: Script<El<SVGForeignObjectElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGForeignObjectElement, M>>): ReactiveTreeNode<El<SVGForeignObjectElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGForeignObjectElement, M, D>>): ReactiveTreeNode<El<SVGForeignObjectElement, M, D>>
 
-export function ForeignObject<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGForeignObjectElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGForeignObjectElement, M>>,
-  setupOrMode?: Script<El<SVGForeignObjectElement, M>> | Mode,
-  setup?: Script<El<SVGForeignObjectElement, M>>,
-  setupTask?: ScriptAsync<El<SVGForeignObjectElement, M>>,
-  creation?: Script<El<SVGForeignObjectElement, M>>,
-  creationTask?: ScriptAsync<El<SVGForeignObjectElement, M>>,
-  mounting?: Script<El<SVGForeignObjectElement, M>>,
-  destruction?: Script<El<SVGForeignObjectElement, M>>,
+export function ForeignObject<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGForeignObjectElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGForeignObjectElement, M, D>>,
+  setupOrMode?: Script<El<SVGForeignObjectElement, M, D>> | Mode,
+  setup?: Script<El<SVGForeignObjectElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGForeignObjectElement, M, D>>,
+  creation?: Script<El<SVGForeignObjectElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGForeignObjectElement, M, D>>,
+  mounting?: Script<El<SVGForeignObjectElement, M, D>>,
+  destruction?: Script<El<SVGForeignObjectElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGForeignObjectElement, M>>): ReactiveTreeNode<El<SVGForeignObjectElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGForeignObjectElement, M, D>>): ReactiveTreeNode<El<SVGForeignObjectElement, M, D>> {
   //
   return describe(ForeignObject.name, SvgTags.foreignObject,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1750,45 +1750,45 @@ export function ForeignObject<M = unknown>(
 
 // G
 
-export function G<M = unknown>(
-  setup: Script<El<SVGGElement, M>>): ReactiveTreeNode<El<SVGGElement, M>>
+export function G<M = unknown, D = unknown>(
+  setup: Script<El<SVGGElement, M, D>>): ReactiveTreeNode<El<SVGGElement, M, D>>
 
-export function G<M = unknown>(
+export function G<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGGElement, M>>): ReactiveTreeNode<El<SVGGElement, M>>
+  setup: Script<El<SVGGElement, M, D>>): ReactiveTreeNode<El<SVGGElement, M, D>>
 
-export function G<M = unknown>(
+export function G<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGGElement, M>>): ReactiveTreeNode<El<SVGGElement, M>>
+  setup: Script<El<SVGGElement, M, D>>): ReactiveTreeNode<El<SVGGElement, M, D>>
 
-export function G<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGGElement, M>>): ReactiveTreeNode<El<SVGGElement, M>>
+export function G<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGGElement, M, D>>): ReactiveTreeNode<El<SVGGElement, M, D>>
 
-export function G<M = unknown>(
+export function G<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGGElement, M>>,
-  setupTask?: ScriptAsync<El<SVGGElement, M>>,
-  creation?: Script<El<SVGGElement, M>>,
-  creationTask?: ScriptAsync<El<SVGGElement, M>>,
-  mounting?: Script<El<SVGGElement, M>>,
-  destruction?: Script<El<SVGGElement, M>>,
+  setup?: Script<El<SVGGElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGGElement, M, D>>,
+  creation?: Script<El<SVGGElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGGElement, M, D>>,
+  mounting?: Script<El<SVGGElement, M, D>>,
+  destruction?: Script<El<SVGGElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGGElement, M>>): ReactiveTreeNode<El<SVGGElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGGElement, M, D>>): ReactiveTreeNode<El<SVGGElement, M, D>>
 
-export function G<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGGElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGGElement, M>>,
-  setupOrMode?: Script<El<SVGGElement, M>> | Mode,
-  setup?: Script<El<SVGGElement, M>>,
-  setupTask?: ScriptAsync<El<SVGGElement, M>>,
-  creation?: Script<El<SVGGElement, M>>,
-  creationTask?: ScriptAsync<El<SVGGElement, M>>,
-  mounting?: Script<El<SVGGElement, M>>,
-  destruction?: Script<El<SVGGElement, M>>,
+export function G<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGGElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGGElement, M, D>>,
+  setupOrMode?: Script<El<SVGGElement, M, D>> | Mode,
+  setup?: Script<El<SVGGElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGGElement, M, D>>,
+  creation?: Script<El<SVGGElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGGElement, M, D>>,
+  mounting?: Script<El<SVGGElement, M, D>>,
+  destruction?: Script<El<SVGGElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGGElement, M>>): ReactiveTreeNode<El<SVGGElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGGElement, M, D>>): ReactiveTreeNode<El<SVGGElement, M, D>> {
   //
   return describe(G.name, SvgTags.g,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1797,45 +1797,45 @@ export function G<M = unknown>(
 
 // SvgImage
 
-export function SvgImage<M = unknown>(
-  setup: Script<El<SVGImageElement, M>>): ReactiveTreeNode<El<SVGImageElement, M>>
+export function SvgImage<M = unknown, D = unknown>(
+  setup: Script<El<SVGImageElement, M, D>>): ReactiveTreeNode<El<SVGImageElement, M, D>>
 
-export function SvgImage<M = unknown>(
+export function SvgImage<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGImageElement, M>>): ReactiveTreeNode<El<SVGImageElement, M>>
+  setup: Script<El<SVGImageElement, M, D>>): ReactiveTreeNode<El<SVGImageElement, M, D>>
 
-export function SvgImage<M = unknown>(
+export function SvgImage<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGImageElement, M>>): ReactiveTreeNode<El<SVGImageElement, M>>
+  setup: Script<El<SVGImageElement, M, D>>): ReactiveTreeNode<El<SVGImageElement, M, D>>
 
-export function SvgImage<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGImageElement, M>>): ReactiveTreeNode<El<SVGImageElement, M>>
+export function SvgImage<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGImageElement, M, D>>): ReactiveTreeNode<El<SVGImageElement, M, D>>
 
-export function SvgImage<M = unknown>(
+export function SvgImage<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGImageElement, M>>,
-  setupTask?: ScriptAsync<El<SVGImageElement, M>>,
-  creation?: Script<El<SVGImageElement, M>>,
-  creationTask?: ScriptAsync<El<SVGImageElement, M>>,
-  mounting?: Script<El<SVGImageElement, M>>,
-  destruction?: Script<El<SVGImageElement, M>>,
+  setup?: Script<El<SVGImageElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGImageElement, M, D>>,
+  creation?: Script<El<SVGImageElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGImageElement, M, D>>,
+  mounting?: Script<El<SVGImageElement, M, D>>,
+  destruction?: Script<El<SVGImageElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGImageElement, M>>): ReactiveTreeNode<El<SVGImageElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGImageElement, M, D>>): ReactiveTreeNode<El<SVGImageElement, M, D>>
 
-export function SvgImage<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGImageElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGImageElement, M>>,
-  setupOrMode?: Script<El<SVGImageElement, M>> | Mode,
-  setup?: Script<El<SVGImageElement, M>>,
-  setupTask?: ScriptAsync<El<SVGImageElement, M>>,
-  creation?: Script<El<SVGImageElement, M>>,
-  creationTask?: ScriptAsync<El<SVGImageElement, M>>,
-  mounting?: Script<El<SVGImageElement, M>>,
-  destruction?: Script<El<SVGImageElement, M>>,
+export function SvgImage<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGImageElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGImageElement, M, D>>,
+  setupOrMode?: Script<El<SVGImageElement, M, D>> | Mode,
+  setup?: Script<El<SVGImageElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGImageElement, M, D>>,
+  creation?: Script<El<SVGImageElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGImageElement, M, D>>,
+  mounting?: Script<El<SVGImageElement, M, D>>,
+  destruction?: Script<El<SVGImageElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGImageElement, M>>): ReactiveTreeNode<El<SVGImageElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGImageElement, M, D>>): ReactiveTreeNode<El<SVGImageElement, M, D>> {
   //
   return describe(SvgImage.name, SvgTags.image,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1844,45 +1844,45 @@ export function SvgImage<M = unknown>(
 
 // SvgLine
 
-export function SvgLine<M = unknown>(
-  setup: Script<El<SVGLineElement, M>>): ReactiveTreeNode<El<SVGLineElement, M>>
+export function SvgLine<M = unknown, D = unknown>(
+  setup: Script<El<SVGLineElement, M, D>>): ReactiveTreeNode<El<SVGLineElement, M, D>>
 
-export function SvgLine<M = unknown>(
+export function SvgLine<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGLineElement, M>>): ReactiveTreeNode<El<SVGLineElement, M>>
+  setup: Script<El<SVGLineElement, M, D>>): ReactiveTreeNode<El<SVGLineElement, M, D>>
 
-export function SvgLine<M = unknown>(
+export function SvgLine<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGLineElement, M>>): ReactiveTreeNode<El<SVGLineElement, M>>
+  setup: Script<El<SVGLineElement, M, D>>): ReactiveTreeNode<El<SVGLineElement, M, D>>
 
-export function SvgLine<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGLineElement, M>>): ReactiveTreeNode<El<SVGLineElement, M>>
+export function SvgLine<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGLineElement, M, D>>): ReactiveTreeNode<El<SVGLineElement, M, D>>
 
-export function SvgLine<M = unknown>(
+export function SvgLine<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGLineElement, M>>,
-  setupTask?: ScriptAsync<El<SVGLineElement, M>>,
-  creation?: Script<El<SVGLineElement, M>>,
-  creationTask?: ScriptAsync<El<SVGLineElement, M>>,
-  mounting?: Script<El<SVGLineElement, M>>,
-  destruction?: Script<El<SVGLineElement, M>>,
+  setup?: Script<El<SVGLineElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGLineElement, M, D>>,
+  creation?: Script<El<SVGLineElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGLineElement, M, D>>,
+  mounting?: Script<El<SVGLineElement, M, D>>,
+  destruction?: Script<El<SVGLineElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGLineElement, M>>): ReactiveTreeNode<El<SVGLineElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGLineElement, M, D>>): ReactiveTreeNode<El<SVGLineElement, M, D>>
 
-export function SvgLine<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGLineElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGLineElement, M>>,
-  setupOrMode?: Script<El<SVGLineElement, M>> | Mode,
-  setup?: Script<El<SVGLineElement, M>>,
-  setupTask?: ScriptAsync<El<SVGLineElement, M>>,
-  creation?: Script<El<SVGLineElement, M>>,
-  creationTask?: ScriptAsync<El<SVGLineElement, M>>,
-  mounting?: Script<El<SVGLineElement, M>>,
-  destruction?: Script<El<SVGLineElement, M>>,
+export function SvgLine<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGLineElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGLineElement, M, D>>,
+  setupOrMode?: Script<El<SVGLineElement, M, D>> | Mode,
+  setup?: Script<El<SVGLineElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGLineElement, M, D>>,
+  creation?: Script<El<SVGLineElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGLineElement, M, D>>,
+  mounting?: Script<El<SVGLineElement, M, D>>,
+  destruction?: Script<El<SVGLineElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGLineElement, M>>): ReactiveTreeNode<El<SVGLineElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGLineElement, M, D>>): ReactiveTreeNode<El<SVGLineElement, M, D>> {
   //
   return describe(SvgLine.name, SvgTags.line,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1891,45 +1891,45 @@ export function SvgLine<M = unknown>(
 
 // LinearGradient
 
-export function LinearGradient<M = unknown>(
-  setup: Script<El<SVGLinearGradientElement, M>>): ReactiveTreeNode<El<SVGLinearGradientElement, M>>
+export function LinearGradient<M = unknown, D = unknown>(
+  setup: Script<El<SVGLinearGradientElement, M, D>>): ReactiveTreeNode<El<SVGLinearGradientElement, M, D>>
 
-export function LinearGradient<M = unknown>(
+export function LinearGradient<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGLinearGradientElement, M>>): ReactiveTreeNode<El<SVGLinearGradientElement, M>>
+  setup: Script<El<SVGLinearGradientElement, M, D>>): ReactiveTreeNode<El<SVGLinearGradientElement, M, D>>
 
-export function LinearGradient<M = unknown>(
+export function LinearGradient<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGLinearGradientElement, M>>): ReactiveTreeNode<El<SVGLinearGradientElement, M>>
+  setup: Script<El<SVGLinearGradientElement, M, D>>): ReactiveTreeNode<El<SVGLinearGradientElement, M, D>>
 
-export function LinearGradient<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGLinearGradientElement, M>>): ReactiveTreeNode<El<SVGLinearGradientElement, M>>
+export function LinearGradient<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGLinearGradientElement, M, D>>): ReactiveTreeNode<El<SVGLinearGradientElement, M, D>>
 
-export function LinearGradient<M = unknown>(
+export function LinearGradient<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGLinearGradientElement, M>>,
-  setupTask?: ScriptAsync<El<SVGLinearGradientElement, M>>,
-  creation?: Script<El<SVGLinearGradientElement, M>>,
-  creationTask?: ScriptAsync<El<SVGLinearGradientElement, M>>,
-  mounting?: Script<El<SVGLinearGradientElement, M>>,
-  destruction?: Script<El<SVGLinearGradientElement, M>>,
+  setup?: Script<El<SVGLinearGradientElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGLinearGradientElement, M, D>>,
+  creation?: Script<El<SVGLinearGradientElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGLinearGradientElement, M, D>>,
+  mounting?: Script<El<SVGLinearGradientElement, M, D>>,
+  destruction?: Script<El<SVGLinearGradientElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGLinearGradientElement, M>>): ReactiveTreeNode<El<SVGLinearGradientElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGLinearGradientElement, M, D>>): ReactiveTreeNode<El<SVGLinearGradientElement, M, D>>
 
-export function LinearGradient<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGLinearGradientElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGLinearGradientElement, M>>,
-  setupOrMode?: Script<El<SVGLinearGradientElement, M>> | Mode,
-  setup?: Script<El<SVGLinearGradientElement, M>>,
-  setupTask?: ScriptAsync<El<SVGLinearGradientElement, M>>,
-  creation?: Script<El<SVGLinearGradientElement, M>>,
-  creationTask?: ScriptAsync<El<SVGLinearGradientElement, M>>,
-  mounting?: Script<El<SVGLinearGradientElement, M>>,
-  destruction?: Script<El<SVGLinearGradientElement, M>>,
+export function LinearGradient<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGLinearGradientElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGLinearGradientElement, M, D>>,
+  setupOrMode?: Script<El<SVGLinearGradientElement, M, D>> | Mode,
+  setup?: Script<El<SVGLinearGradientElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGLinearGradientElement, M, D>>,
+  creation?: Script<El<SVGLinearGradientElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGLinearGradientElement, M, D>>,
+  mounting?: Script<El<SVGLinearGradientElement, M, D>>,
+  destruction?: Script<El<SVGLinearGradientElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGLinearGradientElement, M>>): ReactiveTreeNode<El<SVGLinearGradientElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGLinearGradientElement, M, D>>): ReactiveTreeNode<El<SVGLinearGradientElement, M, D>> {
   //
   return describe(LinearGradient.name, SvgTags.linearGradient,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1938,45 +1938,45 @@ export function LinearGradient<M = unknown>(
 
 // Marker
 
-export function Marker<M = unknown>(
-  setup: Script<El<SVGMarkerElement, M>>): ReactiveTreeNode<El<SVGMarkerElement, M>>
+export function Marker<M = unknown, D = unknown>(
+  setup: Script<El<SVGMarkerElement, M, D>>): ReactiveTreeNode<El<SVGMarkerElement, M, D>>
 
-export function Marker<M = unknown>(
+export function Marker<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGMarkerElement, M>>): ReactiveTreeNode<El<SVGMarkerElement, M>>
+  setup: Script<El<SVGMarkerElement, M, D>>): ReactiveTreeNode<El<SVGMarkerElement, M, D>>
 
-export function Marker<M = unknown>(
+export function Marker<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGMarkerElement, M>>): ReactiveTreeNode<El<SVGMarkerElement, M>>
+  setup: Script<El<SVGMarkerElement, M, D>>): ReactiveTreeNode<El<SVGMarkerElement, M, D>>
 
-export function Marker<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGMarkerElement, M>>): ReactiveTreeNode<El<SVGMarkerElement, M>>
+export function Marker<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGMarkerElement, M, D>>): ReactiveTreeNode<El<SVGMarkerElement, M, D>>
 
-export function Marker<M = unknown>(
+export function Marker<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGMarkerElement, M>>,
-  setupTask?: ScriptAsync<El<SVGMarkerElement, M>>,
-  creation?: Script<El<SVGMarkerElement, M>>,
-  creationTask?: ScriptAsync<El<SVGMarkerElement, M>>,
-  mounting?: Script<El<SVGMarkerElement, M>>,
-  destruction?: Script<El<SVGMarkerElement, M>>,
+  setup?: Script<El<SVGMarkerElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGMarkerElement, M, D>>,
+  creation?: Script<El<SVGMarkerElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGMarkerElement, M, D>>,
+  mounting?: Script<El<SVGMarkerElement, M, D>>,
+  destruction?: Script<El<SVGMarkerElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGMarkerElement, M>>): ReactiveTreeNode<El<SVGMarkerElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGMarkerElement, M, D>>): ReactiveTreeNode<El<SVGMarkerElement, M, D>>
 
-export function Marker<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGMarkerElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGMarkerElement, M>>,
-  setupOrMode?: Script<El<SVGMarkerElement, M>> | Mode,
-  setup?: Script<El<SVGMarkerElement, M>>,
-  setupTask?: ScriptAsync<El<SVGMarkerElement, M>>,
-  creation?: Script<El<SVGMarkerElement, M>>,
-  creationTask?: ScriptAsync<El<SVGMarkerElement, M>>,
-  mounting?: Script<El<SVGMarkerElement, M>>,
-  destruction?: Script<El<SVGMarkerElement, M>>,
+export function Marker<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGMarkerElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGMarkerElement, M, D>>,
+  setupOrMode?: Script<El<SVGMarkerElement, M, D>> | Mode,
+  setup?: Script<El<SVGMarkerElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGMarkerElement, M, D>>,
+  creation?: Script<El<SVGMarkerElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGMarkerElement, M, D>>,
+  mounting?: Script<El<SVGMarkerElement, M, D>>,
+  destruction?: Script<El<SVGMarkerElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGMarkerElement, M>>): ReactiveTreeNode<El<SVGMarkerElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGMarkerElement, M, D>>): ReactiveTreeNode<El<SVGMarkerElement, M, D>> {
   //
   return describe(Marker.name, SvgTags.marker,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -1985,45 +1985,45 @@ export function Marker<M = unknown>(
 
 // Mask
 
-export function Mask<M = unknown>(
-  setup: Script<El<SVGMaskElement, M>>): ReactiveTreeNode<El<SVGMaskElement, M>>
+export function Mask<M = unknown, D = unknown>(
+  setup: Script<El<SVGMaskElement, M, D>>): ReactiveTreeNode<El<SVGMaskElement, M, D>>
 
-export function Mask<M = unknown>(
+export function Mask<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGMaskElement, M>>): ReactiveTreeNode<El<SVGMaskElement, M>>
+  setup: Script<El<SVGMaskElement, M, D>>): ReactiveTreeNode<El<SVGMaskElement, M, D>>
 
-export function Mask<M = unknown>(
+export function Mask<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGMaskElement, M>>): ReactiveTreeNode<El<SVGMaskElement, M>>
+  setup: Script<El<SVGMaskElement, M, D>>): ReactiveTreeNode<El<SVGMaskElement, M, D>>
 
-export function Mask<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGMaskElement, M>>): ReactiveTreeNode<El<SVGMaskElement, M>>
+export function Mask<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGMaskElement, M, D>>): ReactiveTreeNode<El<SVGMaskElement, M, D>>
 
-export function Mask<M = unknown>(
+export function Mask<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGMaskElement, M>>,
-  setupTask?: ScriptAsync<El<SVGMaskElement, M>>,
-  creation?: Script<El<SVGMaskElement, M>>,
-  creationTask?: ScriptAsync<El<SVGMaskElement, M>>,
-  mounting?: Script<El<SVGMaskElement, M>>,
-  destruction?: Script<El<SVGMaskElement, M>>,
+  setup?: Script<El<SVGMaskElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGMaskElement, M, D>>,
+  creation?: Script<El<SVGMaskElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGMaskElement, M, D>>,
+  mounting?: Script<El<SVGMaskElement, M, D>>,
+  destruction?: Script<El<SVGMaskElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGMaskElement, M>>): ReactiveTreeNode<El<SVGMaskElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGMaskElement, M, D>>): ReactiveTreeNode<El<SVGMaskElement, M, D>>
 
-export function Mask<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGMaskElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGMaskElement, M>>,
-  setupOrMode?: Script<El<SVGMaskElement, M>> | Mode,
-  setup?: Script<El<SVGMaskElement, M>>,
-  setupTask?: ScriptAsync<El<SVGMaskElement, M>>,
-  creation?: Script<El<SVGMaskElement, M>>,
-  creationTask?: ScriptAsync<El<SVGMaskElement, M>>,
-  mounting?: Script<El<SVGMaskElement, M>>,
-  destruction?: Script<El<SVGMaskElement, M>>,
+export function Mask<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGMaskElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGMaskElement, M, D>>,
+  setupOrMode?: Script<El<SVGMaskElement, M, D>> | Mode,
+  setup?: Script<El<SVGMaskElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGMaskElement, M, D>>,
+  creation?: Script<El<SVGMaskElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGMaskElement, M, D>>,
+  mounting?: Script<El<SVGMaskElement, M, D>>,
+  destruction?: Script<El<SVGMaskElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGMaskElement, M>>): ReactiveTreeNode<El<SVGMaskElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGMaskElement, M, D>>): ReactiveTreeNode<El<SVGMaskElement, M, D>> {
   //
   return describe(Mask.name, SvgTags.mask,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2032,45 +2032,45 @@ export function Mask<M = unknown>(
 
 // MetaData
 
-export function MetaData<M = unknown>(
-  setup: Script<El<SVGMetadataElement, M>>): ReactiveTreeNode<El<SVGMetadataElement, M>>
+export function MetaData<M = unknown, D = unknown>(
+  setup: Script<El<SVGMetadataElement, M, D>>): ReactiveTreeNode<El<SVGMetadataElement, M, D>>
 
-export function MetaData<M = unknown>(
+export function MetaData<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGMetadataElement, M>>): ReactiveTreeNode<El<SVGMetadataElement, M>>
+  setup: Script<El<SVGMetadataElement, M, D>>): ReactiveTreeNode<El<SVGMetadataElement, M, D>>
 
-export function MetaData<M = unknown>(
+export function MetaData<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGMetadataElement, M>>): ReactiveTreeNode<El<SVGMetadataElement, M>>
+  setup: Script<El<SVGMetadataElement, M, D>>): ReactiveTreeNode<El<SVGMetadataElement, M, D>>
 
-export function MetaData<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGMetadataElement, M>>): ReactiveTreeNode<El<SVGMetadataElement, M>>
+export function MetaData<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGMetadataElement, M, D>>): ReactiveTreeNode<El<SVGMetadataElement, M, D>>
 
-export function MetaData<M = unknown>(
+export function MetaData<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGMetadataElement, M>>,
-  setupTask?: ScriptAsync<El<SVGMetadataElement, M>>,
-  creation?: Script<El<SVGMetadataElement, M>>,
-  creationTask?: ScriptAsync<El<SVGMetadataElement, M>>,
-  mounting?: Script<El<SVGMetadataElement, M>>,
-  destruction?: Script<El<SVGMetadataElement, M>>,
+  setup?: Script<El<SVGMetadataElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGMetadataElement, M, D>>,
+  creation?: Script<El<SVGMetadataElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGMetadataElement, M, D>>,
+  mounting?: Script<El<SVGMetadataElement, M, D>>,
+  destruction?: Script<El<SVGMetadataElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGMetadataElement, M>>): ReactiveTreeNode<El<SVGMetadataElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGMetadataElement, M, D>>): ReactiveTreeNode<El<SVGMetadataElement, M, D>>
 
-export function MetaData<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGMetadataElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGMetadataElement, M>>,
-  setupOrMode?: Script<El<SVGMetadataElement, M>> | Mode,
-  setup?: Script<El<SVGMetadataElement, M>>,
-  setupTask?: ScriptAsync<El<SVGMetadataElement, M>>,
-  creation?: Script<El<SVGMetadataElement, M>>,
-  creationTask?: ScriptAsync<El<SVGMetadataElement, M>>,
-  mounting?: Script<El<SVGMetadataElement, M>>,
-  destruction?: Script<El<SVGMetadataElement, M>>,
+export function MetaData<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGMetadataElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGMetadataElement, M, D>>,
+  setupOrMode?: Script<El<SVGMetadataElement, M, D>> | Mode,
+  setup?: Script<El<SVGMetadataElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGMetadataElement, M, D>>,
+  creation?: Script<El<SVGMetadataElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGMetadataElement, M, D>>,
+  mounting?: Script<El<SVGMetadataElement, M, D>>,
+  destruction?: Script<El<SVGMetadataElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGMetadataElement, M>>): ReactiveTreeNode<El<SVGMetadataElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGMetadataElement, M, D>>): ReactiveTreeNode<El<SVGMetadataElement, M, D>> {
   //
   return describe(MetaData.name, SvgTags.metadata,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2079,45 +2079,45 @@ export function MetaData<M = unknown>(
 
 // MPath
 
-export function MPath<M = unknown>(
-  setup: Script<El<SVGElement, M>>): ReactiveTreeNode<El<SVGElement, M>>
+export function MPath<M = unknown, D = unknown>(
+  setup: Script<El<SVGElement, M, D>>): ReactiveTreeNode<El<SVGElement, M, D>>
 
-export function MPath<M = unknown>(
+export function MPath<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGElement, M>>): ReactiveTreeNode<El<SVGElement, M>>
+  setup: Script<El<SVGElement, M, D>>): ReactiveTreeNode<El<SVGElement, M, D>>
 
-export function MPath<M = unknown>(
+export function MPath<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGElement, M>>): ReactiveTreeNode<El<SVGElement, M>>
+  setup: Script<El<SVGElement, M, D>>): ReactiveTreeNode<El<SVGElement, M, D>>
 
-export function MPath<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGElement, M>>): ReactiveTreeNode<El<SVGElement, M>>
+export function MPath<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGElement, M, D>>): ReactiveTreeNode<El<SVGElement, M, D>>
 
-export function MPath<M = unknown>(
+export function MPath<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGElement, M>>,
-  setupTask?: ScriptAsync<El<SVGElement, M>>,
-  creation?: Script<El<SVGElement, M>>,
-  creationTask?: ScriptAsync<El<SVGElement, M>>,
-  mounting?: Script<El<SVGElement, M>>,
-  destruction?: Script<El<SVGElement, M>>,
+  setup?: Script<El<SVGElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGElement, M, D>>,
+  creation?: Script<El<SVGElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGElement, M, D>>,
+  mounting?: Script<El<SVGElement, M, D>>,
+  destruction?: Script<El<SVGElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGElement, M>>): ReactiveTreeNode<El<SVGElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGElement, M, D>>): ReactiveTreeNode<El<SVGElement, M, D>>
 
-export function MPath<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGElement, M>>,
-  setupOrMode?: Script<El<SVGElement, M>> | Mode,
-  setup?: Script<El<SVGElement, M>>,
-  setupTask?: ScriptAsync<El<SVGElement, M>>,
-  creation?: Script<El<SVGElement, M>>,
-  creationTask?: ScriptAsync<El<SVGElement, M>>,
-  mounting?: Script<El<SVGElement, M>>,
-  destruction?: Script<El<SVGElement, M>>,
+export function MPath<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGElement, M, D>>,
+  setupOrMode?: Script<El<SVGElement, M, D>> | Mode,
+  setup?: Script<El<SVGElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGElement, M, D>>,
+  creation?: Script<El<SVGElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGElement, M, D>>,
+  mounting?: Script<El<SVGElement, M, D>>,
+  destruction?: Script<El<SVGElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGElement, M>>): ReactiveTreeNode<El<SVGElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGElement, M, D>>): ReactiveTreeNode<El<SVGElement, M, D>> {
   //
   return describe(MPath.name, SvgTags.mpath,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2126,45 +2126,45 @@ export function MPath<M = unknown>(
 
 // Path
 
-export function Path<M = unknown>(
-  setup: Script<El<SVGPathElement, M>>): ReactiveTreeNode<El<SVGPathElement, M>>
+export function Path<M = unknown, D = unknown>(
+  setup: Script<El<SVGPathElement, M, D>>): ReactiveTreeNode<El<SVGPathElement, M, D>>
 
-export function Path<M = unknown>(
+export function Path<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGPathElement, M>>): ReactiveTreeNode<El<SVGPathElement, M>>
+  setup: Script<El<SVGPathElement, M, D>>): ReactiveTreeNode<El<SVGPathElement, M, D>>
 
-export function Path<M = unknown>(
+export function Path<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGPathElement, M>>): ReactiveTreeNode<El<SVGPathElement, M>>
+  setup: Script<El<SVGPathElement, M, D>>): ReactiveTreeNode<El<SVGPathElement, M, D>>
 
-export function Path<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGPathElement, M>>): ReactiveTreeNode<El<SVGPathElement, M>>
+export function Path<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGPathElement, M, D>>): ReactiveTreeNode<El<SVGPathElement, M, D>>
 
-export function Path<M = unknown>(
+export function Path<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGPathElement, M>>,
-  setupTask?: ScriptAsync<El<SVGPathElement, M>>,
-  creation?: Script<El<SVGPathElement, M>>,
-  creationTask?: ScriptAsync<El<SVGPathElement, M>>,
-  mounting?: Script<El<SVGPathElement, M>>,
-  destruction?: Script<El<SVGPathElement, M>>,
+  setup?: Script<El<SVGPathElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGPathElement, M, D>>,
+  creation?: Script<El<SVGPathElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGPathElement, M, D>>,
+  mounting?: Script<El<SVGPathElement, M, D>>,
+  destruction?: Script<El<SVGPathElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGPathElement, M>>): ReactiveTreeNode<El<SVGPathElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGPathElement, M, D>>): ReactiveTreeNode<El<SVGPathElement, M, D>>
 
-export function Path<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGPathElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGPathElement, M>>,
-  setupOrMode?: Script<El<SVGPathElement, M>> | Mode,
-  setup?: Script<El<SVGPathElement, M>>,
-  setupTask?: ScriptAsync<El<SVGPathElement, M>>,
-  creation?: Script<El<SVGPathElement, M>>,
-  creationTask?: ScriptAsync<El<SVGPathElement, M>>,
-  mounting?: Script<El<SVGPathElement, M>>,
-  destruction?: Script<El<SVGPathElement, M>>,
+export function Path<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGPathElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGPathElement, M, D>>,
+  setupOrMode?: Script<El<SVGPathElement, M, D>> | Mode,
+  setup?: Script<El<SVGPathElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGPathElement, M, D>>,
+  creation?: Script<El<SVGPathElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGPathElement, M, D>>,
+  mounting?: Script<El<SVGPathElement, M, D>>,
+  destruction?: Script<El<SVGPathElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGPathElement, M>>): ReactiveTreeNode<El<SVGPathElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGPathElement, M, D>>): ReactiveTreeNode<El<SVGPathElement, M, D>> {
   //
   return describe(Path.name, SvgTags.path,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2173,45 +2173,45 @@ export function Path<M = unknown>(
 
 // Pattern
 
-export function Pattern<M = unknown>(
-  setup: Script<El<SVGPatternElement, M>>): ReactiveTreeNode<El<SVGPatternElement, M>>
+export function Pattern<M = unknown, D = unknown>(
+  setup: Script<El<SVGPatternElement, M, D>>): ReactiveTreeNode<El<SVGPatternElement, M, D>>
 
-export function Pattern<M = unknown>(
+export function Pattern<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGPatternElement, M>>): ReactiveTreeNode<El<SVGPatternElement, M>>
+  setup: Script<El<SVGPatternElement, M, D>>): ReactiveTreeNode<El<SVGPatternElement, M, D>>
 
-export function Pattern<M = unknown>(
+export function Pattern<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGPatternElement, M>>): ReactiveTreeNode<El<SVGPatternElement, M>>
+  setup: Script<El<SVGPatternElement, M, D>>): ReactiveTreeNode<El<SVGPatternElement, M, D>>
 
-export function Pattern<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGPatternElement, M>>): ReactiveTreeNode<El<SVGPatternElement, M>>
+export function Pattern<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGPatternElement, M, D>>): ReactiveTreeNode<El<SVGPatternElement, M, D>>
 
-export function Pattern<M = unknown>(
+export function Pattern<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGPatternElement, M>>,
-  setupTask?: ScriptAsync<El<SVGPatternElement, M>>,
-  creation?: Script<El<SVGPatternElement, M>>,
-  creationTask?: ScriptAsync<El<SVGPatternElement, M>>,
-  mounting?: Script<El<SVGPatternElement, M>>,
-  destruction?: Script<El<SVGPatternElement, M>>,
+  setup?: Script<El<SVGPatternElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGPatternElement, M, D>>,
+  creation?: Script<El<SVGPatternElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGPatternElement, M, D>>,
+  mounting?: Script<El<SVGPatternElement, M, D>>,
+  destruction?: Script<El<SVGPatternElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGPatternElement, M>>): ReactiveTreeNode<El<SVGPatternElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGPatternElement, M, D>>): ReactiveTreeNode<El<SVGPatternElement, M, D>>
 
-export function Pattern<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGPatternElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGPatternElement, M>>,
-  setupOrMode?: Script<El<SVGPatternElement, M>> | Mode,
-  setup?: Script<El<SVGPatternElement, M>>,
-  setupTask?: ScriptAsync<El<SVGPatternElement, M>>,
-  creation?: Script<El<SVGPatternElement, M>>,
-  creationTask?: ScriptAsync<El<SVGPatternElement, M>>,
-  mounting?: Script<El<SVGPatternElement, M>>,
-  destruction?: Script<El<SVGPatternElement, M>>,
+export function Pattern<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGPatternElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGPatternElement, M, D>>,
+  setupOrMode?: Script<El<SVGPatternElement, M, D>> | Mode,
+  setup?: Script<El<SVGPatternElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGPatternElement, M, D>>,
+  creation?: Script<El<SVGPatternElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGPatternElement, M, D>>,
+  mounting?: Script<El<SVGPatternElement, M, D>>,
+  destruction?: Script<El<SVGPatternElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGPatternElement, M>>): ReactiveTreeNode<El<SVGPatternElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGPatternElement, M, D>>): ReactiveTreeNode<El<SVGPatternElement, M, D>> {
   //
   return describe(Pattern.name, SvgTags.pattern,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2220,45 +2220,45 @@ export function Pattern<M = unknown>(
 
 // Polygon
 
-export function Polygon<M = unknown>(
-  setup: Script<El<SVGPolygonElement, M>>): ReactiveTreeNode<El<SVGPolygonElement, M>>
+export function Polygon<M = unknown, D = unknown>(
+  setup: Script<El<SVGPolygonElement, M, D>>): ReactiveTreeNode<El<SVGPolygonElement, M, D>>
 
-export function Polygon<M = unknown>(
+export function Polygon<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGPolygonElement, M>>): ReactiveTreeNode<El<SVGPolygonElement, M>>
+  setup: Script<El<SVGPolygonElement, M, D>>): ReactiveTreeNode<El<SVGPolygonElement, M, D>>
 
-export function Polygon<M = unknown>(
+export function Polygon<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGPolygonElement, M>>): ReactiveTreeNode<El<SVGPolygonElement, M>>
+  setup: Script<El<SVGPolygonElement, M, D>>): ReactiveTreeNode<El<SVGPolygonElement, M, D>>
 
-export function Polygon<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGPolygonElement, M>>): ReactiveTreeNode<El<SVGPolygonElement, M>>
+export function Polygon<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGPolygonElement, M, D>>): ReactiveTreeNode<El<SVGPolygonElement, M, D>>
 
-export function Polygon<M = unknown>(
+export function Polygon<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGPolygonElement, M>>,
-  setupTask?: ScriptAsync<El<SVGPolygonElement, M>>,
-  creation?: Script<El<SVGPolygonElement, M>>,
-  creationTask?: ScriptAsync<El<SVGPolygonElement, M>>,
-  mounting?: Script<El<SVGPolygonElement, M>>,
-  destruction?: Script<El<SVGPolygonElement, M>>,
+  setup?: Script<El<SVGPolygonElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGPolygonElement, M, D>>,
+  creation?: Script<El<SVGPolygonElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGPolygonElement, M, D>>,
+  mounting?: Script<El<SVGPolygonElement, M, D>>,
+  destruction?: Script<El<SVGPolygonElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGPolygonElement, M>>): ReactiveTreeNode<El<SVGPolygonElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGPolygonElement, M, D>>): ReactiveTreeNode<El<SVGPolygonElement, M, D>>
 
-export function Polygon<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGPolygonElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGPolygonElement, M>>,
-  setupOrMode?: Script<El<SVGPolygonElement, M>> | Mode,
-  setup?: Script<El<SVGPolygonElement, M>>,
-  setupTask?: ScriptAsync<El<SVGPolygonElement, M>>,
-  creation?: Script<El<SVGPolygonElement, M>>,
-  creationTask?: ScriptAsync<El<SVGPolygonElement, M>>,
-  mounting?: Script<El<SVGPolygonElement, M>>,
-  destruction?: Script<El<SVGPolygonElement, M>>,
+export function Polygon<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGPolygonElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGPolygonElement, M, D>>,
+  setupOrMode?: Script<El<SVGPolygonElement, M, D>> | Mode,
+  setup?: Script<El<SVGPolygonElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGPolygonElement, M, D>>,
+  creation?: Script<El<SVGPolygonElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGPolygonElement, M, D>>,
+  mounting?: Script<El<SVGPolygonElement, M, D>>,
+  destruction?: Script<El<SVGPolygonElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGPolygonElement, M>>): ReactiveTreeNode<El<SVGPolygonElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGPolygonElement, M, D>>): ReactiveTreeNode<El<SVGPolygonElement, M, D>> {
   //
   return describe(Polygon.name, SvgTags.polygon,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2267,45 +2267,45 @@ export function Polygon<M = unknown>(
 
 // PolyLine
 
-export function PolyLine<M = unknown>(
-  setup: Script<El<SVGPolylineElement, M>>): ReactiveTreeNode<El<SVGPolylineElement, M>>
+export function PolyLine<M = unknown, D = unknown>(
+  setup: Script<El<SVGPolylineElement, M, D>>): ReactiveTreeNode<El<SVGPolylineElement, M, D>>
 
-export function PolyLine<M = unknown>(
+export function PolyLine<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGPolylineElement, M>>): ReactiveTreeNode<El<SVGPolylineElement, M>>
+  setup: Script<El<SVGPolylineElement, M, D>>): ReactiveTreeNode<El<SVGPolylineElement, M, D>>
 
-export function PolyLine<M = unknown>(
+export function PolyLine<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGPolylineElement, M>>): ReactiveTreeNode<El<SVGPolylineElement, M>>
+  setup: Script<El<SVGPolylineElement, M, D>>): ReactiveTreeNode<El<SVGPolylineElement, M, D>>
 
-export function PolyLine<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGPolylineElement, M>>): ReactiveTreeNode<El<SVGPolylineElement, M>>
+export function PolyLine<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGPolylineElement, M, D>>): ReactiveTreeNode<El<SVGPolylineElement, M, D>>
 
-export function PolyLine<M = unknown>(
+export function PolyLine<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGPolylineElement, M>>,
-  setupTask?: ScriptAsync<El<SVGPolylineElement, M>>,
-  creation?: Script<El<SVGPolylineElement, M>>,
-  creationTask?: ScriptAsync<El<SVGPolylineElement, M>>,
-  mounting?: Script<El<SVGPolylineElement, M>>,
-  destruction?: Script<El<SVGPolylineElement, M>>,
+  setup?: Script<El<SVGPolylineElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGPolylineElement, M, D>>,
+  creation?: Script<El<SVGPolylineElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGPolylineElement, M, D>>,
+  mounting?: Script<El<SVGPolylineElement, M, D>>,
+  destruction?: Script<El<SVGPolylineElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGPolylineElement, M>>): ReactiveTreeNode<El<SVGPolylineElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGPolylineElement, M, D>>): ReactiveTreeNode<El<SVGPolylineElement, M, D>>
 
-export function PolyLine<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGPolylineElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGPolylineElement, M>>,
-  setupOrMode?: Script<El<SVGPolylineElement, M>> | Mode,
-  setup?: Script<El<SVGPolylineElement, M>>,
-  setupTask?: ScriptAsync<El<SVGPolylineElement, M>>,
-  creation?: Script<El<SVGPolylineElement, M>>,
-  creationTask?: ScriptAsync<El<SVGPolylineElement, M>>,
-  mounting?: Script<El<SVGPolylineElement, M>>,
-  destruction?: Script<El<SVGPolylineElement, M>>,
+export function PolyLine<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGPolylineElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGPolylineElement, M, D>>,
+  setupOrMode?: Script<El<SVGPolylineElement, M, D>> | Mode,
+  setup?: Script<El<SVGPolylineElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGPolylineElement, M, D>>,
+  creation?: Script<El<SVGPolylineElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGPolylineElement, M, D>>,
+  mounting?: Script<El<SVGPolylineElement, M, D>>,
+  destruction?: Script<El<SVGPolylineElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGPolylineElement, M>>): ReactiveTreeNode<El<SVGPolylineElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGPolylineElement, M, D>>): ReactiveTreeNode<El<SVGPolylineElement, M, D>> {
   //
   return describe(PolyLine.name, SvgTags.polyline,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2314,45 +2314,45 @@ export function PolyLine<M = unknown>(
 
 // RadialGradient
 
-export function RadialGradient<M = unknown>(
-  setup: Script<El<SVGRadialGradientElement, M>>): ReactiveTreeNode<El<SVGRadialGradientElement, M>>
+export function RadialGradient<M = unknown, D = unknown>(
+  setup: Script<El<SVGRadialGradientElement, M, D>>): ReactiveTreeNode<El<SVGRadialGradientElement, M, D>>
 
-export function RadialGradient<M = unknown>(
+export function RadialGradient<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGRadialGradientElement, M>>): ReactiveTreeNode<El<SVGRadialGradientElement, M>>
+  setup: Script<El<SVGRadialGradientElement, M, D>>): ReactiveTreeNode<El<SVGRadialGradientElement, M, D>>
 
-export function RadialGradient<M = unknown>(
+export function RadialGradient<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGRadialGradientElement, M>>): ReactiveTreeNode<El<SVGRadialGradientElement, M>>
+  setup: Script<El<SVGRadialGradientElement, M, D>>): ReactiveTreeNode<El<SVGRadialGradientElement, M, D>>
 
-export function RadialGradient<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGRadialGradientElement, M>>): ReactiveTreeNode<El<SVGRadialGradientElement, M>>
+export function RadialGradient<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGRadialGradientElement, M, D>>): ReactiveTreeNode<El<SVGRadialGradientElement, M, D>>
 
-export function RadialGradient<M = unknown>(
+export function RadialGradient<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGRadialGradientElement, M>>,
-  setupTask?: ScriptAsync<El<SVGRadialGradientElement, M>>,
-  creation?: Script<El<SVGRadialGradientElement, M>>,
-  creationTask?: ScriptAsync<El<SVGRadialGradientElement, M>>,
-  mounting?: Script<El<SVGRadialGradientElement, M>>,
-  destruction?: Script<El<SVGRadialGradientElement, M>>,
+  setup?: Script<El<SVGRadialGradientElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGRadialGradientElement, M, D>>,
+  creation?: Script<El<SVGRadialGradientElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGRadialGradientElement, M, D>>,
+  mounting?: Script<El<SVGRadialGradientElement, M, D>>,
+  destruction?: Script<El<SVGRadialGradientElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGRadialGradientElement, M>>): ReactiveTreeNode<El<SVGRadialGradientElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGRadialGradientElement, M, D>>): ReactiveTreeNode<El<SVGRadialGradientElement, M, D>>
 
-export function RadialGradient<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGRadialGradientElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGRadialGradientElement, M>>,
-  setupOrMode?: Script<El<SVGRadialGradientElement, M>> | Mode,
-  setup?: Script<El<SVGRadialGradientElement, M>>,
-  setupTask?: ScriptAsync<El<SVGRadialGradientElement, M>>,
-  creation?: Script<El<SVGRadialGradientElement, M>>,
-  creationTask?: ScriptAsync<El<SVGRadialGradientElement, M>>,
-  mounting?: Script<El<SVGRadialGradientElement, M>>,
-  destruction?: Script<El<SVGRadialGradientElement, M>>,
+export function RadialGradient<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGRadialGradientElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGRadialGradientElement, M, D>>,
+  setupOrMode?: Script<El<SVGRadialGradientElement, M, D>> | Mode,
+  setup?: Script<El<SVGRadialGradientElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGRadialGradientElement, M, D>>,
+  creation?: Script<El<SVGRadialGradientElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGRadialGradientElement, M, D>>,
+  mounting?: Script<El<SVGRadialGradientElement, M, D>>,
+  destruction?: Script<El<SVGRadialGradientElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGRadialGradientElement, M>>): ReactiveTreeNode<El<SVGRadialGradientElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGRadialGradientElement, M, D>>): ReactiveTreeNode<El<SVGRadialGradientElement, M, D>> {
   //
   return describe(RadialGradient.name, SvgTags.radialGradient,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2361,45 +2361,45 @@ export function RadialGradient<M = unknown>(
 
 // Rect
 
-export function Rect<M = unknown>(
-  setup: Script<El<SVGRectElement, M>>): ReactiveTreeNode<El<SVGRectElement, M>>
+export function Rect<M = unknown, D = unknown>(
+  setup: Script<El<SVGRectElement, M, D>>): ReactiveTreeNode<El<SVGRectElement, M, D>>
 
-export function Rect<M = unknown>(
+export function Rect<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGRectElement, M>>): ReactiveTreeNode<El<SVGRectElement, M>>
+  setup: Script<El<SVGRectElement, M, D>>): ReactiveTreeNode<El<SVGRectElement, M, D>>
 
-export function Rect<M = unknown>(
+export function Rect<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGRectElement, M>>): ReactiveTreeNode<El<SVGRectElement, M>>
+  setup: Script<El<SVGRectElement, M, D>>): ReactiveTreeNode<El<SVGRectElement, M, D>>
 
-export function Rect<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGRectElement, M>>): ReactiveTreeNode<El<SVGRectElement, M>>
+export function Rect<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGRectElement, M, D>>): ReactiveTreeNode<El<SVGRectElement, M, D>>
 
-export function Rect<M = unknown>(
+export function Rect<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGRectElement, M>>,
-  setupTask?: ScriptAsync<El<SVGRectElement, M>>,
-  creation?: Script<El<SVGRectElement, M>>,
-  creationTask?: ScriptAsync<El<SVGRectElement, M>>,
-  mounting?: Script<El<SVGRectElement, M>>,
-  destruction?: Script<El<SVGRectElement, M>>,
+  setup?: Script<El<SVGRectElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGRectElement, M, D>>,
+  creation?: Script<El<SVGRectElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGRectElement, M, D>>,
+  mounting?: Script<El<SVGRectElement, M, D>>,
+  destruction?: Script<El<SVGRectElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGRectElement, M>>): ReactiveTreeNode<El<SVGRectElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGRectElement, M, D>>): ReactiveTreeNode<El<SVGRectElement, M, D>>
 
-export function Rect<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGRectElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGRectElement, M>>,
-  setupOrMode?: Script<El<SVGRectElement, M>> | Mode,
-  setup?: Script<El<SVGRectElement, M>>,
-  setupTask?: ScriptAsync<El<SVGRectElement, M>>,
-  creation?: Script<El<SVGRectElement, M>>,
-  creationTask?: ScriptAsync<El<SVGRectElement, M>>,
-  mounting?: Script<El<SVGRectElement, M>>,
-  destruction?: Script<El<SVGRectElement, M>>,
+export function Rect<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGRectElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGRectElement, M, D>>,
+  setupOrMode?: Script<El<SVGRectElement, M, D>> | Mode,
+  setup?: Script<El<SVGRectElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGRectElement, M, D>>,
+  creation?: Script<El<SVGRectElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGRectElement, M, D>>,
+  mounting?: Script<El<SVGRectElement, M, D>>,
+  destruction?: Script<El<SVGRectElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGRectElement, M>>): ReactiveTreeNode<El<SVGRectElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGRectElement, M, D>>): ReactiveTreeNode<El<SVGRectElement, M, D>> {
   //
   return describe(Rect.name, SvgTags.rect,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2408,45 +2408,45 @@ export function Rect<M = unknown>(
 
 // Stop
 
-export function Stop<M = unknown>(
-  setup: Script<El<SVGStopElement, M>>): ReactiveTreeNode<El<SVGStopElement, M>>
+export function Stop<M = unknown, D = unknown>(
+  setup: Script<El<SVGStopElement, M, D>>): ReactiveTreeNode<El<SVGStopElement, M, D>>
 
-export function Stop<M = unknown>(
+export function Stop<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGStopElement, M>>): ReactiveTreeNode<El<SVGStopElement, M>>
+  setup: Script<El<SVGStopElement, M, D>>): ReactiveTreeNode<El<SVGStopElement, M, D>>
 
-export function Stop<M = unknown>(
+export function Stop<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGStopElement, M>>): ReactiveTreeNode<El<SVGStopElement, M>>
+  setup: Script<El<SVGStopElement, M, D>>): ReactiveTreeNode<El<SVGStopElement, M, D>>
 
-export function Stop<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGStopElement, M>>): ReactiveTreeNode<El<SVGStopElement, M>>
+export function Stop<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGStopElement, M, D>>): ReactiveTreeNode<El<SVGStopElement, M, D>>
 
-export function Stop<M = unknown>(
+export function Stop<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGStopElement, M>>,
-  setupTask?: ScriptAsync<El<SVGStopElement, M>>,
-  creation?: Script<El<SVGStopElement, M>>,
-  creationTask?: ScriptAsync<El<SVGStopElement, M>>,
-  mounting?: Script<El<SVGStopElement, M>>,
-  destruction?: Script<El<SVGStopElement, M>>,
+  setup?: Script<El<SVGStopElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGStopElement, M, D>>,
+  creation?: Script<El<SVGStopElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGStopElement, M, D>>,
+  mounting?: Script<El<SVGStopElement, M, D>>,
+  destruction?: Script<El<SVGStopElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGStopElement, M>>): ReactiveTreeNode<El<SVGStopElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGStopElement, M, D>>): ReactiveTreeNode<El<SVGStopElement, M, D>>
 
-export function Stop<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGStopElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGStopElement, M>>,
-  setupOrMode?: Script<El<SVGStopElement, M>> | Mode,
-  setup?: Script<El<SVGStopElement, M>>,
-  setupTask?: ScriptAsync<El<SVGStopElement, M>>,
-  creation?: Script<El<SVGStopElement, M>>,
-  creationTask?: ScriptAsync<El<SVGStopElement, M>>,
-  mounting?: Script<El<SVGStopElement, M>>,
-  destruction?: Script<El<SVGStopElement, M>>,
+export function Stop<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGStopElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGStopElement, M, D>>,
+  setupOrMode?: Script<El<SVGStopElement, M, D>> | Mode,
+  setup?: Script<El<SVGStopElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGStopElement, M, D>>,
+  creation?: Script<El<SVGStopElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGStopElement, M, D>>,
+  mounting?: Script<El<SVGStopElement, M, D>>,
+  destruction?: Script<El<SVGStopElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGStopElement, M>>): ReactiveTreeNode<El<SVGStopElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGStopElement, M, D>>): ReactiveTreeNode<El<SVGStopElement, M, D>> {
   //
   return describe(Stop.name, SvgTags.stop,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2455,45 +2455,45 @@ export function Stop<M = unknown>(
 
 // SvgSwitch
 
-export function SvgSwitch<M = unknown>(
-  setup: Script<El<SVGSwitchElement, M>>): ReactiveTreeNode<El<SVGSwitchElement, M>>
+export function SvgSwitch<M = unknown, D = unknown>(
+  setup: Script<El<SVGSwitchElement, M, D>>): ReactiveTreeNode<El<SVGSwitchElement, M, D>>
 
-export function SvgSwitch<M = unknown>(
+export function SvgSwitch<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGSwitchElement, M>>): ReactiveTreeNode<El<SVGSwitchElement, M>>
+  setup: Script<El<SVGSwitchElement, M, D>>): ReactiveTreeNode<El<SVGSwitchElement, M, D>>
 
-export function SvgSwitch<M = unknown>(
+export function SvgSwitch<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGSwitchElement, M>>): ReactiveTreeNode<El<SVGSwitchElement, M>>
+  setup: Script<El<SVGSwitchElement, M, D>>): ReactiveTreeNode<El<SVGSwitchElement, M, D>>
 
-export function SvgSwitch<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGSwitchElement, M>>): ReactiveTreeNode<El<SVGSwitchElement, M>>
+export function SvgSwitch<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGSwitchElement, M, D>>): ReactiveTreeNode<El<SVGSwitchElement, M, D>>
 
-export function SvgSwitch<M = unknown>(
+export function SvgSwitch<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGSwitchElement, M>>,
-  setupTask?: ScriptAsync<El<SVGSwitchElement, M>>,
-  creation?: Script<El<SVGSwitchElement, M>>,
-  creationTask?: ScriptAsync<El<SVGSwitchElement, M>>,
-  mounting?: Script<El<SVGSwitchElement, M>>,
-  destruction?: Script<El<SVGSwitchElement, M>>,
+  setup?: Script<El<SVGSwitchElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGSwitchElement, M, D>>,
+  creation?: Script<El<SVGSwitchElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGSwitchElement, M, D>>,
+  mounting?: Script<El<SVGSwitchElement, M, D>>,
+  destruction?: Script<El<SVGSwitchElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGSwitchElement, M>>): ReactiveTreeNode<El<SVGSwitchElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGSwitchElement, M, D>>): ReactiveTreeNode<El<SVGSwitchElement, M, D>>
 
-export function SvgSwitch<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGSwitchElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGSwitchElement, M>>,
-  setupOrMode?: Script<El<SVGSwitchElement, M>> | Mode,
-  setup?: Script<El<SVGSwitchElement, M>>,
-  setupTask?: ScriptAsync<El<SVGSwitchElement, M>>,
-  creation?: Script<El<SVGSwitchElement, M>>,
-  creationTask?: ScriptAsync<El<SVGSwitchElement, M>>,
-  mounting?: Script<El<SVGSwitchElement, M>>,
-  destruction?: Script<El<SVGSwitchElement, M>>,
+export function SvgSwitch<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGSwitchElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGSwitchElement, M, D>>,
+  setupOrMode?: Script<El<SVGSwitchElement, M, D>> | Mode,
+  setup?: Script<El<SVGSwitchElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGSwitchElement, M, D>>,
+  creation?: Script<El<SVGSwitchElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGSwitchElement, M, D>>,
+  mounting?: Script<El<SVGSwitchElement, M, D>>,
+  destruction?: Script<El<SVGSwitchElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGSwitchElement, M>>): ReactiveTreeNode<El<SVGSwitchElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGSwitchElement, M, D>>): ReactiveTreeNode<El<SVGSwitchElement, M, D>> {
   //
   return describe(SvgSwitch.name, SvgTags.switch,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2502,45 +2502,45 @@ export function SvgSwitch<M = unknown>(
 
 // Symbol
 
-export function Symbol<M = unknown>(
-  setup: Script<El<SVGSymbolElement, M>>): ReactiveTreeNode<El<SVGSymbolElement, M>>
+export function Symbol<M = unknown, D = unknown>(
+  setup: Script<El<SVGSymbolElement, M, D>>): ReactiveTreeNode<El<SVGSymbolElement, M, D>>
 
-export function Symbol<M = unknown>(
+export function Symbol<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGSymbolElement, M>>): ReactiveTreeNode<El<SVGSymbolElement, M>>
+  setup: Script<El<SVGSymbolElement, M, D>>): ReactiveTreeNode<El<SVGSymbolElement, M, D>>
 
-export function Symbol<M = unknown>(
+export function Symbol<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGSymbolElement, M>>): ReactiveTreeNode<El<SVGSymbolElement, M>>
+  setup: Script<El<SVGSymbolElement, M, D>>): ReactiveTreeNode<El<SVGSymbolElement, M, D>>
 
-export function Symbol<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGSymbolElement, M>>): ReactiveTreeNode<El<SVGSymbolElement, M>>
+export function Symbol<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGSymbolElement, M, D>>): ReactiveTreeNode<El<SVGSymbolElement, M, D>>
 
-export function Symbol<M = unknown>(
+export function Symbol<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGSymbolElement, M>>,
-  setupTask?: ScriptAsync<El<SVGSymbolElement, M>>,
-  creation?: Script<El<SVGSymbolElement, M>>,
-  creationTask?: ScriptAsync<El<SVGSymbolElement, M>>,
-  mounting?: Script<El<SVGSymbolElement, M>>,
-  destruction?: Script<El<SVGSymbolElement, M>>,
+  setup?: Script<El<SVGSymbolElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGSymbolElement, M, D>>,
+  creation?: Script<El<SVGSymbolElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGSymbolElement, M, D>>,
+  mounting?: Script<El<SVGSymbolElement, M, D>>,
+  destruction?: Script<El<SVGSymbolElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGSymbolElement, M>>): ReactiveTreeNode<El<SVGSymbolElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGSymbolElement, M, D>>): ReactiveTreeNode<El<SVGSymbolElement, M, D>>
 
-export function Symbol<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGSymbolElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGSymbolElement, M>>,
-  setupOrMode?: Script<El<SVGSymbolElement, M>> | Mode,
-  setup?: Script<El<SVGSymbolElement, M>>,
-  setupTask?: ScriptAsync<El<SVGSymbolElement, M>>,
-  creation?: Script<El<SVGSymbolElement, M>>,
-  creationTask?: ScriptAsync<El<SVGSymbolElement, M>>,
-  mounting?: Script<El<SVGSymbolElement, M>>,
-  destruction?: Script<El<SVGSymbolElement, M>>,
+export function Symbol<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGSymbolElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGSymbolElement, M, D>>,
+  setupOrMode?: Script<El<SVGSymbolElement, M, D>> | Mode,
+  setup?: Script<El<SVGSymbolElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGSymbolElement, M, D>>,
+  creation?: Script<El<SVGSymbolElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGSymbolElement, M, D>>,
+  mounting?: Script<El<SVGSymbolElement, M, D>>,
+  destruction?: Script<El<SVGSymbolElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGSymbolElement, M>>): ReactiveTreeNode<El<SVGSymbolElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGSymbolElement, M, D>>): ReactiveTreeNode<El<SVGSymbolElement, M, D>> {
   //
   return describe(Symbol.name, SvgTags.symbol,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2549,45 +2549,45 @@ export function Symbol<M = unknown>(
 
 // Text
 
-export function Text<M = unknown>(
-  setup: Script<El<SVGTextElement, M>>): ReactiveTreeNode<El<SVGTextElement, M>>
+export function Text<M = unknown, D = unknown>(
+  setup: Script<El<SVGTextElement, M, D>>): ReactiveTreeNode<El<SVGTextElement, M, D>>
 
-export function Text<M = unknown>(
+export function Text<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGTextElement, M>>): ReactiveTreeNode<El<SVGTextElement, M>>
+  setup: Script<El<SVGTextElement, M, D>>): ReactiveTreeNode<El<SVGTextElement, M, D>>
 
-export function Text<M = unknown>(
+export function Text<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGTextElement, M>>): ReactiveTreeNode<El<SVGTextElement, M>>
+  setup: Script<El<SVGTextElement, M, D>>): ReactiveTreeNode<El<SVGTextElement, M, D>>
 
-export function Text<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGTextElement, M>>): ReactiveTreeNode<El<SVGTextElement, M>>
+export function Text<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGTextElement, M, D>>): ReactiveTreeNode<El<SVGTextElement, M, D>>
 
-export function Text<M = unknown>(
+export function Text<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGTextElement, M>>,
-  setupTask?: ScriptAsync<El<SVGTextElement, M>>,
-  creation?: Script<El<SVGTextElement, M>>,
-  creationTask?: ScriptAsync<El<SVGTextElement, M>>,
-  mounting?: Script<El<SVGTextElement, M>>,
-  destruction?: Script<El<SVGTextElement, M>>,
+  setup?: Script<El<SVGTextElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGTextElement, M, D>>,
+  creation?: Script<El<SVGTextElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGTextElement, M, D>>,
+  mounting?: Script<El<SVGTextElement, M, D>>,
+  destruction?: Script<El<SVGTextElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGTextElement, M>>): ReactiveTreeNode<El<SVGTextElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGTextElement, M, D>>): ReactiveTreeNode<El<SVGTextElement, M, D>>
 
-export function Text<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGTextElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGTextElement, M>>,
-  setupOrMode?: Script<El<SVGTextElement, M>> | Mode,
-  setup?: Script<El<SVGTextElement, M>>,
-  setupTask?: ScriptAsync<El<SVGTextElement, M>>,
-  creation?: Script<El<SVGTextElement, M>>,
-  creationTask?: ScriptAsync<El<SVGTextElement, M>>,
-  mounting?: Script<El<SVGTextElement, M>>,
-  destruction?: Script<El<SVGTextElement, M>>,
+export function Text<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGTextElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGTextElement, M, D>>,
+  setupOrMode?: Script<El<SVGTextElement, M, D>> | Mode,
+  setup?: Script<El<SVGTextElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGTextElement, M, D>>,
+  creation?: Script<El<SVGTextElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGTextElement, M, D>>,
+  mounting?: Script<El<SVGTextElement, M, D>>,
+  destruction?: Script<El<SVGTextElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGTextElement, M>>): ReactiveTreeNode<El<SVGTextElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGTextElement, M, D>>): ReactiveTreeNode<El<SVGTextElement, M, D>> {
   //
   return describe(Text.name, SvgTags.text,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2596,45 +2596,45 @@ export function Text<M = unknown>(
 
 // TextPath
 
-export function TextPath<M = unknown>(
-  setup: Script<El<SVGTextPathElement, M>>): ReactiveTreeNode<El<SVGTextPathElement, M>>
+export function TextPath<M = unknown, D = unknown>(
+  setup: Script<El<SVGTextPathElement, M, D>>): ReactiveTreeNode<El<SVGTextPathElement, M, D>>
 
-export function TextPath<M = unknown>(
+export function TextPath<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGTextPathElement, M>>): ReactiveTreeNode<El<SVGTextPathElement, M>>
+  setup: Script<El<SVGTextPathElement, M, D>>): ReactiveTreeNode<El<SVGTextPathElement, M, D>>
 
-export function TextPath<M = unknown>(
+export function TextPath<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGTextPathElement, M>>): ReactiveTreeNode<El<SVGTextPathElement, M>>
+  setup: Script<El<SVGTextPathElement, M, D>>): ReactiveTreeNode<El<SVGTextPathElement, M, D>>
 
-export function TextPath<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGTextPathElement, M>>): ReactiveTreeNode<El<SVGTextPathElement, M>>
+export function TextPath<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGTextPathElement, M, D>>): ReactiveTreeNode<El<SVGTextPathElement, M, D>>
 
-export function TextPath<M = unknown>(
+export function TextPath<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGTextPathElement, M>>,
-  setupTask?: ScriptAsync<El<SVGTextPathElement, M>>,
-  creation?: Script<El<SVGTextPathElement, M>>,
-  creationTask?: ScriptAsync<El<SVGTextPathElement, M>>,
-  mounting?: Script<El<SVGTextPathElement, M>>,
-  destruction?: Script<El<SVGTextPathElement, M>>,
+  setup?: Script<El<SVGTextPathElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGTextPathElement, M, D>>,
+  creation?: Script<El<SVGTextPathElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGTextPathElement, M, D>>,
+  mounting?: Script<El<SVGTextPathElement, M, D>>,
+  destruction?: Script<El<SVGTextPathElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGTextPathElement, M>>): ReactiveTreeNode<El<SVGTextPathElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGTextPathElement, M, D>>): ReactiveTreeNode<El<SVGTextPathElement, M, D>>
 
-export function TextPath<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGTextPathElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGTextPathElement, M>>,
-  setupOrMode?: Script<El<SVGTextPathElement, M>> | Mode,
-  setup?: Script<El<SVGTextPathElement, M>>,
-  setupTask?: ScriptAsync<El<SVGTextPathElement, M>>,
-  creation?: Script<El<SVGTextPathElement, M>>,
-  creationTask?: ScriptAsync<El<SVGTextPathElement, M>>,
-  mounting?: Script<El<SVGTextPathElement, M>>,
-  destruction?: Script<El<SVGTextPathElement, M>>,
+export function TextPath<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGTextPathElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGTextPathElement, M, D>>,
+  setupOrMode?: Script<El<SVGTextPathElement, M, D>> | Mode,
+  setup?: Script<El<SVGTextPathElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGTextPathElement, M, D>>,
+  creation?: Script<El<SVGTextPathElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGTextPathElement, M, D>>,
+  mounting?: Script<El<SVGTextPathElement, M, D>>,
+  destruction?: Script<El<SVGTextPathElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGTextPathElement, M>>): ReactiveTreeNode<El<SVGTextPathElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGTextPathElement, M, D>>): ReactiveTreeNode<El<SVGTextPathElement, M, D>> {
   //
   return describe(TextPath.name, SvgTags.textPath,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2643,45 +2643,45 @@ export function TextPath<M = unknown>(
 
 // TSpan
 
-export function TSpan<M = unknown>(
-  setup: Script<El<SVGTSpanElement, M>>): ReactiveTreeNode<El<SVGTSpanElement, M>>
+export function TSpan<M = unknown, D = unknown>(
+  setup: Script<El<SVGTSpanElement, M, D>>): ReactiveTreeNode<El<SVGTSpanElement, M, D>>
 
-export function TSpan<M = unknown>(
+export function TSpan<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGTSpanElement, M>>): ReactiveTreeNode<El<SVGTSpanElement, M>>
+  setup: Script<El<SVGTSpanElement, M, D>>): ReactiveTreeNode<El<SVGTSpanElement, M, D>>
 
-export function TSpan<M = unknown>(
+export function TSpan<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGTSpanElement, M>>): ReactiveTreeNode<El<SVGTSpanElement, M>>
+  setup: Script<El<SVGTSpanElement, M, D>>): ReactiveTreeNode<El<SVGTSpanElement, M, D>>
 
-export function TSpan<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGTSpanElement, M>>): ReactiveTreeNode<El<SVGTSpanElement, M>>
+export function TSpan<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGTSpanElement, M, D>>): ReactiveTreeNode<El<SVGTSpanElement, M, D>>
 
-export function TSpan<M = unknown>(
+export function TSpan<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGTSpanElement, M>>,
-  setupTask?: ScriptAsync<El<SVGTSpanElement, M>>,
-  creation?: Script<El<SVGTSpanElement, M>>,
-  creationTask?: ScriptAsync<El<SVGTSpanElement, M>>,
-  mounting?: Script<El<SVGTSpanElement, M>>,
-  destruction?: Script<El<SVGTSpanElement, M>>,
+  setup?: Script<El<SVGTSpanElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGTSpanElement, M, D>>,
+  creation?: Script<El<SVGTSpanElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGTSpanElement, M, D>>,
+  mounting?: Script<El<SVGTSpanElement, M, D>>,
+  destruction?: Script<El<SVGTSpanElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGTSpanElement, M>>): ReactiveTreeNode<El<SVGTSpanElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGTSpanElement, M, D>>): ReactiveTreeNode<El<SVGTSpanElement, M, D>>
 
-export function TSpan<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGTSpanElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGTSpanElement, M>>,
-  setupOrMode?: Script<El<SVGTSpanElement, M>> | Mode,
-  setup?: Script<El<SVGTSpanElement, M>>,
-  setupTask?: ScriptAsync<El<SVGTSpanElement, M>>,
-  creation?: Script<El<SVGTSpanElement, M>>,
-  creationTask?: ScriptAsync<El<SVGTSpanElement, M>>,
-  mounting?: Script<El<SVGTSpanElement, M>>,
-  destruction?: Script<El<SVGTSpanElement, M>>,
+export function TSpan<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGTSpanElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGTSpanElement, M, D>>,
+  setupOrMode?: Script<El<SVGTSpanElement, M, D>> | Mode,
+  setup?: Script<El<SVGTSpanElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGTSpanElement, M, D>>,
+  creation?: Script<El<SVGTSpanElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGTSpanElement, M, D>>,
+  mounting?: Script<El<SVGTSpanElement, M, D>>,
+  destruction?: Script<El<SVGTSpanElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGTSpanElement, M>>): ReactiveTreeNode<El<SVGTSpanElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGTSpanElement, M, D>>): ReactiveTreeNode<El<SVGTSpanElement, M, D>> {
   //
   return describe(TSpan.name, SvgTags.tspan,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2690,45 +2690,45 @@ export function TSpan<M = unknown>(
 
 // Use
 
-export function Use<M = unknown>(
-  setup: Script<El<SVGUseElement, M>>): ReactiveTreeNode<El<SVGUseElement, M>>
+export function Use<M = unknown, D = unknown>(
+  setup: Script<El<SVGUseElement, M, D>>): ReactiveTreeNode<El<SVGUseElement, M, D>>
 
-export function Use<M = unknown>(
+export function Use<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGUseElement, M>>): ReactiveTreeNode<El<SVGUseElement, M>>
+  setup: Script<El<SVGUseElement, M, D>>): ReactiveTreeNode<El<SVGUseElement, M, D>>
 
-export function Use<M = unknown>(
+export function Use<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGUseElement, M>>): ReactiveTreeNode<El<SVGUseElement, M>>
+  setup: Script<El<SVGUseElement, M, D>>): ReactiveTreeNode<El<SVGUseElement, M, D>>
 
-export function Use<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGUseElement, M>>): ReactiveTreeNode<El<SVGUseElement, M>>
+export function Use<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGUseElement, M, D>>): ReactiveTreeNode<El<SVGUseElement, M, D>>
 
-export function Use<M = unknown>(
+export function Use<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGUseElement, M>>,
-  setupTask?: ScriptAsync<El<SVGUseElement, M>>,
-  creation?: Script<El<SVGUseElement, M>>,
-  creationTask?: ScriptAsync<El<SVGUseElement, M>>,
-  mounting?: Script<El<SVGUseElement, M>>,
-  destruction?: Script<El<SVGUseElement, M>>,
+  setup?: Script<El<SVGUseElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGUseElement, M, D>>,
+  creation?: Script<El<SVGUseElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGUseElement, M, D>>,
+  mounting?: Script<El<SVGUseElement, M, D>>,
+  destruction?: Script<El<SVGUseElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGUseElement, M>>): ReactiveTreeNode<El<SVGUseElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGUseElement, M, D>>): ReactiveTreeNode<El<SVGUseElement, M, D>>
 
-export function Use<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGUseElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGUseElement, M>>,
-  setupOrMode?: Script<El<SVGUseElement, M>> | Mode,
-  setup?: Script<El<SVGUseElement, M>>,
-  setupTask?: ScriptAsync<El<SVGUseElement, M>>,
-  creation?: Script<El<SVGUseElement, M>>,
-  creationTask?: ScriptAsync<El<SVGUseElement, M>>,
-  mounting?: Script<El<SVGUseElement, M>>,
-  destruction?: Script<El<SVGUseElement, M>>,
+export function Use<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGUseElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGUseElement, M, D>>,
+  setupOrMode?: Script<El<SVGUseElement, M, D>> | Mode,
+  setup?: Script<El<SVGUseElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGUseElement, M, D>>,
+  creation?: Script<El<SVGUseElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGUseElement, M, D>>,
+  mounting?: Script<El<SVGUseElement, M, D>>,
+  destruction?: Script<El<SVGUseElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGUseElement, M>>): ReactiveTreeNode<El<SVGUseElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGUseElement, M, D>>): ReactiveTreeNode<El<SVGUseElement, M, D>> {
   //
   return describe(Use.name, SvgTags.use,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
@@ -2737,45 +2737,45 @@ export function Use<M = unknown>(
 
 // View
 
-export function View<M = unknown>(
-  setup: Script<El<SVGViewElement, M>>): ReactiveTreeNode<El<SVGViewElement, M>>
+export function View<M = unknown, D = unknown>(
+  setup: Script<El<SVGViewElement, M, D>>): ReactiveTreeNode<El<SVGViewElement, M, D>>
 
-export function View<M = unknown>(
+export function View<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<SVGViewElement, M>>): ReactiveTreeNode<El<SVGViewElement, M>>
+  setup: Script<El<SVGViewElement, M, D>>): ReactiveTreeNode<El<SVGViewElement, M, D>>
 
-export function View<M = unknown>(
+export function View<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<SVGViewElement, M>>): ReactiveTreeNode<El<SVGViewElement, M>>
+  setup: Script<El<SVGViewElement, M, D>>): ReactiveTreeNode<El<SVGViewElement, M, D>>
 
-export function View<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<SVGViewElement, M>>): ReactiveTreeNode<El<SVGViewElement, M>>
+export function View<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<SVGViewElement, M, D>>): ReactiveTreeNode<El<SVGViewElement, M, D>>
 
-export function View<M = unknown>(
+export function View<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<SVGViewElement, M>>,
-  setupTask?: ScriptAsync<El<SVGViewElement, M>>,
-  creation?: Script<El<SVGViewElement, M>>,
-  creationTask?: ScriptAsync<El<SVGViewElement, M>>,
-  mounting?: Script<El<SVGViewElement, M>>,
-  destruction?: Script<El<SVGViewElement, M>>,
+  setup?: Script<El<SVGViewElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGViewElement, M, D>>,
+  creation?: Script<El<SVGViewElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGViewElement, M, D>>,
+  mounting?: Script<El<SVGViewElement, M, D>>,
+  destruction?: Script<El<SVGViewElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGViewElement, M>>): ReactiveTreeNode<El<SVGViewElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<SVGViewElement, M, D>>): ReactiveTreeNode<El<SVGViewElement, M, D>>
 
-export function View<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<SVGViewElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<SVGViewElement, M>>,
-  setupOrMode?: Script<El<SVGViewElement, M>> | Mode,
-  setup?: Script<El<SVGViewElement, M>>,
-  setupTask?: ScriptAsync<El<SVGViewElement, M>>,
-  creation?: Script<El<SVGViewElement, M>>,
-  creationTask?: ScriptAsync<El<SVGViewElement, M>>,
-  mounting?: Script<El<SVGViewElement, M>>,
-  destruction?: Script<El<SVGViewElement, M>>,
+export function View<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<SVGViewElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<SVGViewElement, M, D>>,
+  setupOrMode?: Script<El<SVGViewElement, M, D>> | Mode,
+  setup?: Script<El<SVGViewElement, M, D>>,
+  setupTask?: ScriptAsync<El<SVGViewElement, M, D>>,
+  creation?: Script<El<SVGViewElement, M, D>>,
+  creationTask?: ScriptAsync<El<SVGViewElement, M, D>>,
+  mounting?: Script<El<SVGViewElement, M, D>>,
+  destruction?: Script<El<SVGViewElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<SVGViewElement, M>>): ReactiveTreeNode<El<SVGViewElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<SVGViewElement, M, D>>): ReactiveTreeNode<El<SVGViewElement, M, D>> {
   //
   return describe(View.name, SvgTags.view,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,

@@ -11,45 +11,45 @@ import { ElDriver } from "../ElDriver.js"
 
 // Fragment
 
-export function Fragment<M = unknown>(
-  setup: Script<El<void, M>>): ReactiveTreeNode<El<void, M>>
+export function Fragment<M = unknown, D = unknown>(
+  setup: Script<El<void, M, D>>): ReactiveTreeNode<El<void, M, D>>
 
-export function Fragment<M = unknown>(
+export function Fragment<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<void, M>>): ReactiveTreeNode<El<void, M>>
+  setup: Script<El<void, M, D>>): ReactiveTreeNode<El<void, M, D>>
 
-export function Fragment<M = unknown>(
+export function Fragment<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<void, M>>): ReactiveTreeNode<El<void, M>>
+  setup: Script<El<void, M, D>>): ReactiveTreeNode<El<void, M, D>>
 
-export function Fragment<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<void, M>>): ReactiveTreeNode<El<void, M>>
+export function Fragment<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<void, M, D>>): ReactiveTreeNode<El<void, M, D>>
 
-export function Fragment<M = unknown>(
+export function Fragment<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<void, M>>,
-  setupTask?: ScriptAsync<El<void, M>>,
-  creation?: Script<El<void, M>>,
-  creationTask?: ScriptAsync<El<void, M>>,
-  mounting?: Script<El<void, M>>,
-  destruction?: Script<El<void, M>>,
+  setup?: Script<El<void, M, D>>,
+  setupTask?: ScriptAsync<El<void, M, D>>,
+  creation?: Script<El<void, M, D>>,
+  creationTask?: ScriptAsync<El<void, M, D>>,
+  mounting?: Script<El<void, M, D>>,
+  destruction?: Script<El<void, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<void, M>>): ReactiveTreeNode<El<void, M>>
+  basis?: ReactiveTreeNodeDesc<El<void, M, D>>): ReactiveTreeNode<El<void, M, D>>
 
-export function Fragment<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<void, M>> | string | Mode | ReactiveTreeNodeDesc<El<void, M>>,
-  setupOrMode?: Script<El<void, M>> | Mode,
-  setup?: Script<El<void, M>>,
-  setupTask?: ScriptAsync<El<void, M>>,
-  creation?: Script<El<void, M>>,
-  creationTask?: ScriptAsync<El<void, M>>,
-  mounting?: Script<El<void, M>>,
-  destruction?: Script<El<void, M>>,
+export function Fragment<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<void, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<void, M, D>>,
+  setupOrMode?: Script<El<void, M, D>> | Mode,
+  setup?: Script<El<void, M, D>>,
+  setupTask?: ScriptAsync<El<void, M, D>>,
+  creation?: Script<El<void, M, D>>,
+  creationTask?: ScriptAsync<El<void, M, D>>,
+  mounting?: Script<El<void, M, D>>,
+  destruction?: Script<El<void, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<void, M>>): ReactiveTreeNode<El<void, M>> {
+  basis?: ReactiveTreeNodeDesc<El<void, M, D>>): ReactiveTreeNode<El<void, M, D>> {
   //
   const desc = args2desc(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,

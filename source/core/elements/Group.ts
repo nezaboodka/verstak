@@ -11,45 +11,45 @@ import { HtmlDriver } from "../WebDriver.js"
 
 // Group
 
-export function Group<M = unknown>(
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Group<M = unknown, D = unknown>(
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Group<M = unknown>(
+export function Group<M = unknown, D = unknown>(
   key: string,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Group<M = unknown>(
+export function Group<M = unknown, D = unknown>(
   mode: Mode,
-  setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  setup: Script<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Group<M = unknown>(
-  description: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+export function Group<M = unknown, D = unknown>(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Group<M = unknown>(
+export function Group<M = unknown, D = unknown>(
   key?: string,
   mode?: Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
 
-export function Group<M = unknown>(
-  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M>>,
-  setupOrMode?: Script<El<HTMLElement, M>> | Mode,
-  setup?: Script<El<HTMLElement, M>>,
-  setupTask?: ScriptAsync<El<HTMLElement, M>>,
-  creation?: Script<El<HTMLElement, M>>,
-  creationTask?: ScriptAsync<El<HTMLElement, M>>,
-  mounting?: Script<El<HTMLElement, M>>,
-  destruction?: Script<El<HTMLElement, M>>,
+export function Group<M = unknown, D = unknown>(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
+  setupOrMode?: Script<El<HTMLElement, M, D>> | Mode,
+  setup?: Script<El<HTMLElement, M, D>>,
+  setupTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  creation?: Script<El<HTMLElement, M, D>>,
+  creationTask?: ScriptAsync<El<HTMLElement, M, D>>,
+  mounting?: Script<El<HTMLElement, M, D>>,
+  destruction?: Script<El<HTMLElement, M, D>>,
   signalArgs?: unknown,
   unmounted?: boolean,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>> {
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
   //
   return describe(Group.name, GroupDriver.glob,
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
