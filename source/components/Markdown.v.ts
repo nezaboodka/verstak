@@ -5,13 +5,62 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
+import { ReactiveTreeNode, ReactiveTreeNodeDesc, Script, Mode, ScriptAsync, args2desc, setBasis } from "reactronic"
 import Md from "markdown-it"
 import * as prism from "prismjs"
-import { Element } from "verstak"
+import { Element, El } from "verstak"
 
-export function Markdown(content: string) {
+export function Markdown(
+  content: string,
+  setup: Script<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+
+export function Markdown(
+  content: string,
+  key: string,
+  setup: Script<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+
+export function Markdown(
+  content: string,
+  mode: Mode,
+  setup: Script<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+
+export function Markdown(
+  content: string,
+  description: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+
+export function Markdown(
+  content: string,
+  key?: string,
+  mode?: Mode,
+  setup?: Script<El<HTMLElement>>,
+  setupTask?: ScriptAsync<El<HTMLElement>>,
+  creation?: Script<El<HTMLElement>>,
+  creationTask?: ScriptAsync<El<HTMLElement>>,
+  mounting?: Script<El<HTMLElement>>,
+  destruction?: Script<El<HTMLElement>>,
+  signalArgs?: unknown,
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
+
+export function Markdown(
+  content: string,
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement>>,
+  setupOrMode?: Script<El<HTMLElement>> | Mode,
+  setup?: Script<El<HTMLElement>>,
+  setupTask?: ScriptAsync<El<HTMLElement>>,
+  creation?: Script<El<HTMLElement>>,
+  creationTask?: ScriptAsync<El<HTMLElement>>,
+  mounting?: Script<El<HTMLElement>>,
+  destruction?: Script<El<HTMLElement>>,
+  signalArgs?: unknown,
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>> {
+  //
+  const description = args2desc(
+    setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
+    creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
   return (
-    Element({
+    Element(setBasis(description, {
       creation(el, base) {
         this.contentWrapping = true
         // b.native.setAttribute("markdown", "true")
@@ -21,7 +70,7 @@ export function Markdown(content: string) {
         this.textIsFormatted = true
         this.text = md.render(content)
       },
-    })
+    }))
   )
 }
 

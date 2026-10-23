@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDesc, setBasis } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDesc, Script, Mode, ScriptAsync, args2desc, setBasis } from "reactronic"
 import { Element, El, OnClick } from "verstak"
 import { rxModel } from "./common/Utils.js"
 import { Theme } from "./Theme.js"
@@ -17,7 +17,49 @@ export type ButtonModel = {
   action?(): void
 }
 
-export function Button(description?: ReactiveTreeNodeDesc<El<HTMLElement, ButtonModel>>) {
+export function Button(
+  setup: Script<El<HTMLElement, ButtonModel>>): ReactiveTreeNode<El<HTMLElement, ButtonModel>>
+
+export function Button(
+  key: string,
+  setup: Script<El<HTMLElement, ButtonModel>>): ReactiveTreeNode<El<HTMLElement, ButtonModel>>
+
+export function Button(
+  mode: Mode,
+  setup: Script<El<HTMLElement, ButtonModel>>): ReactiveTreeNode<El<HTMLElement, ButtonModel>>
+
+export function Button(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, ButtonModel>>): ReactiveTreeNode<El<HTMLElement, ButtonModel>>
+
+export function Button(
+  key?: string,
+  mode?: Mode,
+  setup?: Script<El<HTMLElement, ButtonModel>>,
+  setupTask?: ScriptAsync<El<HTMLElement, ButtonModel>>,
+  creation?: Script<El<HTMLElement, ButtonModel>>,
+  creationTask?: ScriptAsync<El<HTMLElement, ButtonModel>>,
+  mounting?: Script<El<HTMLElement, ButtonModel>>,
+  destruction?: Script<El<HTMLElement, ButtonModel>>,
+  signalArgs?: unknown,
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, ButtonModel>>): ReactiveTreeNode<El<HTMLElement, ButtonModel>>
+
+export function Button(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, ButtonModel>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, ButtonModel>>,
+  setupOrMode?: Script<El<HTMLElement, ButtonModel>> | Mode,
+  setup?: Script<El<HTMLElement, ButtonModel>>,
+  setupTask?: ScriptAsync<El<HTMLElement, ButtonModel>>,
+  creation?: Script<El<HTMLElement, ButtonModel>>,
+  creationTask?: ScriptAsync<El<HTMLElement, ButtonModel>>,
+  mounting?: Script<El<HTMLElement, ButtonModel>>,
+  destruction?: Script<El<HTMLElement, ButtonModel>>,
+  signalArgs?: unknown,
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, ButtonModel>>): ReactiveTreeNode<El<HTMLElement, ButtonModel>> {
+  //
+  const description = args2desc(
+    setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
+    creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
   return (
     Element<ButtonModel>(setBasis(description, {
       creation() {

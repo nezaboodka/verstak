@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNodeDesc, Mode, setBasis } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDesc, Script, Mode, ScriptAsync, args2desc, setBasis } from "reactronic"
 import { Element, FocusModel, OnFocus, rowBreak, El, Fragment, KeyboardSensor, KeyboardModifiers, H, V } from "verstak"
 import { rxModel, ValuesOrRefs } from "./common/Utils.js"
 import { Theme, InputStyling } from "./Theme.js"
@@ -23,7 +23,49 @@ export type InputModel<T = string> = FocusModel & {
   inputStyle: string
 }
 
-export function Input(description?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel>>) {
+export function Input(
+  setup: Script<El<HTMLElement, InputModel>>): ReactiveTreeNode<El<HTMLElement, InputModel>>
+
+export function Input(
+  key: string,
+  setup: Script<El<HTMLElement, InputModel>>): ReactiveTreeNode<El<HTMLElement, InputModel>>
+
+export function Input(
+  mode: Mode,
+  setup: Script<El<HTMLElement, InputModel>>): ReactiveTreeNode<El<HTMLElement, InputModel>>
+
+export function Input(
+  description: ReactiveTreeNodeDesc<El<HTMLElement, InputModel>>): ReactiveTreeNode<El<HTMLElement, InputModel>>
+
+export function Input(
+  key?: string,
+  mode?: Mode,
+  setup?: Script<El<HTMLElement, InputModel>>,
+  setupTask?: ScriptAsync<El<HTMLElement, InputModel>>,
+  creation?: Script<El<HTMLElement, InputModel>>,
+  creationTask?: ScriptAsync<El<HTMLElement, InputModel>>,
+  mounting?: Script<El<HTMLElement, InputModel>>,
+  destruction?: Script<El<HTMLElement, InputModel>>,
+  signalArgs?: unknown,
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel>>): ReactiveTreeNode<El<HTMLElement, InputModel>>
+
+export function Input(
+  setupOrKeyOrModeDescription?: Script<El<HTMLElement, InputModel>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, InputModel>>,
+  setupOrMode?: Script<El<HTMLElement, InputModel>> | Mode,
+  setup?: Script<El<HTMLElement, InputModel>>,
+  setupTask?: ScriptAsync<El<HTMLElement, InputModel>>,
+  creation?: Script<El<HTMLElement, InputModel>>,
+  creationTask?: ScriptAsync<El<HTMLElement, InputModel>>,
+  mounting?: Script<El<HTMLElement, InputModel>>,
+  destruction?: Script<El<HTMLElement, InputModel>>,
+  signalArgs?: unknown,
+  unmounted?: boolean,
+  basis?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel>>): ReactiveTreeNode<El<HTMLElement, InputModel>> {
+  //
+  const description = args2desc(
+    setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
+    creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
   return (
     Element<InputModel>(setBasis(description, {
       creation() {
