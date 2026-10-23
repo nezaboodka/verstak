@@ -13,6 +13,8 @@ export type ImageModel = {
   source?: string
 }
 
+// Image
+
 export function Image(
   setup: Script<El<HTMLElement, ImageModel>>): ReactiveTreeNode<El<HTMLElement, ImageModel>>
 

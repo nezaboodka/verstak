@@ -9,6 +9,8 @@ import { ReactiveTreeNode, ReactiveTreeNodeDesc, Script, Mode, ScriptAsync, desc
 import { El, ElKind } from "../core/El.js"
 import { SvgDriver } from "../core/WebDriver.js"
 
+// Svg
+
 export function Svg<M = unknown>(
   setup: Script<El<SVGSVGElement, M>>): ReactiveTreeNode<El<SVGSVGElement, M>>
 
@@ -53,6 +55,8 @@ export function Svg<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// SvgA
 
 export function SvgA<M = unknown>(
   setup: Script<El<SVGAElement, M>>): ReactiveTreeNode<El<SVGAElement, M>>
@@ -99,6 +103,8 @@ export function SvgA<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Animate
+
 export function Animate<M = unknown>(
   setup: Script<El<SVGAnimateElement, M>>): ReactiveTreeNode<El<SVGAnimateElement, M>>
 
@@ -143,6 +149,8 @@ export function Animate<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// AnimateMotion
 
 export function AnimateMotion<M = unknown>(
   setup: Script<El<SVGAnimateMotionElement, M>>): ReactiveTreeNode<El<SVGAnimateMotionElement, M>>
@@ -189,6 +197,8 @@ export function AnimateMotion<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// AnimateTransform
+
 export function AnimateTransform<M = unknown>(
   setup: Script<El<SVGAnimateTransformElement, M>>): ReactiveTreeNode<El<SVGAnimateTransformElement, M>>
 
@@ -233,6 +243,8 @@ export function AnimateTransform<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Circle
 
 export function Circle<M = unknown>(
   setup: Script<El<SVGCircleElement, M>>): ReactiveTreeNode<El<SVGCircleElement, M>>
@@ -279,6 +291,8 @@ export function Circle<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// ClipPath
+
 export function ClipPath<M = unknown>(
   setup: Script<El<SVGClipPathElement, M>>): ReactiveTreeNode<El<SVGClipPathElement, M>>
 
@@ -323,6 +337,8 @@ export function ClipPath<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Defs
 
 export function Defs<M = unknown>(
   setup: Script<El<SVGDefsElement, M>>): ReactiveTreeNode<El<SVGDefsElement, M>>
@@ -369,6 +385,8 @@ export function Defs<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Desc
+
 export function Desc<M = unknown>(
   setup: Script<El<SVGDescElement, M>>): ReactiveTreeNode<El<SVGDescElement, M>>
 
@@ -413,6 +431,8 @@ export function Desc<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Ellipse
 
 export function Ellipse<M = unknown>(
   setup: Script<El<SVGEllipseElement, M>>): ReactiveTreeNode<El<SVGEllipseElement, M>>
@@ -459,6 +479,8 @@ export function Ellipse<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// FeBlend
+
 export function FeBlend<M = unknown>(
   setup: Script<El<SVGFEBlendElement, M>>): ReactiveTreeNode<El<SVGFEBlendElement, M>>
 
@@ -503,6 +525,8 @@ export function FeBlend<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// FeColorMatrix
 
 export function FeColorMatrix<M = unknown>(
   setup: Script<El<SVGFEColorMatrixElement, M>>): ReactiveTreeNode<El<SVGFEColorMatrixElement, M>>
@@ -549,6 +573,8 @@ export function FeColorMatrix<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// FeComponentTransfer
+
 export function FeComponentTransfer<M = unknown>(
   setup: Script<El<SVGFEComponentTransferElement, M>>): ReactiveTreeNode<El<SVGFEComponentTransferElement, M>>
 
@@ -593,6 +619,8 @@ export function FeComponentTransfer<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// FeComposite
 
 export function FeComposite<M = unknown>(
   setup: Script<El<SVGFECompositeElement, M>>): ReactiveTreeNode<El<SVGFECompositeElement, M>>
@@ -639,6 +667,8 @@ export function FeComposite<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// FeConvolveMatrix
+
 export function FeConvolveMatrix<M = unknown>(
   setup: Script<El<SVGFEConvolveMatrixElement, M>>): ReactiveTreeNode<El<SVGFEConvolveMatrixElement, M>>
 
@@ -683,6 +713,8 @@ export function FeConvolveMatrix<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// FeDiffuseLighting
 
 export function FeDiffuseLighting<M = unknown>(
   setup: Script<El<SVGFEDiffuseLightingElement, M>>): ReactiveTreeNode<El<SVGFEDiffuseLightingElement, M>>
@@ -729,6 +761,8 @@ export function FeDiffuseLighting<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// FeDisplacementMap
+
 export function FeDisplacementMap<M = unknown>(
   setup: Script<El<SVGFEDisplacementMapElement, M>>): ReactiveTreeNode<El<SVGFEDisplacementMapElement, M>>
 
@@ -773,6 +807,8 @@ export function FeDisplacementMap<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// FeDistantLight
 
 export function FeDistantLight<M = unknown>(
   setup: Script<El<SVGFEDistantLightElement, M>>): ReactiveTreeNode<El<SVGFEDistantLightElement, M>>
@@ -819,6 +855,8 @@ export function FeDistantLight<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// FeDropShadow
+
 export function FeDropShadow<M = unknown>(
   setup: Script<El<SVGFEDropShadowElement, M>>): ReactiveTreeNode<El<SVGFEDropShadowElement, M>>
 
@@ -863,6 +901,8 @@ export function FeDropShadow<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// FeFlood
 
 export function FeFlood<M = unknown>(
   setup: Script<El<SVGFEFloodElement, M>>): ReactiveTreeNode<El<SVGFEFloodElement, M>>
@@ -909,6 +949,8 @@ export function FeFlood<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// FeFuncA
+
 export function FeFuncA<M = unknown>(
   setup: Script<El<SVGFEFuncAElement, M>>): ReactiveTreeNode<El<SVGFEFuncAElement, M>>
 
@@ -953,6 +995,8 @@ export function FeFuncA<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// FeFuncB
 
 export function FeFuncB<M = unknown>(
   setup: Script<El<SVGFEFuncBElement, M>>): ReactiveTreeNode<El<SVGFEFuncBElement, M>>
@@ -999,6 +1043,8 @@ export function FeFuncB<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// FeFuncG
+
 export function FeFuncG<M = unknown>(
   setup: Script<El<SVGFEFuncGElement, M>>): ReactiveTreeNode<El<SVGFEFuncGElement, M>>
 
@@ -1043,6 +1089,8 @@ export function FeFuncG<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// FeFuncR
 
 export function FeFuncR<M = unknown>(
   setup: Script<El<SVGFEFuncRElement, M>>): ReactiveTreeNode<El<SVGFEFuncRElement, M>>
@@ -1089,6 +1137,8 @@ export function FeFuncR<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// FeGaussianBlur
+
 export function FeGaussianBlur<M = unknown>(
   setup: Script<El<SVGFEGaussianBlurElement, M>>): ReactiveTreeNode<El<SVGFEGaussianBlurElement, M>>
 
@@ -1133,6 +1183,8 @@ export function FeGaussianBlur<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// FeImage
 
 export function FeImage<M = unknown>(
   setup: Script<El<SVGFEImageElement, M>>): ReactiveTreeNode<El<SVGFEImageElement, M>>
@@ -1179,6 +1231,8 @@ export function FeImage<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// FeMerge
+
 export function FeMerge<M = unknown>(
   setup: Script<El<SVGFEMergeElement, M>>): ReactiveTreeNode<El<SVGFEMergeElement, M>>
 
@@ -1223,6 +1277,8 @@ export function FeMerge<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// FeMergeNode
 
 export function FeMergeNode<M = unknown>(
   setup: Script<El<SVGFEMergeNodeElement, M>>): ReactiveTreeNode<El<SVGFEMergeNodeElement, M>>
@@ -1269,6 +1325,8 @@ export function FeMergeNode<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// FeMorphology
+
 export function FeMorphology<M = unknown>(
   setup: Script<El<SVGFEMorphologyElement, M>>): ReactiveTreeNode<El<SVGFEMorphologyElement, M>>
 
@@ -1313,6 +1371,8 @@ export function FeMorphology<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// FeOffset
 
 export function FeOffset<M = unknown>(
   setup: Script<El<SVGFEOffsetElement, M>>): ReactiveTreeNode<El<SVGFEOffsetElement, M>>
@@ -1359,6 +1419,8 @@ export function FeOffset<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// FePointLight
+
 export function FePointLight<M = unknown>(
   setup: Script<El<SVGFEPointLightElement, M>>): ReactiveTreeNode<El<SVGFEPointLightElement, M>>
 
@@ -1403,6 +1465,8 @@ export function FePointLight<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// FeSpecularLighting
 
 export function FeSpecularLighting<M = unknown>(
   setup: Script<El<SVGFESpecularLightingElement, M>>): ReactiveTreeNode<El<SVGFESpecularLightingElement, M>>
@@ -1449,6 +1513,8 @@ export function FeSpecularLighting<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// FeSpotLight
+
 export function FeSpotLight<M = unknown>(
   setup: Script<El<SVGFESpotLightElement, M>>): ReactiveTreeNode<El<SVGFESpotLightElement, M>>
 
@@ -1493,6 +1559,8 @@ export function FeSpotLight<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// FeTile
 
 export function FeTile<M = unknown>(
   setup: Script<El<SVGFETileElement, M>>): ReactiveTreeNode<El<SVGFETileElement, M>>
@@ -1539,6 +1607,8 @@ export function FeTile<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// FeTurbulence
+
 export function FeTurbulence<M = unknown>(
   setup: Script<El<SVGFETurbulenceElement, M>>): ReactiveTreeNode<El<SVGFETurbulenceElement, M>>
 
@@ -1583,6 +1653,8 @@ export function FeTurbulence<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Filter
 
 export function Filter<M = unknown>(
   setup: Script<El<SVGFilterElement, M>>): ReactiveTreeNode<El<SVGFilterElement, M>>
@@ -1629,6 +1701,8 @@ export function Filter<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// ForeignObject
+
 export function ForeignObject<M = unknown>(
   setup: Script<El<SVGForeignObjectElement, M>>): ReactiveTreeNode<El<SVGForeignObjectElement, M>>
 
@@ -1673,6 +1747,8 @@ export function ForeignObject<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// G
 
 export function G<M = unknown>(
   setup: Script<El<SVGGElement, M>>): ReactiveTreeNode<El<SVGGElement, M>>
@@ -1719,6 +1795,8 @@ export function G<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// SvgImage
+
 export function SvgImage<M = unknown>(
   setup: Script<El<SVGImageElement, M>>): ReactiveTreeNode<El<SVGImageElement, M>>
 
@@ -1763,6 +1841,8 @@ export function SvgImage<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// SvgLine
 
 export function SvgLine<M = unknown>(
   setup: Script<El<SVGLineElement, M>>): ReactiveTreeNode<El<SVGLineElement, M>>
@@ -1809,6 +1889,8 @@ export function SvgLine<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// LinearGradient
+
 export function LinearGradient<M = unknown>(
   setup: Script<El<SVGLinearGradientElement, M>>): ReactiveTreeNode<El<SVGLinearGradientElement, M>>
 
@@ -1853,6 +1935,8 @@ export function LinearGradient<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Marker
 
 export function Marker<M = unknown>(
   setup: Script<El<SVGMarkerElement, M>>): ReactiveTreeNode<El<SVGMarkerElement, M>>
@@ -1899,6 +1983,8 @@ export function Marker<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Mask
+
 export function Mask<M = unknown>(
   setup: Script<El<SVGMaskElement, M>>): ReactiveTreeNode<El<SVGMaskElement, M>>
 
@@ -1943,6 +2029,8 @@ export function Mask<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// MetaData
 
 export function MetaData<M = unknown>(
   setup: Script<El<SVGMetadataElement, M>>): ReactiveTreeNode<El<SVGMetadataElement, M>>
@@ -1989,6 +2077,8 @@ export function MetaData<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// MPath
+
 export function MPath<M = unknown>(
   setup: Script<El<SVGElement, M>>): ReactiveTreeNode<El<SVGElement, M>>
 
@@ -2033,6 +2123,8 @@ export function MPath<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Path
 
 export function Path<M = unknown>(
   setup: Script<El<SVGPathElement, M>>): ReactiveTreeNode<El<SVGPathElement, M>>
@@ -2079,6 +2171,8 @@ export function Path<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Pattern
+
 export function Pattern<M = unknown>(
   setup: Script<El<SVGPatternElement, M>>): ReactiveTreeNode<El<SVGPatternElement, M>>
 
@@ -2123,6 +2217,8 @@ export function Pattern<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Polygon
 
 export function Polygon<M = unknown>(
   setup: Script<El<SVGPolygonElement, M>>): ReactiveTreeNode<El<SVGPolygonElement, M>>
@@ -2169,6 +2265,8 @@ export function Polygon<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// PolyLine
+
 export function PolyLine<M = unknown>(
   setup: Script<El<SVGPolylineElement, M>>): ReactiveTreeNode<El<SVGPolylineElement, M>>
 
@@ -2213,6 +2311,8 @@ export function PolyLine<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// RadialGradient
 
 export function RadialGradient<M = unknown>(
   setup: Script<El<SVGRadialGradientElement, M>>): ReactiveTreeNode<El<SVGRadialGradientElement, M>>
@@ -2259,6 +2359,8 @@ export function RadialGradient<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Rect
+
 export function Rect<M = unknown>(
   setup: Script<El<SVGRectElement, M>>): ReactiveTreeNode<El<SVGRectElement, M>>
 
@@ -2303,6 +2405,8 @@ export function Rect<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Stop
 
 export function Stop<M = unknown>(
   setup: Script<El<SVGStopElement, M>>): ReactiveTreeNode<El<SVGStopElement, M>>
@@ -2349,6 +2453,8 @@ export function Stop<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// SvgSwitch
+
 export function SvgSwitch<M = unknown>(
   setup: Script<El<SVGSwitchElement, M>>): ReactiveTreeNode<El<SVGSwitchElement, M>>
 
@@ -2393,6 +2499,8 @@ export function SvgSwitch<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Symbol
 
 export function Symbol<M = unknown>(
   setup: Script<El<SVGSymbolElement, M>>): ReactiveTreeNode<El<SVGSymbolElement, M>>
@@ -2439,6 +2547,8 @@ export function Symbol<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Text
+
 export function Text<M = unknown>(
   setup: Script<El<SVGTextElement, M>>): ReactiveTreeNode<El<SVGTextElement, M>>
 
@@ -2483,6 +2593,8 @@ export function Text<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// TextPath
 
 export function TextPath<M = unknown>(
   setup: Script<El<SVGTextPathElement, M>>): ReactiveTreeNode<El<SVGTextPathElement, M>>
@@ -2529,6 +2641,8 @@ export function TextPath<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// TSpan
+
 export function TSpan<M = unknown>(
   setup: Script<El<SVGTSpanElement, M>>): ReactiveTreeNode<El<SVGTSpanElement, M>>
 
@@ -2574,6 +2688,8 @@ export function TSpan<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Use
+
 export function Use<M = unknown>(
   setup: Script<El<SVGUseElement, M>>): ReactiveTreeNode<El<SVGUseElement, M>>
 
@@ -2618,6 +2734,8 @@ export function Use<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// View
 
 export function View<M = unknown>(
   setup: Script<El<SVGViewElement, M>>): ReactiveTreeNode<El<SVGViewElement, M>>

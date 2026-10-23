@@ -17,6 +17,8 @@ export type ToggleModel = {
   color?: string
 }
 
+// Toggle
+
 export function Toggle(
   setup: Script<El<HTMLElement, ToggleModel>>): ReactiveTreeNode<El<HTMLElement, ToggleModel>>
 

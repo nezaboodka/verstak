@@ -9,6 +9,8 @@ import { ReactiveTreeNode, ReactiveTreeNodeDesc, type Script, Mode, ScriptAsync,
 import { El, ElKind } from "../core/El.js"
 import { HtmlDriver } from "../core/WebDriver.js"
 
+// A
+
 export function A<M = unknown>(
   setup: Script<El<HTMLAnchorElement, M>>): ReactiveTreeNode<El<HTMLAnchorElement, M>>
 
@@ -53,6 +55,8 @@ export function A<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Abbr
 
 export function Abbr<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -99,6 +103,8 @@ export function Abbr<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Address
+
 export function Address<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -143,6 +149,8 @@ export function Address<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Area
 
 export function Area<M = unknown>(
   setup: Script<El<HTMLAreaElement, M>>): ReactiveTreeNode<El<HTMLAreaElement, M>>
@@ -189,6 +197,8 @@ export function Area<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Article
+
 export function Article<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -233,6 +243,8 @@ export function Article<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Aside
 
 export function Aside<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -279,6 +291,8 @@ export function Aside<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Audio
+
 export function Audio<M = unknown>(
   setup: Script<El<HTMLAudioElement, M>>): ReactiveTreeNode<El<HTMLAudioElement, M>>
 
@@ -323,6 +337,8 @@ export function Audio<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// B
 
 export function B<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -369,6 +385,8 @@ export function B<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Base
+
 export function Base<M = unknown>(
   setup: Script<El<HTMLBaseElement, M>>): ReactiveTreeNode<El<HTMLBaseElement, M>>
 
@@ -413,6 +431,8 @@ export function Base<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Bdi
 
 export function Bdi<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -459,6 +479,8 @@ export function Bdi<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Bdo
+
 export function Bdo<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -503,6 +525,8 @@ export function Bdo<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Big
 
 export function Big<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -549,6 +573,8 @@ export function Big<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// BlockQuote
+
 export function BlockQuote<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -593,6 +619,8 @@ export function BlockQuote<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Body
 
 export function Body<M = unknown>(
   setup: Script<El<HTMLBodyElement, M>>): ReactiveTreeNode<El<HTMLBodyElement, M>>
@@ -639,6 +667,8 @@ export function Body<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// BR
+
 export function BR<M = unknown>(
   setup: Script<El<HTMLBRElement, M>>): ReactiveTreeNode<El<HTMLBRElement, M>>
 
@@ -683,6 +713,8 @@ export function BR<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Button
 
 export function Button<M = unknown>(
   setup: Script<El<HTMLButtonElement, M>>): ReactiveTreeNode<El<HTMLButtonElement, M>>
@@ -729,6 +761,8 @@ export function Button<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Canvas
+
 export function Canvas<M = unknown>(
   setup: Script<El<HTMLCanvasElement, M>>): ReactiveTreeNode<El<HTMLCanvasElement, M>>
 
@@ -773,6 +807,8 @@ export function Canvas<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Caption
 
 export function Caption<M = unknown>(
   setup: Script<El<HTMLTableCaptionElement, M>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M>>
@@ -819,6 +855,8 @@ export function Caption<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Cite
+
 export function Cite<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -863,6 +901,8 @@ export function Cite<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Code
 
 export function Code<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -909,6 +949,8 @@ export function Code<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Col
+
 export function Col<M = unknown>(
   setup: Script<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>>
 
@@ -953,6 +995,8 @@ export function Col<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// ColGroup
 
 export function ColGroup<M = unknown>(
   setup: Script<El<HTMLTableColElement, M>>): ReactiveTreeNode<El<HTMLTableColElement, M>>
@@ -999,6 +1043,8 @@ export function ColGroup<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Data
+
 export function Data<M = unknown>(
   setup: Script<El<HTMLDataElement, M>>): ReactiveTreeNode<El<HTMLDataElement, M>>
 
@@ -1043,6 +1089,8 @@ export function Data<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// DataList
 
 export function DataList<M = unknown>(
   setup: Script<El<HTMLDataListElement, M>>): ReactiveTreeNode<El<HTMLDataListElement, M>>
@@ -1089,6 +1137,8 @@ export function DataList<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// DD
+
 export function DD<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -1133,6 +1183,8 @@ export function DD<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Del
 
 export function Del<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -1179,6 +1231,8 @@ export function Del<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Details
+
 export function Details<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -1223,6 +1277,8 @@ export function Details<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Dfn
 
 export function Dfn<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -1269,6 +1325,8 @@ export function Dfn<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Div
+
 export function Div<M = unknown>(
   setup: Script<El<HTMLDivElement, M>>): ReactiveTreeNode<El<HTMLDivElement, M>>
 
@@ -1313,6 +1371,8 @@ export function Div<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// DL
 
 export function DL<M = unknown>(
   setup: Script<El<HTMLDListElement, M>>): ReactiveTreeNode<El<HTMLDListElement, M>>
@@ -1359,6 +1419,8 @@ export function DL<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// DT
+
 export function DT<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -1403,6 +1465,8 @@ export function DT<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// EM
 
 export function EM<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -1449,6 +1513,8 @@ export function EM<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Embed
+
 export function Embed<M = unknown>(
   setup: Script<El<HTMLEmbedElement, M>>): ReactiveTreeNode<El<HTMLEmbedElement, M>>
 
@@ -1493,6 +1559,8 @@ export function Embed<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// FieldSet
 
 export function FieldSet<M = unknown>(
   setup: Script<El<HTMLFieldSetElement, M>>): ReactiveTreeNode<El<HTMLFieldSetElement, M>>
@@ -1539,6 +1607,8 @@ export function FieldSet<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// FigCaption
+
 export function FigCaption<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -1583,6 +1653,8 @@ export function FigCaption<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Figure
 
 export function Figure<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -1629,6 +1701,8 @@ export function Figure<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Footer
+
 export function Footer<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -1673,6 +1747,8 @@ export function Footer<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Form
 
 export function Form<M = unknown>(
   setup: Script<El<HTMLFormElement, M>>): ReactiveTreeNode<El<HTMLFormElement, M>>
@@ -1719,6 +1795,8 @@ export function Form<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// H1
+
 export function H1<M = unknown>(
   setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
 
@@ -1763,6 +1841,8 @@ export function H1<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// H2
 
 export function H2<M = unknown>(
   setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
@@ -1809,6 +1889,8 @@ export function H2<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// H3
+
 export function H3<M = unknown>(
   setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
 
@@ -1853,6 +1935,8 @@ export function H3<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// H4
 
 export function H4<M = unknown>(
   setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
@@ -1899,6 +1983,8 @@ export function H4<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// H5
+
 export function H5<M = unknown>(
   setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
 
@@ -1943,6 +2029,8 @@ export function H5<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// H6
 
 export function H6<M = unknown>(
   setup: Script<El<HTMLHeadingElement, M>>): ReactiveTreeNode<El<HTMLHeadingElement, M>>
@@ -1989,6 +2077,8 @@ export function H6<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Head
+
 export function Head<M = unknown>(
   setup: Script<El<HTMLHeadElement, M>>): ReactiveTreeNode<El<HTMLHeadElement, M>>
 
@@ -2033,6 +2123,8 @@ export function Head<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Header
 
 export function Header<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -2079,6 +2171,8 @@ export function Header<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// HGroup
+
 export function HGroup<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -2123,6 +2217,8 @@ export function HGroup<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// HR
 
 export function HR<M = unknown>(
   setup: Script<El<HTMLHRElement, M>>): ReactiveTreeNode<El<HTMLHRElement, M>>
@@ -2169,6 +2265,8 @@ export function HR<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Html
+
 export function Html<M = unknown>(
   setup: Script<El<HTMLHtmlElement, M>>): ReactiveTreeNode<El<HTMLHtmlElement, M>>
 
@@ -2213,6 +2311,8 @@ export function Html<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// I
 
 export function I<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -2259,6 +2359,8 @@ export function I<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// IFrame
+
 export function IFrame<M = unknown>(
   setup: Script<El<HTMLIFrameElement, M>>): ReactiveTreeNode<El<HTMLIFrameElement, M>>
 
@@ -2303,6 +2405,8 @@ export function IFrame<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Img
 
 export function Img<M = unknown>(
   setup: Script<El<HTMLImageElement, M>>): ReactiveTreeNode<El<HTMLImageElement, M>>
@@ -2349,6 +2453,8 @@ export function Img<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Input
+
 export function Input<M = unknown>(
   setup: Script<El<HTMLInputElement, M>>): ReactiveTreeNode<El<HTMLInputElement, M>>
 
@@ -2393,6 +2499,8 @@ export function Input<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Ins
 
 export function Ins<M = unknown>(
   setup: Script<El<HTMLModElement, M>>): ReactiveTreeNode<El<HTMLModElement, M>>
@@ -2439,6 +2547,8 @@ export function Ins<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Kbd
+
 export function Kbd<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -2483,6 +2593,8 @@ export function Kbd<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// KeyGen
 
 export function KeyGen<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -2529,6 +2641,8 @@ export function KeyGen<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Label
+
 export function Label<M = unknown>(
   setup: Script<El<HTMLLabelElement, M>>): ReactiveTreeNode<El<HTMLLabelElement, M>>
 
@@ -2573,6 +2687,8 @@ export function Label<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Legend
 
 export function Legend<M = unknown>(
   setup: Script<El<HTMLLegendElement, M>>): ReactiveTreeNode<El<HTMLLegendElement, M>>
@@ -2619,6 +2735,8 @@ export function Legend<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// LI
+
 export function LI<M = unknown>(
   setup: Script<El<HTMLLIElement, M>>): ReactiveTreeNode<El<HTMLLIElement, M>>
 
@@ -2663,6 +2781,8 @@ export function LI<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Link
 
 export function Link<M = unknown>(
   setup: Script<El<HTMLLinkElement, M>>): ReactiveTreeNode<El<HTMLLinkElement, M>>
@@ -2709,6 +2829,8 @@ export function Link<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Main
+
 export function Main<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -2753,6 +2875,8 @@ export function Main<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Map
 
 export function Map<M = unknown>(
   setup: Script<El<HTMLMapElement, M>>): ReactiveTreeNode<El<HTMLMapElement, M>>
@@ -2799,6 +2923,8 @@ export function Map<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Mark
+
 export function Mark<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -2843,6 +2969,8 @@ export function Mark<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Menu
 
 export function Menu<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -2889,6 +3017,8 @@ export function Menu<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// MenuItem
+
 export function MenuItem<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -2933,6 +3063,8 @@ export function MenuItem<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Meta
 
 export function Meta<M = unknown>(
   setup: Script<El<HTMLMetaElement, M>>): ReactiveTreeNode<El<HTMLMetaElement, M>>
@@ -2979,6 +3111,8 @@ export function Meta<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Meter
+
 export function Meter<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -3023,6 +3157,8 @@ export function Meter<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Nav
 
 export function Nav<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -3069,6 +3205,8 @@ export function Nav<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// NoIndex
+
 export function NoIndex<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -3113,6 +3251,8 @@ export function NoIndex<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// NoScript
 
 export function NoScript<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -3159,6 +3299,8 @@ export function NoScript<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Obj
+
 export function Obj<M = unknown>(
   setup: Script<El<HTMLObjectElement, M>>): ReactiveTreeNode<El<HTMLObjectElement, M>>
 
@@ -3203,6 +3345,8 @@ export function Obj<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// OL
 
 export function OL<M = unknown>(
   setup: Script<El<HTMLOListElement, M>>): ReactiveTreeNode<El<HTMLOListElement, M>>
@@ -3249,6 +3393,8 @@ export function OL<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// OptGroup
+
 export function OptGroup<M = unknown>(
   setup: Script<El<HTMLOptGroupElement, M>>): ReactiveTreeNode<El<HTMLOptGroupElement, M>>
 
@@ -3293,6 +3439,8 @@ export function OptGroup<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Option
 
 export function Option<M = unknown>(
   setup: Script<El<HTMLOptionElement, M>>): ReactiveTreeNode<El<HTMLOptionElement, M>>
@@ -3339,6 +3487,8 @@ export function Option<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Output
+
 export function Output<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -3383,6 +3533,8 @@ export function Output<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// P
 
 export function P<M = unknown>(
   setup: Script<El<HTMLParagraphElement, M>>): ReactiveTreeNode<El<HTMLParagraphElement, M>>
@@ -3429,6 +3581,8 @@ export function P<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Param
+
 export function Param<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -3473,6 +3627,8 @@ export function Param<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Picture
 
 export function Picture<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -3519,6 +3675,8 @@ export function Picture<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Pre
+
 export function Pre<M = unknown>(
   setup: Script<El<HTMLPreElement, M>>): ReactiveTreeNode<El<HTMLPreElement, M>>
 
@@ -3563,6 +3721,8 @@ export function Pre<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Progress
 
 export function Progress<M = unknown>(
   setup: Script<El<HTMLProgressElement, M>>): ReactiveTreeNode<El<HTMLProgressElement, M>>
@@ -3609,6 +3769,8 @@ export function Progress<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Q
+
 export function Q<M = unknown>(
   setup: Script<El<HTMLQuoteElement, M>>): ReactiveTreeNode<El<HTMLQuoteElement, M>>
 
@@ -3653,6 +3815,8 @@ export function Q<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// RP
 
 export function RP<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -3699,6 +3863,8 @@ export function RP<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// RT
+
 export function RT<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -3743,6 +3909,8 @@ export function RT<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Ruby
 
 export function Ruby<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -3789,6 +3957,8 @@ export function Ruby<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// S
+
 export function S<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -3833,6 +4003,8 @@ export function S<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Samp
 
 export function Samp<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -3879,6 +4051,8 @@ export function Samp<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Script
+
 export function Script<M = unknown>(
   setup: Script<El<HTMLScriptElement, M>>): ReactiveTreeNode<El<HTMLScriptElement, M>>
 
@@ -3923,6 +4097,8 @@ export function Script<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Section
 
 export function Section<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -3969,6 +4145,8 @@ export function Section<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Select
+
 export function Select<M = unknown>(
   setup: Script<El<HTMLSelectElement, M>>): ReactiveTreeNode<El<HTMLSelectElement, M>>
 
@@ -4013,6 +4191,8 @@ export function Select<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Small
 
 export function Small<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -4059,6 +4239,8 @@ export function Small<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Source
+
 export function Source<M = unknown>(
   setup: Script<El<HTMLSourceElement, M>>): ReactiveTreeNode<El<HTMLSourceElement, M>>
 
@@ -4103,6 +4285,8 @@ export function Source<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Span
 
 export function Span<M = unknown>(
   setup: Script<El<HTMLSpanElement, M>>): ReactiveTreeNode<El<HTMLSpanElement, M>>
@@ -4149,6 +4333,8 @@ export function Span<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Strong
+
 export function Strong<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -4193,6 +4379,8 @@ export function Strong<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Style
 
 export function Style<M = unknown>(
   setup: Script<El<HTMLStyleElement, M>>): ReactiveTreeNode<El<HTMLStyleElement, M>>
@@ -4239,6 +4427,8 @@ export function Style<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Sub
+
 export function Sub<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -4283,6 +4473,8 @@ export function Sub<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Summary
 
 export function Summary<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -4329,6 +4521,8 @@ export function Summary<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Sup
+
 export function Sup<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
 
@@ -4373,6 +4567,8 @@ export function Sup<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Tbl
 
 export function Tbl<M = unknown>(
   setup: Script<El<HTMLTableElement, M>>): ReactiveTreeNode<El<HTMLTableElement, M>>
@@ -4419,6 +4615,8 @@ export function Tbl<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Template
+
 export function Template<M = unknown>(
   setup: Script<El<HTMLTemplateElement, M>>): ReactiveTreeNode<El<HTMLTemplateElement, M>>
 
@@ -4463,6 +4661,8 @@ export function Template<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// TBody
 
 export function TBody<M = unknown>(
   setup: Script<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
@@ -4509,6 +4709,8 @@ export function TBody<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// TD
+
 export function TD<M = unknown>(
   setup: Script<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>>
 
@@ -4553,6 +4755,8 @@ export function TD<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// TextArea
 
 export function TextArea<M = unknown>(
   setup: Script<El<HTMLTextAreaElement, M>>): ReactiveTreeNode<El<HTMLTextAreaElement, M>>
@@ -4599,6 +4803,8 @@ export function TextArea<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// TFoot
+
 export function TFoot<M = unknown>(
   setup: Script<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
 
@@ -4643,6 +4849,8 @@ export function TFoot<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// TH
 
 export function TH<M = unknown>(
   setup: Script<El<HTMLTableCellElement, M>>): ReactiveTreeNode<El<HTMLTableCellElement, M>>
@@ -4689,6 +4897,8 @@ export function TH<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// THead
+
 export function THead<M = unknown>(
   setup: Script<El<HTMLTableSectionElement, M>>): ReactiveTreeNode<El<HTMLTableSectionElement, M>>
 
@@ -4733,6 +4943,8 @@ export function THead<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Time
 
 export function Time<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -4779,6 +4991,8 @@ export function Time<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Title
+
 export function Title<M = unknown>(
   setup: Script<El<HTMLTitleElement, M>>): ReactiveTreeNode<El<HTMLTitleElement, M>>
 
@@ -4823,6 +5037,8 @@ export function Title<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// TR
 
 export function TR<M = unknown>(
   setup: Script<El<HTMLTableRowElement, M>>): ReactiveTreeNode<El<HTMLTableRowElement, M>>
@@ -4869,6 +5085,8 @@ export function TR<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Track
+
 export function Track<M = unknown>(
   setup: Script<El<HTMLTrackElement, M>>): ReactiveTreeNode<El<HTMLTrackElement, M>>
 
@@ -4913,6 +5131,8 @@ export function Track<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// U
 
 export function U<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -4959,6 +5179,8 @@ export function U<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// UL
+
 export function UL<M = unknown>(
   setup: Script<El<HTMLUListElement, M>>): ReactiveTreeNode<El<HTMLUListElement, M>>
 
@@ -5003,6 +5225,8 @@ export function UL<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Var
 
 export function Var<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>
@@ -5049,6 +5273,8 @@ export function Var<M = unknown>(
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
 
+// Video
+
 export function Video<M = unknown>(
   setup: Script<El<HTMLVideoElement, M>>): ReactiveTreeNode<El<HTMLVideoElement, M>>
 
@@ -5093,6 +5319,8 @@ export function Video<M = unknown>(
     setupOrKeyOrModeDescription, setupOrMode, setup, setupTask,
     creation, creationTask, mounting, destruction, signalArgs, unmounted, basis)
 }
+
+// Wbr
 
 export function Wbr<M = unknown>(
   setup: Script<El<HTMLElement, M>>): ReactiveTreeNode<El<HTMLElement, M>>

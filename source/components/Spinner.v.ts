@@ -14,6 +14,8 @@ export type SpinnerModel = {
   color: string
 }
 
+// Spinner
+
 export function Spinner(
   setup: Script<El<HTMLElement, SpinnerModel>>): ReactiveTreeNode<El<HTMLElement, SpinnerModel>>
 

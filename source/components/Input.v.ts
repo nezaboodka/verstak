@@ -23,6 +23,8 @@ export type InputModel<T = string> = FocusModel & {
   inputStyle: string
 }
 
+// Input
+
 export function Input(
   setup: Script<El<HTMLElement, InputModel>>): ReactiveTreeNode<El<HTMLElement, InputModel>>
 

@@ -17,6 +17,8 @@ export type ButtonModel = {
   action?(): void
 }
 
+// Button
+
 export function Button(
   setup: Script<El<HTMLElement, ButtonModel>>): ReactiveTreeNode<El<HTMLElement, ButtonModel>>
 

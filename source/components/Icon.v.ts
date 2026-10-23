@@ -9,6 +9,8 @@ import { ReactiveTreeNode, ReactiveTreeNodeDesc, Script, Mode, ScriptAsync, args
 import { Element, El } from "verstak"
 import { Theme } from "./Theme.js"
 
+// Icon
+
 export function Icon(
   name: string,
   setup: Script<El<HTMLElement, void>>): ReactiveTreeNode<El<HTMLElement, void>>
