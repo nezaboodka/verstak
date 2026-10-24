@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDesc, setBasis  } from "reactronic"
+import { ReactiveTreeNode, ReactiveTreeNodeDesc, Script, Mode, ScriptTask, args2desc } from "reactronic"
 import { El } from "../core/El.js"
 import { Div } from "./HtmlElements.js"
 import { Fragment } from "../core/elements/api.js"
@@ -22,11 +22,48 @@ export interface DraggableAreaModel {
 
 export function DraggableArea(
   draggingId: string,
-  builder: ReactiveTreeNodeDesc<El<HTMLDivElement, DraggableAreaModel>>): ReactiveTreeNode<El<HTMLDivElement>> {
+  setup: Script<El<HTMLDivElement, DraggableAreaModel>>,
+  setupTask?: ScriptTask<El<HTMLDivElement, DraggableAreaModel>>,
+  basis?: ReactiveTreeNodeDesc<El<HTMLDivElement, DraggableAreaModel>>): ReactiveTreeNode<El<HTMLDivElement, DraggableAreaModel>>
+
+export function DraggableArea(
+  draggingId: string,
+  key: string,
+  setup: Script<El<HTMLDivElement, DraggableAreaModel>>,
+  setupTask?: ScriptTask<El<HTMLDivElement, DraggableAreaModel>>,
+  basis?: ReactiveTreeNodeDesc<El<HTMLDivElement, DraggableAreaModel>>): ReactiveTreeNode<El<HTMLDivElement, DraggableAreaModel>>
+
+export function DraggableArea(
+  draggingId: string,
+  mode: Mode,
+  setup: Script<El<HTMLDivElement, DraggableAreaModel>>,
+  setupTask?: ScriptTask<El<HTMLDivElement, DraggableAreaModel>>,
+  basis?: ReactiveTreeNodeDesc<El<HTMLDivElement, DraggableAreaModel>>): ReactiveTreeNode<El<HTMLDivElement, DraggableAreaModel>>
+
+export function DraggableArea(
+  draggingId: string,
+  key: string,
+  mode: Mode,
+  setup: Script<El<HTMLDivElement, DraggableAreaModel>>,
+  setupTask?: ScriptTask<El<HTMLDivElement, DraggableAreaModel>>,
+  basis?: ReactiveTreeNodeDesc<El<HTMLDivElement, DraggableAreaModel>>): ReactiveTreeNode<El<HTMLDivElement, DraggableAreaModel>>
+
+export function DraggableArea(
+  draggingId: string,
+  description?: ReactiveTreeNodeDesc<El<HTMLDivElement, DraggableAreaModel>>,
+  basis?: ReactiveTreeNodeDesc<El<HTMLDivElement, DraggableAreaModel>>): ReactiveTreeNode<El<HTMLDivElement, DraggableAreaModel>>
+
+export function DraggableArea(
+  draggingId: string,
+  p1?: Script<El<HTMLDivElement, DraggableAreaModel>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLDivElement, DraggableAreaModel>>,
+  p2?: Script<El<HTMLDivElement, DraggableAreaModel>> | ScriptTask<El<HTMLDivElement, DraggableAreaModel>> | Mode | ReactiveTreeNodeDesc<El<HTMLDivElement, DraggableAreaModel>>,
+  p3?: Script<El<HTMLDivElement, DraggableAreaModel>> | ScriptTask<El<HTMLDivElement, DraggableAreaModel>> | ReactiveTreeNodeDesc<El<HTMLDivElement, DraggableAreaModel>>,
+  p4?: ScriptTask<El<HTMLDivElement, DraggableAreaModel>> | ReactiveTreeNodeDesc<El<HTMLDivElement, DraggableAreaModel>>,
+  p5?: ReactiveTreeNodeDesc<El<HTMLDivElement, DraggableAreaModel>>): ReactiveTreeNode<El<HTMLDivElement, DraggableAreaModel>> {
   //
-  // signalArgs = signalArgs ? { ...signalArgs, draggingId } : { draggingId }
+  const description = args2desc(DraggableArea.name, p1, p2, p3, p4, p5)
   return (
-    Div<DraggableAreaModel>(setBasis(builder, {
+    Div<DraggableAreaModel>(description, {
       setup() {
         const e = this.native
         const model = this.model
@@ -56,6 +93,6 @@ export function DraggableArea(
           }
         })
       },
-    }))
+    })
   )
 }

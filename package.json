@@ -37,12 +37,12 @@
   },
   "homepage": "https://github.com/nezaboodka/verstak/blob/master/README.md#readme",
   "dependencies": {
-    "@types/linkify-it": "^3.0.5",
     "@emotion/css": "^11.13.5",
+    "@types/linkify-it": "^3.0.5",
     "markdown-it": "^14.1.0",
     "markdown-it-prism": "^2.3.0",
     "prismjs": "^1.30.0",
-    "reactronic": "^0.96.26041"
+    "reactronic": "^0.96.26044"
   },
   "devDependencies": {
     "@types/markdown-it": "14.2.0",
