@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { RtElement, inherit, Mode, Conf, ConfOrScript, Driver, RtNode } from "reactronic"
+import { RtElement, inherit, norm, Mode, ConfOrScript, Driver, RtNode } from "reactronic"
 import { El, ElKind } from "../El.js"
 import { ElDriver } from "../ElDriver.js"
 
@@ -14,9 +14,9 @@ import { ElDriver } from "../ElDriver.js"
 export function Fragment<M = unknown, D = unknown>(
   conf?: ConfOrScript<El<void, M, D>>): RtNode<El<void, M, D>> {
   // TODO: use "norm"
-  const declared: Conf<El<void, M, D>> = typeof conf === "function" ? { setup: conf } : conf ?? {}
-  declared.mode = (declared.mode ?? Mode.default) | Mode.fragment
-  return RtElement(inherit(declared, {
+  conf = norm(conf) ?? {}
+  conf.mode = Mode.fragment | (conf.mode ?? Mode.default)
+  return RtElement(inherit(conf, {
     caption: Fragment.name,
     driver: FragmentDriver.glob,
   }))
