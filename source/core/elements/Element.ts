@@ -115,6 +115,13 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
   override produceChild(ownerNode: RtNode<El<T, any>>, childDriver: Driver<any>, childConf?: Conf<any>, _childBasis?: Conf<any>): LinkedItem<RtNode> | undefined {
     let result: LinkedItem<RtNode> | undefined = undefined
+    const lastChild = ownerNode.children.lastItem
+    if (lastChild === undefined && !childDriver.isPartition) {
+      RtElement({
+        caption: "Partition",
+        driver: PartitionDriver.glob,
+      })
+    }
     const el = ownerNode.element as ElImpl
     if (el.splitView !== undefined) {
       if (isSplitViewPartition(childDriver)) {
@@ -141,17 +148,10 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
       }
     }
     else {
-      const last = ownerNode.children.lastItem
       if (childDriver.isPartition) {
         // Coalesce multiple separators into single one, if any
-        if (last?.driver === childDriver)
-          result = last
-      }
-      else if (last === undefined) {
-        RtElement({
-          caption: "Partition",
-          driver: PartitionDriver.glob,
-        })
+        if (lastChild?.driver === childDriver)
+          result = lastChild
       }
     }
     return result

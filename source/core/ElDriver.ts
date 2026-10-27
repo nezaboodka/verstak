@@ -749,6 +749,8 @@ export class ElImpl<T extends Element = any, M = any, D = any> implements El<T, 
     const e = element.native
     if (e instanceof HTMLElement) {
       element.sealed = value
+      e.style.position = value !== undefined ? "relative" : ""
+      e.style.overflow = value !== undefined ? "hidden" : ""
       const t = Transaction.current
       Transaction.outside(() => {
         t.whenFinished(true).then(() => {
