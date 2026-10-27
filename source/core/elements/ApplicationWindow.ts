@@ -17,11 +17,13 @@ export function ApplicationWindow(
   acquireVerstakStyleSheet()
   const page = (document ?? global.document).body
   const driver = new ApplicationWindowDriver(page)
-  page.classList.add("v5k-app")
-  page.classList.add("v5k-element")
   return RtElement(inherit(conf, {
     caption: ApplicationWindow.name,
     driver,
+    setup(el, base) {
+      el.useStylingPreset("v5k-app")
+      el.useStylingPreset("v5k-element")
+    },
   }))
 }
 

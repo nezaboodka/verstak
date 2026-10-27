@@ -28,7 +28,8 @@ export function describeSplitter<T>(index: number, splitViewNode: RtNode<El<T>>)
     Splitter({
       key,
       creation() {
-        this.native.className = `splitter ${key}`
+        this.native.classList.add("splitter")
+        this.native.classList.add(key)
       },
       setup() {
         const e = this.native
