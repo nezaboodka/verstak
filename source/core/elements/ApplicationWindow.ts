@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDesc, Script, Mode, ScriptTask, describe } from "reactronic"
+import { RtElement, inherit, ConfOrScript, RtNode } from "reactronic"
 import { El } from "../El.js"
 import { ElementDriver } from "./Element.js"
 import { acquireVerstakStyleSheet } from "./v5k.js"
@@ -13,46 +13,16 @@ import { acquireVerstakStyleSheet } from "./v5k.js"
 // ApplicationWindow
 
 export function ApplicationWindow(
-  setup: Script<El<HTMLElement>>,
-  setupTask?: ScriptTask<El<HTMLElement>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
-
-export function ApplicationWindow(
-  key: string,
-  setup: Script<El<HTMLElement>>,
-  setupTask?: ScriptTask<El<HTMLElement>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
-
-export function ApplicationWindow(
-  mode: Mode,
-  setup: Script<El<HTMLElement>>,
-  setupTask?: ScriptTask<El<HTMLElement>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
-
-export function ApplicationWindow(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement>>,
-  setupTask?: ScriptTask<El<HTMLElement>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
-
-export function ApplicationWindow(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>>
-
-export function ApplicationWindow(
-  p1?: Script<El<HTMLElement>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement>>,
-  p2?: Script<El<HTMLElement>> | ScriptTask<El<HTMLElement>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement>>,
-  p3?: Script<El<HTMLElement>> | ScriptTask<El<HTMLElement>> | ReactiveTreeNodeDesc<El<HTMLElement>>,
-  p4?: ScriptTask<El<HTMLElement>> | ReactiveTreeNodeDesc<El<HTMLElement>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement>>): ReactiveTreeNode<El<HTMLElement>> {
-  //
+  conf?: ConfOrScript<El<HTMLElement>>): RtNode<El<HTMLElement>> {
   acquireVerstakStyleSheet()
   const page = (document ?? global.document).body
   const driver = new ApplicationWindowDriver(page)
   page.classList.add("v5k-app")
   page.classList.add("v5k-element")
-  return describe(ApplicationWindow.name, driver, p1, p2, p3, p4, p5)
+  return RtElement(inherit(conf, {
+    caption: ApplicationWindow.name,
+    driver,
+  }))
 }
 
 // ApplicationWindowDriver
@@ -65,7 +35,7 @@ export class ApplicationWindowDriver<T extends HTMLElement> extends ElementDrive
     this.native = native
   }
 
-  override assignNativeElement(node: ReactiveTreeNode<El<T>>): void {
+  override assignNativeElement(node: RtNode<El<T>>): void {
     node.element.native = this.native
   }
 }

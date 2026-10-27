@@ -5,4570 +5,1149 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDesc, type Script, Mode, ScriptTask, describe } from "reactronic"
+import { inherit, RtElement, ConfOrScript, RtNode } from "reactronic"
 import { El, ElKind } from "../core/El.js"
 import { HtmlDriver } from "../core/WebDriver.js"
 
 // A
 
 export function A<M = unknown, D = unknown>(
-  setup: Script<El<HTMLAnchorElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLAnchorElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAnchorElement, M, D>>): ReactiveTreeNode<El<HTMLAnchorElement, M, D>>
-
-export function A<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLAnchorElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLAnchorElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAnchorElement, M, D>>): ReactiveTreeNode<El<HTMLAnchorElement, M, D>>
-
-export function A<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLAnchorElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLAnchorElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAnchorElement, M, D>>): ReactiveTreeNode<El<HTMLAnchorElement, M, D>>
-
-export function A<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLAnchorElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLAnchorElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAnchorElement, M, D>>): ReactiveTreeNode<El<HTMLAnchorElement, M, D>>
-
-export function A<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLAnchorElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAnchorElement, M, D>>): ReactiveTreeNode<El<HTMLAnchorElement, M, D>>
-
-export function A<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLAnchorElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLAnchorElement, M, D>>,
-  p2?: Script<El<HTMLAnchorElement, M, D>> | ScriptTask<El<HTMLAnchorElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLAnchorElement, M, D>>,
-  p3?: Script<El<HTMLAnchorElement, M, D>> | ScriptTask<El<HTMLAnchorElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLAnchorElement, M, D>>,
-  p4?: ScriptTask<El<HTMLAnchorElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLAnchorElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLAnchorElement, M, D>>): ReactiveTreeNode<El<HTMLAnchorElement, M, D>> {
-  //
-  return describe(A.name, HtmlTags.a, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLAnchorElement, M, D>>): RtNode<El<HTMLAnchorElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: A.name,
+    driver: HtmlTags.a,
+  }))
 }
 
 // Abbr
 
 export function Abbr<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Abbr<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Abbr<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Abbr<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Abbr<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Abbr<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Abbr.name, HtmlTags.abbr, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Abbr.name,
+    driver: HtmlTags.abbr,
+  }))
 }
 
 // Address
 
 export function Address<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Address<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Address<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Address<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Address<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Address<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Address.name, HtmlTags.address, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Address.name,
+    driver: HtmlTags.address,
+  }))
 }
 
 // Area
 
 export function Area<M = unknown, D = unknown>(
-  setup: Script<El<HTMLAreaElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLAreaElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAreaElement, M, D>>): ReactiveTreeNode<El<HTMLAreaElement, M, D>>
-
-export function Area<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLAreaElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLAreaElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAreaElement, M, D>>): ReactiveTreeNode<El<HTMLAreaElement, M, D>>
-
-export function Area<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLAreaElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLAreaElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAreaElement, M, D>>): ReactiveTreeNode<El<HTMLAreaElement, M, D>>
-
-export function Area<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLAreaElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLAreaElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAreaElement, M, D>>): ReactiveTreeNode<El<HTMLAreaElement, M, D>>
-
-export function Area<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLAreaElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAreaElement, M, D>>): ReactiveTreeNode<El<HTMLAreaElement, M, D>>
-
-export function Area<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLAreaElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLAreaElement, M, D>>,
-  p2?: Script<El<HTMLAreaElement, M, D>> | ScriptTask<El<HTMLAreaElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLAreaElement, M, D>>,
-  p3?: Script<El<HTMLAreaElement, M, D>> | ScriptTask<El<HTMLAreaElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLAreaElement, M, D>>,
-  p4?: ScriptTask<El<HTMLAreaElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLAreaElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLAreaElement, M, D>>): ReactiveTreeNode<El<HTMLAreaElement, M, D>> {
-  //
-  return describe(Area.name, HtmlTags.area, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLAreaElement, M, D>>): RtNode<El<HTMLAreaElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Area.name,
+    driver: HtmlTags.area,
+  }))
 }
 
 // Article
 
 export function Article<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Article<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Article<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Article<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Article<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Article<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Article.name, HtmlTags.article, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Article.name,
+    driver: HtmlTags.article,
+  }))
 }
 
 // Aside
 
 export function Aside<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Aside<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Aside<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Aside<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Aside<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Aside<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Aside.name, HtmlTags.aside, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Aside.name,
+    driver: HtmlTags.aside,
+  }))
 }
 
 // Audio
 
 export function Audio<M = unknown, D = unknown>(
-  setup: Script<El<HTMLAudioElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLAudioElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAudioElement, M, D>>): ReactiveTreeNode<El<HTMLAudioElement, M, D>>
-
-export function Audio<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLAudioElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLAudioElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAudioElement, M, D>>): ReactiveTreeNode<El<HTMLAudioElement, M, D>>
-
-export function Audio<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLAudioElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLAudioElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAudioElement, M, D>>): ReactiveTreeNode<El<HTMLAudioElement, M, D>>
-
-export function Audio<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLAudioElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLAudioElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAudioElement, M, D>>): ReactiveTreeNode<El<HTMLAudioElement, M, D>>
-
-export function Audio<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLAudioElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLAudioElement, M, D>>): ReactiveTreeNode<El<HTMLAudioElement, M, D>>
-
-export function Audio<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLAudioElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLAudioElement, M, D>>,
-  p2?: Script<El<HTMLAudioElement, M, D>> | ScriptTask<El<HTMLAudioElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLAudioElement, M, D>>,
-  p3?: Script<El<HTMLAudioElement, M, D>> | ScriptTask<El<HTMLAudioElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLAudioElement, M, D>>,
-  p4?: ScriptTask<El<HTMLAudioElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLAudioElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLAudioElement, M, D>>): ReactiveTreeNode<El<HTMLAudioElement, M, D>> {
-  //
-  return describe(Audio.name, HtmlTags.audio, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLAudioElement, M, D>>): RtNode<El<HTMLAudioElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Audio.name,
+    driver: HtmlTags.audio,
+  }))
 }
 
 // B
 
 export function B<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function B<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function B<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function B<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function B<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function B<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(B.name, HtmlTags.b, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: B.name,
+    driver: HtmlTags.b,
+  }))
 }
 
 // Base
 
 export function Base<M = unknown, D = unknown>(
-  setup: Script<El<HTMLBaseElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLBaseElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBaseElement, M, D>>): ReactiveTreeNode<El<HTMLBaseElement, M, D>>
-
-export function Base<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLBaseElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLBaseElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBaseElement, M, D>>): ReactiveTreeNode<El<HTMLBaseElement, M, D>>
-
-export function Base<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLBaseElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLBaseElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBaseElement, M, D>>): ReactiveTreeNode<El<HTMLBaseElement, M, D>>
-
-export function Base<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLBaseElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLBaseElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBaseElement, M, D>>): ReactiveTreeNode<El<HTMLBaseElement, M, D>>
-
-export function Base<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLBaseElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBaseElement, M, D>>): ReactiveTreeNode<El<HTMLBaseElement, M, D>>
-
-export function Base<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLBaseElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLBaseElement, M, D>>,
-  p2?: Script<El<HTMLBaseElement, M, D>> | ScriptTask<El<HTMLBaseElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLBaseElement, M, D>>,
-  p3?: Script<El<HTMLBaseElement, M, D>> | ScriptTask<El<HTMLBaseElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLBaseElement, M, D>>,
-  p4?: ScriptTask<El<HTMLBaseElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLBaseElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLBaseElement, M, D>>): ReactiveTreeNode<El<HTMLBaseElement, M, D>> {
-  //
-  return describe(Base.name, HtmlTags.base, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLBaseElement, M, D>>): RtNode<El<HTMLBaseElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Base.name,
+    driver: HtmlTags.base,
+  }))
 }
 
 // Bdi
 
 export function Bdi<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Bdi<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Bdi<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Bdi<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Bdi<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Bdi<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Bdi.name, HtmlTags.bdi, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Bdi.name,
+    driver: HtmlTags.bdi,
+  }))
 }
 
 // Bdo
 
 export function Bdo<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Bdo<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Bdo<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Bdo<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Bdo<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Bdo<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Bdo.name, HtmlTags.bdo, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Bdo.name,
+    driver: HtmlTags.bdo,
+  }))
 }
 
 // Big
 
 export function Big<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Big<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Big<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Big<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Big<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Big<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Big.name, HtmlTags.big, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Big.name,
+    driver: HtmlTags.big,
+  }))
 }
 
 // BlockQuote
 
 export function BlockQuote<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function BlockQuote<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function BlockQuote<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function BlockQuote<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function BlockQuote<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function BlockQuote<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(BlockQuote.name, HtmlTags.blockquote, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: BlockQuote.name,
+    driver: HtmlTags.blockquote,
+  }))
 }
 
 // Body
 
 export function Body<M = unknown, D = unknown>(
-  setup: Script<El<HTMLBodyElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLBodyElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBodyElement, M, D>>): ReactiveTreeNode<El<HTMLBodyElement, M, D>>
-
-export function Body<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLBodyElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLBodyElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBodyElement, M, D>>): ReactiveTreeNode<El<HTMLBodyElement, M, D>>
-
-export function Body<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLBodyElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLBodyElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBodyElement, M, D>>): ReactiveTreeNode<El<HTMLBodyElement, M, D>>
-
-export function Body<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLBodyElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLBodyElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBodyElement, M, D>>): ReactiveTreeNode<El<HTMLBodyElement, M, D>>
-
-export function Body<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLBodyElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBodyElement, M, D>>): ReactiveTreeNode<El<HTMLBodyElement, M, D>>
-
-export function Body<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLBodyElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLBodyElement, M, D>>,
-  p2?: Script<El<HTMLBodyElement, M, D>> | ScriptTask<El<HTMLBodyElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLBodyElement, M, D>>,
-  p3?: Script<El<HTMLBodyElement, M, D>> | ScriptTask<El<HTMLBodyElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLBodyElement, M, D>>,
-  p4?: ScriptTask<El<HTMLBodyElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLBodyElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLBodyElement, M, D>>): ReactiveTreeNode<El<HTMLBodyElement, M, D>> {
-  //
-  return describe(Body.name, HtmlTags.body, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLBodyElement, M, D>>): RtNode<El<HTMLBodyElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Body.name,
+    driver: HtmlTags.body,
+  }))
 }
 
 // BR
 
 export function BR<M = unknown, D = unknown>(
-  setup: Script<El<HTMLBRElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLBRElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBRElement, M, D>>): ReactiveTreeNode<El<HTMLBRElement, M, D>>
-
-export function BR<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLBRElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLBRElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBRElement, M, D>>): ReactiveTreeNode<El<HTMLBRElement, M, D>>
-
-export function BR<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLBRElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLBRElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBRElement, M, D>>): ReactiveTreeNode<El<HTMLBRElement, M, D>>
-
-export function BR<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLBRElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLBRElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBRElement, M, D>>): ReactiveTreeNode<El<HTMLBRElement, M, D>>
-
-export function BR<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLBRElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLBRElement, M, D>>): ReactiveTreeNode<El<HTMLBRElement, M, D>>
-
-export function BR<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLBRElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLBRElement, M, D>>,
-  p2?: Script<El<HTMLBRElement, M, D>> | ScriptTask<El<HTMLBRElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLBRElement, M, D>>,
-  p3?: Script<El<HTMLBRElement, M, D>> | ScriptTask<El<HTMLBRElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLBRElement, M, D>>,
-  p4?: ScriptTask<El<HTMLBRElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLBRElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLBRElement, M, D>>): ReactiveTreeNode<El<HTMLBRElement, M, D>> {
-  //
-  return describe(BR.name, HtmlTags.br, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLBRElement, M, D>>): RtNode<El<HTMLBRElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: BR.name,
+    driver: HtmlTags.br,
+  }))
 }
 
 // Button
 
 export function Button<M = unknown, D = unknown>(
-  setup: Script<El<HTMLButtonElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLButtonElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLButtonElement, M, D>>): ReactiveTreeNode<El<HTMLButtonElement, M, D>>
-
-export function Button<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLButtonElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLButtonElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLButtonElement, M, D>>): ReactiveTreeNode<El<HTMLButtonElement, M, D>>
-
-export function Button<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLButtonElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLButtonElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLButtonElement, M, D>>): ReactiveTreeNode<El<HTMLButtonElement, M, D>>
-
-export function Button<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLButtonElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLButtonElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLButtonElement, M, D>>): ReactiveTreeNode<El<HTMLButtonElement, M, D>>
-
-export function Button<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLButtonElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLButtonElement, M, D>>): ReactiveTreeNode<El<HTMLButtonElement, M, D>>
-
-export function Button<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLButtonElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLButtonElement, M, D>>,
-  p2?: Script<El<HTMLButtonElement, M, D>> | ScriptTask<El<HTMLButtonElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLButtonElement, M, D>>,
-  p3?: Script<El<HTMLButtonElement, M, D>> | ScriptTask<El<HTMLButtonElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLButtonElement, M, D>>,
-  p4?: ScriptTask<El<HTMLButtonElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLButtonElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLButtonElement, M, D>>): ReactiveTreeNode<El<HTMLButtonElement, M, D>> {
-  //
-  return describe(Button.name, HtmlTags.button, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLButtonElement, M, D>>): RtNode<El<HTMLButtonElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Button.name,
+    driver: HtmlTags.button,
+  }))
 }
 
 // Canvas
 
 export function Canvas<M = unknown, D = unknown>(
-  setup: Script<El<HTMLCanvasElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLCanvasElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLCanvasElement, M, D>>): ReactiveTreeNode<El<HTMLCanvasElement, M, D>>
-
-export function Canvas<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLCanvasElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLCanvasElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLCanvasElement, M, D>>): ReactiveTreeNode<El<HTMLCanvasElement, M, D>>
-
-export function Canvas<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLCanvasElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLCanvasElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLCanvasElement, M, D>>): ReactiveTreeNode<El<HTMLCanvasElement, M, D>>
-
-export function Canvas<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLCanvasElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLCanvasElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLCanvasElement, M, D>>): ReactiveTreeNode<El<HTMLCanvasElement, M, D>>
-
-export function Canvas<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLCanvasElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLCanvasElement, M, D>>): ReactiveTreeNode<El<HTMLCanvasElement, M, D>>
-
-export function Canvas<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLCanvasElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLCanvasElement, M, D>>,
-  p2?: Script<El<HTMLCanvasElement, M, D>> | ScriptTask<El<HTMLCanvasElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLCanvasElement, M, D>>,
-  p3?: Script<El<HTMLCanvasElement, M, D>> | ScriptTask<El<HTMLCanvasElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLCanvasElement, M, D>>,
-  p4?: ScriptTask<El<HTMLCanvasElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLCanvasElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLCanvasElement, M, D>>): ReactiveTreeNode<El<HTMLCanvasElement, M, D>> {
-  //
-  return describe(Canvas.name, HtmlTags.canvas, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLCanvasElement, M, D>>): RtNode<El<HTMLCanvasElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Canvas.name,
+    driver: HtmlTags.canvas,
+  }))
 }
 
 // Caption
 
 export function Caption<M = unknown, D = unknown>(
-  setup: Script<El<HTMLTableCaptionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableCaptionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M, D>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M, D>>
-
-export function Caption<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLTableCaptionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableCaptionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M, D>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M, D>>
-
-export function Caption<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLTableCaptionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableCaptionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M, D>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M, D>>
-
-export function Caption<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLTableCaptionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableCaptionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M, D>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M, D>>
-
-export function Caption<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M, D>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M, D>>
-
-export function Caption<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLTableCaptionElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M, D>>,
-  p2?: Script<El<HTMLTableCaptionElement, M, D>> | ScriptTask<El<HTMLTableCaptionElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M, D>>,
-  p3?: Script<El<HTMLTableCaptionElement, M, D>> | ScriptTask<El<HTMLTableCaptionElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M, D>>,
-  p4?: ScriptTask<El<HTMLTableCaptionElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLTableCaptionElement, M, D>>): ReactiveTreeNode<El<HTMLTableCaptionElement, M, D>> {
-  //
-  return describe(Caption.name, HtmlTags.caption, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLTableCaptionElement, M, D>>): RtNode<El<HTMLTableCaptionElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Caption.name,
+    driver: HtmlTags.caption,
+  }))
 }
 
 // Cite
 
 export function Cite<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Cite<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Cite<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Cite<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Cite<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Cite<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Cite.name, HtmlTags.cite, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Cite.name,
+    driver: HtmlTags.cite,
+  }))
 }
 
 // Code
 
 export function Code<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Code<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Code<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Code<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Code<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Code<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Code.name, HtmlTags.code, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Code.name,
+    driver: HtmlTags.code,
+  }))
 }
 
 // Col
 
 export function Col<M = unknown, D = unknown>(
-  setup: Script<El<HTMLTableColElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableColElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
-
-export function Col<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLTableColElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableColElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
-
-export function Col<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLTableColElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableColElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
-
-export function Col<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLTableColElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableColElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
-
-export function Col<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
-
-export function Col<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLTableColElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>,
-  p2?: Script<El<HTMLTableColElement, M, D>> | ScriptTask<El<HTMLTableColElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>,
-  p3?: Script<El<HTMLTableColElement, M, D>> | ScriptTask<El<HTMLTableColElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>,
-  p4?: ScriptTask<El<HTMLTableColElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>> {
-  //
-  return describe(Col.name, HtmlTags.col, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLTableColElement, M, D>>): RtNode<El<HTMLTableColElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Col.name,
+    driver: HtmlTags.col,
+  }))
 }
 
 // ColGroup
 
 export function ColGroup<M = unknown, D = unknown>(
-  setup: Script<El<HTMLTableColElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableColElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
-
-export function ColGroup<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLTableColElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableColElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
-
-export function ColGroup<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLTableColElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableColElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
-
-export function ColGroup<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLTableColElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableColElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
-
-export function ColGroup<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>>
-
-export function ColGroup<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLTableColElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>,
-  p2?: Script<El<HTMLTableColElement, M, D>> | ScriptTask<El<HTMLTableColElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>,
-  p3?: Script<El<HTMLTableColElement, M, D>> | ScriptTask<El<HTMLTableColElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>,
-  p4?: ScriptTask<El<HTMLTableColElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLTableColElement, M, D>>): ReactiveTreeNode<El<HTMLTableColElement, M, D>> {
-  //
-  return describe(ColGroup.name, HtmlTags.colgroup, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLTableColElement, M, D>>): RtNode<El<HTMLTableColElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: ColGroup.name,
+    driver: HtmlTags.colgroup,
+  }))
 }
 
 // Data
 
 export function Data<M = unknown, D = unknown>(
-  setup: Script<El<HTMLDataElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDataElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDataElement, M, D>>): ReactiveTreeNode<El<HTMLDataElement, M, D>>
-
-export function Data<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLDataElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDataElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDataElement, M, D>>): ReactiveTreeNode<El<HTMLDataElement, M, D>>
-
-export function Data<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLDataElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDataElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDataElement, M, D>>): ReactiveTreeNode<El<HTMLDataElement, M, D>>
-
-export function Data<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLDataElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDataElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDataElement, M, D>>): ReactiveTreeNode<El<HTMLDataElement, M, D>>
-
-export function Data<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLDataElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDataElement, M, D>>): ReactiveTreeNode<El<HTMLDataElement, M, D>>
-
-export function Data<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLDataElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLDataElement, M, D>>,
-  p2?: Script<El<HTMLDataElement, M, D>> | ScriptTask<El<HTMLDataElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLDataElement, M, D>>,
-  p3?: Script<El<HTMLDataElement, M, D>> | ScriptTask<El<HTMLDataElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLDataElement, M, D>>,
-  p4?: ScriptTask<El<HTMLDataElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLDataElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLDataElement, M, D>>): ReactiveTreeNode<El<HTMLDataElement, M, D>> {
-  //
-  return describe(Data.name, HtmlTags.data, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLDataElement, M, D>>): RtNode<El<HTMLDataElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Data.name,
+    driver: HtmlTags.data,
+  }))
 }
 
 // DataList
 
 export function DataList<M = unknown, D = unknown>(
-  setup: Script<El<HTMLDataListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDataListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDataListElement, M, D>>): ReactiveTreeNode<El<HTMLDataListElement, M, D>>
-
-export function DataList<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLDataListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDataListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDataListElement, M, D>>): ReactiveTreeNode<El<HTMLDataListElement, M, D>>
-
-export function DataList<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLDataListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDataListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDataListElement, M, D>>): ReactiveTreeNode<El<HTMLDataListElement, M, D>>
-
-export function DataList<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLDataListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDataListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDataListElement, M, D>>): ReactiveTreeNode<El<HTMLDataListElement, M, D>>
-
-export function DataList<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLDataListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDataListElement, M, D>>): ReactiveTreeNode<El<HTMLDataListElement, M, D>>
-
-export function DataList<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLDataListElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLDataListElement, M, D>>,
-  p2?: Script<El<HTMLDataListElement, M, D>> | ScriptTask<El<HTMLDataListElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLDataListElement, M, D>>,
-  p3?: Script<El<HTMLDataListElement, M, D>> | ScriptTask<El<HTMLDataListElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLDataListElement, M, D>>,
-  p4?: ScriptTask<El<HTMLDataListElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLDataListElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLDataListElement, M, D>>): ReactiveTreeNode<El<HTMLDataListElement, M, D>> {
-  //
-  return describe(DataList.name, HtmlTags.datalist, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLDataListElement, M, D>>): RtNode<El<HTMLDataListElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: DataList.name,
+    driver: HtmlTags.datalist,
+  }))
 }
 
 // DD
 
 export function DD<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function DD<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function DD<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function DD<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function DD<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function DD<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(DD.name, HtmlTags.dd, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: DD.name,
+    driver: HtmlTags.dd,
+  }))
 }
 
 // Del
 
 export function Del<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Del<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Del<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Del<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Del<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Del<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Del.name, HtmlTags.del, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Del.name,
+    driver: HtmlTags.del,
+  }))
 }
 
 // Details
 
 export function Details<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Details<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Details<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Details<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Details<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Details<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Details.name, HtmlTags.details, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Details.name,
+    driver: HtmlTags.details,
+  }))
 }
 
 // Dfn
 
 export function Dfn<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Dfn<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Dfn<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Dfn<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Dfn<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Dfn<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Dfn.name, HtmlTags.dfn, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Dfn.name,
+    driver: HtmlTags.dfn,
+  }))
 }
 
 // Div
 
 export function Div<M = unknown, D = unknown>(
-  setup: Script<El<HTMLDivElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDivElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDivElement, M, D>>): ReactiveTreeNode<El<HTMLDivElement, M, D>>
-
-export function Div<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLDivElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDivElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDivElement, M, D>>): ReactiveTreeNode<El<HTMLDivElement, M, D>>
-
-export function Div<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLDivElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDivElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDivElement, M, D>>): ReactiveTreeNode<El<HTMLDivElement, M, D>>
-
-export function Div<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLDivElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDivElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDivElement, M, D>>): ReactiveTreeNode<El<HTMLDivElement, M, D>>
-
-export function Div<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLDivElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDivElement, M, D>>): ReactiveTreeNode<El<HTMLDivElement, M, D>>
-
-export function Div<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLDivElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLDivElement, M, D>>,
-  p2?: Script<El<HTMLDivElement, M, D>> | ScriptTask<El<HTMLDivElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLDivElement, M, D>>,
-  p3?: Script<El<HTMLDivElement, M, D>> | ScriptTask<El<HTMLDivElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLDivElement, M, D>>,
-  p4?: ScriptTask<El<HTMLDivElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLDivElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLDivElement, M, D>>): ReactiveTreeNode<El<HTMLDivElement, M, D>> {
-  //
-  return describe(Div.name, HtmlTags.div, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLDivElement, M, D>>): RtNode<El<HTMLDivElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Div.name,
+    driver: HtmlTags.div,
+  }))
 }
 
 // DL
 
 export function DL<M = unknown, D = unknown>(
-  setup: Script<El<HTMLDListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDListElement, M, D>>): ReactiveTreeNode<El<HTMLDListElement, M, D>>
-
-export function DL<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLDListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDListElement, M, D>>): ReactiveTreeNode<El<HTMLDListElement, M, D>>
-
-export function DL<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLDListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDListElement, M, D>>): ReactiveTreeNode<El<HTMLDListElement, M, D>>
-
-export function DL<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLDListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLDListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDListElement, M, D>>): ReactiveTreeNode<El<HTMLDListElement, M, D>>
-
-export function DL<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLDListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLDListElement, M, D>>): ReactiveTreeNode<El<HTMLDListElement, M, D>>
-
-export function DL<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLDListElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLDListElement, M, D>>,
-  p2?: Script<El<HTMLDListElement, M, D>> | ScriptTask<El<HTMLDListElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLDListElement, M, D>>,
-  p3?: Script<El<HTMLDListElement, M, D>> | ScriptTask<El<HTMLDListElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLDListElement, M, D>>,
-  p4?: ScriptTask<El<HTMLDListElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLDListElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLDListElement, M, D>>): ReactiveTreeNode<El<HTMLDListElement, M, D>> {
-  //
-  return describe(DL.name, HtmlTags.dl, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLDListElement, M, D>>): RtNode<El<HTMLDListElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: DL.name,
+    driver: HtmlTags.dl,
+  }))
 }
 
 // DT
 
 export function DT<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function DT<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function DT<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function DT<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function DT<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function DT<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(DT.name, HtmlTags.dt, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: DT.name,
+    driver: HtmlTags.dt,
+  }))
 }
 
 // EM
 
 export function EM<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function EM<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function EM<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function EM<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function EM<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function EM<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(EM.name, HtmlTags.em, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: EM.name,
+    driver: HtmlTags.em,
+  }))
 }
 
 // Embed
 
 export function Embed<M = unknown, D = unknown>(
-  setup: Script<El<HTMLEmbedElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLEmbedElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLEmbedElement, M, D>>): ReactiveTreeNode<El<HTMLEmbedElement, M, D>>
-
-export function Embed<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLEmbedElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLEmbedElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLEmbedElement, M, D>>): ReactiveTreeNode<El<HTMLEmbedElement, M, D>>
-
-export function Embed<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLEmbedElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLEmbedElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLEmbedElement, M, D>>): ReactiveTreeNode<El<HTMLEmbedElement, M, D>>
-
-export function Embed<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLEmbedElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLEmbedElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLEmbedElement, M, D>>): ReactiveTreeNode<El<HTMLEmbedElement, M, D>>
-
-export function Embed<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLEmbedElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLEmbedElement, M, D>>): ReactiveTreeNode<El<HTMLEmbedElement, M, D>>
-
-export function Embed<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLEmbedElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLEmbedElement, M, D>>,
-  p2?: Script<El<HTMLEmbedElement, M, D>> | ScriptTask<El<HTMLEmbedElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLEmbedElement, M, D>>,
-  p3?: Script<El<HTMLEmbedElement, M, D>> | ScriptTask<El<HTMLEmbedElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLEmbedElement, M, D>>,
-  p4?: ScriptTask<El<HTMLEmbedElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLEmbedElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLEmbedElement, M, D>>): ReactiveTreeNode<El<HTMLEmbedElement, M, D>> {
-  //
-  return describe(Embed.name, HtmlTags.embed, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLEmbedElement, M, D>>): RtNode<El<HTMLEmbedElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Embed.name,
+    driver: HtmlTags.embed,
+  }))
 }
 
 // FieldSet
 
 export function FieldSet<M = unknown, D = unknown>(
-  setup: Script<El<HTMLFieldSetElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLFieldSetElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M, D>>): ReactiveTreeNode<El<HTMLFieldSetElement, M, D>>
-
-export function FieldSet<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLFieldSetElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLFieldSetElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M, D>>): ReactiveTreeNode<El<HTMLFieldSetElement, M, D>>
-
-export function FieldSet<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLFieldSetElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLFieldSetElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M, D>>): ReactiveTreeNode<El<HTMLFieldSetElement, M, D>>
-
-export function FieldSet<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLFieldSetElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLFieldSetElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M, D>>): ReactiveTreeNode<El<HTMLFieldSetElement, M, D>>
-
-export function FieldSet<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M, D>>): ReactiveTreeNode<El<HTMLFieldSetElement, M, D>>
-
-export function FieldSet<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLFieldSetElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M, D>>,
-  p2?: Script<El<HTMLFieldSetElement, M, D>> | ScriptTask<El<HTMLFieldSetElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M, D>>,
-  p3?: Script<El<HTMLFieldSetElement, M, D>> | ScriptTask<El<HTMLFieldSetElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M, D>>,
-  p4?: ScriptTask<El<HTMLFieldSetElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLFieldSetElement, M, D>>): ReactiveTreeNode<El<HTMLFieldSetElement, M, D>> {
-  //
-  return describe(FieldSet.name, HtmlTags.fieldset, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLFieldSetElement, M, D>>): RtNode<El<HTMLFieldSetElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: FieldSet.name,
+    driver: HtmlTags.fieldset,
+  }))
 }
 
 // FigCaption
 
 export function FigCaption<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function FigCaption<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function FigCaption<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function FigCaption<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function FigCaption<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function FigCaption<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(FigCaption.name, HtmlTags.figcaption, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: FigCaption.name,
+    driver: HtmlTags.figcaption,
+  }))
 }
 
 // Figure
 
 export function Figure<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Figure<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Figure<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Figure<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Figure<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Figure<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Figure.name, HtmlTags.figure, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Figure.name,
+    driver: HtmlTags.figure,
+  }))
 }
 
 // Footer
 
 export function Footer<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Footer<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Footer<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Footer<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Footer<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Footer<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Footer.name, HtmlTags.footer, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Footer.name,
+    driver: HtmlTags.footer,
+  }))
 }
 
 // Form
 
 export function Form<M = unknown, D = unknown>(
-  setup: Script<El<HTMLFormElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLFormElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLFormElement, M, D>>): ReactiveTreeNode<El<HTMLFormElement, M, D>>
-
-export function Form<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLFormElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLFormElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLFormElement, M, D>>): ReactiveTreeNode<El<HTMLFormElement, M, D>>
-
-export function Form<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLFormElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLFormElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLFormElement, M, D>>): ReactiveTreeNode<El<HTMLFormElement, M, D>>
-
-export function Form<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLFormElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLFormElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLFormElement, M, D>>): ReactiveTreeNode<El<HTMLFormElement, M, D>>
-
-export function Form<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLFormElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLFormElement, M, D>>): ReactiveTreeNode<El<HTMLFormElement, M, D>>
-
-export function Form<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLFormElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLFormElement, M, D>>,
-  p2?: Script<El<HTMLFormElement, M, D>> | ScriptTask<El<HTMLFormElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLFormElement, M, D>>,
-  p3?: Script<El<HTMLFormElement, M, D>> | ScriptTask<El<HTMLFormElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLFormElement, M, D>>,
-  p4?: ScriptTask<El<HTMLFormElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLFormElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLFormElement, M, D>>): ReactiveTreeNode<El<HTMLFormElement, M, D>> {
-  //
-  return describe(Form.name, HtmlTags.form, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLFormElement, M, D>>): RtNode<El<HTMLFormElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Form.name,
+    driver: HtmlTags.form,
+  }))
 }
 
 // H1
 
 export function H1<M = unknown, D = unknown>(
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H1<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H1<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H1<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H1<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H1<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLHeadingElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p2?: Script<El<HTMLHeadingElement, M, D>> | ScriptTask<El<HTMLHeadingElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p3?: Script<El<HTMLHeadingElement, M, D>> | ScriptTask<El<HTMLHeadingElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p4?: ScriptTask<El<HTMLHeadingElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>> {
-  //
-  return describe(H1.name, HtmlTags.h1, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLHeadingElement, M, D>>): RtNode<El<HTMLHeadingElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: H1.name,
+    driver: HtmlTags.h1,
+  }))
 }
 
 // H2
 
 export function H2<M = unknown, D = unknown>(
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H2<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H2<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H2<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H2<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H2<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLHeadingElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p2?: Script<El<HTMLHeadingElement, M, D>> | ScriptTask<El<HTMLHeadingElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p3?: Script<El<HTMLHeadingElement, M, D>> | ScriptTask<El<HTMLHeadingElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p4?: ScriptTask<El<HTMLHeadingElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>> {
-  //
-  return describe(H2.name, HtmlTags.h2, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLHeadingElement, M, D>>): RtNode<El<HTMLHeadingElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: H2.name,
+    driver: HtmlTags.h2,
+  }))
 }
 
 // H3
 
 export function H3<M = unknown, D = unknown>(
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H3<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H3<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H3<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H3<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H3<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLHeadingElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p2?: Script<El<HTMLHeadingElement, M, D>> | ScriptTask<El<HTMLHeadingElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p3?: Script<El<HTMLHeadingElement, M, D>> | ScriptTask<El<HTMLHeadingElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p4?: ScriptTask<El<HTMLHeadingElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>> {
-  //
-  return describe(H3.name, HtmlTags.h3, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLHeadingElement, M, D>>): RtNode<El<HTMLHeadingElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: H3.name,
+    driver: HtmlTags.h3,
+  }))
 }
 
 // H4
 
 export function H4<M = unknown, D = unknown>(
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H4<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H4<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H4<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H4<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H4<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLHeadingElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p2?: Script<El<HTMLHeadingElement, M, D>> | ScriptTask<El<HTMLHeadingElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p3?: Script<El<HTMLHeadingElement, M, D>> | ScriptTask<El<HTMLHeadingElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p4?: ScriptTask<El<HTMLHeadingElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>> {
-  //
-  return describe(H4.name, HtmlTags.h4, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLHeadingElement, M, D>>): RtNode<El<HTMLHeadingElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: H4.name,
+    driver: HtmlTags.h4,
+  }))
 }
 
 // H5
 
 export function H5<M = unknown, D = unknown>(
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H5<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H5<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H5<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H5<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H5<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLHeadingElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p2?: Script<El<HTMLHeadingElement, M, D>> | ScriptTask<El<HTMLHeadingElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p3?: Script<El<HTMLHeadingElement, M, D>> | ScriptTask<El<HTMLHeadingElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p4?: ScriptTask<El<HTMLHeadingElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>> {
-  //
-  return describe(H5.name, HtmlTags.h5, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLHeadingElement, M, D>>): RtNode<El<HTMLHeadingElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: H5.name,
+    driver: HtmlTags.h5,
+  }))
 }
 
 // H6
 
 export function H6<M = unknown, D = unknown>(
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H6<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H6<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H6<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLHeadingElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H6<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>>
-
-export function H6<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLHeadingElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p2?: Script<El<HTMLHeadingElement, M, D>> | ScriptTask<El<HTMLHeadingElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p3?: Script<El<HTMLHeadingElement, M, D>> | ScriptTask<El<HTMLHeadingElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p4?: ScriptTask<El<HTMLHeadingElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLHeadingElement, M, D>>): ReactiveTreeNode<El<HTMLHeadingElement, M, D>> {
-  //
-  return describe(H6.name, HtmlTags.h6, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLHeadingElement, M, D>>): RtNode<El<HTMLHeadingElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: H6.name,
+    driver: HtmlTags.h6,
+  }))
 }
 
 // Head
 
 export function Head<M = unknown, D = unknown>(
-  setup: Script<El<HTMLHeadElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadElement, M, D>>): ReactiveTreeNode<El<HTMLHeadElement, M, D>>
-
-export function Head<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLHeadElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadElement, M, D>>): ReactiveTreeNode<El<HTMLHeadElement, M, D>>
-
-export function Head<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLHeadElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadElement, M, D>>): ReactiveTreeNode<El<HTMLHeadElement, M, D>>
-
-export function Head<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLHeadElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHeadElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadElement, M, D>>): ReactiveTreeNode<El<HTMLHeadElement, M, D>>
-
-export function Head<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLHeadElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHeadElement, M, D>>): ReactiveTreeNode<El<HTMLHeadElement, M, D>>
-
-export function Head<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLHeadElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHeadElement, M, D>>,
-  p2?: Script<El<HTMLHeadElement, M, D>> | ScriptTask<El<HTMLHeadElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLHeadElement, M, D>>,
-  p3?: Script<El<HTMLHeadElement, M, D>> | ScriptTask<El<HTMLHeadElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHeadElement, M, D>>,
-  p4?: ScriptTask<El<HTMLHeadElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHeadElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLHeadElement, M, D>>): ReactiveTreeNode<El<HTMLHeadElement, M, D>> {
-  //
-  return describe(Head.name, HtmlTags.head, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLHeadElement, M, D>>): RtNode<El<HTMLHeadElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Head.name,
+    driver: HtmlTags.head,
+  }))
 }
 
 // Header
 
 export function Header<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Header<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Header<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Header<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Header<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Header<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Header.name, HtmlTags.header, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Header.name,
+    driver: HtmlTags.header,
+  }))
 }
 
 // HGroup
 
 export function HGroup<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function HGroup<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function HGroup<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function HGroup<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function HGroup<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function HGroup<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(HGroup.name, HtmlTags.hgroup, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: HGroup.name,
+    driver: HtmlTags.hgroup,
+  }))
 }
 
 // HR
 
 export function HR<M = unknown, D = unknown>(
-  setup: Script<El<HTMLHRElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHRElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHRElement, M, D>>): ReactiveTreeNode<El<HTMLHRElement, M, D>>
-
-export function HR<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLHRElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHRElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHRElement, M, D>>): ReactiveTreeNode<El<HTMLHRElement, M, D>>
-
-export function HR<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLHRElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHRElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHRElement, M, D>>): ReactiveTreeNode<El<HTMLHRElement, M, D>>
-
-export function HR<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLHRElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHRElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHRElement, M, D>>): ReactiveTreeNode<El<HTMLHRElement, M, D>>
-
-export function HR<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLHRElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHRElement, M, D>>): ReactiveTreeNode<El<HTMLHRElement, M, D>>
-
-export function HR<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLHRElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHRElement, M, D>>,
-  p2?: Script<El<HTMLHRElement, M, D>> | ScriptTask<El<HTMLHRElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLHRElement, M, D>>,
-  p3?: Script<El<HTMLHRElement, M, D>> | ScriptTask<El<HTMLHRElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHRElement, M, D>>,
-  p4?: ScriptTask<El<HTMLHRElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHRElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLHRElement, M, D>>): ReactiveTreeNode<El<HTMLHRElement, M, D>> {
-  //
-  return describe(HR.name, HtmlTags.hr, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLHRElement, M, D>>): RtNode<El<HTMLHRElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: HR.name,
+    driver: HtmlTags.hr,
+  }))
 }
 
 // Html
 
 export function Html<M = unknown, D = unknown>(
-  setup: Script<El<HTMLHtmlElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHtmlElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHtmlElement, M, D>>): ReactiveTreeNode<El<HTMLHtmlElement, M, D>>
-
-export function Html<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLHtmlElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHtmlElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHtmlElement, M, D>>): ReactiveTreeNode<El<HTMLHtmlElement, M, D>>
-
-export function Html<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLHtmlElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHtmlElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHtmlElement, M, D>>): ReactiveTreeNode<El<HTMLHtmlElement, M, D>>
-
-export function Html<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLHtmlElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLHtmlElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHtmlElement, M, D>>): ReactiveTreeNode<El<HTMLHtmlElement, M, D>>
-
-export function Html<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLHtmlElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLHtmlElement, M, D>>): ReactiveTreeNode<El<HTMLHtmlElement, M, D>>
-
-export function Html<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLHtmlElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLHtmlElement, M, D>>,
-  p2?: Script<El<HTMLHtmlElement, M, D>> | ScriptTask<El<HTMLHtmlElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLHtmlElement, M, D>>,
-  p3?: Script<El<HTMLHtmlElement, M, D>> | ScriptTask<El<HTMLHtmlElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHtmlElement, M, D>>,
-  p4?: ScriptTask<El<HTMLHtmlElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLHtmlElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLHtmlElement, M, D>>): ReactiveTreeNode<El<HTMLHtmlElement, M, D>> {
-  //
-  return describe(Html.name, HtmlTags.html, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLHtmlElement, M, D>>): RtNode<El<HTMLHtmlElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Html.name,
+    driver: HtmlTags.html,
+  }))
 }
 
 // I
 
 export function I<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function I<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function I<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function I<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function I<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function I<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(I.name, HtmlTags.i, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: I.name,
+    driver: HtmlTags.i,
+  }))
 }
 
 // IFrame
 
 export function IFrame<M = unknown, D = unknown>(
-  setup: Script<El<HTMLIFrameElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLIFrameElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLIFrameElement, M, D>>): ReactiveTreeNode<El<HTMLIFrameElement, M, D>>
-
-export function IFrame<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLIFrameElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLIFrameElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLIFrameElement, M, D>>): ReactiveTreeNode<El<HTMLIFrameElement, M, D>>
-
-export function IFrame<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLIFrameElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLIFrameElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLIFrameElement, M, D>>): ReactiveTreeNode<El<HTMLIFrameElement, M, D>>
-
-export function IFrame<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLIFrameElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLIFrameElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLIFrameElement, M, D>>): ReactiveTreeNode<El<HTMLIFrameElement, M, D>>
-
-export function IFrame<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLIFrameElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLIFrameElement, M, D>>): ReactiveTreeNode<El<HTMLIFrameElement, M, D>>
-
-export function IFrame<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLIFrameElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLIFrameElement, M, D>>,
-  p2?: Script<El<HTMLIFrameElement, M, D>> | ScriptTask<El<HTMLIFrameElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLIFrameElement, M, D>>,
-  p3?: Script<El<HTMLIFrameElement, M, D>> | ScriptTask<El<HTMLIFrameElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLIFrameElement, M, D>>,
-  p4?: ScriptTask<El<HTMLIFrameElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLIFrameElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLIFrameElement, M, D>>): ReactiveTreeNode<El<HTMLIFrameElement, M, D>> {
-  //
-  return describe(IFrame.name, HtmlTags.iframe, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLIFrameElement, M, D>>): RtNode<El<HTMLIFrameElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: IFrame.name,
+    driver: HtmlTags.iframe,
+  }))
 }
 
 // Img
 
 export function Img<M = unknown, D = unknown>(
-  setup: Script<El<HTMLImageElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLImageElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLImageElement, M, D>>): ReactiveTreeNode<El<HTMLImageElement, M, D>>
-
-export function Img<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLImageElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLImageElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLImageElement, M, D>>): ReactiveTreeNode<El<HTMLImageElement, M, D>>
-
-export function Img<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLImageElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLImageElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLImageElement, M, D>>): ReactiveTreeNode<El<HTMLImageElement, M, D>>
-
-export function Img<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLImageElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLImageElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLImageElement, M, D>>): ReactiveTreeNode<El<HTMLImageElement, M, D>>
-
-export function Img<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLImageElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLImageElement, M, D>>): ReactiveTreeNode<El<HTMLImageElement, M, D>>
-
-export function Img<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLImageElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLImageElement, M, D>>,
-  p2?: Script<El<HTMLImageElement, M, D>> | ScriptTask<El<HTMLImageElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLImageElement, M, D>>,
-  p3?: Script<El<HTMLImageElement, M, D>> | ScriptTask<El<HTMLImageElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLImageElement, M, D>>,
-  p4?: ScriptTask<El<HTMLImageElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLImageElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLImageElement, M, D>>): ReactiveTreeNode<El<HTMLImageElement, M, D>> {
-  //
-  return describe(Img.name, HtmlTags.img, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLImageElement, M, D>>): RtNode<El<HTMLImageElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Img.name,
+    driver: HtmlTags.img,
+  }))
 }
 
 // Input
 
 export function Input<M = unknown, D = unknown>(
-  setup: Script<El<HTMLInputElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLInputElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLInputElement, M, D>>): ReactiveTreeNode<El<HTMLInputElement, M, D>>
-
-export function Input<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLInputElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLInputElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLInputElement, M, D>>): ReactiveTreeNode<El<HTMLInputElement, M, D>>
-
-export function Input<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLInputElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLInputElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLInputElement, M, D>>): ReactiveTreeNode<El<HTMLInputElement, M, D>>
-
-export function Input<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLInputElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLInputElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLInputElement, M, D>>): ReactiveTreeNode<El<HTMLInputElement, M, D>>
-
-export function Input<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLInputElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLInputElement, M, D>>): ReactiveTreeNode<El<HTMLInputElement, M, D>>
-
-export function Input<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLInputElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLInputElement, M, D>>,
-  p2?: Script<El<HTMLInputElement, M, D>> | ScriptTask<El<HTMLInputElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLInputElement, M, D>>,
-  p3?: Script<El<HTMLInputElement, M, D>> | ScriptTask<El<HTMLInputElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLInputElement, M, D>>,
-  p4?: ScriptTask<El<HTMLInputElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLInputElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLInputElement, M, D>>): ReactiveTreeNode<El<HTMLInputElement, M, D>> {
-  //
-  return describe(Input.name, HtmlTags.input, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLInputElement, M, D>>): RtNode<El<HTMLInputElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Input.name,
+    driver: HtmlTags.input,
+  }))
 }
 
 // Ins
 
 export function Ins<M = unknown, D = unknown>(
-  setup: Script<El<HTMLModElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLModElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLModElement, M, D>>): ReactiveTreeNode<El<HTMLModElement, M, D>>
-
-export function Ins<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLModElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLModElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLModElement, M, D>>): ReactiveTreeNode<El<HTMLModElement, M, D>>
-
-export function Ins<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLModElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLModElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLModElement, M, D>>): ReactiveTreeNode<El<HTMLModElement, M, D>>
-
-export function Ins<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLModElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLModElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLModElement, M, D>>): ReactiveTreeNode<El<HTMLModElement, M, D>>
-
-export function Ins<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLModElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLModElement, M, D>>): ReactiveTreeNode<El<HTMLModElement, M, D>>
-
-export function Ins<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLModElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLModElement, M, D>>,
-  p2?: Script<El<HTMLModElement, M, D>> | ScriptTask<El<HTMLModElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLModElement, M, D>>,
-  p3?: Script<El<HTMLModElement, M, D>> | ScriptTask<El<HTMLModElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLModElement, M, D>>,
-  p4?: ScriptTask<El<HTMLModElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLModElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLModElement, M, D>>): ReactiveTreeNode<El<HTMLModElement, M, D>> {
-  //
-  return describe(Ins.name, HtmlTags.ins, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLModElement, M, D>>): RtNode<El<HTMLModElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Ins.name,
+    driver: HtmlTags.ins,
+  }))
 }
 
 // Kbd
 
 export function Kbd<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Kbd<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Kbd<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Kbd<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Kbd<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Kbd<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Kbd.name, HtmlTags.kbd, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Kbd.name,
+    driver: HtmlTags.kbd,
+  }))
 }
 
 // KeyGen
 
 export function KeyGen<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function KeyGen<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function KeyGen<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function KeyGen<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function KeyGen<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function KeyGen<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(KeyGen.name, HtmlTags.keygen, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: KeyGen.name,
+    driver: HtmlTags.keygen,
+  }))
 }
 
 // Label
 
 export function Label<M = unknown, D = unknown>(
-  setup: Script<El<HTMLLabelElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLabelElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLabelElement, M, D>>): ReactiveTreeNode<El<HTMLLabelElement, M, D>>
-
-export function Label<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLLabelElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLabelElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLabelElement, M, D>>): ReactiveTreeNode<El<HTMLLabelElement, M, D>>
-
-export function Label<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLLabelElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLabelElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLabelElement, M, D>>): ReactiveTreeNode<El<HTMLLabelElement, M, D>>
-
-export function Label<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLLabelElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLabelElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLabelElement, M, D>>): ReactiveTreeNode<El<HTMLLabelElement, M, D>>
-
-export function Label<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLLabelElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLabelElement, M, D>>): ReactiveTreeNode<El<HTMLLabelElement, M, D>>
-
-export function Label<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLLabelElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLLabelElement, M, D>>,
-  p2?: Script<El<HTMLLabelElement, M, D>> | ScriptTask<El<HTMLLabelElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLLabelElement, M, D>>,
-  p3?: Script<El<HTMLLabelElement, M, D>> | ScriptTask<El<HTMLLabelElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLLabelElement, M, D>>,
-  p4?: ScriptTask<El<HTMLLabelElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLLabelElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLLabelElement, M, D>>): ReactiveTreeNode<El<HTMLLabelElement, M, D>> {
-  //
-  return describe(Label.name, HtmlTags.label, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLLabelElement, M, D>>): RtNode<El<HTMLLabelElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Label.name,
+    driver: HtmlTags.label,
+  }))
 }
 
 // Legend
 
 export function Legend<M = unknown, D = unknown>(
-  setup: Script<El<HTMLLegendElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLegendElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLegendElement, M, D>>): ReactiveTreeNode<El<HTMLLegendElement, M, D>>
-
-export function Legend<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLLegendElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLegendElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLegendElement, M, D>>): ReactiveTreeNode<El<HTMLLegendElement, M, D>>
-
-export function Legend<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLLegendElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLegendElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLegendElement, M, D>>): ReactiveTreeNode<El<HTMLLegendElement, M, D>>
-
-export function Legend<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLLegendElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLegendElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLegendElement, M, D>>): ReactiveTreeNode<El<HTMLLegendElement, M, D>>
-
-export function Legend<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLLegendElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLegendElement, M, D>>): ReactiveTreeNode<El<HTMLLegendElement, M, D>>
-
-export function Legend<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLLegendElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLLegendElement, M, D>>,
-  p2?: Script<El<HTMLLegendElement, M, D>> | ScriptTask<El<HTMLLegendElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLLegendElement, M, D>>,
-  p3?: Script<El<HTMLLegendElement, M, D>> | ScriptTask<El<HTMLLegendElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLLegendElement, M, D>>,
-  p4?: ScriptTask<El<HTMLLegendElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLLegendElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLLegendElement, M, D>>): ReactiveTreeNode<El<HTMLLegendElement, M, D>> {
-  //
-  return describe(Legend.name, HtmlTags.legend, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLLegendElement, M, D>>): RtNode<El<HTMLLegendElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Legend.name,
+    driver: HtmlTags.legend,
+  }))
 }
 
 // LI
 
 export function LI<M = unknown, D = unknown>(
-  setup: Script<El<HTMLLIElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLIElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLIElement, M, D>>): ReactiveTreeNode<El<HTMLLIElement, M, D>>
-
-export function LI<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLLIElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLIElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLIElement, M, D>>): ReactiveTreeNode<El<HTMLLIElement, M, D>>
-
-export function LI<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLLIElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLIElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLIElement, M, D>>): ReactiveTreeNode<El<HTMLLIElement, M, D>>
-
-export function LI<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLLIElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLIElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLIElement, M, D>>): ReactiveTreeNode<El<HTMLLIElement, M, D>>
-
-export function LI<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLLIElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLIElement, M, D>>): ReactiveTreeNode<El<HTMLLIElement, M, D>>
-
-export function LI<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLLIElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLLIElement, M, D>>,
-  p2?: Script<El<HTMLLIElement, M, D>> | ScriptTask<El<HTMLLIElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLLIElement, M, D>>,
-  p3?: Script<El<HTMLLIElement, M, D>> | ScriptTask<El<HTMLLIElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLLIElement, M, D>>,
-  p4?: ScriptTask<El<HTMLLIElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLLIElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLLIElement, M, D>>): ReactiveTreeNode<El<HTMLLIElement, M, D>> {
-  //
-  return describe(LI.name, HtmlTags.li, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLLIElement, M, D>>): RtNode<El<HTMLLIElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: LI.name,
+    driver: HtmlTags.li,
+  }))
 }
 
 // Link
 
 export function Link<M = unknown, D = unknown>(
-  setup: Script<El<HTMLLinkElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLinkElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLinkElement, M, D>>): ReactiveTreeNode<El<HTMLLinkElement, M, D>>
-
-export function Link<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLLinkElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLinkElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLinkElement, M, D>>): ReactiveTreeNode<El<HTMLLinkElement, M, D>>
-
-export function Link<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLLinkElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLinkElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLinkElement, M, D>>): ReactiveTreeNode<El<HTMLLinkElement, M, D>>
-
-export function Link<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLLinkElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLLinkElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLinkElement, M, D>>): ReactiveTreeNode<El<HTMLLinkElement, M, D>>
-
-export function Link<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLLinkElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLLinkElement, M, D>>): ReactiveTreeNode<El<HTMLLinkElement, M, D>>
-
-export function Link<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLLinkElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLLinkElement, M, D>>,
-  p2?: Script<El<HTMLLinkElement, M, D>> | ScriptTask<El<HTMLLinkElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLLinkElement, M, D>>,
-  p3?: Script<El<HTMLLinkElement, M, D>> | ScriptTask<El<HTMLLinkElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLLinkElement, M, D>>,
-  p4?: ScriptTask<El<HTMLLinkElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLLinkElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLLinkElement, M, D>>): ReactiveTreeNode<El<HTMLLinkElement, M, D>> {
-  //
-  return describe(Link.name, HtmlTags.link, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLLinkElement, M, D>>): RtNode<El<HTMLLinkElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Link.name,
+    driver: HtmlTags.link,
+  }))
 }
 
 // Main
 
 export function Main<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Main<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Main<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Main<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Main<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Main<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Main.name, HtmlTags.main, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Main.name,
+    driver: HtmlTags.main,
+  }))
 }
 
 // Map
 
 export function Map<M = unknown, D = unknown>(
-  setup: Script<El<HTMLMapElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLMapElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLMapElement, M, D>>): ReactiveTreeNode<El<HTMLMapElement, M, D>>
-
-export function Map<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLMapElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLMapElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLMapElement, M, D>>): ReactiveTreeNode<El<HTMLMapElement, M, D>>
-
-export function Map<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLMapElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLMapElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLMapElement, M, D>>): ReactiveTreeNode<El<HTMLMapElement, M, D>>
-
-export function Map<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLMapElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLMapElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLMapElement, M, D>>): ReactiveTreeNode<El<HTMLMapElement, M, D>>
-
-export function Map<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLMapElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLMapElement, M, D>>): ReactiveTreeNode<El<HTMLMapElement, M, D>>
-
-export function Map<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLMapElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLMapElement, M, D>>,
-  p2?: Script<El<HTMLMapElement, M, D>> | ScriptTask<El<HTMLMapElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLMapElement, M, D>>,
-  p3?: Script<El<HTMLMapElement, M, D>> | ScriptTask<El<HTMLMapElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLMapElement, M, D>>,
-  p4?: ScriptTask<El<HTMLMapElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLMapElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLMapElement, M, D>>): ReactiveTreeNode<El<HTMLMapElement, M, D>> {
-  //
-  return describe(Map.name, HtmlTags.map, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLMapElement, M, D>>): RtNode<El<HTMLMapElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Map.name,
+    driver: HtmlTags.map,
+  }))
 }
 
 // Mark
 
 export function Mark<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Mark<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Mark<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Mark<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Mark<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Mark<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Mark.name, HtmlTags.mark, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Mark.name,
+    driver: HtmlTags.mark,
+  }))
 }
 
 // Menu
 
 export function Menu<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Menu<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Menu<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Menu<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Menu<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Menu<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Menu.name, HtmlTags.menu, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Menu.name,
+    driver: HtmlTags.menu,
+  }))
 }
 
 // MenuItem
 
 export function MenuItem<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function MenuItem<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function MenuItem<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function MenuItem<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function MenuItem<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function MenuItem<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(MenuItem.name, HtmlTags.menuitem, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: MenuItem.name,
+    driver: HtmlTags.menuitem,
+  }))
 }
 
 // Meta
 
 export function Meta<M = unknown, D = unknown>(
-  setup: Script<El<HTMLMetaElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLMetaElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLMetaElement, M, D>>): ReactiveTreeNode<El<HTMLMetaElement, M, D>>
-
-export function Meta<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLMetaElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLMetaElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLMetaElement, M, D>>): ReactiveTreeNode<El<HTMLMetaElement, M, D>>
-
-export function Meta<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLMetaElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLMetaElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLMetaElement, M, D>>): ReactiveTreeNode<El<HTMLMetaElement, M, D>>
-
-export function Meta<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLMetaElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLMetaElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLMetaElement, M, D>>): ReactiveTreeNode<El<HTMLMetaElement, M, D>>
-
-export function Meta<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLMetaElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLMetaElement, M, D>>): ReactiveTreeNode<El<HTMLMetaElement, M, D>>
-
-export function Meta<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLMetaElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLMetaElement, M, D>>,
-  p2?: Script<El<HTMLMetaElement, M, D>> | ScriptTask<El<HTMLMetaElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLMetaElement, M, D>>,
-  p3?: Script<El<HTMLMetaElement, M, D>> | ScriptTask<El<HTMLMetaElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLMetaElement, M, D>>,
-  p4?: ScriptTask<El<HTMLMetaElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLMetaElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLMetaElement, M, D>>): ReactiveTreeNode<El<HTMLMetaElement, M, D>> {
-  //
-  return describe(Meta.name, HtmlTags.meta, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLMetaElement, M, D>>): RtNode<El<HTMLMetaElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Meta.name,
+    driver: HtmlTags.meta,
+  }))
 }
 
 // Meter
 
 export function Meter<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Meter<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Meter<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Meter<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Meter<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Meter<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Meter.name, HtmlTags.meter, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Meter.name,
+    driver: HtmlTags.meter,
+  }))
 }
 
 // Nav
 
 export function Nav<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Nav<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Nav<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Nav<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Nav<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Nav<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Nav.name, HtmlTags.nav, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Nav.name,
+    driver: HtmlTags.nav,
+  }))
 }
 
 // NoIndex
 
 export function NoIndex<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function NoIndex<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function NoIndex<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function NoIndex<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function NoIndex<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function NoIndex<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(NoIndex.name, HtmlTags.noindex, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: NoIndex.name,
+    driver: HtmlTags.noindex,
+  }))
 }
 
 // NoScript
 
 export function NoScript<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function NoScript<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function NoScript<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function NoScript<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function NoScript<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function NoScript<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(NoScript.name, HtmlTags.noscript, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: NoScript.name,
+    driver: HtmlTags.noscript,
+  }))
 }
 
 // Obj
 
 export function Obj<M = unknown, D = unknown>(
-  setup: Script<El<HTMLObjectElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLObjectElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLObjectElement, M, D>>): ReactiveTreeNode<El<HTMLObjectElement, M, D>>
-
-export function Obj<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLObjectElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLObjectElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLObjectElement, M, D>>): ReactiveTreeNode<El<HTMLObjectElement, M, D>>
-
-export function Obj<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLObjectElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLObjectElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLObjectElement, M, D>>): ReactiveTreeNode<El<HTMLObjectElement, M, D>>
-
-export function Obj<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLObjectElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLObjectElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLObjectElement, M, D>>): ReactiveTreeNode<El<HTMLObjectElement, M, D>>
-
-export function Obj<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLObjectElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLObjectElement, M, D>>): ReactiveTreeNode<El<HTMLObjectElement, M, D>>
-
-export function Obj<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLObjectElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLObjectElement, M, D>>,
-  p2?: Script<El<HTMLObjectElement, M, D>> | ScriptTask<El<HTMLObjectElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLObjectElement, M, D>>,
-  p3?: Script<El<HTMLObjectElement, M, D>> | ScriptTask<El<HTMLObjectElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLObjectElement, M, D>>,
-  p4?: ScriptTask<El<HTMLObjectElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLObjectElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLObjectElement, M, D>>): ReactiveTreeNode<El<HTMLObjectElement, M, D>> {
-  //
-  return describe(Obj.name, HtmlTags.object, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLObjectElement, M, D>>): RtNode<El<HTMLObjectElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Obj.name,
+    driver: HtmlTags.object,
+  }))
 }
 
 // OL
 
 export function OL<M = unknown, D = unknown>(
-  setup: Script<El<HTMLOListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLOListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOListElement, M, D>>): ReactiveTreeNode<El<HTMLOListElement, M, D>>
-
-export function OL<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLOListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLOListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOListElement, M, D>>): ReactiveTreeNode<El<HTMLOListElement, M, D>>
-
-export function OL<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLOListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLOListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOListElement, M, D>>): ReactiveTreeNode<El<HTMLOListElement, M, D>>
-
-export function OL<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLOListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLOListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOListElement, M, D>>): ReactiveTreeNode<El<HTMLOListElement, M, D>>
-
-export function OL<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLOListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOListElement, M, D>>): ReactiveTreeNode<El<HTMLOListElement, M, D>>
-
-export function OL<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLOListElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLOListElement, M, D>>,
-  p2?: Script<El<HTMLOListElement, M, D>> | ScriptTask<El<HTMLOListElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLOListElement, M, D>>,
-  p3?: Script<El<HTMLOListElement, M, D>> | ScriptTask<El<HTMLOListElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLOListElement, M, D>>,
-  p4?: ScriptTask<El<HTMLOListElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLOListElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLOListElement, M, D>>): ReactiveTreeNode<El<HTMLOListElement, M, D>> {
-  //
-  return describe(OL.name, HtmlTags.ol, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLOListElement, M, D>>): RtNode<El<HTMLOListElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: OL.name,
+    driver: HtmlTags.ol,
+  }))
 }
 
 // OptGroup
 
 export function OptGroup<M = unknown, D = unknown>(
-  setup: Script<El<HTMLOptGroupElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLOptGroupElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M, D>>): ReactiveTreeNode<El<HTMLOptGroupElement, M, D>>
-
-export function OptGroup<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLOptGroupElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLOptGroupElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M, D>>): ReactiveTreeNode<El<HTMLOptGroupElement, M, D>>
-
-export function OptGroup<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLOptGroupElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLOptGroupElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M, D>>): ReactiveTreeNode<El<HTMLOptGroupElement, M, D>>
-
-export function OptGroup<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLOptGroupElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLOptGroupElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M, D>>): ReactiveTreeNode<El<HTMLOptGroupElement, M, D>>
-
-export function OptGroup<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M, D>>): ReactiveTreeNode<El<HTMLOptGroupElement, M, D>>
-
-export function OptGroup<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLOptGroupElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M, D>>,
-  p2?: Script<El<HTMLOptGroupElement, M, D>> | ScriptTask<El<HTMLOptGroupElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M, D>>,
-  p3?: Script<El<HTMLOptGroupElement, M, D>> | ScriptTask<El<HTMLOptGroupElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M, D>>,
-  p4?: ScriptTask<El<HTMLOptGroupElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLOptGroupElement, M, D>>): ReactiveTreeNode<El<HTMLOptGroupElement, M, D>> {
-  //
-  return describe(OptGroup.name, HtmlTags.optgroup, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLOptGroupElement, M, D>>): RtNode<El<HTMLOptGroupElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: OptGroup.name,
+    driver: HtmlTags.optgroup,
+  }))
 }
 
 // Option
 
 export function Option<M = unknown, D = unknown>(
-  setup: Script<El<HTMLOptionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLOptionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOptionElement, M, D>>): ReactiveTreeNode<El<HTMLOptionElement, M, D>>
-
-export function Option<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLOptionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLOptionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOptionElement, M, D>>): ReactiveTreeNode<El<HTMLOptionElement, M, D>>
-
-export function Option<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLOptionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLOptionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOptionElement, M, D>>): ReactiveTreeNode<El<HTMLOptionElement, M, D>>
-
-export function Option<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLOptionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLOptionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOptionElement, M, D>>): ReactiveTreeNode<El<HTMLOptionElement, M, D>>
-
-export function Option<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLOptionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLOptionElement, M, D>>): ReactiveTreeNode<El<HTMLOptionElement, M, D>>
-
-export function Option<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLOptionElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLOptionElement, M, D>>,
-  p2?: Script<El<HTMLOptionElement, M, D>> | ScriptTask<El<HTMLOptionElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLOptionElement, M, D>>,
-  p3?: Script<El<HTMLOptionElement, M, D>> | ScriptTask<El<HTMLOptionElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLOptionElement, M, D>>,
-  p4?: ScriptTask<El<HTMLOptionElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLOptionElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLOptionElement, M, D>>): ReactiveTreeNode<El<HTMLOptionElement, M, D>> {
-  //
-  return describe(Option.name, HtmlTags.option, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLOptionElement, M, D>>): RtNode<El<HTMLOptionElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Option.name,
+    driver: HtmlTags.option,
+  }))
 }
 
 // Output
 
 export function Output<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Output<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Output<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Output<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Output<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Output<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Output.name, HtmlTags.output, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Output.name,
+    driver: HtmlTags.output,
+  }))
 }
 
 // P
 
 export function P<M = unknown, D = unknown>(
-  setup: Script<El<HTMLParagraphElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLParagraphElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLParagraphElement, M, D>>): ReactiveTreeNode<El<HTMLParagraphElement, M, D>>
-
-export function P<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLParagraphElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLParagraphElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLParagraphElement, M, D>>): ReactiveTreeNode<El<HTMLParagraphElement, M, D>>
-
-export function P<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLParagraphElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLParagraphElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLParagraphElement, M, D>>): ReactiveTreeNode<El<HTMLParagraphElement, M, D>>
-
-export function P<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLParagraphElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLParagraphElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLParagraphElement, M, D>>): ReactiveTreeNode<El<HTMLParagraphElement, M, D>>
-
-export function P<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLParagraphElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLParagraphElement, M, D>>): ReactiveTreeNode<El<HTMLParagraphElement, M, D>>
-
-export function P<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLParagraphElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLParagraphElement, M, D>>,
-  p2?: Script<El<HTMLParagraphElement, M, D>> | ScriptTask<El<HTMLParagraphElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLParagraphElement, M, D>>,
-  p3?: Script<El<HTMLParagraphElement, M, D>> | ScriptTask<El<HTMLParagraphElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLParagraphElement, M, D>>,
-  p4?: ScriptTask<El<HTMLParagraphElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLParagraphElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLParagraphElement, M, D>>): ReactiveTreeNode<El<HTMLParagraphElement, M, D>> {
-  //
-  return describe(P.name, HtmlTags.p, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLParagraphElement, M, D>>): RtNode<El<HTMLParagraphElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: P.name,
+    driver: HtmlTags.p,
+  }))
 }
 
 // Param
 
 export function Param<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Param<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Param<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Param<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Param<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Param<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Param.name, HtmlTags.param, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Param.name,
+    driver: HtmlTags.param,
+  }))
 }
 
 // Picture
 
 export function Picture<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Picture<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Picture<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Picture<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Picture<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Picture<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Picture.name, HtmlTags.picture, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Picture.name,
+    driver: HtmlTags.picture,
+  }))
 }
 
 // Pre
 
 export function Pre<M = unknown, D = unknown>(
-  setup: Script<El<HTMLPreElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLPreElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLPreElement, M, D>>): ReactiveTreeNode<El<HTMLPreElement, M, D>>
-
-export function Pre<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLPreElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLPreElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLPreElement, M, D>>): ReactiveTreeNode<El<HTMLPreElement, M, D>>
-
-export function Pre<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLPreElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLPreElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLPreElement, M, D>>): ReactiveTreeNode<El<HTMLPreElement, M, D>>
-
-export function Pre<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLPreElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLPreElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLPreElement, M, D>>): ReactiveTreeNode<El<HTMLPreElement, M, D>>
-
-export function Pre<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLPreElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLPreElement, M, D>>): ReactiveTreeNode<El<HTMLPreElement, M, D>>
-
-export function Pre<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLPreElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLPreElement, M, D>>,
-  p2?: Script<El<HTMLPreElement, M, D>> | ScriptTask<El<HTMLPreElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLPreElement, M, D>>,
-  p3?: Script<El<HTMLPreElement, M, D>> | ScriptTask<El<HTMLPreElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLPreElement, M, D>>,
-  p4?: ScriptTask<El<HTMLPreElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLPreElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLPreElement, M, D>>): ReactiveTreeNode<El<HTMLPreElement, M, D>> {
-  //
-  return describe(Pre.name, HtmlTags.pre, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLPreElement, M, D>>): RtNode<El<HTMLPreElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Pre.name,
+    driver: HtmlTags.pre,
+  }))
 }
 
 // Progress
 
 export function Progress<M = unknown, D = unknown>(
-  setup: Script<El<HTMLProgressElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLProgressElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLProgressElement, M, D>>): ReactiveTreeNode<El<HTMLProgressElement, M, D>>
-
-export function Progress<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLProgressElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLProgressElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLProgressElement, M, D>>): ReactiveTreeNode<El<HTMLProgressElement, M, D>>
-
-export function Progress<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLProgressElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLProgressElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLProgressElement, M, D>>): ReactiveTreeNode<El<HTMLProgressElement, M, D>>
-
-export function Progress<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLProgressElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLProgressElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLProgressElement, M, D>>): ReactiveTreeNode<El<HTMLProgressElement, M, D>>
-
-export function Progress<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLProgressElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLProgressElement, M, D>>): ReactiveTreeNode<El<HTMLProgressElement, M, D>>
-
-export function Progress<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLProgressElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLProgressElement, M, D>>,
-  p2?: Script<El<HTMLProgressElement, M, D>> | ScriptTask<El<HTMLProgressElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLProgressElement, M, D>>,
-  p3?: Script<El<HTMLProgressElement, M, D>> | ScriptTask<El<HTMLProgressElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLProgressElement, M, D>>,
-  p4?: ScriptTask<El<HTMLProgressElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLProgressElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLProgressElement, M, D>>): ReactiveTreeNode<El<HTMLProgressElement, M, D>> {
-  //
-  return describe(Progress.name, HtmlTags.progress, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLProgressElement, M, D>>): RtNode<El<HTMLProgressElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Progress.name,
+    driver: HtmlTags.progress,
+  }))
 }
 
 // Q
 
 export function Q<M = unknown, D = unknown>(
-  setup: Script<El<HTMLQuoteElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLQuoteElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLQuoteElement, M, D>>): ReactiveTreeNode<El<HTMLQuoteElement, M, D>>
-
-export function Q<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLQuoteElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLQuoteElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLQuoteElement, M, D>>): ReactiveTreeNode<El<HTMLQuoteElement, M, D>>
-
-export function Q<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLQuoteElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLQuoteElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLQuoteElement, M, D>>): ReactiveTreeNode<El<HTMLQuoteElement, M, D>>
-
-export function Q<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLQuoteElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLQuoteElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLQuoteElement, M, D>>): ReactiveTreeNode<El<HTMLQuoteElement, M, D>>
-
-export function Q<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLQuoteElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLQuoteElement, M, D>>): ReactiveTreeNode<El<HTMLQuoteElement, M, D>>
-
-export function Q<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLQuoteElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLQuoteElement, M, D>>,
-  p2?: Script<El<HTMLQuoteElement, M, D>> | ScriptTask<El<HTMLQuoteElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLQuoteElement, M, D>>,
-  p3?: Script<El<HTMLQuoteElement, M, D>> | ScriptTask<El<HTMLQuoteElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLQuoteElement, M, D>>,
-  p4?: ScriptTask<El<HTMLQuoteElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLQuoteElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLQuoteElement, M, D>>): ReactiveTreeNode<El<HTMLQuoteElement, M, D>> {
-  //
-  return describe(Q.name, HtmlTags.q, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLQuoteElement, M, D>>): RtNode<El<HTMLQuoteElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Q.name,
+    driver: HtmlTags.q,
+  }))
 }
 
 // RP
 
 export function RP<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function RP<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function RP<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function RP<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function RP<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function RP<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(RP.name, HtmlTags.rp, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: RP.name,
+    driver: HtmlTags.rp,
+  }))
 }
 
 // RT
 
 export function RT<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function RT<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function RT<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function RT<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function RT<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function RT<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(RT.name, HtmlTags.rt, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: RT.name,
+    driver: HtmlTags.rt,
+  }))
 }
 
 // Ruby
 
 export function Ruby<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Ruby<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Ruby<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Ruby<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Ruby<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Ruby<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Ruby.name, HtmlTags.ruby, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Ruby.name,
+    driver: HtmlTags.ruby,
+  }))
 }
 
 // S
 
 export function S<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function S<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function S<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function S<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function S<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function S<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(S.name, HtmlTags.s, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: S.name,
+    driver: HtmlTags.s,
+  }))
 }
 
 // Samp
 
 export function Samp<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Samp<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Samp<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Samp<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Samp<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Samp<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Samp.name, HtmlTags.samp, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Samp.name,
+    driver: HtmlTags.samp,
+  }))
 }
 
 // Script
 
 export function Script<M = unknown, D = unknown>(
-  setup: Script<El<HTMLScriptElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLScriptElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLScriptElement, M, D>>): ReactiveTreeNode<El<HTMLScriptElement, M, D>>
-
-export function Script<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLScriptElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLScriptElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLScriptElement, M, D>>): ReactiveTreeNode<El<HTMLScriptElement, M, D>>
-
-export function Script<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLScriptElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLScriptElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLScriptElement, M, D>>): ReactiveTreeNode<El<HTMLScriptElement, M, D>>
-
-export function Script<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLScriptElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLScriptElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLScriptElement, M, D>>): ReactiveTreeNode<El<HTMLScriptElement, M, D>>
-
-export function Script<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLScriptElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLScriptElement, M, D>>): ReactiveTreeNode<El<HTMLScriptElement, M, D>>
-
-export function Script<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLScriptElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLScriptElement, M, D>>,
-  p2?: Script<El<HTMLScriptElement, M, D>> | ScriptTask<El<HTMLScriptElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLScriptElement, M, D>>,
-  p3?: Script<El<HTMLScriptElement, M, D>> | ScriptTask<El<HTMLScriptElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLScriptElement, M, D>>,
-  p4?: ScriptTask<El<HTMLScriptElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLScriptElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLScriptElement, M, D>>): ReactiveTreeNode<El<HTMLScriptElement, M, D>> {
-  //
-  return describe(Script.name, HtmlTags.script, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLScriptElement, M, D>>): RtNode<El<HTMLScriptElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Script.name,
+    driver: HtmlTags.script,
+  }))
 }
 
 // Section
 
 export function Section<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Section<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Section<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Section<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Section<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Section<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Section.name, HtmlTags.section, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Section.name,
+    driver: HtmlTags.section,
+  }))
 }
 
 // Select
 
 export function Select<M = unknown, D = unknown>(
-  setup: Script<El<HTMLSelectElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLSelectElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSelectElement, M, D>>): ReactiveTreeNode<El<HTMLSelectElement, M, D>>
-
-export function Select<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLSelectElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLSelectElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSelectElement, M, D>>): ReactiveTreeNode<El<HTMLSelectElement, M, D>>
-
-export function Select<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLSelectElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLSelectElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSelectElement, M, D>>): ReactiveTreeNode<El<HTMLSelectElement, M, D>>
-
-export function Select<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLSelectElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLSelectElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSelectElement, M, D>>): ReactiveTreeNode<El<HTMLSelectElement, M, D>>
-
-export function Select<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLSelectElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSelectElement, M, D>>): ReactiveTreeNode<El<HTMLSelectElement, M, D>>
-
-export function Select<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLSelectElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLSelectElement, M, D>>,
-  p2?: Script<El<HTMLSelectElement, M, D>> | ScriptTask<El<HTMLSelectElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLSelectElement, M, D>>,
-  p3?: Script<El<HTMLSelectElement, M, D>> | ScriptTask<El<HTMLSelectElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLSelectElement, M, D>>,
-  p4?: ScriptTask<El<HTMLSelectElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLSelectElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLSelectElement, M, D>>): ReactiveTreeNode<El<HTMLSelectElement, M, D>> {
-  //
-  return describe(Select.name, HtmlTags.select, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLSelectElement, M, D>>): RtNode<El<HTMLSelectElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Select.name,
+    driver: HtmlTags.select,
+  }))
 }
 
 // Small
 
 export function Small<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Small<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Small<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Small<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Small<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Small<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Small.name, HtmlTags.small, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Small.name,
+    driver: HtmlTags.small,
+  }))
 }
 
 // Source
 
 export function Source<M = unknown, D = unknown>(
-  setup: Script<El<HTMLSourceElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLSourceElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSourceElement, M, D>>): ReactiveTreeNode<El<HTMLSourceElement, M, D>>
-
-export function Source<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLSourceElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLSourceElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSourceElement, M, D>>): ReactiveTreeNode<El<HTMLSourceElement, M, D>>
-
-export function Source<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLSourceElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLSourceElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSourceElement, M, D>>): ReactiveTreeNode<El<HTMLSourceElement, M, D>>
-
-export function Source<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLSourceElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLSourceElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSourceElement, M, D>>): ReactiveTreeNode<El<HTMLSourceElement, M, D>>
-
-export function Source<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLSourceElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSourceElement, M, D>>): ReactiveTreeNode<El<HTMLSourceElement, M, D>>
-
-export function Source<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLSourceElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLSourceElement, M, D>>,
-  p2?: Script<El<HTMLSourceElement, M, D>> | ScriptTask<El<HTMLSourceElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLSourceElement, M, D>>,
-  p3?: Script<El<HTMLSourceElement, M, D>> | ScriptTask<El<HTMLSourceElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLSourceElement, M, D>>,
-  p4?: ScriptTask<El<HTMLSourceElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLSourceElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLSourceElement, M, D>>): ReactiveTreeNode<El<HTMLSourceElement, M, D>> {
-  //
-  return describe(Source.name, HtmlTags.source, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLSourceElement, M, D>>): RtNode<El<HTMLSourceElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Source.name,
+    driver: HtmlTags.source,
+  }))
 }
 
 // Span
 
 export function Span<M = unknown, D = unknown>(
-  setup: Script<El<HTMLSpanElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLSpanElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSpanElement, M, D>>): ReactiveTreeNode<El<HTMLSpanElement, M, D>>
-
-export function Span<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLSpanElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLSpanElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSpanElement, M, D>>): ReactiveTreeNode<El<HTMLSpanElement, M, D>>
-
-export function Span<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLSpanElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLSpanElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSpanElement, M, D>>): ReactiveTreeNode<El<HTMLSpanElement, M, D>>
-
-export function Span<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLSpanElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLSpanElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSpanElement, M, D>>): ReactiveTreeNode<El<HTMLSpanElement, M, D>>
-
-export function Span<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLSpanElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLSpanElement, M, D>>): ReactiveTreeNode<El<HTMLSpanElement, M, D>>
-
-export function Span<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLSpanElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLSpanElement, M, D>>,
-  p2?: Script<El<HTMLSpanElement, M, D>> | ScriptTask<El<HTMLSpanElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLSpanElement, M, D>>,
-  p3?: Script<El<HTMLSpanElement, M, D>> | ScriptTask<El<HTMLSpanElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLSpanElement, M, D>>,
-  p4?: ScriptTask<El<HTMLSpanElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLSpanElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLSpanElement, M, D>>): ReactiveTreeNode<El<HTMLSpanElement, M, D>> {
-  //
-  return describe(Span.name, HtmlTags.span, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLSpanElement, M, D>>): RtNode<El<HTMLSpanElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Span.name,
+    driver: HtmlTags.span,
+  }))
 }
 
 // Strong
 
 export function Strong<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Strong<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Strong<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Strong<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Strong<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Strong<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Strong.name, HtmlTags.strong, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Strong.name,
+    driver: HtmlTags.strong,
+  }))
 }
 
 // Style
 
 export function Style<M = unknown, D = unknown>(
-  setup: Script<El<HTMLStyleElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLStyleElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLStyleElement, M, D>>): ReactiveTreeNode<El<HTMLStyleElement, M, D>>
-
-export function Style<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLStyleElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLStyleElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLStyleElement, M, D>>): ReactiveTreeNode<El<HTMLStyleElement, M, D>>
-
-export function Style<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLStyleElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLStyleElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLStyleElement, M, D>>): ReactiveTreeNode<El<HTMLStyleElement, M, D>>
-
-export function Style<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLStyleElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLStyleElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLStyleElement, M, D>>): ReactiveTreeNode<El<HTMLStyleElement, M, D>>
-
-export function Style<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLStyleElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLStyleElement, M, D>>): ReactiveTreeNode<El<HTMLStyleElement, M, D>>
-
-export function Style<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLStyleElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLStyleElement, M, D>>,
-  p2?: Script<El<HTMLStyleElement, M, D>> | ScriptTask<El<HTMLStyleElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLStyleElement, M, D>>,
-  p3?: Script<El<HTMLStyleElement, M, D>> | ScriptTask<El<HTMLStyleElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLStyleElement, M, D>>,
-  p4?: ScriptTask<El<HTMLStyleElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLStyleElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLStyleElement, M, D>>): ReactiveTreeNode<El<HTMLStyleElement, M, D>> {
-  //
-  return describe(Style.name, HtmlTags.style, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLStyleElement, M, D>>): RtNode<El<HTMLStyleElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Style.name,
+    driver: HtmlTags.style,
+  }))
 }
 
 // Sub
 
 export function Sub<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Sub<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Sub<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Sub<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Sub<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Sub<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Sub.name, HtmlTags.sub, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Sub.name,
+    driver: HtmlTags.sub,
+  }))
 }
 
 // Summary
 
 export function Summary<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Summary<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Summary<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Summary<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Summary<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Summary<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Summary.name, HtmlTags.summary, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Summary.name,
+    driver: HtmlTags.summary,
+  }))
 }
 
 // Sup
 
 export function Sup<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Sup<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Sup<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Sup<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Sup<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Sup<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Sup.name, HtmlTags.sup, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Sup.name,
+    driver: HtmlTags.sup,
+  }))
 }
 
 // Tbl
 
 export function Tbl<M = unknown, D = unknown>(
-  setup: Script<El<HTMLTableElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableElement, M, D>>): ReactiveTreeNode<El<HTMLTableElement, M, D>>
-
-export function Tbl<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLTableElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableElement, M, D>>): ReactiveTreeNode<El<HTMLTableElement, M, D>>
-
-export function Tbl<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLTableElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableElement, M, D>>): ReactiveTreeNode<El<HTMLTableElement, M, D>>
-
-export function Tbl<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLTableElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableElement, M, D>>): ReactiveTreeNode<El<HTMLTableElement, M, D>>
-
-export function Tbl<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLTableElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableElement, M, D>>): ReactiveTreeNode<El<HTMLTableElement, M, D>>
-
-export function Tbl<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLTableElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableElement, M, D>>,
-  p2?: Script<El<HTMLTableElement, M, D>> | ScriptTask<El<HTMLTableElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLTableElement, M, D>>,
-  p3?: Script<El<HTMLTableElement, M, D>> | ScriptTask<El<HTMLTableElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableElement, M, D>>,
-  p4?: ScriptTask<El<HTMLTableElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLTableElement, M, D>>): ReactiveTreeNode<El<HTMLTableElement, M, D>> {
-  //
-  return describe(Tbl.name, HtmlTags.table, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLTableElement, M, D>>): RtNode<El<HTMLTableElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Tbl.name,
+    driver: HtmlTags.table,
+  }))
 }
 
 // Template
 
 export function Template<M = unknown, D = unknown>(
-  setup: Script<El<HTMLTemplateElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTemplateElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTemplateElement, M, D>>): ReactiveTreeNode<El<HTMLTemplateElement, M, D>>
-
-export function Template<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLTemplateElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTemplateElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTemplateElement, M, D>>): ReactiveTreeNode<El<HTMLTemplateElement, M, D>>
-
-export function Template<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLTemplateElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTemplateElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTemplateElement, M, D>>): ReactiveTreeNode<El<HTMLTemplateElement, M, D>>
-
-export function Template<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLTemplateElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTemplateElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTemplateElement, M, D>>): ReactiveTreeNode<El<HTMLTemplateElement, M, D>>
-
-export function Template<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLTemplateElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTemplateElement, M, D>>): ReactiveTreeNode<El<HTMLTemplateElement, M, D>>
-
-export function Template<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLTemplateElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTemplateElement, M, D>>,
-  p2?: Script<El<HTMLTemplateElement, M, D>> | ScriptTask<El<HTMLTemplateElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLTemplateElement, M, D>>,
-  p3?: Script<El<HTMLTemplateElement, M, D>> | ScriptTask<El<HTMLTemplateElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTemplateElement, M, D>>,
-  p4?: ScriptTask<El<HTMLTemplateElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTemplateElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLTemplateElement, M, D>>): ReactiveTreeNode<El<HTMLTemplateElement, M, D>> {
-  //
-  return describe(Template.name, HtmlTags.template, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLTemplateElement, M, D>>): RtNode<El<HTMLTemplateElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Template.name,
+    driver: HtmlTags.template,
+  }))
 }
 
 // TBody
 
 export function TBody<M = unknown, D = unknown>(
-  setup: Script<El<HTMLTableSectionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableSectionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
-
-export function TBody<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLTableSectionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableSectionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
-
-export function TBody<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLTableSectionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableSectionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
-
-export function TBody<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLTableSectionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableSectionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
-
-export function TBody<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
-
-export function TBody<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLTableSectionElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
-  p2?: Script<El<HTMLTableSectionElement, M, D>> | ScriptTask<El<HTMLTableSectionElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
-  p3?: Script<El<HTMLTableSectionElement, M, D>> | ScriptTask<El<HTMLTableSectionElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
-  p4?: ScriptTask<El<HTMLTableSectionElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>> {
-  //
-  return describe(TBody.name, HtmlTags.tbody, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLTableSectionElement, M, D>>): RtNode<El<HTMLTableSectionElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: TBody.name,
+    driver: HtmlTags.tbody,
+  }))
 }
 
 // TD
 
 export function TD<M = unknown, D = unknown>(
-  setup: Script<El<HTMLTableCellElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableCellElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
-
-export function TD<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLTableCellElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableCellElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
-
-export function TD<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLTableCellElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableCellElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
-
-export function TD<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLTableCellElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableCellElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
-
-export function TD<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
-
-export function TD<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLTableCellElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>,
-  p2?: Script<El<HTMLTableCellElement, M, D>> | ScriptTask<El<HTMLTableCellElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>,
-  p3?: Script<El<HTMLTableCellElement, M, D>> | ScriptTask<El<HTMLTableCellElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>,
-  p4?: ScriptTask<El<HTMLTableCellElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>> {
-  //
-  return describe(TD.name, HtmlTags.td, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLTableCellElement, M, D>>): RtNode<El<HTMLTableCellElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: TD.name,
+    driver: HtmlTags.td,
+  }))
 }
 
 // TextArea
 
 export function TextArea<M = unknown, D = unknown>(
-  setup: Script<El<HTMLTextAreaElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTextAreaElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M, D>>): ReactiveTreeNode<El<HTMLTextAreaElement, M, D>>
-
-export function TextArea<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLTextAreaElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTextAreaElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M, D>>): ReactiveTreeNode<El<HTMLTextAreaElement, M, D>>
-
-export function TextArea<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLTextAreaElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTextAreaElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M, D>>): ReactiveTreeNode<El<HTMLTextAreaElement, M, D>>
-
-export function TextArea<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLTextAreaElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTextAreaElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M, D>>): ReactiveTreeNode<El<HTMLTextAreaElement, M, D>>
-
-export function TextArea<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M, D>>): ReactiveTreeNode<El<HTMLTextAreaElement, M, D>>
-
-export function TextArea<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLTextAreaElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M, D>>,
-  p2?: Script<El<HTMLTextAreaElement, M, D>> | ScriptTask<El<HTMLTextAreaElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M, D>>,
-  p3?: Script<El<HTMLTextAreaElement, M, D>> | ScriptTask<El<HTMLTextAreaElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M, D>>,
-  p4?: ScriptTask<El<HTMLTextAreaElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLTextAreaElement, M, D>>): ReactiveTreeNode<El<HTMLTextAreaElement, M, D>> {
-  //
-  return describe(TextArea.name, HtmlTags.textarea, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLTextAreaElement, M, D>>): RtNode<El<HTMLTextAreaElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: TextArea.name,
+    driver: HtmlTags.textarea,
+  }))
 }
 
 // TFoot
 
 export function TFoot<M = unknown, D = unknown>(
-  setup: Script<El<HTMLTableSectionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableSectionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
-
-export function TFoot<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLTableSectionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableSectionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
-
-export function TFoot<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLTableSectionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableSectionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
-
-export function TFoot<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLTableSectionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableSectionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
-
-export function TFoot<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
-
-export function TFoot<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLTableSectionElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
-  p2?: Script<El<HTMLTableSectionElement, M, D>> | ScriptTask<El<HTMLTableSectionElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
-  p3?: Script<El<HTMLTableSectionElement, M, D>> | ScriptTask<El<HTMLTableSectionElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
-  p4?: ScriptTask<El<HTMLTableSectionElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>> {
-  //
-  return describe(TFoot.name, HtmlTags.tfoot, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLTableSectionElement, M, D>>): RtNode<El<HTMLTableSectionElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: TFoot.name,
+    driver: HtmlTags.tfoot,
+  }))
 }
 
 // TH
 
 export function TH<M = unknown, D = unknown>(
-  setup: Script<El<HTMLTableCellElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableCellElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
-
-export function TH<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLTableCellElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableCellElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
-
-export function TH<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLTableCellElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableCellElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
-
-export function TH<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLTableCellElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableCellElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
-
-export function TH<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>>
-
-export function TH<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLTableCellElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>,
-  p2?: Script<El<HTMLTableCellElement, M, D>> | ScriptTask<El<HTMLTableCellElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>,
-  p3?: Script<El<HTMLTableCellElement, M, D>> | ScriptTask<El<HTMLTableCellElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>,
-  p4?: ScriptTask<El<HTMLTableCellElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLTableCellElement, M, D>>): ReactiveTreeNode<El<HTMLTableCellElement, M, D>> {
-  //
-  return describe(TH.name, HtmlTags.th, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLTableCellElement, M, D>>): RtNode<El<HTMLTableCellElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: TH.name,
+    driver: HtmlTags.th,
+  }))
 }
 
 // THead
 
 export function THead<M = unknown, D = unknown>(
-  setup: Script<El<HTMLTableSectionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableSectionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
-
-export function THead<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLTableSectionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableSectionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
-
-export function THead<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLTableSectionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableSectionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
-
-export function THead<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLTableSectionElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableSectionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
-
-export function THead<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>>
-
-export function THead<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLTableSectionElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
-  p2?: Script<El<HTMLTableSectionElement, M, D>> | ScriptTask<El<HTMLTableSectionElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
-  p3?: Script<El<HTMLTableSectionElement, M, D>> | ScriptTask<El<HTMLTableSectionElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
-  p4?: ScriptTask<El<HTMLTableSectionElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLTableSectionElement, M, D>>): ReactiveTreeNode<El<HTMLTableSectionElement, M, D>> {
-  //
-  return describe(THead.name, HtmlTags.thead, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLTableSectionElement, M, D>>): RtNode<El<HTMLTableSectionElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: THead.name,
+    driver: HtmlTags.thead,
+  }))
 }
 
 // Time
 
 export function Time<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Time<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Time<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Time<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Time<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Time<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Time.name, HtmlTags.time, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Time.name,
+    driver: HtmlTags.time,
+  }))
 }
 
 // Title
 
 export function Title<M = unknown, D = unknown>(
-  setup: Script<El<HTMLTitleElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTitleElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTitleElement, M, D>>): ReactiveTreeNode<El<HTMLTitleElement, M, D>>
-
-export function Title<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLTitleElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTitleElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTitleElement, M, D>>): ReactiveTreeNode<El<HTMLTitleElement, M, D>>
-
-export function Title<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLTitleElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTitleElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTitleElement, M, D>>): ReactiveTreeNode<El<HTMLTitleElement, M, D>>
-
-export function Title<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLTitleElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTitleElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTitleElement, M, D>>): ReactiveTreeNode<El<HTMLTitleElement, M, D>>
-
-export function Title<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLTitleElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTitleElement, M, D>>): ReactiveTreeNode<El<HTMLTitleElement, M, D>>
-
-export function Title<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLTitleElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTitleElement, M, D>>,
-  p2?: Script<El<HTMLTitleElement, M, D>> | ScriptTask<El<HTMLTitleElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLTitleElement, M, D>>,
-  p3?: Script<El<HTMLTitleElement, M, D>> | ScriptTask<El<HTMLTitleElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTitleElement, M, D>>,
-  p4?: ScriptTask<El<HTMLTitleElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTitleElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLTitleElement, M, D>>): ReactiveTreeNode<El<HTMLTitleElement, M, D>> {
-  //
-  return describe(Title.name, HtmlTags.title, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLTitleElement, M, D>>): RtNode<El<HTMLTitleElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Title.name,
+    driver: HtmlTags.title,
+  }))
 }
 
 // TR
 
 export function TR<M = unknown, D = unknown>(
-  setup: Script<El<HTMLTableRowElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableRowElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableRowElement, M, D>>): ReactiveTreeNode<El<HTMLTableRowElement, M, D>>
-
-export function TR<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLTableRowElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableRowElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableRowElement, M, D>>): ReactiveTreeNode<El<HTMLTableRowElement, M, D>>
-
-export function TR<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLTableRowElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableRowElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableRowElement, M, D>>): ReactiveTreeNode<El<HTMLTableRowElement, M, D>>
-
-export function TR<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLTableRowElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTableRowElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableRowElement, M, D>>): ReactiveTreeNode<El<HTMLTableRowElement, M, D>>
-
-export function TR<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLTableRowElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTableRowElement, M, D>>): ReactiveTreeNode<El<HTMLTableRowElement, M, D>>
-
-export function TR<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLTableRowElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTableRowElement, M, D>>,
-  p2?: Script<El<HTMLTableRowElement, M, D>> | ScriptTask<El<HTMLTableRowElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLTableRowElement, M, D>>,
-  p3?: Script<El<HTMLTableRowElement, M, D>> | ScriptTask<El<HTMLTableRowElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableRowElement, M, D>>,
-  p4?: ScriptTask<El<HTMLTableRowElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTableRowElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLTableRowElement, M, D>>): ReactiveTreeNode<El<HTMLTableRowElement, M, D>> {
-  //
-  return describe(TR.name, HtmlTags.tr, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLTableRowElement, M, D>>): RtNode<El<HTMLTableRowElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: TR.name,
+    driver: HtmlTags.tr,
+  }))
 }
 
 // Track
 
 export function Track<M = unknown, D = unknown>(
-  setup: Script<El<HTMLTrackElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTrackElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTrackElement, M, D>>): ReactiveTreeNode<El<HTMLTrackElement, M, D>>
-
-export function Track<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLTrackElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTrackElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTrackElement, M, D>>): ReactiveTreeNode<El<HTMLTrackElement, M, D>>
-
-export function Track<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLTrackElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTrackElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTrackElement, M, D>>): ReactiveTreeNode<El<HTMLTrackElement, M, D>>
-
-export function Track<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLTrackElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLTrackElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTrackElement, M, D>>): ReactiveTreeNode<El<HTMLTrackElement, M, D>>
-
-export function Track<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLTrackElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLTrackElement, M, D>>): ReactiveTreeNode<El<HTMLTrackElement, M, D>>
-
-export function Track<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLTrackElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLTrackElement, M, D>>,
-  p2?: Script<El<HTMLTrackElement, M, D>> | ScriptTask<El<HTMLTrackElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLTrackElement, M, D>>,
-  p3?: Script<El<HTMLTrackElement, M, D>> | ScriptTask<El<HTMLTrackElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTrackElement, M, D>>,
-  p4?: ScriptTask<El<HTMLTrackElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLTrackElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLTrackElement, M, D>>): ReactiveTreeNode<El<HTMLTrackElement, M, D>> {
-  //
-  return describe(Track.name, HtmlTags.track, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLTrackElement, M, D>>): RtNode<El<HTMLTrackElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Track.name,
+    driver: HtmlTags.track,
+  }))
 }
 
 // U
 
 export function U<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function U<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function U<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function U<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function U<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function U<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(U.name, HtmlTags.u, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: U.name,
+    driver: HtmlTags.u,
+  }))
 }
 
 // UL
 
 export function UL<M = unknown, D = unknown>(
-  setup: Script<El<HTMLUListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLUListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLUListElement, M, D>>): ReactiveTreeNode<El<HTMLUListElement, M, D>>
-
-export function UL<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLUListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLUListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLUListElement, M, D>>): ReactiveTreeNode<El<HTMLUListElement, M, D>>
-
-export function UL<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLUListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLUListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLUListElement, M, D>>): ReactiveTreeNode<El<HTMLUListElement, M, D>>
-
-export function UL<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLUListElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLUListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLUListElement, M, D>>): ReactiveTreeNode<El<HTMLUListElement, M, D>>
-
-export function UL<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLUListElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLUListElement, M, D>>): ReactiveTreeNode<El<HTMLUListElement, M, D>>
-
-export function UL<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLUListElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLUListElement, M, D>>,
-  p2?: Script<El<HTMLUListElement, M, D>> | ScriptTask<El<HTMLUListElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLUListElement, M, D>>,
-  p3?: Script<El<HTMLUListElement, M, D>> | ScriptTask<El<HTMLUListElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLUListElement, M, D>>,
-  p4?: ScriptTask<El<HTMLUListElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLUListElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLUListElement, M, D>>): ReactiveTreeNode<El<HTMLUListElement, M, D>> {
-  //
-  return describe(UL.name, HtmlTags.ul, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLUListElement, M, D>>): RtNode<El<HTMLUListElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: UL.name,
+    driver: HtmlTags.ul,
+  }))
 }
 
 // Var
 
 export function Var<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Var<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Var<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Var<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Var<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Var<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Var.name, HtmlTags.var, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Var.name,
+    driver: HtmlTags.var,
+  }))
 }
 
 // Video
 
 export function Video<M = unknown, D = unknown>(
-  setup: Script<El<HTMLVideoElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLVideoElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLVideoElement, M, D>>): ReactiveTreeNode<El<HTMLVideoElement, M, D>>
-
-export function Video<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLVideoElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLVideoElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLVideoElement, M, D>>): ReactiveTreeNode<El<HTMLVideoElement, M, D>>
-
-export function Video<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLVideoElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLVideoElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLVideoElement, M, D>>): ReactiveTreeNode<El<HTMLVideoElement, M, D>>
-
-export function Video<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLVideoElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLVideoElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLVideoElement, M, D>>): ReactiveTreeNode<El<HTMLVideoElement, M, D>>
-
-export function Video<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLVideoElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLVideoElement, M, D>>): ReactiveTreeNode<El<HTMLVideoElement, M, D>>
-
-export function Video<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLVideoElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLVideoElement, M, D>>,
-  p2?: Script<El<HTMLVideoElement, M, D>> | ScriptTask<El<HTMLVideoElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLVideoElement, M, D>>,
-  p3?: Script<El<HTMLVideoElement, M, D>> | ScriptTask<El<HTMLVideoElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLVideoElement, M, D>>,
-  p4?: ScriptTask<El<HTMLVideoElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLVideoElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLVideoElement, M, D>>): ReactiveTreeNode<El<HTMLVideoElement, M, D>> {
-  //
-  return describe(Video.name, HtmlTags.video, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLVideoElement, M, D>>): RtNode<El<HTMLVideoElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Video.name,
+    driver: HtmlTags.video,
+  }))
 }
 
 // Wbr
 
 export function Wbr<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Wbr<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Wbr<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Wbr<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Wbr<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Wbr<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Wbr.name, HtmlTags.wbr, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Wbr.name,
+    driver: HtmlTags.wbr,
+  }))
 }
-
 
 const HtmlTags = {
   a: new HtmlDriver<HTMLAnchorElement>("a", false, el => el.kind = ElKind.native),

@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDesc, ReactiveTreeNodeDriver, LinkedItem, Script, Mode, ScriptTask, describe, runNonReactive } from "reactronic"
+import { RtNode, RtElement, inherit, runNonReactive, Conf, ConfOrScript, Driver, LinkedItem } from "reactronic"
 import { El, Direction, ElKind } from "../El.js"
 import { clamp } from "../ElUtils.js"
 import { ElImpl, ElLayoutInfo, InitialElLayoutInfo } from "../ElDriver.js"
@@ -19,41 +19,11 @@ import { describeSplitter, isSplitViewPartition } from "./Splitter.js"
 // Element
 
 export function Element<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Element<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Element<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Element<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Element<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Element<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Element.name, ElementDriver.glob, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Element.name,
+    driver: ElementDriver.glob,
+  }))
 }
 
 // ElementDriver (display: flex, flex-direction: column)
@@ -66,7 +36,7 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
     super(ElementDriver.id, false, el => el.kind = ElKind.element)
   }
 
-  override runSetup(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
+  override runSetup(node: RtNode<El<T>>): void | Promise<void> {
     const el = node.element as ElImpl
     const result = super.runSetup(node)
     if (el.splitView !== undefined) {
@@ -95,7 +65,7 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
             const surroundingYpx = layoutInfo.borderSizeYpx - layoutInfo.contentSizeYpx
             let i = 0
             const preferred: Array<number> = []
-            const sizesPx: Array<{ node: ReactiveTreeNode<ElImpl>, sizePx: number }> = []
+            const sizesPx: Array<{ node: RtNode<ElImpl>, sizePx: number }> = []
             for (const child of node.children.items()) {
               const partEl = child.element as ElImpl
               if (isSplitViewPartition(child.driver) && partEl !== undefined) {
@@ -121,30 +91,30 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
                 }
                 // console.log(`%c[${i}]: ${minPx}..%c${partEl.layoutInfo.effectiveSizePx} -> ${clamp(partEl.layoutInfo!.effectiveSizePx, minPx, maxPx)}%c..${maxPx} (pref = ${preferredPx}) (px)`, "color: yellow", "color: #00BB00", "color: yellow")
                 const sizePx = partEl.layoutInfo!.effectiveSizePx = clamp(partEl.layoutInfo!.effectiveSizePx, minPx, maxPx)
-                sizesPx.push({ node: child as ReactiveTreeNode<ElImpl>, sizePx })
+                sizesPx.push({ node: child as RtNode<ElImpl>, sizePx })
                 i++
               }
             }
             const priorities = preferred.length > 0
               ? getPrioritiesForSizeChanging(isHorizontal, node.children, preferred)
               : getPrioritiesForEmptySpaceDistribution(isHorizontal, node.children)
-            runNonReactive(() => relayout(node as any as ReactiveTreeNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx))
+            runNonReactive(() => relayout(node as any as RtNode<ElImpl>, priorities.resizable, priorities.manuallyResizable, sizesPx))
           }
         },
       })
-      ReactiveTreeNode.launchNestedNodesThenDo(() => {
+      RtNode.launchNestedNodesThenDo(() => {
         layoutInfo.isUpdateFinished = true
         // WORKAROUND: As long as "isUpdateFinished = true" does not trigger relaunch of
         // "update" of Intermediate (such a relaunch requires subscriptions on values
         // of variables rather than variables themselves), we do it manually.
-        ReactiveTreeNode.launchSetup(relayoutEl, { stamp: node.stamp })
+        RtNode.launchSetup(relayoutEl, { stamp: node.stamp })
       })
     }
     return result
   }
 
-  override describeChild(ownerNode: ReactiveTreeNode<El<T, any>>, childDriver: ReactiveTreeNodeDriver<any>, childDescription?: ReactiveTreeNodeDesc<any> | undefined, childBasis?: ReactiveTreeNodeDesc<any> | undefined): LinkedItem<ReactiveTreeNode> | undefined {
-    let result: LinkedItem<ReactiveTreeNode> | undefined = undefined
+  override produceChild(ownerNode: RtNode<El<T, any>>, childDriver: Driver<any>, childConf?: Conf<any>, _childBasis?: Conf<any>): LinkedItem<RtNode> | undefined {
+    let result: LinkedItem<RtNode> | undefined = undefined
     const el = ownerNode.element as ElImpl
     if (el.splitView !== undefined) {
       if (isSplitViewPartition(childDriver)) {
@@ -154,11 +124,11 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
             partCount++
         }
         const isHorizontal = el.splitView === Direction.horizontal
-        if (childDescription !== undefined) {
-          if (childDescription.signalArgs === undefined)
-            childDescription.signalArgs = {}
-          Object.defineProperty(childDescription.signalArgs, "index", { value: partCount })
-          overrideMethod(childDescription, "setup", el => {
+        if (childConf !== undefined) {
+          if (childConf.signalArgs === undefined)
+            childConf.signalArgs = {}
+          Object.defineProperty(childConf.signalArgs, "index", { value: partCount })
+          overrideMethod(childConf, "setup", el => {
             if (isHorizontal)
               el.style.gridColumn = `${partCount + 1}`
             else
@@ -178,7 +148,10 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
           result = last
       }
       else if (last === undefined) {
-        describe("Partition", PartitionDriver.glob, {})
+        RtElement({
+          caption: "Partition",
+          driver: PartitionDriver.glob,
+        })
       }
     }
     return result
@@ -187,7 +160,7 @@ export class ElementDriver<T extends HTMLElement> extends HtmlDriver<T> {
 
 // overrideMethod
 
-function overrideMethod(description: ReactiveTreeNodeDesc<El>, method: "creation" | "setup" | "destruction", func: (this: El, el: El) => void): void {
+function overrideMethod(description: Conf<El>, method: "creation" | "setup" | "destruction", func: (this: El, el: El) => void): void {
   const baseScript = description[method]
   description[method] = baseScript !== undefined
     ? (el, base) => { baseScript.call(el, el, base); func.call(el, el) }

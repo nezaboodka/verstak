@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, describe } from "reactronic"
+import { RtElement, RtNode } from "reactronic"
 import { El, ElKind } from "../El.js"
 import { ElImpl } from "../ElDriver.js"
 import { HtmlDriver } from "../WebDriver.js"
@@ -18,7 +18,10 @@ export function row<T = void>(builder?: (element: void) => T, shiftCursorDown?: 
 }
 
 export function rowBreak(shiftCursorDown?: number): void {
-  describe("RowBreak", PartitionDriver.glob, {})
+  RtElement({
+    caption: "RowBreak",
+    driver: PartitionDriver.glob,
+  })
 }
 
 // PartitionDriver (display: flex/row or contents)
@@ -31,12 +34,14 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     super(PartitionDriver.id, true, el => el.kind = ElKind.partition)
   }
 
-  override runSetup(node: ReactiveTreeNode<El<T>>): void | Promise<void> {
+  override runSetup(node: RtNode<El<T>>): void | Promise<void> {
     const result = super.runSetup(node)
     const ownerEl = node.owner.element as ElImpl
     if (ownerEl.sealed !== undefined) {
       node.element.style.flexGrow = "1"
-      describe("Wrapper", WrapperDriver.glob, {
+      RtElement({
+        caption: "Wrapper",
+        driver: WrapperDriver.glob,
         setup() {
           const ownerEl = this.node.owner.owner.element as ElImpl
           if (ownerEl.splitView !== undefined) {
@@ -63,11 +68,11 @@ export class PartitionDriver<T extends HTMLElement> extends HtmlDriver<T> {
     return result
   }
 
-  override provideHost(node: ReactiveTreeNode<El<T, any>>): ReactiveTreeNode<El<T, any>> {
-    let host: ReactiveTreeNode<El<T, any>>
+  override provideHost(node: RtNode<El<T, any>>): RtNode<El<T, any>> {
+    let host: RtNode<El<T, any>>
     const ownerEl = node.owner.element as ElImpl
     if (ownerEl.sealed !== undefined)
-      host = node.children.firstItem as ReactiveTreeNode<El<T, any>>
+      host = node.children.firstItem as RtNode<El<T, any>>
     else
       host = node
     return host

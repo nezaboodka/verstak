@@ -5,14 +5,16 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { describe } from "reactronic"
-import { ElKind, ElPlace } from "../El.js"
+import { RtElement } from "reactronic"
+import { El, ElKind, ElPlace } from "../El.js"
 import { ElDriver } from "../ElDriver.js"
 
 // Cursor
 
 export function cursor(place: ElPlace): void {
-  describe(cursor.name, CursorCommandDriver.glob, {
+  RtElement<El<Element>>({
+    caption: cursor.name,
+    driver: CursorCommandDriver.glob,
     setup() {
       this.place = place
     },

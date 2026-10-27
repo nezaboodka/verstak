@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeVariable } from "reactronic"
+import { RtVariable } from "reactronic"
 
 export enum Axis { X, Y }
 
@@ -42,17 +42,17 @@ export class Dimension<T = NoUnit> {
   }
 
   // Font Size Px
-  static readonly gFontSizePx = new ReactiveTreeVariable<number>("gFontSizePx")
+  static readonly gFontSizePx = new RtVariable<number>("gFontSizePx")
 
   // Line Size Px
-  private static readonly gLineSizePx = new ReactiveTreeVariable<number>("gLineSizePx")
+  private static readonly gLineSizePx = new RtVariable<number>("gLineSizePx")
   static get lineSizePx(): number {
     return Dimension.gLineSizePx.value
   }
   static set lineSizePx(value: number) {
     Dimension.gLineSizePx.value = value
   }
-  static getLineSizePx(): ReactiveTreeVariable<number> {
+  static getLineSizePx(): RtVariable<number> {
     return Dimension.gLineSizePx
   }
 }

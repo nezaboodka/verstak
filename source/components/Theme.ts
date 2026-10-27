@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { runTransactional, ReactiveTreeVariable, Isolation } from "reactronic"
+import { runTransactional, RtVariable, Isolation } from "reactronic"
 import { BasicAbstractTheme } from "./theme/Styling.js"
 import { ButtonStyling, DefaultButtonStyling } from "./theme/Button.s.js"
 import { InputStyling, DefaultInputStyling  } from "./theme/Input.s.js"
@@ -25,7 +25,7 @@ export type AbstractTheme = BasicAbstractTheme & {
 }
 
 export class Theme implements AbstractTheme {
-  private static readonly gCurrent = new ReactiveTreeVariable<AbstractTheme>(Theme.name,
+  private static readonly gCurrent = new RtVariable<AbstractTheme>(Theme.name,
     runTransactional({ isolation: Isolation.disjoinFromOuterTransaction }, () => new Theme()))
 
   static get current(): AbstractTheme {

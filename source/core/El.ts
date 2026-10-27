@@ -5,11 +5,11 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { Handler, ReactiveTreeNode } from "reactronic"
+import { Handler, RtNode } from "reactronic"
 
 export type El<T = any, M = any, D = any> = {
   // System-managed properties
-  readonly node: ReactiveTreeNode<El<T, M, D>>
+  readonly node: RtNode<El<T, M, D>>
   readonly rank: number
   native: T
 

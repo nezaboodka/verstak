@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDesc, Script, Mode, ScriptTask, args2desc } from "reactronic"
+import { inherit, Mode, ConfOrScript, RtNode } from "reactronic"
 import { Element, FocusModel, OnFocus, rowBreak, El, Fragment, KeyboardSensor, KeyboardModifiers, H, V } from "verstak"
 import { rxModel, ValuesOrRefs } from "./common/Utils.js"
 import { Theme, InputStyling } from "./Theme.js"
@@ -26,63 +26,28 @@ export type InputModel<T = string> = FocusModel & {
 // Input
 
 export function Input<D = unknown>(
-  setup: Script<El<HTMLElement, InputModel, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, InputModel, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel, D>>): ReactiveTreeNode<El<HTMLElement, InputModel, D>>
-
-export function Input<D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, InputModel, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, InputModel, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel, D>>): ReactiveTreeNode<El<HTMLElement, InputModel, D>>
-
-export function Input<D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, InputModel, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, InputModel, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel, D>>): ReactiveTreeNode<El<HTMLElement, InputModel, D>>
-
-export function Input<D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, InputModel, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, InputModel, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel, D>>): ReactiveTreeNode<El<HTMLElement, InputModel, D>>
-
-export function Input<D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel, D>>): ReactiveTreeNode<El<HTMLElement, InputModel, D>>
-
-export function Input<D = unknown>(
-  p1?: Script<El<HTMLElement, InputModel, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, InputModel, D>>,
-  p2?: Script<El<HTMLElement, InputModel, D>> | ScriptTask<El<HTMLElement, InputModel, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, InputModel, D>>,
-  p3?: Script<El<HTMLElement, InputModel, D>> | ScriptTask<El<HTMLElement, InputModel, D>> | ReactiveTreeNodeDesc<El<HTMLElement, InputModel, D>>,
-  p4?: ScriptTask<El<HTMLElement, InputModel, D>> | ReactiveTreeNodeDesc<El<HTMLElement, InputModel, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, InputModel, D>>): ReactiveTreeNode<El<HTMLElement, InputModel, D>> {
-  //
-  const description = args2desc(Input.name, p1, p2, p3, p4, p5)
-  return (
-    Element<InputModel, D>(description, {
-      creation() {
-        this.model ??= composeInputModel()
-        this.native.dataForSensor.focus = this.model
-      },
-      setup() {
-        const m = this.model
-        const theme = Theme.current.input
-        this.useStylingPreset(theme.main)
-        if (m.icon)
-          Icon(m.icon, {
-            setup(el, base) {
-              base()
-              this.useStylingPreset(theme.icon)
-            },
-          })
-        InputField(m, theme)
-        InputPopup(m, theme)
-      },
-    })
-  )
+  conf?: ConfOrScript<El<HTMLElement, InputModel, D>>): RtNode<El<HTMLElement, InputModel, D>> {
+  return Element<InputModel, D>(inherit(conf, {
+    caption: Input.name,
+    creation() {
+      this.model ??= composeInputModel()
+      this.native.dataForSensor.focus = this.model
+    },
+    setup() {
+      const m = this.model
+      const theme = Theme.current.input
+      this.useStylingPreset(theme.main)
+      if (m.icon)
+        Icon(m.icon, {
+          setup(el, base) {
+            base()
+            this.useStylingPreset(theme.icon)
+          },
+        })
+      InputField(m, theme)
+      InputPopup(m, theme)
+    },
+  }))
 }
 
 export function composeInputModel<T>(props?: Partial<ValuesOrRefs<InputModel<T>>>): InputModel<T> {

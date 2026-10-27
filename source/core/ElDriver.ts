@@ -5,14 +5,14 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, Handler, BaseDriver, Transaction, signal, RxObject } from "reactronic"
+import { RtNode, Handler, RtDriver, Transaction, signal, RxObject } from "reactronic"
 import { El, ElKind, ElCoords, H, V, Range, ElPlace, Direction } from "./El.js"
 import { equalElCoords, parseElCoords } from "./ElUtils.js"
 
 // ElDriver
 
-export class ElDriver<T extends Element, M = unknown, D = unknown> extends BaseDriver<El<T, M, D>> {
-  override create(node: ReactiveTreeNode<El<T, M, D>>): El<T, M, D> {
+export class ElDriver<T extends Element, M = unknown, D = unknown> extends RtDriver<El<T, M, D>> {
+  override create(node: RtNode<El<T, M, D>>): El<T, M, D> {
     return new ElImpl<T, M, D>(node)
   }
 }
@@ -21,7 +21,7 @@ export class ElDriver<T extends Element, M = unknown, D = unknown> extends BaseD
 
 export class ElImpl<T extends Element = any, M = any, D = any> implements El<T, M, D> {
   // System-managed properties
-  readonly node: ReactiveTreeNode<El<T, M, D>>
+  readonly node: RtNode<El<T, M, D>>
   maxColumnCount: number
   maxRowCount: number
   layoutInfo?: ElLayoutInfo
@@ -52,7 +52,7 @@ export class ElImpl<T extends Element = any, M = any, D = any> implements El<T, 
   private _splitView: Direction | undefined
   private _hasStylingPresets: boolean
 
-  constructor(node: ReactiveTreeNode<El<T, M, D>>) {
+  constructor(node: RtNode<El<T, M, D>>) {
     // System-managed properties
     this.node = node
     this.maxColumnCount = 0
@@ -109,7 +109,7 @@ export class ElImpl<T extends Element = any, M = any, D = any> implements El<T, 
     const node = this.node
     const driver = node.driver
     if (!driver.isPartition) {
-      const owner = node.owner as ReactiveTreeNode<ElImpl>
+      const owner = node.owner as RtNode<ElImpl>
       const ownerEl = owner.element
       const prevEl = node.prev?.element as ElImpl
       const prevElLayoutInfo = prevEl?.layoutInfo ?? InitialElLayoutInfo
@@ -341,12 +341,12 @@ export class ElImpl<T extends Element = any, M = any, D = any> implements El<T, 
   }
 
   protected *children(onlyAfter?: ElImpl): Generator<ElImpl> {
-    const after: ReactiveTreeNode<any> | undefined = onlyAfter?.node
+    const after: RtNode<any> | undefined = onlyAfter?.node
     for (const child of this.node.children.items(after))
       yield child.element as ElImpl
   }
 
-  static *childrenOf(node: ReactiveTreeNode<El>, onlyAfter?: El): Generator<ElImpl> {
+  static *childrenOf(node: RtNode<El>, onlyAfter?: El): Generator<ElImpl> {
     return (node.element as ElImpl).children(onlyAfter as ElImpl)
   }
 
@@ -381,7 +381,7 @@ export class ElImpl<T extends Element = any, M = any, D = any> implements El<T, 
   private static applyWidth<T extends Element>(element: ElImpl<T, any>, value: Range): void {
     const s = element.style
     const node = element.node
-    const owner = node.owner as ReactiveTreeNode<ElImpl>
+    const owner = node.owner as RtNode<ElImpl>
     const ownerEl = owner.element
     if (ownerEl.splitView === Direction.horizontal) {
       // s.minWidth = "" // clear
@@ -399,7 +399,7 @@ export class ElImpl<T extends Element = any, M = any, D = any> implements El<T, 
   private static applyHeight<T extends Element>(element: ElImpl<T, any>, value: Range): void {
     const s = element.style
     const node = element.node
-    const owner = node.owner as ReactiveTreeNode<ElImpl>
+    const owner = node.owner as RtNode<ElImpl>
     const ownerEl = owner.element
     if (ownerEl.splitView === Direction.vertical) {
       // s.minHeight = "" // clear
@@ -710,7 +710,7 @@ export class ElImpl<T extends Element = any, M = any, D = any> implements El<T, 
 
   private static applyOverlayVisible<T extends Element>(element: ElImpl<T, any>, value: boolean | undefined): void {
     const s = element.style
-    const host = ReactiveTreeNode.findMatchingHost<El, El>(element.node, n =>
+    const host = RtNode.findMatchingHost<El, El>(element.node, n =>
       n.element.native instanceof HTMLElement || n.element.native instanceof SVGElement)
     const nativeHost = host?.element.native
     if (value === true) {
@@ -995,7 +995,7 @@ export const Constants = {
   // kindAttrName: "вид",
   keyAttrName: "key",
   kindAttrName: "kind",
-  ownReactiveTreeNodeKey: Symbol("own-reactive-tree-node"),
+  ownRtNodeKey: Symbol("own-reactive-tree-node"),
 }
 
 const DriversByLayout: Array<Handler<El<HTMLElement>>> = [

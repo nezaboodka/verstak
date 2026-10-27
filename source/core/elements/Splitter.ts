@@ -5,7 +5,7 @@
 // By contributing, you agree that your contributions will be
 // automatically licensed under the license referred above.
 
-import { ReactiveTreeNode, ReactiveTreeNodeDesc, ReactiveTreeNodeDriver, Script, Mode, ScriptTask, describe, runNonReactive } from "reactronic"
+import { RtElement, inherit, runNonReactive, ConfOrScript, Driver, RtNode } from "reactronic"
 import { El, Direction, ElKind } from "../El.js"
 import { ElImpl } from "../ElDriver.js"
 import { HtmlDriver } from "../WebDriver.js"
@@ -15,44 +15,14 @@ import { Fragment, FragmentDriver } from "./Fragment.js"
 // Splitter
 
 export function Splitter<M = unknown, D = unknown>(
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Splitter<M = unknown, D = unknown>(
-  key: string,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Splitter<M = unknown, D = unknown>(
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Splitter<M = unknown, D = unknown>(
-  key: string,
-  mode: Mode,
-  setup: Script<El<HTMLElement, M, D>>,
-  setupTask?: ScriptTask<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Splitter<M = unknown, D = unknown>(
-  description?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  basis?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>>
-
-export function Splitter<M = unknown, D = unknown>(
-  p1?: Script<El<HTMLElement, M, D>> | string | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p2?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | Mode | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p3?: Script<El<HTMLElement, M, D>> | ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p4?: ScriptTask<El<HTMLElement, M, D>> | ReactiveTreeNodeDesc<El<HTMLElement, M, D>>,
-  p5?: ReactiveTreeNodeDesc<El<HTMLElement, M, D>>): ReactiveTreeNode<El<HTMLElement, M, D>> {
-  //
-  return describe(Splitter.name, SplitterDriver.glob, p1, p2, p3, p4, p5)
+  conf?: ConfOrScript<El<HTMLElement, M, D>>): RtNode<El<HTMLElement, M, D>> {
+  return RtElement(inherit(conf, {
+    caption: Splitter.name,
+    driver: SplitterDriver.glob,
+  }))
 }
 
-export function describeSplitter<T>(index: number, splitViewNode: ReactiveTreeNode<El<T>>): ReactiveTreeNode<El<HTMLElement>> {
+export function describeSplitter<T>(index: number, splitViewNode: RtNode<El<T>>): RtNode<El<HTMLElement>> {
   const key = `splitter-${index}`
   return (
     Splitter({
@@ -73,27 +43,27 @@ export function describeSplitter<T>(index: number, splitViewNode: ReactiveTreeNo
               if (pointer.draggingOver) {
                 // pointer.dropAllowed = true
                 pointer.dropAllowed = true
-                const initialSizesPx = pointer.getData() as Array<{ node: ReactiveTreeNode<ElImpl>, sizePx: number }>
+                const initialSizesPx = pointer.getData() as Array<{ node: RtNode<ElImpl>, sizePx: number }>
                 const deltaPx = Math.floor(splitViewNode.element.splitView === Direction.horizontal
                   ? pointer.positionX - pointer.startX : pointer.positionY - pointer.startY)
 
-                const clonedSizesPx: Array<{ node: ReactiveTreeNode<ElImpl>, sizePx: number }> = []
+                const clonedSizesPx: Array<{ node: RtNode<ElImpl>, sizePx: number }> = []
                 for (const item of initialSizesPx) {
                   clonedSizesPx.push({ node: item.node, sizePx: item.sizePx })
                 }
 
-                runNonReactive(() => relayoutUsingSplitter(splitViewNode as any as ReactiveTreeNode<ElImpl>, deltaPx, index, clonedSizesPx))
+                runNonReactive(() => relayoutUsingSplitter(splitViewNode as any as RtNode<ElImpl>, deltaPx, index, clonedSizesPx))
                 if (pointer.dropped) {
                   model?.droppedAction?.(pointer)
                 }
               }
               else { // drag started
                 e.setAttribute("rx-dragging", "true")
-                const initialSizesPx: Array<{ node: ReactiveTreeNode<ElImpl>, sizePx: number }> = []
+                const initialSizesPx: Array<{ node: RtNode<ElImpl>, sizePx: number }> = []
                 for (const child of splitViewNode.children.items()) {
                   if (isSplitViewPartition(child.driver)) {
                     const sizePx = (child.element as ElImpl).layoutInfo?.effectiveSizePx ?? 0
-                    initialSizesPx.push({ node: child as ReactiveTreeNode<ElImpl>, sizePx })
+                    initialSizesPx.push({ node: child as RtNode<ElImpl>, sizePx })
                   }
                 }
                 // console.log("initial", initialSizesPx.map(x => x.sizePx).join(", "))
@@ -124,6 +94,6 @@ export class SplitterDriver extends HtmlDriver<HTMLElement> {
 
 // isSplitViewPartition
 
-export function isSplitViewPartition(childDriver: ReactiveTreeNodeDriver): boolean {
+export function isSplitViewPartition(childDriver: Driver): boolean {
   return !childDriver.isPartition && !(childDriver instanceof SplitterDriver) && !(childDriver instanceof FragmentDriver)
 }
